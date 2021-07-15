@@ -10,24 +10,23 @@
                 <thead>
                 <tr>
                     <th style="width: 1%">
-                        ID
+                        {{ __('ID') }}
                     </th>
                     <th style="width: 20%">
-                        Name
+                        {{ __('Name') }}
                     </th>
                     <th style="width: 30%">
-                        Email
+                        {{ __('Email') }}
                     </th>
                     <th>{{__('Created')}}</th>
                     <th style="width: 8%" class="text-center">
-                        Status
+                        {{ __('Roles') }}
                     </th>
-                    <th style="width: 20%">
-                    </th>
+                    <th style="width: 20%"></th>
                 </tr>
                 </thead>
+                
                 <tbody>
-
                 @foreach($users as $user)
                     <tr>
                     <td>{{ $user->id }}</td>
