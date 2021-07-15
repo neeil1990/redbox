@@ -18,9 +18,7 @@
                     <th style="width: 30%">
                         Email
                     </th>
-                    <th>
-                        Project Progress
-                    </th>
+                    <th>{{__('Created')}}</th>
                     <th style="width: 8%" class="text-center">
                         Status
                     </th>
@@ -35,21 +33,38 @@
                     <td>{{ $user->id }}</td>
                     <td>
                         <a>{{ $user->name }} {{ $user->last_name }}</a>
+                        @if($user->session)
                         <br/>
                         <small>
-                            Created {{ $user->created_at->locale('ru_RU')->diffForHumans() }}
+                            <div class="d-flex flex-row align-items-center">
+                                <div>
+                                    @if ($user->session->agent->isDesktop())
+                                        <i class="fas fa-desktop fa-lg"></i>
+                                    @else
+                                        <i class="fas fa-mobile fa-lg"></i>
+                                    @endif
+                                </div>
+
+                                <div class="ml-2">
+                                    <div class="text-sm text-gray-600">
+                                        {{ $user->session->agent->platform() }} - {{ $user->session->agent->browser() }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ $user->session->ip_address }},
+
+                                        @if ($user->session->is_current_device)
+                                            <span class="text-green">{{ __('This device') }}</span>
+                                        @else
+                                            {{ __('Last active') }} {{ $user->session->last_active }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </small>
+                        @endif
                     </td>
                     <td>{{ $user->email }}</td>
-                    <td class="project_progress">
-                        <div class="progress progress-sm">
-                            <div class="progress-bar bg-green" role="progressbar" aria-valuenow="47" aria-valuemin="0" aria-valuemax="100" style="width: 47%">
-                            </div>
-                        </div>
-                        <small>
-                            47% Complete
-                        </small>
-                    </td>
+                    <td>{{ $user->created_at->format('m.d.Y H:m:s') }}</td>
                     <td class="project-state">
                         <span class="badge badge-success">Success</span>
                     </td>

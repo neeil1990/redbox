@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Jenssegers\Agent\Agent;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
-
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('role:admin');
     }
 
     /**
@@ -22,6 +23,17 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::all();
+
+        $users->map(function ($user){
+            if(!$user->session)
+                return true;
+
+            $user->session->agent = $this->createAgent($user->session);
+            $user->session->is_current_device = $user->session->id === request()->session()->getId();
+            $user->session->last_active = $user->session->last_activity->diffForHumans();
+            return $user;
+        });
+
         return view('users.index', compact('users'));
     }
 
@@ -65,7 +77,8 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        $role = Role::all()->pluck('name', 'id');
+        return view('users.edit', compact('user', 'role'));
     }
 
     /**
@@ -81,9 +94,12 @@ class UsersController extends Controller
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'last_name' => ['required', 'string', 'min:3', 'max:255'],
             'email' => ['required', 'string', 'email', 'min:3', 'max:255'],
+            'role' => ['required'],
         ]);
 
         $user->update($request->all());
+
+        $user->syncRoles($request->input('role'));
 
         flash()->overlay(__('User update successfully'), __('Update user'))->success();
 
@@ -106,5 +122,18 @@ class UsersController extends Controller
         }
 
        return redirect('users');
+    }
+
+    /**
+     * Create a new agent instance from the given session.
+     *
+     * @param  mixed  $session
+     * @return \Jenssegers\Agent\Agent
+     */
+    private function createAgent($session)
+    {
+        return tap(new Agent, function ($agent) use ($session) {
+            $agent->setUserAgent($session->user_agent);
+        });
     }
 }

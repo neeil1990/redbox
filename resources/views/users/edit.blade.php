@@ -29,6 +29,12 @@
                         </div>
 
                         <div class="form-group">
+                            {!! Form::label('role', __('Roles')) !!}
+                            {!! Form::select('role[]', $role, null, ['class' => 'custom-select' . ($errors->has('role') ? ' is-invalid' : ''), 'multiple']) !!}
+                            @error('role') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-group">
                             {!! Form::label('image', __('File input')) !!}
                             <div class="input-group">
                                 <div class="custom-file">
