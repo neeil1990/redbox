@@ -66,7 +66,9 @@
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->created_at->format('m.d.Y H:m:s') }}</td>
                     <td class="project-state">
-                        <span class="badge badge-success">Success</span>
+                        @foreach($user->getRoleNames() as $role)
+                            <span class="badge badge-success">{{ $role }}</span>
+                        @endforeach
                     </td>
                     <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{{ route('users.edit', $user->id) }}">
