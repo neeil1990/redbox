@@ -15,8 +15,15 @@ Route::get('info', function (){
     phpinfo();
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
+Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::middleware(['verified'])->group(function () {
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::resource('users', 'UsersController');
+});
 
-Route::resource('users', 'UsersController');
+
+
+
+
