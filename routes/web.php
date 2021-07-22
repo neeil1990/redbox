@@ -21,6 +21,11 @@ Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name
 Route::middleware(['verified'])->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::resource('users', 'UsersController');
+
+    $arPages = ['keywordGenerator', 'duplicates', 'utmMarks', 'roiCalculator'];
+    foreach ($arPages as $page)
+        Route::get($page, "PagesController@{$page}")->name($page);
+
 });
 
 

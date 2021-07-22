@@ -8,9 +8,33 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="/users" class="nav-link">
+            <a href="{{ route('users.index') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Users') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('keywordGenerator') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('Keyword generator') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('duplicates') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('Duplicates') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('utmMarks') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('UTM Marks') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('roiCalculator') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('ROI calculator') }}</p>
             </a>
         </li>
         <li class="nav-item">

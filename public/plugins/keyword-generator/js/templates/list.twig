@@ -1,0 +1,99 @@
+<div class="list-w-img-container">
+    <div class="list">
+        <div class="base-popup_close deleteThis">
+            <span class="close-popup-control">
+                <img src="plugins/keyword-generator/img/close.svg" alt="">
+            </span>
+        </div>
+        <div>
+            <a class="item-title">Список слов</a>
+            <input class="listName" type="text" placeholder="Введите название" value="Список">
+        </div>
+        <textarea
+                wrap="off"
+                rows="14"
+                class="wordList"
+                placeholder=
+"Введите или вставьте&#8200;
+ключевые слова по&#8200;
+одному на строку.&#8200;
+Пустые строки игнорируются.&#8200;
+Чтобы скомбинировать&#8200;
+все списки, кроме&#8200;
+выбранного, нажмите&#8200;
+«Добавить комбинации&#8200;
+без этих слов»"></textarea>
+        <div class="optionsHeader">
+            <a class="arrowDown additionalOptions __dashed" href="#">Дополнительно</a>
+            <div class="wordQuantityContainer"><a>Слов: <a class="wordQuantity"></a></a></div>
+        </div>
+        <div class="additionalOptionsList">
+            <label class="ui_label __no-select">
+                <span class="ui_checkbox">
+                    <input type="checkbox" class="additionalCheckboxOption ui_checkbox_input" value="exactMatch"/>
+                    <span class="ui_checkbox_fake-input"></span>
+                </span>
+                Добавить !
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            Используйте, чтобы в&nbsp;Яндекс.Директе учитывались показы по&nbsp;указанной форме слова. Перед каждым
+                            словом добавляется &laquo;!&raquo;, перед стоп-словами&nbsp;&mdash; &laquo;+&raquo;.
+                        </span>
+                    </span>
+                </span>
+            </label>
+            <br>
+            <label class="ui_label __no-select">
+                <span class="ui_checkbox">
+                    <input type="checkbox" class="additionalCheckboxOption ui_checkbox_input" value="broadMatchModifier"/>
+                    <span class="ui_checkbox_fake-input"></span>
+                </span>
+                Добавить +
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            Модификатор широкого соответствия для Google AdWords. Перед каждым словом добавляется &laquo;+&raquo;.
+                        </span>
+                    </span>
+                </span>
+            </label>
+            <br>
+            <label class="ui_label __no-select">
+                <span class="ui_checkbox">
+                    <input type="checkbox" class="additionalCheckboxOption ui_checkbox_input" value="addToResult"/>
+                    <span class="ui_checkbox_fake-input"></span>
+                </span>
+                Добавить исходный список
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right">
+                        <span class="ui_tooltip_content">
+                            Слова из&nbsp;этого списка будут добавлены в&nbsp;том числе без сочетания с&nbsp;другими.
+                        </span>
+                    </span>
+                </span>
+            </label>
+            <br>
+            <label class="ui_label __no-select">
+                <span class="ui_checkbox">
+                    <input type="checkbox" class="additionalCheckboxOption ui_checkbox_input" value="addBlankWord"/>
+                    <span class="ui_checkbox_fake-input"></span>
+                </span>
+                Скомбинировать без этих слов
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right">
+                        <span class="ui_tooltip_content">
+                            К&nbsp;комбинациям из&nbsp;других списков добавляются варианты без слов из&nbsp;этого списка.
+                        </span>
+                    </span>
+                </span>
+            </label>
+            <br>
+        </div>
+    </div>
+
+</div>

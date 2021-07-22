@@ -1,0 +1,13 @@
+<div>
+    <div class="prime-lightbox __alt __type-base" {% if customWidth %}style="width: {{ customWidth }}px;"{% endif %}>
+        <div class="base-popup_close"><span class="close-popup-control"><img src="plugins/keyword-generator/img/close.svg" alt=""></span></div>
+        <div class="container">
+            <h2 class="base-popup_header">{{ header ? header : 'Внимание' }}</h2>
+            <div class="base-popup_content">{{ content ? content : ''}}</div>
+            <div class="base-popup_controls">
+                <a href="#" class="ui_btn base-popup_controls_action">{{ actionButtonLabel }}</a>
+                <a href="#" class="__dashed base-popup_controls_close-btn">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
