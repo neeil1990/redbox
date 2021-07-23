@@ -25,7 +25,7 @@
                     <th style="width: 20%"></th>
                 </tr>
                 </thead>
-                
+
                 <tbody>
                 @foreach($users as $user)
                     <tr>
@@ -62,7 +62,12 @@
                         </small>
                         @endif
                     </td>
-                    <td>{{ $user->email }}</td>
+                    <td>
+                        {{ $user->email }}
+                        @if($user->email_verified_at)
+                            <span class="badge bg-success">{{ __('VERIFIED') }}</span>
+                        @endif
+                    </td>
                     <td>{{ $user->created_at->format('m.d.Y H:m:s') }}</td>
                     <td class="project-state">
                         @foreach($user->getRoleNames() as $role)
