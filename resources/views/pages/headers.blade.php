@@ -29,7 +29,7 @@
                     <div class="card-header">
                         <h3 class="card-title">HTTP Code: {{ $arItems->status }}</h3>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body p-0 overflow-auto">
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
