@@ -4,8 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Classes\Curl\CurlFacade;
 class PagesController extends Controller
 {
+
+    public function httpHeaders(Request $request)
+    {
+        $response = (new CurlFacade($request->input('url')))->run();
+        return view('pages.headers', compact('response'));
+    }
 
     /**
      * Keyword generator

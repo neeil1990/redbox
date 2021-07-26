@@ -22,9 +22,15 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::resource('users', 'UsersController');
 
-    $arPages = ['keywordGenerator', 'duplicates', 'utmMarks', 'roiCalculator'];
-    foreach ($arPages as $page)
-        Route::get($page, "PagesController@{$page}")->name($page);
+    $arPages = [
+        'keyword-generator' => 'keywordGenerator',
+        'duplicates' => 'duplicates',
+        'utm-marks' => 'utmMarks',
+        'roi-calculator' => 'roiCalculator',
+        'http-headers/{url?}' => 'httpHeaders'
+    ];
+    foreach ($arPages as $url => $page)
+        Route::get($url, "PagesController@{$page}")->name($page);
 
 });
 

@@ -1,0 +1,85 @@
+@component('component.card', ['title' => __('Http headers')])
+
+    @slot('css')
+        <!-- CodeMirror -->
+        <link rel="stylesheet" href="{{ asset('plugins/codemirror/codemirror.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
+    @endslot
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            {!! Form::open(['method' => 'GET', 'route' => 'httpHeaders']) !!}
+            <div class="input-group input-group-sm">
+                {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
+                <span class="input-group-append">
+                    {!! Form::submit(__('Check URL'), ['class' => 'btn btn-info btn-flat']) !!}
+                </span>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+
+    @if($response)
+        <pre class="highlight"><code>{!! url()->full() !!}</code></pre>
+
+        <div class="row">
+            @foreach($response as $arItems)
+            <div class="col-md-6">
+                <div class="card card-outline @if($arItems->status == 200) card-success @else card-danger @endif">
+                    <div class="card-header">
+                        <h3 class="card-title">HTTP Code: {{ $arItems->status }}</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <td><strong>contentType</strong></td>
+                                    <td>{{ $arItems->contentType }}</td>
+                                </tr>
+                                @foreach($arItems->headers as $name => $val)
+                                <tr>
+                                    <td><strong>{{ $name }}</strong></td>
+                                    <td>@if(is_array($val)) {{implode(', ', $val)}} @else {{ $val }} @endif</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ __('HTML Code') }}</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body p-0">
+                        <textarea id="code">{{last($response)->content}}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @slot('js')
+        <!-- CodeMirror -->
+        <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
+        <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
+        <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
+        <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+        <script>
+            $(function () {
+                // CodeMirror
+                CodeMirror.fromTextArea(document.getElementById("code"), {
+                    mode: "htmlmixed",
+                    theme: "monokai"
+                });
+            })
+        </script>
+    @endslot
+
+@endcomponent

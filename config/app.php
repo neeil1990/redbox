@@ -169,6 +169,7 @@ return [
         Laracasts\Flash\FlashServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
+        Ixudra\Curl\CurlServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -233,6 +234,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Flash' => Laracasts\Flash\Flash::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
+        'Curl' => Ixudra\Curl\Facades\Curl::class,
     ],
 
 ];
