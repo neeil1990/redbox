@@ -4,8 +4,11 @@
         <!-- CodeMirror -->
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/codemirror.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
+        <!-- jQuery ui -->
+        <link rel="stylesheet" href="{{ asset('plugins/jquery-ui/jquery-ui.css') }}">
     @endslot
 
+    @if(Auth()->check())
     <div class="row mb-4">
         <div class="col-md-6">
             {!! Form::open(['method' => 'GET', 'route' => 'httpHeaders']) !!}
@@ -18,25 +21,38 @@
             {!! Form::close() !!}
         </div>
     </div>
+    @endif
 
     @if($response)
-        <pre class="highlight"><code>{!! url()->full() !!}</code></pre>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>{{ __('Copy link') }}:</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" id="inputCopy" value="{{ request()->getHost() }}/public/http-headers/{{$id}}" class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text" onclick="copy()" style="cursor: pointer"><i class="fas fa-copy"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="row">
             @foreach($response as $arItems)
             <div class="col-md-6">
-                <div class="card card-outline @if($arItems->status == 200) card-success @else card-danger @endif">
+                <div class="card card-outline @if($arItems['status'] == 200) card-success @else card-danger @endif">
                     <div class="card-header">
-                        <h3 class="card-title">HTTP Code: {{ $arItems->status }}</h3>
+                        <h3 class="card-title">HTTP Code: {{ $arItems['status'] }}</h3>
                     </div>
                     <div class="card-body p-0 overflow-auto">
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
                                     <td><strong>contentType</strong></td>
-                                    <td>{{ $arItems->contentType }}</td>
+                                    <td>{{ $arItems['contentType'] }}</td>
                                 </tr>
-                                @foreach($arItems->headers as $name => $val)
+                                @foreach($arItems['headers'] as $name => $val)
                                 <tr>
                                     <td><strong>{{ $name }}</strong></td>
                                     <td>@if(is_array($val)) {{implode(', ', $val)}} @else {{ $val }} @endif</td>
@@ -58,7 +74,7 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-                        <textarea id="code">{{last($response)->content}}</textarea>
+                        <textarea id="code">{{last($response)['content']}}</textarea>
                     </div>
                 </div>
             </div>
@@ -76,9 +92,34 @@
                 // CodeMirror
                 CodeMirror.fromTextArea(document.getElementById("code"), {
                     mode: "htmlmixed",
-                    theme: "monokai"
+                    //theme: "monokai",
+                    lineNumbers: true,
                 });
             })
+        </script>
+
+        <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
+        <script>
+            $(function(){
+                $( ".CodeMirror" ).resizable();
+            });
+
+            function copy() {
+                var copyText = document.getElementById("inputCopy");
+
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+
+                $(document).Toasts('create', {
+                    class: 'bg-success',
+                    title: "{{ __('Copied link') }}",
+                    subtitle: "{{ __('Close') }}",
+                    body: copyText.value,
+                    autohide: true,
+                    delay: 2000,
+                });
+            }
         </script>
     @endslot
 

@@ -19,6 +19,7 @@ Auth::routes(['verify' => true]);
 Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
 
 Route::middleware(['verified'])->group(function () {
+
     Route::get('/', 'HomeController@index')->name('home');
     Route::resource('users', 'UsersController');
 
@@ -34,7 +35,7 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
-
+Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
 
 
 

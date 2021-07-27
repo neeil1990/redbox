@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\HttpHeader;
 use Illuminate\Http\Request;
 
 use App\Classes\Curl\CurlFacade;
 class PagesController extends Controller
 {
 
-    public function httpHeaders(Request $request)
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function httpHeaders(Request $request, HttpHeader $header)
     {
         $response = (new CurlFacade($request->input('url')))->run();
-        return view('pages.headers', compact('response'));
+        $id = $header->saveData($response);
+
+        return view('pages.headers', compact('response', 'id'));
     }
 
     /**

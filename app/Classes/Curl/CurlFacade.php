@@ -53,14 +53,14 @@ class CurlFacade
     {
         $this->init();
 
-        $response = $this->curl->withResponseHeaders()->returnResponseObject()->get();
+        $response = $this->curl->withResponseHeaders()->returnResponseArray()->get();
 
-        if(!$response->status)
+        if(!$response['status'])
             return $this;
 
-        if($response->status == 301 || $response->status == 302){
+        if($response['status'] == 301 || $response['status'] == 302){
             $this->data[] = $response;
-            $this->url = $response->headers['Location'];
+            $this->url = $response['headers']['Location'];
             return $this->response();
         }
         $this->data[] = $response;
