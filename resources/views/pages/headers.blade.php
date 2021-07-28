@@ -11,7 +11,7 @@
     @if(Auth()->check())
     <div class="row mb-4">
         <div class="col-md-6">
-            {!! Form::open(['method' => 'GET', 'route' => 'httpHeaders']) !!}
+            {!! Form::open(['method' => 'GET', 'route' => 'pages.headers']) !!}
             <div class="input-group input-group-sm">
                 {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
                 <span class="input-group-append">
@@ -79,48 +79,48 @@
                 </div>
             </div>
         </div>
+
+        @slot('js')
+            <!-- CodeMirror -->
+            <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
+            <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
+            <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
+            <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+            <script>
+                $(function () {
+                    // CodeMirror
+                    CodeMirror.fromTextArea(document.getElementById("code"), {
+                        mode: "htmlmixed",
+                        //theme: "monokai",
+                        lineNumbers: true,
+                    });
+                })
+            </script>
+
+            <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
+            <script>
+                $(function(){
+                    $( ".CodeMirror" ).resizable();
+                });
+
+                function copy() {
+                    var copyText = document.getElementById("inputCopy");
+
+                    copyText.select();
+                    copyText.setSelectionRange(0, 99999);
+                    document.execCommand("copy");
+
+                    $(document).Toasts('create', {
+                        class: 'bg-success',
+                        title: "{{ __('Copied link') }}",
+                        subtitle: "{{ __('Close') }}",
+                        body: copyText.value,
+                        autohide: true,
+                        delay: 2000,
+                    });
+                }
+            </script>
+        @endslot
     @endif
-
-    @slot('js')
-        <!-- CodeMirror -->
-        <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
-        <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
-        <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
-        <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
-        <script>
-            $(function () {
-                // CodeMirror
-                CodeMirror.fromTextArea(document.getElementById("code"), {
-                    mode: "htmlmixed",
-                    //theme: "monokai",
-                    lineNumbers: true,
-                });
-            })
-        </script>
-
-        <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
-        <script>
-            $(function(){
-                $( ".CodeMirror" ).resizable();
-            });
-
-            function copy() {
-                var copyText = document.getElementById("inputCopy");
-
-                copyText.select();
-                copyText.setSelectionRange(0, 99999);
-                document.execCommand("copy");
-
-                $(document).Toasts('create', {
-                    class: 'bg-success',
-                    title: "{{ __('Copied link') }}",
-                    subtitle: "{{ __('Close') }}",
-                    body: copyText.value,
-                    autohide: true,
-                    delay: 2000,
-                });
-            }
-        </script>
-    @endslot
 
 @endcomponent

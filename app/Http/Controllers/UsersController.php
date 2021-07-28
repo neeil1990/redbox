@@ -31,6 +31,7 @@ class UsersController extends Controller
             $user->session->agent = $this->createAgent($user->session);
             $user->session->is_current_device = $user->session->id === request()->session()->getId();
             $user->session->last_active = $user->session->last_activity->diffForHumans();
+
             return $user;
         });
 

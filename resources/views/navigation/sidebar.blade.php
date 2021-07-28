@@ -14,31 +14,31 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('keywordGenerator') }}" class="nav-link">
+            <a href="{{ route('pages.keyword') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Keyword generator') }}</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('duplicates') }}" class="nav-link">
+            <a href="{{ route('pages.duplicates') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Duplicates') }}</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('utmMarks') }}" class="nav-link">
+            <a href="{{ route('pages.utm') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('UTM Marks') }}</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('roiCalculator') }}" class="nav-link">
+            <a href="{{ route('pages.roi') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('ROI calculator') }}</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('httpHeaders') }}" class="nav-link">
+            <a href="{{ route('pages.headers') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Http headers') }}</p>
             </a>

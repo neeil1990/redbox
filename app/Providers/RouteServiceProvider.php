@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -26,6 +27,10 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
 
         Route::model('user', \App\User::class);
+
+        Route::bind('description', function($value){
+            return  \App\Description::firstOrNew(['code' => $value, 'lang' => App::getLocale()]);
+        });
     }
 
     /**

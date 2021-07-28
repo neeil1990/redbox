@@ -7,6 +7,9 @@
 @stop
 
 @section('content')
+
+    @include('description.main')
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">{{ $title }}</h3>

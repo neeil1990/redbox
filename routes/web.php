@@ -17,25 +17,22 @@ Route::get('info', function (){
 
 Auth::routes(['verify' => true]);
 Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
+Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
 
 Route::middleware(['verified'])->group(function () {
 
     Route::get('/', 'HomeController@index')->name('home');
-    Route::resource('users', 'UsersController');
 
-    $arPages = [
-        'keyword-generator' => 'keywordGenerator',
-        'duplicates' => 'duplicates',
-        'utm-marks' => 'utmMarks',
-        'roi-calculator' => 'roiCalculator',
-        'http-headers/{url?}' => 'httpHeaders'
-    ];
-    foreach ($arPages as $url => $page)
-        Route::get($url, "PagesController@{$page}")->name($page);
+    Route::resource('users', 'UsersController');
+    Route::resource('description', 'DescriptionController', ['only' => ['edit', 'update']]);
+
+    $arPages = config('pages.link');
+    foreach ($arPages as $page)
+        Route::get($page['url'], "PagesController@{$page['method']}")->name($page['name']);
 
 });
 
-Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
+
 
 
 
