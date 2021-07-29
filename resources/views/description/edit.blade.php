@@ -67,7 +67,7 @@
                 $.ajax({
                     url: "{{ route('description.update', $description->code) }}",
                     type: 'PATCH',
-                    data: {description: $('#summernote').summernote('code')},
+                    data: {description: $('#summernote').summernote('code'), position: $('#description-position').val()},
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     success: function(data) {
                         if(data.id){
