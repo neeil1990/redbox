@@ -1,7 +1,3 @@
-@role('admin')
-    <a href="{{ route('description.edit', $code) }}" class="btn btn-secondary mb-4">{{ __('Add description') }}</a>
-@endrole
-
 @if($description)
     <div class="card card-widget">
         <div class="card-header">

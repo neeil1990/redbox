@@ -8,8 +8,13 @@
 
 @section('content')
 
-    @include('description.main')
+    @role('admin')
+        <a href="{{ route('description.edit', [$code, 'top']) }}" class="btn btn-secondary mb-4">{{ __('Add description') }}</a>
+    @endrole
 
+    @if(isset($description['top']))
+        @include('description.main', ['description' => $description['top']])
+    @endif
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">{{ $title }}</h3>
@@ -25,6 +30,9 @@
         <!-- /.card-body -->
     </div>
     <!-- /.card -->
+    @if(isset($description['bottom']))
+        @include('description.main', ['description' => $description['bottom']])
+    @endif
 @stop
 
 @section('js')

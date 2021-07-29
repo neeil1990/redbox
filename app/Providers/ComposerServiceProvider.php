@@ -23,6 +23,6 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        view()->composer('description.main', '\App\ViewComposers\DescriptionComposer');
+        view()->composer('component.card', '\App\ViewComposers\DescriptionComposer');
     }
 }

@@ -18,6 +18,7 @@ class CreateDescriptionsTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->string('code');
             $table->string('lang');
+            $table->string('position');
             $table->longText('description')->nullable();
             $table->timestamps();
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Description extends Model
 {
-    protected $fillable = ['code', 'lang'];
+    protected $fillable = ['code', 'lang', 'position'];
 
     public function getRouteKeyName()
     {

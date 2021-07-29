@@ -28,8 +28,12 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::model('user', \App\User::class);
 
-        Route::bind('description', function($value){
-            return  \App\Description::firstOrNew(['code' => $value, 'lang' => App::getLocale()]);
+        Route::bind('description', function($code, $request){
+            return  \App\Description::firstOrNew([
+                'code' => $code,
+                'lang' => App::getLocale(),
+                'position' => ($request->position) ?? request()->input('position'),
+            ]);
         });
     }
 

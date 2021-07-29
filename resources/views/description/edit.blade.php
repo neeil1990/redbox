@@ -15,6 +15,11 @@
                 {!! Form::model($description, ['id' => 'descriptionForm', 'method' => 'PATCH', 'route' => ['description.update', $description->code]]) !!}
                 <div class="card-body">
                     <div class="form-group">
+                        {!! Form::label('position', __('Position')) !!}
+                        {!! Form::select('position', ['top' => __('Top'), 'bottom' => __('Bottom')], null, ['id' => 'description-position', 'class' => 'custom-select rounded-0']) !!}
+                        @error('position') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
                         {!! Form::label('description', __('Description')) !!}
                         {!! Form::textarea('description', null, ['id' => 'summernote', 'placeholder' => __('Description')]) !!}
                         @error('description') <span class="error invalid-feedback">{{ $message }}</span> @enderror
@@ -37,6 +42,16 @@
     <!-- Page specific script -->
     <script>
         $(function () {
+            $('#description-position').change(function () {
+                var position = "{{ request()->route('position') }}";
+                if(position){
+                    var str = "{{request()->path()}}";
+                    var url = "/" + str.replace(position, $(this).val());
+
+                    window.location.replace(url);
+                }
+            });
+
             // Summernote
             $('#summernote').summernote({
                 minHeight: 300,

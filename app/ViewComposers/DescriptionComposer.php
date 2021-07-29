@@ -12,10 +12,11 @@ class DescriptionComposer
     public function compose(View $view)
     {
         $code = request()->path();
-        $description = Description::where(['code' => $code, 'lang' => App::getLocale()])->first();
-
-        if(is_object($description))
-            $description = (strip_tags($description->description)) ? $description : null;
+        $description = Description::where(['code' => $code, 'lang' => App::getLocale()])->get();
+        $description = $description->filter(function ($value) {
+            return (!is_null($value->description));
+        });
+        $description = $description->keyBy('position');
 
         $view->with(compact('code', 'description'));
     }

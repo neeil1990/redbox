@@ -24,7 +24,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
 
     Route::resource('users', 'UsersController');
-    Route::resource('description', 'DescriptionController', ['only' => ['edit', 'update']]);
+
+    Route::get('description/{description}/edit/{position?}', 'DescriptionController@edit')->name('description.edit');
+    Route::patch('description/{description}', 'DescriptionController@update')->name('description.update');
 
     $arPages = config('pages.link');
     foreach ($arPages as $page)

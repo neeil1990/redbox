@@ -36,7 +36,9 @@ class DescriptionController extends Controller
     public function update(Description $description, Request $request)
     {
         $description->user_id = Auth::id();
-        $description->description = $request->input('description');
+
+        $descInput = $request->input('description');
+        $description->description = (strip_tags($descInput)) ? $descInput : null;
 
         $description->save();
 
