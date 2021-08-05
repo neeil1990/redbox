@@ -105,7 +105,7 @@
         <!-- /.content-header -->
 
         <!-- Main content -->
-        <div class="content">
+        <div class="content" id="app">
             <div class="container-fluid">
                 @yield('content')
             </div>
@@ -132,6 +132,10 @@
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <!-- Bootstrap -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- app -->
+@unless(request()->path() == 'utm-marks')
+<script src="{{ asset('js/app.js') }}"></script>
+@endunless
 <!-- AdminLTE -->
 <script src="{{ asset('js/adminlte.js') }}"></script>
 

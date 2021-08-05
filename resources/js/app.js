@@ -8,18 +8,21 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+var requireComponent = require.context('./', true, /Base[A-Z]\w+\.(vue|js)$/)
+requireComponent.keys().forEach(function (fileName) {
+    var baseComponentConfig = requireComponent(fileName)
+    baseComponentConfig = baseComponentConfig.default || baseComponentConfig
+    var baseComponentName = baseComponentConfig.name || (
+        fileName
+            .replace(/^.+\//, '')
+            .replace(/\.\w+$/, '')
+    )
+    Vue.component(baseComponentName, baseComponentConfig)
+});
 
-// const files = require.context('./', true, /\.vue$/i);
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
+import RemoveDuplicates from './components/pages/RemoveDuplicates';
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('remove-duplicates', RemoveDuplicates);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -27,6 +30,6 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
+const vm = new Vue({
     el: '#app',
 });
