@@ -15,7 +15,7 @@
             <div class="input-group input-group-sm">
                 {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
                 <span class="input-group-append">
-                    {!! Form::submit(__('Check URL'), ['class' => 'btn btn-info btn-flat']) !!}
+                    {!! Form::submit(__('Check URL'), ['class' => 'btn btn-secondary btn-flat']) !!}
                 </span>
             </div>
             {!! Form::close() !!}

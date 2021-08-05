@@ -18,10 +18,10 @@
             <p><a>Оставить фразы, содержащие </a><input class="filter_word" type="text" size="50" style="width: 100%;"/></p>
             <p><a class="generatedCountText">Получено фраз: <a class="generatedCount"></a></a><br></p>
             <p><textarea title="" cols="50" rows="23" class="result_word_generator" readonly></textarea></p>
-            <button type="button" class="save-result-word-generator ui_btn __accent"><i class="fa fa-save"></i>
+            <button type="button" class="save-result-word-generator btn btn-secondary"><i class="fas fa-save"></i>
                 Сохранить
             </button>
-            <button type="button" class="copy-result-word-generator ui_btn"><i class="fa fa-copy"></i> Скопировать
+            <button type="button" class="copy-result-word-generator btn btn-secondary"><i class="fas fa-copy"></i> Скопировать
             </button>
         </div>
         <div class="optionsHeader">
@@ -145,7 +145,7 @@
 
             </div>
         </div>
-        <button type="button" class="get ui_btn __accent">Получить комбинации</button>
+        <button type="button" class="get btn btn-secondary">Получить комбинации</button>
         <small>Получится комбинаций:</small>
         <small class="combinationsQuantity"></small>
 

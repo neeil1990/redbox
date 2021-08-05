@@ -50,10 +50,10 @@
                     <div class="row">
                         <br/>
                         <div class="col-lg-6 col-lg-6 col-xs-6">
-                            <a class="btn btn-block btn-primary btn-lg" id="go-calc"><i class="fa fa-check success"></i> Посчитать</a>
+                            <a class="btn btn-block btn-secondary" id="go-calc"><i class="fa fa-check success"></i> Посчитать</a>
                         </div>
                         <div class="col-lg-6 col-xs-6">
-                            <button type="reset" class="btn btn-block btn-default btn-lg" id="go-reset"><i class="fa fa-times reject"></i> Очистить</button>
+                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer" id="go-reset"><i class="fa fa-times reject"></i> Очистить</button>
                         </div>
                     </div>
                 </div>
@@ -137,10 +137,10 @@
 
                     <div class="row">
                         <div class="col-lg-6 col-lg-6 col-xs-6">
-                            <a class="btn btn-block btn-primary btn-lg" id="go-prognoz"><i class="fa fa-check success"></i> Посчитать</a>
+                            <a class="btn btn-block btn-secondary" id="go-prognoz"><i class="fas fa-check success"></i> Посчитать</a>
                         </div>
                         <div class="col-lg-6 col-xs-6">
-                            <button type="reset" class="btn btn-block btn-default btn-lg" id="go-prreset"><i class="fa fa-times reject"></i> Очистить</button>
+                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer" id="go-prreset"><i class="fa fa-times reject"></i> Очистить</button>
                         </div>
                     </div>
 

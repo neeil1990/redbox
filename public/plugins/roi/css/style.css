@@ -89,9 +89,9 @@ form label[for="sredcheck"]:before{border-color: #00c0ef;}
     font-size: 18px;
     font-weight: 600;
     border: none;
-    background-color: #d3d3d3;
+    background-color: #6c757d!important;
 }
-.btn-group .btn.btn-info.active{
-    background-color: #cdb477;
+.btn-group .btn.btn-info:not(.active){
+    opacity: .65;
 }
 

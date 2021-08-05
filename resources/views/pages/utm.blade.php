@@ -40,11 +40,11 @@
                         <div class="urlBuilder_tpl">
                             <div class="urlBuilder_tpl_title">Шаблон:</div>
                             <div class="urlBuilder_tpl_items">
-                                <span class="active" data-id="custom">Произвольный</span>
-                                <span data-id="direct">Яндекс.Директ</span>
-                                <span data-id="adwords">Google AdWords</span>
-                                <span data-id="vk">Таргетинг ВКонтакте</span>
-                                <span data-id="mailru">myTarget</span>
+                                <span class="active btn btn-secondary btn-flat" data-id="custom">Произвольный</span>
+                                <span data-id="direct" class="btn btn-secondary btn-flat">Яндекс.Директ</span>
+                                <span data-id="adwords" class="btn btn-secondary btn-flat">Google AdWords</span>
+                                <span data-id="vk" class="btn btn-secondary btn-flat">Таргетинг ВКонтакте</span>
+                                <span data-id="mailru" class="btn btn-secondary btn-flat">myTarget</span>
                             </div>
                         </div>
                     </div>
@@ -77,10 +77,10 @@
 
                             <div class="col-md-4">
                                 <div class="urlBuilder_el_input_items">
-                                    <span>yandex</span>
-                                    <span>google</span>
-                                    <span>vk</span>
-                                    <span>target-mail</span>
+                                    <span class="btn btn-secondary btn-flat">yandex</span>
+                                    <span class="btn btn-secondary btn-flat">google</span>
+                                    <span class="btn btn-secondary btn-flat">vk</span>
+                                    <span class="btn btn-secondary btn-flat">target-mail</span>
                                 </div>
                             </div>
 
@@ -127,11 +127,11 @@
 
                             <div class="col-md-4">
                                 <div class="urlBuilder_el_input_items">
-                                    <span>cpc</span>
-                                    <span>cpv</span>
-                                    <span>cpm</span>
-                                    <span>email</span>
-                                    <span>banner</span>
+                                    <span class="btn btn-secondary btn-flat">cpc</span>
+                                    <span class="btn btn-secondary btn-flat">cpv</span>
+                                    <span class="btn btn-secondary btn-flat">cpm</span>
+                                    <span class="btn btn-secondary btn-flat">email</span>
+                                    <span class="btn btn-secondary btn-flat">banner</span>
                                 </div>
                             </div>
 
@@ -184,9 +184,9 @@
 
                             <div class="col-md-4">
                                 <div class="urlBuilder_el_input_items">
-                                    <span>{campaign_id}</span>
-                                    <span>{campaignid}</span>
-                                    <span>@{{campaign_id}}</span>
+                                    <span class="btn btn-secondary btn-flat">{campaign_id}</span>
+                                    <span class="btn btn-secondary btn-flat">{campaignid}</span>
+                                    <span class="btn btn-secondary btn-flat">@{{campaign_id}}</span>
                                 </div>
                             </div>
 
@@ -245,9 +245,9 @@
 
                             <div class="col-md-4">
                                 <div class="urlBuilder_el_input_items">
-                                    <span>{ad_id}</span>
-                                    <span>{creative}</span>
-                                    <span>@{{banner_id}}</span>
+                                    <span class="btn btn-secondary btn-flat">{ad_id}</span>
+                                    <span class="btn btn-secondary btn-flat">{creative}</span>
+                                    <span class="btn btn-secondary btn-flat">@{{banner_id}}</span>
                                 </div>
                             </div>
                         </div>
@@ -289,19 +289,16 @@
                     </div>
 
                     <div class="urlBuilder_el_input">
-
                         <div class="row">
-
                             <div class="col-md-6">
                                 <input type="text" id="urlBuilderUtmTerm">
                             </div>
                             <div class="col-md-4">
                                 <div class="urlBuilder_el_input_items">
-                                    <span>{keyword}</span>
-                                    <span>@{{geo}}.@{{gender}}.@{{age}}</span>
+                                    <span class="btn btn-secondary btn-flat">{keyword}</span>
+                                    <span class="btn btn-secondary btn-flat">@{{geo}}.@{{gender}}.@{{age}}</span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     <div class="urlBuilder_help">

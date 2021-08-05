@@ -786,8 +786,6 @@ input[type=checkbox], input[type=radio] {
 {
     display: block;
     overflow: hidden;
-    padding-left: 8px;
-    padding-right: 20px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -1425,7 +1423,6 @@ input[type=checkbox], input[type=radio] {
 {
     color: #000;
     font-weight: bold;
-    line-height: 32px;
 }
 .select2-container--default .select2-results__option--highlighted[aria-selected]
 {

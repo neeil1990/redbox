@@ -34,7 +34,6 @@
 }
 .urlBuilder_tpl_items SPAN
 {
-    background: #B8BCBF;
     color: #fff;
     cursor: pointer;
     float: left;
@@ -42,17 +41,6 @@
     padding: 10px;
     white-space: nowrap;
     margin: 5px;
-}
-.urlBuilder_tpl_items SPAN:hover
-{
-    background: #e1e1e1;
-    color: #666;
-}
-.urlBuilder_tpl_items SPAN.active
-{
-    background: #CCB67A;
-    color: #fff;
-    cursor: default;
 }
 .urlBuilder_toogleUrls
 {
@@ -157,10 +145,8 @@
     width: 100%;
 }
 
-
 .urlBuilder_el_input_items SPAN
 {
-    background: #B8BCBF;
     color: #fff;
     cursor: pointer;
     float: left;
@@ -169,11 +155,7 @@
     white-space: nowrap;
     margin: auto 5px;
 }
-.urlBuilder_el_input_items SPAN:hover
-{
-    background: #CCB67A;
-    color: #fff;
-}
+
 .urlBuilder_el_helpToggle
 {
     color: #F7554C;
