@@ -30,7 +30,7 @@ define([
             $('.list-img-container', $container).last().hide();
             $('.list', $container).each(function () {
                 List.List.number += 1;
-                $(this).find('.listName').val('Список ' + (List.List.number));
+                $(this).find('.listName').val((List.List.number));
             });
 
         },

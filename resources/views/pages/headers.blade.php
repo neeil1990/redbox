@@ -43,13 +43,13 @@
             <div class="col-md-6">
                 <div class="card card-outline @if($arItems['status'] == 200) card-success @else card-danger @endif">
                     <div class="card-header">
-                        <h3 class="card-title">HTTP Code: {{ $arItems['status'] }}</h3>
+                        <h3 class="card-title">{{ __('HTTP Code') }}: {{ $arItems['status'] }}</h3>
                     </div>
                     <div class="card-body p-0 overflow-auto">
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
-                                    <td><strong>contentType</strong></td>
+                                    <td><strong>{{ __('contentType') }}</strong></td>
                                     <td>{{ $arItems['contentType'] }}</td>
                                 </tr>
                                 @foreach($arItems['headers'] as $name => $val)

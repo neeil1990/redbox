@@ -17,16 +17,16 @@
             </div>
             <div class="col-md-5">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="убрать символы в начале слова: +-!" v-model="removeStart">
+                    <input type="text" class="form-control" :placeholder="start" v-model="removeStart">
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="убрать символы в конце слова: .!?" v-model="removeEnd">
+                    <input type="text" class="form-control" :placeholder="end" v-model="removeEnd">
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <input type="submit" id="start" class="btn btn-secondary" name="delete" value="Удалить дубликаты">
+                <input type="submit" id="start" class="btn btn-secondary" name="delete" :value="submit">
             </div>
         </div>
     </form>
@@ -40,7 +40,16 @@
             names: {
                 required : true,
                 type: Object
-            }
+            },
+            start: {
+                type: String
+            },
+            end: {
+                type: String
+            },
+            submit: {
+                type: String
+            },
         },
         data(){
             return {

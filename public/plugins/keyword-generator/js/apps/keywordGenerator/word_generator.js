@@ -43,8 +43,8 @@ define([
             function resultOutput() {
                 Functions.closePopups();
                 Functions.showMessage(
-                    'Идёт генерация фраз...',
-                    'Это может занять некоторое время.'
+                    $('#Phrases-are-being-generated').val(),
+                    $('#This-may-take-some-time').val()
                 );
                 setTimeout(function () {
                     Functions.closePopups();

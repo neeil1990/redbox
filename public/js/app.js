@@ -1990,6 +1990,15 @@ __webpack_require__.r(__webpack_exports__);
     names: {
       required: true,
       type: Object
+    },
+    start: {
+      type: String
+    },
+    end: {
+      type: String
+    },
+    submit: {
+      type: String
     }
   },
   data: function data() {
@@ -19962,10 +19971,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: {
-                type: "text",
-                placeholder: "убрать символы в начале слова: +-!"
-              },
+              attrs: { type: "text", placeholder: _vm.start },
               domProps: { value: _vm.removeStart },
               on: {
                 input: function($event) {
@@ -19989,10 +19995,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: {
-                type: "text",
-                placeholder: "убрать символы в конце слова: .!?"
-              },
+              attrs: { type: "text", placeholder: _vm.end },
               domProps: { value: _vm.removeEnd },
               on: {
                 input: function($event) {
@@ -20007,30 +20010,19 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm._m(0)
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-12" }, [
+          _c("input", {
+            staticClass: "btn btn-secondary",
+            attrs: { type: "submit", id: "start", name: "delete" },
+            domProps: { value: _vm.submit }
+          })
+        ])
+      ])
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("input", {
-          staticClass: "btn btn-secondary",
-          attrs: {
-            type: "submit",
-            id: "start",
-            name: "delete",
-            value: "Удалить дубликаты"
-          }
-        })
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

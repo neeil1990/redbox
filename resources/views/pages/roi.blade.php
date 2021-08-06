@@ -10,8 +10,8 @@
         <!-- switch -->
         <div class="row centered">
             <div class="btn-group">
-                <button type="button" class="btn btn-info active" data-id="calc">Калькулятор ROI</button>
-                <button type="button" class="btn btn-info" data-id="prognoz">Прогноз трафика</button>
+                <button type="button" class="btn btn-info active" data-id="calc">{{ __('ROI calculator') }}</button>
+                <button type="button" class="btn btn-info" data-id="prognoz">{{ __('Traffic forecast') }}</button>
             </div>
         </div>
 
@@ -21,28 +21,28 @@
                     <div class="row">
                         <form style="display:contents">
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="zatrat">Стоимость РК</label>
-                                <input type="number" class="form-control" name="zatrat" id="zatrat" placeholder="Затраты в рублях" required>
+                                <label for="zatrat">{{ __('RK cost') }}</label>
+                                <input type="number" class="form-control" name="zatrat" id="zatrat" placeholder="{{ __('Costs in rubles') }}" required>
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="doxod">Доход от РК</label>
-                                <input type="number"  class="form-control" name="doxod" id="doxod" placeholder="Доходы в рублях" required>
+                                <label for="doxod">{{ __('Income from RK') }}</label>
+                                <input type="number"  class="form-control" name="doxod" id="doxod" placeholder="{{ __('Income in rubles') }}" required>
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="prosmotr">Просмотры</label>
-                                <input type="number"  class="form-control" name="prosmotr" id="prosmotr" placeholder="Кол-во просмотров">
+                                <label for="prosmotr">{{ __('Views') }}</label>
+                                <input type="number"  class="form-control" name="prosmotr" id="prosmotr" placeholder="{{ __('Number of views') }}">
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="kliki">Клики</label>
-                                <input type="number"  class="form-control" name="kliki" id="kliki" placeholder="Кол-во кликов">
+                                <label for="kliki">{{ __('Clicks') }}</label>
+                                <input type="number"  class="form-control" name="kliki" id="kliki" placeholder="{{ __('Number of clicks') }}">
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="zayavka">Заявки, звонки</label>
-                                <input type="number"  class="form-control" name="zayavka" id="zayavka" placeholder="Кол-во действий">
+                                <label for="zayavka">{{ __('Applications, calls') }}</label>
+                                <input type="number"  class="form-control" name="zayavka" id="zayavka" placeholder="{{ __('Number of actions') }}">
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="pokupka">Продажи</label>
-                                <input type="number"  class="form-control" name="pokupka" id="pokupka" placeholder="Кол-во продаж">
+                                <label for="pokupka">{{ __('Sales') }}</label>
+                                <input type="number"  class="form-control" name="pokupka" id="pokupka" placeholder="{{ __('Number of sales') }}">
                             </div>
                         </form>
                     </div>
@@ -50,10 +50,10 @@
                     <div class="row">
                         <br/>
                         <div class="col-lg-6 col-lg-6 col-xs-6">
-                            <a class="btn btn-block btn-secondary" id="go-calc"><i class="fa fa-check success"></i> Посчитать</a>
+                            <a class="btn btn-block btn-secondary" id="go-calc"><i class="fa fa-check success"></i> {{ __('Calculate') }}</a>
                         </div>
                         <div class="col-lg-6 col-xs-6">
-                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer" id="go-reset"><i class="fa fa-times reject"></i> Очистить</button>
+                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer" id="go-reset"><i class="fa fa-times reject"></i> {{ __('Clear') }}</button>
                         </div>
                     </div>
                 </div>
@@ -64,16 +64,16 @@
 
                         <?
                         $arRoi = array(
-                            array("id_name" => "bg-change-roi", "id_value" => "rez-roi-roi", "theme" => "danger", "name" => "ROI", "text" => "Окупаемость инвестиций", "type" => "%"),
-                            array("id_name" => "bg-change-ctr", "id_value" => "rez-roi-ctr", "theme" => "danger", "name" => "CTR", "text" => "Из показов в клики", "type" => "%"),
-                            array("id_name" => "bg-change-ctc", "id_value" => "rez-roi-ctc", "theme" => "danger", "name" => "CTC", "text" => "Из кликов в действия", "type" => "%"),
-                            array("id_name" => "bg-change-ctb", "id_value" => "rez-roi-ctb", "theme" => "danger", "name" => "CTB", "text" => "Из показов в покупки", "type" => "%"),
-                            array("id_name" => "bg-change-cpm", "id_value" => "rez-roi-cpm", "theme" => "warning", "name" => "CPM", "text" => "Цена за 1000 показов", "type" => "₽"),
-                            array("id_name" => "bg-change-cpc", "id_value" => "rez-roi-cpc", "theme" => "warning", "name" => "CPC", "text" => "Цена за 1 клик", "type" => "₽"),
-                            array("id_name" => "bg-change-cpa", "id_value" => "rez-roi-cpa", "theme" => "warning", "name" => "CPA", "text" => "Цена за 1 действие", "type" => "₽"),
-                            array("id_name" => "bg-change-cps", "id_value" => "rez-roi-cps", "theme" => "warning", "name" => "CPS", "text" => "Цена за 1 продажу", "type" => "₽"),
-                            array("id_name" => "bg-change-apv", "id_value" => "rez-roi-apv", "theme" => "success", "name" => "APV", "text" => "Средний чек за 1 покупку", "type" => "₽"),
-                            array("id_name" => "bg-change-apc", "id_value" => "rez-roi-apc", "theme" => "success", "name" => "APC", "text" => "Средний чек за 1 визит", "type" => "₽"),
+                            array("id_name" => "bg-change-roi", "id_value" => "rez-roi-roi", "theme" => "danger", "name" => "ROI", "text" => __('Return on investment'), "type" => "%"),
+                            array("id_name" => "bg-change-ctr", "id_value" => "rez-roi-ctr", "theme" => "danger", "name" => "CTR", "text" => __('From impressions to clicks'), "type" => "%"),
+                            array("id_name" => "bg-change-ctc", "id_value" => "rez-roi-ctc", "theme" => "danger", "name" => "CTC", "text" => __('From clicks to actions'), "type" => "%"),
+                            array("id_name" => "bg-change-ctb", "id_value" => "rez-roi-ctb", "theme" => "danger", "name" => "CTB", "text" => __('From impressions to purchases'), "type" => "%"),
+                            array("id_name" => "bg-change-cpm", "id_value" => "rez-roi-cpm", "theme" => "warning", "name" => "CPM", "text" => __('Price per 1000 impressions'), "type" => "₽"),
+                            array("id_name" => "bg-change-cpc", "id_value" => "rez-roi-cpc", "theme" => "warning", "name" => "CPC", "text" => __('Price per click'), "type" => "₽"),
+                            array("id_name" => "bg-change-cpa", "id_value" => "rez-roi-cpa", "theme" => "warning", "name" => "CPA", "text" => __('Price per action'), "type" => "₽"),
+                            array("id_name" => "bg-change-cps", "id_value" => "rez-roi-cps", "theme" => "warning", "name" => "CPS", "text" => __('Price per sale'), "type" => "₽"),
+                            array("id_name" => "bg-change-apv", "id_value" => "rez-roi-apv", "theme" => "success", "name" => "APV", "text" => __('Average check for 1 purchase'), "type" => "₽"),
+                            array("id_name" => "bg-change-apc", "id_value" => "rez-roi-apc", "theme" => "success", "name" => "APC", "text" => __('Average check for 1 visit'), "type" => "₽"),
                         );
                         ?>
 
@@ -113,34 +113,34 @@
                     <div class="row">
                         <form style="display:contents">
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="budget">Бюджет РК</label>
-                                <input type="number" class="form-control input-lg" name="budget" id="budget" placeholder="Затраты в рублях" required>
+                                <label for="budget">{{ __('RK budget') }}</label>
+                                <input type="number" class="form-control input-lg" name="budget" id="budget" placeholder="{{ __('Costs in rubles') }}" required>
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="clickcost">Средняя цена клика</label>
-                                <input type="number"  class="form-control input-lg" name="clickcost" id="clickcost" placeholder="Цена за клик в рублях" required>
+                                <label for="clickcost">{{ __('Average cost per click') }}</label>
+                                <input type="number"  class="form-control input-lg" name="clickcost" id="clickcost" placeholder="{{ __('Cost per click in rubles') }}" required>
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="convaction">Процент конверсий</label>
-                                <input type="number"  class="form-control input-lg" name="convaction" id="convaction" placeholder="Процент целевых действий">
+                                <label for="convaction">{{ __('Conversion rate') }}</label>
+                                <input type="number"  class="form-control input-lg" name="convaction" id="convaction" placeholder="{{ __('Percentage of targeted actions') }}">
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="convsales">Процент продаж</label>
-                                <input type="number"  class="form-control input-lg" name="convsales" id="convsales" placeholder="Процент продаж">
+                                <label for="convsales">{{ __('Percentage of sales') }}</label>
+                                <input type="number"  class="form-control input-lg" name="convsales" id="convsales" placeholder="{{ __('Percentage of sales') }}">
                             </div>
                             <div class="col-lg-12 col-sm-12 col-xs-12">
-                                <label for="sredcheck">Средний чек</label>
-                                <input type="number"  class="form-control input-lg" name="sredcheck" id="sredcheck" placeholder="Средний чек 1 покупки">
+                                <label for="sredcheck">{{ __('Average check') }}</label>
+                                <input type="number"  class="form-control input-lg" name="sredcheck" id="sredcheck" placeholder="{{ __('Average check of 1 purchase') }}">
                             </div>
                         </form>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-6 col-lg-6 col-xs-6">
-                            <a class="btn btn-block btn-secondary" id="go-prognoz"><i class="fas fa-check success"></i> Посчитать</a>
+                            <a class="btn btn-block btn-secondary" id="go-prognoz"><i class="fas fa-check success"></i> {{ __('Calculate') }}</a>
                         </div>
                         <div class="col-lg-6 col-xs-6">
-                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer" id="go-prreset"><i class="fa fa-times reject"></i> Очистить</button>
+                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer" id="go-prreset"><i class="fa fa-times reject"></i> {{ __('Clear') }}</button>
                         </div>
                     </div>
 
@@ -151,11 +151,11 @@
                     <div class="row boxes">
                         <?
                         $arRoiTraff = array(
-                            array("id_name" => "bg-change-prcli", "id_value" => "perclicks", "theme" => "danger", "name" => "CLI", "text" => "Кликов", "type" => " "),
-                            array("id_name" => "bg-change-pract", "id_value" => "peractions", "theme" => "danger", "name" => "ACT", "text" => "Целевых действий", "type" => " "),
-                            array("id_name" => "bg-change-prsal", "id_value" => "persales", "theme" => "danger", "name" => "SAL", "text" => "Продаж", "type" => " "),
-                            array("id_name" => "bg-change-prrev", "id_value" => "perrevenue", "theme" => "danger", "name" => "REV", "text" => "Доход", "type" => "₽"),
-                            array("id_name" => "bg-change-prroi", "id_value" => "perroi", "theme" => "warning", "name" => "ROI", "text" => "Рентабельность инвестиций", "type" => "%"),
+                            array("id_name" => "bg-change-prcli", "id_value" => "perclicks", "theme" => "danger", "name" => "CLI", "text" => __('Clicks'), "type" => " "),
+                            array("id_name" => "bg-change-pract", "id_value" => "peractions", "theme" => "danger", "name" => "ACT", "text" => __('Targeted actions'), "type" => " "),
+                            array("id_name" => "bg-change-prsal", "id_value" => "persales", "theme" => "danger", "name" => "SAL", "text" => __('Sales'), "type" => " "),
+                            array("id_name" => "bg-change-prrev", "id_value" => "perrevenue", "theme" => "danger", "name" => "REV", "text" => __('Income'), "type" => "₽"),
+                            array("id_name" => "bg-change-prroi", "id_value" => "perroi", "theme" => "warning", "name" => "ROI", "text" => __('Return on investment'), "type" => "%"),
                         )
                         ?>
 

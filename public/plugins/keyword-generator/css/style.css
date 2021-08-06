@@ -90,7 +90,7 @@
     padding: 30px;
     position: relative;
     vertical-align: top;
-    width: 330px;
+    width: 360px;
 }
 #keyword-generator .list .additionalOptions
 {
@@ -108,10 +108,11 @@
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
-    line-height: 100%;
     margin-bottom: 16px;
     padding-left: 8px;
     padding-top: 10px;
+    white-space: normal;
+    line-height: 1.5;
 }
 #keyword-generator .globalOptions
 {
@@ -735,7 +736,7 @@ input[type=checkbox], input[type=radio] {
 
 #keyword-generator .addList{
     display: inline-block;
-    width: 330px;
+    width: 360px;
     height: 457px;
     background: #f3f4f4;
     text-align: center;

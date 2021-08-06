@@ -73,8 +73,31 @@ define(['module', 'twig'], function(module, Twig) {
                     var renderer = function(context) {
                             return template.render(context);
                         };
-
                     renderer.source = template;
+
+                    if(renderer.source.id == 'templates/list'){
+                        _.forEach(renderer.source.tokens, function(data, key) {
+                            if(!data.value)
+                                return;
+
+                            data.value = $(data.value).find('[data-text]').each(function(index, val) {
+                                let text = $(`.words-localized > input#${$(this).data('text')}`).val();
+                                if(text){
+                                    $(val).text(text);
+                                }
+
+                                let placeholder = $(`.words-localized > input#${$(this).data('text')}`).attr('placeholder');
+                                if(placeholder){
+                                    $(val).attr('placeholder', placeholder);
+                                }
+
+                                let value = $(`.words-localized > input#${$(this).data('text')}`).val();
+                                if(value){
+                                    $(val).val(value);
+                                }
+                            }).closest('.root').html();
+                        });
+                    }
                     onLoad(renderer);
                 },
                 error: onLoad.error
