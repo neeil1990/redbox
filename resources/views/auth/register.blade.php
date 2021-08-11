@@ -9,9 +9,24 @@
             </div>
 
             <div class="card-body">
-                <p class="login-box-msg">Register a new membership</p>
 
                 <form action="{{ route('register') }}" method="POST">
+                    <p class="login-box-msg">{{ __('Select your language') }}</p>
+
+                    <div class="input-group mb-3">
+                        <select name="lang" class="custom-select flags @error('lang') is-invalid @enderror">
+                            @foreach($lang as $l)
+                            <option value="{{ $l }}">{{ $l }}</option>
+                            @endforeach
+                        </select>
+                        @error('lang')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <p class="login-box-msg">{{ __('Register a new membership') }}</p>
                     @csrf
 
                     <div class="input-group mb-3">
@@ -82,7 +97,7 @@
                             <div class="icheck-primary">
                                 <input type="checkbox" id="agreeTerms" name="terms" value="agree" required>
                                 <label for="agreeTerms">
-                                    I agree to the <a href="#">terms</a>
+                                    {{ __('I agree to the') }} <a href="#">{{ __('terms') }}</a>
                                 </label>
                             </div>
                         </div>
@@ -110,4 +125,23 @@
             <!-- /.form-box -->
         </div><!-- /.card -->
     </div>
+@endsection
+
+@section('js')
+    <script>
+        $(".flags").select2({
+            theme: 'bootstrap4',
+            minimumResultsForSearch: Infinity,
+            templateResult: function (state) {
+                if (!state.id) {
+                    return state.text;
+                }
+                var baseUrl = "/img/flags";
+                var $state = $(
+                    '<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
+                );
+                return $state;
+            }
+        });
+    </script>
 @endsection

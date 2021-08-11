@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use function PHPSTORM_META\map;
 
 class RegisterController extends Controller
 {
@@ -41,6 +44,20 @@ class RegisterController extends Controller
     }
 
     /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationForm()
+    {
+        $lang = collect(Storage::disk('lang')->files())->map(function ($val){
+            return Str::before($val, '.');
+        });
+
+        return view('auth.register', compact('lang'));
+    }
+
+    /**
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data
@@ -48,12 +65,17 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $messages = [
+            'required' => __('The :attribute field is required.'),
+        ];
+
         return Validator::make($data, [
+            'lang' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        ], $messages);
     }
 
     /**
@@ -68,6 +90,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'last_name' => $data['last_name'],
             'email' => $data['email'],
+            'lang' => $data['lang'],
             'password' => Hash::make($data['password']),
         ]);
 

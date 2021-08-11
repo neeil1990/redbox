@@ -1,0 +1,186 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class ProfilesController extends Controller
+{
+    /**
+     * @var
+     */
+    protected $user;
+
+    /**
+     * ProfilesController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+
+            return $next($request);
+        });
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $user = $this->user;
+        return view('profile.index', compact('user'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Profile  $profile
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Profile $profile)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Profile  $profile
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Profile $profile)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Profile  $profile
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'last_name' => ['required', 'string', 'min:3', 'max:255'],
+            'email' => ['required', 'string', 'email', 'min:3', 'max:255'],
+        ]);
+
+        $user = $this->user;
+
+        $user->name = $request->input('name');
+        $user->last_name = $request->input('last_name');
+
+        if($user->email !== $request->input('email')){
+            $user->email = $request->input('email');
+            $user->email_verified_at = null;
+
+            if($user->save()){
+                return redirect()->route('verification.resend');
+            }
+        }
+
+        if ($request->hasFile('image')) {
+
+            if($user->image)
+                Storage::delete($user->image);
+
+            $path = $request->file('image')->store('avatar');
+            $user->image = $path;
+        }
+
+        $user->save();
+
+        flash()->overlay(__('User update successfully'), __('Update user'))->success();
+
+        return redirect()->route('profile.index');
+    }
+
+    public function password(Request $request)
+    {
+
+        $this->validate($request, [
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $user = $this->user;
+
+        $this->resetPassword($user, $request->input('password'));
+
+        flash()->overlay(__('User password successfully'), __('Update user'))->success();
+
+        return redirect()->route('profile.index');
+    }
+
+    /**
+     * Reset the given user's password.
+     *
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param  string  $password
+     * @return void
+     */
+    protected function resetPassword($user, $password)
+    {
+        $user->password = Hash::make($password);
+
+        $user->setRememberToken(Str::random(60));
+
+        $user->save();
+
+        event(new PasswordReset($user));
+
+        $this->guard()->login($user);
+    }
+
+    /**
+     * Get the guard to be used during password reset.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Profile  $profile
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Profile $profile)
+    {
+        //
+    }
+}

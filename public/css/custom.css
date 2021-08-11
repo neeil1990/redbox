@@ -1,4 +1,9 @@
-
 .toast{
     min-width: 300px;
+}
+img.img-flag {
+    margin: 0!important;
+    display: inherit!important;
+    height: 15px;
+    width: 18px;
 }

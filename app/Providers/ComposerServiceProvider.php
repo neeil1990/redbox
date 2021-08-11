@@ -24,5 +24,6 @@ class ComposerServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer('component.card', '\App\ViewComposers\DescriptionComposer');
+        view()->composer('users.panel', '\App\ViewComposers\UserPanelComposer');
     }
 }
