@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
 use Spatie\Permission\Models\Role;
 
@@ -79,7 +81,12 @@ class UsersController extends Controller
     public function edit(User $user)
     {
         $role = Role::all()->pluck('name', 'id');
-        return view('users.edit', compact('user', 'role'));
+        $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val){
+            $str = Str::before($val, '.');
+            return [$str => $str];
+        });
+
+        return view('users.edit', compact('user', 'role', 'lang'));
     }
 
     /**

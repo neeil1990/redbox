@@ -35,17 +35,11 @@
                         </div>
 
                         <div class="form-group">
-                            {!! Form::label('image', __('File input')) !!}
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    {!! Form::file('image', ['class' => 'custom-file-input']) !!}
-                                    {!! Form::label('image', __('Choose file'), ['class' => 'custom-file-label']) !!}
-                                </div>
-                                <div class="input-group-append">
-                                    <span class="input-group-text">{{ __('Upload') }}</span>
-                                </div>
-                            </div>
+                            {!! Form::label('lang', __('Lang')) !!}
+                            {!! Form::select('lang', $lang, null, ['class' => 'custom-select' . ($errors->has('lang') ? ' is-invalid' : '')]) !!}
+                            @error('lang') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                         </div>
+
                     </div>
                     <div class="card-footer">
                         {!! Form::submit(__('Edit'), ['class' => 'btn btn-primary float-right']) !!}
