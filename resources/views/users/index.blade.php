@@ -69,7 +69,11 @@
                             <span class="badge bg-success">{{ __('VERIFIED') }}</span>
                         @endif
                     </td>
-                    <td>{{ $user->created_at->format('m.d.Y H:m:s') }}</td>
+                    <td>
+                        {{ $user->created_at->format('m.d.Y H:m:s') }}
+                        <br/>
+                        <small>{{ $user->created_at->diffForHumans() }}</small>
+                    </td>
                     <td class="project-state">
                         @foreach($user->getRoleNames() as $role)
                             <span class="badge badge-success">{{ __($role) }}</span>
