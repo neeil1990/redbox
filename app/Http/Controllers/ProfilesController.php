@@ -131,7 +131,6 @@ class ProfilesController extends Controller
 
     public function password(Request $request)
     {
-
         $this->validate($request, [
             'password' => 'required|confirmed|min:8',
         ]);
@@ -141,6 +140,8 @@ class ProfilesController extends Controller
         $this->resetPassword($user, $request->input('password'));
 
         flash()->overlay(__('User password successfully'), __('Update user'))->success();
+
+        $user->sendProfilePasswordResetNotification($request);
 
         return redirect()->route('profile.index');
     }
