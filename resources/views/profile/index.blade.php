@@ -29,6 +29,12 @@
                     </div>
 
                     <div class="form-group">
+                        {!! Form::label('lang', __('Lang')) !!}
+                        {!! Form::select('lang', $lang, null, ['class' => 'custom-select' . ($errors->has('lang') ? ' is-invalid' : '')]) !!}
+                        @error('lang') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
                         {!! Form::label('image', __('Image')) !!}
                         <div class="input-group">
                             <div class="custom-file">
@@ -96,8 +102,8 @@
                     symbols: true,
                 });
 
-                $('#password').val(password);
-                $('#password_confirmation').val(password);
+                $('#password').attr('type', 'text').val(password);
+                $('#password_confirmation').attr('type', 'text').val(password);
             });
         });
     </script>

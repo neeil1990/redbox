@@ -42,7 +42,7 @@
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
                         <span class="ui_tooltip_content">
-                            {{ __('Phrase match operator.') }}<br /> {{ __('Works in Yandex.Direct and Google AdWords differently') }}.
+                            {{ __('Phrase match operator.') }}<br /> {{ __('Works in Yandex.Direct and Google AdWords differently.') }}
                         </span>
                     </span>
                 </span>

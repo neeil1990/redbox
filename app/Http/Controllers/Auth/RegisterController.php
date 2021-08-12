@@ -65,17 +65,13 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        $messages = [
-            'required' => __('The :attribute field is required.'),
-        ];
-
         return Validator::make($data, [
             'lang' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ], $messages);
+        ]);
     }
 
     /**

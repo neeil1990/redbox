@@ -3,9 +3,10 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Projects</h3>
+            <h3 class="card-title">{{ __('Users') }}</h3>
         </div>
-        <div class="card-body p-0">
+
+        <div class="card-body table-responsive p-0">
             <table class="table table-striped projects">
                 <thead>
                 <tr>
@@ -71,7 +72,7 @@
                     <td>{{ $user->created_at->format('m.d.Y H:m:s') }}</td>
                     <td class="project-state">
                         @foreach($user->getRoleNames() as $role)
-                            <span class="badge badge-success">{{ $role }}</span>
+                            <span class="badge badge-success">{{ __($role) }}</span>
                         @endforeach
                     </td>
                     <td class="project-actions text-right">

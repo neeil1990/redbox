@@ -7,7 +7,7 @@
                 <a href="#" class="h1"><b>{{ __('Reset Password') }}</b></a>
             </div>
             <div class="card-body">
-                <p class="login-box-msg">You are only one step a way from your new password, recover your password now.</p>
+                <p class="login-box-msg">{{ __('You are only one step a way from your new password, recover your password now.') }}</p>
                 <form action="{{ route('password.update') }}" method="POST">
                     @csrf
 

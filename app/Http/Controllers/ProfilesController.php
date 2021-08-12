@@ -35,8 +35,13 @@ class ProfilesController extends Controller
      */
     public function index()
     {
+        $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val){
+            $str = Str::before($val, '.');
+            return [$str => __($str)];
+        });
+
         $user = $this->user;
-        return view('profile.index', compact('user'));
+        return view('profile.index', compact('user', 'lang'));
     }
 
     /**
@@ -101,14 +106,11 @@ class ProfilesController extends Controller
 
         $user->name = $request->input('name');
         $user->last_name = $request->input('last_name');
+        $user->lang = $request->input('lang');
 
         if($user->email !== $request->input('email')){
             $user->email = $request->input('email');
             $user->email_verified_at = null;
-
-            if($user->save()){
-                return redirect()->route('verification.resend');
-            }
         }
 
         if ($request->hasFile('image')) {
@@ -124,7 +126,7 @@ class ProfilesController extends Controller
 
         flash()->overlay(__('User update successfully'), __('Update user'))->success();
 
-        return redirect()->route('profile.index');
+        return ($user->email_verified_at) ? redirect()->route('profile.index') : redirect()->route('verification.resend');
     }
 
     public function password(Request $request)

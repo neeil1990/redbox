@@ -8,7 +8,7 @@
                 <a href="#" class="h1"><b>{{ __('Login') }}</b></a>
             </div>
             <div class="card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
+                <p class="login-box-msg">{{ __('Sign in to start your session') }}</p>
 
                 <form action="{{ route('login') }}" method="POST">
                     @csrf
@@ -64,7 +64,7 @@
                     @endif
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="btn btn-block btn-danger">
-                            <i class="fas fa-registered mr-2"></i> Register a new membership
+                            <i class="fas fa-registered mr-2"></i> {{ __('Register a new membership') }}
                         </a>
                     @endif
                 </div>

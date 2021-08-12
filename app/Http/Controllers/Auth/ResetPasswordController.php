@@ -36,4 +36,10 @@ class ResetPasswordController extends Controller
     {
         $this->middleware('guest');
     }
+
+    /**
+     * Get the password reset validation error messages.
+     *
+     * @return array
+     */
 }

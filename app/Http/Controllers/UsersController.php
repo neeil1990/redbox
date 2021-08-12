@@ -80,10 +80,13 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
-        $role = Role::all()->pluck('name', 'id');
+        $role = Role::all()->pluck('name', 'id')->map(function ($val){
+            return __($val);
+        });
+
         $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val){
             $str = Str::before($val, '.');
-            return [$str => $str];
+            return [$str => __($str)];
         });
 
         return view('users.edit', compact('user', 'role', 'lang'));

@@ -16,7 +16,7 @@
                     <div class="input-group mb-3">
                         <select name="lang" class="custom-select flags @error('lang') is-invalid @enderror">
                             @foreach($lang as $l)
-                            <option value="{{ $l }}">{{ $l }}</option>
+                            <option value="{{ $l }}">{{ __($l) }}</option>
                             @endforeach
                         </select>
                         @error('lang')
@@ -93,7 +93,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-8">
+                        <div class="col-7">
                             <div class="icheck-primary">
                                 <input type="checkbox" id="agreeTerms" name="terms" value="agree" required>
                                 <label for="agreeTerms">
@@ -102,7 +102,7 @@
                             </div>
                         </div>
                         <!-- /.col -->
-                        <div class="col-4">
+                        <div class="col-5">
                             <button type="submit" class="btn btn-primary btn-block">{{ __('Register') }}</button>
                         </div>
                         <!-- /.col -->
