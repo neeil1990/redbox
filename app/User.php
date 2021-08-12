@@ -45,7 +45,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * Delete no verify users
      * @var int
      */
-    protected $delete = 30;
+    protected $delete = 20;
 
     /**
      * Send the email verification notification.
