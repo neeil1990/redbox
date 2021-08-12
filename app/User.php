@@ -4,6 +4,7 @@ namespace App;
 
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RegisterVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -41,6 +42,12 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Delete no verify users
+     * @var int
+     */
+    protected $delete = 30;
+
+    /**
      * Send the email verification notification.
      *
      * @return void
@@ -73,5 +80,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function session()
     {
         return $this->hasOne('App\Session')->orderBy('last_activity', 'desc');
+    }
+
+    public function deleteNoVerify()
+    {
+        $this->where('email_verified_at', '=', null)
+            ->where('created_at', '<=', Carbon::now()->subDays($this->delete))
+            ->delete();
     }
 }

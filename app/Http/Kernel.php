@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\CheckHttpHeadersDataBase::class,
             \App\Http\Middleware\SetLocaleToAuthUser::class,
+            \App\Http\Middleware\DeleteUsersNoVerify::class,
         ],
 
         'api' => [
