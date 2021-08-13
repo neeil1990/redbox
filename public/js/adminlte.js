@@ -1229,9 +1229,9 @@
       }
 
       var newNavItem = "<li class=\"nav-item\" role=\"presentation\"><a href=\"#\" class=\"btn-iframe-close\" data-widget=\"iframe-close\" data-type=\"only-this\"><i class=\"fas fa-times\"></i></a><a class=\"nav-link\" data-toggle=\"row\" id=\"" + navId + "\" href=\"#" + tabId + "\" role=\"tab\" aria-controls=\"" + tabId + "\" aria-selected=\"false\">" + title + "</a></li>";
-      $__default['default'](SELECTOR_TAB_NAVBAR_NAV).append(unescape(escape(newNavItem)));
+      $__default['default'](SELECTOR_TAB_NAVBAR_NAV).append(unescape(encodeURI(newNavItem)));
       var newTabItem = "<div class=\"tab-pane fade\" id=\"" + tabId + "\" role=\"tabpanel\" aria-labelledby=\"" + navId + "\"><iframe src=\"" + link + "\"></iframe></div>";
-      $__default['default'](SELECTOR_TAB_CONTENT).append(unescape(escape(newTabItem)));
+      $__default['default'](SELECTOR_TAB_CONTENT).append(unescape(encodeURI(newTabItem)));
 
       if (autoOpen) {
         if (this._config.loadingScreen) {
@@ -2146,6 +2146,7 @@
       var searchResults = SearchItems.filter(function (item) {
         return item.name.toLowerCase().includes(searchValue);
       });
+
       var endResults = $__default['default'](searchResults.slice(0, this.options.maxResults));
       $__default['default'](SELECTOR_SEARCH_RESULTS_GROUP).empty();
 
@@ -2153,7 +2154,7 @@
         this._addNotFound();
       } else {
         endResults.each(function (i, result) {
-          $__default['default'](SELECTOR_SEARCH_RESULTS_GROUP).append(_this2._renderItem(escape(result.name), escape(result.link), result.path));
+          $__default['default'](SELECTOR_SEARCH_RESULTS_GROUP).append(_this2._renderItem(result.name, encodeURI(result.link), result.path));
         });
       }
 
