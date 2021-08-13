@@ -22,8 +22,10 @@ class DescriptionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Description $description)
+    public function edit($code, $position)
     {
+        $description = $this->createOrGet($code, $position);
+
         return view('description.edit', compact('description'));
     }
 
@@ -33,8 +35,10 @@ class DescriptionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Description $description, Request $request)
+    public function update($code, Request $request)
     {
+        $description = $this->createOrGet($code, $request->input('position'));
+
         $description->user_id = Auth::id();
 
         $descInput = $request->input('description');
@@ -46,5 +50,14 @@ class DescriptionController extends Controller
             return $description;
 
         return redirect($description->code);
+    }
+
+    private function createOrGet($code, $position)
+    {
+        return Description::firstOrNew([
+            'code' => $code,
+            'lang' => App::getLocale(),
+            'position' => $position,
+        ]);
     }
 }

@@ -37,4 +37,20 @@
 
 @section('js')
     {{ $js ?? null }}
+
+    <script>
+        let name = window.location.pathname;
+        $('.card-widget').on('collapsed.lte.cardwidget', function () {
+            cookies.set(name, 'collapse');
+        });
+        $('.card-widget').on('expanded.lte.cardwidget', function () {
+            cookies.set(name, 'expand');
+        });
+
+        if(cookies.get(name) == 'collapse'){
+            $('.card-widget').addClass('collapsed-card');
+        }else{
+            $('.card-widget').removeClass('collapsed-card');
+        }
+    </script>
 @stop
