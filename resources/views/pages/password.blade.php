@@ -47,7 +47,7 @@
             @if($errors->any())
             @endif
             @if(session()->has('message'))
-                <div class="alert">
+                <div>
                     <h3>Сгенерированный пароль</h3>
                     <h4>{{ session()->get('message') }}</h4>
                 </div>
