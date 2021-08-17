@@ -15,42 +15,40 @@
                 <fieldset>
                     <legend>Настройки генератора:</legend>
                     <label>
-                        <input type="checkbox" name="enums" checked="checked">
+                        <input type="checkbox" id="checkbox1" class="checkbox" name="enums">
                         Цифры
                     </label><br>
                     <label>
-                        <input type="checkbox" name="upperCase" checked="checked">
+                        <input type="checkbox" id="checkbox2" class="checkbox" name="upperCase">
                         Прописные буквы
                     </label><br>
                     <label>
-                        <input type="checkbox" name="lowerCase" checked="checked">
+                        <input type="checkbox" id="checkbox3" class="checkbox" name="lowerCase">
                         Строчные буквы
                     </label><br>
                     <label>
-                        <input type="checkbox" name="specialSymbols">
-                        Спец. символы %, *, ),?, @, #, $, ~
+                        <input type="checkbox" id="checkbox4" class="checkbox" name="specialSymbols">
+                        Спец. символы %, *, ), ?, @, #, $, ~
                     </label>
                     <br>
                     <label>
-                        <input type="checkbox" name="savePassword" checked="checked">
+                        <input type="checkbox" id="checkbox5" class="checkbox" name="savePassword">
                         Сохранить пароль?
                     </label>
                     <br>
                     <label>
-                        Длина пароля:<input type="text" name="countSymbols" value="6" maxlength="3" minlength="1"
-                                            size="5">
+                        Длина пароля:<input type="number" class="number" name="countSymbols" value="6" max="50"
+                                            min="1">
                     </label>
                 </fieldset>
-                <input type="submit" value="Сгенерировать пароль" class="btn btn-success">
+                <input type="submit" value="Сгенерировать пароль" class="btn btn-success" onclick="saveState()">
             </form>
             <h4 class="mt-3 mb-3 text-danger">{{$errors->first()}}</h4>
-            @if($errors->any())
+            @if (\Illuminate\Support\Facades\Session::has('message'))
+                <div class="alert alert-info">{{ \Illuminate\Support\Facades\Session::get('message') }}</div>
             @endif
-            @if(session()->has('message'))
-                <div>
-                    <h3>Сгенерированный пароль</h3>
-                    <h4>{{ session()->get('message') }}</h4>
-                </div>
+            @if (\Illuminate\Support\Facades\Session::has('password'))
+                <div class="alert alert-info">{{ \Illuminate\Support\Facades\Session::get('password') }}</div>
             @endif
         </div>
     </div>
@@ -79,4 +77,39 @@
             <h2>У вас ещё нет сгенерированных паролей</h2>
         @endempty
     </div>
+    @slot('js')
+
+        <script>
+            function saveState() {
+                let checkboxState = document.getElementsByClassName('checkbox')
+                let numberState = document.getElementsByClassName('number')
+                localStorage.setItem('numberState1', numberState[0].value)
+                if(checkboxState[0].checked){
+                    localStorage.setItem('checkState1', checkboxState[0].checked)
+                }
+                if(checkboxState[1].checked){
+                    localStorage.setItem('checkState2', checkboxState[1].checked)
+                }
+                if(checkboxState[2].checked){
+                    localStorage.setItem('checkState3', checkboxState[2].checked)
+                }
+                if(checkboxState[3].checked){
+                    localStorage.setItem('checkState4', checkboxState[3].checked)
+                }
+                if (checkboxState[4].checked) {
+                    localStorage.setItem('checkState5', checkboxState[4].checked)
+                }
+            }
+
+            window.onload = function () {
+                document.getElementsByClassName('number')[0].value = localStorage.getItem('numberState1')
+                document.getElementById('checkbox1').checked = localStorage.getItem('checkState1');
+                document.getElementById('checkbox2').checked = localStorage.getItem('checkState2');
+                document.getElementById('checkbox3').checked = localStorage.getItem('checkState3');
+                document.getElementById('checkbox4').checked = localStorage.getItem('checkState4');
+                document.getElementById('checkbox5').checked = localStorage.getItem('checkState5');
+            }
+        </script>
+    @endslot
+
 @endcomponent

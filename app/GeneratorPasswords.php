@@ -48,10 +48,11 @@ class GeneratorPasswords extends Model
                 }
             }
         }
+
         return $password;
     }
 
-    public static function CheckingForErrors($request)
+    public static function isErrors($request): bool
     {
         if (empty($request->specialSymbols) &&
             empty($request->countSymbols) &&
@@ -59,21 +60,21 @@ class GeneratorPasswords extends Model
             empty($request->upperCase) &&
             empty($request->enums)
         ) {
-            return Redirect::back()->withErrors(['Такая комбинация невозможна']);
+            return true;
         }
 
-        if (empty($request->countSymbols) &&
-            empty($request->specialSymbols) ||
-            empty($request->lowerCase) ||
-            empty($request->upperCase) ||
+        if (empty($request->specialSymbols) &&
+            empty($request->lowerCase) &&
+            empty($request->upperCase) &&
             empty($request->enums)
         ) {
-            return Redirect::back()->withErrors(['Такая комбинация невозможна']);
+            return true;
         }
 
         if (empty($request->countSymbols)) {
-            return Redirect::back()->withErrors(['Длинна пароля не может быть меньше 0']);
+            return true;
         }
-        return true;
+
+        return false;
     }
 }
