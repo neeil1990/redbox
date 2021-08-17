@@ -32,6 +32,6 @@ class CreatePasswordGeneratorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('password_generators');
+        Schema::dropIfExists('generator_passwords');
     }
 }
