@@ -20,6 +20,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('pages.password') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('Password generator') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('pages.duplicates') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Remove Duplicates') }}</p>

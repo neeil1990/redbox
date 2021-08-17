@@ -5,6 +5,7 @@ namespace App;
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RegisterVerifyEmail;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -74,12 +75,23 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getRoleAttribute()
     {
-         return $this->roles->pluck('id');
+        return $this->roles->pluck('id');
     }
 
     public function session()
     {
         return $this->hasOne('App\Session')->orderBy('last_activity', 'desc');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function passwords()
+    {
+        return $this->hasMany('App\GeneratorPasswords')
+            ->orderBy('id', 'desc')
+            ->latest('created_at')
+            ->limit(30);
     }
 
     public function deleteNoVerify()

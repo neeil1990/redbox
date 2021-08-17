@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\HttpHeader;
+use App\GeneratorPasswords;
+use App\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 
 use App\Classes\Curl\CurlFacade;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+
 class PagesController extends Controller
 {
 
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function httpHeaders(Request $request, HttpHeader $header)
     {
@@ -24,7 +31,7 @@ class PagesController extends Controller
     /**
      * Keyword generator
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function keywordGenerator()
     {
@@ -32,9 +39,20 @@ class PagesController extends Controller
     }
 
     /**
+     * @return Factory|View
+     */
+    public function passwordGenerator()
+    {
+        return view('pages.password',
+            [
+                'user' => Auth::user()
+            ]);
+    }
+
+    /**
      * Word duplicates
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function duplicates()
     {
@@ -57,7 +75,7 @@ class PagesController extends Controller
     /**
      * Generator UTM Marks
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function utmMarks()
     {
@@ -67,7 +85,7 @@ class PagesController extends Controller
     /**
      * ROI Calculator
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function roiCalculator()
     {

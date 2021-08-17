@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('info', function (){
+Route::get('info', function () {
     phpinfo();
 });
 
@@ -36,9 +36,5 @@ Route::middleware(['verified'])->group(function () {
     foreach ($arPages as $page)
         Route::get($page['url'], "PagesController@{$page['method']}")->name($page['name']);
 
+    Route::post('generate/password', 'PasswordGeneratorController@createPassword')->name('generate-password');
 });
-
-
-
-
-
