@@ -53,63 +53,48 @@
         </div>
     </div>
 
-    <div class="my-passwords">
-        <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white">
-            <a href="/"
-               class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
-                <svg class="bi me-2" width="30" height="24">
-                    <use xlink:href="#bootstrap"></use>
-                </svg>
-            </a>
-            <div class="list-group list-group-flush border-bottom scrollarea">
-                @foreach($user->passwords as $password)
-                    <a href="#" class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true">
-                        <div class="d-flex w-100 align-items-center justify-content-between">
-                            <strong class="mb-1">{{$password->password}}</strong>
-                            <small>{{$password->created_at}}</small>
-                        </div>
-                    </a>
-                @endforeach
+    <div class="my-passwords mt-5">
+        <h2>Ваши сгенерированные пароли</h2>
 
-            </div>
+        <div class="list-group list-group-flush border-bottom scrollarea">
+            @foreach($user->passwords as $password)
+                <a href="#" class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <strong class="mb-1">{{$password->password}}</strong>
+                        <small>{{$password->created_at}}</small>
+                    </div>
+                </a>
+            @endforeach
+
         </div>
-        @empty($user->passwords)
-            <h2>У вас ещё нет сгенерированных паролей</h2>
-        @endempty
     </div>
-    @slot('js')
+    @empty($user->passwords)
+        <h2>У вас ещё нет сгенерированных паролей</h2>
+        @endempty
+        </div>
+        @slot('js')
 
-        <script>
-            function saveState() {
-                let checkboxState = document.getElementsByClassName('checkbox')
-                let numberState = document.getElementsByClassName('number')
-                localStorage.setItem('numberState1', numberState[0].value)
-                if(checkboxState[0].checked){
+            <script>
+                function saveState() {
+                    let checkboxState = document.getElementsByClassName('checkbox')
+                    let numberState = document.getElementsByClassName('number')
+                    localStorage.setItem('numberState1', numberState[0].value)
                     localStorage.setItem('checkState1', checkboxState[0].checked)
-                }
-                if(checkboxState[1].checked){
                     localStorage.setItem('checkState2', checkboxState[1].checked)
-                }
-                if(checkboxState[2].checked){
                     localStorage.setItem('checkState3', checkboxState[2].checked)
-                }
-                if(checkboxState[3].checked){
                     localStorage.setItem('checkState4', checkboxState[3].checked)
-                }
-                if (checkboxState[4].checked) {
                     localStorage.setItem('checkState5', checkboxState[4].checked)
                 }
-            }
 
-            window.onload = function () {
-                document.getElementsByClassName('number')[0].value = localStorage.getItem('numberState1')
-                document.getElementById('checkbox1').checked = localStorage.getItem('checkState1');
-                document.getElementById('checkbox2').checked = localStorage.getItem('checkState2');
-                document.getElementById('checkbox3').checked = localStorage.getItem('checkState3');
-                document.getElementById('checkbox4').checked = localStorage.getItem('checkState4');
-                document.getElementById('checkbox5').checked = localStorage.getItem('checkState5');
-            }
-        </script>
-    @endslot
+                window.onload = function () {
+                    document.getElementsByClassName('number')[0].value = localStorage.getItem('numberState1')
+                    document.getElementById('checkbox1').checked = localStorage.getItem('checkState1') === 'true';
+                    document.getElementById('checkbox2').checked = localStorage.getItem('checkState2') === 'true';
+                    document.getElementById('checkbox3').checked = localStorage.getItem('checkState3') === 'true';
+                    document.getElementById('checkbox4').checked = localStorage.getItem('checkState4') === 'true';
+                    document.getElementById('checkbox5').checked = localStorage.getItem('checkState5') === 'true';
+                }
+            </script>
+        @endslot
 
-@endcomponent
+        @endcomponent
