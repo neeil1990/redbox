@@ -37,4 +37,5 @@ Route::middleware(['verified'])->group(function () {
         Route::get($page['url'], "PagesController@{$page['method']}")->name($page['name']);
 
     Route::post('generate/password', 'PasswordGeneratorController@createPassword')->name('generate-password');
+    Route::post('counting-text-length', 'CountingTextLengthController@countingTextLength')->name('counting-text-length');
 });

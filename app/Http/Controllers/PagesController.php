@@ -50,6 +50,14 @@ class PagesController extends Controller
     }
 
     /**
+     * @return Factory|View
+     */
+    public function countingTextLength()
+    {
+        return view('pages.length');
+    }
+
+    /**
      * Word duplicates
      *
      * @return Factory|View

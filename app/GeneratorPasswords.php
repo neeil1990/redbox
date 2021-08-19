@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Redirect;
 /**
  * string $passwords
  * integer $user_id
+ * @property string password
+ * @property string user_id
  */
 class GeneratorPasswords extends Model
 {

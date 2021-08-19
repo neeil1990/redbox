@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\GeneratorPasswords;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -10,7 +11,12 @@ use Illuminate\Support\Facades\Session;
 
 class PasswordGeneratorController extends Controller
 {
-    public function createPassword(Request $request)
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function createPassword(Request $request): RedirectResponse
     {
         if (GeneratorPasswords::isErrors($request)) {
             Session::flash('message', 'Такая комбинация параметров недопустима');
@@ -28,4 +34,5 @@ class PasswordGeneratorController extends Controller
         }
         return Redirect::back();
     }
+
 }
