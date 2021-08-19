@@ -14,34 +14,53 @@
                       required>@if (\Illuminate\Support\Facades\Session::has('text')){{ \Illuminate\Support\Facades\Session::get('text') }}@endif</textarea>
             <br>
             <input class="btn btn-secondary mr-2" type="submit" value="{{__('Calculate')}}">
-            <input class="btn btn-flat btn-default" id="_reset" type="reset" value="{{__('Clear')}}">
+            <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
+                   onclick="clearCountingResult();">
         </form>
         <br>
         <div>
             <div id="all-text">
                 <b>{{__('Total characters')}}: </b>
                 @if (\Illuminate\Support\Facades\Session::has('length'))
-                    {{ \Illuminate\Support\Facades\Session::get('length') }}
+                    <span class="counting-result">
+                        {{ \Illuminate\Support\Facades\Session::get('length') }}
+                    </span>
                 @endif
             </div>
             <div id="spaces">
                 <b>{{__('Total spaces')}}: </b>
                 @if (\Illuminate\Support\Facades\Session::has('countSpaces'))
-                    {{ \Illuminate\Support\Facades\Session::get('countSpaces') }}
+                    <span class="counting-result">
+                        {{ \Illuminate\Support\Facades\Session::get('countSpaces') }}
+                    </span>
                 @endif
             </div>
             <div id="no-spaces">
                 <b>{{__('Total characters without spaces')}}: </b>
                 @if (\Illuminate\Support\Facades\Session::has('lengthWithOutSpaces'))
-                    {{ \Illuminate\Support\Facades\Session::get('lengthWithOutSpaces') }}
+                    <span class="counting-result">
+                        {{ \Illuminate\Support\Facades\Session::get('lengthWithOutSpaces') }}
+                    </span>
                 @endif
             </div>
             <div id="words">
                 <b>{{__('Total words')}}: </b>
                 @if (\Illuminate\Support\Facades\Session::has('countWord'))
+                    <span class="counting-result">
                     {{ \Illuminate\Support\Facades\Session::get('countWord') }}
+                    </span>
                 @endif
             </div>
         </div>
     </div>
+    @slot('js')
+        <script>
+            function clearCountingResult() {
+                document.getElementById('text').innerText = '';
+                document.querySelectorAll('.counting-result').forEach((element) => {
+                    element.innerHTML = '';
+                });
+            }
+        </script>
+    @endslot
 @endcomponent

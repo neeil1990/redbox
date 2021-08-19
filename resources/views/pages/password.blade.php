@@ -60,7 +60,7 @@
 
         </div>
     </div>
-    </div>
+
     @slot('js')
         <script>
             function saveState() {
