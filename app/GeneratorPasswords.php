@@ -49,7 +49,7 @@ class GeneratorPasswords extends Model
             }
         }
 
-        return $password;
+        return str_shuffle($password);
     }
 
     public static function isErrors($request): bool

@@ -16,32 +16,32 @@
                     <legend>Настройки генератора:</legend>
                     <label>
                         <input type="checkbox" id="checkbox1" class="checkbox" name="enums">
-                        Цифры
+                        {{__('Enums')}}
                     </label><br>
                     <label>
                         <input type="checkbox" id="checkbox2" class="checkbox" name="upperCase">
-                        Прописные буквы
+                        {{__('Upper case')}}
                     </label><br>
                     <label>
                         <input type="checkbox" id="checkbox3" class="checkbox" name="lowerCase">
-                        Строчные буквы
+                        {{__('Lower case')}}
                     </label><br>
                     <label>
                         <input type="checkbox" id="checkbox4" class="checkbox" name="specialSymbols">
-                        Спец. символы %, *, ), ?, @, #, $, ~
+                        {{__('Special symbols')}} %, *, ), ?, @, #, $, ~
                     </label>
                     <br>
                     <label>
                         <input type="checkbox" id="checkbox5" class="checkbox" name="savePassword">
-                        Сохранить пароль?
+                        {{__('Save password')}}?
                     </label>
                     <br>
                     <label>
-                        Длина пароля:<input type="number" class="number" name="countSymbols" value="6" max="50"
-                                            min="1">
+                        {{__('Characters')}} :
+                        <input type="number" class="number" name="countSymbols" value="6" max="50" min="1">
                     </label>
                 </fieldset>
-                <input type="submit" value="Сгенерировать пароль" class="btn btn-success" onclick="saveState()">
+                <input type="submit" value="Сгенерировать пароль" class="btn btn-secondary" onclick="saveState()">
             </form>
             <h4 class="mt-3 mb-3 text-danger">{{$errors->first()}}</h4>
             @if (\Illuminate\Support\Facades\Session::has('message'))
@@ -54,7 +54,7 @@
     </div>
 
     <div class="my-passwords mt-5">
-        <h2>Ваши сгенерированные пароли</h2>
+        <h2>{{__('Your generated passwords')}}</h2>
 
         <div class="list-group list-group-flush border-bottom scrollarea">
             @foreach($user->passwords as $password)
@@ -73,7 +73,6 @@
         @endempty
         </div>
         @slot('js')
-
             <script>
                 function saveState() {
                     let checkboxState = document.getElementsByClassName('checkbox')
@@ -96,5 +95,4 @@
                 }
             </script>
         @endslot
-
         @endcomponent
