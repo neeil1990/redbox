@@ -20,7 +20,7 @@ class Visit {
     }
 
     handle() {
-        if(!this.paramVisit)
+        if(!this.paramVisit || this.paramVisit === 'null')
             return;
 
         this.clicks();
@@ -35,8 +35,6 @@ class Visit {
 
     check() {
         let params = this.getAsObject();
-
-        console.log(params);
 
         if (this.newTime(params[2]) <= this.time() && params[4] >= this.pagesRequired && params[5] >= this.clicksRequired) {
             this.show(params[1]);
@@ -77,6 +75,10 @@ class Visit {
         $temp.val($('.showVisCode span').text()).select();
         document.execCommand("copy");
         $temp.remove();
+
+        this.setCookie(this.keyCookie, 'null');
+        this.setCookie('pagesCount', 'null');
+        this.setCookie('minutesCount', 'null');
 
         alert('Промокод скопирован!')
     }

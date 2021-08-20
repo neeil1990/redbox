@@ -41,11 +41,36 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ __('Insert to your site') }}</h3>
+                    <h3 class="card-title">{{ __('Insert to your site before closed body') }}</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body p-0">
                     <textarea id="code">
+
+<style>
+    .showVisCode {
+        width:100%;
+        padding:5px 0;
+        background:rgb(35 56 71);
+        color:#b9b9b9;
+        position:relative;
+        z-index:500;
+        clear:both;
+        text-align: center;
+    }
+    .showVisCodeReady{
+        display: inline-block;
+        vertical-align: baseline;
+        line-height: 1;
+        background: #001d02;
+        font-size: 14px;
+        margin-left: 5px;
+        padding: 3px 5px;
+        border: 1px solid #bebebe;
+        border-radius: 4px;
+        cursor:pointer;
+    }
+</style>
 <script defer>
     $.getScript("{{ request()->getSchemeAndHttpHost() }}/client/js/prime.visit.js").done(function(script, textStatus) {
         let paramVisit = new Visit();
