@@ -94,6 +94,11 @@ class User extends Authenticatable implements MustVerifyEmail
             ->limit(30);
     }
 
+    public function behaviors()
+    {
+        return $this->hasMany(Behavior::class);
+    }
+
     public function deleteNoVerify()
     {
         $this->where('email_verified_at', '=', null)
