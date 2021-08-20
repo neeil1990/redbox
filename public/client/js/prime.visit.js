@@ -76,7 +76,6 @@ class Visit {
         document.execCommand("copy");
         $temp.remove();
 
-        this.setCookie(this.keyCookie, 'null');
         this.setCookie('pagesCount', 'null');
         this.setCookie('minutesCount', 'null');
 
