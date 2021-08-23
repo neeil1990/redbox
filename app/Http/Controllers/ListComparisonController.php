@@ -24,15 +24,15 @@ class ListComparisonController extends Controller
 
     public function listComparison(Request $request)
     {
-        Log::debug('php_eol', [PHP_EOL]);
+        Log::debug('php_eol', ["\r\n"]);
         Log::debug('sting first list', [$request->firstList]);
         Log::debug('sting second list', [$request->secondList]);
-        Log::debug('explode first list', explode(PHP_EOL, $request->firstList));
-        Log::debug('explode second list', explode(PHP_EOL, $request->secondList));
+        Log::debug('explode first list', explode("\r\n", $request->firstList));
+        Log::debug('explode second list', explode("\r\n", $request->secondList));
 
-        $result = implode(PHP_EOL, self::uniquePhrases(
-            explode(PHP_EOL, $request->firstList),
-            explode(PHP_EOL, $request->secondList),
+        $result = implode("\r\n", self::uniquePhrases(
+            explode("\r\n", $request->firstList),
+            explode("\r\n", $request->secondList),
             $request->option
         ));
 
