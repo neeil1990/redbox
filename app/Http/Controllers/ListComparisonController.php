@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -23,11 +24,18 @@ class ListComparisonController extends Controller
 
     public function listComparison(Request $request)
     {
+        Log::debug('php_eol', [PHP_EOL]);
+        Log::debug('sting first list', [$request->firstList]);
+        Log::debug('sting second list', [$request->secondList]);
+        Log::debug('explode first list', explode(PHP_EOL, $request->firstList));
+        Log::debug('explode second list', explode(PHP_EOL, $request->secondList));
+
         $result = implode(PHP_EOL, self::uniquePhrases(
             explode(PHP_EOL, $request->firstList),
             explode(PHP_EOL, $request->secondList),
             $request->option
         ));
+
         Session::flash('result', $result);
         return Redirect::back()->withInput($request->toArray());
     }
@@ -42,12 +50,16 @@ class ListComparisonController extends Controller
     {
         switch ($position) {
             case 'uniqueInFirstList':
+                Log::debug('uniqueInFirstList', array_diff($firstList, $secondList));
                 return array_diff($firstList, $secondList);
             case 'uniqueInSecondList':
+                Log::debug('uniqueInSecondList', array_diff($secondList, $firstList));
                 return array_diff($secondList, $firstList);
             case 'unique':
+                Log::debug('unique', array_intersect($firstList, $secondList));
                 return array_intersect($firstList, $secondList);
             case 'union':
+                Log::debug('union', array_unique(array_merge($firstList, $secondList)));
                 return array_unique(array_merge($firstList, $secondList));
         }
     }

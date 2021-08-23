@@ -1,4 +1,9 @@
 @component('component.card', ['title' => __('Password generator')])
+
+    @slot('css')
+        <link rel='stylesheet' id='swpc-main-css'  href='{{ asset('plugins/utm-marks/css/style.css') }}' type='text/css' media='all' />
+    @endslot
+
     <div class="password-generator">
         <div>
             <form action="{{  route('generate.password') }}" method="post">

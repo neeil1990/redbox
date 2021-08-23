@@ -1,4 +1,9 @@
 @component('component.card', ['title' => __('Counting text length')])
+
+    @slot('css')
+        <link rel='stylesheet' id='swpc-main-css'  href='{{ asset('plugins/utm-marks/css/style.css') }}' type='text/css' media='all' />
+    @endslot
+
     <div>
         <h1>{{__('Counting text length')}}</h1>
         <p class="w-50 mt-3 mb-3">

@@ -1,5 +1,13 @@
 @component('component.card', ['title' => __('List comparison')])
 
+    @slot('css')
+        <link rel="stylesheet" type="text/css"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
+        <link rel='stylesheet' id='swpc-main-css' href='{{ asset('plugins/utm-marks/css/style.css') }}' type='text/css'
+              media='all'/>
+    @endslot
+
     <form action="{{  route('counting.list.comparison') }}" method="POST">
         @csrf
         <div class="row">
@@ -22,46 +30,60 @@
         <div class="row">
             <div class="col-8 d-flex flex-column">
                 <label class="mt-3 mb-3">{{__('Comparison type:')}}</label>
-                <label
-                    title="{{__('a list of keywords that were found in both the first and second list (intersection)')}}"
-                    class="radio font-weight-light">
+                <label class="radio font-weight-light">
                     <input type="radio" name="option" value="unique" id="first-radio-option" checked
-                           onclick="saveOptionState('first')">{{__('Unique phrases that are in each of the two lists')}}
-                    <a href=""
-                       title="{{__('a list of keywords that were found in both the first and second list (intersection)')}}"
-                       class="help-link">
-                        <i aria-hidden="true" class="fa fa-question-circle"></i>
-                    </a>
+                           onclick="saveOptionState('first')">
+                    {{__('Unique phrases that are in each of the two lists')}}
+                    <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{__('a list of keywords that were found in both the first and second list (intersection)')}}
+                            </span>
+                        </span>
+                    </span>
                 </label>
-                <label title="{{__('a list of keywords that were found in any of the lists (combining)')}}"
-                       class="radio font-weight-light">
+                <label class="radio font-weight-light">
                     <input type="radio" name="option" value="union" id="second-radio-option"
-                           onclick="saveOptionState('second')">{{__('Unique phrases that are in either of the two lists')}}
-                    <a href="" title="{{__('a list of keywords that were found in any of the lists (combining)')}}"
-                       class="help-link">
-                        <i aria-hidden="true" class="fa fa-question-circle"></i>
-                    </a>
+                           onclick="saveOptionState('second')">
+                    {{__('Unique phrases that are in either of the two lists')}}
+                    <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{__('a list of keywords that were found in any of the lists (combining)')}}
+                            </span>
+                        </span>
+                    </span>
                 </label>
-                <label title="{{__('a list of keywords that are in the first list, but not in the second')}}"
-                       class="radio font-weight-light">
+                <label class="radio font-weight-light">
                     <input type="radio" name="option" value="uniqueInFirstList" id="third-radio-option"
                            onclick="saveOptionState('third')">
                     {{__('Unique phrases that are only in the first list')}}
-                    <a href="" title="{{__('a list of keywords that are in the first list, but not in the second')}}"
-                       class="help-link">
-                        <i aria-hidden="true" class="fa fa-question-circle"></i>
-                    </a>
+                    <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{__('a list of keywords that are in the first list, but not in the second')}}
+                            </span>
+                        </span>
+                    </span>
                 </label>
-                <label title="a list of keywords that are in the second list, but not in the first"
-                       class="radio font-weight-light">
+                <label
+                    class="radio font-weight-light">
                     <input type="radio" name="option" value="uniqueInSecondList" id="fourth-radio-option"
                            onclick="saveOptionState('fourth')">
                     {{__('Unique phrases that are only in the second list')}}
-                    <a href="" title="a list of keywords that are in the second list, but not in the first"
-                       class="help-link">
-                        <i aria-hidden="true" class="fa fa-question-circle"></i>
-                    </a>
+                    <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{__('a list of keywords that are in the second list, but not in the first')}}
+                            </span>
+                        </span>
+                    </span>
                 </label>
+
             </div>
             <div class="col-sm-8 mt-3 mb-3 mt-3">
                 <input class="btn btn-secondary" type="submit" value="{{__('Processing')}}">
