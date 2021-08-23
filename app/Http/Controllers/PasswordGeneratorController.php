@@ -2,15 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\GeneratorPasswords;
+use App\PasswordsGenerator;
+use Faker\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 
 class PasswordGeneratorController extends Controller
 {
+
+    /**
+     * @return Factory|View
+     */
+    public function index(): View
+    {
+        return view('pages.password',
+            [
+                'user' => Auth::user()
+            ]);
+    }
 
     /**
      * @param Request $request
@@ -18,21 +31,94 @@ class PasswordGeneratorController extends Controller
      */
     public function createPassword(Request $request): RedirectResponse
     {
-        if (GeneratorPasswords::isErrors($request)) {
+        if (self::isErrors($request)) {
             Session::flash('message', 'Такая комбинация параметров недопустима');
             return Redirect::back();
         }
 
         if (isset($request->savePassword)) {
-            $user_password = new GeneratorPasswords();
-            $user_password->password = GeneratorPasswords::generatePassword($request);
-            $user_password->user_id = Auth::user()->id;
-            $user_password->save();
+            $userPassword = new PasswordsGenerator();
+            $userPassword->password = self::generatePassword($request);
+            $userPassword->user_id = Auth::user()->id;
+            $userPassword->save();
         } else {
-            Session::flash('password', GeneratorPasswords::generatePassword($request));
+            Session::flash('password', self::generatePassword($request));
             return Redirect::back();
         }
         return Redirect::back();
+    }
+
+    /**
+     * @param $request
+     * @return string
+     */
+    public static function generatePassword($request): string
+    {
+        $password = '';
+        $enums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        $symbols = [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+            'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z'
+        ];
+        $specialSymbols = ['%', '*', ')', '?', '@', '#', '$', '~'];
+
+        $i = 0;
+        while ($i < $request->countSymbols) {
+            if ($request->enums) {
+                $password .= $enums[rand(0, count($enums) - 1)];
+                $i++;
+            }
+            if ($request->lowerCase) {
+                if ($i < $request->countSymbols) {
+                    $password .= $symbols[rand(0, count($symbols) - 1)];
+                    $i++;
+                }
+            }
+            if ($request->upperCase) {
+                if ($i < $request->countSymbols) {
+                    $password .= strtoupper($symbols[rand(0, count($symbols) - 1)]);
+                    $i++;
+                }
+            }
+            if ($request->specialSymbols) {
+                if ($i < $request->countSymbols) {
+                    $password .= $specialSymbols[rand(0, count($specialSymbols) - 1)];
+                    $i++;
+                }
+            }
+        }
+
+        return str_shuffle($password);
+    }
+
+    /**
+     * @param $request
+     * @return bool
+     */
+    public static function isErrors($request): bool
+    {
+        if (empty($request->specialSymbols) &&
+            empty($request->countSymbols) &&
+            empty($request->lowerCase) &&
+            empty($request->upperCase) &&
+            empty($request->enums)
+        ) {
+            return true;
+        }
+
+        if (empty($request->specialSymbols) &&
+            empty($request->lowerCase) &&
+            empty($request->upperCase) &&
+            empty($request->enums)
+        ) {
+            return true;
+        }
+
+        if (empty($request->countSymbols)) {
+            return true;
+        }
+
+        return false;
     }
 
 }

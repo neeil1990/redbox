@@ -8,7 +8,7 @@
             {{__('If you are typing not in a text editor, but in a notepad or browser, then this tool will become your faithful assistant.')}}
         </p>
         <h2>{{__("Enter text")}}</h2>
-        <form id="text-length" action="{{  route('counting-text-length') }}" method="POST">
+        <form id="text-length" action="{{  route('counting.text.length') }}" method="POST">
             @csrf
             <textarea name="text" class="form-control w-50" id="text" rows="10"
                       required>@if (\Illuminate\Support\Facades\Session::has('text')){{ \Illuminate\Support\Facades\Session::get('text') }}@endif</textarea>

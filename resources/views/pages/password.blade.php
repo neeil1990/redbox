@@ -1,7 +1,7 @@
 @component('component.card', ['title' => __('Password generator')])
     <div class="password-generator">
         <div>
-            <form action="{{  route('generate-password') }}" method="post">
+            <form action="{{  route('generate.password') }}" method="post">
                 @csrf
                 <fieldset>
                     <legend>{{__('Generator settings')}}:</legend>

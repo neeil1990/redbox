@@ -3,14 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\HttpHeader;
-use App\GeneratorPasswords;
-use App\User;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
-
 use App\Classes\Curl\CurlFacade;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class PagesController extends Controller
@@ -36,25 +31,6 @@ class PagesController extends Controller
     public function keywordGenerator()
     {
         return view('pages.keyword');
-    }
-
-    /**
-     * @return Factory|View
-     */
-    public function passwordGenerator()
-    {
-        return view('pages.password',
-            [
-                'user' => Auth::user()
-            ]);
-    }
-
-    /**
-     * @return Factory|View
-     */
-    public function countingTextLength()
-    {
-        return view('pages.length');
     }
 
     /**

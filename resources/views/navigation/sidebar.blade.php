@@ -32,6 +32,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('list.comparison') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('List comparison') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('pages.duplicates') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Remove Duplicates') }}</p>
