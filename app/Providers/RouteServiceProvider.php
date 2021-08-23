@@ -27,6 +27,10 @@ class RouteServiceProvider extends ServiceProvider
     {
         parent::boot();
 
+        Route::bind('behavior', function($url){
+            return Auth::user()->behaviors()->findOrFail($url);
+        });
+
         Route::model('user', \App\User::class);
     }
 

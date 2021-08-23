@@ -14,6 +14,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('behavior.index') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{ __('Behavior') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('pages.keyword') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Keyword generator') }}</p>
