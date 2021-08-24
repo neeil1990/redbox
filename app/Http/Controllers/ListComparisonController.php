@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -22,14 +22,12 @@ class ListComparisonController extends Controller
         return view('pages.comparison');
     }
 
-    public function listComparison(Request $request)
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function listComparison(Request $request): RedirectResponse
     {
-        Log::debug('php_eol', ["\r\n"]);
-        Log::debug('sting first list', [$request->firstList]);
-        Log::debug('sting second list', [$request->secondList]);
-        Log::debug('explode first list', explode("\r\n", $request->firstList));
-        Log::debug('explode second list', explode("\r\n", $request->secondList));
-
         $result = implode("\r\n", self::uniquePhrases(
             explode("\r\n", $request->firstList),
             explode("\r\n", $request->secondList),
@@ -50,17 +48,13 @@ class ListComparisonController extends Controller
     {
         switch ($position) {
             case 'uniqueInFirstList':
-                Log::debug('uniqueInFirstList', array_diff($firstList, $secondList));
-                return array_diff($firstList, $secondList);
+                return array_diff(array_unique(array_diff($firstList, $secondList)), array(""));
             case 'uniqueInSecondList':
-                Log::debug('uniqueInSecondList', array_diff($secondList, $firstList));
-                return array_diff($secondList, $firstList);
+                return array_diff(array_unique(array_diff($secondList, $firstList)), array(""));
             case 'unique':
-                Log::debug('unique', array_intersect($firstList, $secondList));
-                return array_intersect($firstList, $secondList);
+                return array_diff(array_unique(array_intersect($firstList, $secondList)), array(""));
             case 'union':
-                Log::debug('union', array_unique(array_merge($firstList, $secondList)));
-                return array_unique(array_merge($firstList, $secondList));
+                return array_diff(array_unique(array_merge($firstList, $secondList)), array(""));
         }
     }
 
@@ -68,7 +62,7 @@ class ListComparisonController extends Controller
      * @param Request $request
      * @return BinaryFileResponse
      */
-    public function downloadComparisonFile(Request $request)
+    public function downloadComparisonFile(Request $request): BinaryFileResponse
     {
         $fileName = md5(Carbon::now());
         Storage::put('files\\' . $fileName . '.txt', $request->result);

@@ -2,13 +2,11 @@
 
     @slot('css')
         <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel='stylesheet' id='swpc-main-css' href='{{ asset('plugins/utm-marks/css/style.css') }}' type='text/css'
-              media='all'/>
+              href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
     @endslot
 
-    <form action="{{  route('counting.list.comparison') }}" method="POST">
+    <form action="{{  route('counting.list.comparison') }}" method="POST" id="list-comparison">
         @csrf
         <div class="row">
             <div class="col-sm-12 textpart">
@@ -17,20 +15,26 @@
         </div>
         <div class="row mt-3 mb-3">
             <div class="col-sm-6 d-flex flex-column">
-                <label class="font-weight-light">{{__('First list')}}</label>
-                <textarea class="form-control" name="firstList" rows="7"
+                <div class="d-flex flex-row justify-content-between">
+                    <label>{{__('First list')}}</label>
+                    <div class="count-phrases">{{__('count phrases')}}: <span id="firstPhrases">0</span></div>
+                </div>
+                <textarea class="form-control" name="firstList" rows="7" id="firstList"
                           required>{{\Illuminate\Support\Facades\Input::old('firstList')}}</textarea>
             </div>
             <div class="col-sm-6 d-flex flex-column">
-                <label class="font-weight-light">{{__('Second list')}}</label>
-                <textarea class="form-control" name="secondList" rows="7"
+                <div class="d-flex flex-row justify-content-between">
+                    <label>{{__('Second list')}}</label>
+                    <div class="count-phrases">{{__('count phrases')}}: <span id="secondPhrases">0</span></div>
+                </div>
+                <textarea class="form-control" name="secondList" rows="7" id="secondList"
                           required>{{\Illuminate\Support\Facades\Input::old('secondList')}}</textarea>
             </div>
         </div>
         <div class="row">
             <div class="col-8 d-flex flex-column">
                 <label class="mt-3 mb-3">{{__('Comparison type:')}}</label>
-                <label class="radio font-weight-light">
+                <label class="radio">
                     <input type="radio" name="option" value="unique" id="first-radio-option" checked
                            onclick="saveOptionState('first')">
                     {{__('Unique phrases that are in each of the two lists')}}
@@ -43,7 +47,7 @@
                         </span>
                     </span>
                 </label>
-                <label class="radio font-weight-light">
+                <label class="radio ">
                     <input type="radio" name="option" value="union" id="second-radio-option"
                            onclick="saveOptionState('second')">
                     {{__('Unique phrases that are in either of the two lists')}}
@@ -56,7 +60,7 @@
                         </span>
                     </span>
                 </label>
-                <label class="radio font-weight-light">
+                <label class="radio ">
                     <input type="radio" name="option" value="uniqueInFirstList" id="third-radio-option"
                            onclick="saveOptionState('third')">
                     {{__('Unique phrases that are only in the first list')}}
@@ -70,7 +74,7 @@
                     </span>
                 </label>
                 <label
-                    class="radio font-weight-light">
+                    class="radio ">
                     <input type="radio" name="option" value="uniqueInSecondList" id="fourth-radio-option"
                            onclick="saveOptionState('fourth')">
                     {{__('Unique phrases that are only in the second list')}}
@@ -92,6 +96,10 @@
     </form>
     @if (\Illuminate\Support\Facades\Session::has('result'))
         <div class="result mt-3">
+            <div class="d-flex flex-row justify-content-between">
+                <label>{{__('Comparison result')}}</label>
+                <div class="count-phrases">{{__('count phrases')}}: <span id="numberPhrasesInResult">0</span></div>
+            </div>
             <textarea name="result" id="comparison-result" class="form-control"
                       rows="10">{{\Illuminate\Support\Facades\Session::get('result')}}</textarea>
             <div class="col-sm-12 d-flex">
@@ -113,22 +121,6 @@
         </div>
     @endif
     @slot('js')
-        <script>
-            window.onload = function () {
-                if (localStorage.getItem('radioOptionState') !== null) {
-                    let index = localStorage.getItem('radioOptionState');
-                    document.getElementById(index + '-radio-option').checked = true;
-                }
-            }
-
-            function saveOptionState(index) {
-                localStorage.setItem('radioOptionState', index)
-            }
-
-            function saveOfBuffer() {
-                document.getElementById('comparison-result').select();
-                document.execCommand('copy');
-            }
-        </script>
+        <script src="{{ asset('plugins/list-comparison/js/list-comparison.js') }}"></script>
     @endslot
 @endcomponent

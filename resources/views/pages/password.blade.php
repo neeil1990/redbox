@@ -42,10 +42,10 @@
             </form>
             <h4 class="mt-3 mb-3 text-danger">{{$errors->first()}}</h4>
             @if (\Illuminate\Support\Facades\Session::has('message'))
-                <div class="alert alert-info">{{ \Illuminate\Support\Facades\Session::get('message') }}</div>
+                <div class="alert alert-danger mt-5">{{ \Illuminate\Support\Facades\Session::get('message') }}</div>
             @endif
             @if (\Illuminate\Support\Facades\Session::has('password'))
-                <div class="alert alert-info">{{ \Illuminate\Support\Facades\Session::get('password') }}</div>
+                <h3 class="mt-5">Сгенерированный пароль: {{ \Illuminate\Support\Facades\Session::get('password') }}</h3>
             @endif
         </div>
     </div>
@@ -65,28 +65,7 @@
 
         </div>
     </div>
-
     @slot('js')
-        <script>
-            function saveState() {
-                let checkboxState = document.getElementsByClassName('checkbox')
-                let numberState = document.getElementsByClassName('number')
-                localStorage.setItem('numberState1', numberState[0].value)
-                localStorage.setItem('checkState1', checkboxState[0].checked)
-                localStorage.setItem('checkState2', checkboxState[1].checked)
-                localStorage.setItem('checkState3', checkboxState[2].checked)
-                localStorage.setItem('checkState4', checkboxState[3].checked)
-                localStorage.setItem('checkState5', checkboxState[4].checked)
-            }
-
-            window.onload = function () {
-                document.getElementsByClassName('number')[0].value = localStorage.getItem('numberState1')
-                document.getElementById('checkbox1').checked = localStorage.getItem('checkState1') === 'true';
-                document.getElementById('checkbox2').checked = localStorage.getItem('checkState2') === 'true';
-                document.getElementById('checkbox3').checked = localStorage.getItem('checkState3') === 'true';
-                document.getElementById('checkbox4').checked = localStorage.getItem('checkState4') === 'true';
-                document.getElementById('checkbox5').checked = localStorage.getItem('checkState5') === 'true';
-            }
-        </script>
+        <script src="{{ asset('plugins/password-generator/js/my-password-generator.js') }}"></script>
     @endslot
 @endcomponent

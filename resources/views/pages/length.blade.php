@@ -1,12 +1,6 @@
 @component('component.card', ['title' => __('Counting text length')])
-
-    @slot('css')
-        <link rel='stylesheet' id='swpc-main-css'  href='{{ asset('plugins/utm-marks/css/style.css') }}' type='text/css' media='all' />
-    @endslot
-
     <div>
-        <h1>{{__('Counting text length')}}</h1>
-        <p class="w-50 mt-3 mb-3">
+        <p class="w-50 mb-3">
             {{__('This tool will instantly calculate how many characters and spaces are in your text, as well as the number of characters without spaces and the number of words in the text.')}}
         </p>
         <p class="w-50 mt-3 mb-3">
@@ -23,49 +17,42 @@
                    onclick="clearCountingResult();">
         </form>
         <br>
-        <div>
-            <div id="all-text">
-                <b>{{__('Total characters')}}: </b>
-                @if (\Illuminate\Support\Facades\Session::has('length'))
+        <div id="text-length-result">
+            @if (\Illuminate\Support\Facades\Session::has('length'))
+                <div id="all-text">
+                    <b>{{__('Total characters')}}: </b>
                     <span class="counting-result">
                         {{ \Illuminate\Support\Facades\Session::get('length') }}
                     </span>
-                @endif
-            </div>
-            <div id="spaces">
-                <b>{{__('Total spaces')}}: </b>
-                @if (\Illuminate\Support\Facades\Session::has('countSpaces'))
+                </div>
+            @endif
+            @if (\Illuminate\Support\Facades\Session::has('countSpaces'))
+                <div id="spaces">
+                    <b>{{__('Total spaces')}}: </b>
                     <span class="counting-result">
                         {{ \Illuminate\Support\Facades\Session::get('countSpaces') }}
                     </span>
-                @endif
-            </div>
-            <div id="no-spaces">
-                <b>{{__('Total characters without spaces')}}: </b>
-                @if (\Illuminate\Support\Facades\Session::has('lengthWithOutSpaces'))
+                </div>
+            @endif
+            @if (\Illuminate\Support\Facades\Session::has('lengthWithOutSpaces'))
+                <div id="no-spaces">
+                    <b>{{__('Total characters without spaces')}}: </b>
                     <span class="counting-result">
                         {{ \Illuminate\Support\Facades\Session::get('lengthWithOutSpaces') }}
                     </span>
-                @endif
-            </div>
-            <div id="words">
-                <b>{{__('Total words')}}: </b>
-                @if (\Illuminate\Support\Facades\Session::has('countWord'))
+                </div>
+            @endif
+            @if (\Illuminate\Support\Facades\Session::has('countWord'))
+                <div id="words">
+                    <b>{{__('Total words')}}: </b>
                     <span class="counting-result">
                     {{ \Illuminate\Support\Facades\Session::get('countWord') }}
                     </span>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
     </div>
     @slot('js')
-        <script>
-            function clearCountingResult() {
-                document.getElementById('text').innerText = '';
-                document.querySelectorAll('.counting-result').forEach((element) => {
-                    element.innerHTML = '';
-                });
-            }
-        </script>
+        <script src="{{ asset('plugins/text-length/js/text-length.js') }}"></script>
     @endslot
 @endcomponent
