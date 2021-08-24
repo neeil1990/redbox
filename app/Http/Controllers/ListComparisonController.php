@@ -69,6 +69,6 @@ class ListComparisonController extends Controller
         Log::debug('file name', ['files\\' . $fileName . '.txt', $request->result]);
         Log::debug('put result', [Storage::put('files\\' . $fileName . '.txt', $request->result)]);
         Storage::put('files\\' . $fileName . '.txt', $request->result);
-        return response()->download(storage_path('app\public\files\\' . $fileName . '.txt'));
+        return response()->download(storage_path('app/public/files/' . $fileName . '.txt'));
     }
 }
