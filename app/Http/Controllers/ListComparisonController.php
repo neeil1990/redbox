@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -65,6 +66,8 @@ class ListComparisonController extends Controller
     public function downloadComparisonFile(Request $request): BinaryFileResponse
     {
         $fileName = md5(Carbon::now());
+        Log::debug('file name', ['files\\' . $fileName . '.txt', $request->result]);
+        Log::debug('put result', [Storage::put('files\\' . $fileName . '.txt', $request->result)]);
         Storage::put('files\\' . $fileName . '.txt', $request->result);
         return response()->download(storage_path('app\public\files\\' . $fileName . '.txt'));
     }
