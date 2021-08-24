@@ -45,7 +45,7 @@
                 <div class="alert alert-danger mt-5">{{ \Illuminate\Support\Facades\Session::get('message') }}</div>
             @endif
             @if (\Illuminate\Support\Facades\Session::has('password'))
-                <h3 class="mt-5">Сгенерированный пароль: {{ \Illuminate\Support\Facades\Session::get('password') }}</h3>
+                <h3 class="mt-5">{{__('Generated password')}}: {{ \Illuminate\Support\Facades\Session::get('password') }}</h3>
             @endif
         </div>
     </div>
