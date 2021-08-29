@@ -2,6 +2,21 @@ window.onload = function () {
     countPhrasesInLists()
     calculatePhrasesInFistList()
     removeExtraSpaces()
+    checkboxState()
+    goUp()
+}
+
+function checkboxState() {
+    let checkboxStateIds = ['unique-word', 'unique-word-forms', 'number-occurrences', 'key-phrases']
+    for (let i = 0; i < checkboxStateIds.length; i++) {
+        if (localStorage.getItem(checkboxStateIds[i]) === 'true') {
+            document.getElementById(checkboxStateIds[i]).checked = localStorage.getItem(checkboxStateIds[i])
+        }
+    }
+}
+
+function saveOptionState(index) {
+    localStorage.setItem(index, document.getElementById(index).checked)
 }
 
 function countPhrasesInLists() {
@@ -83,4 +98,12 @@ function removeExtraSpaces() {
     document.querySelectorAll('.key-phrases-result').forEach((el) => {
         el.innerHTML = el.innerHTML.trim()
     });
+}
+
+function goUp() {
+    let top = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+    if (top > 0) {
+        window.scrollBy(0, -100);
+        var timeOut = setTimeout('goUp()', 20);
+    } else clearTimeout(timeOut);
 }

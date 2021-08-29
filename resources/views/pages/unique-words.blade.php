@@ -50,7 +50,8 @@
                         <input type="checkbox"
                                id="unique-word"
                                name="uniqueWord"
-                               class="custom-control-input">
+                               class="custom-control-input"
+                               onclick="saveOptionState('unique-word')">
                         <label for="unique-word" class="custom-control-label">
                             {{__('Word')}}
                         </label>
@@ -59,7 +60,8 @@
                         <input type="checkbox"
                                id="unique-word-forms"
                                name="uniqueWordForms"
-                               class="custom-control-input">
+                               class="custom-control-input"
+                               onclick="saveOptionState('unique-word-forms')">
                         <label for="unique-word-forms" class="custom-control-label">
                             {{__('Word forms')}}
                         </label>
@@ -68,7 +70,8 @@
                         <input type="checkbox"
                                id="number-occurrences"
                                name="numberOccurrences"
-                               class="custom-control-input">
+                               class="custom-control-input"
+                               onclick="saveOptionState('number-occurrences')">
                         <label for="number-occurrences" class="custom-control-label">
                             {{__('Number of occurrences')}}
                         </label>
@@ -77,7 +80,8 @@
                         <input type="checkbox"
                                id="key-phrases"
                                name="keyPhrases"
-                               class="custom-control-input">
+                               class="custom-control-input"
+                               onclick="saveOptionState('key-phrases')">
                         <label for="key-phrases" class="custom-control-label">
                             {{__('Key phrases')}}
                         </label>
