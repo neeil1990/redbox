@@ -21,11 +21,11 @@
                       id="phrases"
                       required>{{\Illuminate\Support\Facades\Input::old('phrases')}}</textarea>
         </div>
-        <input class="btn btn-secondary mt-2 mr-2" type="submit" value="Обработать">
+        <input class="btn btn-secondary mt-2 mr-2" type="submit" value="{{__('Processing')}}">
     </form>
     @if (\Illuminate\Support\Facades\Session::has('listWords'))
-        <fieldset class="unique-words-filter mt-3 mb-3">
-            <legend>{{__('additionally')}}</legend>
+        <fieldset class="unique-words-filter mt-4 mb-3">
+            <legend>{{__('Additionally')}}</legend>
             <div class="d-flex mt-2 mb-2">
                 <div class="w-auto">
                     <p class="mr-3">{{__('Delete lines where the number of occurrences:')}}</p>
