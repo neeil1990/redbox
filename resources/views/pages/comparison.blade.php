@@ -1,11 +1,9 @@
 @component('component.card', ['title' => __('List comparison')])
-
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
     @endslot
-
     <form action="{{  route('counting.list.comparison') }}" method="POST" id="list-comparison">
         @csrf
         <div class="row">
@@ -34,10 +32,16 @@
         <div class="row">
             <div class="col-8 d-flex flex-column">
                 <label class="mt-3 mb-3">{{__('Comparison type:')}}</label>
-                <label class="radio">
-                    <input type="radio" name="option" value="unique" id="first-radio-option" checked
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input"
+                           type="radio"
+                           name="option"
+                           value="unique"
+                           id="first-radio-option"
+                           checked
                            onclick="saveOptionState('first')">
-                    {{__('Unique phrases that are in each of the two lists')}}
+                    <label for="first-radio-option"
+                           class="custom-control-label">{{__('Unique phrases that are in each of the two lists')}}</label>
                     <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
@@ -46,11 +50,16 @@
                             </span>
                         </span>
                     </span>
-                </label>
-                <label class="radio ">
-                    <input type="radio" name="option" value="union" id="second-radio-option"
+                </div>
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input"
+                           type="radio"
+                           name="option"
+                           value="union"
+                           id="second-radio-option"
                            onclick="saveOptionState('second')">
-                    {{__('Unique phrases that are in either of the two lists')}}
+                    <label for="second-radio-option"
+                           class="custom-control-label">{{__('Unique phrases that are in either of the two lists')}}</label>
                     <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
@@ -59,11 +68,16 @@
                             </span>
                         </span>
                     </span>
-                </label>
-                <label class="radio ">
-                    <input type="radio" name="option" value="uniqueInFirstList" id="third-radio-option"
+                </div>
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input"
+                           type="radio"
+                           name="option"
+                           value="uniqueInFirstList"
+                           id="third-radio-option"
                            onclick="saveOptionState('third')">
-                    {{__('Unique phrases that are only in the first list')}}
+                    <label for="third-radio-option"
+                           class="custom-control-label">{{__('Unique phrases that are only in the first list')}}</label>
                     <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
@@ -72,12 +86,16 @@
                             </span>
                         </span>
                     </span>
-                </label>
-                <label
-                    class="radio ">
-                    <input type="radio" name="option" value="uniqueInSecondList" id="fourth-radio-option"
+                </div>
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input"
+                           type="radio"
+                           name="option"
+                           value="uniqueInSecondList"
+                           id="fourth-radio-option"
                            onclick="saveOptionState('fourth')">
-                    {{__('Unique phrases that are only in the second list')}}
+                    <label for="fourth-radio-option"
+                           class="custom-control-label">{{__('Unique phrases that are only in the second list')}}</label>
                     <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
@@ -86,8 +104,7 @@
                             </span>
                         </span>
                     </span>
-                </label>
-
+                </div>
             </div>
             <div class="col-sm-8 mt-3 mb-3 mt-3">
                 <input class="btn btn-secondary" type="submit" value="{{__('Processing')}}">
@@ -102,13 +119,13 @@
             </div>
             <textarea name="result" id="comparison-result" class="form-control"
                       rows="10">{{\Illuminate\Support\Facades\Session::get('result')}}</textarea>
-            <div class="col-sm-12 d-flex">
+            <div class="d-flex">
                 <a title="{{__('Copy result')}}">
                     <button onclick="saveOfBuffer()" class="btn btn-default mt-2 mr-2">
                         <i aria-hidden="true" class="fa fa-clipboard"></i>
                     </button>
                 </a>
-                <form action="{{route('download-comparison-file')}}" method="GET">
+                <form action="{{route('download.comparison.file')}}" method="GET">
                     @csrf
                     <input type="hidden" value="{{\Illuminate\Support\Facades\Session::get('result')}}" name="result">
                     <a title="{{__('Download file')}}" class="pull-left ml-2 mr-2">

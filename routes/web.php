@@ -44,10 +44,15 @@ Route::middleware(['verified'])->group(function () {
     Route::post('generate-password', 'PasswordGeneratorController@createPassword')->name('generate.password');
     Route::get('password-generator', 'PasswordGeneratorController@index')->name('pages.password');
 
-    Route::post('counting-text-length', 'CountingTextLengthController@countingTextLength')->name('counting.text.length');
-    Route::get('counting-text-length', 'CountingTextLengthController@index')->name('pages.length');
+    Route::post('counting-text-length', 'TextLengthController@countingTextLength')->name('counting.text.length');
+    Route::get('counting-text-length', 'TextLengthController@index')->name('pages.length');
 
     Route::get('list-comparison', 'ListComparisonController@index')->name('list.comparison');
     Route::post('list-comparison', 'ListComparisonController@listComparison')->name('counting.list.comparison');
-    Route::get('download-comparison-file', 'ListComparisonController@downloadComparisonFile')->name('download-comparison-file');
+    Route::get('download-comparison-file', 'ListComparisonController@downloadComparisonFile')->name('download.comparison.file');
+
+    Route::get('unique-words', 'UniqueWordsController@index')->name('unique.words');
+    Route::post('unique-words', 'UniqueWordsController@countingUniqueWords')->name('unique.words');
+    Route::post('download-unique-words', 'UniqueWordsController@downloadUniqueWords')->name('download.unique.words');
+    Route::post('download-unique-phrases', 'UniqueWordsController@downloadUniquePhrases')->name('download.unique.phrases');
 });

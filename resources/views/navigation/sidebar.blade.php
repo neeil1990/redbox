@@ -44,6 +44,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('unique.words') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{__("Highlighting unique words in the text")}}</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('pages.duplicates') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Remove Duplicates') }}</p>
