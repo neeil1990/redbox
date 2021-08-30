@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -27,9 +28,9 @@ class UniqueWordsController extends Controller
     public function countingUniqueWords(Request $request)
     {
         $listWords = self::stringToCollectionWords($request->phrases);
-        $phrases = $request->phrases;
+        $oldPhrases = $request->phrases;
 
-        return view('pages.unique-words', compact('listWords', 'phrases'));
+        return view('pages.unique-words', compact('listWords', 'oldPhrases'));
     }
 
     /**

@@ -19,8 +19,7 @@
                       name="phrases"
                       rows="10"
                       id="phrases"
-                      required>
-            </textarea>
+                      required>@if (isset($oldPhrases)){{$oldPhrases}}@endif</textarea>
         </div>
         <input class="btn btn-secondary mt-3 mr-2" type="submit" value="{{__('Processing')}}">
     </form>
@@ -99,7 +98,7 @@
                         <input type="hidden" id="extraId" name="extraId">
                         <input type="hidden"
                                name="phrases"
-                               value="{{\Illuminate\Support\Facades\Input::old('phrases')}}"
+                               value="@if (isset($oldPhrases)){{$oldPhrases}}@endif"
                                checked>
                         <button class="btn btn-default mt-2 __helper-link ui_tooltip_w">
                             <i aria-hidden="true" class="fa fa-download"></i>
