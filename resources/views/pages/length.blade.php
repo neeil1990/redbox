@@ -13,7 +13,7 @@
                       class="form-control col-lg-6 col-sm-12"
                       id="text"
                       rows="10"
-                      required>@if (\Illuminate\Support\Facades\Session::has('text')){{ \Illuminate\Support\Facades\Session::get('text') }}@endif</textarea>
+                      required>@if (isset($text)){{ $text }}@endif</textarea>
             <br>
             <input class="btn btn-secondary mr-2" type="submit" value="{{__('Calculate')}}">
             <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"

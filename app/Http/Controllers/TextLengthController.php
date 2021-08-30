@@ -23,20 +23,20 @@ class TextLengthController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return array|false|\Illuminate\Contracts\Foundation\Application|Factory|View|mixed
      */
-    public function countingTextLength(Request $request): RedirectResponse
+    public function countingTextLength(Request $request)
     {
         $length = Str::length($request->text);
         $countSpaces = self::countingSpaces($request->text);
         $lengthWithOutSpaces = $length - $countSpaces;
-        Session::flash('text', $request->text);
+        $text = $request->text;
         Session::flash('length', $length);
         Session::flash('countSpaces', $countSpaces);
         Session::flash('lengthWithOutSpaces', $lengthWithOutSpaces);
         Session::flash('countWord', self::countingWord($request->text));
 
-        return Redirect::back();
+        return view('pages.length', compact('text'));
     }
 
     /**
