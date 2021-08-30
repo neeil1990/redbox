@@ -1,6 +1,3 @@
-#app > div > div > div.card-body > div > div.card-body.table-responsive.p-0{
-    overflow: hidden;
-}
 .ui_tooltip {
     color: #000;
     display: none;
@@ -228,4 +225,21 @@ label:not(.form-check-label):not(.custom-file-label) {
     color: #888;
     font: 13px/18px "Open Sans", sans-serif;
     padding-top: 6px;
+}
+
+.form-control.key-phrases-result {
+    font-size: 14px;
+}
+
+.table.table-valign-middle tbody > tr > td, .table.table-valign-middle tbody > tr > th,
+.table.table-valign-middle thead > tr > td, .table.table-valign-middle thead > tr > th {
+    vertical-align: baseline;
+}
+
+.unique-form, .fa.fa-minus-square-o {
+    display: none;
+}
+
+.unique-form{
+    transition: .4s;
 }

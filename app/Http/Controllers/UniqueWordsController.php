@@ -28,7 +28,7 @@ class UniqueWordsController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function countingUniqueWords(Request $request)
+    public function countingUniqueWords(Request $request): RedirectResponse
     {
         $listWords = self::stringToCollectionWords($request->phrases);
         Session::flash('listWords', $listWords);
@@ -50,7 +50,6 @@ class UniqueWordsController extends Controller
         $words = collect($t)->map(function ($arr) {
             return array_combine(['word', 'wordForms', 'numberOccurrences', 'keyPhrases'], $arr);
         });
-
         return $words->sortByDesc('numberOccurrences');
     }
 
@@ -81,7 +80,7 @@ class UniqueWordsController extends Controller
      */
     public static function getWords($string): array
     {
-        $string = preg_replace('[\n\r|\n|\s+|\s+$|\s+(?=\s)]', ' ', $string);
+        $string = preg_replace('[\n\r | \n | \s +|\s + $|\s + (?=\s)]', ' ', $string);
         return explode(' ', $string);
     }
 
@@ -134,8 +133,9 @@ class UniqueWordsController extends Controller
         $words = self::stringToCollectionWords($request->phrases);
         self::removeExtraItems($words, $request->extraId);
         $text = self::confirmText($words, $request);
+        $subject = self::confirmSubject($request);
 
-        return self::uploadFIle($text);
+        return self::uploadFIle($subject . $text);
     }
 
     /**
@@ -145,8 +145,8 @@ class UniqueWordsController extends Controller
     public static function uploadFIle($text): BinaryFileResponse
     {
         $fileName = md5(Carbon::now());
-        Storage::put('files\\' . $fileName . '.csv', $text);
-        return response()->download(storage_path('app/public/files/' . $fileName . '.csv'));
+        Storage::put('files\\' . $fileName . ' . csv', $text);
+        return response()->download(storage_path('app /public/files / ' . $fileName . ' . csv'));
     }
 
     /**
@@ -225,6 +225,30 @@ class UniqueWordsController extends Controller
         }
 
         return $separator;
+    }
+
+    /**
+     * @param $request
+     * @return string
+     */
+    public static function confirmSubject($request): string
+    {
+        $subject = '';
+        if ($request->uniqueWord === 'on') {
+            $subject .= __('Word') . ';';
+        }
+        if ($request->uniqueWordForms === 'on') {
+            $subject .= __('Word forms') . ';';
+        }
+        if ($request->numberOccurrences === 'on') {
+            $subject .= __('Number of occurrences') . ';';
+        }
+        if ($request->keyPhrases === 'on') {
+            $subject .= __('Key phrases') . ';';
+        }
+        $subject .= "\n";
+
+        return $subject;
     }
 
     /**

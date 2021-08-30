@@ -9,7 +9,10 @@
         <h2>{{__("Enter text")}}</h2>
         <form id="text-length" action="{{  route('counting.text.length') }}" method="POST">
             @csrf
-            <textarea name="text" class="form-control w-50" id="text" rows="10"
+            <textarea name="text"
+                      class="form-control col-lg-6 col-sm-12"
+                      id="text"
+                      rows="10"
                       required>@if (\Illuminate\Support\Facades\Session::has('text')){{ \Illuminate\Support\Facades\Session::get('text') }}@endif</textarea>
             <br>
             <input class="btn btn-secondary mr-2" type="submit" value="{{__('Calculate')}}">

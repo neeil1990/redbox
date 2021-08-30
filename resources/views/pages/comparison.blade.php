@@ -41,8 +41,8 @@
                            checked
                            onclick="saveOptionState('first')">
                     <label for="first-radio-option"
-                           class="custom-control-label">{{__('Unique phrases that are in each of the two lists')}}</label>
-                    <span class="__helper-link ui_tooltip_w">
+                           class="custom-control-label">{{__('Unique phrases that are in each of the two lists')}}
+                        <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
@@ -50,6 +50,7 @@
                             </span>
                         </span>
                     </span>
+                    </label>
                 </div>
                 <div class="custom-control custom-radio">
                     <input class="custom-control-input"
@@ -59,8 +60,8 @@
                            id="second-radio-option"
                            onclick="saveOptionState('second')">
                     <label for="second-radio-option"
-                           class="custom-control-label">{{__('Unique phrases that are in either of the two lists')}}</label>
-                    <span class="__helper-link ui_tooltip_w">
+                           class="custom-control-label">{{__('Unique phrases that are in either of the two lists')}}
+                        <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
@@ -68,6 +69,7 @@
                             </span>
                         </span>
                     </span>
+                    </label>
                 </div>
                 <div class="custom-control custom-radio">
                     <input class="custom-control-input"
@@ -77,8 +79,8 @@
                            id="third-radio-option"
                            onclick="saveOptionState('third')">
                     <label for="third-radio-option"
-                           class="custom-control-label">{{__('Unique phrases that are only in the first list')}}</label>
-                    <span class="__helper-link ui_tooltip_w">
+                           class="custom-control-label">{{__('Unique phrases that are only in the first list')}}
+                        <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
@@ -86,6 +88,7 @@
                             </span>
                         </span>
                     </span>
+                    </label>
                 </div>
                 <div class="custom-control custom-radio">
                     <input class="custom-control-input"
@@ -95,8 +98,8 @@
                            id="fourth-radio-option"
                            onclick="saveOptionState('fourth')">
                     <label for="fourth-radio-option"
-                           class="custom-control-label">{{__('Unique phrases that are only in the second list')}}</label>
-                    <span class="__helper-link ui_tooltip_w">
+                           class="custom-control-label">{{__('Unique phrases that are only in the second list')}}
+                        <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
@@ -104,6 +107,7 @@
                             </span>
                         </span>
                     </span>
+                    </label>
                 </div>
             </div>
             <div class="col-sm-8 mt-3 mb-3 mt-3">

@@ -2,21 +2,7 @@ window.onload = function () {
     countPhrasesInLists()
     calculatePhrasesInFistList()
     removeExtraSpaces()
-    checkboxState()
     goUp()
-}
-
-function checkboxState() {
-    let checkboxStateIds = ['unique-word', 'unique-word-forms', 'number-occurrences', 'key-phrases']
-    for (let i = 0; i < checkboxStateIds.length; i++) {
-        if (localStorage.getItem(checkboxStateIds[i]) === 'true') {
-            document.getElementById(checkboxStateIds[i]).checked = localStorage.getItem(checkboxStateIds[i])
-        }
-    }
-}
-
-function saveOptionState(index) {
-    localStorage.setItem(index, document.getElementById(index).checked)
 }
 
 function countPhrasesInLists() {
@@ -69,7 +55,7 @@ function saveInBuffer() {
             text += el.children[3].innerText + ';'
         }
         if (document.getElementById('key-phrases').checked) {
-            let textarea = el.children[4].querySelector('.form-control').value.trim()
+            let textarea = el.children[4].querySelector('.unique-element-key-phrases').innerHTML.trim()
             textarea = textarea.split('\n')
             for (let i = 0; i < textarea.length; i++) {
                 text += textarea[i] + '\n;;;;'
@@ -104,6 +90,19 @@ function goUp() {
     let top = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
     if (top > 0) {
         window.scrollBy(0, -100);
-        var timeOut = setTimeout('goUp()', 20);
-    } else clearTimeout(timeOut);
+    }
+}
+
+function showForm(id) {
+    document.getElementById('unique-form' + id).style.display = 'block'
+    document.getElementById('unique-minus' + id).style.display = 'block'
+    document.getElementById('unique-plus' + id).style.display = 'none'
+    document.getElementById('unique-span' + id).style.display = 'none'
+}
+
+function hiddenForm(id){
+    document.getElementById('unique-form' + id).style.display = 'none'
+    document.getElementById('unique-minus' + id).style.display = 'none'
+    document.getElementById('unique-plus' + id).style.display = 'block'
+    document.getElementById('unique-span' + id).style.display = 'block'
 }

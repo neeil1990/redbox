@@ -9,19 +9,19 @@
         @csrf
         <h2 class="mt-3 mb-3">{{__('Get a list of unique words from the list of keywords')}}</h2>
         <div class="d-flex flex-column unique-words">
-            <div class="d-flex flex-row justify-content-between">
+            <div class="d-flex flex-row justify-content-between col-lg-6 col-sm-12 pl-0 pr-0">
                 <label>{{__('List of keywords')}}</label>
-                <div class="count-phrases">{{__('count phrases')}}:
+                <div class="count-phrases text-right">{{__('count phrases')}}:
                     <span id="countPhrases">0</span>
                 </div>
             </div>
-            <textarea class="form-control"
+            <textarea class="form-control col-lg-6 col-sm-12"
                       name="phrases"
-                      rows="7"
+                      rows="10"
                       id="phrases"
                       required>{{\Illuminate\Support\Facades\Input::old('phrases')}}</textarea>
         </div>
-        <input class="btn btn-secondary mt-2 mr-2" type="submit" value="{{__('Processing')}}">
+        <input class="btn btn-secondary mt-3 mr-2" type="submit" value="{{__('Processing')}}">
     </form>
     @if (\Illuminate\Support\Facades\Session::has('listWords'))
         <fieldset class="unique-words-filter mt-4 mb-3">
@@ -51,7 +51,7 @@
                                id="unique-word"
                                name="uniqueWord"
                                class="custom-control-input"
-                               onclick="saveOptionState('unique-word')">
+                               checked>
                         <label for="unique-word" class="custom-control-label">
                             {{__('Word')}}
                         </label>
@@ -61,7 +61,7 @@
                                id="unique-word-forms"
                                name="uniqueWordForms"
                                class="custom-control-input"
-                               onclick="saveOptionState('unique-word-forms')">
+                               checked>
                         <label for="unique-word-forms" class="custom-control-label">
                             {{__('Word forms')}}
                         </label>
@@ -71,7 +71,7 @@
                                id="number-occurrences"
                                name="numberOccurrences"
                                class="custom-control-input"
-                               onclick="saveOptionState('number-occurrences')">
+                               checked>
                         <label for="number-occurrences" class="custom-control-label">
                             {{__('Number of occurrences')}}
                         </label>
@@ -81,7 +81,7 @@
                                id="key-phrases"
                                name="keyPhrases"
                                class="custom-control-input"
-                               onclick="saveOptionState('key-phrases')">
+                               checked>
                         <label for="key-phrases" class="custom-control-label">
                             {{__('Key phrases')}}
                         </label>
@@ -98,8 +98,8 @@
                         <input type="hidden" id="extraId" name="extraId">
                         <input type="hidden"
                                name="phrases"
-                               value="{{\Illuminate\Support\Facades\Input::old('phrases')}}">
-
+                               value="{{\Illuminate\Support\Facades\Input::old('phrases')}}"
+                               checked>
                         <button class="btn btn-default mt-2 __helper-link ui_tooltip_w">
                             <i aria-hidden="true" class="fa fa-download"></i>
                             <span class="ui_tooltip __right __l">
@@ -139,9 +139,26 @@
                                 {{$list['numberOccurrences']}}
                             </td>
                             <td class="d-flex flex-column unique-key-phrases">
-                                <form action="{{ route('download.unique.phrases') }}" method="POST">
-                                    @csrf
-                                    <div class="flex-column">
+                                @if(isset($list['keyPhrases'][1]))
+                                    <div class="mb-1">
+                                        <i aria-hidden="true"
+                                           class="fa fa-plus-square-o"
+                                           id="unique-plus{{$key}}"
+                                           onclick="showForm({{$key}})"
+                                        ></i>
+                                        <span id="unique-span{{$key}}">{{$list['keyPhrases'][0]}}</span>
+                                        <i aria-hidden="true"
+                                           class="fa fa-minus-square-o"
+                                           id="unique-minus{{$key}}"
+                                           onclick="hiddenForm({{$key}})"
+                                        ></i>
+                                    </div>
+                                    <form action="{{ route('download.unique.phrases') }}"
+                                          method="POST"
+                                          id="unique-form{{$key}}"
+                                          class="unique-form">
+                                        @csrf
+                                        <div class="flex-column">
                                     <span class="__helper-link ui_tooltip_w mr-1 btn btn-default mb-1"
                                           onclick="savePhrasesInBuffer({{$key}})">
                                         <i aria-hidden="true" class="fa fa-clipboard"></i>
@@ -151,24 +168,29 @@
                                             </span>
                                         </span>
                                     </span>
-                                        <span class="__helper-link ui_tooltip_w">
+                                            <span class="__helper-link ui_tooltip_w">
                                         <button class="btn btn-default  mb-1">
                                             <i aria-hidden="true" class="fa fa-download"></i>
                                         </button>
                                         <span class="ui_tooltip __right __l">
-                                            <span class="ui_tooltip_content">
-                                                {{__('Upload as a file')}}
-                                            </span>
+                                        <span class="ui_tooltip_content">
+                                            {{__('Upload as a file')}}
                                         </span>
                                     </span>
-                                    </div>
-                                    <textarea
-                                        name="keyPhrases"
-                                        id="key-phrases-{{$key}}"
-                                        rows="3"
-                                        class="form-control key-phrases-result"
-                                    >@foreach($list['keyPhrases'] as $phrases){{$phrases . "\n"}}@endforeach</textarea>
-                                </form>
+                                    </span>
+                                        </div>
+                                        <textarea
+                                            name="keyPhrases"
+                                            id="key-phrases-{{$key}}"
+                                            rows="3"
+                                            class="form-control key-phrases-result unique-element-key-phrases"
+                                        >@foreach($list['keyPhrases'] as $phrases){{$phrases . "\n"}}@endforeach</textarea>
+                                        @else
+                                            <span class="unique-element-key-phrases">
+                                                {{$list['keyPhrases'][0]}}
+                                            </span>
+                                        @endif
+                                    </form>
                             </td>
                         </tr>
                     @endforeach
