@@ -18,7 +18,7 @@
                     <div class="count-phrases">{{__('count phrases')}}: <span id="firstPhrases">0</span></div>
                 </div>
                 <textarea class="form-control" name="firstList" rows="7" id="firstList"
-                          required>{{\Illuminate\Support\Facades\Input::old('firstList')}}</textarea>
+                          required>@if(isset($firstList)){{ $firstList }}@endif</textarea>
             </div>
             <div class="col-sm-6 d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
@@ -26,7 +26,7 @@
                     <div class="count-phrases">{{__('count phrases')}}: <span id="secondPhrases">0</span></div>
                 </div>
                 <textarea class="form-control" name="secondList" rows="7" id="secondList"
-                          required>{{\Illuminate\Support\Facades\Input::old('secondList')}}</textarea>
+                          required>@if(isset($secondList)){{ $secondList }}@endif</textarea>
             </div>
         </div>
         <div class="row">
@@ -115,14 +115,14 @@
             </div>
         </div>
     </form>
-    @if (\Illuminate\Support\Facades\Session::has('result'))
+    @if (isset($result))
         <div class="result mt-3">
             <div class="d-flex flex-row justify-content-between">
                 <label>{{__('Comparison result')}}</label>
                 <div class="count-phrases">{{__('count phrases')}}: <span id="numberPhrasesInResult">0</span></div>
             </div>
             <textarea name="result" id="comparison-result" class="form-control"
-                      rows="10">{{\Illuminate\Support\Facades\Session::get('result')}}</textarea>
+                      rows="10">{{ $result }}</textarea>
             <div class="d-flex">
                 <a title="{{__('Copy result')}}">
                     <button onclick="saveOfBuffer()" class="btn btn-default mt-2 mr-2">
@@ -131,7 +131,7 @@
                 </a>
                 <form action="{{route('download.comparison.file')}}" method="GET">
                     @csrf
-                    <input type="hidden" value="{{\Illuminate\Support\Facades\Session::get('result')}}" name="result">
+                    <input type="hidden" value="{{ $result }}" name="result">
                     <a title="{{__('Download file')}}" class="pull-left ml-2 mr-2">
                         <button class="btn btn-default mt-2">
                             <i aria-hidden="true" class="fa fa-download"></i>

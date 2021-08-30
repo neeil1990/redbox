@@ -24,9 +24,9 @@ class ListComparisonController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return array|false|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|View|mixed
      */
-    public function listComparison(Request $request): RedirectResponse
+    public function listComparison(Request $request)
     {
         $result = implode("\r\n", self::uniquePhrases(
             explode("\r\n", $request->firstList),
@@ -34,8 +34,13 @@ class ListComparisonController extends Controller
             $request->option
         ));
 
-        Session::flash('result', $result);
-        return Redirect::back()->withInput($request->toArray());
+        $firstList = $request->firstList;
+        $secondList = $request->secondList;
+
+        return view('pages.comparison', compact(
+            'firstList',
+            'secondList',
+            'result'));
     }
 
     /**
