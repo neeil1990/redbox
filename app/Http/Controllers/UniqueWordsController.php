@@ -143,7 +143,7 @@ class UniqueWordsController extends Controller
     public static function uploadFIle($text): BinaryFileResponse
     {
         $fileName = md5(Carbon::now());
-        Storage::put('files\\' . $fileName . ' . csv', $text);
+        Storage::put('files\\' . $fileName . '.csv', $text);
         return response()->download(storage_path('app/public/files/' . $fileName . '.csv'));
     }
 
