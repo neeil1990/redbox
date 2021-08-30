@@ -7,6 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -28,12 +29,13 @@ class UniqueWordsController extends Controller
     public function countingUniqueWords(Request $request)
     {
         $listWords = self::stringToCollectionWords($request->phrases);
-        $oldInformation = $request->phrases;
-        return view('pages.unique-words', compact('listWords', 'oldInformation'));
+
+        return view('pages.unique-words', compact('listWords'));
     }
 
     /**
      * @param $string
+     * @return \Illuminate\Support\Collection
      */
     public static function stringToCollectionWords($string)
     {
@@ -142,7 +144,7 @@ class UniqueWordsController extends Controller
     {
         $fileName = md5(Carbon::now());
         Storage::put('files\\' . $fileName . ' . csv', $text);
-        return response()->download(storage_path('app /public/files / ' . $fileName . ' . csv'));
+        return response()->download(storage_path('app /public/files /' . $fileName . '.csv'));
     }
 
     /**

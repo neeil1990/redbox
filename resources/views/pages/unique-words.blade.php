@@ -19,7 +19,7 @@
                       name="phrases"
                       rows="10"
                       id="phrases"
-                      required>@if(isset($oldInformation)){{$oldInformation}}@endif</textarea>
+                      required>{{\Illuminate\Support\Facades\Input::old('phrases')}}</textarea>
         </div>
         <input class="btn btn-secondary mt-3 mr-2" type="submit" value="{{__('Processing')}}">
     </form>
