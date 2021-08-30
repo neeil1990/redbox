@@ -116,30 +116,35 @@
         </div>
     </form>
     @if (isset($result))
-        <div class="result mt-3">
-            <div class="d-flex flex-row justify-content-between">
-                <label>{{__('Comparison result')}}</label>
-                <div class="count-phrases">{{__('count phrases')}}: <span id="numberPhrasesInResult">0</span></div>
-            </div>
-            <textarea name="result" id="comparison-result" class="form-control"
-                      rows="10">{{ $result }}</textarea>
-            <div class="d-flex">
-                <a title="{{__('Copy result')}}">
-                    <button onclick="saveOfBuffer()" class="btn btn-default mt-2 mr-2">
-                        <i aria-hidden="true" class="fa fa-clipboard"></i>
+        <form action="{{route('download.comparison.file')}}" method="GET">
+            @csrf
+            <div class="result mt-3">
+                <div class="d-flex flex-row justify-content-between">
+                    <label>{{__('Comparison result')}}</label>
+                    <div class="count-phrases">{{__('count phrases')}}: <span id="numberPhrasesInResult">0</span></div>
+                </div>
+                <textarea name="result" id="comparison-result" class="form-control"
+                          rows="10">{{ $result }}</textarea>
+                <div class="d-flex">
+                <span class="__helper-link ui_tooltip_w btn btn-default mt-2 mr-2" onclick="saveOfBuffer()">
+                    <i aria-hidden="true" class="fa fa-clipboard"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{__('Copy to Clipboard')}}
+                            </span>
+                        </span>
+                </span>
+                    <button class="btn btn-default mt-2 __helper-link ui_tooltip_w">
+                        <i aria-hidden="true" class="fa fa-download"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{__('Upload as a file')}}
+                            </span>
+                        </span>
                     </button>
-                </a>
-                <form action="{{route('download.comparison.file')}}" method="GET">
-                    @csrf
-                    <input type="hidden" value="{{ $result }}" name="result">
-                    <a title="{{__('Download file')}}" class="pull-left ml-2 mr-2">
-                        <button class="btn btn-default mt-2">
-                            <i aria-hidden="true" class="fa fa-download"></i>
-                        </button>
-                    </a>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     @endif
     @slot('js')
         <script src="{{ asset('plugins/list-comparison/js/list-comparison.js') }}"></script>
