@@ -28,15 +28,15 @@ function deleteItem(id) {
 }
 
 function deleteItems() {
-    let greaterOrEqual = document.getElementById('greaterOrEqual').value
-    let lessOrEqual = document.getElementById('lessOrEqual').value
+    let greaterOrEqual = Number(document.getElementById('greaterOrEqual').value)
+    let lessOrEqual = Number(document.getElementById('lessOrEqual').value)
 
     document.querySelectorAll('.unique-result').forEach((el) => {
-        if (el.children[3].innerText >= greaterOrEqual && greaterOrEqual != '') {
+        if (Number(el.children[3].innerText) >= greaterOrEqual && greaterOrEqual != '') {
             el.remove();
         }
 
-        if (el.children[3].innerText <= lessOrEqual && lessOrEqual != '') {
+        if (Number(el.children[3].innerText) <= lessOrEqual && lessOrEqual != '') {
             el.remove();
         }
     })
@@ -100,7 +100,7 @@ function showForm(id) {
     document.getElementById('unique-span' + id).style.display = 'none'
 }
 
-function hiddenForm(id){
+function hiddenForm(id) {
     document.getElementById('unique-form' + id).style.display = 'none'
     document.getElementById('unique-minus' + id).style.display = 'none'
     document.getElementById('unique-plus' + id).style.display = 'block'

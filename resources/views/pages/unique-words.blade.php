@@ -135,9 +135,7 @@
                             </td>
                             <td class="unique-word">{{$list['word']}}</td>
                             <td class="unique-word-form">{{$list['wordForms']}}</td>
-                            <td class="number-occurrences">
-                                {{$list['numberOccurrences']}}
-                            </td>
+                            <td class="number-occurrences">{{$list['numberOccurrences']}}</td>
                             <td class="d-flex flex-column unique-key-phrases">
                                 @if(isset($list['keyPhrases'][1]))
                                     <div class="mb-1">
