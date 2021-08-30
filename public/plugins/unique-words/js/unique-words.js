@@ -32,11 +32,13 @@ function deleteItems() {
     let lessOrEqual = Number(document.getElementById('lessOrEqual').value)
 
     document.querySelectorAll('.unique-result').forEach((el) => {
-        if (Number(el.children[3].innerText) >= greaterOrEqual && greaterOrEqual != '') {
+        if (Number(el.children[3].innerText) >= greaterOrEqual && greaterOrEqual !== 0) {
+            document.getElementById('extraId').value += el.id.slice(16) + ' ';
             el.remove();
         }
 
-        if (Number(el.children[3].innerText) <= lessOrEqual && lessOrEqual != '') {
+        if (Number(el.children[3].innerText) <= lessOrEqual && lessOrEqual !== 0) {
+            document.getElementById('extraId').value += el.id.slice(16) + ' ';
             el.remove();
         }
     })
