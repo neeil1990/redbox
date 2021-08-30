@@ -80,8 +80,9 @@ class UniqueWordsController extends Controller
      */
     public static function getWords($string): array
     {
-        $string = preg_replace('[\n\r | \n | \s +|\s + $|\s + (?=\s)]', ' ', $string);
-        return explode(' ', $string);
+        $string = explode("\r\n", $string);
+        $string = implode(" ", $string);
+        return explode(" ", $string);
     }
 
     /**
