@@ -7,9 +7,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -26,21 +23,19 @@ class UniqueWordsController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return array|false|Application|Factory|View|mixed
      */
-    public function countingUniqueWords(Request $request): RedirectResponse
+    public function countingUniqueWords(Request $request)
     {
         $listWords = self::stringToCollectionWords($request->phrases);
-        Session::flash('listWords', $listWords);
-
-        return Redirect::back()->withInput($request->toArray());
+        $oldInformation = $request->phrases;
+        return view('pages.unique-words', compact('listWords', 'oldInformation'));
     }
 
     /**
      * @param $string
-     * @return Collection
      */
-    public static function stringToCollectionWords($string): Collection
+    public static function stringToCollectionWords($string)
     {
         $string = mb_strtolower($string);
         $string = self::removeExtraSymbols($string);

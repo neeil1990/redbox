@@ -19,11 +19,11 @@
                       name="phrases"
                       rows="10"
                       id="phrases"
-                      required>{{\Illuminate\Support\Facades\Input::old('phrases')}}</textarea>
+                      required>@if(isset($oldInformation)){{$oldInformation}}@endif</textarea>
         </div>
         <input class="btn btn-secondary mt-3 mr-2" type="submit" value="{{__('Processing')}}">
     </form>
-    @if (\Illuminate\Support\Facades\Session::has('listWords'))
+    @if (isset($listWords))
         <fieldset class="unique-words-filter mt-4 mb-3">
             <legend>{{__('Additionally')}}</legend>
             <div class="d-flex mt-2 mb-2">
@@ -128,7 +128,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach(\Illuminate\Support\Facades\Session::get('listWords') as $key => $list)
+                    @foreach($listWords as $key => $list)
                         <tr id="unique-words-id-{{$key}}" class="unique-result">
                             <td>
                                 <i class="fa fa-trash" onclick="deleteItem({{$key}})"></i>
