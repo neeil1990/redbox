@@ -144,7 +144,7 @@ class UniqueWordsController extends Controller
     {
         $fileName = md5(Carbon::now());
         Storage::put('files\\' . $fileName . ' . csv', $text);
-        return response()->download(storage_path('app /public/files /' . $fileName . '.csv'));
+        return response()->download(storage_path('app/public/files/' . $fileName . '.csv'));
     }
 
     /**
