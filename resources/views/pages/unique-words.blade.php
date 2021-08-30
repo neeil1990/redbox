@@ -187,7 +187,9 @@
                                         >@foreach($list['keyPhrases'] as $phrases){{$phrases . "\n"}}@endforeach</textarea>
                                         @else
                                             <span class="unique-element-key-phrases">
-                                                {{$list['keyPhrases'][0]}}
+                                                @foreach($list['keyPhrases'] as $item)
+                                                    {{$item}}
+                                                @endforeach
                                             </span>
                                         @endif
                                     </form>
