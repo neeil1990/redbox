@@ -32,8 +32,8 @@
                     </div>
                     <div class="card-tools d-flex">
                         @if(count($project->descriptions) > 0)
-                                <i class="fas fa-eye btn-tool pr-0" data-toggle="collapse"
-                                   data-target="#project-id-{{$project->id}}"></i>
+                            <i class="fas fa-eye btn-tool pr-0" data-toggle="collapse"
+                               data-target="#project-id-{{$project->id}}"></i>
                         @endif
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                     @foreach($project->descriptions as $description)
                         <div class="d-flex mt-3 ml-3">
                             <div class="project_description col-10 mr-auto pl-0">
-                                {!! $description->description !!}
+                                <p>{!! $description->description !!}</p>
                             </div>
                             <div class="d-flex col-1 align-items-start justify-content-end pr-1">
                                 <a href="{{ route('edit.description', $description->id) }}" class="mr-2">
