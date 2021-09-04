@@ -50,6 +50,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('projects') }}" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>{{__('Projects')}}</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('pages.duplicates') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Remove Duplicates') }}</p>
@@ -74,7 +80,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="https://docs.google.com/document/d/1TpjCQjXYV_ZWyxD-c8plld7m2-dce4fSGuMz0fgytK4/edit" target="_blank" class="nav-link">
+            <a href="https://docs.google.com/document/d/1TpjCQjXYV_ZWyxD-c8plld7m2-dce4fSGuMz0fgytK4/edit"
+               target="_blank" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>{{ __('Documentation') }}</p>
             </a>

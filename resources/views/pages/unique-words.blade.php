@@ -3,7 +3,6 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/unique-words/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/unique-words/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/unique-words/css/style.css') }}"/>
     @endslot
     <form method="POST" action="{{  route('unique.words') }}">
         @csrf

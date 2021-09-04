@@ -55,4 +55,17 @@ Route::middleware(['verified'])->group(function () {
     Route::post('unique-words', 'UniqueWordsController@countingUniqueWords')->name('unique.words');
     Route::post('download-unique-words', 'UniqueWordsController@downloadUniqueWords')->name('download.unique.words');
     Route::post('download-unique-phrases', 'UniqueWordsController@downloadUniquePhrases')->name('download.unique.phrases');
+
+    Route::get('projects', 'TextEditorController@index')->name('projects');
+    Route::get('create-project', 'TextEditorController@createView')->name('create.project');
+    Route::get('edit-project{id}', 'TextEditorController@editProjectView')->name('edit.project');
+    Route::post('edit-project', 'TextEditorController@editProject')->name('save.edit.project');
+    Route::post('save-project', 'TextEditorController@saveProject')->name('save.project');
+    Route::get('project/delete{id}', 'TextEditorController@destroyProject')->name('delete.project');
+
+    Route::get('edit-description{id}', 'TextEditorController@editDescriptionView')->name('edit.description');
+    Route::post('edit-description', 'TextEditorController@editDescription')->name('save.edit.description');
+    Route::get('description/delete{id}', 'TextEditorController@destroyDescription')->name('delete.description');
+    Route::get('create-description', 'TextEditorController@createDescriptionView')->name('create.description');
+    Route::post('save-description', 'TextEditorController@createDescription')->name('save.description');
 });

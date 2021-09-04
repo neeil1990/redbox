@@ -1,0 +1,34 @@
+.modal-dialog {
+    max-width: 80% !important;
+}
+
+.card-body::after, .card-footer::after, .card-header::after {
+    display: block;
+    clear: both !important;
+    content: none;
+}
+
+#app > div > div {
+    background: none;
+    box-shadow: none;
+}
+
+.card.maximized-card {
+    background-color: #fff !important;
+    background-clip: border-box !important;
+}
+
+.fa {
+    color: #adb5bd;
+    font-weight: 600;
+}
+
+#app > div > div > div.card-header {
+    background: #fff;
+}
+
+.short_project_description {
+    color: #888;
+    font: 13px/18px "Open Sans", sans-serif;
+    padding-top: 6px;
+}
