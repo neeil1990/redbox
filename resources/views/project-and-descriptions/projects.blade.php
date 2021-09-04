@@ -32,7 +32,7 @@
                     </div>
                     <div class="card-tools d-flex">
                         @if(count($project->descriptions) > 0)
-                            <i class="fas fa-eye btn-tool pr-0" data-toggle="collapse"
+                            <i class="fas fa-eye pr-0" data-toggle="collapse"
                                data-target="#project-id-{{$project->id}}"></i>
                         @endif
                     </div>
