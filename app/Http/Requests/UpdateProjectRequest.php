@@ -34,11 +34,11 @@ class UpdateProjectRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'project_name.required' => 'Название проекта не может быть пустым',
-            'project_name.min' => 'Название проекта должно содержать минимум 2 символа',
-            'project_name.unique' => 'Проект с таким названием уже существует',
-            'short_description.required'  => 'Описание проекта не может быть пустым',
-            'short_description.min'  => 'Описание должно содержать минимум 10 символов',
+            'project_name.required' => __('The project name cannot be empty'),
+            'project_name.min' => __('The project name must contain at least 2 characters'),
+            'project_name.unique' => __('A project with this name already exists'),
+            'short_description.required' => __('The project description cannot be empty'),
+            'short_description.min' => __('The description must contain at least 10 characters'),
         ];
     }
 

@@ -28,8 +28,8 @@ class ProjectDescriptionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.required'  => 'Описание проекта не может быть пустым',
-            'description.min'  => 'Описание должно содержать минимум 10 символов',
+            'description.required' => __('The project description cannot be empty'),
+            'description.min' => __('The description must contain at least 10 characters'),
         ];
     }
 }

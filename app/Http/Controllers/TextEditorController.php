@@ -88,7 +88,7 @@ class TextEditorController extends Controller
         $project->save();
         self::saveDescription($request->description, $project->id);
 
-        flash()->overlay(__('Project was created successfully'), ' ')
+        flash()->overlay(__('Project was successfully created'), ' ')
             ->success();
         return Redirect::route('projects');
     }
@@ -100,7 +100,7 @@ class TextEditorController extends Controller
     public function destroyProject(string $id): RedirectResponse
     {
         Project::destroy($id);
-        flash()->overlay(__('Project successfully deleted'), ' ')
+        flash()->overlay(__('Project was successfully deleted'), ' ')
             ->success();
         return Redirect::back();
     }

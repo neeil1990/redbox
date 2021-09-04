@@ -23,7 +23,7 @@ class CreateProjectRequest extends FormRequest
         return [
             'project_name' => 'required|min:2|unique:projects',
             'description' => 'required|min:10',
-            'short_description' => 'max:100'
+            'short_description' => 'min:10|max:100'
         ];
     }
 
@@ -33,12 +33,14 @@ class CreateProjectRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'project_name.required' => 'Название проекта не может быть пустым',
-            'project_name.min' => 'Название проекта должно содержать минимум 2 символа',
-            'project_name.unique' => 'Проект с таким названием уже существует',
-            'description.required'  => 'Описание проекта не может быть пустым',
-            'description.min'  => 'Описание должно содержать минимум 10 символов',
-            'short_description.max'  => 'Краткое описание должно содержать максимум 100 символов',
+            'project_name.required' => __('The project name cannot be empty'),
+            'project_name.min' => __('The project name must contain at least 2 characters'),
+            'project_name.unique' => __('A project with this name already exists'),
+            'short_description.required' => __('The project description cannot be empty'),
+            'short_description.min' => __('The description must contain at least 10 characters'),
+            'description.required' => __('The project description cannot be empty'),
+            'description.min' => __('The description must contain at least 10 characters'),
+            'short_description.max' => __('The short description must contain a maximum of 100 characters'),
         ];
     }
 }
