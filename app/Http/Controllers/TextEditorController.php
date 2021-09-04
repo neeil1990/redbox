@@ -142,7 +142,7 @@ class TextEditorController extends Controller
     public function destroyDescription(string $id): RedirectResponse
     {
         ProjectDescription::destroy($id);
-        flash()->overlay(__('description was successfully deleted'), ' ')
+        flash()->overlay(__('Description was successfully deleted'), ' ')
             ->success();
         return Redirect::back();
     }
