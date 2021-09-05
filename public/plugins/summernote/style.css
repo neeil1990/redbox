@@ -27,6 +27,10 @@
     background: #fff;
 }
 
+.card-header {
+    min-height: 50px;
+}
+
 .short_project_description {
     color: #888;
     font: 13px/18px "Open Sans", sans-serif;
@@ -35,4 +39,24 @@
 
 .fas.fa-eye {
     color: #adb5bd
+}
+
+.card-default {
+    border-top: 3px solid #adb5bd;
+}
+
+.card-header {
+    color: black;
+}
+
+.short_description_project {
+    color: #adb5bd;
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+.fa:hover {
+    color: #4b545c;
 }

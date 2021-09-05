@@ -52,7 +52,7 @@
         <li class="nav-item">
             <a href="{{ route('projects') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
-                <p>{{__('Projects')}}</p>
+                <p>{{__('Visual html editor')}}</p>
             </a>
         </li>
         <li class="nav-item">
