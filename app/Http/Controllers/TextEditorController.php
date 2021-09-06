@@ -80,7 +80,7 @@ class TextEditorController extends Controller
         $project = new Project();
         $project->project_name = $request->project_name;
         if (empty($request->short_description)) {
-            $project->short_description = Str::limit(strip_tags($request->description), '100');
+            $project->short_description = Str::limit(strip_tags($request->description), 70);
         } else {
             $project->short_description = $request->short_description;
         }
