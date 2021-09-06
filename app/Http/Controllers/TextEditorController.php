@@ -77,6 +77,12 @@ class TextEditorController extends Controller
      */
     public function saveProject(CreateProjectRequest $request): RedirectResponse
     {
+        if (strip_tags(str_replace('&nbsp;', '', $request->description)) == 0) {
+            flash()->overlay(__('The text cannot be empty'), ' ')
+                ->error();
+            return Redirect::Back();
+        }
+
         $project = new Project();
         $project->project_name = $request->project_name;
         if (empty($request->short_description)) {
