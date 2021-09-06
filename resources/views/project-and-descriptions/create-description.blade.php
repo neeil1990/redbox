@@ -13,8 +13,7 @@
                             <p>{{__('Are you sure?')}}</p>
                         </div>
                         <div class="modal-footer">
-                            <input type="reset" class="btn btn-default ml-1" value="{{__('Clear')}}"
-                                   onclick="resetText()" data-dismiss="modal">
+                            <input type="reset" class="btn btn-default ml-1" value="{{__('Clear')}}" data-dismiss="modal">
                             <button type="button"
                                     class="btn btn-default"
                                     data-dismiss="modal">
@@ -61,9 +60,11 @@
                 });
             });
 
-            function resetText() {
-                document.querySelector('.note-editable.card-block').innerHTML = ''
-            }
+            $(document).ready(function () {
+                $(".btn.btn-default.ml-1").click(function () {
+                    $('#description').summernote('code', '');
+                });
+            });
         </script>
     @endslot
 @endcomponent

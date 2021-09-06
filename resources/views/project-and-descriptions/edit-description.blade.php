@@ -12,7 +12,8 @@
                         <p>{{__('Are you sure?')}}</p>
                     </div>
                     <div class="modal-footer">
-                        <input type="reset" class="btn btn-default ml-1" value="{{__('Clear')}}" onclick="resetText()" data-dismiss="modal">
+                        <input type="reset" class="btn btn-default ml-1" value="{{__('Clear')}}"
+                               data-dismiss="modal">
                         <button type="button"
                                 class="btn btn-default"
                                 data-dismiss="modal">
@@ -35,7 +36,8 @@
             <div class="d-flex justify-content-between">
                 <div>
                     <input type="submit" class="btn btn-secondary" value="{{__('Save changes')}}">
-                    <button class="mr-2 ml-2 btn btn-default btn-flat" type="button" data-toggle="modal" data-target="#clear-description">
+                    <button class="mr-2 ml-2 btn btn-default btn-flat" type="button" data-toggle="modal"
+                            data-target="#clear-description">
                         {{__('Clear')}}
                     </button>
                 </div>
@@ -56,9 +58,11 @@
                 });
             });
 
-            function resetText() {
-                document.querySelector('.note-editable.card-block').innerHTML = ''
-            }
+            $(document).ready(function () {
+                $(".btn.btn-default.ml-1").click(function () {
+                    $('#description').summernote('code', '');
+                });
+            });
         </script>
     @endslot
 @endcomponent

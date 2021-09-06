@@ -77,10 +77,15 @@
             });
 
             function resetText() {
-                document.querySelector('.note-editable.card-block').innerHTML = ''
                 document.querySelector('.project_name_input').value = ''
                 document.querySelector('.short_description_input').value = ''
             }
+
+            $(document).ready(function () {
+                $(".btn.btn-default.ml-1").click(function () {
+                    $('#description').summernote('code', '');
+                });
+            });
         </script>
     @endslot
 @endcomponent
