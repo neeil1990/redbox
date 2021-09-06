@@ -15,135 +15,125 @@
             </a>
         @endif
     </div>
-    <div id="accordion">
-        @foreach($projects as $project)
-            <div class="modal fade" id="remove-project-id-{{$project->id}}"
-                 tabindex="-1"
-                 role="dialog"
-                 aria-hidden="true">
-                <div class="modal-dialog w-25" role="document">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <p>{{__('Delete a project')}} {{$project->project_name}}</p>
-                            <p>{{__('Are you sure?')}}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="{{ route('delete.project', $project->id) }}" class="btn btn-secondary">
-                                {{__('Delete a project')}}
-                            </a>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Back')}}</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card card-default card-outline">
-                <div class="w-100 collapsed">
-                    <div class="card-header">
-                        <h4 class="card-title w-100 d-flex flex-column">
-                            <span class="d-flex justify-content-between pb-2">
-                                <a data-toggle="collapse" class="subject_project_name"
-                                   href="#project-id-{{$project->id}}"
-                                   aria-expanded="false">
-                                {{ $project->project_name }}
-                                </a>
-                                <a data-toggle="collapse" href="#project-id-{{$project->id}}"
-                                   aria-expanded="false">
-                                <i class="fa fa-eye"></i>
-                                </a>
-                            </span>
-                            <p class="short_description_project">
-                                {{ $project->short_description }}
-                            </p>
-                        </h4>
-                    </div>
-                </div>
-                <div id="project-id-{{$project->id}}" class="collapse" data-parent="#accordion" style="">
-                    <div class="card-body">
-                        @foreach($project->descriptions as $description)
-                            <div class="accordion" id="accordion{{$description->id}}">
-                                <div class="modal fade"
-                                     id="remove-description-id-{{$description->id}}"
-                                     tabindex="-1"
-                                     role="dialog"
-                                     aria-hidden="true">
-                                    <div class="modal-dialog w-25" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-body">
-                                                <p>{{__('Delete a description')}}</p>
-                                                <p>{{__('Are you sure?')}}</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <a href="{{ route('delete.description', $description->id) }}"
-                                                   class="btn btn-secondary">
-                                                    {{__('Delete a description')}}
-                                                </a>
-                                                <button type="button"
-                                                        class="btn btn-default"
-                                                        data-dismiss="modal">
-                                                    {{__('Back')}}
-                                                </button>
-                                            </div>
-                                        </div>
+    <div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover">
+                    <tbody>
+                    @foreach($projects as $project)
+                        <div class="modal fade" id="remove-project-id-{{$project->id}}"
+                             role="dialog"
+                             aria-hidden="true">
+                            <div class="modal-dialog w-25" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <p>{{__('Delete a project')}} {{$project->project_name}}</p>
+                                        <p>{{__('Are you sure?')}}</p>
                                     </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">
-                                            <div class="d-flex justify-content-between">
-                                                <span class="font-weight-lighter pointer"
-                                                      data-toggle="collapse"
-                                                      data-target="#description-id-{{$description->id}}"
-                                                      aria-expanded="false"
-                                                      aria-controls="description-id-{{$description->id}}">
-                                                    {{\Illuminate\Support\Str::limit(strip_tags($description->description),50)}}
-                                                </span>
-                                                <div>
-                                                    <a href="{{ route('edit.description', $description->id) }}">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
-                                                    <i class="fa fa-trash mr-2 ml-2"
-                                                       data-toggle="modal"
-                                                       data-target="#remove-description-id-{{$description->id}}"></i>
-                                                    <i class="fa fa-eye"
-                                                       data-toggle="collapse"
-                                                       data-target="#description-id-{{$description->id}}"
-                                                       aria-expanded="false"
-                                                       aria-controls="description-id-{{$description->id}}"></i>
-                                                </div>
-                                            </div>
-                                        </h5>
-                                    </div>
-
-                                    <div id="description-id-{{$description->id}}" class="collapse"
-                                         aria-labelledby="headingOne" data-parent="#accordion{{$description->id}}"
-                                         style="">
-                                        <div class="d-flex border-top">
-                                            <div class="project_description mr-auto pl-4 pr-4">
-                                                <p>{!! $description->description !!}</p>
-                                            </div>
-                                            <div class="d-flex align-items-start pt-4">
-                                            </div>
-                                        </div>
+                                    <div class="modal-footer">
+                                        <a href="{{ route('delete.project', $project->id) }}" class="btn btn-secondary">
+                                            {{__('Delete a project')}}
+                                        </a>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{__('Back')}}</button>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-                    <div class="d-flex collapse card-footer">
-                        <a href="{{ route('edit.project', $project->id) }}"
-                           class="mr-2 btn btn-secondary btn-flat">
-                            {{__('Edit')}}
-                        </a>
-                        <button type="button"
-                                class="mr-2 btn btn-default btn-flat"
-                                data-toggle="modal"
-                                data-target="#remove-project-id-{{$project->id}}">
-                            {{__('Delete a project')}}
-                        </button>
-                    </div>
-                </div>
+                        </div>
+                        <tr data-widget="expandable-table" aria-expanded="false">
+                            <td class="d-flex justify-content-between">
+                                <div>
+                                    @if(count($project->descriptions) != 0)
+                                        <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                    @else
+                                        <i class="expandable-table-caret"></i>
+                                    @endif
+                                    {{$project->project_name}}
+                                    <span class="short_project_description">
+                                        {{$project->short_description}}
+                                    </span>
+                                </div>
+                                <div>
+                                    <a href="{{ route('edit.project', $project->id) }}"
+                                       class="fa fa-edit mr-2">
+                                    </a>
+                                    <a class="fa fa-trash"
+                                       data-toggle="modal"
+                                       data-target="#remove-project-id-{{$project->id}}">
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="expandable-body d-none">
+                            <td>
+                                <div class="p-0">
+                                    <table class="table table-hover">
+                                        @foreach($project->descriptions as $description)
+                                            <div class="modal fade"
+                                                 id="remove-description-id-{{$description->id}}"
+                                                 role="dialog"
+                                                 aria-hidden="true">
+                                                <div class="modal-dialog w-25" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-body">
+                                                            <p>{{__('Delete a text')}}</p>
+                                                            <p>{{__('Are you sure?')}}</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a href="{{ route('delete.description', $description->id) }}"
+                                                               class="btn btn-secondary">
+                                                                {{__('Delete a text')}}
+                                                            </a>
+                                                            <button type="button"
+                                                                    class="btn btn-default"
+                                                                    data-dismiss="modal">
+                                                                {{__('Back')}}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <tbody>
+                                            <tr data-widget="expandable-table" aria-expanded="false">
+                                                <td class="d-flex justify-content-between pr-3">
+                                                    <div>
+                                                        <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                                        {{\Illuminate\Support\Str::limit(strip_tags($description->description), 10)}}
+                                                    </div>
+                                                    <div>
+                                                        <a href="{{ route('edit.description', $description->id) }}">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <i class="fa fa-trash mr-2 ml-2"
+                                                           data-toggle="modal"
+                                                           data-target="#remove-description-id-{{$description->id}}"></i>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="expandable-body d-none">
+                                                <td>
+                                                    <div class="p-0">
+                                                        <table class="table table-hover">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>{!! $description->description !!}</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
-        @endforeach
+        </div>
     </div>
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
