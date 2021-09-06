@@ -57,7 +57,7 @@
                                 <div class="modal-dialog w-25" role="document">
                                     <div class="modal-content">
                                         <div class="modal-body">
-                                            <p>{{__('Delete a description')}} {{strip_tags($description->description)}}</p>
+                                            <p>{{__('Delete a description')}}</p>
                                             <p>{{__('Are you sure?')}}</p>
                                         </div>
                                         <div class="modal-footer">
