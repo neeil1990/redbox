@@ -59,4 +59,17 @@
 
 .fa:hover {
     color: #4b545c;
+    cursor: pointer !important;
+}
+
+.fa-eye, .fa-trash, .fa-edit {
+    font-size: 16px;
+}
+
+.pointer {
+    cursor: pointer !important;
+}
+
+.subject_project_name {
+    color: black !important;
 }
