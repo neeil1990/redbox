@@ -98,7 +98,7 @@
                                                 <td class="d-flex justify-content-between pr-3">
                                                     <div>
                                                         <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
-                                                        {{\Illuminate\Support\Str::limit(strip_tags($description->description), 10)}}
+                                                        {{\Illuminate\Support\Str::words(strip_tags($description->description), 4)}}
                                                     </div>
                                                     <div>
                                                         <a href="{{ route('edit.description', $description->id) }}">

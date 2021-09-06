@@ -29,7 +29,7 @@
                    name="description_id"
                    value="{{$description->id}}">
             <div class="form-group">
-                <label>{{__('Description')}}</label>
+                <label>{{__('Text')}}</label>
                 {!! Form::textarea('description', $description->description, ['id' => 'description','class' => 'form-control mb-3 description' . ($errors->has('description') ? ' is-invalid' : '')]) !!}
                 @error('description') <span class="error invalid-feedback">{{ $message }}</span>@enderror
             </div>

@@ -37,7 +37,7 @@ class UpdateProjectRequest extends FormRequest
             'project_name.required' => __('The project name cannot be empty'),
             'project_name.min' => __('The project name must contain at least 2 characters'),
             'project_name.unique' => __('A project with this name already exists'),
-            'short_description.required' => __('The project description cannot be empty'),
+            'short_description.required' => __('This field cannot be empty'),
             'short_description.min' => __('The description must contain at least 10 characters'),
         ];
     }

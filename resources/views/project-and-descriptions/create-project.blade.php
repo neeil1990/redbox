@@ -48,7 +48,7 @@
                 @error('short_description') <span class="error invalid-feedback">{{ $message }}</span>@enderror
             </div>
             <div class="form-group">
-                <label>{{__('Description')}}</label>
+                <label>{{__('Text')}}</label>
                 {!! Form::textarea('description', null, ['id' => 'description','class' => 'form-control mb-3' . ($errors->has('description') ? ' is-invalid' : '')]) !!}
                 @error('description') <span class="error invalid-feedback">{{ $message }}</span>@enderror
             </div>

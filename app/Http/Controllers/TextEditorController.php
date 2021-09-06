@@ -122,14 +122,15 @@ class TextEditorController extends Controller
     public function editDescription(ProjectDescriptionRequest $request)
     {
         if (strlen(strip_tags($request->description)) == 0) {
-            flash()->overlay(__('The description cannot be empty'), ' ')
+            flash()->overlay(__('The text cannot be empty'), ' ')
                 ->error();
             return $this->editDescriptionView($request->description_id);
         }
         $description = ProjectDescription::where('id', $request->description_id)->first();
+        //summernote have bugs, him generated extra symbols when text have color
         $description->description = $request->description;
         $description->save();
-        flash()->overlay(__('Description was successfully change'), ' ')
+        flash()->overlay(__('Text was successfully change'), ' ')
             ->success();
 
         return Redirect::route('projects');
@@ -142,7 +143,7 @@ class TextEditorController extends Controller
     public function destroyDescription(string $id): RedirectResponse
     {
         ProjectDescription::destroy($id);
-        flash()->overlay(__('Description was successfully deleted'), ' ')
+        flash()->overlay(__('Text was successfully deleted'), ' ')
             ->success();
         return Redirect::back();
     }
@@ -163,7 +164,7 @@ class TextEditorController extends Controller
     public function createDescription(CreateProjectDescriptionRequest $request): RedirectResponse
     {
         self::saveDescription($request->description, $request->project_id);
-        flash()->overlay(__('Description was saved successfully'), ' ')
+        flash()->overlay(__('Text was saved successfully'), ' ')
             ->success();
         return Redirect::route('projects');
     }
