@@ -42,7 +42,15 @@
                 {!! Form::textarea('description', null, ['id' => 'description','class' => 'form-control mb-3' . ($errors->has('description') ? ' is-invalid' : '')]) !!}
                 @error('description') <span class="error invalid-feedback">{{ $message }}</span> @enderror
             </div>
-
+            <div>
+                <input type="submit" class="btn btn-secondary mr-2" value="{{__('Save the project')}}">
+                <button class="btn btn-default btn-flat mr-2" type="button" data-toggle="modal"
+                        data-target="#clear-text">
+                    {{__('Clear')}}
+                </button>
+                <a href="{{ route('HTML.editor') }}"
+                   class="btn btn-default btn-flat">{{__('Back to projects')}}</a>
+            </div>
             <div id="scroll_to_bottom"></div>
         </form>
     </div>
