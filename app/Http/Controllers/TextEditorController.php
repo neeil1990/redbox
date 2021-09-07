@@ -191,11 +191,18 @@ class TextEditorController extends Controller
      */
     public function createDescription(CreateProjectDescriptionRequest $request): RedirectResponse
     {
+        if (self::isDescriptionEmpty($request->description)) {
+            flash()->overlay(__('The text cannot be empty'), ' ')
+                ->error();
+
+            return Redirect::back();
+        }
+
         self::saveDescription($request->description, $request->project_id);
         flash()->overlay(__('Text was saved successfully'), ' ')
             ->success();
 
-        return Redirect::route('HTML.editor');
+        return Redirect::back();
     }
 
     /**
