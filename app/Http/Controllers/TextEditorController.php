@@ -16,12 +16,11 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use JavaScript;
-use Symfony\Component\VarDumper\VarDumper;
 
 class TextEditorController extends Controller
 {
     /**
-     * @return array|false|Application|Factory|View|mixed
+     * @return array|false|Application|Factory|RedirectResponse|View|mixed
      */
     public function index()
     {
@@ -29,16 +28,17 @@ class TextEditorController extends Controller
             ->get()
             ->sortByDesc('id');
         if (count($projects) === 0) {
-            return self::createView();
+            return self::createView(false);
         }
 
         return view('project-and-descriptions.projects', compact('projects'));
     }
 
     /**
-     * @return array|false|Application|Factory|View|mixed
+     * @param boolean $showButton
+     * @return array|false|Application|Factory|RedirectResponse|View|mixed
      */
-    public function createView()
+    public function createView(bool $showButton = true)
     {
         $user_id = Auth::id();
         if (self::isCountProjectsMoreTwenty($user_id)) {
@@ -48,7 +48,7 @@ class TextEditorController extends Controller
         }
         self::getLanguage();
 
-        return view('project-and-descriptions.create-project');
+        return view('project-and-descriptions.create-project', compact('showButton'));
     }
 
     /**
@@ -72,9 +72,9 @@ class TextEditorController extends Controller
             'project_name' => $request->project_name,
             'short_description' => $request->short_description
         ]);
-
         flash()->overlay(__('Project was successfully changed'), ' ')
             ->success();
+
         return Redirect::route('HTML.editor');
     }
 
@@ -84,6 +84,11 @@ class TextEditorController extends Controller
      */
     public function saveProject(CreateProjectRequest $request): RedirectResponse
     {
+        if (self::isDescriptionEmpty($request->description)) {
+            flash()->overlay(__('The text cannot be empty'), ' ')
+                ->error();
+            return Redirect::back();
+        }
         $project = new Project();
         $project->project_name = $request->project_name;
         if (empty($request->short_description)) {
@@ -95,9 +100,10 @@ class TextEditorController extends Controller
         $project->save();
         self::saveDescription($request->description, $project->id);
 
-        flash()->overlay(__('Project was successfully created'), ' ')
+        flash()->overlay(__('Project was successfully created'), $project->project_name)
             ->success();
-        return Redirect::route('HTML.editor');
+
+        return Redirect::route('create.project');
     }
 
     /**
@@ -109,6 +115,7 @@ class TextEditorController extends Controller
         Project::destroy($id);
         flash()->overlay(__('Project was successfully deleted'), ' ')
             ->success();
+
         return Redirect::back();
     }
 
@@ -130,13 +137,14 @@ class TextEditorController extends Controller
      */
     public function editDescription(EditProjectDescriptionRequest $request)
     {
-        if (strlen(strip_tags($request->description)) == 0) {
+        if (self::isDescriptionEmpty($request->description)) {
             flash()->overlay(__('The text cannot be empty'), ' ')
                 ->error();
+
             return $this->editDescriptionView($request->description_id);
         }
+
         $description = ProjectDescription::where('id', $request->description_id)->first();
-        //summernote have bugs, him generated extra symbols when text have color
         $description->description = $request->description;
         $description->save();
         flash()->overlay(__('Text was successfully change'), ' ')
@@ -154,6 +162,7 @@ class TextEditorController extends Controller
         ProjectDescription::destroy($id);
         flash()->overlay(__('Text was successfully deleted'), ' ')
             ->success();
+
         return Redirect::back();
     }
 
@@ -166,6 +175,7 @@ class TextEditorController extends Controller
         if (self::isCountDescriptionProjectsMoreThirty($user_id)) {
             flash()->overlay(__('You have reached the maximum number of texts per project, you need to delete something'), ' ')
                 ->error();
+
             return Redirect::route('HTML.editor');
         }
 
@@ -184,6 +194,7 @@ class TextEditorController extends Controller
         self::saveDescription($request->description, $request->project_id);
         flash()->overlay(__('Text was saved successfully'), ' ')
             ->success();
+
         return Redirect::route('HTML.editor');
     }
 
@@ -231,5 +242,17 @@ class TextEditorController extends Controller
         JavaScript::put([
             'language' => __('en-US'),
         ]);
+    }
+
+    /**
+     * @param $description
+     * @return bool
+     */
+    public static function isDescriptionEmpty($description): bool
+    {
+        if (strip_tags($description) === "") {
+            return true;
+        }
+        return false;
     }
 }

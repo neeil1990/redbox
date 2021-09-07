@@ -75,7 +75,7 @@
 .scroll-to {
     position: fixed;
     right: 10px;
-    top: 220px;
+    bottom: 120px;
 }
 
 .scroll-to.d-flex.flex-column {

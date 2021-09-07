@@ -42,7 +42,7 @@
                         </div>
                         <tr data-widget="expandable-table" aria-expanded="false">
                             <td class="d-flex justify-content-between">
-                                <div>
+                                <div class="w-75">
                                     @if(count($project->descriptions) != 0)
                                         <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
                                     @else
@@ -95,10 +95,10 @@
                                             </div>
                                             <tbody>
                                             <tr data-widget="expandable-table" aria-expanded="false">
-                                                <td class="d-flex justify-content-between pr-3">
-                                                    <div>
+                                                <td class="d-flex justify-content-between pr-3 text-wrap">
+                                                    <div class="w-50">
                                                         <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
-                                                        {{\Illuminate\Support\Str::words(strip_tags($description->description), 4)}}
+                                                        {{\Illuminate\Support\Str::words(\Illuminate\Support\Str::limit(strip_tags($description->description), 35), 4)}}
                                                     </div>
                                                     <div>
                                                         <a href="{{ route('edit.description', $description->id) }}">
@@ -116,7 +116,7 @@
                                                         <table class="table table-hover">
                                                             <tbody>
                                                             <tr>
-                                                                <td>{!! $description->description !!}</td>
+                                                                <td class="text-wrap">{!! $description->description !!}</td>
                                                             </tr>
                                                             </tbody>
                                                         </table>

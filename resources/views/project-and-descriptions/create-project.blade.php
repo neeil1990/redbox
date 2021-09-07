@@ -11,7 +11,7 @@
             <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow"></a>
             <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow"></a>
         </div>
-        <form action="{{route('save.project')}}" method="POST" class="col-lg-12 col-sm-12 mb-5" id="scroll_to_top">
+        <form action="{{route('save.project')}}" method="POST" class="col-lg-12 col-sm-12 mb-5" id="summernote-form">
             <div class="modal fade" id="clear-text" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog w-25" role="document">
                     <div class="modal-content">
@@ -56,18 +56,15 @@
                 {!! Form::textarea('description', null, ['id' => 'description','class' => 'form-control mb-3' . ($errors->has('description') ? ' is-invalid' : '')]) !!}
                 @error('description') <span class="error invalid-feedback">{{ $message }}</span>@enderror
             </div>
-            <div class="d-flex justify-content-between">
-                <div>
-                    <input type="submit" class="btn btn-secondary" value="{{__('Save the project')}}">
-                    <button class="mr-2 ml-2 btn btn-default btn-flat" type="button" data-toggle="modal"
-                            data-target="#clear-text">
-                        {{__('Clear')}}
-                    </button>
-                </div>
-                <div>
-                    <a href="{{ route('HTML.editor') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
-                </div>
-            </div>
+            <input type="submit" class="btn btn-secondary mr-2" value="{{__('Save the project')}}">
+            <button class="btn btn-default btn-flat mr-2" type="button" data-toggle="modal"
+                    data-target="#clear-text">
+                {{__('Clear')}}
+            </button>
+            @if($showButton)
+                <a href="{{ route('HTML.editor') }}"
+                   class="btn btn-default btn-flat">{{__('Back to projects')}}</a>
+            @endif
             <div id="scroll_to_bottom"></div>
         </form>
     </div>
@@ -90,15 +87,28 @@
 
             $(document).ready(function () {
                 $(".btn.btn-default.ml-1").click(function () {
-                    $('#description').summernote('code', '');
+                    if ($('#description').summernote('codeview.isActivated')) {
+                        $('#description').summernote('codeview.deactivate');
+                        $('#description').summernote('code', '');
+                        $('#description').summernote('codeview.activate');
+                    } else {
+                        $('#description').summernote('code', '');
+                    }
                 });
             });
+
             $(".scroll_arrow").on("click", function (e) {
                 e.preventDefault();
                 var anchor = $(this).attr('href');
                 $('html, body').stop().animate({
                     scrollTop: $(anchor).offset().top - 60
                 }, 800);
+            });
+
+            $(document).on("submit", "#summernote-form", function (e) {
+                if ($('#description').summernote('codeview.isActivated')) {
+                    $('#description').summernote('codeview.deactivate');
+                }
             });
         </script>
     @endslot

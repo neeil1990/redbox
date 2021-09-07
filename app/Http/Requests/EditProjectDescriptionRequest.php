@@ -28,7 +28,7 @@ class EditProjectDescriptionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.required' => __('This field cannot be empty'),
+            'description.required' => __('The text cannot be empty'),
             'description.min' => __('The text must contain at least 10 characters'),
             'description.max' => __('The text must contain no more than 10 characters'),
         ];

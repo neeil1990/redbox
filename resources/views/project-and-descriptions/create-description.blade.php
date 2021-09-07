@@ -8,7 +8,7 @@
             <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow"></a>
             <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow"></a>
         </div>
-        <form action="{{ route('save.description') }}" method="POST" class="col-lg-12 col-sm-12">
+        <form action="{{ route('save.description') }}" method="POST" class="col-lg-12 col-sm-12" id="summernote-form">
             <div class="modal fade" id="clear-text" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog w-25" role="document">
                     <div class="modal-content">
@@ -71,7 +71,13 @@
 
             $(document).ready(function () {
                 $(".btn.btn-default.ml-1").click(function () {
-                    $('#description').summernote('code', '');
+                    if ($('#description').summernote('codeview.isActivated')) {
+                        $('#description').summernote('codeview.deactivate');
+                        $('#description').summernote('code', '');
+                        $('#description').summernote('codeview.activate');
+                    } else {
+                        $('#description').summernote('code', '');
+                    }
                 });
             });
 
@@ -81,6 +87,12 @@
                 $('html, body').stop().animate({
                     scrollTop: $(anchor).offset().top - 60
                 }, 800);
+            });
+
+            $(document).on("submit","#summernote-form",function(e){
+                if ($('#description').summernote('codeview.isActivated')) {
+                    $('#description').summernote('codeview.deactivate');
+                }
             });
         </script>
     @endslot

@@ -27,7 +27,7 @@
             <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow"></a>
             <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow"></a>
         </div>
-        <form action="{{route('save.edit.description')}}" method="POST" class="col-lg-12 col-sm-12 mb-5">
+        <form action="{{route('save.edit.description')}}" method="POST" class="col-lg-12 col-sm-12 mb-5" id="summernote-form">
             @csrf
             <input type="hidden"
                    name="description_id"
@@ -66,7 +66,13 @@
 
             $(document).ready(function () {
                 $(".btn.btn-default.ml-1").click(function () {
-                    $('#description').summernote('code', '');
+                    if ($('#description').summernote('codeview.isActivated')) {
+                        $('#description').summernote('codeview.deactivate');
+                        $('#description').summernote('code', '');
+                        $('#description').summernote('codeview.activate');
+                    } else {
+                        $('#description').summernote('code', '');
+                    }
                 });
             });
 
@@ -76,6 +82,12 @@
                 $('html, body').stop().animate({
                     scrollTop: $(anchor).offset().top - 60
                 }, 800);
+            });
+
+            $(document).on("submit","#summernote-form",function(e){
+                if ($('#description').summernote('codeview.isActivated')) {
+                    $('#description').summernote('codeview.deactivate');
+                }
             });
         </script>
     @endslot
