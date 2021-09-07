@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
  * @property string description
  * @property string id
  * @property mixed short_description
+ * @property mixed project_id
  */
 class EditProjectRequest extends FormRequest
 {

@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Projects')])
+@component('component.card', ['title' => __('Add text')])
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/summernote.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/style.css') }}"/>
