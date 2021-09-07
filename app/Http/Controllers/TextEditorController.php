@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateProjectDescriptionRequest;
-use App\Http\Requests\ProjectDescriptionRequest;
+use App\Http\Requests\EditProjectDescriptionRequest;
 use App\Http\Requests\CreateProjectRequest;
-use App\Http\Requests\UpdateProjectRequest;
+use App\Http\Requests\EditProjectRequest;
 use App\Project;
 use App\ProjectDescription;
 use Illuminate\Contracts\Foundation\Application;
@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use JavaScript;
+use Symfony\Component\VarDumper\VarDumper;
 
 class TextEditorController extends Controller
 {
@@ -26,6 +28,9 @@ class TextEditorController extends Controller
         $projects = Project::where('user_id', Auth::user()->id)
             ->get()
             ->sortByDesc('id');
+        if (count($projects) === 0) {
+            return self::createView();
+        }
 
         return view('project-and-descriptions.projects', compact('projects'));
     }
@@ -35,11 +40,13 @@ class TextEditorController extends Controller
      */
     public function createView()
     {
-        if (self::isCountProjectsMoreTwenty(Auth::id())) {
+        $user_id = Auth::id();
+        if (self::isCountProjectsMoreTwenty($user_id)) {
             flash()->overlay(__('You have created the maximum number of projects(20), you need to delete something'), ' ')
                 ->error();
-            return Redirect::route('projects');
+            return Redirect::route('HTML.editor');
         }
+        self::getLanguage();
 
         return view('project-and-descriptions.create-project');
     }
@@ -55,10 +62,10 @@ class TextEditorController extends Controller
     }
 
     /**
-     * @param UpdateProjectRequest $request
+     * @param EditProjectRequest $request
      * @return RedirectResponse
      */
-    protected function editProject(UpdateProjectRequest $request): RedirectResponse
+    protected function editProject(EditProjectRequest $request): RedirectResponse
     {
         $project = Project::find($request->project_id);
         $project->update([
@@ -68,7 +75,7 @@ class TextEditorController extends Controller
 
         flash()->overlay(__('Project was successfully changed'), ' ')
             ->success();
-        return Redirect::route('projects');
+        return Redirect::route('HTML.editor');
     }
 
     /**
@@ -90,7 +97,7 @@ class TextEditorController extends Controller
 
         flash()->overlay(__('Project was successfully created'), ' ')
             ->success();
-        return Redirect::route('projects');
+        return Redirect::route('HTML.editor');
     }
 
     /**
@@ -112,14 +119,16 @@ class TextEditorController extends Controller
     public function editDescriptionView(string $id)
     {
         $description = ProjectDescription::where('id', $id)->first();
+        self::getLanguage();
+
         return view('project-and-descriptions.edit-description', compact('description'));
     }
 
     /**
-     * @param ProjectDescriptionRequest $request
+     * @param EditProjectDescriptionRequest $request
      * @return array|Application|Factory|RedirectResponse|View|mixed
      */
-    public function editDescription(ProjectDescriptionRequest $request)
+    public function editDescription(EditProjectDescriptionRequest $request)
     {
         if (strlen(strip_tags($request->description)) == 0) {
             flash()->overlay(__('The text cannot be empty'), ' ')
@@ -133,7 +142,7 @@ class TextEditorController extends Controller
         flash()->overlay(__('Text was successfully change'), ' ')
             ->success();
 
-        return Redirect::route('projects');
+        return Redirect::route('HTML.editor');
     }
 
     /**
@@ -153,7 +162,16 @@ class TextEditorController extends Controller
      */
     public function createDescriptionView()
     {
-        $projects = Project::where('user_id', Auth::id())->get();
+        $user_id = Auth::id();
+        if (self::isCountDescriptionProjectsMoreThirty($user_id)) {
+            flash()->overlay(__('You have reached the maximum number of texts per project, you need to delete something'), ' ')
+                ->error();
+            return Redirect::route('HTML.editor');
+        }
+
+        $projects = Project::where('user_id', $user_id)->get();
+        self::getLanguage();
+
         return view('project-and-descriptions.create-description')->with('projects', $projects);
     }
 
@@ -166,7 +184,7 @@ class TextEditorController extends Controller
         self::saveDescription($request->description, $request->project_id);
         flash()->overlay(__('Text was saved successfully'), ' ')
             ->success();
-        return Redirect::route('projects');
+        return Redirect::route('HTML.editor');
     }
 
     /**
@@ -182,6 +200,21 @@ class TextEditorController extends Controller
     }
 
     /**
+     * @param $user_id
+     * @return bool
+     */
+    public static function isCountDescriptionProjectsMoreThirty($user_id): bool
+    {
+        $descriptions = Project::where('user_id', $user_id)->withCount('descriptions')->get();
+        foreach ($descriptions as $description) {
+            if ($description->descriptions_count >= 30) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param $description
      * @param $id
      */
@@ -191,5 +224,12 @@ class TextEditorController extends Controller
         $projectDescription->description = $description;
         $projectDescription->project_id = $id;
         $projectDescription->save();
+    }
+
+    public static function getLanguage()
+    {
+        JavaScript::put([
+            'language' => __('en-US'),
+        ]);
     }
 }

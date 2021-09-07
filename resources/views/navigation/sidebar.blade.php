@@ -50,9 +50,9 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('projects') }}" class="nav-link">
+            <a href="{{ route('HTML.editor') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
-                <p>{{__('Visual HTML editor')}}</p>
+                <p>{{__('HTML editor')}}</p>
             </a>
         </li>
         <li class="nav-item">

@@ -4,6 +4,10 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/style.css') }}"/>
     @endslot
     <div class="card-body">
+        <div class="scroll-to d-flex flex-column">
+            <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow"></a>
+            <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow"></a>
+        </div>
         <form action="{{ route('save.description') }}" method="POST" class="col-lg-12 col-sm-12">
             <div class="modal fade" id="clear-text" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog w-25" role="document">
@@ -13,7 +17,8 @@
                             <p>{{__('Are you sure?')}}</p>
                         </div>
                         <div class="modal-footer">
-                            <input type="reset" class="btn btn-default ml-1" value="{{__('Clear')}}" data-dismiss="modal">
+                            <input type="reset" class="btn btn-default ml-1" value="{{__('Clear')}}"
+                                   data-dismiss="modal">
                             <button type="button"
                                     class="btn btn-default"
                                     data-dismiss="modal">
@@ -46,16 +51,20 @@
                     </button>
                 </div>
                 <div>
-                    <a href="{{ route('projects') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
+                    <a href="{{ route('HTML.editor') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
                 </div>
             </div>
+            <div id="scroll_to_bottom"></div>
         </form>
     </div>
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+        <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
+            //this **language** variable put in the TextEditorController.getLanguage()
             $(function () {
                 $('#description').summernote({
+                    lang: language,
                     minHeight: 350
                 });
             });
@@ -64,6 +73,14 @@
                 $(".btn.btn-default.ml-1").click(function () {
                     $('#description').summernote('code', '');
                 });
+            });
+
+            $(".scroll_arrow").on("click", function (e) {
+                e.preventDefault();
+                var anchor = $(this).attr('href');
+                $('html, body').stop().animate({
+                    scrollTop: $(anchor).offset().top - 60
+                }, 800);
             });
         </script>
     @endslot

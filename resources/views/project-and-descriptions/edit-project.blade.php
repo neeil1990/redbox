@@ -45,7 +45,7 @@
                     </button>
                 </div>
                 <div>
-                    <a href="{{ route('projects') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
+                    <a href="{{ route('HTML.editor') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
                 </div>
             </div>
         </form>
@@ -56,6 +56,7 @@
                 document.querySelector('.project_name_input').value = ''
                 document.querySelector('.short_description_input').value = ''
             }
+
         </script>
     @endslot
 @endcomponent

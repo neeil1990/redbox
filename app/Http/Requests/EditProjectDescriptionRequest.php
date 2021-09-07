@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * @property mixed description
  * @property mixed description_id
  */
-class ProjectDescriptionRequest extends FormRequest
+class EditProjectDescriptionRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,7 +18,7 @@ class ProjectDescriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description' => 'required|min:10'
+            'description' => 'required|min:10|max:4294967295',
         ];
     }
 
@@ -29,7 +29,8 @@ class ProjectDescriptionRequest extends FormRequest
     {
         return [
             'description.required' => __('This field cannot be empty'),
-            'description.min' => __('The description must contain at least 10 characters'),
+            'description.min' => __('The text must contain at least 10 characters'),
+            'description.max' => __('The text must contain no more than 10 characters'),
         ];
     }
 }

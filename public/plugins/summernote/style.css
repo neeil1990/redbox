@@ -71,3 +71,22 @@
 .subject_project_name {
     color: black !important;
 }
+
+.scroll-to {
+    position: fixed;
+    right: 10px;
+    top: 220px;
+}
+
+.scroll-to.d-flex.flex-column {
+    font-size: 35px !important;
+    font-weight: normal;
+}
+
+.fa.fa-arrow-circle-up.scroll_arrow {
+    margin-bottom: 10px;
+}
+
+.content-wrapper {
+    height: inherit !important;
+}

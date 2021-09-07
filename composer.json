@@ -13,6 +13,7 @@
         "ixudra/curl": "^6.21",
         "jenssegers/agent": "^2.6",
         "laracasts/flash": "^3.2",
+        "laracasts/utilities": "^3.2",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "5.8.*",

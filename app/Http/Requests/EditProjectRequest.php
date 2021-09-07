@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
  * @property string id
  * @property mixed short_description
  */
-class UpdateProjectRequest extends FormRequest
+class EditProjectRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -38,7 +38,7 @@ class UpdateProjectRequest extends FormRequest
             'project_name.min' => __('The project name must contain at least 2 characters'),
             'project_name.unique' => __('A project with this name already exists'),
             'short_description.required' => __('This field cannot be empty'),
-            'short_description.min' => __('The description must contain at least 10 characters'),
+            'short_description.min' => __('The text must contain at least 10 characters'),
         ];
     }
 

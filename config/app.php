@@ -1,5 +1,7 @@
 <?php
 
+use Laracasts\Utilities\JavaScript\JavaScriptServiceProvider;
+
 return [
 
     /*
@@ -181,6 +183,10 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
 
+        /*
+         * Another Providers...
+         */
+        JavaScriptServiceProvider::class
     ],
 
     /*

@@ -56,7 +56,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('download-unique-words', 'UniqueWordsController@downloadUniqueWords')->name('download.unique.words');
     Route::post('download-unique-phrases', 'UniqueWordsController@downloadUniquePhrases')->name('download.unique.phrases');
 
-    Route::get('projects', 'TextEditorController@index')->name('projects');
+    Route::get('projects', 'TextEditorController@index')->name('HTML.editor');
     Route::get('create-project', 'TextEditorController@createView')->name('create.project');
     Route::get('edit-project{id}', 'TextEditorController@editProjectView')->name('edit.project');
     Route::post('edit-project', 'TextEditorController@editProject')->name('save.edit.project');

@@ -23,6 +23,10 @@
                 </div>
             </div>
         </div>
+        <div class="scroll-to d-flex flex-column">
+            <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow"></a>
+            <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow"></a>
+        </div>
         <form action="{{route('save.edit.description')}}" method="POST" class="col-lg-12 col-sm-12 mb-5">
             @csrf
             <input type="hidden"
@@ -42,18 +46,20 @@
                     </button>
                 </div>
                 <div>
-                    <a href="{{ route('projects') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
+                    <a href="{{ route('HTML.editor') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
                 </div>
             </div>
+            <div id="scroll_to_bottom"></div>
         </form>
     </div>
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
-        <script src="{{ asset('plugins/summernote/summernote-bs4.css') }}"></script>
+        <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
+            //this **language** variable put in the TextEditorController.createView()
             $(function () {
-                $('.description').summernote({
-                    lang: 'ru-RU',
+                $('#description').summernote({
+                    lang: language,
                     minHeight: 350
                 });
             });
@@ -62,6 +68,14 @@
                 $(".btn.btn-default.ml-1").click(function () {
                     $('#description').summernote('code', '');
                 });
+            });
+
+            $(".scroll_arrow").on("click", function (e) {
+                e.preventDefault();
+                var anchor = $(this).attr('href');
+                $('html, body').stop().animate({
+                    scrollTop: $(anchor).offset().top - 60
+                }, 800);
             });
         </script>
     @endslot

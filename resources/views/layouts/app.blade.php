@@ -21,7 +21,7 @@
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light" id="header-nav-bar">
         <!-- Left navbar links -->
         @include('navigation.menu')
 

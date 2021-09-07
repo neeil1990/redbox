@@ -19,7 +19,7 @@ class CreateProjectDescriptionRequest extends FormRequest
     {
         return [
             'project_id' => 'required',
-            'description' => 'required|min:10'
+            'description' => 'required|min:10|max:4294967295',
         ];
     }
 
@@ -31,7 +31,8 @@ class CreateProjectDescriptionRequest extends FormRequest
         return [
             'project_name.required' => __('The project name cannot be empty'),
             'description.required' => __('This field cannot be empty'),
-            'description.min' => __('The description must contain at least 10 characters'),
+            'description.min' => __('The text must contain at least 10 characters'),
+            'description.max' => __('The text must contain no more than 10 characters'),
         ];
     }
 }
