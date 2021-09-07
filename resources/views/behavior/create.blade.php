@@ -23,6 +23,16 @@
                     {!! Form::number('minutes', null, ['min' => 1, 'max' => 60, 'class' => 'form-control' . ($errors->has('minutes') ? ' is-invalid' : ''), 'placeholder' => __('Minutes on site')]) !!}
                     @error('minutes') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                 </div>
+                <div class="form-group">
+                    {!! Form::label('clicks', __('Clicks on site')) !!}
+                    {!! Form::number('clicks', null, ['min' => 1, 'max' => 100, 'class' => 'form-control' . ($errors->has('clicks') ? ' is-invalid' : ''), 'placeholder' => __('Clicks on site')]) !!}
+                    @error('clicks') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    {!! Form::label('pages', __('Pages visit')) !!}
+                    {!! Form::number('pages', null, ['min' => 1, 'max' => 100, 'class' => 'form-control' . ($errors->has('pages') ? ' is-invalid' : ''), 'placeholder' => __('Pages visit')]) !!}
+                    @error('pages') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                </div>
 
             </div>
             <div class="card-footer">

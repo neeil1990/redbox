@@ -21,33 +21,23 @@
             <table class="table table-striped table-valign-middle">
                 <thead>
                 <tr>
-                    <th>{{ __('Status') }}</th>
                     <th>{{ __('Domain') }}</th>
-                    <th>{{ __('Code') }}</th>
                     <th>{{ __('Url') }}</th>
-                    <th>{{ __('More') }}</th>
+                    <th></th>
                 </tr>
                 </thead>
 
                 <tbody>
                 @foreach($behaviors as $behavior)
                 <tr>
-                    <td>
-                        @if($behavior->status)
-                            <i class="fas fa-check-square">
-                        @else
-                            <i class="fas fa-window-close">
-                        @endif
-                    </td>
-                    <td>{{ $behavior->domain }}</td>
-                    <td>{{ $behavior->code }}</td>
+                    <td><a href="{{ route('behavior.show', [$behavior->id]) }}" class="text-muted text-bold">{{ $behavior->domain }}</a></td>
                     <td>
                         {{ route('behavior.check', [$behavior->id]) }}
                         <a href="{{ route('behavior.check', [$behavior->id]) }}" target="_blank" class="text-muted"> <i class="fas fa-window-restore"></i></a>
                     </td>
                     <td>
-                        <a href="{{ route('behavior.show', [$behavior->id]) }}" class="text-muted">
-                            <i class="fas fa-search"></i>
+                        <a href="{{ route('behavior.edit', [$behavior->id]) }}" class="btn btn-app">
+                            <i class="fas fa-edit"></i> {{ __('Add request') }}
                         </a>
                     </td>
                 </tr>
