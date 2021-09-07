@@ -27,7 +27,8 @@
             <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow"></a>
             <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow"></a>
         </div>
-        <form action="{{route('save.edit.description')}}" method="POST" class="col-lg-12 col-sm-12 mb-5" id="summernote-form">
+        <form action="{{route('save.edit.description')}}" method="POST" class="col-lg-12 col-sm-12 mb-5"
+              id="summernote-form">
             @csrf
             <input type="hidden"
                    name="description_id"
@@ -37,17 +38,14 @@
                 {!! Form::textarea('description', $description->description, ['id' => 'description','class' => 'form-control mb-3 description' . ($errors->has('description') ? ' is-invalid' : '')]) !!}
                 @error('description') <span class="error invalid-feedback">{{ $message }}</span>@enderror
             </div>
-            <div class="d-flex justify-content-between">
-                <div>
-                    <input type="submit" class="btn btn-secondary" value="{{__('Save changes')}}">
-                    <button class="mr-2 ml-2 btn btn-default btn-flat" type="button" data-toggle="modal"
-                            data-target="#clear-description">
-                        {{__('Clear')}}
-                    </button>
-                </div>
-                <div>
-                    <a href="{{ route('HTML.editor') }}" class="btn btn-default btn-flat">{{__('Back')}}</a>
-                </div>
+            <div>
+                <input type="submit" class="btn btn-secondary mr-2" value="{{__('Save the project')}}">
+                <button class="btn btn-default btn-flat mr-2" type="button" data-toggle="modal"
+                        data-target="#clear-text">
+                    {{__('Clear')}}
+                </button>
+                <a href="{{ route('HTML.editor') }}"
+                   class="btn btn-default btn-flat">{{__('Back to projects')}}</a>
             </div>
             <div id="scroll_to_bottom"></div>
         </form>
@@ -84,7 +82,7 @@
                 }, 800);
             });
 
-            $(document).on("submit","#summernote-form",function(e){
+            $(document).on("submit", "#summernote-form", function (e) {
                 if ($('#description').summernote('codeview.isActivated')) {
                     $('#description').summernote('codeview.deactivate');
                 }
