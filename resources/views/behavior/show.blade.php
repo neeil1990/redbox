@@ -6,39 +6,92 @@
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
     @endslot
 
-    <h3 class="my-3">{{ $behavior->domain }}</h3>
-
     <div class="row">
         <div class="col-md-3 col-sm-6 col-12">
-            @if($behavior->status)
-                <div class="info-box">
-                    <span class="info-box-icon bg-info"><i class="far fa-check-square"></i></span>
+            <div class="info-box">
+                <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
 
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{ __('Promo code') }}</span>
-                        <span class="info-box-number">{{ __('Applied') }}</span>
-                    </div>
-                    <!-- /.info-box-content -->
+                <div class="info-box-content">
+                    <span class="info-box-text">{{ __('Project') }}</span>
+                    <span class="info-box-number">{{ $behavior->domain }}</span>
                 </div>
-                <!-- /.info-box -->
-            @else
-                <div class="info-box">
-                    <span class="info-box-icon bg-info"><i class="far fa-window-close"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{ __('Promo code') }}</span>
-                        <span class="info-box-number">{{ __('Not applied') }}</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            @endif
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
         </div>
-        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">{{ __('Minutes') }}</span>
+                    <span class="info-box-number">{{ $behavior->minutes }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">{{ __('Clicks') }}</span>
+                    <span class="info-box-number">{{ $behavior->clicks }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">{{ __('Pages') }}</span>
+                    <span class="info-box-number">{{ $behavior->pages }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-bold">{{ $behavior->domain }}</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Phrase') }}</th>
+                            <th>{{ __('Code') }}</th>
+                            <th style="width: 20px"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($behavior->phrases as $phrase)
+                            <tr>
+                                <td>{{ $phrase->phrase }}</td>
+                                <td><span class="badge @if($phrase->status) bg-success @else bg-danger @endif">{{ $phrase->code }}</span></td>
+                                <td class="text-center">
+                                    <a href="#" class="text-red phrase-destroy" data-id="{{ $phrase->id }}">
+                                        <i class="fas fa-ban"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">{{ __('Insert to your site before closed body') }}</h3>
@@ -46,40 +99,13 @@
                 <!-- /.card-header -->
                 <div class="card-body p-0">
                     <textarea id="code">
-
-<style>
-    .showVisCode {
-        width:100%;
-        padding:5px 0;
-        background:rgb(35 56 71);
-        color:#b9b9b9;
-        position:relative;
-        z-index:500;
-        clear:both;
-        text-align: center;
-    }
-    .showVisCodeReady{
-        display: inline-block;
-        vertical-align: baseline;
-        line-height: 1;
-        background: #001d02;
-        font-size: 14px;
-        margin-left: 5px;
-        padding: 3px 5px;
-        border: 1px solid #bebebe;
-        border-radius: 4px;
-        cursor:pointer;
-    }
-</style>
+<!-- PRIME VISIT-->
 <script defer>
-    $.getScript("{{ request()->getSchemeAndHttpHost() }}/client/js/prime.visit.js").done(function(script, textStatus) {
-        let paramVisit = new Visit();
-        if(!paramVisit.getCookie('paramsVisit')){
-            paramVisit.update('{{ $params }}');
-        }
-        paramVisit.handle();
-
-    }).fail(function(jqxhr, settings, exception) {
+    $.getScript("{{ request()->getSchemeAndHttpHost() }}/client/js/prime.visit.js")
+        .done(function(script, textStatus) {
+            let paramVisit = new Visit('{{ $params }}');
+            paramVisit.handle();
+        }).fail(function(jqxhr, settings, exception) {
         console.log('prime.visit error!');
     });
 </script>
@@ -109,6 +135,19 @@
                 CodeMirror.fromTextArea(document.getElementById("code"), {
                     mode: "htmlmixed",
                     theme: "monokai",
+                });
+
+                $('.phrase-destroy').click(function (e) {
+                    e.preventDefault();
+
+                    let self = $(this);
+                    let id = self.data('id');
+
+                    axios.delete(`/behavior/phrase/${id}`).then(function (response) {
+                        if(response.status === 200){
+                            self.closest('tr').remove();
+                        }
+                    });
                 });
             })
         </script>

@@ -1,72 +1,100 @@
 class Visit {
-    pagesRequired = 2;
-    clicksRequired = 5;
-    keyCookie = 'paramsVisit';
-
+    style = {
+        'showVisCode' : {
+            width: '100%',
+            padding: '5px 0',
+            background: 'rgb(35 56 71)',
+            color: '#b9b9b9',
+            position: 'relative',
+            "z-index": '500',
+            clear: 'both',
+            "text-align": 'center'
+        },
+        'showVisCodeReady' : {
+            display: 'inline-block',
+            "vertical-align": 'baseline',
+            "line-height": '1',
+            background: '#001d02',
+            "font-size": '14px',
+            "margin-left": '5px',
+            padding: '3px 5px',
+            border: '1px solid #bebebe',
+            "border-radius": '4px',
+            cursor: 'pointer'
+        },
+    };
     pagesCount = {};
-    constructor() {
-        let paramVisit = this.getCookie(this.keyCookie);
-
-        if(!paramVisit){
+    constructor(params) {
+        if(!params){
             return;
         }
 
-        this.paramVisit = paramVisit;
-    }
-
-    update(params) {
-        this.setCookie(this.keyCookie, params, {expires: .5});
-        this.paramVisit = this.getCookie(this.keyCookie);
+        this.params = JSON.parse(this.getAsObject(params));
     }
 
     handle() {
-        if(!this.paramVisit || this.paramVisit === 'null')
+
+        if(!this.params)
             return;
+
+        this.show();
 
         this.clicks();
         this.pages();
 
         let self = this;
         this.check();
+
         setTimeout(function () {
             self.check();
         }, 15000);
     }
 
     check() {
-        let params = this.getAsObject();
-
-        if (this.newTime(params[2]) <= this.time() && params[4] >= this.pagesRequired && params[5] >= this.clicksRequired) {
-            this.show(params[1]);
+        if (this.newTime(this.params.minutes) <= this.time() && this.getPages() >= this.params.pages && this.getClicks() >= this.params.clicks) {
+            this.show();
         }
     }
 
+    getPages() {
+        return (this.pagesCount) ? Object.keys(this.pagesCount).length : 0;
+    }
+
+    getClicks() {
+        let clicks = self.getCookie('clicksPrime');
+        return (clicks) ? clicks : 0;
+    }
+
     newTime(minutes) {
+
         let time = null;
-        if(!this.getCookie('minutesCount')){
+        if(!this.getCookie('minutesPrime')){
             time = this.time() + (60 * minutes);
-            this.setCookie('minutesCount', time);
+            this.setCookie('minutesPrime', time);
         }else{
-            time = this.getCookie('minutesCount');
+            time = this.getCookie('minutesPrime');
         }
 
         return time;
     }
 
-    show(code) {
+    show() {
         $('.showVisCode').remove();
+        let self = this;
+        $.get( `/public/behavior/${this.params.domain}/code`).done(function(data) {
+            let codeHtml = $('<span/>').text(data.code);
+            let copyHtml = $('<div/>', {
+                "class" : 'showVisCodeReady',
+                "onClick" : '(new Visit()).copy()'
+            }).css(self.style.showVisCodeReady).text('Скопировать');
 
-        let codeHtml = $('<span/>').text(code);
-        let copyHtml = $('<div/>', {
-            "class" : 'showVisCodeReady',
-            "onClick" : '(new Visit()).copy()'
-        }).text('Скопировать');
-
-        let showCode = $('<div/>', { "class" : 'showVisCode'}).html(
-            `Промокод: ${codeHtml[0].outerHTML} ${copyHtml[0].outerHTML}`
-        );
-
-        $('body').append(showCode);
+            let showCode = $('<div/>', { "class" : 'showVisCode'}).css(self.style.showVisCode).html(
+                `Промокод: ${codeHtml[0].outerHTML} ${copyHtml[0].outerHTML}`
+            );
+            $('body').append(showCode);
+        }).fail(function() {
+            console.log( "error" );
+        });
     }
 
     copy() {
@@ -85,16 +113,19 @@ class Visit {
     clicks() {
         let self = this;
         $('html').click(function () {
-            if(self.paramVisit){
-                let params = self.getAsObject();
-                params[5]++;
-                self.update(self.getAsString(params));
-            }
+            let clicks = self.getCookie('clicksPrime');
+
+            if(!clicks)
+                clicks = 1;
+            else
+                clicks++;
+
+            self.setCookie('clicksPrime', clicks);
         });
     }
 
     pages() {
-        let pageUrls = $.parseJSON(this.getCookie('pagesCount'));
+        let pageUrls = $.parseJSON(this.getCookie('pagesPrime'));
 
         let url = window.location.pathname;
         this.pagesCount = {
@@ -102,21 +133,15 @@ class Visit {
             ...pageUrls
         };
 
-        this.setCookie('pagesCount', JSON.stringify(this.pagesCount));
-
-        console.log(this.pagesCount);
-
-        let params = this.getAsObject();
-        params[4] = this.pagesCount ? Object.keys(this.pagesCount).length : 0;
-        this.update(this.getAsString(params));
+        this.setCookie('pagesPrime', JSON.stringify(this.pagesCount));
     }
 
     time() {
         return parseInt(new Date().getTime() / 1000)
     }
 
-    getAsObject(){
-        return this.b64DecodeUnicode(this.paramVisit).split('||');
+    getAsObject(params){
+        return this.b64DecodeUnicode(params);
     }
 
     getAsString(params) {

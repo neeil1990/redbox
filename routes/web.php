@@ -18,6 +18,8 @@ Route::get('info', function () {
 Auth::routes(['verify' => true]);
 Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
 Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
+
+Route::get('public/behavior/{site}/code', 'BehaviorController@code')->name('behavior.code');
 Route::get('public/behavior/{id}/check', 'BehaviorController@check')->name('behavior.check');
 Route::post('public/behavior/verify', 'BehaviorController@verify')->name('behavior.verify');
 
@@ -28,7 +30,7 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('users', 'UsersController');
 
     Route::resource('behavior', 'BehaviorController');
-
+    Route::delete('behavior/phrase/{phrase}', 'BehaviorController@phraseDestroy')->name('behavior.phrase.destroy');
 
     Route::get('profile/', 'ProfilesController@index')->name('profile.index');
     Route::post('profile/', 'ProfilesController@update')->name('profile.update');

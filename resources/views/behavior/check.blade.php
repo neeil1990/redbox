@@ -14,11 +14,13 @@
             </div>
             <div class="card-body">
                 <p class="login-box-msg">
-                    {{ __('Some text...') }}
+                    {{ __('Domain') }}: {{ $domain }}<br/>
+                    {{ __('Search request') }}: {{ $phrases->phrase }}<br/>
                 </p>
 
                 <form action="{{ route('behavior.verify') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="domain" value="{{$behavior->domain}}">
                     <div class="input-group mb-3">
                         <input type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" placeholder="{{ __('Promo code') }}" autocomplete="email" autofocus>
                         <div class="input-group-append">
