@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -37,9 +40,9 @@ class UniqueWordsController extends Controller
 
     /**
      * @param $string
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
-    public static function stringToCollectionWords($string)
+    public static function stringToCollectionWords($string): Collection
     {
         $string = mb_strtolower($string);
         $string = self::removeExtraSymbols($string);

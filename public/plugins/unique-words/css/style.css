@@ -240,6 +240,10 @@ label:not(.form-check-label):not(.custom-file-label) {
     display: none;
 }
 
-.unique-form{
+.unique-form {
     transition: .4s;
+}
+
+.spinner-border.spinner-border-sm.mr-2 {
+    display: none;
 }

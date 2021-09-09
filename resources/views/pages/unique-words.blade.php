@@ -20,7 +20,11 @@
                       id="phrases"
                       required>@if (isset($oldPhrases)){{$oldPhrases}}@endif</textarea>
         </div>
-        <input class="btn btn-secondary mt-3 mr-2" type="submit" value="{{__('Processing')}}">
+        <button class="btn btn-secondary mt-3 mr-2 d-flex align-items-center" type="submit">
+            <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true">
+            </span>
+            {{__('Processing')}}
+        </button>
     </form>
     @if (isset($listWords))
         <fieldset class="unique-words-filter mt-4 mb-3">
@@ -200,5 +204,10 @@
     @endif
     @slot('js')
         <script src="{{ asset('plugins/unique-words/js/unique-words.js') }}"></script>
+        <script>
+            $(".btn.btn-secondary.mt-3.mr-2").on("click", function (e) {
+                document.querySelector('.spinner-border.spinner-border-sm.mr-2').style.display = 'block';
+            });
+        </script>
     @endslot
 @endcomponent
