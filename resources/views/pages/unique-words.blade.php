@@ -208,6 +208,10 @@
             $(".btn.btn-secondary.mt-3.mr-2").on("click", function (e) {
                 document.querySelector('.spinner-border.spinner-border-sm.mr-2').style.display = 'block';
             });
+
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
         </script>
     @endslot
 @endcomponent
