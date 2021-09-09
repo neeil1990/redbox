@@ -7,10 +7,12 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\VarDumper\VarDumper;
 
 class UniqueWordsController extends Controller
 {
@@ -93,6 +95,9 @@ class UniqueWordsController extends Controller
         $t = [];
         foreach ($words as $word) {
             foreach ($countValues as $key => $value) {
+                if ($word === "") {
+                    continue;
+                }
                 if ($word == $key) {
                     $matches = self::searchMatches($phrases, $word);
                     array_push($t, [$word, $word, $value, $matches]);
