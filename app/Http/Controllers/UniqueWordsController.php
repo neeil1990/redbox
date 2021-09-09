@@ -8,8 +8,10 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\VarDumper\VarDumper;
 
 class UniqueWordsController extends Controller
 {
@@ -111,11 +113,8 @@ class UniqueWordsController extends Controller
     {
         $result = [];
         foreach ($phrases as $phrase) {
-            $t = explode(' ', $phrase);
-            foreach ($t as $value) {
-                if ($value === $word) {
-                    array_push($result, $phrase);
-                }
+            if (Str::contains($phrase, $word)) {
+                array_push($result, $phrase);
             }
         }
         return $result;
