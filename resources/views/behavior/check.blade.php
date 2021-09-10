@@ -16,6 +16,7 @@
                 <p class="login-box-msg">
                     {{ __('Domain') }}: {{ $domain }}<br/>
                     {{ __('Search request') }}: {{ $phrases->phrase }}<br/>
+                    {{$behavior->description}}
                 </p>
 
                 <form action="{{ route('behavior.verify') }}" method="POST">

@@ -33,6 +33,11 @@
                     {!! Form::number('pages', null, ['min' => 1, 'max' => 100, 'class' => 'form-control' . ($errors->has('pages') ? ' is-invalid' : ''), 'placeholder' => __('Pages visit')]) !!}
                     @error('pages') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                 </div>
+                <div class="form-group">
+                    {!! Form::label('description', __('Description')) !!}
+                    {!! Form::textarea('description', null, ['class' => 'form-control' . ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => __('Description')]) !!}
+                    @error('description') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                </div>
 
             </div>
             <div class="card-footer">

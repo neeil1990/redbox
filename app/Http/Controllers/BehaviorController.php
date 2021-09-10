@@ -71,7 +71,7 @@ class BehaviorController extends Controller
     public function code($site)
     {
 		header('Access-Control-Allow-Origin: *');
-		
+
         $behavior = Behavior::where('domain', $site)->firstOrFail();
         $phrases = $behavior->phrases()->where('status', 0)->firstOrFail();
         return $phrases;
@@ -122,6 +122,7 @@ class BehaviorController extends Controller
             'minutes' => $request->input('minutes'),
             'clicks' => $request->input('clicks'),
             'pages' => $request->input('pages'),
+            'description' => $request->input('description'),
         ]);
 
         return redirect()->route('behavior.index');
@@ -187,7 +188,20 @@ class BehaviorController extends Controller
      */
     public function update(Request $request, Behavior $behavior)
     {
+        $data = [];
         $phrases = $request->input('phrases');
+        $count = $request->input('count');
+
+        foreach ($phrases as $k => $phrase){
+            if(strlen($phrase) > 3){
+                for ($i = 1; $i <= $count[$k]; $i++) {
+                    $data[] = $phrase;
+                }
+            }
+        }
+        $phrases = $data;
+        shuffle($phrases);
+
         foreach ($phrases as $phrase){
             if(strlen($phrase) > 3)
                 $behavior->phrases()->create([
@@ -214,5 +228,4 @@ class BehaviorController extends Controller
         else
             abort(403);
     }
-
 }
