@@ -1,4 +1,5 @@
 class Visit {
+	url = 'https://lk.redbox.su';
     style = {
         'showVisCode' : {
             width: '100%',
@@ -28,7 +29,7 @@ class Visit {
         if(!params){
             return;
         }
-
+		
         this.params = JSON.parse(this.getAsObject(params));
     }
 
@@ -36,8 +37,6 @@ class Visit {
 
         if(!this.params)
             return;
-
-        this.show();
 
         this.clicks();
         this.pages();
@@ -61,7 +60,7 @@ class Visit {
     }
 
     getClicks() {
-        let clicks = self.getCookie('clicksPrime');
+        let clicks = this.getCookie('clicksPrime');
         return (clicks) ? clicks : 0;
     }
 
@@ -81,7 +80,7 @@ class Visit {
     show() {
         $('.showVisCode').remove();
         let self = this;
-        $.get( `/public/behavior/${this.params.domain}/code`).done(function(data) {
+        $.get( `${self.url}/public/behavior/${this.params.domain}/code`).done(function(data) {
             let codeHtml = $('<span/>').text(data.code);
             let copyHtml = $('<div/>', {
                 "class" : 'showVisCodeReady',
@@ -104,10 +103,11 @@ class Visit {
         document.execCommand("copy");
         $temp.remove();
 
-        this.setCookie('pagesCount', 'null');
-        this.setCookie('minutesCount', 'null');
-
-        alert('Промокод скопирован!')
+        alert('Промокод скопирован!');
+		
+		this.deleteCookie('clicksPrime');
+		this.deleteCookie('pagesPrime');
+		this.deleteCookie('minutesPrime');
     }
 
     clicks() {
@@ -189,4 +189,10 @@ class Visit {
         }
         document.cookie = updatedCookie;
     }
+	
+	deleteCookie(name) {
+	  this.setCookie(name, "", {
+		'max-age': -1
+	  })
+	}
 }

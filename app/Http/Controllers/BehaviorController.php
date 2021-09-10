@@ -70,6 +70,8 @@ class BehaviorController extends Controller
 
     public function code($site)
     {
+		header('Access-Control-Allow-Origin: *');
+		
         $behavior = Behavior::where('domain', $site)->firstOrFail();
         $phrases = $behavior->phrases()->where('status', 0)->firstOrFail();
         return $phrases;
