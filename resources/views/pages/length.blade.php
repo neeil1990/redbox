@@ -14,7 +14,7 @@
                    onclick="clearCountingResult();">
         </form>
         <div>
-            <div class="progress-bar mt-3 mb-3 pt-2 pb-2" role="progressbar"></div>
+            <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
         </div>
         <div id="text-length-result" class="mt-3">
             <div id="all-text">
@@ -57,11 +57,13 @@
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     document.querySelector('.progress-bar').style.width = percent + '%'
+                                    document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
                                         setTimeout(() => {
                                             $(".progress-bar").hide(200)
                                             percent = 0
                                             document.querySelector('.progress-bar').style.width = percent + '%'
+                                            document.querySelector('.progress-bar').innerText = percent + '%'
                                         }, 2000)
                                     }
                                 }
