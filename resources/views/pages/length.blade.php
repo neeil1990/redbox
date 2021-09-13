@@ -1,12 +1,6 @@
 @component('component.card', ['title' => __('Counting text length')])
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div>
-        <p class="w-50 mb-3">
-            {{__('This tool will instantly calculate how many characters and spaces are in your text, as well as the number of characters without spaces and the number of words in the text.')}}
-        </p>
-        <p class="w-50 mt-3 mb-3">
-            {{__('If you are typing not in a text editor, but in a notepad or browser, then this tool will become your faithful assistant.')}}
-        </p>
         <h2>{{__("Enter text")}}</h2>
         <form>
             <textarea name="text"
@@ -63,16 +57,16 @@
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     document.querySelector('.progress-bar').style.width = percent + '%'
-                                    document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
                                         setTimeout(() => {
                                             $(".progress-bar").hide(200)
-                                            document.querySelector('.progress-bar').style.width = 0 + '%'
-                                            document.querySelector('.progress-bar').innerText = 0 + '%'
+                                            percent = 0
+                                            document.querySelector('.progress-bar').style.width = percent + '%'
                                         }, 2000)
                                     }
                                 }
                             }, false);
+
                             return xhr;
                         },
                         success: function (response) {
@@ -82,11 +76,6 @@
                             document.querySelector('.lengthWithOutSpaces').innerText = response.data.lengthWithOutSpaces
                             document.querySelector('.countWord').innerText = response.data.countWords
                         },
-
-                        // complete: function (success) {
-                        //     console.log('c')
-                        //     console.log(success.success);
-                        // },
                     });
                 });
             });
