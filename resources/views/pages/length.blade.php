@@ -52,19 +52,15 @@
                         },
                         xhr: function () {
                             let xhr = $.ajaxSettings.xhr();
+                            setProgressBarStyles()
                             $(".progress-bar").show()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
-                                    document.querySelector('.progress-bar').style.width = percent + '%'
-                                    document.querySelector('.progress-bar').innerText = percent + '%'
+                                    setProgressBarStyles(percent)
                                     if (percent === 100) {
                                         setTimeout(() => {
                                             $(".progress-bar").hide()
-                                            // document.querySelector('.progress-bar').style.transition = 0.3 + 's';
-                                            // document.querySelector('.progress-bar').style.opa = percent + '%'
-                                            // document.querySelector('.progress-bar').style.display = 'none'
-                                            // document.querySelector('.progress-bar').innerText = ''
                                         }, 2000)
                                     }
                                 }
@@ -83,6 +79,10 @@
                 });
             });
 
+            function setProgressBarStyles(percent = 0) {
+                document.querySelector('.progress-bar').style.width = percent + '%'
+                document.querySelector('.progress-bar').innerText = percent + '%'
+            }
         </script>
     @endslot
 @endcomponent
