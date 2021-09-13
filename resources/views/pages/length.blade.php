@@ -10,7 +10,7 @@
         <h2>{{__("Enter text")}}</h2>
         <form>
             <textarea name="text"
-                      class="form-control col-lg-6 col-sm-12"
+                      class="form-control col-12"
                       id="text"
                       rows="10"
                       required></textarea>
@@ -19,6 +19,9 @@
             <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
                    onclick="clearCountingResult();">
         </form>
+        <div>
+            <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+        </div>
         <div id="text-length-result" class="mt-3">
             <div id="all-text">
                 <b>{{__('Total characters')}}: </b>
@@ -54,11 +57,18 @@
                             _token: token
                         },
                         xhr: function () {
-                            var xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
-                            xhr.upload.addEventListener('progress', function (evt) { // добавляем обработчик события progress (onprogress)
-                                if (evt.lengthComputable) { // если известно количество байт
-                                    console.log(evt.loaded)
-                                    console.log(evt.total)
+                            let xhr = $.ajaxSettings.xhr();
+                            $(".progress-bar").show()
+                            xhr.upload.addEventListener('progress', function (evt) {
+                                if (evt.lengthComputable) {
+                                    let percent = (evt.total / evt.loaded) * 100;
+                                    document.querySelector('.progress-bar').style.width = percent + '%'
+                                    document.querySelector('.progress-bar').innerText = percent + '%'
+                                    if (percent === 100) {
+                                        setTimeout(() => {
+                                            $(".progress-bar").hide(200)
+                                        }, 2000)
+                                    }
                                 }
                             }, false);
                             return xhr;
