@@ -52,6 +52,7 @@
                         },
                         xhr: function () {
                             let xhr = $.ajaxSettings.xhr();
+                            document.querySelector('.progress-bar').style.opacity = 1
                             $("#progress-bar").show(300)
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
