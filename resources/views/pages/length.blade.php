@@ -61,12 +61,14 @@
                             $(".progress-bar").show()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
-                                    let percent = (evt.loaded / evt.total) * 100;
+                                    let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     document.querySelector('.progress-bar').style.width = percent + '%'
                                     document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
                                         setTimeout(() => {
                                             $(".progress-bar").hide(200)
+                                            document.querySelector('.progress-bar').style.width = 0 + '%'
+                                            document.querySelector('.progress-bar').innerText = 0 + '%'
                                         }, 2000)
                                     }
                                 }
