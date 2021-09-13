@@ -13,7 +13,7 @@
             <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
                    onclick="clearCountingResult();">
         </form>
-        <div>
+        <div id="progress-bar">
             <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
         </div>
         <div id="text-length-result" class="mt-3">
@@ -52,7 +52,7 @@
                         },
                         xhr: function () {
                             let xhr = $.ajaxSettings.xhr();
-                            $(".progress-bar").show(300)
+                            $("#progress-bar").show(300)
                             setProgressBarStyles()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
@@ -60,7 +60,7 @@
                                     setProgressBarStyles(percent)
                                     if (percent === 100) {
                                         setTimeout(() => {
-                                            $(".progress-bar").hide(300)
+                                            $("#progress-bar").hide(300)
                                         }, 2000)
                                     }
                                 }
