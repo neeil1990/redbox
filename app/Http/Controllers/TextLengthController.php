@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -23,20 +26,23 @@ class TextLengthController extends Controller
 
     /**
      * @param Request $request
-     * @return array|false|\Illuminate\Contracts\Foundation\Application|Factory|View|mixed
+     * @return mixed
      */
     public function countingTextLength(Request $request)
     {
         $length = Str::length($request->text);
         $countSpaces = self::countingSpaces($request->text);
         $lengthWithOutSpaces = $length - $countSpaces;
-        $text = $request->text;
-        Session::flash('length', $length);
-        Session::flash('countSpaces', $countSpaces);
-        Session::flash('lengthWithOutSpaces', $lengthWithOutSpaces);
-        Session::flash('countWord', self::countingWord($request->text));
+        $data = [
+            'success' => true,
+            'text' => $request->text,
+            'length' => $length,
+            'countSpaces' => $countSpaces,
+            'lengthWithOutSpaces' => $lengthWithOutSpaces,
+            'countWords' => self::countingWord($request->text)
+        ];
 
-        return view('pages.length', compact('text'));
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -60,9 +66,14 @@ class TextLengthController extends Controller
                     $str,
                     1,
                     "аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъыЫьэЭюЮяЯ"
-
                 )
             );
+    }
+
+    public function test(Request $request)
+    {
+        Log::debug('asd', [$request->text]);
+        response('Update Successfully.');
     }
 
 }
