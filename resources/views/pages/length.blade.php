@@ -61,9 +61,11 @@
                                     document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
                                         setTimeout(() => {
-                                            $(".progress-bar").hide(300)
-                                            document.querySelector('.progress-bar').style.width = 0 + '%'
+                                            percent = 0
+                                            document.querySelector('.progress-bar').style.transition = 0.3 + 's';
+                                            document.querySelector('.progress-bar').style.width = percent + '%'
                                             document.querySelector('.progress-bar').innerText = ''
+                                            $(".progress-bar").hide(300)
                                         }, 2000)
                                     }
                                 }
