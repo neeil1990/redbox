@@ -53,7 +53,6 @@
                         xhr: function () {
                             let xhr = $.ajaxSettings.xhr();
                             $("#progress-bar").show(300)
-                            setProgressBarStyles()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
@@ -79,7 +78,7 @@
                 });
             });
 
-            function setProgressBarStyles(percent = 0) {
+            function setProgressBarStyles(percent) {
                 document.querySelector('.progress-bar').style.width = percent + '%'
                 document.querySelector('.progress-bar').innerText = percent + '%'
             }
