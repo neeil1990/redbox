@@ -52,15 +52,15 @@
                         },
                         xhr: function () {
                             let xhr = $.ajaxSettings.xhr();
+                            $(".progress-bar").show(300)
                             setProgressBarStyles()
-                            $(".progress-bar").show()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     setProgressBarStyles(percent)
                                     if (percent === 100) {
                                         setTimeout(() => {
-                                            $(".progress-bar").hide()
+                                            $(".progress-bar").hide(300)
                                         }, 2000)
                                     }
                                 }
