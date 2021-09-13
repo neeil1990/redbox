@@ -51,21 +51,20 @@
                             _token: token
                         },
                         xhr: function () {
-                            let percent = 0;
                             let xhr = $.ajaxSettings.xhr();
                             $(".progress-bar").show()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
-                                    percent = Math.floor((evt.loaded / evt.total) * 100);
+                                    let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     document.querySelector('.progress-bar').style.width = percent + '%'
                                     document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
                                         setTimeout(() => {
-                                            percent = 0
-                                            document.querySelector('.progress-bar').style.transition = 0.3 + 's';
-                                            document.querySelector('.progress-bar').style.width = percent + '%'
-                                            document.querySelector('.progress-bar').innerText = ''
-                                            $(".progress-bar").hide(300)
+                                            $(".progress-bar").hide()
+                                            // document.querySelector('.progress-bar').style.transition = 0.3 + 's';
+                                            // document.querySelector('.progress-bar').style.opa = percent + '%'
+                                            // document.querySelector('.progress-bar').style.display = 'none'
+                                            // document.querySelector('.progress-bar').innerText = ''
                                         }, 2000)
                                     }
                                 }
