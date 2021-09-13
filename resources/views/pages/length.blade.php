@@ -63,7 +63,7 @@
                                         setTimeout(() => {
                                             document.querySelector('.progress-bar').style.width = 0 + '%'
                                             document.querySelector('.progress-bar').innerText = ''
-                                            $(".progress-bar").hide(500)
+                                            $(".progress-bar").hide(300)
                                         }, 2000)
                                     }
                                 }
