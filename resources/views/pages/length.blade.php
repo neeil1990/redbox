@@ -61,7 +61,7 @@
                             $(".progress-bar").show()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
-                                    let percent = (evt.total / evt.loaded) * 100;
+                                    let percent = (evt.loaded / evt.total) * 100;
                                     document.querySelector('.progress-bar').style.width = percent + '%'
                                     document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
