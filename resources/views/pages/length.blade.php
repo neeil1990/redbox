@@ -8,15 +8,17 @@
             {{__('If you are typing not in a text editor, but in a notepad or browser, then this tool will become your faithful assistant.')}}
         </p>
         <h2>{{__("Enter text")}}</h2>
-        <textarea name="text"
-                  class="form-control col-lg-6 col-sm-12"
-                  id="text"
-                  rows="10"
-                  required></textarea>
-        <br>
-        <input class="btn btn-secondary mr-2" type="submit" value="{{__('Calculate')}}">
-        <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
-               onclick="clearCountingResult();">
+        <form>
+            <textarea name="text"
+                      class="form-control col-lg-6 col-sm-12"
+                      id="text"
+                      rows="10"
+                      required></textarea>
+            <br>
+            <input class="btn btn-secondary mr-2" type="button" value="{{__('Calculate')}}">
+            <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
+                   onclick="clearCountingResult();">
+        </form>
         <div id="text-length-result" class="mt-3">
             <div id="all-text">
                 <b>{{__('Total characters')}}: </b>
