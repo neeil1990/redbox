@@ -12,10 +12,10 @@
             <input class="btn btn-secondary mr-2" type="button" value="{{__('Calculate')}}">
             <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
                    onclick="clearCountingResult();">
-            <span id="progress-bar">
-                <span class="progress-bar mt-3 mb-3" role="progressbar"></span>
-            </span>
         </form>
+        <div id="progress-bar">
+            <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+        </div>
         <div id="text-length-result" class="mt-3">
             <div id="all-text">
                 <b>{{__('Total characters')}}: </b>
