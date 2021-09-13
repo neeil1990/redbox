@@ -14,7 +14,7 @@
                    onclick="clearCountingResult();">
         </form>
         <div>
-            <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+            <div class="progress-bar mt-3 mb-3 pt-2 pb-2" role="progressbar"></div>
         </div>
         <div id="text-length-result" class="mt-3">
             <div id="all-text">
