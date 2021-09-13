@@ -51,20 +51,18 @@
                             _token: token
                         },
                         xhr: function () {
+                            let percent = 0;
                             let xhr = $.ajaxSettings.xhr();
                             $(".progress-bar").show()
                             xhr.upload.addEventListener('progress', function (evt) {
                                 if (evt.lengthComputable) {
-                                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                                    percent = Math.floor((evt.loaded / evt.total) * 100);
                                     document.querySelector('.progress-bar').style.width = percent + '%'
                                     document.querySelector('.progress-bar').innerText = percent + '%'
                                     if (percent === 100) {
-                                        setTimeout(() => {
-                                            $(".progress-bar").hide(200)
-                                            percent = 0
-                                            document.querySelector('.progress-bar').style.width = percent + '%'
-                                            document.querySelector('.progress-bar').innerText = percent + '%'
-                                        }, 2000)
+                                        document.querySelector('.progress-bar').style.width = 0 + '%'
+                                        document.querySelector('.progress-bar').innerText = ''
+                                        $(".progress-bar").hide(500)
                                     }
                                 }
                             }, false);
