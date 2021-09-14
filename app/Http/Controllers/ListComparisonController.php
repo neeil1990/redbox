@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -27,25 +27,19 @@ class ListComparisonController extends Controller
      */
     public function listComparison(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'firstList' => 'required',
-            'secondList' => 'required',
-        ]);
+        $firstList = self::removeExtraSymbols($request->firstList);
+        $secondList = self::removeExtraSymbols($request->secondList);
+        $result = implode("\n", self::uniquePhrases(
+            explode(' ', $firstList),
+            explode(' ', $secondList),
+            $request->option
+        ));
 
-        if ($validator->passes()) {
-            $result = implode("\r\n", self::uniquePhrases(
-                explode("\r\n", $request->firstList),
-                explode("\r\n", $request->secondList),
-                $request->option
-            ));
+        $data = [
+            'result' => $result
+        ];
 
-            $data = [
-                'result' => $result
-            ];
-
-            return response()->json(['data' => $data]);
-        }
-        return response()->json($validator->errors()->all(), 400);
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -56,6 +50,7 @@ class ListComparisonController extends Controller
      */
     public static function uniquePhrases($firstList, $secondList, $position): array
     {
+        Log::debug('f', array_unique($firstList));
         switch ($position) {
             case 'uniqueInFirstList':
                 return array_diff(array_unique(array_diff($firstList, $secondList)), array(""));
@@ -77,5 +72,14 @@ class ListComparisonController extends Controller
         $fileName = md5(Carbon::now());
         Storage::put('files\\' . $fileName . '.txt', $request->result);
         return response()->download(storage_path('app/public/files/' . $fileName . '.txt'));
+    }
+
+    /**
+     * @param $text
+     * @return array|string|string[]
+     */
+    public static function removeExtraSymbols($text)
+    {
+        return str_replace(["\r", "\n", "\r\n", "\n*"], ' ', $text);
     }
 }
