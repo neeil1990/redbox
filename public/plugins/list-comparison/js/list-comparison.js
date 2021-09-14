@@ -13,16 +13,8 @@ function saveOptionState(index) {
 }
 
 function saveOfBuffer() {
-    createElementForCopyInformationInBuffer($('#comparison-result').val())
-}
-
-function createElementForCopyInformationInBuffer(text) {
-    let copyText = document.createElement('textarea');
-    document.body.appendChild(copyText);
-    copyText.value = text;
-    copyText.select();
+    document.getElementById('comparison-result').select();
     document.execCommand('copy');
-    document.body.removeChild(copyText);
 }
 
 function countPhrasesInLists() {

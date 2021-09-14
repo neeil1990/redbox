@@ -155,7 +155,6 @@
                     var secondList = $('#secondList').val();
                     var alert = $('.alert-danger');
                     removeErrorMessage(alert)
-
                     if (firstLists === '' || secondList === '') {
                         alert.show(100);
                         alert.append('<p class="error-message">You need to fill in both lists</p>');
