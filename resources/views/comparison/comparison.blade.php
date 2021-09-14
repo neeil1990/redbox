@@ -127,7 +127,7 @@
     <div id="progress-bar">
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
-    <form action="{{route('download.comparison.file')}}" method="GET" class="result-form">
+    <form action="{{route('download.comparison.file')}}" method="POST" class="result-form">
         @csrf
         <div class="result mt-3">
             <div class="d-flex flex-row justify-content-between">

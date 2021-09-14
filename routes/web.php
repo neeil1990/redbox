@@ -51,7 +51,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('list-comparison', 'ListComparisonController@index')->name('list.comparison');
     Route::post('list-comparison', 'ListComparisonController@listComparison')->name('counting.list.comparison');
-    Route::get('download-comparison-file', 'ListComparisonController@downloadComparisonFile')->name('download.comparison.file');
+    Route::post('download-comparison-file', 'ListComparisonController@downloadComparisonFile')->name('download.comparison.file');
 
     Route::get('unique-words', 'UniqueWordsController@index')->name('unique.words');
     Route::post('unique-words', 'UniqueWordsController@countingUniqueWords')->name('unique.words');
