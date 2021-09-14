@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -30,8 +29,8 @@ class ListComparisonController extends Controller
         $firstList = self::removeExtraSymbols($request->firstList);
         $secondList = self::removeExtraSymbols($request->secondList);
         $result = implode("\n", self::uniquePhrases(
-            explode(' ', $firstList),
-            explode(' ', $secondList),
+            explode(PHP_EOL, $firstList),
+            explode(PHP_EOL, $secondList),
             $request->option
         ));
 
@@ -50,7 +49,6 @@ class ListComparisonController extends Controller
      */
     public static function uniquePhrases($firstList, $secondList, $position): array
     {
-        Log::debug('f', array_unique($firstList));
         switch ($position) {
             case 'uniqueInFirstList':
                 return array_diff(array_unique(array_diff($firstList, $secondList)), array(""));
@@ -80,6 +78,6 @@ class ListComparisonController extends Controller
      */
     public static function removeExtraSymbols($text)
     {
-        return str_replace(["\r", "\n", "\r\n", "\n*"], ' ', $text);
+        return str_replace(["\r", "\n", "\r\n", "\n*"], PHP_EOL, $text);
     }
 }
