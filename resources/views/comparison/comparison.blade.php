@@ -3,9 +3,18 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div class="alert alert-danger">
+    <div id="toast-container" class="toast-top-right success-message">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('The result was successfully copied to the clipboard') }}</div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-top-right error-message">
+        <div class="toast toast-error" aria-live="assertive">
+            <div class="toast-message">{{ __('Both lists should not be empty') }}</div>
+        </div>
     </div>
     <form id="list-comparison">
         <div class="row">
@@ -148,19 +157,18 @@
     </form>
     @slot('js')
         <script src="{{ asset('plugins/list-comparison/js/list-comparison.js') }}"></script>
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <script>
             $(document).ready(function () {
                 $(".btn.btn-secondary").click(function () {
                     var firstLists = $('#firstList').val();
                     var secondList = $('#secondList').val();
-                    var alert = $('.alert-danger');
-                    removeErrorMessage(alert)
                     if (firstLists === '' || secondList === '') {
-                        alert.show(100);
-                        alert.append('<p class="error-message">You need to fill in both lists</p>');
+                        $('.error-message').show(300)
+                        $('.result-form').hide(300)
                         setTimeout(() => {
-                            removeErrorMessage(alert);
-                        }, 5000)
+                            $('.error-message').hide(300)
+                        }, 3000)
                         return
                     }
                     $.ajax({
@@ -201,21 +209,7 @@
                             $('#comparison-result').val(response.data.result)
                             comparisonResult()
                         },
-                        error: function (errors) {
-                            $('.result-form').hide(400)
-                            printErrorMsg(errors.responseJSON)
-                        },
                     });
-
-                    function printErrorMsg(msg) {
-                        alert.show(100);
-                        $.each(msg, function (key, value) {
-                            alert.append('<p class="error-message">' + value + '</p>');
-                        });
-                        setTimeout(() => {
-                            removeErrorMessage(alert);
-                        }, 5000)
-                    }
                 });
             });
 
@@ -224,11 +218,6 @@
                     width: percent + '%'
                 })
                 document.querySelector('.progress-bar').innerText = percent + '%'
-            }
-
-            function removeErrorMessage(alert) {
-                alert.hide(300);
-                $('p.error-message').remove();
             }
         </script>
     @endslot

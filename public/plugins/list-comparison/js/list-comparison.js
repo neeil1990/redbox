@@ -15,6 +15,10 @@ function saveOptionState(index) {
 function saveOfBuffer() {
     document.getElementById('comparison-result').select();
     document.execCommand('copy');
+    $('.success-message').show(300)
+    setTimeout(() => {
+        $('.success-message').hide(300)
+    }, 3000)
 }
 
 function countPhrasesInLists() {
@@ -66,4 +70,5 @@ function comparisonResult() {
 }
 
 $('.result-form').hide()
-$('.alert-danger').hide()
+$('.error-message').hide()
+$('.success-message').hide()
