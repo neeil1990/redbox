@@ -2,14 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -69,11 +63,4 @@ class TextLengthController extends Controller
                 )
             );
     }
-
-    public function test(Request $request)
-    {
-        Log::debug('asd', [$request->text]);
-        response('Update Successfully.');
-    }
-
 }
