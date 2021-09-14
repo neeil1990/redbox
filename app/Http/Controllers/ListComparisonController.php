@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -19,28 +18,34 @@ class ListComparisonController extends Controller
      */
     public function index(): View
     {
-        return view('pages.comparison');
+        return view('comparison.comparison');
     }
 
     /**
      * @param Request $request
-     * @return array|false|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|View|mixed
+     * @return JsonResponse
      */
-    public function listComparison(Request $request)
+    public function listComparison(Request $request): JsonResponse
     {
-        $result = implode("\r\n", self::uniquePhrases(
-            explode("\r\n", $request->firstList),
-            explode("\r\n", $request->secondList),
-            $request->option
-        ));
+        $validator = Validator::make($request->all(), [
+            'firstList' => 'required',
+            'secondList' => 'required',
+        ]);
 
-        $firstList = $request->firstList;
-        $secondList = $request->secondList;
+        if ($validator->passes()) {
+            $result = implode("\r\n", self::uniquePhrases(
+                explode("\r\n", $request->firstList),
+                explode("\r\n", $request->secondList),
+                $request->option
+            ));
 
-        return view('pages.comparison', compact(
-            'firstList',
-            'secondList',
-            'result'));
+            $data = [
+                'result' => $result
+            ];
+
+            return response()->json(['data' => $data]);
+        }
+        return response()->json($validator->errors()->all(), 400);
     }
 
     /**

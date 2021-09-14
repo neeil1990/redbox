@@ -4,8 +4,10 @@
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
     @endslot
-    <form action="{{  route('counting.list.comparison') }}" method="POST" id="list-comparison">
-        @csrf
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <div class="alert alert-danger">
+    </div>
+    <form id="list-comparison">
         <div class="row">
             <div class="col-sm-12 textpart">
                 <h3>{{__('Compare the lists of keywords and get a common unique list.')}}</h3>
@@ -17,16 +19,14 @@
                     <label>{{__('First list')}}</label>
                     <div class="count-phrases">{{__('count phrases')}}: <span id="firstPhrases">0</span></div>
                 </div>
-                <textarea class="form-control" name="firstList" rows="7" id="firstList"
-                          required>@if(isset($firstList)){{ $firstList }}@endif</textarea>
+                <textarea class="form-control" name="firstList" rows="7" id="firstList" required></textarea>
             </div>
             <div class="col-sm-6 d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <label>{{__('Second list')}}</label>
                     <div class="count-phrases">{{__('count phrases')}}: <span id="secondPhrases">0</span></div>
                 </div>
-                <textarea class="form-control" name="secondList" rows="7" id="secondList"
-                          required>@if(isset($secondList)){{ $secondList }}@endif</textarea>
+                <textarea class="form-control" name="secondList" rows="7" id="secondList" required></textarea>
             </div>
         </div>
         <div class="row">
@@ -111,21 +111,22 @@
                 </div>
             </div>
             <div class="col-sm-8 mt-3 mb-3 mt-3">
-                <input class="btn btn-secondary" type="submit" value="{{__('Processing')}}">
+                <input class="btn btn-secondary" type="button" value="{{__('Processing')}}">
             </div>
         </div>
     </form>
-    @if (isset($result))
-        <form action="{{route('download.comparison.file')}}" method="GET">
-            @csrf
-            <div class="result mt-3">
-                <div class="d-flex flex-row justify-content-between">
-                    <label>{{__('Comparison result')}}</label>
-                    <div class="count-phrases">{{__('count phrases')}}: <span id="numberPhrasesInResult">0</span></div>
-                </div>
-                <textarea name="result" id="comparison-result" class="form-control"
-                          rows="10">{{ $result }}</textarea>
-                <div class="d-flex">
+    <div id="progress-bar">
+        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+    </div>
+    <form action="{{route('download.comparison.file')}}" method="GET" class="result-form">
+        @csrf
+        <div class="result mt-3">
+            <div class="d-flex flex-row justify-content-between">
+                <label>{{__('Comparison result')}}</label>
+                <div class="count-phrases">{{__('count phrases')}}: <span id="numberPhrasesInResult">0</span></div>
+            </div>
+            <textarea name="result" id="comparison-result" class="form-control" rows="10"></textarea>
+            <div class="d-flex">
                 <span class="__helper-link ui_tooltip_w btn btn-default mt-2 mr-2" onclick="saveOfBuffer()">
                     <i aria-hidden="true" class="fa fa-clipboard"></i>
                         <span class="ui_tooltip __right __l">
@@ -134,19 +135,102 @@
                             </span>
                         </span>
                 </span>
-                    <button class="btn btn-default mt-2 __helper-link ui_tooltip_w">
-                        <i aria-hidden="true" class="fa fa-download"></i>
-                        <span class="ui_tooltip __right __l">
+                <button class="btn btn-default mt-2 __helper-link ui_tooltip_w">
+                    <i aria-hidden="true" class="fa fa-download"></i>
+                    <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
                                 {{__('Upload as a file')}}
                             </span>
                         </span>
-                    </button>
-                </div>
+                </button>
             </div>
-        </form>
-    @endif
+        </div>
+    </form>
     @slot('js')
         <script src="{{ asset('plugins/list-comparison/js/list-comparison.js') }}"></script>
+        <script>
+            $(document).ready(function () {
+                $(".btn.btn-secondary").click(function () {
+                    var firstLists = $('#firstList').val();
+                    var secondList = $('#secondList').val();
+                    var alert = $('.alert-danger');
+                    removeErrorMessage(alert)
+
+                    if (firstLists === '' || secondList === '') {
+                        alert.show(100);
+                        alert.append('<p class="error-message">You need to fill in both lists</p>');
+                        setTimeout(() => {
+                            removeErrorMessage(alert);
+                        }, 5000)
+                        return
+                    }
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('counting.list.comparison') }}",
+                        data: {
+                            firstList: firstLists,
+                            secondList: secondList,
+                            option: $('.custom-control-input:checked').val(),
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        xhr: function () {
+                            let xhr = $.ajaxSettings.xhr();
+                            xhr.upload.addEventListener('progress', function (evt) {
+                                $('.progress-bar').css({
+                                    opacity: 1
+                                });
+                                $("#progress-bar").show(300)
+                                if (evt.lengthComputable) {
+                                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                                    setProgressBarStyles(percent)
+                                    if (percent === 100) {
+                                        setTimeout(() => {
+                                            $('.progress-bar').css({
+                                                opacity: 0,
+                                                width: 0 + '%'
+                                            });
+                                            $("#progress-bar").hide(300)
+                                        }, 2000)
+                                    }
+                                }
+                            }, false);
+                            return xhr;
+                        },
+                        success: function (response) {
+                            $('.result-form').show(400)
+                            $('#comparison-result').val(response.data.result)
+                            comparisonResult()
+                        },
+                        error: function (errors) {
+                            $('.result-form').hide(400)
+                            printErrorMsg(errors.responseJSON)
+                        },
+                    });
+
+                    function printErrorMsg(msg) {
+                        alert.show(100);
+                        $.each(msg, function (key, value) {
+                            alert.append('<p class="error-message">' + value + '</p>');
+                        });
+                        setTimeout(() => {
+                            removeErrorMessage(alert);
+                        }, 5000)
+                    }
+                });
+            });
+
+            function setProgressBarStyles(percent) {
+                $('.progress-bar').css({
+                    width: percent + '%'
+                })
+                document.querySelector('.progress-bar').innerText = percent + '%'
+            }
+
+            function removeErrorMessage(alert) {
+                alert.hide(300);
+                $('p.error-message').remove();
+            }
+        </script>
     @endslot
 @endcomponent

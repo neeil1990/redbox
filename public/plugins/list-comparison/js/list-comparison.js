@@ -2,7 +2,6 @@ window.onload = function () {
     countPhrasesInLists()
     calculatePhrasesInFistList()
     calculatePhrasesInSecondList()
-    comparisonResult()
     if (localStorage.getItem('radioOptionState') !== null) {
         let index = localStorage.getItem('radioOptionState');
         document.getElementById(index + '-radio-option').checked = true;
@@ -14,8 +13,7 @@ function saveOptionState(index) {
 }
 
 function saveOfBuffer() {
-    let text = document.getElementById('comparison-result').value;
-    createElementForCopyInformationInBuffer(text)
+    createElementForCopyInformationInBuffer($('#comparison-result').val())
 }
 
 function createElementForCopyInformationInBuffer(text) {
@@ -74,3 +72,6 @@ function comparisonResult() {
 
     document.getElementById('numberPhrasesInResult').innerText = numberLineBreaksInResultList
 }
+
+$('.result-form').hide()
+$('.alert-danger').hide()
