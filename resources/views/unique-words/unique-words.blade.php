@@ -276,6 +276,7 @@
                                 progressClass.css({
                                     width: percent + '%'
                                 })
+                                console.log(percent)
                                 if (Math.round(percent) === 100) {
                                     setTimeout(() => {
                                         progressId.hide();

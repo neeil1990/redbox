@@ -168,7 +168,7 @@
                         $('.result-form').hide(300)
                         setTimeout(() => {
                             $('.error-message').hide(300)
-                        }, 3000)
+                        }, 5000)
                         return
                     }
                     $.ajax({
