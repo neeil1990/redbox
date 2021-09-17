@@ -20,7 +20,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <p>Ваш файл готов, вы можете его скачать</p>
+                    <p>{{ __('Your file is ready, you can download it') }}</p>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -29,7 +29,7 @@
                     <form action="{{ route('download-file') }}" method="POST" class="justify-content-between">
                         @csrf
                         <input class="file-path-input" type="hidden" name="fileName" value="">
-                        <input class="btn btn-secondary" type="submit" value="Скачать">
+                        <input class="btn btn-secondary" type="submit" value="{{ __('Download') }}">
                         <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                     </form>
                 </div>
@@ -54,12 +54,14 @@
         </div>
         <input class="btn btn-secondary mt-3 mr-2 d-flex align-items-center" type="button" value="{{__('Processing')}}">
         <div id="progress-bar" class="mt-3 mb-3">
-            Обработка данных
+            <p>{{ __('Data processing') }}</p>
             <div class="progress-bar" role="progressbar"></div>
         </div>
         <div id="progress-bar-table" class="mt-3 mb-3">
-            Генерация таблицы
-            <div class="progress-bar-table" role="progressbar"></div>
+            <p>{{ __('Generating a table') }}</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only"></span>
+            </div>
         </div>
     </form>
     <fieldset class="unique-words-filter mt-4 mb-3">
@@ -239,11 +241,11 @@
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         xhr: function () {
-                            let progressBar = $('.progress-bar');
+                            let progressBarClass = $('.progress-bar');
                             let progressBarId = $("#progress-bar")
                             let xhr = $.ajaxSettings.xhr();
                             xhr.upload.addEventListener('progress', function (evt) {
-                                progressBar.css({
+                                progressBarClass.css({
                                     opacity: 1
                                 });
                                 progressBarId.show(400)
@@ -251,35 +253,38 @@
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     setProgressBarStyles(percent)
                                     if (percent === 100) {
+                                        $('#progress-bar-table').show(400)
                                         setTimeout(() => {
-                                            progressBarId.hide(400)
-                                            progressBar.css({
+                                            progressBarClass.css({
                                                 opacity: 0,
                                                 width: 0 + '%'
-                                            }, 2000);
-                                        })
+                                            });
+                                            progressBarId.hide(400)
+                                        }, 2000)
                                     }
                                 }
                             }, false);
                             return xhr;
                         },
                         success: function (response) {
-                            $('#progress-bar-table').show(400);
                             $('fieldset.unique-words-filter.mt-4.mb-3').show(400)
                             $('div.unique-words-result').show(400)
-                            let step = calculatePercentTableGeneration(response.length)
-                            let percent = 0
+                            // let step = calculatePercentTableGeneration(response.length)
+                            // let percent = 0
+                            let progressBarTableId = $('#progress-bar-table')
                             let progressBarTable = $('.progress-bar-table')
+                            // progressBarTableId.show(400);
                             for (const [key, value] of Object.entries(response.list)) {
-                                percent += step
-                                progressBarTable.text(Math.round(percent) + '%');
-                                progressBarTable.css({
-                                    width: percent + '%'
-                                })
+                                // console.log(percent)
+                                // percent += step
+                                // progressBarTable.text(Math.round(percent) + '%');
+                                // progressBarTable.css({
+                                //     width: percent + '%'
+                                // })
                                 createRow(key, value)
                             }
                             setTimeout(() => {
-                                $('#progress-bar-table').hide(400);
+                                progressBarTableId.hide(400);
                                 progressBarTable.css({
                                     opacity: 0,
                                     width: 0 + '%'
@@ -349,12 +354,12 @@
                 //     <i aria-hidden="true"
                 //        class="fa fa-plus-square-o"
                 //        id="unique-plus"
-                //        onclick="$('#test-res').show(); $('.fa.fa-minus-square-o').show(); $('.fa.fa-plus-square-o').hide()"></i>
+                //        onclick="$('#test-res').show(400); $('.fa.fa-minus-square-o').show(400); $('.fa.fa-plus-square-o').hide(400)"></i>
                 //     <span id="unique-span"></span>
                 //     <i aria-hidden="true"
                 //        class="fa fa-minus-square-o"
                 //        id="unique-minus"
-                //        onclick="$('#test-res').hide();  $('.fa.fa-plus-square-o').show(); $('.fa.fa-minus-square-o').hide()"></i>
+                //        onclick="$('#test-res').hide(400);  $('.fa.fa-plus-square-o').show(400); $('.fa.fa-minus-square-o').hide(400)"></i>
                 // </div>
             }
 

@@ -1,6 +1,5 @@
 window.onload = function () {
     countPhrasesInLists()
-    removeExtraSpaces()
 }
 
 function countPhrasesInLists() {
@@ -57,11 +56,6 @@ function saveInBuffer() {
     createElementForCopyInformationInBuffer(text)
 }
 
-function savePhrasesInBuffer(id) {
-    let text = document.getElementById('key-phrases-' + id).value
-    createElementForCopyInformationInBuffer(text.trim())
-}
-
 function createElementForCopyInformationInBuffer(text) {
     let copyText = document.createElement('textarea');
     document.body.appendChild(copyText);
@@ -69,12 +63,6 @@ function createElementForCopyInformationInBuffer(text) {
     copyText.select();
     document.execCommand('copy');
     document.body.removeChild(copyText);
-}
-
-function removeExtraSpaces() {
-    document.querySelectorAll('.key-phrases-result').forEach((el) => {
-        el.innerHTML = el.innerHTML.trim()
-    });
 }
 
 function calculatePercentTableGeneration(length) {
