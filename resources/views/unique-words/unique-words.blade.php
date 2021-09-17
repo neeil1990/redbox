@@ -127,7 +127,7 @@
                     </label>
                 </div>
                 <div class="flex">
-                    <span class="__helper-link ui_tooltip_w btn btn-default mt-2" onclick="saveInBuffer()">
+                    <span class="__helper-link ui_tooltip_w btn btn-default mt-2" onclick="processingText()">
                     <i aria-hidden="true" class="fa fa-clipboard"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">

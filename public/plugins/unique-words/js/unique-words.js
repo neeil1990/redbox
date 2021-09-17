@@ -29,8 +29,8 @@ function deleteItems() {
     })
 }
 
-function saveInBuffer() {
-    var text = ''
+function processingText() {
+    let text = ''
     document.querySelectorAll('.table-row').forEach((el) => {
         if (document.getElementById('unique-word').checked) {
             text += el.children[1].innerText + ';'
@@ -42,27 +42,27 @@ function saveInBuffer() {
             text += el.children[3].innerText + ';'
         }
         if (document.getElementById('key-phrases').checked) {
-            console.log('----------')
-            console.log(el.children[4])
-            console.log('----------')
-            // let textarea = el.children[4].querySelector('.unique-element-key-phrases').innerHTML.trim()
-            // textarea = textarea.split('\n')
-            // for (let i = 0; i < textarea.length; i++) {
-            //     text += textarea[i] + '\n;;;;'
-            // }
+            let id = el.id.substr(16)
+            if (document.getElementById('unique-words-textarea-' + id)) {
+                text += document.getElementById('unique-words-textarea-' + id).value.replace('\n\n', ';;;;')
+            } else {
+                text += document.getElementById('unique-words-td-id-' + id).innerHTML
+            }
         }
-        text += '\n'
     })
     createElementForCopyInformationInBuffer(text)
 }
 
 function createElementForCopyInformationInBuffer(text) {
-    let copyText = document.createElement('textarea');
-    document.body.appendChild(copyText);
-    copyText.value = text;
-    copyText.select();
-    document.execCommand('copy');
-    document.body.removeChild(copyText);
+    console.log(text)
+    let area = document.createElement('textarea');
+    area.style.opasity = 0
+    document.body.appendChild(area);
+    area.value = text;
+    area.select();
+    document.execCommand("copy");
+    document.body.removeChild(area);
+    showSuccessCopyMessage()
 }
 
 function calculatePercentTableGeneration(length) {
@@ -84,10 +84,7 @@ function createTextArea(key, value) {
 function savePhrasesInBuffer(key) {
     document.getElementById('unique-words-textarea-' + key).select();
     document.execCommand('copy');
-    $('.success-message').show(300)
-    setTimeout(() => {
-        $('.success-message').hide(300)
-    }, 5000)
+    showSuccessCopyMessage()
 }
 
 function createKeyPhrases(key, value) {
@@ -112,6 +109,7 @@ function createRow(key, value) {
     let td3 = document.createElement('td')
     let td4 = document.createElement('td')
     let td5 = document.createElement('td')
+    td5.id = 'unique-words-td-id-' + key
     let icon = document.createElement('i')
     if (value.numberOccurrences >= 2) {
         let div = createKeyPhrases(key, value)
@@ -141,4 +139,11 @@ function setProgressBarStyles(percent) {
         width: percent + '%'
     })
     document.querySelector('.progress-bar').innerText = percent + '%'
+}
+
+function showSuccessCopyMessage() {
+    $('.success-message').show(300)
+    setTimeout(() => {
+        $('.success-message').hide(300)
+    }, 5000)
 }
