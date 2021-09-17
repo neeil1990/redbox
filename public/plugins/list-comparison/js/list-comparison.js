@@ -18,7 +18,7 @@ function saveOfBuffer() {
     $('.success-message').show(300)
     setTimeout(() => {
         $('.success-message').hide(300)
-    }, 3000)
+    }, 5000)
 }
 
 function countPhrasesInLists() {

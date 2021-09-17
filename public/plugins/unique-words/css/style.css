@@ -247,3 +247,31 @@ label:not(.form-check-label):not(.custom-file-label) {
 .spinner-border.spinner-border-sm.mr-2 {
     display: none;
 }
+
+fieldset.unique-words-filter.mt-4.mb-3,
+.unique-words-result,
+.error-message,
+.success-message,
+.hidden-modal-form,
+#progress-bar,
+#progress-bar-table {
+    display: none;
+}
+
+.fa {
+    cursor: pointer;
+}
+
+#test-res {
+    display: none;
+}
+
+#progress-bar-table {
+    display: none;
+}
+
+.progress-bar-table {
+    background: #007bff;
+    color: white;
+    text-align: center;
+}

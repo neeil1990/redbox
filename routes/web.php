@@ -56,7 +56,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('unique-words', 'UniqueWordsController@index')->name('unique.words');
     Route::post('unique-words', 'UniqueWordsController@countingUniqueWords')->name('unique.words');
     Route::post('download-unique-words', 'UniqueWordsController@downloadUniqueWords')->name('download.unique.words');
-    Route::post('download-unique-phrases', 'UniqueWordsController@downloadUniquePhrases')->name('download.unique.phrases');
+    Route::post('download-unique-phrases', 'UniqueWordsController@createFile')->name('createFile.unique.phrases');
+    Route::post('download-file', 'UniqueWordsController@downloadFile')->name('download-file');
 
     Route::get('html-editor', 'TextEditorController@index')->name('HTML.editor');
     Route::get('create-project', 'TextEditorController@createView')->name('create.project');

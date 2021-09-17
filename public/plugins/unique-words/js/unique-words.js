@@ -1,44 +1,30 @@
 window.onload = function () {
     countPhrasesInLists()
-    calculatePhrasesInFistList()
     removeExtraSpaces()
-    goUp()
 }
 
 function countPhrasesInLists() {
     document.getElementById('phrases').addEventListener('keyup', function () {
-        calculatePhrasesInFistList();
+        let numberLineBreaksInFirstList = 0;
+        let firstList = document.getElementById('phrases').value.split('\n');
+        for (let i = 0; i < firstList.length; i++) {
+            if (firstList[i] !== '') {
+                numberLineBreaksInFirstList++
+            }
+        }
+        document.getElementById('countPhrases').innerText = numberLineBreaksInFirstList
     });
 }
 
-function calculatePhrasesInFistList() {
-    let numberLineBreaksInFirstList = 0;
-    let firstList = document.getElementById('phrases').value.split('\n');
-    for (let i = 0; i < firstList.length; i++) {
-        if (firstList[i] !== '') {
-            numberLineBreaksInFirstList++
-        }
-    }
-    document.getElementById('countPhrases').innerText = numberLineBreaksInFirstList
-}
-
-function deleteItem(id) {
-    document.getElementById('unique-words-id-' + id).remove();
-    document.getElementById('extraId').value += id + ' ';
-}
-
 function deleteItems() {
-    let greaterOrEqual = Number(document.getElementById('greaterOrEqual').value)
-    let lessOrEqual = Number(document.getElementById('lessOrEqual').value)
-
-    document.querySelectorAll('.unique-result').forEach((el) => {
+    let greaterOrEqual = Number($('#greaterOrEqual').val())
+    let lessOrEqual = Number($('#lessOrEqual').val())
+    document.querySelectorAll('.table-row').forEach((el) => {
         if (Number(el.children[3].innerText) >= greaterOrEqual && greaterOrEqual !== 0) {
-            document.getElementById('extraId').value += el.id.slice(16) + ' ';
             el.remove();
         }
 
         if (Number(el.children[3].innerText) <= lessOrEqual && lessOrEqual !== 0) {
-            document.getElementById('extraId').value += el.id.slice(16) + ' ';
             el.remove();
         }
     })
@@ -46,7 +32,7 @@ function deleteItems() {
 
 function saveInBuffer() {
     var text = ''
-    document.querySelectorAll('.unique-result').forEach((el) => {
+    document.querySelectorAll('.table-row').forEach((el) => {
         if (document.getElementById('unique-word').checked) {
             text += el.children[1].innerText + ';'
         }
@@ -57,11 +43,14 @@ function saveInBuffer() {
             text += el.children[3].innerText + ';'
         }
         if (document.getElementById('key-phrases').checked) {
-            let textarea = el.children[4].querySelector('.unique-element-key-phrases').innerHTML.trim()
-            textarea = textarea.split('\n')
-            for (let i = 0; i < textarea.length; i++) {
-                text += textarea[i] + '\n;;;;'
-            }
+            console.log('----------')
+            console.log(el.children[4])
+            console.log('----------')
+            // let textarea = el.children[4].querySelector('.unique-element-key-phrases').innerHTML.trim()
+            // textarea = textarea.split('\n')
+            // for (let i = 0; i < textarea.length; i++) {
+            //     text += textarea[i] + '\n;;;;'
+            // }
         }
         text += '\n'
     })
@@ -88,23 +77,80 @@ function removeExtraSpaces() {
     });
 }
 
-function goUp() {
-    let top = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
-    if (top > 0) {
-        window.scrollBy(0, -100);
+function calculatePercentTableGeneration(length) {
+    return 100 / length
+}
+
+function createTextArea(key, value) {
+    let textarea = document.createElement('textarea')
+    textarea.name = 'keyPhrases'
+    textarea.className = 'form form-control'
+    let str = value.keyPhrases.toString()
+    textarea.innerHTML = str.replace(/,/g, '\n\r')
+    textarea.rows = 6
+    textarea.id = 'unique-words-textarea-' + key
+
+    return textarea
+}
+
+function savePhrasesInBuffer(key) {
+    document.getElementById('unique-words-textarea-' + key).select();
+    document.execCommand('copy');
+    $('.success-message').show(300)
+    setTimeout(() => {
+        $('.success-message').hide(300)
+    }, 5000)
+}
+
+function createKeyPhrases(key, value) {
+    let div = document.createElement('div')
+    div.className = 'd-flex flex-column'
+    let divForIcons = document.createElement('div')
+    divForIcons.className = 'mb-2'
+    divForIcons.appendChild(createClipboardIcon(key))
+    divForIcons.appendChild(createDownloadIcon(key))
+    div.appendChild(divForIcons)
+    div.appendChild(createTextArea(key, value))
+    return div
+}
+
+function createRow(key, value) {
+    let tbody = document.getElementById('result-table').getElementsByTagName('tbody')[0];
+    let row = document.createElement("tr")
+    row.id = 'unique-words-id-' + key
+    row.className = 'table-row'
+    let td1 = document.createElement('td')
+    let td2 = document.createElement('td')
+    let td3 = document.createElement('td')
+    let td4 = document.createElement('td')
+    let td5 = document.createElement('td')
+    let icon = document.createElement('i')
+    if (value.numberOccurrences >= 2) {
+        let div = createKeyPhrases(key, value)
+        td5.appendChild(div)
+    } else {
+        td5.appendChild(document.createTextNode(value.keyPhrases))
     }
+
+    icon.onclick = function () {
+        $('#unique-words-id-' + key).remove()
+    }
+    icon.className = 'fa fa-trash'
+    td1.appendChild(icon)
+    td2.appendChild(document.createTextNode(value.word))
+    td3.appendChild(document.createTextNode(value.wordForms))
+    td4.appendChild(document.createTextNode(value.numberOccurrences))
+    row.appendChild(td1);
+    row.appendChild(td2);
+    row.appendChild(td3);
+    row.appendChild(td4);
+    row.appendChild(td5);
+    tbody.appendChild(row);
 }
 
-function showForm(id) {
-    document.getElementById('unique-form' + id).style.display = 'block'
-    document.getElementById('unique-minus' + id).style.display = 'block'
-    document.getElementById('unique-plus' + id).style.display = 'none'
-    document.getElementById('unique-span' + id).style.display = 'none'
-}
-
-function hiddenForm(id) {
-    document.getElementById('unique-form' + id).style.display = 'none'
-    document.getElementById('unique-minus' + id).style.display = 'none'
-    document.getElementById('unique-plus' + id).style.display = 'block'
-    document.getElementById('unique-span' + id).style.display = 'block'
+function setProgressBarStyles(percent) {
+    $('.progress-bar').css({
+        width: percent + '%'
+    })
+    document.querySelector('.progress-bar').innerText = percent + '%'
 }

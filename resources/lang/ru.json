@@ -179,7 +179,8 @@
 
     "Highlighting unique words in the text": "Выделение уникальных слов в тексте",
     "Get a list of unique words from the list of keywords": "Получите список уникальных слов из списка ключевых фраз",
-    "List of keywords": "Список ключевых слов",
+    "List of phrases": "Список ключевых фраз",
+    "The list of keywords should not be empty": "Список ключевых фраз не должен быть пустым",
     "additionally": "дополнительно",
     "Delete lines where the number of occurrences:": "Удалить строки, где кол-во вхождений:",
     "greater than or equal to:": "больше или равно:",
