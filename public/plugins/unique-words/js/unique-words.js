@@ -145,5 +145,5 @@ function showSuccessCopyMessage() {
     $('.success-message').show(300)
     setTimeout(() => {
         $('.success-message').hide(300)
-    }, 5000)
+    }, 10000)
 }
