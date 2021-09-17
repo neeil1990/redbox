@@ -59,7 +59,7 @@
         </div>
         <div id="progress-bar-table" class="mt-3 mb-3">
             Генерация таблицы
-            <div class="progress-bar-table" role="progressbar">123</div>
+            <div class="progress-bar-table" role="progressbar"></div>
         </div>
     </form>
     <fieldset class="unique-words-filter mt-4 mb-3">
@@ -264,32 +264,28 @@
                             return xhr;
                         },
                         success: function (response) {
+                            $('fieldset.unique-words-filter.mt-4.mb-3').show()
+                            $('div.unique-words-result').show()
                             let step = calculatePercentTableGeneration(response.length)
                             let percent = 0
                             let progressId = $('#progress-bar-table')
                             let progressClass = $('.progress-bar-table')
-
+                            progressId.show();
                             for (const [key, value] of Object.entries(response.list)) {
-                                progressId.show();
-                                percent = percent + step
+                                percent += step
                                 progressClass.text(Math.round(percent) + '%');
                                 progressClass.css({
                                     width: percent + '%'
                                 })
-                                console.log(percent)
-                                if (Math.round(percent) === 100) {
-                                    setTimeout(() => {
-                                        progressId.hide();
-                                        progressClass.css({
-                                            opacity: 0,
-                                            width: 0 + '%'
-                                        });
-                                    }, 2000)
-                                }
                                 createRow(key, value)
                             }
-                            $('fieldset.unique-words-filter.mt-4.mb-3').show()
-                            $('div.unique-words-result').show()
+                            setTimeout(() => {
+                                progressId.hide();
+                                progressClass.css({
+                                    opacity: 0,
+                                    width: 0 + '%'
+                                });
+                            }, 2000)
                         },
                     });
                 });
