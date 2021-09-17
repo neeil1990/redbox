@@ -256,7 +256,7 @@
                                                 opacity: 0,
                                                 width: 0 + '%'
                                             });
-                                            progressBarId.hide()
+                                            progressBarId.hide(400)
                                         }, 2000)
                                     }
                                 }
@@ -280,7 +280,7 @@
                                 createRow(key, value)
                             }
                             setTimeout(() => {
-                                progressId.hide();
+                                progressId.hide(400);
                                 progressClass.css({
                                     opacity: 0,
                                     width: 0 + '%'
