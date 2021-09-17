@@ -177,6 +177,11 @@
     "######################## Генератор слов https://lk.redbox.su/unique-words ###############################": "",
     "######################## Инпут, кнопки, заголовки таблицы и дополнительная секция ###############################": "",
 
+    "Generating a table": "Генерация таблицы",
+    "Data processing": "Обработка данных",
+    "Download": "Скачать",
+    "Close": "Закрыть",
+    "Your file is ready, you can download it": "Ваш файл готов, вы можете его скачать",
     "Highlighting unique words in the text": "Выделение уникальных слов в тексте",
     "Get a list of unique words from the list of keywords": "Получите список уникальных слов из списка ключевых фраз",
     "List of phrases": "Список ключевых фраз",
