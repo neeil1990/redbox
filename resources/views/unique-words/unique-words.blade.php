@@ -239,49 +239,48 @@
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         xhr: function () {
-                            let progressBarClass = $('.progress-bar');
+                            let progressBar = $('.progress-bar');
                             let progressBarId = $("#progress-bar")
                             let xhr = $.ajaxSettings.xhr();
                             xhr.upload.addEventListener('progress', function (evt) {
-                                progressBarClass.css({
+                                progressBar.css({
                                     opacity: 1
                                 });
-                                progressBarId.show()
+                                progressBarId.show(400)
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     setProgressBarStyles(percent)
                                     if (percent === 100) {
                                         setTimeout(() => {
-                                            progressBarClass.css({
+                                            progressBarId.hide(400)
+                                            progressBar.css({
                                                 opacity: 0,
                                                 width: 0 + '%'
-                                            });
-                                            progressBarId.hide(400)
-                                        }, 2000)
+                                            }, 2000);
+                                        })
                                     }
                                 }
                             }, false);
                             return xhr;
                         },
                         success: function (response) {
-                            $('fieldset.unique-words-filter.mt-4.mb-3').show()
-                            $('div.unique-words-result').show()
+                            $('#progress-bar-table').show(400);
+                            $('fieldset.unique-words-filter.mt-4.mb-3').show(400)
+                            $('div.unique-words-result').show(400)
                             let step = calculatePercentTableGeneration(response.length)
                             let percent = 0
-                            let progressId = $('#progress-bar-table')
-                            let progressClass = $('.progress-bar-table')
-                            progressId.show();
+                            let progressBarTable = $('.progress-bar-table')
                             for (const [key, value] of Object.entries(response.list)) {
                                 percent += step
-                                progressClass.text(Math.round(percent) + '%');
-                                progressClass.css({
+                                progressBarTable.text(Math.round(percent) + '%');
+                                progressBarTable.css({
                                     width: percent + '%'
                                 })
                                 createRow(key, value)
                             }
                             setTimeout(() => {
-                                progressId.hide(400);
-                                progressClass.css({
+                                $('#progress-bar-table').hide(400);
+                                progressBarTable.css({
                                     opacity: 0,
                                     width: 0 + '%'
                                 });
