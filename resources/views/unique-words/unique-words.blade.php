@@ -302,7 +302,6 @@
                 var result = confirmSeparatorAndTittle()
                 let separator = result[0]
                 document.querySelectorAll('.table-row').forEach((el) => {
-                    console.log(el)
                     if (document.getElementById('unique-word').checked) {
                         text += el.children[1].innerText + ';'
                     }
