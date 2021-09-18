@@ -142,20 +142,6 @@ class UniqueWordsController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return BinaryFileResponse
-     */
-    public function downloadUniqueWords(Request $request): BinaryFileResponse
-    {
-        $words = self::stringToCollectionWords($request->phrases);
-        self::removeExtraItems($words, $request->extraId);
-        $text = self::confirmText($words, $request);
-        $subject = self::confirmSubject($request);
-
-        return self::uploadFIle($subject . $text);
-    }
-
-    /**
      * @param $text
      * @return JsonResponse
      */
@@ -178,72 +164,6 @@ class UniqueWordsController extends Controller
         foreach ($extraIds as $extraId) {
             $words->pull($extraId);
         }
-    }
-
-    /**
-     * @param $words
-     * @param $request
-     * @return string
-     */
-    public static function confirmText($words, $request): string
-    {
-        $result = '';
-        $separator = self::confirmSeparator($request);
-        foreach ($words as $word) {
-            if ($request->uniqueWord === 'on') {
-                $result .= $word['word'] . ';';
-            }
-            if ($request->uniqueWordForms === 'on') {
-                $result .= $word['wordForms'] . ';';
-            }
-            if ($request->numberOccurrences === 'on') {
-                $result .= $word['numberOccurrences'] . ';';
-            }
-            if ($request->keyPhrases === 'on') {
-                foreach ($word['keyPhrases'] as $item) {
-                    $result .= $item . "\n" . $separator;
-                }
-            }
-            $result .= "\n";
-        }
-        return $result;
-    }
-
-    /**
-     * @param $request
-     * @return string
-     */
-    public static function confirmSeparator($request): string
-    {
-        $countOptions = 0;
-        if ($request->uniqueWord === 'on') {
-            $countOptions++;
-        }
-        if ($request->uniqueWordForms === 'on') {
-            $countOptions++;
-        }
-        if ($request->numberOccurrences === 'on') {
-            $countOptions++;
-        }
-        if ($request->keyPhrases === 'on') {
-            $countOptions++;
-        }
-
-        switch ($countOptions) {
-            case 2:
-                $separator = ';';
-                break;
-            case 3:
-                $separator = ';;';
-                break;
-            case 4:
-                $separator = ';;;';
-                break;
-            default:
-                $separator = '';
-        }
-
-        return $separator;
     }
 
     /**
@@ -276,6 +196,9 @@ class UniqueWordsController extends Controller
      */
     public function createFile(Request $request): JsonResponse
     {
+        if ($request->text) {
+            return self::uploadFIle($request->text);
+        }
         return self::uploadFIle($request->keyPhrases);
     }
 

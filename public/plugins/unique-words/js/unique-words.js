@@ -29,32 +29,7 @@ function deleteItems() {
     })
 }
 
-function processingText() {
-    let text = ''
-    document.querySelectorAll('.table-row').forEach((el) => {
-        if (document.getElementById('unique-word').checked) {
-            text += el.children[1].innerText + ';'
-        }
-        if (document.getElementById('unique-word-forms').checked) {
-            text += el.children[2].innerText + ';'
-        }
-        if (document.getElementById('number-occurrences').checked) {
-            text += el.children[3].innerText + ';'
-        }
-        if (document.getElementById('key-phrases').checked) {
-            let id = el.id.substr(16)
-            if (document.getElementById('unique-words-textarea-' + id)) {
-                text += document.getElementById('unique-words-textarea-' + id).value.replace('\n\n', ';;;;')
-            } else {
-                text += document.getElementById('unique-words-td-id-' + id).innerHTML
-            }
-        }
-    })
-    createElementForCopyInformationInBuffer(text)
-}
-
 function createElementForCopyInformationInBuffer(text) {
-    console.log(text)
     let area = document.createElement('textarea');
     area.style.opasity = 0
     document.body.appendChild(area);
@@ -88,15 +63,52 @@ function savePhrasesInBuffer(key) {
 }
 
 function createKeyPhrases(key, value) {
+    let divForSquareIcons = document.createElement('div')
     let div = document.createElement('div')
-    div.className = 'd-flex flex-column'
     let divForIcons = document.createElement('div')
+    let parentDiv = document.createElement('div')
+
+    parentDiv.id = 'parent-' + key
+    parentDiv.className = 'parent-div'
+    divForSquareIcons.appendChild(createPlusSquare(key, value))
+    divForSquareIcons.appendChild(createMinusSquare(key))
+    div.className = 'd-flex flex-column'
     divForIcons.className = 'mb-2'
     divForIcons.appendChild(createClipboardIcon(key))
     divForIcons.appendChild(createDownloadIcon(key))
-    div.appendChild(divForIcons)
-    div.appendChild(createTextArea(key, value))
+    div.appendChild(divForSquareIcons)
+    parentDiv.appendChild(divForIcons)
+    parentDiv.appendChild(createTextArea(key, value))
+    div.appendChild(parentDiv)
+
     return div
+}
+
+function createPlusSquare(key, value) {
+    let iPlus = document.createElement('i')
+    iPlus.innerText = '  ' + value.keyPhrases[0].slice(0, 30)
+    iPlus.className = 'fa fa-plus-square-o'
+    iPlus.id = 'plus-' + key
+    iPlus.onclick = function () {
+        $('#minus-' + key).show(300)
+        $('#parent-' + key).show(300)
+        $('#plus-' + key).hide(300)
+    }
+
+    return iPlus
+}
+
+function createMinusSquare(key) {
+    let iMinus = document.createElement('i')
+    iMinus.className = 'fa fa-minus-square-o'
+    iMinus.id = 'minus-' + key
+    iMinus.onclick = function () {
+        $('#minus-' + key).hide(300)
+        $('#parent-' + key).hide(300)
+        $('#plus-' + key).show(300)
+    }
+
+    return iMinus
 }
 
 function createRow(key, value) {
@@ -115,7 +127,7 @@ function createRow(key, value) {
         let div = createKeyPhrases(key, value)
         td5.appendChild(div)
     } else {
-        td5.appendChild(document.createTextNode(value.keyPhrases))
+        td5.appendChild(document.createTextNode(value.keyPhrases[0]))
     }
 
     icon.onclick = function () {

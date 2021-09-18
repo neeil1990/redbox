@@ -236,17 +236,10 @@ label:not(.form-check-label):not(.custom-file-label) {
     vertical-align: baseline;
 }
 
-.unique-form, .fa.fa-minus-square-o {
-    display: none;
-}
-
 .unique-form {
     transition: .4s;
 }
 
-.spinner-border.spinner-border-sm.mr-2 {
-    display: none;
-}
 
 fieldset.unique-words-filter.mt-4.mb-3,
 .unique-words-result,
@@ -254,20 +247,14 @@ fieldset.unique-words-filter.mt-4.mb-3,
 .success-message,
 .hidden-modal-form,
 #progress-bar,
-#progress-bar-table {
+#progress-bar-table,
+.parent-div,
+.fa.fa-minus-square-o {
     display: none;
 }
 
 .fa {
     cursor: pointer;
-}
-
-#test-res {
-    display: none;
-}
-
-#progress-bar-table {
-    display: none;
 }
 
 .progress-bar-table {

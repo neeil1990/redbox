@@ -84,8 +84,7 @@
             </div>
         </div>
         <div class="d-flex row mt-3 mb-3">
-            <form class="col-sm-12 d-flex flex-column" method="POST" action="{{ route('download.unique.words') }}">
-                @csrf
+            <div>
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox"
                            id="unique-word"
@@ -127,7 +126,8 @@
                     </label>
                 </div>
                 <div class="flex">
-                    <span class="__helper-link ui_tooltip_w btn btn-default mt-2" onclick="processingText()">
+                    <span class="__helper-link ui_tooltip_w btn btn-default mt-2"
+                          onclick="confirmTextForCopy()">
                     <i aria-hidden="true" class="fa fa-clipboard"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
@@ -135,12 +135,10 @@
                             </span>
                         </span>
                     </span>
-                    <input type="hidden" id="extraId" name="extraId">
-                    <input type="hidden"
-                           name="phrases"
-                           value="@if (isset($oldPhrases)){{$oldPhrases}}@endif"
-                           checked>
-                    <button class="btn btn-default mt-2 __helper-link ui_tooltip_w">
+                    <button class="btn btn-default mt-2 __helper-link ui_tooltip_w"
+                            data-toggle="modal"
+                            data-target="#modal-default"
+                            onclick="confirmTextForDownload()">
                         <i aria-hidden="true" class="fa fa-download"></i>
                         <span class="ui_tooltip __right __l">
                                 <span class="ui_tooltip_content">
@@ -149,7 +147,7 @@
                             </span>
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </fieldset>
     <div class="card mt-3 mb-3 unique-words-result">
@@ -168,47 +166,6 @@
                 </tr>
                 </thead>
                 <tbody class="table-body">
-                {{--                @foreach($listWords as $key => $list)--}}
-                {{--                    <tr id="unique-words-id-" class="unique-result">--}}
-                {{--                        <td>--}}
-                {{--                            <i class="fa fa-trash" onclick="deleteItem({{$key}})"></i>--}}
-                {{--                        </td>--}}
-                {{--                        <td class="unique-word">{{$list['word']}}</td>--}}
-                {{--                        <td class="unique-word-form">{{$list['wordForms']}}</td>--}}
-                {{--                        <td class="number-occurrences">{{$list['numberOccurrences']}}</td>--}}
-                {{--                        <td class="d-flex flex-column unique-key-phrases">--}}
-                {{--                                            @if(isset($list['keyPhrases'][1]))--}}
-                {{--                <form action="{{ route('download.unique.phrases') }}"--}}
-                {{--                      method="POST"--}}
-                {{--                      id="unique-form"--}}
-                {{--                      class="unique-form">--}}
-                {{--                    @csrf--}}
-                {{--                    <div class="flex-column">--}}
-                {{--                        <span class="__helper-link ui_tooltip_w mr-1 btn btn-default mb-1"--}}
-                {{--                              onclick="savePhrasesInBuffer()">--}}
-                {{--                            <i aria-hidden="true"--}}
-                {{--                               class="fa fa-clipboard"></i>--}}
-                {{--                            <span class="ui_tooltip __left __l">--}}
-                {{--                                <span class="ui_tooltip_content">--}}
-                {{--                                    {{__('Copy to Clipboard')}}--}}
-                {{--                                </span>--}}
-                {{--                            </span>--}}
-                {{--                        </span>--}}
-                {{--                        <span class="__helper-link ui_tooltip_w">--}}
-                {{--                            <button class="btn btn-default  mb-1">--}}
-                {{--                                <i aria-hidden="true"--}}
-                {{--                                   class="fa fa-download"></i>--}}
-                {{--                            </button>--}}
-                {{--                            <span class="ui_tooltip __right __l">--}}
-                {{--                            <span class="ui_tooltip_content">--}}
-                {{--                                {{__('Upload as a file')}}--}}
-                {{--                            </span>--}}
-                {{--                        </span>--}}
-                {{--                        </span>--}}
-                {{--                    </div>--}}
-                {{--                    <textarea name="keyPhrases" id="key-phrases-" rows="3"--}}
-                {{--                              class="form-control key-phrases-result unique-element-key-phrases"></textarea>--}}
-                {{--                </form>--}}
                 </tbody>
             </table>
         </div>
@@ -269,18 +226,9 @@
                         success: function (response) {
                             $('fieldset.unique-words-filter.mt-4.mb-3').show(400)
                             $('div.unique-words-result').show(400)
-                            // let step = calculatePercentTableGeneration(response.length)
-                            // let percent = 0
                             let progressBarTableId = $('#progress-bar-table')
                             let progressBarTable = $('.progress-bar-table')
-                            // progressBarTableId.show(400);
                             for (const [key, value] of Object.entries(response.list)) {
-                                // console.log(percent)
-                                // percent += step
-                                // progressBarTable.text(Math.round(percent) + '%');
-                                // progressBarTable.css({
-                                //     width: percent + '%'
-                                // })
                                 createRow(key, value)
                             }
                             setTimeout(() => {
@@ -325,7 +273,7 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "{{ route('createFile.unique.phrases') }}",
+                        url: "{{ route('create.file.unique.phrases') }}",
                         data: {
                             keyPhrases: $('#unique-words-textarea-' + key).val(),
                             _token: $('meta[name="csrf-token"]').attr('content')
@@ -349,18 +297,99 @@
                 return span;
             }
 
-            function createHelpIcons() {
-                // <div class="mb-1">
-                //     <i aria-hidden="true"
-                //        class="fa fa-plus-square-o"
-                //        id="unique-plus"
-                //        onclick="$('#test-res').show(400); $('.fa.fa-minus-square-o').show(400); $('.fa.fa-plus-square-o').hide(400)"></i>
-                //     <span id="unique-span"></span>
-                //     <i aria-hidden="true"
-                //        class="fa fa-minus-square-o"
-                //        id="unique-minus"
-                //        onclick="$('#test-res').hide(400);  $('.fa.fa-plus-square-o').show(400); $('.fa.fa-minus-square-o').hide(400)"></i>
-                // </div>
+            function confirmTextForCopy() {
+                var text = '';
+                var result = confirmSeparatorAndTittle()
+                let separator = result[0]
+                document.querySelectorAll('.table-row').forEach((el) => {
+                    console.log(el)
+                    if (document.getElementById('unique-word').checked) {
+                        text += el.children[1].innerText + ';'
+                    }
+                    if (document.getElementById('unique-word-forms').checked) {
+                        text += el.children[2].innerText + ';'
+                    }
+                    if (document.getElementById('number-occurrences').checked) {
+                        text += el.children[3].innerText + ';'
+                    }
+                    if (document.getElementById('key-phrases').checked) {
+                        let id = el.id.substr(16)
+                        if (document.getElementById('unique-words-textarea-' + id)) {
+                            text += document.getElementById('unique-words-textarea-' + id).value.replace('\n\n', separator)
+                        } else {
+                            text += document.getElementById('unique-words-td-id-' + id).innerHTML + separator
+                        }
+                    }
+                })
+
+                createElementForCopyInformationInBuffer(text)
+            }
+
+            function confirmTextForDownload() {
+                var text = '';
+                var result = confirmSeparatorAndTittle()
+                let separator = result[0]
+                text += result[1]
+                document.querySelectorAll('.table-row').forEach((el) => {
+                    if (document.getElementById('unique-word').checked) {
+                        text += el.children[1].innerText + ';'
+                    }
+                    if (document.getElementById('unique-word-forms').checked) {
+                        text += el.children[2].innerText + ';'
+                    }
+                    if (document.getElementById('number-occurrences').checked) {
+                        text += el.children[3].innerText + ';'
+                    }
+                    if (document.getElementById('key-phrases').checked) {
+                        let id = el.id.substr(16)
+                        if (document.getElementById('unique-words-textarea-' + id)) {
+                            let keyPhrases = document.getElementById('unique-words-textarea-' + id).innerHTML.split('\n\n')
+                            for (let i = 0; i < keyPhrases.length; i++) {
+                                text += keyPhrases[i] + '\n' + separator.slice(0, -1);
+                            }
+                        } else {
+                            text += document.getElementById('unique-words-td-id-' + id).innerHTML + separator
+                        }
+                    }
+                    text += '\n'
+                })
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('create.file.unique.words') }}",
+                    data: {
+                        text: text,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        $('.file-path-input').attr('value', response.fileName)
+                    }
+                });
+            }
+
+            function confirmSeparatorAndTittle() {
+                let separator = '';
+                let title = '';
+                if (document.getElementById('unique-word').checked) {
+                    title += '{{ __('Word') }};'
+                    separator += ';'
+                }
+                if (document.getElementById('unique-word-forms').checked) {
+                    title += '{{ __('Word forms') }};';
+                    separator += ';'
+                }
+                if (document.getElementById('number-occurrences').checked) {
+                    title += '{{ __('Number of occurrences') }};';
+                    separator += ';'
+                }
+                if (document.getElementById('key-phrases').checked) {
+                    title += '{{ __('Key phrases') }};';
+                    separator += ';'
+                }
+                title += '\n\n';
+
+                return [separator, title]
             }
 
         </script>
