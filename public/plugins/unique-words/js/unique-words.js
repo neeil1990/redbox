@@ -90,9 +90,9 @@ function createPlusSquare(key, value) {
     iPlus.className = 'fa fa-plus-square-o'
     iPlus.id = 'plus-' + key
     iPlus.onclick = function () {
-        $('#minus-' + key).show(300)
-        $('#parent-' + key).show(300)
-        $('#plus-' + key).hide(300)
+        $('#minus-' + key).show()
+        $('#parent-' + key).show()
+        $('#plus-' + key).hide()
     }
 
     return iPlus
@@ -103,9 +103,9 @@ function createMinusSquare(key) {
     iMinus.className = 'fa fa-minus-square-o'
     iMinus.id = 'minus-' + key
     iMinus.onclick = function () {
-        $('#minus-' + key).hide(300)
-        $('#parent-' + key).hide(300)
-        $('#plus-' + key).show(300)
+        $('#minus-' + key).hide()
+        $('#parent-' + key).hide()
+        $('#plus-' + key).show()
     }
 
     return iMinus
