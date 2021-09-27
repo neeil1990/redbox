@@ -92,6 +92,11 @@
             </div>
         </div>
         <div class="col-md-6">
+            @if (session('update_site_code'))
+                <div class="alert alert-info" role="alert">
+                    {{ session('update_site_code') }}
+                </div>
+            @endif
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">{{ __('Insert to your site before closed body') }}</h3>
@@ -116,8 +121,11 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            {!! Form::open(['method' => 'DELETE', 'route' => ['behavior.destroy', $behavior->id]]) !!}
+        <div class="col-md-6">
+            <a href="{{ route('behavior.edit_project', $behavior->id) }}" class="btn btn-success"><i class="fas fa-edit"></i> {{ __('Edit project') }}</a>
+        </div>
+        <div class="col-md-6">
+            {!! Form::open(['method' => 'DELETE', 'route' => ['behavior.destroy', $behavior->id], 'onSubmit' => 'deleteProject(this);return false;']) !!}
                 {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger']) !!}
             {!! Form::close() !!}
         </div>
@@ -149,7 +157,12 @@
                         }
                     });
                 });
-            })
+            });
+
+            function deleteProject(e) {
+                if (confirm('{{ __('You sure about that?') }}'))
+                    e.submit();
+            }
         </script>
     @endslot
 

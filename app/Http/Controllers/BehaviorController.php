@@ -37,9 +37,16 @@ class BehaviorController extends Controller
     public function check($id)
     {
         $behavior = Behavior::findOrFail($id);
-        $phrases = $behavior->phrases()->where('status', 0)->firstOrFail();
+        $phrases = $behavior->phrases()->where('status', 0)->first();
 
-        $domain = preg_replace('/(.)./', '$1*', $behavior->domain);
+        if(!$phrases){
+            Session::flash('adding_phrases', __('Please adding phrases.'));
+            return redirect()->route('behavior.edit', [$id]);
+        }
+
+        $arDomain = explode('.', $behavior->domain);
+        $domain = preg_replace('/(.)./iu', '$1*', $arDomain[0]);
+        $domain = implode('.', [$domain, $arDomain[1]]);
 
         return view('behavior.check', compact('phrases', 'domain', 'behavior'));
     }
@@ -128,6 +135,22 @@ class BehaviorController extends Controller
         return redirect()->route('behavior.index');
     }
 
+    public function updateProject(Request $request, Behavior $behavior)
+    {
+        $this->validate($request, [
+            'domain' => ['required', 'min:3'],
+            'minutes' => ['required', 'between:1,60'],
+            'clicks' => ['required', 'between:1,100'],
+            'pages' => ['required', 'between:1,100'],
+        ]);
+
+        $behavior->update($request->all());
+
+        Session::flash('update_site_code', __('Update code on your site!'));
+
+        return redirect()->route('behavior.show', [$behavior->id]);
+    }
+
     /**
      * Get a new, random ID.
      *
@@ -179,6 +202,15 @@ class BehaviorController extends Controller
     {
 
         return view('behavior.edit', compact('behavior'));
+    }
+
+    /**
+     * @param Behavior $behavior
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     */
+    public function editProject(Behavior $behavior)
+    {
+        return view('behavior.edit_project', compact('behavior'));
     }
 
     /**

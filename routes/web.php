@@ -29,8 +29,11 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('users', 'UsersController');
 
-    Route::resource('behavior', 'BehaviorController');
+    Route::get('behavior/{behavior}/edit-project', 'BehaviorController@editProject')->name('behavior.edit_project');
+    Route::patch('behavior/{behavior}/update-project', 'BehaviorController@updateProject')->name('behavior.update_project');
+
     Route::delete('behavior/phrase/{phrase}', 'BehaviorController@phraseDestroy')->name('behavior.phrase.destroy');
+    Route::resource('behavior', 'BehaviorController');
 
     Route::get('profile/', 'ProfilesController@index')->name('profile.index');
     Route::post('profile/', 'ProfilesController@update')->name('profile.update');
