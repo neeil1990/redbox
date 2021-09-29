@@ -1,9 +1,24 @@
-.toast{
+.toast {
     min-width: 300px;
 }
+
 img.img-flag {
-    margin: 0!important;
-    display: inherit!important;
+    margin: 0 !important;
+    display: inherit !important;
     height: 15px;
     width: 18px;
+}
+
+.user-panel img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.8rem !important;
+}
+
+.user-panel .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 0 0 5px !important;
 }
