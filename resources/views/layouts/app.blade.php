@@ -7,7 +7,8 @@
     <title>@yield('title')</title>
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <!-- IonIcons -->
@@ -23,17 +24,17 @@
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light" id="header-nav-bar">
         <!-- Left navbar links -->
-        @include('navigation.menu')
+    @include('navigation.menu')
 
-        <!-- Right navbar links -->
+    <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
             <!-- Navbar Search -->
-            @include('component.search')
+        @include('component.search')
 
-            <!-- Messages Dropdown Menu -->
-            @include('component.messages')
+        <!-- Messages Dropdown Menu -->
+        @include('component.messages')
 
-            <!-- Notifications Dropdown Menu -->
+        <!-- Notifications Dropdown Menu -->
             @include('component.notifications')
 
             <li class="nav-item">
@@ -55,14 +56,15 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Sidebar user panel (optional) -->
-            @auth
-                @include('users.panel')
-            @endauth
+        @auth
+            @include('users.panel')
+        @endauth
 
-            <!-- SidebarSearch Form -->
+        <!-- SidebarSearch Form -->
             <div class="form-inline">
                 <div class="input-group" data-widget="sidebar-search">
-                    <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                    <input class="form-control form-control-sidebar" type="search" placeholder="Search"
+                           aria-label="Search">
                     <div class="input-group-append">
                         <button class="btn btn-sidebar">
                             <i class="fas fa-search fa-fw"></i>
@@ -72,34 +74,16 @@
             </div>
 
             <!-- Sidebar Menu -->
-            @include('navigation.sidebar')
-            <!-- /.sidebar-menu -->
+        @include('navigation.sidebar')
+        <!-- /.sidebar-menu -->
         </div>
         <!-- /.sidebar -->
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0">Dashboard v3</h1>
-                    </div><!-- /.col -->
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Dashboard v3</li>
-                        </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
-        </div>
-        <!-- /.content-header -->
-
         <!-- Main content -->
-        <div class="content" id="app">
+        <div class="content pt-5" id="app">
             <div class="container-fluid">
                 @yield('content')
             </div>
@@ -128,7 +112,7 @@
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- app -->
 @unless(request()->path() == 'utm-marks')
-<script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 @endunless
 <!-- AdminLTE -->
 <script src="{{ asset('js/adminlte.js') }}"></script>
