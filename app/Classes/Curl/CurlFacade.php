@@ -61,7 +61,7 @@ class CurlFacade
 
         if($response['status'] == 301 || $response['status'] == 302){
             $this->data[] = $response;
-            $this->url = $this->checkUrl($response['headers']['location']);
+            $this->url = $this->checkUrl($response['headers']['Location']);
             return $this->response();
         }
         $this->data[] = $response;
