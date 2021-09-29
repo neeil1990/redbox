@@ -3,6 +3,7 @@
 
 namespace App\Classes\Curl;
 
+use Illuminate\Support\Str;
 use Ixudra\Curl\Facades\Curl;
 class CurlFacade
 {
@@ -60,7 +61,7 @@ class CurlFacade
 
         if($response['status'] == 301 || $response['status'] == 302){
             $this->data[] = $response;
-            $this->url = $response['headers']['Location'];
+            $this->url = $this->checkUrl($response['headers']['location']);
             return $this->response();
         }
         $this->data[] = $response;
@@ -76,5 +77,16 @@ class CurlFacade
         return $this->data;
     }
 
+    private function checkUrl($url)
+    {
+        if(!parse_url($url, PHP_URL_HOST)){
+            $arUrl = parse_url(request('url'));
+            $domain = implode('://', [$arUrl['scheme'], $arUrl['host']]);
+            $url = $domain . $url;
+
+            return $url;
+        }
+        return $url;
+    }
 
 }
