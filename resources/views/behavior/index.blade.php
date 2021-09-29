@@ -7,14 +7,6 @@
     <div class="card">
         <div class="card-header border-0">
             <h3 class="card-title">{{ __('Sites') }}</h3>
-            <div class="card-tools">
-                <a href="#" class="btn btn-tool btn-sm">
-                    <i class="fas fa-download"></i>
-                </a>
-                <a href="#" class="btn btn-tool btn-sm">
-                    <i class="fas fa-bars"></i>
-                </a>
-            </div>
         </div>
 
         <div class="card-body table-responsive p-0">
@@ -22,6 +14,7 @@
                 <thead>
                 <tr>
                     <th>{{ __('Domain') }}</th>
+                    <th></th>
                     <th>{{ __('Url') }}</th>
                     <th></th>
                 </tr>
@@ -32,10 +25,21 @@
                 <tr>
                     <td><a href="{{ route('behavior.show', [$behavior->id]) }}" class="text-muted text-bold">{{ $behavior->domain }}</a></td>
                     <td>
-                        {{ route('behavior.check', [$behavior->id]) }}
-                        <a href="{{ route('behavior.check', [$behavior->id]) }}" target="_blank" class="text-muted"> <i class="fas fa-window-restore"></i></a>
+                        <a href="{{ route('behavior.show', [$behavior->id]) }}" class="btn btn-app">
+                            <i class="fas fa-project-diagram"></i> {{ __('Go to project') }}
+                        </a>
                     </td>
                     <td>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="{{ route('behavior.check', [$behavior->id]) }}">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <a href="{{ route('behavior.check', [$behavior->id]) }}" target="_blank" class="text-muted"> <i class="fas fa-window-restore"></i></a>
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center">
                         <a href="{{ route('behavior.edit', [$behavior->id]) }}" class="btn btn-app">
                             <i class="fas fa-edit"></i> {{ __('Add request') }}
                         </a>
@@ -49,7 +53,7 @@
 
         <div class="card-footer clearfix">
             <a href="{{ route('behavior.create') }}" class="btn btn-secondary">
-                <i class="fas fa-plus"></i> {{ __('Add item') }}
+                <i class="fas fa-plus"></i> {{ __('Add project') }}
             </a>
         </div>
     </div>

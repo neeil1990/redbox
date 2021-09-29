@@ -5,6 +5,12 @@
     @endslot
 
     <div class="col-md-6">
+        @if (session('adding_phrases'))
+            <div class="alert alert-danger" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                {{ session('adding_phrases') }}
+            </div>
+        @endif
         <div class="card card-primary">
             <div class="card-header">
                 <h3 class="card-title">{{ __('Requests') }}</h3>
