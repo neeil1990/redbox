@@ -22,3 +22,13 @@ img.img-flag {
     align-items: center;
     padding: 0 0 0 5px !important;
 }
+
+.login-box{
+    width: 600px;
+}
+
+@media (max-width: 768px) {
+    .login-box{
+        width: 360px;
+    }
+}

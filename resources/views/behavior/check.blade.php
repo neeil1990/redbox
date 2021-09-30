@@ -1,6 +1,7 @@
 @extends('layouts.auth')
 
 @section('content')
+
     <div class="login-box">
         @if (session('applied'))
             <div class="alert alert-success" role="alert">
@@ -14,7 +15,7 @@
             </div>
             <div class="card-body">
                 <p class="login-box-msg">
-                    {{$behavior->description}}<br/>
+                    {!! $behavior->description !!}<br/>
                     <span class="text-lg">{{ __('Search request') }}: {{ $phrases->phrase }}</span><br/>
                     <span class="text-lg">{{ __('Domain') }}: {{ $domain }}</span>
                 </p>
