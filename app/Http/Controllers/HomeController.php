@@ -25,7 +25,7 @@ class HomeController extends Controller
     {
         $posts = DescriptionProject::orderBy('order', 'ASC')->get();
 
-        return view('projects', compact('posts'));
+        return view('home', compact('posts'));
     }
 
     /**
