@@ -6,18 +6,13 @@ use App\DescriptionProject;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
-class HomeController extends Controller
+class DescriptionProjectController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('role:user');
-    }
-
     /**
      * @return array|false|Application|Factory|View|mixed
      */
@@ -44,6 +39,7 @@ class HomeController extends Controller
             }
         }
 
-        return response('success');
+        return response('success', 200);
     }
+
 }
