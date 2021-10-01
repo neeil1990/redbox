@@ -44,7 +44,7 @@ class DescriptionProjectForAdminController extends Controller
         ]);
 
         DescriptionProject::create($request->all());
-        return Redirect::back();
+        return Redirect::refresh();
     }
 
     /**
