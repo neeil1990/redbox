@@ -25,8 +25,8 @@ Route::post('public/behavior/verify', 'BehaviorController@verify')->name('behavi
 
 Route::middleware(['verified'])->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::post('project-sortable','HomeController@updateOrder');
 
-    Route::post('project-sortable','DescriptionProjectController@updateOrder');
     Route::resource('main-projects','DescriptionProjectForAdminController');
 
     Route::resource('users', 'UsersController');

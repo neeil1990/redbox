@@ -26,7 +26,6 @@ class DescriptionProjectForAdminController extends Controller
         return view('main-projects.index', compact(['data']));
     }
 
-
     /**
      * @return array|false|Application|Factory|View|mixed
      */
