@@ -12,7 +12,7 @@
     <body>
     <div id="tablecontents" class="row p-0 m-0">
         @foreach($posts as $post)
-            <div class="card col-3 p-0 ml-auto mr-auto" data-id="{{ $post->id }}">
+            <div class="card col-4 p-0 ml-auto mr-auto" data-id="{{ $post->id }}">
                 <div class="card-header">
                     <h5 class="card-title">{{ $post->title }}</h5>
                 </div>
