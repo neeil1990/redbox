@@ -1,7 +1,8 @@
 @component('component.card', ['title' => __('Behavior')])
 
     @slot('css')
-
+        <!-- summernote -->
+        <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
     @endslot
 
     <div class="col-md-6">
@@ -34,7 +35,7 @@
                 </div>
                 <div class="form-group">
                     {!! Form::label('description', __('Description')) !!}
-                    {!! Form::textarea('description', null, ['class' => 'form-control' . ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => __('Description')]) !!}
+                    {!! Form::textarea('description', null, ['id' => 'summernoteProject', 'class' => 'form-control' . ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => __('Description')]) !!}
                     @error('description') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                 </div>
 
@@ -47,7 +48,20 @@
     </div>
 
     @slot('js')
+        <!-- Summernote -->
+        <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
 
+        <script>
+            $(document).ready(function() {
+                $('#summernoteProject').summernote({
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline']],
+                        ['font', ['superscript', 'subscript']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                    ]
+                });
+            });
+        </script>
     @endslot
 
 
