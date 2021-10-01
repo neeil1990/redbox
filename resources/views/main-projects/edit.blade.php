@@ -9,7 +9,7 @@
 
         <div class="form-group required">
             {!! Form::label("description") !!}
-            {!! Form::text("description", $data->description ,["class"=>"form-control","required"=>"required"]) !!}
+            {!! Form::textarea("description", $data->description ,["class"=>"form-control","required"=>"required"]) !!}
         </div>
 
         <div class="form-group required">
