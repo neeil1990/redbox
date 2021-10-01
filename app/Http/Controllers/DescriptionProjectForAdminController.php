@@ -7,6 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class DescriptionProjectForAdminController extends Controller
@@ -34,10 +35,6 @@ class DescriptionProjectForAdminController extends Controller
         return view('main-projects.create');
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -47,7 +44,7 @@ class DescriptionProjectForAdminController extends Controller
         ]);
 
         DescriptionProject::create($request->all());
-        return self::index();
+        return Redirect::back();
     }
 
     /**
