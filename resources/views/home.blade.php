@@ -9,10 +9,10 @@
         @foreach($result as $item)
             <div class="card col-4 p-0" data-id="{{ $item['id'] }}">
                 <div class="card-header">
-                    <h5 class="card-title">{{ $item['title'] }}</h5>
+                    <h5 class="card-title">{{ __($item['title']) }}</h5>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">{{ $item['description'] }}</p>
+                    <p class="card-text">{{ __($item['description']) }}</p>
                 </div>
                 <div class="card-footer">
                     <a href="{{ $item['link'] }}" class="btn btn-primary">link to service</a>

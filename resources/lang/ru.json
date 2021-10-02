@@ -299,23 +299,23 @@
   "Pages visit": "Просмотренных страниц",
   "Description": "Описание задачи",
   "Save": "Сохранить",
-  "Url": "Адрес", 
-  "Requests": "Запросы", 
-  "Add key phrases request": "Добавить ключевой запрос",   
-  "Search request": "Поисковой запрос", 
-  "Enter the site visit code": "Введите код с сайта",   
-  "Send code": "Отправить код",  
-  "Enter your exercise": "Ваше задание", 
-  "Edit project": "Изменить проект", 
+  "Url": "Адрес",
+  "Requests": "Запросы",
+  "Add key phrases request": "Добавить ключевой запрос",
+  "Search request": "Поисковой запрос",
+  "Enter the site visit code": "Введите код с сайта",
+  "Send code": "Отправить код",
+  "Enter your exercise": "Ваше задание",
+  "Edit project": "Изменить проект",
 
-  "Minutes": "Минуты", 
-  "Clicks": "Клики", 
-  "Pages": "Страницы", 
-  "Phrase": "Фраза", 
-  "Code": "Код", 
-  "Insert to your site before closed body": "Вставьте на ваш сайт перед закрывающим тегом body", 
-  "Promo code applied!": "Промо код принят", 
- 
+  "Minutes": "Минуты",
+  "Clicks": "Клики",
+  "Pages": "Страницы",
+  "Phrase": "Фраза",
+  "Code": "Код",
+  "Insert to your site before closed body": "Вставьте на ваш сайт перед закрывающим тегом body",
+  "Promo code applied!": "Промо код принят",
+
 
 
   "######################## Пользователи https://lk.redbox.su/users ###############################": "",
@@ -338,8 +338,9 @@
 
   "Add description": "Добавить описание",
 
-  "You sure about that?": "Вы действительно это хотите сделать?"
+  "You sure about that?": "Вы действительно это хотите сделать?",
 
 
-
+  "#################################### Main page ########################": "",
+  "Main page": "Главная"
 }
