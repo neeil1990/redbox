@@ -157,8 +157,8 @@
     "Comparison type:": "Тип сравнения",
     "Unique phrases that are in each of the two lists": "Уникальные фразы, которые есть в каждом из двух списков",
     "a list of keywords that were found in both the first and second list (intersection)": "список ключевых слов, которые были найдены как в первом, так и во втором списке (пересечение)",
-    "Unique phrases that are in either of the two lists":"Уникальные фразы, которые есть в любом из двух списков",
-    "a list of keywords that were found in any of the lists (combining)":"список ключевых фраз, которые нашлись в любом из списков (объединение)",
+    "Unique phrases that are in either of the two lists": "Уникальные фразы, которые есть в любом из двух списков",
+    "a list of keywords that were found in any of the lists (combining)": "список ключевых фраз, которые нашлись в любом из списков (объединение)",
     "Unique phrases that are only in the first list": "Уникальные фразы, которые есть только в первом списке",
     "a list of keywords that are in the first list, but not in the second": "список ключевых фраз, которые есть в первом списке, но нет во втором",
     "Unique phrases that are only in the second list": "Уникальные фразы, которые есть только во втором списке",
@@ -342,5 +342,14 @@
 
 
   "#################################### Main page ########################": "",
-  "Main page": "Главная"
+  "Main page": "Главная",
+  "The service helps to cross queries, get unique phrases at the output for subsequent processing or parsing, or subsequent quick search for competitors on the page.": "Сервис помогает скрещивать запросы, на выходе получать уникальные словосочетания для последующей обработки или парсинга, или последующего быстрого поиска конкурентов на странице",
+  "Our online password generator is a universal tool for online generation of a high-quality and secure, tamper-resistant and easy-to-remember password according to selected parameters using various characters": "Наш онлайн генератор паролей – это универсальное средство для онлайн генерации качественного и безопасного, устойчивого к взлому и легко запоминающегося пароля по выбранным параметрам с использованием различных символов",
+  "This tool will instantly calculate how many characters and spaces there are in your text, as well as the number of characters without spaces and the number of words in the text.\n\nIf you type text not in a text editor, but in a notepad or browser, then this tool will become your faithful assistant.": "Этот инструмент мгновенно просчитает, сколько всего символов и пробелов в вашем тексте, а так же количество символов без пробелов и количество слов в тексте.\n\nЕсли вы набираете текст не в текстовом редакторе, а в блокноте или браузере, то данный инструмент станет вашим верным помощником.",
+  "To simplify the answer to the stated question, the HTML editor is a tool program used to write the basics of websites. And, despite the fact that almost any text editor can be used to create websites, this does not mean that it is better for you to use a regular text editor instead of a specially created developer tool.": "Если упростить ответ на заявленный вопрос – редактор HTML это программа-инструмент, используемая для написания основы веб-сайтов. И, несмотря на то, что практически любой текстовый редактор может использоваться для создания сайтов, это вовсе не означает, что вам лучше использовать обычный текстовый редактор вместо специально созданного инструмента разработчика.",
+  "For example, you have a list of pages with each new line or a list of keywords where you need to remove duplicates.": "Например у вас есть список страниц с каждой новой строки или список ключевых слов, где нужно удалить дубликаты.",
+  "ROI calculator. ROI is a key indicator in arbitration, it reflects the effectiveness of your advertising company.": "Калькулятор ROI. ROI — ключевой показатель в арбитраже, отражает эффективность вашей рекламной компании.",
+  "Http headers": "Заголовки Http",
+  "Link to service": "Ссылка на сервис"
+
 }

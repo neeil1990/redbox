@@ -15,7 +15,7 @@
                     <p class="card-text">{{ __($item['description']) }}</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ $item['link'] }}" class="btn btn-primary">link to service</a>
+                    <a href="{{ $item['link'] }}" class="btn-link">{{ __('Link to service') }}</a>
                 </div>
             </div>
         @endforeach
