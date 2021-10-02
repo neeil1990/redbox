@@ -5,6 +5,8 @@
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <body>
+    <h4>{{ __('On this page there are our services that you can use.') }}</h4>
+    <p class="text-muted"> {{ __('You can drag and drop services, thereby setting up a convenient order for you') }}</p>
     <div id="tablecontents" class="row p-0 m-0">
         @foreach($result as $item)
             <div class="card col-4 p-0" data-id="{{ $item['id'] }}">
