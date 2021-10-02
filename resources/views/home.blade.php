@@ -6,16 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <body>
     <div id="tablecontents" class="row p-0 m-0">
-        @foreach($posts as $post)
-            <div class="card col-4 p-0" data-id="{{ $post->id }}">
+        @foreach($result as $item)
+            <div class="card col-4 p-0" data-id="{{ $item['id'] }}">
                 <div class="card-header">
-                    <h5 class="card-title">{{ $post->title }}</h5>
+                    <h5 class="card-title">{{ $item['title'] }}</h5>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">{{ $post->description }}</p>
+                    <p class="card-text">{{ $item['description'] }}</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ $post->link }}" class="btn btn-primary">link to service</a>
+                    <a href="{{ $item['link'] }}" class="btn btn-primary">link to service</a>
                 </div>
             </div>
         @endforeach
@@ -35,12 +35,12 @@
                 });
 
                 function sendOrderToServer() {
-                    var order = [];
+                    var orders = [];
                     var token = $('meta[name="csrf-token"]').attr('content');
                     $('div.card').each(function (index) {
-                        order.push({
+                        orders.push({
                             id: $(this).attr('data-id'),
-                            position: index + 1
+                            // position: index + 1
                         });
                     });
 
@@ -49,7 +49,7 @@
                         dataType: "json",
                         url: "{{ url('project-sortable') }}",
                         data: {
-                            order: order,
+                            orders: orders,
                             _token: token
                         },
                     });

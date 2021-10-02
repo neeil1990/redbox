@@ -87,6 +87,6 @@ class DescriptionProjectForAdminController extends Controller
     public function destroy($id): RedirectResponse
     {
         DescriptionProject::where('id', $id)->delete();
-        return redirect()->back()->with('success', 'Delete Successfully');
+        return redirect()->back();
     }
 }

@@ -18,7 +18,6 @@ class CreateProjectTable extends Migration
             $table->string('title', 100);
             $table->text('description');
             $table->string('link');
-            $table->integer('order')->default(0);
             $table->timestamps();
         });
     }
