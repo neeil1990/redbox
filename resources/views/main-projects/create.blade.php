@@ -1,9 +1,8 @@
 @component('component.card', ['title' => __('Create project')])
 @section('content')
-    <h3 class="pt-2 pb-2">{{ __('This module allows you to create services that are displayed on the main page') }}</h3>
-    <span
-        class="text-info"> {{ __('When you create a project, you need to manually add the localization text to the item') }}</span>
-    <p class="text-info">######################## Main page ########################</p>
+    <h4 class="pt-2 pb-2">{{ __('This module allows you to create services that are displayed on the main page') }}</h4>
+    <span class="text-muted"> {{ __('When you create a project, you need to manually add the localization text to the item') }}</span>
+    <p class="text-muted">######################## Main page ########################</p>
     {!! Form::open(['action' =>'DescriptionProjectForAdminController@store', 'method' => 'POST'])!!}
     <div class="col-md-6 mt-3">
         <div class="form-group required">

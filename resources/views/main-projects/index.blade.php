@@ -15,15 +15,15 @@
                     <tr>
                         <td>{{$row->id }}</td>
                         <td>{{$row->title }}</td>
-                        <td>{{$row->description }}</td>
+                        <td class="w-50">{{$row->description }}</td>
                         <td>{{$row->link }}</td>
-                        <td>
-                            <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default w-75">
+                        <td class="d-flex flex-row">
+                            <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default mr-2">
                                 <i class="fa fa-edit"></i>
                             </a>
                             <form action="{{ route('main-projects.destroy', $row->id)}}" method="post">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-default w-75" type="submit">
+                                <button class="btn btn-default" type="submit">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </form>
@@ -32,9 +32,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <a href="{{ route('main-projects.create')}}" class="btn btn-secondary">
-                Create new
-            </a>
+            <a href="{{ route('main-projects.create')}}" class="btn btn-secondary">{{ __('Create new') }}</a>
         </div>
     </div>
 @endsection
