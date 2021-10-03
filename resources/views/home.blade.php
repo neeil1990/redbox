@@ -11,8 +11,8 @@
         @foreach($result as $item)
             <div class="card col-3 ml-auto mr-auto p-0" data-id="{{ $item['id'] }}">
                 <div class="card-header d-flex w-100">
-                    <h5 class="card-title w-50">{{ __($item['title']) }}</h5>
-                    <span class="handle ui-sortable-handle w-50 text-right">
+                    <h5 class="card-title w-75">{{ __($item['title']) }}</h5>
+                    <span class="handle ui-sortable-handle w-25 text-right">
                       <i class="fas fa-ellipsis-v"></i>
                       <i class="fas fa-ellipsis-v"></i>
                     </span>
