@@ -5,3 +5,7 @@
 .handle.ui-sortable-handle:hover {
     cursor: move;
 }
+
+div.card {
+    width: 30%;
+}

@@ -9,7 +9,7 @@
     <p class="text-muted pl-2"> {{ __('You can drag and drop services, thereby setting up a convenient order for you') }}</p>
     <div id="tablecontents" class="row p-0 pl-2">
         @foreach($result as $item)
-            <div class="card col-lg-3 col-sm-5 p-0 mr-2 ml-2" data-id="{{ $item['id'] }}">
+            <div class="card p-0 mr-2 ml-2" data-id="{{ $item['id'] }}">
                 <div class="card-header d-flex w-100">
                     <h5 class="card-title w-75">{{ __($item['title']) }}</h5>
                     <span class="handle ui-sortable-handle w-25 text-right">
