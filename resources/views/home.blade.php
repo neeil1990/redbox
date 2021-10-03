@@ -9,15 +9,19 @@
     <p class="text-muted"> {{ __('You can drag and drop services, thereby setting up a convenient order for you') }}</p>
     <div id="tablecontents" class="row p-0 m-0">
         @foreach($result as $item)
-            <div class="card col-4 p-0" data-id="{{ $item['id'] }}">
-                <div class="card-header">
-                    <h5 class="card-title">{{ __($item['title']) }}</h5>
+            <div class="card col-3 ml-auto mr-auto p-0" data-id="{{ $item['id'] }}">
+                <div class="card-header d-flex w-100">
+                    <h5 class="card-title w-50">{{ __($item['title']) }}</h5>
+                    <span class="handle ui-sortable-handle w-50 text-right">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </span>
                 </div>
                 <div class="card-body">
                     <p class="card-text">{{ __($item['description']) }}</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ $item['link'] }}" class="btn-link" target="_blank">{{ __('Link to service') }}</a>
+                    <a href="{{ $item['link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
                 </div>
             </div>
         @endforeach
@@ -42,7 +46,6 @@
                     $('div.card').each(function (index) {
                         orders.push({
                             id: $(this).attr('data-id'),
-                            // position: index + 1
                         });
                     });
 
