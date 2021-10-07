@@ -50,7 +50,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="index3.html" class="brand-link">
-            <img src="/logo.svg" alt="RedBox" class="brand-image">
+            <img src="img/logo.svg" alt="RedBox" class="brand-image">
         </a>
 
         <!-- Sidebar -->
