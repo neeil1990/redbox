@@ -80,12 +80,17 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('backlink') }}" class="nav-link">
+                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
+                <p>{{ __('Link Tracking') }}</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="https://docs.google.com/document/d/1TpjCQjXYV_ZWyxD-c8plld7m2-dce4fSGuMz0fgytK4/edit"
                target="_blank" class="nav-link">
                 <ion-icon name="document-text-outline" class="nav-icon"></ion-icon>
                 <p>{{ __('Documentation') }}</p>
             </a>
         </li>
-
     </ul>
 </nav>

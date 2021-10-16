@@ -1,0 +1,153 @@
+@component('component.card', ['title' => __('Link tracking')])
+@section('content')
+    @slot('css')
+        <link rel="stylesheet" type="text/css"
+              href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
+    @endslot
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <div id="toast-container" class="toast-top-right success-message">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message"> Success changed</div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-top-right error-message">
+        <div class="toast toast-error" aria-live="assertive">
+            <div class="toast-message error-msg">The field must contain more than 0 characters</div>
+        </div>
+    </div>
+    <div class='mt-3'>
+        <div class='form-group required' projectId="{{ $project->id }}">
+            {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-4 project-name project-name','required' => 'required','placeholder' => 'Project name']) !!}
+        </div>
+        <table id="example2"
+               class="table table-bordered table-hover dataTable dtr-inline"
+               role="grid"
+               aria-describedby="example2_info">
+            <thead>
+            <tr>
+                <th>Link</th>
+                <th>Site donor</th>
+                <th>Anchor</th>
+                <th>Check nofollow</th>
+                <th>Check noindex</th>
+                <th>Last check</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($project->link as $link)
+                <tr id="{{ $link->id }}">
+                    <td>
+                        {!! Form::text('link', $link->link ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'link']) !!}
+                    </td>
+                    <td>
+                        {!! Form::text('site_donor', $link->site_donor ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Site donor']) !!}
+                    </td>
+                    <td>
+                        {!! Form::text('anchor', $link->anchor ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Anchor']) !!}
+                    </td>
+                    <td>
+                        {!! Form::input('number', 'nofollow', $link->nofollow, ['class' => 'form-control backlink', 'max'=>1, 'min' => 0]) !!}
+                    </td>
+                    <td>
+                        {!! Form::input('number', 'noindex', $link->noindex, ['class' => 'form-control backlink', 'max'=>1, 'min' => 0]) !!}
+                    </td>
+                    <td>@isset($link->last_check){{ $link->last_check }}@endisset</td>
+                    <td>
+                        @if((boolean)$link->broken)
+                            <span class="text-danger">{{ $link->status }}</span>
+                        @else
+                            <span class="text-info">{{ $link->status }}</span>
+                        @endif
+                    </td>
+                    <td class="d-flex">
+                        <form action="{{ route('check.link', $link->id)}}" method="get" class="mr-3">
+                            @csrf
+                            <button class="btn btn-default" type="submit">
+                                <i aria-hidden="true" class="fa fa-search"></i>
+                            </button>
+                        </form>
+                        <form action="{{ route('delete.link', $link->id)}}" method="post">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-default" type="submit">
+                                <i aria-hidden="true" class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+            @endforeach
+        </table>
+        <div class='pt-3'>
+            <a href='{{ route('add.link.view', $project->id) }}' class='btn btn-secondary'> {{ __('Add') }}</a>
+            <a href='{{ route('backlink') }}' class='btn btn-default'> {{ __('Back') }}</a>
+        </div>
+    </div>
+    @slot('js')
+        <script>
+            var oldValue = ''
+            var oldProjectName = ''
+            $(document).ready(function () {
+                $(".form-control.col-4.project-name").focus(function () {
+                    oldProjectName = $(this).val()
+                })
+                $(".form-control.col-4.project-name").blur(function () {
+                    if (oldProjectName !== $(this).val()) {
+                        console.log($(this).parent().attr("projectId"))
+                        console.log($(this).attr('name'))
+                        console.log($(this).val())
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('edit.backlink') }}",
+                            data: {
+                                id: $(this).parent().attr("projectId"),
+                                name: $(this).attr('name'),
+                                option: $(this).val(),
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function () {
+                            },
+                            error: function () {
+                            }
+                        });
+                    }
+                })
+                $(".backlink").focus(function () {
+                    oldValue = $(this).val()
+                })
+                $(".backlink").blur(function () {
+                    if (oldValue != $(this).val()) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('edit.link') }}",
+                            data: {
+                                id: $(this).parent().parent().attr("id"),
+                                name: $(this).attr('name'),
+                                option: $(this).val(),
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function () {
+                                $('.toast-top-right.success-message').show(300)
+                                setTimeout(() => {
+                                    $('.toast-top-right.success-message').hide(300)
+                                }, 4000)
+                            },
+                            error: function () {
+                                $('.toast-top-right.error-message').show()
+                                setTimeout(() => {
+                                    $('.toast-top-right.error-message').hide(300)
+                                }, 4000)
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    @endslot
+@endsection
+@endcomponent

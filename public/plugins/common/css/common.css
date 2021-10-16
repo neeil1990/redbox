@@ -1,0 +1,208 @@
+.ui_tooltip {
+    color: #000;
+    display: none;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.375;
+    position: absolute;
+    text-align: left;
+    z-index: 1000;
+}
+
+.ui_tooltip.__top {
+    left: 50%;
+    padding: 0 0 11px;
+    top: 0;
+    transform: translate(-50%, -100%);
+}
+
+.ui_tooltip.__top .ui_tooltip_content:before {
+    border-color: rgba(0, 0, 0, .1) transparent transparent;
+    border-width: 12px 9px 0;
+    bottom: -14px;
+}
+
+.ui_tooltip.__top .ui_tooltip_content:after, .ui_tooltip.__top .ui_tooltip_content:before {
+    border-style: solid;
+    content: " ";
+    height: 0;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 0;
+}
+
+.ui_tooltip.__top .ui_tooltip_content:after {
+    border-color: #fff transparent transparent;
+    border-width: 11px 9px 0;
+    bottom: -11px;
+}
+
+.ui_tooltip.__bottom {
+    bottom: 0;
+    left: 50%;
+    padding: 11px 0 0;
+    transform: translate(-50%, 100%);
+}
+
+.ui_tooltip.__bottom .ui_tooltip_content:before {
+    border-color: transparent transparent rgba(0, 0, 0, .1);
+    border-width: 0 9px 12px;
+    top: -14px;
+}
+
+.ui_tooltip.__bottom .ui_tooltip_content:after, .ui_tooltip.__bottom .ui_tooltip_content:before {
+    border-style: solid;
+    content: " ";
+    height: 0;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 0;
+}
+
+.ui_tooltip.__bottom .ui_tooltip_content:after {
+    border-color: transparent transparent #fff;
+    border-width: 0 9px 11px;
+    top: -11px;
+}
+
+.ui_tooltip.__left {
+    left: 0;
+    top: 50%;
+    transform: translate(-100%, -50%);
+}
+
+.ui_tooltip.__left .ui_tooltip_content {
+    right: 11px;
+}
+
+.ui_tooltip.__left .ui_tooltip_content:before {
+    border-color: transparent transparent transparent rgba(0, 0, 0, .1);
+    border-width: 12px 0 12px 9px;
+    right: -11px;
+}
+
+.ui_tooltip.__left .ui_tooltip_content:after, .ui_tooltip.__left .ui_tooltip_content:before {
+    border-style: solid;
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+}
+
+.ui_tooltip.__left .ui_tooltip_content:after {
+    border-color: transparent transparent transparent #fff;
+    border-width: 10px 0 11px 9px;
+    right: -9px;
+}
+
+.ui_tooltip.__right {
+    padding: 0 0 0 11px;
+    right: 0;
+    top: 50%;
+    transform: translate(100%, -50%);
+}
+
+.ui_tooltip.__right .ui_tooltip_content:before {
+    border-color: transparent rgba(0, 0, 0, .1) transparent transparent;
+    border-width: 12px 9px 12px 0;
+    left: -11px;
+}
+
+.ui_tooltip.__right .ui_tooltip_content:after, .ui_tooltip.__right .ui_tooltip_content:before {
+    border-style: solid;
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+}
+
+.ui_tooltip.__right .ui_tooltip_content:after {
+    border-color: transparent #fff transparent transparent;
+    border-width: 10px 9px 11px 0;
+    left: -9px;
+}
+
+.ui_tooltip_content {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 4px;
+    box-shadow: 0 2px 3px 0 rgba(8, 9, 9, .3);
+    box-sizing: border-box;
+    display: block;
+    padding: 11px 22px;
+    position: relative;
+}
+
+.ui_tooltip_w {
+    position: relative;
+}
+
+.ui_tooltip_w:hover > .ui_tooltip {
+    display: block;
+}
+
+
+.ui_page {
+    overflow: visible;
+}
+
+.elama-lightbox, .elama-lightbox.__alt {
+    margin-top: 0;
+}
+
+.select2-dropdown {
+    z-index: 1;
+}
+
+.ui_btn {
+    background: #cdb477;
+    border: 0;
+    border-radius: 2px;
+    color: #fff;
+    display: inline-block;
+    font-family: Open Sans, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    height: 34px;
+    line-height: 34px;
+    outline: none;
+    padding: 0 20px;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+.fa {
+    display: inline-block;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    moz-osx-font-smoothing: grayscale;
+    webkit-font-smoothing: antialiased;
+    color: gray;
+}
+
+.fa-question-circle:before {
+    content: "\F059";
+}
+
+.list-w-img-container .list a.item-title {
+    font-size: 24px;
+    font-family: Open Sans, sans-serif;
+}
+
+label:not(.form-check-label):not(.custom-file-label) {
+    font-weight: 400;
+}
+
+.count-phrases {
+    color: #888;
+    font: 13px/18px "Open Sans",sans-serif;
+    padding-top: 6px;
+}

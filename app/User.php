@@ -89,7 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function passwords()
     {
-        return $this->hasMany('App\PasswordsGenerator')
+        return $this->hasMany(PasswordsGenerator::class)
             ->orderBy('id', 'desc')
             ->latest('created_at')
             ->limit(30);

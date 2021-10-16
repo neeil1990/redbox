@@ -1,11 +1,9 @@
 @component('component.card', ['title' => __('Password generator')])
-
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
     @endslot
-
     <div class="password-generator">
         <div>
             <form action="{{  route('generate.password') }}" method="post">

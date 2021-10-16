@@ -28,9 +28,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('test', 'TestController@index')->name('test');
 
     Route::get('/', 'HomeController@index')->name('home');
-    Route::post('project-sortable','HomeController@updateOrder');
+    Route::post('project-sortable', 'HomeController@updateOrder');
 
-    Route::resource('main-projects','DescriptionProjectForAdminController');
+    Route::resource('main-projects', 'DescriptionProjectForAdminController');
 
     Route::resource('users', 'UsersController');
 
@@ -76,7 +76,43 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('edit-description{id}', 'TextEditorController@editDescriptionView')->name('edit.description');
     Route::post('edit-description', 'TextEditorController@editDescription')->name('save.edit.description');
-    Route::get('description/delete{id}', 'TextEditorController@destroyDescription')->name('delete.description');
+    Route::delete('description/delete{id}', 'TextEditorController@destroyDescription')->name('delete.description');
     Route::get('create-description', 'TextEditorController@createDescriptionView')->name('create.description');
     Route::post('save-description', 'TextEditorController@createDescription')->name('save.description');
+
+    Route::get('backlink', 'BacklinkController@index')->name('backlink');
+
+    Route::get('add-backlink', 'BacklinkController@createView')->name('add.backlink');
+    Route::post('add-backlink', 'BacklinkController@store')->name('add.backlink');
+
+    Route::delete('delete-backlink/{id}', 'BacklinkController@remove')->name('delete.backlink');
+    Route::get('show-backlink/{id}', 'BacklinkController@show')->name('show.backlink');
+    Route::post('edit-backlink', 'BacklinkController@edit')->name('save.changes.backlink');
+
+    Route::get('check-link/{id}', 'BacklinkController@checkLink')->name('check.link');
+    Route::delete('delete-link/{id}', 'BacklinkController@removeLink')->name('delete.link');
+
+    Route::post('edit-link', 'BacklinkController@editLink')->name('edit.link');
+    Route::get('add-link/{id}', 'BacklinkController@addLinkView')->name('add.link.view');
+
+    Route::post('add-link', 'BacklinkController@storeLink');
+    Route::post('edit-backlink', 'BacklinkController@editBacklink')->name('edit.backlink');
 });
+
+
+Route::get('broken-link', function () {
+//    $ls = \App\LinkTracking::all();
+//    foreach ($ls as $l) {
+//        \Symfony\Component\VarDumper\VarDumper::dump($l);
+//        \Symfony\Component\VarDumper\VarDumper::dump($l->brokenLink);
+//    }
+//    dd(123);
+    $ts = \App\BrokenLink::all();
+    foreach ($ts as $t) {
+        \Symfony\Component\VarDumper\VarDumper::dump($t->linkTracking);
+    }
+    dd();
+});
+//select * from `broken_link`
+// where `broken_link`.`link_tracking_id` = 2
+// and `broken_link`.`link_tracking_id`
