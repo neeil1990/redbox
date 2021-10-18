@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use mysql_xdevapi\Exception;
-use Symfony\Component\VarDumper\VarDumper;
 
 class BacklinkController extends Controller
 {
@@ -42,12 +40,12 @@ class BacklinkController extends Controller
             $brokenFlag = false;
             foreach ($projects as $project) {
                 foreach ($project->link as $link) {
-                    $brokenLink = BrokenLink::find($link->id);
-                    if (isset($brokenLink)) {
-                        continue;
-                    }
                     $this->containsLink($link->site_donor, $link->link, $link->anchor, (boolean)$link->nofollow, (boolean)$link->noindex);
                     if (isset($this->result['error'])) {
+                        $brokenLink = BrokenLink::find($link->id);
+                        if (isset($brokenLink)) {
+                            continue;
+                        }
                         $this->saveBrokenLink($link->id);
                         $brokenFlag = true;
                     }
