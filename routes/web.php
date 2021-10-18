@@ -98,21 +98,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('add-link', 'BacklinkController@storeLink');
     Route::post('edit-backlink', 'BacklinkController@editBacklink')->name('edit.backlink');
 });
-
-
-Route::get('broken-link', function () {
-//    $ls = \App\LinkTracking::all();
-//    foreach ($ls as $l) {
-//        \Symfony\Component\VarDumper\VarDumper::dump($l);
-//        \Symfony\Component\VarDumper\VarDumper::dump($l->brokenLink);
-//    }
-//    dd(123);
-    $ts = \App\BrokenLink::all();
-    foreach ($ts as $t) {
-        \Symfony\Component\VarDumper\VarDumper::dump($t->linkTracking);
-    }
-    dd();
-});
-//select * from `broken_link`
-// where `broken_link`.`link_tracking_id` = 2
-// and `broken_link`.`link_tracking_id`
