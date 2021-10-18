@@ -25,9 +25,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-            Log::debug('schedule', [now()]);
-        })->daily();
+        $schedule->command('minute:update')
+            ->everyMinute();
         // $schedule->command('inspire')
         //          ->hourly();
     }
