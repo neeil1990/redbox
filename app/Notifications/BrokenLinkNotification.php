@@ -44,7 +44,7 @@ class BrokenLinkNotification extends Notification
         return (new MailMessage)
             ->line('The introduction to the notification.')
             ->line('error: ' . $this->request)
-            ->action('Notification Action', url('/'))
+            ->action('Check your projects', route('backlink'))
             ->line('Thank you for using our application!');
     }
 
