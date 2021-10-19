@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LinkTracking extends Model
 {
@@ -14,10 +14,10 @@ class LinkTracking extends Model
     protected $guarded = [];
 
     /**
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function brokenLink(): HasOne
+    public function project(): BelongsTo
     {
-        return $this->hasOne(BrokenLink::class);
+        return $this->belongsTo(ProjectTracking::class, 'project_tracking_id','id');
     }
 }

@@ -3,7 +3,7 @@
     <a href="{{ route('add.backlink') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         Add link tracking
     </a>
-    @foreach($tracking as $track)
+    @foreach($backlinks as $backlink)
         <div class="row">
             <div class="col-sm-12">
                 <table id="example2" class="table table-bordered table-hover dataTable dtr-inline"
@@ -18,23 +18,23 @@
                     <tbody>
                     <tr class="odd">
                         <td class="col-5">
-                            <a href="{{ route('show.backlink', $track->id)}}">
-                                {{ $track->project_name }}
+                            <a href="{{ route('show.backlink', $backlink->id)}}">
+                                {{ $backlink->project_name }}
                             </a>
                         </td>
                         <td class="col-5">
                             @if($totalBrokenLinks > 0)
                                 <span class="text-danger">
-                                    {{ $track->total_link - $totalBrokenLinks }}/{{ $track->total_link }}
+                                    {{ $backlink->total_link - $totalBrokenLinks }}/{{ $backlink->total_link }}
                                 </span>
                             @else
                                 <span class="text-info">
-                                    {{ $track->total_link - $totalBrokenLinks }}/{{ $track->total_link }}
+                                    {{ $backlink->total_link - $totalBrokenLinks }}/{{ $backlink->total_link }}
                                 </span>
                             @endif
                         </td>
                         <td>
-                            <form action="{{ route('delete.backlink', $track->id)}}"
+                            <form action="{{ route('delete.backlink', $backlink->id)}}"
                                   class="pt-1"
                                   method="post">
                                 @csrf @method('DELETE')

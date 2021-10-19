@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\BrokenLinkNotification;
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RegisterVerifyEmail;
 use Carbon\Carbon;
@@ -70,6 +71,17 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Send the password reset notification.
+     *
+     * @param $request
+     * @return void
+     */
+    public function sendBrokenLinkNotification($request)
+    {
+        $this->notify(new BrokenLinkNotification($request));
+    }
+
+    /**
      * Input value roles for edit users
      *
      * @return mixed
@@ -105,5 +117,10 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->where('email_verified_at', '=', null)
             ->where('created_at', '<=', Carbon::now()->subDays($this->delete))
             ->delete();
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(ProjectTracking::class);
     }
 }
