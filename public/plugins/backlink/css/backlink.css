@@ -1,12 +1,3 @@
-.backlink, .project-name {
-    background: #F4F6FA;
-    border: none;
-}
-
-.backlink:focus, .backlink:active {
-    background: white;
-}
-
 .toast-top-right.success-message, .toast-top-right.error-message {
     display: none;
 }
