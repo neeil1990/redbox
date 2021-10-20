@@ -28,6 +28,7 @@ $('#addRow').click(function () {
 $('#removeRow').click(function () {
     $('#tr-id-' + countRows).remove();
     countRows--;
+    $('#countRows').val(countRows)
     if (countRows == 1) {
         $('#removeRow').hide(100)
     }
