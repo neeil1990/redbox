@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Link tracking')])
+@component('component.card', ['title' => __('Add Link tracking')])
 @section('content')
     @slot('css')
         <link rel="stylesheet" type="text/css"
@@ -6,17 +6,16 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
     @endslot
-    {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST', 'class' => 'express-form'])!!}
-    <div class='col-md-6 mt-3'>
+    {!! Form::open(['action' =>'BacklinkController@storeLink', 'method' => 'POST'])!!}
+    <div class='col-md-6 mt-3 express-form'>
         <div class='form-group required'>
-            {!! Form::label('Project name') !!}
-            {!! Form::text('project_name', null ,['class' => 'form-control','required' => 'required','placeholder' => 'Project name']) !!}
-        </div>
-        <div class='form-group required'>
+            <input type="hidden" name="id" value="{{ $id }}">
             {!! Form::label('Params') !!}
-            {!! Form::textarea('params',
-            null ,
-            ['class' => 'form-control','required' => 'required','placeholder' => 'Site donor::Link on site::anchor::Отслеживать nofollow(0/1)::Отслеживать noindex(0/1)::Проверка в индексах yandex(0/1)::Проверка в индексах google(0/1)']) !!}
+            {!! Form::textarea('params', null, [
+            'class'=>'form-control',
+            'required'=>'required',
+            'placeholder'=>'Site donor::Link on site::anchor::Отслеживать nofollow(0/1)::Отслеживать noindex(0/1)::Проверка в индексах yandex(0/1)::Проверка в индексах google(0/1)'
+            ]) !!}
             <span class="__helper-link ui_tooltip_w">
                 Непонятна конструкция
             <i class="fa fa-question-circle"></i>
@@ -38,20 +37,18 @@
                 </span>
             </span>
             <p>Вы можете <a href="#" class="text-info">воспользоваться упрощённым форматом</a></p>
+
         </div>
         <div class='pt-3'>
-            <button class='btn btn-secondary' title='Save' type='submit'>{{ __('Create') }}</button>
-            <a href='{{ route('backlink') }}' class='btn btn-default'> {{ __('Back') }}</a>
+            <button class='btn btn-secondary' title='Save' type='submit'>{{ __('Add to backlink') }}</button>
+            <a href='{{ route('show.backlink',$id) }}' class='btn btn-default'> {{ __('Back') }}</a>
         </div>
     </div>
     {!! Form::close() !!}
     <div style="display: none" class="simplified-form">
         <p>Вы можете <a href="#" class="text-info express">воспользоваться ускоренным форматом</a></p>
-        {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST'])!!}
-        <div class='form-group required col-6'>
-            {!! Form::label('Project name') !!}
-            {!! Form::text('project_name', null ,['class' => 'form-control','required' => 'required','placeholder' => 'Project name']) !!}
-        </div>
+        {!! Form::open(['action' =>'BacklinkController@storeLink', 'method' => 'POST'])!!}
+        <input type="hidden" name="id" value="{{ $id }}">
         <input type="hidden" name="countRows" id="countRows" value="1">
         <table id="example2"
                class="table table-bordered table-hover dataTable dtr-inline"

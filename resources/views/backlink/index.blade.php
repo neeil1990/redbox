@@ -11,7 +11,7 @@
                     <thead>
                     <tr role="row">
                         <th>Project name</th>
-                        <th>Live links/Total links</th>
+                        <th>Broken links/Total links</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -23,13 +23,13 @@
                             </a>
                         </td>
                         <td class="col-5">
-                            @if($totalBrokenLinks > 0)
+                            @if($backlink->total_broken_link != 0)
                                 <span class="text-danger">
-                                    {{ $backlink->total_link - $totalBrokenLinks }}/{{ $backlink->total_link }}
+                                    {{ $backlink->total_broken_link }}/{{ $backlink->total_link }}
                                 </span>
                             @else
                                 <span class="text-info">
-                                    {{ $backlink->total_link - $totalBrokenLinks }}/{{ $backlink->total_link }}
+                                    {{ $backlink->total_broken_link }}/{{ $backlink->total_link }}
                                 </span>
                             @endif
                         </td>

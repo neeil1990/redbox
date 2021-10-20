@@ -74,11 +74,11 @@ class User extends Authenticatable implements MustVerifyEmail
      * Send the password reset notification.
      *
      * @param $request
-     * @return void
+     * @param $link
      */
-    public function sendBrokenLinkNotification($request)
+    public function sendBrokenLinkNotification($request, $link)
     {
-        $this->notify(new BrokenLinkNotification($request));
+        $this->notify(new BrokenLinkNotification($request, $link));
     }
 
     /**

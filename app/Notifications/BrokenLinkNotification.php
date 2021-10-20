@@ -11,15 +11,17 @@ class BrokenLinkNotification extends Notification
     use Queueable;
 
     private $request;
+    private $link;
 
     /**
      * Create a new notification instance.
      *
      * @param $request
      */
-    public function __construct($request)
+    public function __construct($request, $link)
     {
         $this->request = $request;
+        $this->link = $link;
     }
 
     /**
@@ -43,6 +45,9 @@ class BrokenLinkNotification extends Notification
     {
         return (new MailMessage)
             ->line('The introduction to the notification.')
+            ->line('Site donor: ' . $this->link->site_donor)
+            ->line('Link' . $this->link->link)
+            ->line('Anchor' . $this->link->anchor)
             ->line('error: ' . $this->request)
             ->action('Check your projects', route('backlink'))
             ->line('Thank you for using our application!');

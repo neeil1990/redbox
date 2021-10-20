@@ -18,8 +18,8 @@
         </div>
     </div>
     <div class='mt-3'>
-        <div class='form-group required' projectId="{{ $project->id }}">
-            {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-4 project-name project-name','required' => 'required','placeholder' => 'Project name']) !!}
+        <div class='form-group required d-flex align-items-center' projectId="{{ $project->id }}">
+            {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-3 project-name','required' => 'required']) !!}
         </div>
         <table id="example2"
                class="table table-bordered table-hover dataTable dtr-inline"
@@ -27,36 +27,37 @@
                aria-describedby="example2_info">
             <thead>
             <tr>
-                <th>Link</th>
-                <th>Site donor</th>
-                <th>Anchor</th>
-                <th>Check nofollow</th>
-                <th>Check noindex</th>
-                <th>Last check</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th class="fixed-th-height">Site donor</th>
+                <th class="fixed-th-height">Link</th>
+                <th class="fixed-th-height">Anchor</th>
+                <th class="fixed-th-height">Check nofollow</th>
+                <th class="fixed-th-height">Check noindex</th>
+                <th class="fixed-th-height">Last check</th>
+                <th class="fixed-th-height">Status</th>
+                <th class="fixed-th-height">Actions</th>
             </tr>
             </thead>
             <tbody>
             @foreach($project->link as $link)
                 <tr id="{{ $link->id }}">
-                    <td>
-                        {!! Form::text('link', $link->link ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'link']) !!}
-                    </td>
-                    <td>
+                    <td class="table-d">
                         {!! Form::text('site_donor', $link->site_donor ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Site donor']) !!}
                     </td>
-                    <td>
+                    <td class="table-d">
+                        {!! Form::text('link', $link->link ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'link']) !!}
+                    </td>
+                    <td class="table-d">
                         {!! Form::text('anchor', $link->anchor ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Anchor']) !!}
                     </td>
-                    <td>
-                        {!! Form::input('number', 'nofollow', $link->nofollow, ['class' => 'form-control backlink', 'max'=>1, 'min' => 0]) !!}
+                    <td class="">
+                        {!! Form::select('nofollow', ['1' => __('Yes'), '0' => __('No')], $link->nofollow, ['class' => 'form-control backlink']) !!}
                     </td>
-                    <td>
-                        {!! Form::input('number', 'noindex', $link->noindex, ['class' => 'form-control backlink', 'max'=>1, 'min' => 0]) !!}
+                    <td class="">
+                        {!! Form::select('noindex', ['1' => __('Yes'), '0' => __('No')], $link->noindex, ['class' => 'form-control backlink']) !!}
+
                     </td>
-                    <td>@isset($link->last_check){{ $link->last_check }}@endisset</td>
-                    <td>
+                    <td class="">@isset($link->last_check){{ $link->last_check }}@endisset</td>
+                    <td class="fixed-height">
                         @if((boolean)$link->broken)
                             <span class="text-danger">{{ $link->status }}</span>
                         @else
@@ -90,6 +91,7 @@
         <script>
             var oldValue = ''
             var oldProjectName = ''
+
             $(document).ready(function () {
                 $(".form-control.col-4.project-name").focus(function () {
                     oldProjectName = $(this).val()

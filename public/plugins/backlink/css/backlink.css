@@ -14,3 +14,22 @@
 td.d-flex {
     border: none;
 }
+
+.table-d:hover {
+    width: 500px;
+    transition: .8s;
+}
+
+.table-d {
+    width: 175px;
+    transition: .8s;
+}
+
+.fixed-height {
+    width: 180px;
+    height: 150px;
+}
+
+.fixed-th-height {
+    height: 70px;
+}
