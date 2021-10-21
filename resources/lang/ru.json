@@ -348,6 +348,9 @@
   "Status": "Состояние",
   "To my projects": "К моим проектам",
   "Add to Tracking": "Добавить в отслеживание",
+  "Tracking was successfully deleted": "Отслеживание было успешно удалено",
+  "Tracking was successfully created": "Отслеживание было успешно создано",
+  "Link was successfully deleted": "Ссылка была успешно удалена",
 
   "######################## Пользователи https://lk.redbox.su/users ###############################": "",
   "Was online": "Был в сети",
