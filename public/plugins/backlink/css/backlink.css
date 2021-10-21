@@ -3,7 +3,9 @@
 }
 
 td.d-flex {
-    border: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
 }
 
 .table-d:hover {

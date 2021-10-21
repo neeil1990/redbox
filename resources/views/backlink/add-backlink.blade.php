@@ -1,5 +1,4 @@
 @component('component.card', ['title' => __('Add Link tracking')])
-@section('content')
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -10,22 +9,23 @@
     <div class='col-md-6 mt-3 express-form'>
         <div class='form-group required'>
             <input type="hidden" name="id" value="{{ $id }}">
-            {!! Form::label(__('Link parameters')) !!}
+            {!! Form::label( __('Loading links with a list')) !!}
             {!! Form::textarea('params', null, [
             'class'=>'form-control',
             'required'=>'required',
+            'placeholder' => 'donor.ru/1::akceptor.ru/2::текст ссылки::1::1::1::1'
             ]) !!}
             <span class="__helper-link ui_tooltip_w">
-                {{ __('The construction is unclear') }}
+                {{ __('Decoding of the design') }}
             <i class="fa fa-question-circle"></i>
                 <span class="ui_tooltip __right __l">
-                    <span class="ui_tooltip_content">
+                    <span class="ui_tooltip_content" style="width: 600px">
                         <p>
-                            {{ __('https://ru.wikipedia.org/wiki/Сайт::/wiki/%D0%91%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80::браузеров::0::0::0::0') }}
+                            donor.ru/1::akceptor.ru/2::текст ссылки::1::1::1::1
                         </p>
-                        https://ru.wikipedia.org/wiki/Сайт - {{ __('The page of the site where the link will be searched') }}
-                        /wiki/%D0%91%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80 - {{ __('The link that the script will search for') }}<br>
-                        браузеров - {{ __('Anchor') }}<br>
+                        donor.ru/1 - {{ __('The page of the site where the link will be searched') }}
+                        akceptor.ru/2 - {{ __('The link that the script will search for') }}<br>
+                        текст ссылки - {{ __('Anchor') }}<br>
                         {{ __('Check that the rel attribute with the nofollow property is not present in the link - (0 - no/1 - yes)') }}<br>
                         {{ __('Check that the link is missing in the noindex tag - (0 - no/1 - yes)') }}<br>
                         {{ __('Checking that the link is indexed by Yandex - (0 - no/1 - yes)') }}<br>
@@ -38,7 +38,8 @@
         </div>
         <div class='pt-3'>
             <button class='btn btn-secondary' title='Save' type='submit'>{{ __('Add to Tracking') }}</button>
-            <a href='{{ route('show.backlink', $id) }}' class='btn btn-default'>{{ __('To my projects') }}</a>
+            <a href='{{ route('backlink') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
+            <a href='{{ route('show.backlink', $id) }}' class='btn btn-default'>{{ __('Back') }}</a>
         </div>
     </div>
     {!! Form::close() !!}
@@ -93,49 +94,51 @@
                 <input type="button" class="btn btn-default" id="removeRow" value="{{ __('Delete row') }}"
                        style="display: none">
             </div>
-            <a href='{{ route('backlink') }}' class='btn btn-default mr-2'> {{ __('To my projects') }}</a>
+            <div>
+                <a href='{{ route('backlink') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
+                <a href='{{ route('show.backlink', $id) }}' class='btn btn-default'>{{ __('Back') }}</a>
+            </div>
         </div>
         {!! Form::close() !!}
     </div>
-@endsection
-@slot('js')
-    <script>
-        var countRows = 1
+    @slot('js')
+        <script>
+            var countRows = 1
 
-        $('.text-info').click(function () {
-            $('.express-form').hide(300)
-            $('.simplified-form').show(300)
-        });
-        $('.express').click(function () {
-            $('.express-form').show(300)
-            $('.simplified-form').hide(300)
-        });
-        $('#addRow').click(function () {
-            $('#removeRow').show(100)
-            countRows++
-            $('#countRows').val(countRows)
-            $('#example2 tbody').append(
-                '<tr id="tr-id-' + countRows + '">' +
-                '<td><input type="text" name="site_donor_' + countRows + '" class="form form-control" required></td>' +
-                '<td><input type="text" name="link_' + countRows + '" class="form form-control" required></td>' +
-                '<td><input type="text" name="anchor_' + countRows + '" class="form form-control" required></td>' +
-                '<td><select class="custom-select rounded-0" name="nofollow_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
-                '<td><select class="custom-select rounded-0" name="noindex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
-                '<td><select class="custom-select rounded-0" name="yandex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
-                '<td><select class="custom-select rounded-0" name="google_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
-                '</tr>'
-            );
-        });
+            $('.text-info').click(function () {
+                $('.express-form').hide(300)
+                $('.simplified-form').show(300)
+            });
+            $('.express').click(function () {
+                $('.express-form').show(300)
+                $('.simplified-form').hide(300)
+            });
+            $('#addRow').click(function () {
+                $('#removeRow').show(100)
+                countRows++
+                $('#countRows').val(countRows)
+                $('#example2 tbody').append(
+                    '<tr id="tr-id-' + countRows + '">' +
+                    '<td><input type="text" name="site_donor_' + countRows + '" class="form form-control" required></td>' +
+                    '<td><input type="text" name="link_' + countRows + '" class="form form-control" required></td>' +
+                    '<td><input type="text" name="anchor_' + countRows + '" class="form form-control" required></td>' +
+                    '<td><select class="custom-select rounded-0" name="nofollow_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                    '<td><select class="custom-select rounded-0" name="noindex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                    '<td><select class="custom-select rounded-0" name="yandex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                    '<td><select class="custom-select rounded-0" name="google_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                    '</tr>'
+                );
+            });
 
-        $('#removeRow').click(function () {
-            $('#tr-id-' + countRows).remove();
-            countRows--;
-            $('#countRows').val(countRows)
-            if (countRows === 1) {
-                $('#removeRow').hide(100)
-            }
-        });
+            $('#removeRow').click(function () {
+                $('#tr-id-' + countRows).remove();
+                countRows--;
+                $('#countRows').val(countRows)
+                if (countRows === 1) {
+                    $('#removeRow').hide(100)
+                }
+            });
 
-    </script>
-@endslot
+        </script>
+    @endslot
 @endcomponent

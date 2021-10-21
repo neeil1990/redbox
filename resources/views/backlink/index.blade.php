@@ -1,5 +1,9 @@
 @component('component.card', ['title' => __('My Projects')])
-@section('content')
+    @slot('css')
+        <link rel="stylesheet" type="text/css"
+              href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+    @endslot
     <a href="{{ route('add.backlink') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add link tracking') }}
     </a>
@@ -51,5 +55,4 @@
             </div>
         </div>
     @endforeach
-@endsection
 @endcomponent
