@@ -82,7 +82,7 @@
         <li class="nav-item">
             <a href="{{ route('backlink') }}" class="nav-link">
                 <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Link Tracking') }}</p>
+                <p>{{ __('Link tracking') }}</p>
             </a>
         </li>
         <li class="nav-item">
