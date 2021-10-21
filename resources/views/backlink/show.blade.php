@@ -9,12 +9,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message"> Success changed</div>
+            <div class="toast-message">{{ __('Successfully changed') }}</div>
         </div>
     </div>
     <div id="toast-container" class="toast-top-right error-message">
         <div class="toast toast-error" aria-live="assertive">
-            <div class="toast-message error-msg">The field must contain more than 0 characters</div>
+            <div class="toast-message error-msg">{{ __('The field must contain more than 0 characters') }}</div>
         </div>
     </div>
     <div class='mt-3'>
@@ -90,10 +90,10 @@
             var oldProjectName = ''
 
             $(document).ready(function () {
-                $(".form-control.col-4.project-name").focus(function () {
+                $(".form-control.col-3.project-name").focus(function () {
                     oldProjectName = $(this).val()
                 })
-                $(".form-control.col-4.project-name").blur(function () {
+                $(".form-control.col-3.project-name").blur(function () {
                     if (oldProjectName !== $(this).val()) {
                         console.log($(this).parent().attr("projectId"))
                         console.log($(this).attr('name'))
@@ -109,8 +109,16 @@
                                 _token: $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function () {
+                                $('.toast-top-right.success-message').show(300)
+                                setTimeout(() => {
+                                    $('.toast-top-right.success-message').hide(300)
+                                }, 4000)
                             },
                             error: function () {
+                                $('.toast-top-right.error-message').show()
+                                setTimeout(() => {
+                                    $('.toast-top-right.error-message').hide(300)
+                                }, 4000)
                             }
                         });
                     }
