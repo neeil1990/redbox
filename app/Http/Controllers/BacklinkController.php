@@ -327,7 +327,7 @@ class BacklinkController extends Controller
      */
     public function searchLinksOnPage($html, $link_url, $anchor): ?array
     {
-        if (preg_match_all('(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>*' . addslashes($anchor) . '</a>))', $html, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('(<a *href=["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))', $html, $matches, PREG_SET_ORDER)) {
             $this->result['link'] = 'ссылка найдена, anchor совпадает';
             return array_unique($matches, SORT_REGULAR);
         }
@@ -366,12 +366,12 @@ class BacklinkController extends Controller
      */
     public function searchNoindex($html, $link_url, $anchor)
     {
-        if (preg_match_all('(<!--noindex-->(<a *href*=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>*' . addslashes($anchor) . '</a>))<!--/noindex-->)',
+        if (preg_match_all('(<!--noindex-->(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))<!--/noindex-->)',
             $html,
             $matches,
             PREG_SET_ORDER)) {
             $this->result['error'] = 'ссылка помещена в noindex';
-        } elseif (preg_match_all('(<noindex>(<a *href*=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>*' . addslashes($anchor) . '</a>))</noindex>)',
+        } elseif (preg_match_all('(<noindex>(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))</noindex>)',
             $html,
             $matches,
             PREG_SET_ORDER)) {
