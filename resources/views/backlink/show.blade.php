@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Link tracking')])
+@component('component.card', ['title' => __('My project')])
 @section('content')
     @slot('css')
         <link rel="stylesheet" type="text/css"

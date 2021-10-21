@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Link tracking')])
+@component('component.card', ['title' => __('My Projects')])
 @section('content')
     <a href="{{ route('add.backlink') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add link tracking') }}
