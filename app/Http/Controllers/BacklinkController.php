@@ -95,6 +95,9 @@ class BacklinkController extends Controller
     public function index()
     {
         $backlinks = ProjectTracking::where('user_id', '=', Auth::id())->get();
+        if (count($backlinks) === 0) {
+            return $this->createView();
+        }
 
         return view('backlink.index', compact('backlinks'));
     }
@@ -400,7 +403,7 @@ class BacklinkController extends Controller
                 $this->decrement($target->project_tracking_id);
             }
         }
-        if(isset($sendMail)){
+        if (isset($sendMail)) {
             $target->mail_sent = $sendMail;
         }
         $target->broken = $broken;
