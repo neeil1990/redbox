@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Add Link tracking')])
+@component('component.card', ['title' => __('Add link tracking')])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
