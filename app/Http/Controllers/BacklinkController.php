@@ -36,21 +36,23 @@ class BacklinkController extends Controller
     {
         try {
             $links = LinkTracking::all();
-            foreach ($links as $link) {
-                $this->containsLink(
-                    $link->site_donor,
-                    $link->link,
-                    $link->anchor,
-                    (boolean)$link->nofollow,
-                    (boolean)$link->noindex
-                );
-                if (isset($this->result['error'])) {
-                    $this->saveResult($link, true);
-                } else {
-                    $this->saveResult($link);
+            foreach ($links->chunk(5) as $links) {
+                foreach ($links as $link) {
+                    $this->containsLink(
+                        $link->site_donor,
+                        $link->link,
+                        $link->anchor,
+                        (boolean)$link->nofollow,
+                        (boolean)$link->noindex
+                    );
+                    if (isset($this->result['error'])) {
+                        $this->saveResult($link, true);
+                    } else {
+                        $this->saveResult($link, false, false);
+                    }
+                    unset($this->result);
+                    sleep(1);
                 }
-                unset($this->result);
-                sleep(1);
             }
         } catch (\Exception $exception) {
             Log::debug('scan link', [$exception]);
@@ -64,22 +66,23 @@ class BacklinkController extends Controller
     {
         try {
             $links = LinkTracking::where('broken', '=', true)->get();
-            foreach ($links as $link) {
-                $this->containsLink(
-                    $link->site_donor,
-                    $link->link,
-                    $link->anchor,
-                    (boolean)$link->nofollow,
-                    (boolean)$link->noindex
-                );
-                if (isset($this->result['error'])) {
-                    $link->project->user->sendBrokenLinkNotification($this->result['error'], $link);
-                    $this->saveResult($link, true);
-                } else {
-                    $this->saveResult($link);
+            foreach ($links->chunk(5) as $links) {
+                foreach ($links as $link) {
+                    $this->containsLink($link->site_donor, $link->link, $link->anchor, (boolean)$link->nofollow, (boolean)$link->noindex);
+                    if (isset($this->result['error'])) {
+                        if (!(boolean)$link->mail_sent) {
+                            $link->project->user->sendBrokenLinkNotification($this->result['error'], $link);
+                            $this->saveResult($link, true, true);
+                        } else {
+                            $this->saveResult($link, true);
+                        }
+                    } else {
+                        $this->saveResult($link, false, false);
+                    }
+                    unset($this->result);
+                    Log::debug('chunk', [$links]);
+                    sleep(1);
                 }
-                unset($this->result);
-                sleep(1);
             }
         } catch (\Exception $exception) {
             Log::debug('scan broken link', [$exception]);
@@ -258,7 +261,7 @@ class BacklinkController extends Controller
             flash()->overlay($this->result['error'], ' ')->error();
             $this->saveResult($target, true);
         } else {
-            $this->saveResult($target);
+            $this->saveResult($target, false, false);
         }
 
         return Redirect::route('show.backlink', $target->project_tracking_id);
@@ -299,7 +302,6 @@ class BacklinkController extends Controller
         curl_setopt($curl, CURLOPT_URL, $page_url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-//        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)');
         curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($curl, CURLOPT_TIMEOUT, 60);
@@ -378,9 +380,10 @@ class BacklinkController extends Controller
 
     /**
      * @param $target
-     * @param false $broken
+     * @param $broken
+     * @param $sendMail
      */
-    public function saveResult($target, $broken = false)
+    public function saveResult($target, $broken, $sendMail = null)
     {
         $target->status = implode(', ', $this->result);
         $target->last_check = date("Y-m-d H:i:s");
@@ -396,6 +399,9 @@ class BacklinkController extends Controller
             } else {
                 $this->decrement($target->project_tracking_id);
             }
+        }
+        if(isset($sendMail)){
+            $target->mail_sent = $sendMail;
         }
         $target->broken = $broken;
         $target->save();

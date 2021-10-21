@@ -19,35 +19,32 @@
     </div>
     <div class='mt-3'>
         <div class='form-group required d-flex align-items-center' projectId="{{ $project->id }}">
-            {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-3 project-name','required' => 'required']) !!}
+            {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-3 project-name']) !!}
         </div>
-        <table id="example2"
-               class="table table-bordered table-hover dataTable dtr-inline"
-               role="grid"
-               aria-describedby="example2_info">
+        <table class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr>
-                <th class="fixed-th-height">Site donor</th>
-                <th class="fixed-th-height">Link</th>
-                <th class="fixed-th-height">Anchor</th>
-                <th class="fixed-th-height">Check nofollow</th>
-                <th class="fixed-th-height">Check noindex</th>
-                <th class="fixed-th-height">Last check</th>
-                <th class="fixed-th-height">Status</th>
-                <th class="fixed-th-height">Actions</th>
+                <th class="fixed-th-height">{{ __('Link to the page of the donor website') }}</th>
+                <th class="fixed-th-height">{{ __('The link that the script will search for') }}</th>
+                <th class="fixed-th-height">{{ __('Anchor') }}</th>
+                <th class="fixed-th-height">{{ __('Check nofollow') }}</th>
+                <th class="fixed-th-height">{{ __('Check noindex') }}</th>
+                <th class="fixed-th-height">{{ __('Last check') }}</th>
+                <th class="fixed-th-height">{{ __('Status') }}</th>
+                <th class="fixed-th-height"></th>
             </tr>
             </thead>
             <tbody>
             @foreach($project->link as $link)
                 <tr id="{{ $link->id }}">
                     <td class="table-d">
-                        {!! Form::text('site_donor', $link->site_donor ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Site donor']) !!}
+                        {!! Form::text('site_donor', $link->site_donor ,['class' => 'form-control backlink']) !!}
                     </td>
                     <td class="table-d">
-                        {!! Form::text('link', $link->link ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'link']) !!}
+                        {!! Form::text('link', $link->link ,['class' => 'form-control backlink']) !!}
                     </td>
                     <td class="table-d">
-                        {!! Form::text('anchor', $link->anchor ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Anchor']) !!}
+                        {!! Form::text('anchor', $link->anchor ,['class' => 'form-control backlink']) !!}
                     </td>
                     <td class="">
                         {!! Form::select('nofollow', ['1' => __('Yes'), '0' => __('No')], $link->nofollow, ['class' => 'form-control backlink']) !!}

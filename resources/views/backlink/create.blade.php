@@ -9,75 +9,73 @@
     {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST', 'class' => 'express-form'])!!}
     <div class='col-md-6 mt-3'>
         <div class='form-group required'>
-            {!! Form::label('Project name') !!}
-            {!! Form::text('project_name', null ,['class' => 'form-control','required' => 'required','placeholder' => 'Project name']) !!}
+            {!! Form::label(__('Project name')) !!}
+            {!! Form::text('project_name', null ,['class' => 'form-control','required' => 'required','placeholder' => __('Project name')]) !!}
         </div>
         <div class='form-group required'>
-            {!! Form::label('Params') !!}
-            {!! Form::textarea('params',
-            null ,
-            ['class' => 'form-control','required' => 'required','placeholder' => 'Site donor::Link on site::anchor::Отслеживать nofollow(0/1)::Отслеживать noindex(0/1)::Проверка в индексах yandex(0/1)::Проверка в индексах google(0/1)']) !!}
+            {!! Form::label(__('Link parameters')) !!}
+            {!! Form::textarea('params', null,[
+            'class' => 'form-control',
+            'required' => 'required'
+            ]) !!}
             <span class="__helper-link ui_tooltip_w">
-                Непонятна конструкция
+                {{ __('The construction is unclear') }}
             <i class="fa fa-question-circle"></i>
                 <span class="ui_tooltip __right __l">
                     <span class="ui_tooltip_content">
                         <p>
-                        Сайт на котором будет находится ссылка::Ссылка::Анкор::Отслеживать nofollow(0/1)::Отслеживать noindex(0/1)::Проверка в индексах yandex(0/1)::Проверка в индексах google(0/1)
+                            {{ __('https://ru.wikipedia.org/wiki/Сайт::/wiki/%D0%91%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80::браузеров::0::0::0::0') }}
                         </p>
-                        <p>Пример https://ru.wikipedia.org/wiki/Сайт::/wiki/%D0%91%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80::браузеров::0::0::0::0</p>
-                        https://ru.wikipedia.org/wiki/Сайт - Домен
-                        /wiki/%D0%91%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80 - Ссылка, которую будет искать скрипт<br>
-                        браузеров - Анкор ссылки<br>
-                        Проверять что в ссылке не присутствует атрибут rel с свойством nofollow<br>
-                        Проверять что ссылку отсутствует в теге noindex <br>
-                        Проверка того, что ссылка проиндексирована Яндексом<br>
-                        Проверка того, что ссылка проиндексирована Google<br><br>
-                        Разделяйте строки при помощи Shift + Enter
+                        https://ru.wikipedia.org/wiki/Сайт - {{ __('The page of the site where the link will be searched') }}
+                        /wiki/%D0%91%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80 - {{ __('The link that the script will search for') }}<br>
+                        браузеров - {{ __('Anchor') }}<br>
+                        {{ __('Check that the rel attribute with the nofollow property is not present in the link - (0 - no/1 - yes)') }}<br>
+                        {{ __('Check that the link is missing in the noindex tag - (0 - no/1 - yes)') }}<br>
+                        {{ __('Checking that the link is indexed by Yandex - (0 - no/1 - yes)') }}<br>
+                        {{ __('Checking that the link is indexed by Google - (0 - no/1 - yes)') }}<br><br>
+                        {{ __('Separate the lines using Shift + Enter') }}
                     </span>
                 </span>
             </span>
-            <p>Вы можете <a href="#" class="text-info">воспользоваться упрощённым форматом</a></p>
+            <p>{{ __('You can') }} <a href="#" class="text-info">{{ __('use a simplified format') }}</a></p>
         </div>
         <div class='pt-3'>
-            <button class='btn btn-secondary' title='Save' type='submit'>{{ __('Create') }}</button>
-            <a href='{{ route('backlink') }}' class='btn btn-default'> {{ __('Back') }}</a>
+            <button class='btn btn-secondary' title='Save' type='submit'>{{ __('Add to Tracking') }}</button>
+            <a href='{{ route('backlink') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
         </div>
     </div>
     {!! Form::close() !!}
     <div style="display: none" class="simplified-form">
-        <p>Вы можете <a href="#" class="text-info express">воспользоваться ускоренным форматом</a></p>
+        <p>{{ __('You can') }} <a href="#" class="text-info express">{{ __('use the accelerated format') }}</a></p>
         {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST'])!!}
-        <div class='form-group required col-6'>
-            {!! Form::label('Project name') !!}
-            {!! Form::text('project_name', null ,['class' => 'form-control','required' => 'required','placeholder' => 'Project name']) !!}
+        <div class='form-group required w-50'>
+            {!! Form::label(__('Project name')) !!}
+            {!! Form::text('project_name', null ,['class' => 'form-control','required' => 'required']) !!}
         </div>
         <input type="hidden" name="countRows" id="countRows" value="1">
         <table id="example2"
-               class="table table-bordered table-hover dataTable dtr-inline"
-               role="grid"
-               aria-describedby="example2_info">
+               class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr>
-                <th>Ссылка на сайт донор</th>
-                <th>Ссылка, которую будет искать скрипт</th>
-                <th>Анкор</th>
-                <th>Проверять наличие nofollow</th>
-                <th>Проверять наличие noindex</th>
-                <th>Проверять индексирование в Яндекс</th>
-                <th>Проверять индексирование в Google</th>
+                <th>{{ __('Link to the page of the donor website') }}</th>
+                <th>{{ __('The link that the script will search for') }}</th>
+                <th>{{ __('Anchor') }}</th>
+                <th>{{ __('Check that the rel attribute with the nofollow property is not present in the link') }}</th>
+                <th>{{ __('Check that the link is missing in the noindex tag') }}</th>
+                <th>{{ __('Checking that the link is indexed by Yandex') }}</th>
+                <th>{{ __('Checking that the link is indexed by Google') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>
-                    {!! Form::text('site_donor_1', null ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Сайт донор']) !!}
+                    {!! Form::text('site_donor_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
                 </td>
                 <td>
-                    {!! Form::text('link_1', null ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Ссылка']) !!}
+                    {!! Form::text('link_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
                 </td>
                 <td>
-                    {!! Form::text('anchor_1', null ,['class' => 'form-control backlink','required' => 'required','placeholder' => 'Анкор']) !!}
+                    {!! Form::text('anchor_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
                 </td>
                 <td>
                     {!! Form::select('nofollow_1', ['1' => __('Yes'), '0' => __('No')], null, ['class' => 'custom-select rounded-0']) !!}
@@ -96,16 +94,54 @@
         </table>
         <div class="d-flex justify-content-between">
             <div class="buttons">
-                <input type="submit" class="btn btn-secondary mr-2" value="{{ __('Save') }}">
-                <input type="button" class="btn btn-default mr-2" id="addRow" value="add row">
-                <input type="button" class="btn btn-default" id="removeRow" value="delete row" style="display: none">
+                <input type="submit" class="btn btn-secondary mr-2" value="{{ __('Add to Tracking') }}">
+                <input type="button" class="btn btn-default mr-2" id="addRow" value="{{ __('Add row') }}">
+                <input type="button" class="btn btn-default" id="removeRow" value="{{ __('Delete row') }}"
+                       style="display: none">
             </div>
-            <a href='{{ route('backlink') }}' class='btn btn-default mr-2'> {{ __('Back') }}</a>
+            <a href='{{ route('backlink') }}' class='btn btn-default'> {{ __('To my projects') }}</a>
         </div>
         {!! Form::close() !!}
     </div>
 @endsection
 @slot('js')
-    <script src="{{ asset('plugins/backlink/js/add-row-in-table.js') }}"></script>
+    <script>
+        var countRows = 1
+
+        $('.text-info').click(function () {
+            $('.express-form').hide(300)
+            $('.simplified-form').show(300)
+        });
+        $('.express').click(function () {
+            $('.express-form').show(300)
+            $('.simplified-form').hide(300)
+        });
+        $('#addRow').click(function () {
+            $('#removeRow').show(100)
+            countRows++
+            $('#countRows').val(countRows)
+            $('#example2 tbody').append(
+                '<tr id="tr-id-' + countRows + '">' +
+                '<td><input type="text" name="site_donor_' + countRows + '" class="form form-control" required></td>' +
+                '<td><input type="text" name="link_' + countRows + '" class="form form-control" required></td>' +
+                '<td><input type="text" name="anchor_' + countRows + '" class="form form-control" required></td>' +
+                '<td><select class="custom-select rounded-0" name="nofollow_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                '<td><select class="custom-select rounded-0" name="noindex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                '<td><select class="custom-select rounded-0" name="yandex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                '<td><select class="custom-select rounded-0" name="google_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
+                '</tr>'
+            );
+        });
+
+        $('#removeRow').click(function () {
+            $('#tr-id-' + countRows).remove();
+            countRows--;
+            $('#countRows').val(countRows)
+            if (countRows == 1) {
+                $('#removeRow').hide(100)
+            }
+        });
+
+    </script>
 @endslot
 @endcomponent

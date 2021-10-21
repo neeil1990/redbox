@@ -14,9 +14,9 @@ $('#addRow').click(function () {
     $('#countRows').val(countRows)
     $('#example2 tbody').append(
         '<tr id="tr-id-' + countRows + '">' +
-        '<td><input type="text" name="site_donor_' + countRows + '" class="form form-control" required placeholder="Сайт донор"></td>' +
-        '<td><input type="text" name="link_' + countRows + '" class="form form-control" required placeholder="Ссылка"></td>' +
-        '<td><input type="text" name="anchor_' + countRows + '" class="form form-control" required placeholder="Анкор"></td>' +
+        '<td><input type="text" name="site_donor_' + countRows + '" class="form form-control" required></td>' +
+        '<td><input type="text" name="link_' + countRows + '" class="form form-control" required></td>' +
+        '<td><input type="text" name="anchor_' + countRows + '" class="form form-control" required></td>' +
         '<td><select class="custom-select rounded-0" name="nofollow_' + countRows + '" id=""><option value="1">Yes</option><option value="0">No</option></select></td>' +
         '<td><select class="custom-select rounded-0" name="noindex_' + countRows + '" id=""><option value="1">Yes</option><option value="0">No</option></select></td>' +
         '<td><select class="custom-select rounded-0" name="yandex_' + countRows + '" id=""><option value="1">Yes</option><option value="0">No</option></select></td>' +

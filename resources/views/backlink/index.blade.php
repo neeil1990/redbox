@@ -1,18 +1,17 @@
 @component('component.card', ['title' => __('Link tracking')])
 @section('content')
     <a href="{{ route('add.backlink') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
-        Add link tracking
+        {{ __('Add link tracking') }}
     </a>
     @foreach($backlinks as $backlink)
         <div class="row">
             <div class="col-sm-12">
-                <table id="example2" class="table table-bordered table-hover dataTable dtr-inline"
-                       role="grid" aria-describedby="example2_info">
+                <table class="table table-bordered table-hover dataTable dtr-inline">
                     <thead>
                     <tr role="row">
-                        <th>Project name</th>
-                        <th>Broken links/Total links</th>
-                        <th>Actions</th>
+                        <th>{{ __('Project name') }}</th>
+                        <th>{{ __('Broken links/Total links') }}</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
