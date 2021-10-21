@@ -327,7 +327,7 @@ class BacklinkController extends Controller
      */
     public function searchLinksOnPage($html, $link_url, $anchor): ?array
     {
-        if (preg_match_all('(<a *href*=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>*' . addslashes($anchor) . '*</a>))', $html, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>*' . addslashes($anchor) . '</a>))', $html, $matches, PREG_SET_ORDER)) {
             $this->result['link'] = 'ссылка найдена, anchor совпадает';
             return array_unique($matches, SORT_REGULAR);
         }
