@@ -15,11 +15,6 @@ Route::get('info', function () {
     phpinfo();
 });
 
-Route::get('remove-all-projects', function (){
-   \App\ProjectTracking::query()->delete();
-   \App\LinkTracking::query()->delete();
-});
-
 Auth::routes(['verify' => true]);
 Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
 Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
