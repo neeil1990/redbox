@@ -4,6 +4,7 @@
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
     @endslot
     {!! Form::open(['action' =>'BacklinkController@storeLink', 'method' => 'POST'])!!}
     <div class='col-md-6 mt-3 express-form'>
@@ -49,16 +50,16 @@
         <input type="hidden" name="id" value="{{ $id }}">
         <input type="hidden" name="countRows" id="countRows" value="1">
         <table id="example2"
-               class="table table-bordered table-hover dataTable dtr-inline">
+               class="table table-bordered table-hover dataTable dtr-inline add-backlink">
             <thead>
             <tr>
-                <th>{{ __('Link to the page of the donor website') }}</th>
-                <th>{{ __('The link that the script will search for') }}</th>
-                <th>{{ __('Anchor') }}</th>
-                <th>{{ __('Check that the rel attribute with the nofollow property is not present in the link') }}</th>
-                <th>{{ __('Check that the link is missing in the noindex tag') }}</th>
-                <th>{{ __('Checking that the link is indexed by Yandex') }}</th>
-                <th>{{ __('Checking that the link is indexed by Google') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('Link to the page of the donor website') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('The link that the script will search for') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('Anchor') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('Check that the rel attribute with the nofollow property is not present in the link') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('Check that the link is missing in the noindex tag') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('Checking that the link is indexed by Yandex') }}</th>
+                <th style="vertical-align: middle; text-align: center;">{{ __('Checking that the link is indexed by Google') }}</th>
             </tr>
             </thead>
             <tbody>

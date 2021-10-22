@@ -9,20 +9,30 @@ td.d-flex {
 }
 
 .table-d:hover {
-    width: 500px;
+    width: 600px;
     transition: .8s;
 }
 
 .table-d {
-    width: 175px;
+    width: 200px;
     transition: .8s;
 }
 
 .fixed-height {
-    width: 180px;
     height: 150px;
 }
 
 .fixed-th-height {
-    height: 70px;
+    height: 130px;
 }
+
+th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7), th:nth-child(8) {
+    width: 10%;
+}
+
+@media (max-width: 1300px) {
+    .fixed-th-height {
+        height: 150px;
+    }
+}
+

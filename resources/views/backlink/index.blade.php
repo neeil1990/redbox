@@ -38,7 +38,7 @@
                         </td>
                         <td>
                             <form action="{{ route('delete.backlink', $backlink->id)}}"
-                                  class="pt-1"
+                                  class="d-flex justify-content-center"
                                   method="post">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-default" type="submit">
