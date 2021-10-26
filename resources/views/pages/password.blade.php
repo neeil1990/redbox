@@ -82,8 +82,8 @@
             <tbody>
             @foreach($user->passwords as $password)
                 <tr>
-                    <td class="align-baseline">{{ $password->password }}</td>
-                    <td class="align-baseline">{{ $password->created_at }}</td>
+                    <td class="align-baseline col-5">{{ $password->password }}</td>
+                    <td class="align-baseline col-5">{{ $password->created_at }}</td>
                     <td class="d-flex justify-content-center align-items-center border-0">
                         <span class="__helper-link ui_tooltip_w btn btn-default">
                             <span style="display: none" class="hidden-password">
