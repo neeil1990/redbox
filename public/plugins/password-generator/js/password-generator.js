@@ -17,3 +17,18 @@ window.onload = function () {
     document.getElementById('checkbox4').checked = localStorage.getItem('checkState4') === 'true';
     document.getElementById('checkbox5').checked = localStorage.getItem('checkState5') === 'true';
 }
+
+$('.__helper-link.ui_tooltip_w.btn.btn-default').click(function () {
+    let text = $(this).find(':first-child.hidden-password').text()
+    let textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+    textarea.value = text.trim();
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+
+    $('.success-message').show(300)
+    setTimeout(() => {
+        $('.success-message').hide(300)
+    }, 5000)
+});

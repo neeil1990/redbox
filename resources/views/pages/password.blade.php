@@ -2,14 +2,20 @@
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
     @endslot
+    <div id="toast-container" class="toast-top-right success-message" style="display: none">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('The result was successfully copied to the clipboard') }}</div>
+        </div>
+    </div>
     <div class="password-generator">
-        <div>
-            <form action="{{  route('generate.password') }}" method="post">
+        <div class="d-flex justify-content-between">
+            <form class="col-6" action="{{  route('generate.password') }}" method="post">
                 @csrf
                 <div class="d-flex flex-column">
-                    <p>{{__('Generator settings')}}:</p>
+                    <h3>{{__('Generator settings')}}:</h3>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" id="checkbox1" class="checkbox custom-control-input" name="enums">
                         <label for="checkbox1" class="custom-control-label">
@@ -29,7 +35,8 @@
                         </label>
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="checkbox4" class="checkbox custom-control-input" name="specialSymbols">
+                        <input type="checkbox" id="checkbox4" class="checkbox custom-control-input"
+                               name="specialSymbols">
                         <label for="checkbox4" class="custom-control-label">
                             {{__('Special symbols')}} %, *, ), ?, @, #, $, ~
                         </label>
@@ -50,33 +57,50 @@
                        class="btn btn-secondary"
                        onclick="saveState()">
             </form>
-            <h4 class="mt-3 mb-3 text-danger">{{$errors->first()}}</h4>
-            @if (\Illuminate\Support\Facades\Session::has('message'))
-                <div class="alert alert-danger mt-5">{{ \Illuminate\Support\Facades\Session::get('message') }}</div>
-            @endif
-            @if (\Illuminate\Support\Facades\Session::has('password'))
-                <h3 class="mt-5">{{__('Generated password')}}
-                    : {{ \Illuminate\Support\Facades\Session::get('password') }}</h3>
-            @endif
+            <div class="passwords col-6">
+                @isset($passwords)
+                    <h3>{{__('Generated passwords')}}: </h3>
+                    @foreach($passwords as $password)
+                            <p>{{ $password }}</p>
+                    @endforeach
+                @endisset
+            </div>
         </div>
     </div>
 
     <div class="my-passwords mt-5">
         <h2>{{__('Your generated passwords')}}</h2>
-
-        <div class="list-group list-group-flush border-bottom scrollarea">
+        <table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid"
+               aria-describedby="example1_info">
+            <thead>
+            <tr role="row">
+                <th>{{ __('Password') }}</th>
+                <th>{{ __('Created at') }}</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
             @foreach($user->passwords as $password)
-                <a href="#" class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <strong class="mb-1">{{$password->password}}</strong>
-                        <small>{{$password->created_at}}</small>
-                    </div>
-                </a>
+                <tr>
+                    <td class="align-baseline">{{ $password->password }}</td>
+                    <td class="align-baseline">{{ $password->created_at }}</td>
+                    <td class="d-flex justify-content-center align-items-center border-0">
+                        <span class="__helper-link ui_tooltip_w btn btn-default">
+                            <span style="display: none" class="hidden-password">
+                                {{ $password->password }}
+                            </span>
+                            <i aria-hidden="true" class="fa fa-clipboard"></i>
+                            <span class="ui_tooltip __left __l">
+                                <span class="ui_tooltip_content">{{ __('Copy to Clipboard') }}</span>
+                            </span>
+                        </span>
+                    </td>
+                </tr>
             @endforeach
-
-        </div>
+            </tbody>
+        </table>
     </div>
     @slot('js')
-        <script src="{{ asset('plugins/password-generator/js/my-password-generator.js') }}"></script>
+        <script src="{{ asset('plugins/password-generator/js/password-generator.js') }}"></script>
     @endslot
 @endcomponent

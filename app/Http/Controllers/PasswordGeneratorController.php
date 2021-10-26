@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\PasswordsGenerator;
 use Faker\Factory;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class PasswordGeneratorController extends Controller
@@ -19,31 +19,30 @@ class PasswordGeneratorController extends Controller
      */
     public function index(): View
     {
-        return view('pages.password',
-            [
-                'user' => Auth::user()
-            ]);
+        return view('pages.password', ['user' => Auth::user()]);
     }
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return array|Application|\Illuminate\Contracts\View\Factory|RedirectResponse|View|mixed
      */
-    public function createPassword(Request $request): RedirectResponse
+    public function createPassword(Request $request)
     {
-        if (self::isErrors($request)) {
-            Session::flash('message', 'Такая комбинация параметров недопустима');
+        if ($this->isErrors($request)) {
+            flash()->overlay(__('This combination of parameters is not allowed'), ' ')->error();
             return Redirect::back();
         }
-
         if (isset($request->savePassword)) {
             $userPassword = new PasswordsGenerator();
-            $userPassword->password = self::generatePassword($request);
+            $userPassword->password = $this->generatePassword($request);
             $userPassword->user_id = Auth::user()->id;
             $userPassword->save();
         } else {
-            Session::flash('password', self::generatePassword($request));
-            return Redirect::back();
+            $passwords = array();
+            for ($i = 0; $i < 5; $i++) {
+                $passwords[] = $this->generatePassword($request);
+            }
+            return view('pages.password', ['user' => Auth::user(), 'passwords' => $passwords]);
         }
         return Redirect::back();
     }
@@ -52,15 +51,19 @@ class PasswordGeneratorController extends Controller
      * @param $request
      * @return string
      */
-    public static function generatePassword($request): string
+    public function generatePassword($request): string
     {
         $password = '';
-        $enums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        $enums = [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        ];
         $symbols = [
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
             'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z'
         ];
-        $specialSymbols = ['%', '*', ')', '?', '@', '#', '$', '~'];
+        $specialSymbols = [
+            '%', '*', ')', '?', '@', '#', '$', '~'
+        ];
 
         $i = 0;
         while ($i < $request->countSymbols) {
@@ -95,7 +98,7 @@ class PasswordGeneratorController extends Controller
      * @param $request
      * @return bool
      */
-    public static function isErrors($request): bool
+    public function isErrors($request): bool
     {
         if (empty($request->specialSymbols) &&
             empty($request->countSymbols) &&
