@@ -84,7 +84,7 @@
                 <tr>
                     <td class="align-baseline col-5">{{ $password->password }}</td>
                     <td class="align-baseline col-5">{{ $password->created_at }}</td>
-                    <td class="d-flex justify-content-center align-items-center border-0">
+                    <td class="d-flex justify-content-center align-items-center border-bottom-0 border-left-0 border-right-0">
                         <span class="__helper-link ui_tooltip_w btn btn-default">
                             <span style="display: none" class="hidden-password">
                                 {{ $password->password }}
