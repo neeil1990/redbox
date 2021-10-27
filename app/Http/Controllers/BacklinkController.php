@@ -365,7 +365,7 @@ class BacklinkController extends Controller
     {
         $html = $this->curlInit($page_url);
         if ($html == false) {
-            $this->result['error'] = 'сайт донор не существует';
+            $this->result['error'] = __('the donor site does not exist');
         } else {
             if ((boolean)$noindex) {
                 $this->searchNoindex($html, $link_url, $anchor);
@@ -412,10 +412,10 @@ class BacklinkController extends Controller
     public function searchLinksOnPage($html, $link_url, $anchor): ?array
     {
         if (preg_match_all('(<a *href=["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))', $html, $matches, PREG_SET_ORDER)) {
-            $this->result['link'] = 'ссылка найдена, anchor совпадает';
+            $this->result['link'] = __('link found, anchor matches');
             return array_unique($matches, SORT_REGULAR);
         }
-        $this->result['error'] = 'ссылка не найдена или anchor не совпадает';
+        $this->result['error'] = __('link not found or anchor does not match');
         return null;
     }
 
@@ -426,9 +426,9 @@ class BacklinkController extends Controller
     public function searchAnchor($match, $anchor)
     {
         if (strpos($match, $anchor) === 'false') {
-            $this->result['error'] = 'anchor не совпадает';
+            $this->result['error'] = __('anchor does not match');
         }
-        $this->result['anchor'] = 'anchor совпадает';
+        $this->result['anchor'] = __('anchor matches');
     }
 
     /**
@@ -437,9 +437,9 @@ class BacklinkController extends Controller
     public function searchNofollow($link)
     {
         if (preg_match('/rel*=*[\'"]?nofollow[\'"]?/i ', $link[0])) {
-            $this->result['error'] = 'в атрибуте rel присутствует свойство nofollow ';
+            $this->result['error'] = __('the nofollow property is present in the rel attribute');
         } else {
-            $this->result['nofollow'] = 'nofollow отсутствует';
+            $this->result['nofollow'] = __('nofollow is missing');
         }
     }
 
@@ -454,14 +454,14 @@ class BacklinkController extends Controller
             $html,
             $matches,
             PREG_SET_ORDER)) {
-            $this->result['error'] = 'ссылка помещена в noindex';
+            $this->result['error'] = __('the link is placed in noindex');
         } elseif (preg_match_all('(<noindex>(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))</noindex>)',
             $html,
             $matches,
             PREG_SET_ORDER)) {
-            $this->result['error'] = 'ссылка помещена в noindex';
+            $this->result['error'] = __('the link is placed in noindex');
         } else {
-            $this->result['noindex'] = 'ссылка не помещена в noindex';
+            $this->result['noindex'] = __('the link is not placed in noindex');
         }
     }
 
