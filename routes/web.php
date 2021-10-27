@@ -81,20 +81,15 @@ Route::middleware(['verified'])->group(function () {
     Route::post('save-description', 'TextEditorController@createDescription')->name('save.description');
 
     Route::get('backlink', 'BacklinkController@index')->name('backlink');
-
-    Route::get('add-backlink', 'BacklinkController@createView')->name('add.backlink');
+    Route::get('add-backlink', 'BacklinkController@createView')->name('add.backlink.view');
     Route::post('add-backlink', 'BacklinkController@store')->name('add.backlink');
-
     Route::delete('delete-backlink/{id}', 'BacklinkController@remove')->name('delete.backlink');
     Route::get('show-backlink/{id}', 'BacklinkController@show')->name('show.backlink');
     Route::post('edit-backlink', 'BacklinkController@edit')->name('save.changes.backlink');
-
     Route::get('check-link/{id}', 'BacklinkController@checkLink')->name('check.link');
     Route::delete('delete-link/{id}', 'BacklinkController@removeLink')->name('delete.link');
-
     Route::post('edit-link', 'BacklinkController@editLink')->name('edit.link');
     Route::get('add-link/{id}', 'BacklinkController@addLinkView')->name('add.link.view');
-
-    Route::post('add-link', 'BacklinkController@storeLink');
     Route::post('edit-backlink', 'BacklinkController@editBacklink')->name('edit.backlink');
+    Route::post('add-link', 'BacklinkController@storeLink');
 });

@@ -14,7 +14,7 @@
             {!! Form::textarea('params', null, [
             'class'=>'form-control',
             'required'=>'required',
-            'placeholder' => 'donor.ru/1::akceptor.ru/2::текст ссылки::1::1::1::1'
+            'placeholder' => 'donor.ru/1::akceptor.ru/2::anchor::1::1::1::1'
             ]) !!}
             <span class="__helper-link ui_tooltip_w">
                 {{ __('Decoding of the design') }}
@@ -22,11 +22,11 @@
                 <span class="ui_tooltip __right __l">
                     <span class="ui_tooltip_content" style="width: 600px">
                         <p>
-                            donor.ru/1::akceptor.ru/2::текст ссылки::1::1::1::1
+                            donor.ru/1::akceptor.ru/2::anchor::1::1::1::1
                         </p>
                         donor.ru/1 - {{ __('The page of the site where the link will be searched') }}
                         akceptor.ru/2 - {{ __('The link that the script will search for') }}<br>
-                        текст ссылки - {{ __('Anchor') }}<br>
+                        anchor - {{ __('Anchor') }}<br>
                         {{ __('Check that the rel attribute with the nofollow property is not present in the link - (0 - no/1 - yes)') }}<br>
                         {{ __('Check that the link is missing in the noindex tag - (0 - no/1 - yes)') }}<br>
                         {{ __('Checking that the link is indexed by Yandex - (0 - no/1 - yes)') }}<br>
@@ -38,7 +38,7 @@
             <p>{{ __('You can') }} <a href="#" class="text-info">{{ __('use a simplified format') }}</a></p>
         </div>
         <div class='pt-3'>
-            <button class='btn btn-secondary' title='Save' type='submit'>{{ __('Add to Tracking') }}</button>
+            <input type="submit" class="btn btn-secondary" value="{{ __('Add to Tracking') }}">
             <a href='{{ route('backlink') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
             <a href='{{ route('show.backlink', $id) }}' class='btn btn-default'>{{ __('Back') }}</a>
         </div>

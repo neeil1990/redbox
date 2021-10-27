@@ -68,7 +68,12 @@ class BacklinkController extends Controller
             $links = LinkTracking::where('broken', '=', true)->get();
             foreach ($links->chunk(5) as $links) {
                 foreach ($links as $link) {
-                    $this->containsLink($link->site_donor, $link->link, $link->anchor, (boolean)$link->nofollow, (boolean)$link->noindex);
+                    $this->containsLink($link->site_donor,
+                        $link->link,
+                        $link->anchor,
+                        (boolean)$link->nofollow,
+                        (boolean)$link->noindex
+                    );
                     if (isset($this->result['error'])) {
                         if (!(boolean)$link->mail_sent) {
                             $link->project->user->sendBrokenLinkNotification($this->result['error'], $link);
@@ -80,7 +85,6 @@ class BacklinkController extends Controller
                         $this->saveResult($link, false, false);
                     }
                     unset($this->result);
-                    Log::debug('chunk', [$links]);
                     sleep(1);
                 }
             }
@@ -111,6 +115,108 @@ class BacklinkController extends Controller
     }
 
     /**
+     * @param $id
+     * @return array|Application|Factory|View|mixed
+     */
+    public function addLinkView($id)
+    {
+        return view('backlink.add-backlink', compact('id'));
+    }
+
+
+    /**
+     * @param $id
+     * @return RedirectResponse
+     */
+    public function remove($id): RedirectResponse
+    {
+        ProjectTracking::destroy($id);
+        flash()->overlay(__('Tracking was successfully deleted'), ' ')->success();
+
+        return Redirect::route('backlink');
+    }
+
+    /**
+     * @param $id
+     * @return array|Application|Factory|View|mixed
+     */
+    public function show($id)
+    {
+        $project = ProjectTracking::findOrFail($id);
+
+        return view('backlink.show', compact('project'));
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function storeLink(Request $request): RedirectResponse
+    {
+        if (isset($request->countRows)) {
+            $this->simplifiedCreate($request);
+        } else {
+            $phrases = $this->getParams($request->params);
+            if ($this->isParserError($phrases)) {
+                flash()->overlay(__('Invalid format'), ' ')->error();
+                return Redirect::back();
+            }
+            $this->expressCreate($request, $phrases);
+        }
+        flash()->overlay(__('Tracking was successfully created'), ' ')->success();
+
+        return Redirect::route('backlink');
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editLink(Request $request): JsonResponse
+    {
+        if (strlen($request->option) > 0) {
+            LinkTracking::where('id', $request->id)->update([
+                $request->name => $request->option,
+            ]);
+            return response()->json([]);
+        }
+        return response()->json([], 400);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editBacklink(Request $request): JsonResponse
+    {
+        if (strlen($request->option) > 0) {
+            ProjectTracking::where('id', $request->id)->update([
+                $request->name => $request->option
+            ]);
+            return response()->json([]);
+        }
+        return response()->json([], 400);
+    }
+
+    /**
+     * @param $id
+     * @return array|Application|Factory|View|mixed
+     */
+    public function removeLink($id)
+    {
+        $link = LinkTracking::findOrFail($id);
+        $project = ProjectTracking::findOrFail($link->project_tracking_id);
+        $project->decrement('total_link');
+        if ((boolean)$link->broken) {
+            $project->decrement('total_broken_link');
+        }
+        LinkTracking::destroy($id);
+        flash()->overlay(__('Link was successfully deleted'), ' ')->success();
+
+        return Redirect::route('show.backlink', $link->project_tracking_id);
+    }
+
+    /**
      * @param Request $request
      * @return RedirectResponse
      */
@@ -119,8 +225,14 @@ class BacklinkController extends Controller
         if (isset($request->countRows)) {
             $this->simplifiedCreate($request);
         } else {
-            $this->expressCreate($request);
+            $phrases = $this->getParams($request->params);
+            if ($this->isParserError($phrases)) {
+                flash()->overlay(__('Invalid format'), ' ')->error();
+                return Redirect::refresh();
+            }
+            $this->expressCreate($request, $phrases);
         }
+
         flash()->overlay(__('Tracking was successfully created'), ' ')->success();
         return Redirect::route('backlink');
 
@@ -128,15 +240,10 @@ class BacklinkController extends Controller
 
     /**
      * @param $request
-     * @return mixed
+     * @param $phrases
      */
-    public function expressCreate($request)
+    public function expressCreate($request, $phrases)
     {
-        $phrases = $this->getParams($request->params);
-        if ($this->isParserError($phrases)) {
-            flash()->overlay(__('Format in invalid'), ' ')->error();
-            return Redirect::refresh();
-        }
         if (empty($request->id)) {
             $projectTracking = new ProjectTracking();
             $projectTracking->user_id = Auth::id();
@@ -221,29 +328,6 @@ class BacklinkController extends Controller
             }
         }
         return false;
-    }
-
-    /**
-     * @param $id
-     * @return RedirectResponse
-     */
-    public function remove($id): RedirectResponse
-    {
-        ProjectTracking::destroy($id);
-        flash()->overlay(__('Tracking was successfully deleted'), ' ')->success();
-
-        return Redirect::route('backlink');
-    }
-
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
-    public function show($id)
-    {
-        $project = ProjectTracking::findOrFail($id);
-
-        return view('backlink.show', compact('project'));
     }
 
     /**
@@ -424,76 +508,4 @@ class BacklinkController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function storeLink(Request $request): RedirectResponse
-    {
-        if (isset($request->countRows)) {
-            $this->simplifiedCreate($request);
-        } else {
-            $this->expressCreate($request);
-        }
-        flash()->overlay(__('Tracking was successfully created'), ' ')->success();
-
-        return Redirect::route('backlink');
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function editLink(Request $request): JsonResponse
-    {
-        if (strlen($request->option) > 0) {
-            LinkTracking::where('id', $request->id)->update([
-                $request->name => $request->option,
-            ]);
-            return response()->json([]);
-        }
-        return response()->json([], 400);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function editBacklink(Request $request): JsonResponse
-    {
-        if (strlen($request->option) > 0) {
-            ProjectTracking::where('id', $request->id)->update([
-                $request->name => $request->option
-            ]);
-            return response()->json([]);
-        }
-        return response()->json([], 400);
-    }
-
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
-    public function addLinkView($id)
-    {
-        return view('backlink.add-backlink', compact('id'));
-    }
-
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
-    public function removeLink($id)
-    {
-        $link = LinkTracking::findOrFail($id);
-        $project = ProjectTracking::findOrFail($link->project_tracking_id);
-        $project->decrement('total_link');
-        if ((boolean)$link->broken) {
-            $project->decrement('total_broken_link');
-        }
-        LinkTracking::destroy($id);
-        flash()->overlay(__('Link was successfully deleted'), ' ')->success();
-
-        return Redirect::route('show.backlink', $link->project_tracking_id);
-    }
 }
