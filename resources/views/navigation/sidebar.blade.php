@@ -64,7 +64,7 @@
         <li class="nav-item">
             <a href="{{ route('pages.utm') }}" class="nav-link">
                 <ion-icon name="bookmarks-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('UTM Marks') }}</p>
+                <p>{{ __('Utm builder') }}</p>
             </a>
         </li>
         <li class="nav-item">
