@@ -7615,6 +7615,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ResponseHttpCode",
   props: {
@@ -7625,6 +7630,12 @@ __webpack_require__.r(__webpack_exports__);
       type: String
     },
     codeTitle: {
+      type: String
+    },
+    textTitle: {
+      type: String
+    },
+    timeoutTitle: {
       type: String
     }
   },
@@ -7649,6 +7660,7 @@ __webpack_require__.r(__webpack_exports__);
       app.codes = {};
       app.StringToArray();
       app.arUrls.forEach(function (element, i) {
+        if (i >= 500) return false;
         setTimeout(function () {
           app.HttpRequest(element, i);
         }, i * app.time);
@@ -71170,6 +71182,8 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "form-group" }, [
+              _c("label", [_vm._v(_vm._s(_vm.textTitle))]),
+              _vm._v(" "),
               _c("textarea", {
                 directives: [
                   {
@@ -71188,6 +71202,32 @@ var render = function() {
                       return
                     }
                     _vm.urls = $event.target.value
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", [_vm._v(_vm._s(_vm.timeoutTitle))]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.time,
+                    expression: "time"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { type: "number", min: "1" },
+                domProps: { value: _vm.time },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.time = $event.target.value
                   }
                 }
               })

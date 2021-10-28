@@ -7,7 +7,12 @@
 
                 <form @submit.prevent="ShowHttpResponse">
                     <div class="form-group">
+                        <label>{{ textTitle }}</label>
                         <textarea type="text" class="form-control" rows="10" v-model="urls"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ timeoutTitle }}</label>
+                        <input type="number" min="1" class="form-control" v-model="time">
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -74,6 +79,12 @@
             },
             codeTitle: {
                 type: String
+            },
+            textTitle: {
+                type: String
+            },
+            timeoutTitle: {
+                type: String
             }
         },
         data(){
@@ -101,6 +112,9 @@
                 app.StringToArray();
 
                 app.arUrls.forEach((element,i) => {
+                    if(i >= 500)
+                        return false;
+
                     setTimeout(() => {
                         app.HttpRequest(element, i);
                     }, i * app.time);
