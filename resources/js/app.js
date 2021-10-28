@@ -21,8 +21,10 @@ requireComponent.keys().forEach(function (fileName) {
 });
 
 import RemoveDuplicates from './components/pages/RemoveDuplicates';
+import ResponseHttpCode from './components/pages/ResponseHttpCode';
 
 Vue.component('remove-duplicates', RemoveDuplicates);
+Vue.component('response-http-code', ResponseHttpCode);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

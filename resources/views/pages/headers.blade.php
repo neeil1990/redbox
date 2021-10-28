@@ -23,6 +23,8 @@
     </div>
     @endif
 
+    <response-http-code submit="{{ __('Send') }}" url-title="{{ __('url') }}" code-title="{{ __('code') }}"></response-http-code>
+
     @if($response)
         <div class="row mb-4">
             <div class="col-md-6">

@@ -48,6 +48,16 @@ class CurlFacade
     }
 
     /**
+     * @return mixed
+     */
+    public function httpCode()
+    {
+        $this->init();
+        $code = $this->curl->withResponseHeaders()->returnResponseArray()->get();
+        return $code['status'];
+    }
+
+    /**
      * @return $this|CurlFacade
      */
     private function response()
