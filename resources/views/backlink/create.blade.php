@@ -10,13 +10,13 @@
     <div class='col-md-6 mt-3'>
         <div class='form-group required'>
             {!! Form::label(__('Project name')) !!}
-            {!! Form::text('project_name', null ,['class' => 'form form-control','required' => 'required','placeholder' => __('Project name')]) !!}
+            {!! Form::text('project_name', null, ['class' => 'form form-control','required','placeholder' => __('Project name')]) !!}
         </div>
         <div class='form-group required'>
             {!! Form::label(__('Loading links with a list')) !!}
             {!! Form::textarea('params', null,[
             'class' => 'form-control',
-            'required' => 'required',
+            'required',
             'placeholder' => 'donor.ru/1::akceptor.ru/2::текст ссылки::1::1::1::1'
             ]) !!}
             <span class="__helper-link ui_tooltip_w">
@@ -39,7 +39,7 @@
             <p>{{ __('You can') }} <a href="#" class="text-info">{{ __('use a simplified format') }}</a></p>
         </div>
         <div class='pt-3'>
-            <button class='btn btn-secondary mr-2' title='Save' type='submit'>{{ __('Add to Tracking') }}</button>
+            <button class='btn btn-secondary mr-2' type='submit'>{{ __('Add to Tracking') }}</button>
             <a href='{{ route('backlink') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
         </div>
     </div>
@@ -49,9 +49,9 @@
         {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST'])!!}
         <div class='form-group required w-50'>
             {!! Form::label(__('Project name')) !!}
-            {!! Form::text('project_name', null ,[
+            {!! Form::text('project_name', null, [
             'class' => 'form form-control',
-            'required' => 'required'
+            'required'
             ]) !!}
         </div>
         <input type="hidden" name="countRows" id="countRows" value="1">
@@ -71,13 +71,13 @@
             <tbody>
             <tr>
                 <td>
-                    {!! Form::text('site_donor_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
+                    {!! Form::text('site_donor_1', null, ['class' => 'form-control backlink','required']) !!}
                 </td>
                 <td>
-                    {!! Form::text('link_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
+                    {!! Form::text('link_1', null, ['class' => 'form-control backlink','required']) !!}
                 </td>
                 <td>
-                    {!! Form::text('anchor_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
+                    {!! Form::text('anchor_1', null, ['class' => 'form-control backlink','required']) !!}
                 </td>
                 <td>
                     {!! Form::select('nofollow_1', ['1' => __('Yes'), '0' => __('No')], null, ['class' => 'custom-select rounded-0']) !!}
@@ -108,7 +108,6 @@
     @slot('js')
         <script>
             var countRows = 1
-
             $('.text-info').click(function () {
                 $('.express-form').hide(300)
                 $('.simplified-form').show(300)
@@ -142,7 +141,6 @@
                     $('#removeRow').hide(100)
                 }
             });
-
         </script>
     @endslot
 @endcomponent

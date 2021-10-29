@@ -4,34 +4,32 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class BrokenLinkNotification extends Notification
+class BrokenDomenNotification extends Notification
 {
     use Queueable;
 
-    private $request;
-    private $link;
+    public $project;
 
     /**
      * Create a new notification instance.
      *
-     * @param $request
-     * @param $link
+     * @param $project
      */
-    public function __construct($request, $link)
+    public function __construct($project)
     {
-        $this->request = $request;
-        $this->link = $link;
+        $this->project = $project;
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable): array
+    public function via($notifiable)
     {
         return ['mail'];
     }
@@ -39,28 +37,27 @@ class BrokenLinkNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return MailMessage
      */
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('This message is generated automatically and does not need to be answered')
-            ->line('Site donor: ' . $this->link->site_donor)
-            ->line('Link: ' . $this->link->link)
-            ->line('Anchor: ' . $this->link->anchor)
-            ->line('error: ' . $this->request)
-            ->action('Check your projects', route('backlink'))
+            ->line('This message is generated automatically and does not need to be answered.')
+            ->line('Link' . $this->project->link)
+            ->line('Status codde: ' . $this->project->status)
+            ->line('Anchor: ' . $this->project->uptime_percent . '%')
+            ->action('Check your projects', route('domain.monitoring'))
             ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable): array
+    public function toArray($notifiable)
     {
         return [
             //

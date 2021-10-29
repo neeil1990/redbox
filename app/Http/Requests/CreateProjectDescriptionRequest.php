@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * @property int project_id
- * @property text description
+ * @property string description
  */
 class CreateProjectDescriptionRequest extends FormRequest
 {

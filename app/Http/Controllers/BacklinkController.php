@@ -123,7 +123,6 @@ class BacklinkController extends Controller
         return view('backlink.add-backlink', compact('id'));
     }
 
-
     /**
      * @param $id
      * @return RedirectResponse

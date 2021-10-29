@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\BrokenDomenNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RegisterVerifyEmail;
@@ -71,14 +72,20 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Send the password reset notification.
-     *
      * @param $request
      * @param $link
      */
     public function sendBrokenLinkNotification($request, $link)
     {
         $this->notify(new BrokenLinkNotification($request, $link));
+    }
+
+    /**
+     * @param $project
+     */
+    public function sendBrokenDomenNotification($project)
+    {
+        $this->notify(new BrokenDomenNotification($project));
     }
 
     /**

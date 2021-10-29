@@ -65,13 +65,13 @@
             <tbody>
             <tr>
                 <td>
-                    {!! Form::text('site_donor_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
+                    {!! Form::text('site_donor_1', null, ['class' => 'form-control backlink','required']) !!}
                 </td>
                 <td>
-                    {!! Form::text('link_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
+                    {!! Form::text('link_1', null, ['class' => 'form-control backlink','required']) !!}
                 </td>
                 <td>
-                    {!! Form::text('anchor_1', null ,['class' => 'form-control backlink','required' => 'required']) !!}
+                    {!! Form::text('anchor_1', null, ['class' => 'form-control backlink','required']) !!}
                 </td>
                 <td>
                     {!! Form::select('nofollow_1', ['1' => __('Yes'), '0' => __('No')], null, ['class' => 'custom-select rounded-0']) !!}

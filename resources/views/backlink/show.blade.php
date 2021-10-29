@@ -51,12 +51,11 @@
                     <td class="table-d">
                         {!! Form::textarea('anchor', $link->anchor ,['class' => 'form-control backlink','rows' => 6]) !!}
                     </td>
-                    <td class="">
+                    <td>
                         {!! Form::select('nofollow', ['1' => __('Yes'), '0' => __('No')], $link->nofollow, ['class' => 'form-control backlink']) !!}
                     </td>
-                    <td class="">
+                    <td>
                         {!! Form::select('noindex', ['1' => __('Yes'), '0' => __('No')], $link->noindex, ['class' => 'form-control backlink']) !!}
-
                     </td>
                     <td class="">@isset($link->last_check){{ $link->last_check }}@endisset</td>
                     <td class="fixed-height">
@@ -93,16 +92,12 @@
         <script>
             var oldValue = ''
             var oldProjectName = ''
-
             $(document).ready(function () {
                 $(".form-control.col-3.project-name").focus(function () {
                     oldProjectName = $(this).val()
                 })
                 $(".form-control.col-3.project-name").blur(function () {
                     if (oldProjectName !== $(this).val()) {
-                        console.log($(this).parent().attr("projectId"))
-                        console.log($(this).attr('name'))
-                        console.log($(this).val())
                         $.ajax({
                             type: "POST",
                             dataType: "json",

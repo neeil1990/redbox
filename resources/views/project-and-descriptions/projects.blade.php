@@ -34,8 +34,7 @@
                                         <a href="{{ route('delete.project', $project->id) }}" class="btn btn-secondary">
                                             {{__('Delete a project')}}
                                         </a>
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{__('Back')}}</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Back')}}</button>
                                     </div>
                                 </div>
                             </div>

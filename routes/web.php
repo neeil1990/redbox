@@ -92,4 +92,11 @@ Route::middleware(['verified'])->group(function () {
     Route::get('add-link/{id}', 'BacklinkController@addLinkView')->name('add.link.view');
     Route::post('edit-backlink', 'BacklinkController@editBacklink')->name('edit.backlink');
     Route::post('add-link', 'BacklinkController@storeLink');
+
+    Route::get('domain-monitoring', 'DomainMonitoringController@index')->name('domain.monitoring');
+    Route::get('add-domain-monitoring', 'DomainMonitoringController@createView')->name('add.domain.monitoring.view');
+    Route::post('add-domain-monitoring', 'DomainMonitoringController@store')->name('add.domain.monitoring');
+    Route::get('delete-domain-monitoring/{id}', 'DomainMonitoringController@remove')->name('delete.domain.monitoring');
+    Route::get('check-domain-monitoring/{id}', 'DomainMonitoringController@checkLink')->name('check.domain');
+    Route::post('edit-domain-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
 });
