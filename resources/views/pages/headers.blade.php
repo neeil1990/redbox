@@ -6,12 +6,16 @@
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
         <!-- jQuery ui -->
         <link rel="stylesheet" href="{{ asset('plugins/jquery-ui/jquery-ui.css') }}">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+
     @endslot
 
     @if(Auth()->check())
     <div class="row mb-4">
         <div class="col-md-6">
             {!! Form::open(['method' => 'GET', 'route' => 'pages.headers']) !!}
+            <label>{{ __('To check one link') }}</label>
             <div class="input-group input-group-sm">
                 {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
                 <span class="input-group-append">
@@ -22,6 +26,13 @@
         </div>
     </div>
     @endif
+
+    <response-http-code submit="{{ __('Send') }}"
+                        url-title="{{ __('url') }}"
+                        code-title="{{ __('code') }}"
+                        text-title="{{ __('Bulk check up to 500 pieces at a time') }}"
+                        timeout-title="{{ __('Timeout between requests in ms') }}"
+    ></response-http-code>
 
     @if($response)
         <div class="row mb-4">

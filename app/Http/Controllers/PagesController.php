@@ -17,6 +17,9 @@ class PagesController extends Controller
      */
     public function httpHeaders(Request $request, HttpHeader $header)
     {
+        if($request->input('http', false))
+            return (new CurlFacade($request->input('url')))->httpCode();
+
         $response = (new CurlFacade($request->input('url')))->run();
         $id = $header->saveData($response);
 
