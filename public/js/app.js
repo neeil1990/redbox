@@ -7642,6 +7642,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       time: 1000,
+      order: 'desc',
       urls: '',
       arUrls: [],
       items: [],
@@ -7665,6 +7666,10 @@ __webpack_require__.r(__webpack_exports__);
           app.HttpRequest(element, i);
         }, i * app.time);
       });
+    },
+    Sorting: function Sorting() {
+      if (this.order === 'desc') this.order = 'asc';else this.order = 'desc';
+      this.items = _.orderBy(this.items, 'code', this.order);
     },
     HttpRequest: function HttpRequest(url, i) {
       var app = this;
@@ -71267,7 +71272,7 @@ var render = function() {
               ),
               _vm._v(" "),
               _c("div", { staticClass: "card-body" }, [
-                _c("table", { staticClass: "table table-bordered" }, [
+                _c("table", { staticClass: "table dataTable table-bordered" }, [
                   _c("thead", [
                     _c("tr", [
                       _c("th", { staticStyle: { width: "10px" } }, [
@@ -71276,7 +71281,19 @@ var render = function() {
                       _vm._v(" "),
                       _c("th", [_vm._v(_vm._s(_vm.urlTitle))]),
                       _vm._v(" "),
-                      _c("th", [_vm._v(_vm._s(_vm.codeTitle))]),
+                      _c(
+                        "th",
+                        {
+                          staticClass: "sorting",
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.Sorting.apply(null, arguments)
+                            }
+                          }
+                        },
+                        [_vm._v(_vm._s(_vm.codeTitle))]
+                      ),
                       _vm._v(" "),
                       _c("th", { staticStyle: { width: "40px" } })
                     ])

@@ -34,12 +34,12 @@
                         </span>
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered">
+                        <table class="table dataTable table-bordered">
                             <thead>
                                 <tr>
                                     <th style="width: 10px">#</th>
                                     <th>{{ urlTitle }}</th>
-                                    <th>{{ codeTitle }}</th>
+                                    <th class="sorting" @click.prevent="Sorting">{{ codeTitle }}</th>
                                     <th style="width: 40px"></th>
                                 </tr>
                             </thead>
@@ -90,6 +90,7 @@
         data(){
           return {
               time: 1000,
+              order: 'desc',
               urls: '',
               arUrls: [],
               items: [],
@@ -119,6 +120,15 @@
                         app.HttpRequest(element, i);
                     }, i * app.time);
                 });
+            },
+
+            Sorting() {
+                if(this.order === 'desc')
+                    this.order = 'asc';
+                else
+                    this.order = 'desc';
+
+                this.items = _.orderBy(this.items, 'code', this.order);
             },
 
             HttpRequest(url, i) {

@@ -6,6 +6,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
         <!-- jQuery ui -->
         <link rel="stylesheet" href="{{ asset('plugins/jquery-ui/jquery-ui.css') }}">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+
     @endslot
 
     @if(Auth()->check())
