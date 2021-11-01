@@ -29,12 +29,11 @@ class TelegramBot extends Model
 
     public static function repairedDomenNotification($project)
     {
-        dd(Telegram::class);
         $uptimePercent = round($project->uptime_percent, 2);
 
         Telegram::sendMessage([
             'chat_id' => $project->telegramBot->chat_id,
-            'text' => "Внимание: Проект <code>{$project->project_name}</code> стал <code>доступен</code>
+            'text' => "Внимание: проект <code>{$project->project_name}</code> стал <code>доступен</code>
 В <code>{$project->last_check}</code>
 Состояние: <code>{$project->status}</code>
 Текущий uptime: <code>{$uptimePercent}%</code>

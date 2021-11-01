@@ -81,10 +81,6 @@
                             <i aria-hidden="true" class="fa fa-search"></i>
                         </button>
                     </form>
-                    <button class="btn btn-default" data-toggle="modal"
-                            data-target="#remove-project-id-{{$project->id}}">
-                        <i class="fa fa-trash"></i>
-                    </button>
                     @if(!$project->telegramBot->active)
                         <button class="btn btn-default" data-toggle="modal" data-target="#exampleModal{{$project->id}}">
                             <i class="fa fa-envelope"></i>
@@ -153,6 +149,10 @@
                             </div>
                         </div>
                     @endif
+                    <button class="btn btn-default" data-toggle="modal"
+                            data-target="#remove-project-id-{{$project->id}}">
+                        <i class="fa fa-trash"></i>
+                    </button>
                 </td>
             </tr>
         @endforeach

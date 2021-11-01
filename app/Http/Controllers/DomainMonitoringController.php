@@ -106,7 +106,7 @@ class DomainMonitoringController extends Controller
 
     public function sendNotifications($project, $oldState)
     {
-        if ($oldState && !$project->broken) {
+        if ($oldState && !$project->broken && $project->telegramBot->active) {
             TelegramBot::repairedDomenNotification($project);
         }
 
