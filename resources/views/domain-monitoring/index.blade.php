@@ -72,7 +72,8 @@
                         <span class="text-info">{{ $project->status }} / {{ $project->code }}</span>
                     @endif
                 </td>
-                <td>{{ $project->uptime_percent }}%</td>
+                <td>{{ $project->uptime_percent }}%
+                </td>
                 <td class="d-flex justify-content-around m-auto border-bottom-0 border-left-0 border-right-0">
                     <form action="{{ route('check.domain', $project->id)}}" method="get">
                         @csrf
@@ -82,9 +83,76 @@
                     </form>
                     <button class="btn btn-default" data-toggle="modal"
                             data-target="#remove-project-id-{{$project->id}}">
-                        <i class="fa fa-trash">
-                        </i>
+                        <i class="fa fa-trash"></i>
                     </button>
+                    @if(!$project->telegramBot->active)
+                        <button class="btn btn-default" data-toggle="modal" data-target="#exampleModal{{$project->id}}">
+                            <i class="fa fa-envelope"></i>
+                        </button>
+                        <div class="modal fade" id="exampleModal{{$project->id}}" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">
+                                            Хотите получать уведомления о состоянии этой ссылки в телеграм?
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Это специальный токен привязанный к ссылке:<br>
+                                            <span class="text-info">{{ $project->telegramBot->token }}</span></p>
+                                        <p>отправьте его нашему телеграм боту
+                                            <span class="text-info">@RedboxNotificationBot </span>
+                                            боту, для того чтобы получать уведомления о состоянии ссылок</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{{ route('verification.token', $project->telegramBot->token)}}"
+                                              method="get">
+                                            @csrf
+                                            <button class="btn btn-secondary" type="submit">
+                                                Я отправил токен боту
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Close') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <button class="btn btn-default" data-toggle="modal"
+                                data-target="#resetNotivication{{$project->id}}">
+                            <i class="fa fa-fire"></i>
+                        </button>
+                        <div class="modal fade" id="resetNotivication{{$project->id}}" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Хотите перестать получать
+                                            уведомления в телеграм?</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{{ route('reset.notification', $project->telegramBot->token)}}"
+                                              method="get">
+                                            @csrf
+                                            <button class="btn btn-secondary" type="submit">
+                                                Перестать получать уведомления
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Close') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </td>
             </tr>
         @endforeach

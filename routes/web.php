@@ -100,5 +100,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('check-domain-monitoring/{id}', 'DomainMonitoringController@checkLink')->name('check.domain');
     Route::post('edit-domain-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
 
-    Route::get('f-super-secret-link-for-set-webhook-for-telegram-bot-f', 'TelegramBotController@setWebhook')->name('set.webhook');
+    Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
+    Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');
 });

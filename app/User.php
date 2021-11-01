@@ -83,7 +83,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * @param $project
      */
-    public function sendBrokenDomenNotification($project)
+    public function brokenDomenNotification($project)
     {
         $this->notify(new BrokenDomenNotification($project));
     }

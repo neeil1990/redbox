@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\DomainMonitoring;
+use App\TelegramBot;
+use App\User;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -10,13 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 
 class DomainMonitoringController extends Controller
 {
-    const HTTP_OK = 200;
-
-    const HTTP_NOT_FOUND = 404;
-
     public function index()
     {
         $projects = DomainMonitoring::where('user_id', '=', Auth::id())->get();
@@ -41,6 +41,11 @@ class DomainMonitoringController extends Controller
         $monitoring = new DomainMonitoring($request->all());
         $monitoring->user_id = Auth::id();
         $monitoring->save();
+
+        $bot = new TelegramBot();
+        $bot->domain_monitoring_id = $monitoring->id;
+        $bot->token = Str::random(40);
+        $bot->save();
 
         return Redirect::route('domain.monitoring');
     }
@@ -71,33 +76,46 @@ class DomainMonitoringController extends Controller
 
     public function httpCheck($project)
     {
+        $oldState = $project->broken;
         try {
             $client = new Client();
             $res = $client->request('get', $project->link);
-            if ($res->getStatusCode() === self::HTTP_OK) {
+            if ($res->getStatusCode() === 200) {
                 if (isset($project->phrase)) {
                     $this->searchPhrase($res->getBody()->getContents(), $project);
                 } else {
                     $project->status = 'Всё в порядке';
                     $project->broken = false;
+                    $project->send_notification = false;
                 }
-                $project->send_mail = false;
             } else {
-                $project->status = 'Ссылка сломана';
+                $project->status = 'Домен не отвечает';
                 $project->broken = true;
             }
             $project->code = $res->getStatusCode();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $project->code = $e->getCode();
             $project->broken = true;
         }
-//        if ($project->broken && !$project->send_mail) {
-//            $project->send_mail = true;
-//            User::find(Auth::id())->sendBrokenDomenNotification($project);
-//        }
+        $this->sendNotifications($project, $oldState);
         $project->uptime_percent = $this->calculateUpTime($project);
         $project->last_check = Carbon::now();
         $project->save();
+    }
+
+    public function sendNotifications($project, $oldState)
+    {
+        if ($oldState && !$project->broken) {
+            TelegramBot::repairedDomenNotification($project);
+        }
+
+        if ($project->broken && !$project->send_notification) {
+            $project->send_notification = true;
+            User::find(Auth::id())->brokenDomenNotification($project);
+            if ($project->telegramBot->active) {
+                TelegramBot::brokenDomenNotification($project);
+            }
+        }
     }
 
     /**
@@ -135,6 +153,7 @@ class DomainMonitoringController extends Controller
             if (count($matches) > 0) {
                 $project->status = 'Всё в порядке';
                 $project->broken = false;
+                $project->send_notification = false;
             }
         } else {
             $project->status = 'Ключевая фраза не найдена';

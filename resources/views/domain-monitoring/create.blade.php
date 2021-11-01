@@ -35,7 +35,7 @@
         </div>
         <div class='pt-3'>
             <button class='btn btn-secondary mr-2' type='submit'>{{ __('Add to Tracking') }}</button>
-            <a href='{{ route('backlink') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
+            <a href='{{ route('domain.monitoring') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
         </div>
     </div>
     {!! Form::close() !!}

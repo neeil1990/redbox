@@ -2,18 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\TelegramBot;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramBotController extends Controller
 {
-    public function setWebhook()
+    public function verificationToken($token): RedirectResponse
     {
-        $url = 'https://api.telegram.org/bot2021809943:AAEYwR44bYSl00FzSdpGjIPykZswS1IN1ko/setWebhook';
-        $options = [
-            'url' => 'https://lk.redbox.su/telegrambot.php'
-        ];
+        $updates = Telegram::getUpdates();
+        foreach ($updates as $update) {
+            if ($update['message']['text'] === $token) {
+                TelegramBot::where('token', '=', $token)->update([
+                    'active' => 1,
+                    'chat_id' => $update['message']['chat']['id']
+                ]);
+                flash()->overlay(__('Теперь уведомления будут приходить к вам в телеграм'), ' ')->success();
+                return Redirect::back();
+            }
+        }
+        flash()->overlay(__('Токен проекта не найден в истории телеграм бота'), ' ')->error();
+        return Redirect::back();
+    }
 
-        $response = file_get_contents($url . '?' . http_build_query($options));
-        dd($response);
+    /**
+     * @param $token
+     * @return RedirectResponse
+     */
+    public function resetNotification($token): RedirectResponse
+    {
+        TelegramBot::where('token', '=', $token)->update([
+            'active' => 0,
+        ]);
+        flash()->overlay(__('Вы успешно отписались от рассылки'), ' ')->success();
+
+        return Redirect::back();
     }
 }
