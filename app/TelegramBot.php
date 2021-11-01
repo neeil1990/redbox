@@ -29,6 +29,7 @@ class TelegramBot extends Model
 
     public static function repairedDomenNotification($project)
     {
+        dd(Telegram::class);
         $uptimePercent = round($project->uptime_percent, 2);
 
         Telegram::sendMessage([
