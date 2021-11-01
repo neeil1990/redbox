@@ -112,7 +112,7 @@ class DomainMonitoringController extends Controller
 
         if ($project->broken && !$project->send_notification) {
             $project->send_notification = true;
-            User::find(Auth::id())->brokenDomenNotification($project);
+//            User::find(Auth::id())->brokenDomenNotification($project);
             if ($project->telegramBot->active) {
                 TelegramBot::brokenDomenNotification($project);
             }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8e63f8b8ad63cac69bc296e13ed0c7c",
+    "content-hash": "4f694316a688409f7b17e8654c3612d0",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -726,24 +726,24 @@
         },
         {
             "name": "irazasyed/telegram-bot-sdk",
-            "version": "dev-develop",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/irazasyed/telegram-bot-sdk.git",
-                "reference": "bb6a2d77171765ac980e2010b7f1ebf2bd2c4541"
+                "reference": "4a3279c2b9ece4f0d0175340f43c1d64f2d06c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/irazasyed/telegram-bot-sdk/zipball/bb6a2d77171765ac980e2010b7f1ebf2bd2c4541",
-                "reference": "bb6a2d77171765ac980e2010b7f1ebf2bd2c4541",
+                "url": "https://api.github.com/repos/irazasyed/telegram-bot-sdk/zipball/4a3279c2b9ece4f0d0175340f43c1d64f2d06c4c",
+                "reference": "4a3279c2b9ece4f0d0175340f43c1d64f2d06c4c",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^6.3 || ^7.0.1",
+                "guzzlehttp/guzzle": "^6.1 || ^7.0",
                 "guzzlehttp/psr7": "^1.3",
                 "illuminate/support": "^5.5 || ^6.0 || ^7.0 || ^8.0",
                 "league/event": "^2.1",
-                "php": "^7.2 || ^8.0"
+                "php": "^7.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "^8.5"
@@ -752,7 +752,6 @@
                 "illuminate/container": "Hold dependencies to be injected in commands constructors",
                 "irazasyed/larasupport": "Allows you to use any Laravel Package in Lumen by adding support!"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -796,9 +795,9 @@
             ],
             "support": {
                 "issues": "https://github.com/irazasyed/telegram-bot-sdk/issues",
-                "source": "https://github.com/irazasyed/telegram-bot-sdk/tree/develop"
+                "source": "https://github.com/irazasyed/telegram-bot-sdk/tree/v3.2.0"
             },
-            "time": "2021-10-22T20:06:26+00:00"
+            "time": "2020-09-05T08:39:34+00:00"
         },
         {
             "name": "ixudra/curl",
@@ -7100,9 +7099,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "irazasyed/telegram-bot-sdk": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
