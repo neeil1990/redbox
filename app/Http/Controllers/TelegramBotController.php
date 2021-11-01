@@ -12,7 +12,6 @@ class TelegramBotController extends Controller
     public function verificationToken($token): RedirectResponse
     {
         $updates = Telegram::getUpdates();
-        dd($updates);
         foreach ($updates as $update) {
             if ($update['message']['text'] === $token) {
                 TelegramBot::where('token', '=', $token)->update([

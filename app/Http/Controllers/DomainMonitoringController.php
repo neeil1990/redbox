@@ -95,6 +95,7 @@ class DomainMonitoringController extends Controller
             $project->code = $res->getStatusCode();
         } catch (Exception $e) {
             $project->code = $e->getCode();
+            $project->status = 'Домен не отвечает';
             $project->broken = true;
         }
         $this->sendNotifications($project, $oldState);
