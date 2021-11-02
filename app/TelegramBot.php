@@ -51,12 +51,9 @@ class TelegramBot extends Model
             while ($find) {
                 foreach ($updates as $key => $element) {
                     if (isset($element['message']) && $element['message']['text'] === $token) {
-                        $bot = TelegramBot::where('token', '=', $token)->first();
-                        $bot->active = 1;
-                        $bot->chat_id = $element['message']['chat']['id'];
-                        $bot->save();
-                        DomainMonitoring::where('id', '=', $bot->domain_monitoring_id)->update([
-                            'send_notification' => 0
+                        TelegramBot::where('token', '=', $token)->update([
+                            'active' => 1,
+                            'chat_id' => $element['message']['chat']['id'],
                         ]);
                         return true;
                     }
