@@ -3,8 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Redirect;
-use Telegram\Bot\Laravel\Facades\Telegram;
+use Symfony\Component\VarDumper\VarDumper;
 
 class TelegramBot extends Model
 {
@@ -24,13 +23,18 @@ class TelegramBot extends Model
     }
 
     /**
-     * @return mixed
+     * @param false $offset
+     * @return array
      */
-    public static function getUpdates(): array
+    public static function getUpdates($offset = null): array
     {
+        $data = [];
+        if (isset($offset)) {
+            $data = ['offset' => $offset];
+        }
         $updates = json_decode(file_get_contents('https://api.telegram.org/bot'
             . env('TELEGRAM_BOT_TOKEN', '2073017935:AAHgwY7d0TBAAUzNUyvsmH6QLH14nESQhOc') .
-            '/getUpdates'), true);
+            '/getUpdates?' . http_build_query($data)), true);
 
         return $updates['result'];
     }
@@ -41,17 +45,29 @@ class TelegramBot extends Model
      */
     public static function searchToken($token): bool
     {
+        $find = true;
         $updates = TelegramBot::getUpdates();
-        foreach ($updates as $update) {
-            if (isset($update['message']) && $update['message']['text'] === $token) {
-                TelegramBot::where('token', '=', $token)->update([
-                    'active' => 1,
-                    'chat_id' => $update['message']['chat']['id']
-                ]);
-                return true;
+        while ($find) {
+            foreach ($updates as $key => $element) {
+                if (isset($element['message']) && $element['message']['text'] === $token) {
+                    $bot = TelegramBot::where('token', '=', $token)->first();
+                    $bot->active = 1;
+                    $bot->chat_id = $element['message']['chat']['id'];
+                    $bot->save();
+
+                    DomainMonitoring::where('id', '=', $bot->domain_monitoring_id)->update([
+                        'send_notification' => 0
+                    ]);
+                    return true;
+                }
+                if (count($updates) === 1) {
+                    return false;
+                }
+                if ($key === array_key_last($updates)) {
+                    $updates = TelegramBot::getUpdates($element['update_id']);
+                }
             }
         }
-        return false;
     }
 
     public static function sendMessage($project, $status)

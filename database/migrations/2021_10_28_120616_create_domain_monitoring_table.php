@@ -23,7 +23,6 @@ class CreateDomainMonitoringTable extends Migration
             $table->string('status')->nullable();
             $table->integer('code')->nullable();
             $table->boolean('broken')->default(false);
-            $table->boolean('send_notification')->default(false);
             $table->float('uptime_percent')->nullable();
             $table->integer('up_time')->nullable();
             $table->timestamp('last_check')->nullable();

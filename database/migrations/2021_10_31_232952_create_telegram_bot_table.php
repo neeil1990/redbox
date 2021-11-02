@@ -16,6 +16,7 @@ class CreateTelegramBotTable extends Migration
         Schema::create('telegram_bot', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('domain_monitoring_id');
+            $table->unsignedBigInteger('user_id');
             $table->integer('chat_id')->nullable();
             $table->string('token', 40);
             $table->boolean('active')->default(0);
@@ -24,6 +25,11 @@ class CreateTelegramBotTable extends Migration
             $table->foreign('domain_monitoring_id')
                 ->references('id')
                 ->on('domain_monitoring')
+                ->onDelete('cascade');
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }

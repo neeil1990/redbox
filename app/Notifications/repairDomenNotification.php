@@ -4,9 +4,10 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class BrokenDomenNotification extends Notification
+class repairDomenNotification extends Notification
 {
     use Queueable;
 
@@ -28,7 +29,7 @@ class BrokenDomenNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable): array
+    public function via($notifiable)
     {
         return ['mail'];
     }
@@ -43,7 +44,7 @@ class BrokenDomenNotification extends Notification
     {
         return (new MailMessage)
             ->line('This message is generated automatically and does not need to be answered.')
-            ->line('Domain' . $this->project->link . ' broken')
+            ->line('Domain' . $this->project->link . ' repair')
             ->line('Status code: ' . $this->project->status)
             ->line('Anchor: ' . $this->project->uptime_percent . '%')
             ->action('Check your projects', route('domain.monitoring'))

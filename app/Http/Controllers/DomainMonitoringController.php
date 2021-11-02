@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\DomainMonitoring;
 use App\TelegramBot;
-use App\User;
-use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,13 +35,15 @@ class DomainMonitoringController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $userId = Auth::id();
         $monitoring = new DomainMonitoring($request->all());
-        $monitoring->user_id = Auth::id();
+        $monitoring->user_id = $userId;
         $monitoring->save();
 
         $bot = new TelegramBot();
         $bot->domain_monitoring_id = $monitoring->id;
-        $bot->token = Str::random(40);
+        $bot->user_id = $userId;
+        $bot->token = Str::limit(md5(Carbon::now() . $userId), 40);
         $bot->save();
 
         return Redirect::route('domain.monitoring');
@@ -69,96 +68,19 @@ class DomainMonitoringController extends Controller
     public function checkLink($id): RedirectResponse
     {
         $project = DomainMonitoring::findOrFail($id);
-        $this->httpCheck($project);
+        DomainMonitoring::httpCheck($project);
 
         return Redirect::back();
     }
 
-    public function httpCheck($project)
-    {
-        $oldState = $project->broken;
-        try {
-            $client = new Client();
-            $res = $client->request('get', $project->link);
-            if ($res->getStatusCode() === 200) {
-                if (isset($project->phrase)) {
-                    $this->searchPhrase($res->getBody()->getContents(), $project);
-                } else {
-                    $project->status = 'Всё в порядке';
-                    $project->broken = false;
-                    $project->send_notification = false;
-                }
-            } else {
-                $project->status = 'Домен не отвечает';
-                $project->broken = true;
-            }
-            $project->code = $res->getStatusCode();
-        } catch (Exception $e) {
-            $project->code = $e->getCode();
-            $project->status = 'Домен не отвечает';
-            $project->broken = true;
-        }
-        $this->sendNotifications($project, $oldState);
-        $project->uptime_percent = $this->calculateUpTime($project);
-        $project->last_check = Carbon::now();
-        $project->save();
-    }
-
-    public function sendNotifications($project, $oldState)
-    {
-        if ($oldState && !$project->broken && $project->telegramBot->active) {
-            TelegramBot::repairedDomenNotification($project);
-        }
-
-        if ($project->broken && !$project->send_notification) {
-            $project->send_notification = true;
-//            User::find(Auth::id())->brokenDomenNotification($project);
-            if ($project->telegramBot->active) {
-                TelegramBot::brokenDomenNotification($project);
-            }
-        }
-    }
-
     /**
-     * @param $project
-     * @return float
+     * @param $timing
      */
-    public function calculateUpTime($project): float
+    public function checkLinkCrone($timing)
     {
-        $created = new Carbon($project->created_at);
-        $lastCheck = new Carbon($project->last_check);
-        $totalTime = $created->diffInSeconds(Carbon::now());
-        if ($project->last_check === null) {
-            if ($project->broken) {
-                return 0;
-            } else {
-                $project->up_time = $totalTime;
-                return 100;
-            }
-        }
-        if ($project->broken) {
-            return $project->up_time / ($totalTime / 100);
-        }
-
-        $project->up_time += $lastCheck->diffInSeconds(Carbon::now());
-        return $project->up_time / ($totalTime / 100);
-    }
-
-    /**
-     * @param $body
-     * @param $project
-     */
-    public function searchPhrase($body, $project)
-    {
-        if (preg_match_all('(' . $project->phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            if (count($matches) > 0) {
-                $project->status = 'Всё в порядке';
-                $project->broken = false;
-                $project->send_notification = false;
-            }
-        } else {
-            $project->status = 'Ключевая фраза не найдена';
-            $project->broken = true;
+        $projects = DomainMonitoring::where('timing', '=', $timing)->get();
+        foreach ($projects as $project) {
+            DomainMonitoring::httpCheck($project);
         }
     }
 
