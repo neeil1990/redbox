@@ -6,7 +6,7 @@ use App\Notifications\BrokenDomenNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RegisterVerifyEmail;
-use App\Notifications\repairDomenNotification;
+use App\Notifications\RepairDomenNotification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -94,7 +94,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function repairDomenNotification($project)
     {
-        $this->notify(new repairDomenNotification($project));
+        $this->notify(new RepairDomenNotification($project));
     }
 
     /**
