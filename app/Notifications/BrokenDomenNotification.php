@@ -43,7 +43,7 @@ class BrokenDomenNotification extends Notification
     {
         return (new MailMessage)
             ->line('This message is generated automatically and does not need to be answered.')
-            ->line('Domain' . $this->project->link . ' broken')
+            ->line('Domain ' . $this->project->link . ' broken')
             ->line('Status code: ' . $this->project->status)
             ->line('Anchor: ' . $this->project->uptime_percent . '%')
             ->action('Check your projects', route('domain.monitoring'))

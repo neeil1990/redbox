@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class repairDomenNotification extends Notification
+class RepairDomenNotification extends Notification
 {
     use Queueable;
 
@@ -44,7 +44,7 @@ class repairDomenNotification extends Notification
     {
         return (new MailMessage)
             ->line('This message is generated automatically and does not need to be answered.')
-            ->line('Domain' . $this->project->link . ' repair')
+            ->line('Domain ' . $this->project->link . ' repair')
             ->line('Status code: ' . $this->project->status)
             ->line('Anchor: ' . $this->project->uptime_percent . '%')
             ->action('Check your projects', route('domain.monitoring'))
