@@ -5,23 +5,16 @@ namespace App\Http\Controllers;
 use App\TelegramBot;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramBotController extends Controller
 {
     public function verificationToken($token): RedirectResponse
     {
-        $updates = Telegram::getUpdates();
-        foreach ($updates as $update) {
-            if ($update['message']['text'] === $token) {
-                TelegramBot::where('token', '=', $token)->update([
-                    'active' => 1,
-                    'chat_id' => $update['message']['chat']['id']
-                ]);
-                flash()->overlay(__('Теперь уведомления будут приходить к вам в телеграм'), ' ')->success();
-                return Redirect::back();
-            }
+        if (TelegramBot::searchToken($token)) {
+            flash()->overlay(__('Теперь уведомления будут приходить к вам в телеграм'), ' ')->success();
+            return Redirect::back();
         }
+
         flash()->overlay(__('Токен проекта не найден в истории телеграм бота'), ' ')->error();
         return Redirect::back();
     }

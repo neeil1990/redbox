@@ -12,7 +12,6 @@
         "ext-json": "*",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
-        "irazasyed/telegram-bot-sdk": "3.2.0",
         "ixudra/curl": "^6.21",
         "jenssegers/agent": "^2.6",
         "karlmonson/laravel-ping": "^1.0",
