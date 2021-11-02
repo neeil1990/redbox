@@ -54,14 +54,14 @@ class DomainMonitoring extends Model
     public static function sendNotifications($project, $oldState)
     {
         if ($oldState && !$project->broken) {
-            User::find($project->user_id)->repairDomenNotification($project);
+//            User::find($project->user_id)->repairDomenNotification($project);
             if ($project->telegramBot->active) {
                 TelegramBot::repairedDomenNotification($project);
             }
         }
 
         if (!$oldState && $project->broken) {
-            User::find($project->user_id)->brokenDomenNotification($project);
+//            User::find($project->user_id)->brokenDomenNotification($project);
             if ($project->telegramBot->active) {
                 TelegramBot::brokenDomenNotification($project);
             }
