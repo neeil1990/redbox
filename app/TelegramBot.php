@@ -45,28 +45,24 @@ class TelegramBot extends Model
      */
     public static function searchToken($token): bool
     {
-        try {
-            $find = true;
-            $updates = TelegramBot::getUpdates();
-            while ($find) {
-                foreach ($updates as $key => $element) {
-                    if (isset($element['message']) && $element['message']['text'] === $token) {
-                        TelegramBot::where('token', '=', $token)->update([
-                            'active' => 1,
-                            'chat_id' => $element['message']['chat']['id'],
-                        ]);
-                        return true;
-                    }
-                    if (count($updates) === 1) {
-                        return false;
-                    }
-                    if ($key === array_key_last($updates)) {
-                        $updates = TelegramBot::getUpdates($element['update_id']);
-                    }
+        $find = true;
+        $updates = TelegramBot::getUpdates();
+        while ($find) {
+            foreach ($updates as $key => $element) {
+                if (isset($element['message']) && $element['message']['text'] === $token) {
+                    TelegramBot::where('token', '=', $token)->update([
+                        'active' => 1,
+                        'chat_id' => $element['message']['chat']['id'],
+                    ]);
+                    return true;
+                }
+                if (count($updates) === 1) {
+                    return false;
+                }
+                if ($key === array_key_last($updates)) {
+                    $updates = TelegramBot::getUpdates($element['update_id']);
                 }
             }
-        } catch (\Exception $exception) {
-            dd($exception);
         }
     }
 
