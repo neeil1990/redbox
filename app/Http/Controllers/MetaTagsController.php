@@ -45,7 +45,10 @@ class MetaTagsController extends Controller
      */
     public function domain(string $domain)
     {
-        $this->html = new Htmldom($domain);
+        $html = Curl::to($domain)->returnResponseArray()->get();
+
+        $DOM = new Htmldom();
+        $this->html = $DOM->load($html['content']);
 
         return $this;
     }
