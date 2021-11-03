@@ -172,6 +172,7 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
+        Yangqi\Htmldom\HtmldomServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -242,6 +243,7 @@ return [
         'Flash' => Laracasts\Flash\Flash::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Curl' => Ixudra\Curl\Facades\Curl::class,
+        'Htmldom' => Yangqi\Htmldom\Htmldom::class,
     ],
 
 ];

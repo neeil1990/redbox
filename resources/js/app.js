@@ -22,9 +22,11 @@ requireComponent.keys().forEach(function (fileName) {
 
 import RemoveDuplicates from './components/pages/RemoveDuplicates';
 import ResponseHttpCode from './components/pages/ResponseHttpCode';
+import MetaTags from './components/pages/MetaTags';
 
 Vue.component('remove-duplicates', RemoveDuplicates);
 Vue.component('response-http-code', ResponseHttpCode);
+Vue.component('meta-tags', MetaTags);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

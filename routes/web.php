@@ -34,6 +34,8 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('users', 'UsersController');
 
+    Route::resource('meta-tags', 'MetaTagsController');
+
     Route::get('behavior/{behavior}/edit-project', 'BehaviorController@editProject')->name('behavior.edit_project');
     Route::patch('behavior/{behavior}/update-project', 'BehaviorController@updateProject')->name('behavior.update_project');
 
