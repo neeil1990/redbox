@@ -307,6 +307,7 @@
   "You have set up receiving notifications from the bot": "Вы настроили получение уведомлений от бота",
   "stop receiving notifications": "перестать получать уведомления",
   "Domains monitoring": "Мониторинг доменов",
+  "The domain monitoring service makes a request for the data of the domains you are interested in and automatically sends an email if something went wrong": "Сервис мониторинга доменов производит запрос данных интересующих вас доменов и автоматически отсылает письмо если что-то пошло не так",
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
   "Step 1. Landing page": "Шаг 1. Целевая страница",
