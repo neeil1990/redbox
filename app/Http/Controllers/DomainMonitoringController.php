@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\DomainMonitoring;
-use App\TelegramBot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 
 class DomainMonitoringController extends Controller
 {
@@ -39,12 +36,6 @@ class DomainMonitoringController extends Controller
         $monitoring = new DomainMonitoring($request->all());
         $monitoring->user_id = $userId;
         $monitoring->save();
-
-        $bot = new TelegramBot();
-        $bot->domain_monitoring_id = $monitoring->id;
-        $bot->user_id = $userId;
-        $bot->token = Str::limit(md5(Carbon::now() . $userId), 40);
-        $bot->save();
 
         return Redirect::route('domain.monitoring');
     }
@@ -90,7 +81,7 @@ class DomainMonitoringController extends Controller
      */
     public function edit(Request $request): JsonResponse
     {
-        if (strlen($request->option) > 0) {
+        if (strlen($request->option) > 0 || $request->name === 'phrase') {
             DomainMonitoring::where('id', $request->id)->update([
                 $request->name => $request->option,
             ]);

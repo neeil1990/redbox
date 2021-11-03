@@ -33,6 +33,17 @@
                 {!! Form::text('phrase', null, ['class' => 'form form-control', 'id' => 'phrase', 'required']) !!}
             </div>
         </div>
+        <div id="notification" style="display:none;">
+            <span class="text-info">Если фраза не выбрана, то сервер будет ожидать 200 код ответа</span>
+        </div>
+        @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
+            <span>
+            Хотите
+                <a href="{{ route('profile.index') }}" target="_blank">
+                    получать уведомления от нашего телеграм бота
+                </a> ?
+            </span>
+        @endif
         <div class='pt-3'>
             <button class='btn btn-secondary mr-2' type='submit'>{{ __('Add to Tracking') }}</button>
             <a href='{{ route('domain.monitoring') }}' class='btn btn-default'>{{ __('To my projects') }}</a>

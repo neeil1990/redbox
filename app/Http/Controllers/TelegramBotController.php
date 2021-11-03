@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\TelegramBot;
+use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
@@ -25,8 +26,8 @@ class TelegramBotController extends Controller
      */
     public function resetNotification($token): RedirectResponse
     {
-        TelegramBot::where('token', '=', $token)->update([
-            'active' => 0,
+        User::where('telegram_token', '=', $token)->update([
+            'telegram_bot_active' => 0,
         ]);
         flash()->overlay(__('Вы успешно отписались от рассылки'), ' ')->success();
 

@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DomainMonitoring extends Model
 {
@@ -51,21 +52,48 @@ class DomainMonitoring extends Model
      * @param $project
      * @param $oldState
      */
+    public static function calculateTotalTimeLastBreakdown($project, $oldState)
+    {
+        if ((boolean)$oldState == true && (boolean)$project->broken == false) {
+            $timeLastBreakdown = new Carbon($project->time_last_breakdown);
+            $project->total_time_last_breakdown = $timeLastBreakdown->diffInMinutes(Carbon::now());
+        }
+
+        if ((boolean)$oldState == false && (boolean)$project->broken == true) {
+            $project->time_last_breakdown = Carbon::now();
+        }
+    }
+
+    /**
+     * @param $project
+     * @param $oldState
+     */
     public static function sendNotifications($project, $oldState)
     {
-        if ($oldState && !$project->broken) {
-            User::find($project->user_id)->repairDomenNotification($project);
-            if ($project->telegramBot->active) {
-                TelegramBot::repairedDomenNotification($project);
+        $user = User::find(Auth::id());
+
+        if ((boolean)$oldState == true && (boolean)$project->broken == false) {
+            $user->repairDomenNotification($project);
+            if ($user->telegram_bot_active) {
+                TelegramBot::repairedDomenNotification($project, $user->chat_id);
             }
         }
 
-        if (!$oldState && $project->broken) {
-            User::find($project->user_id)->brokenDomenNotification($project);
-            if ($project->telegramBot->active) {
-                TelegramBot::brokenDomenNotification($project);
+        if ((boolean)$oldState == false && (boolean)$project->broken == true) {
+            $user->brokenDomenNotification($project);
+            if ($user->telegram_bot_active) {
+                TelegramBot::brokenDomenNotification($project, $user->chat_id);
             }
         }
+
+        if ((boolean)$oldState == true && (boolean)$project->broken == true) {
+            $lastNotification = new Carbon($project->time_last_notification);
+            if ($lastNotification->diffInMinutes(Carbon::now()) > 60) {
+                TelegramBot::brokenDomenNotification($project, $user->chat_id);
+            }
+        }
+        $project->time_last_notification = Carbon::now();
+
     }
 
     /**
@@ -75,10 +103,8 @@ class DomainMonitoring extends Model
     public static function searchPhrase($body, $project)
     {
         if (preg_match_all('(' . $project->phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            if (count($matches) > 0) {
-                $project->status = 'Всё в порядке';
-                $project->broken = false;
-            }
+            $project->status = 'Всё в порядке';
+            $project->broken = false;
         } else {
             $project->status = 'Ключевая фраза не найдена';
             $project->broken = true;
@@ -99,7 +125,7 @@ class DomainMonitoring extends Model
                     $project->broken = false;
                 }
             } else {
-                $project->status = 'Домен не отвечает';
+                $project->status = 'Код ответа не 200';
                 $project->broken = true;
             }
             $project->code = $res->getStatusCode();
@@ -108,6 +134,8 @@ class DomainMonitoring extends Model
             $project->status = 'Домен не отвечает';
             $project->broken = true;
         }
+        DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
+
         DomainMonitoring::sendNotifications($project, $oldState);
         $project->uptime_percent = DomainMonitoring::calculateUpTime($project);
         $project->last_check = Carbon::now();

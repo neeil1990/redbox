@@ -75,14 +75,13 @@
                             </div>
                             @error('password') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                         </div>
-
                     </div>
-
                     <div class="form-group">
                         {!! Form::label('password_confirmation', __('Confirm password')) !!}
                         <div class="input-group">
                             {!! Form::password('password_confirmation', ['id' => 'password_confirmation', 'class' => 'form-control' . ($errors->has('password_confirmation') ? ' is-invalid' : ''), 'placeholder' => __('Confirm password')]) !!}
-                            @error('password_confirmation') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                            @error('password_confirmation') <span
+                                class="error invalid-feedback">{{ $message }}</span> @enderror
                         </div>
                     </div>
                 </div>
@@ -92,6 +91,46 @@
                 {!! Form::close() !!}
             </div>
         </div>
+    </div>
+    <div class="card card-primary w-50">
+        <div class="card-header">
+            <h3 class="card-title">{{ __('Telegram bot') }}</h3>
+        </div>
+        @if(!$user->telegram_bot_active)
+            <div class="card-body">
+                <p>Это ваш специальный токен, не показывайте его никому!<br>
+                    <span class="text-info">{{ $user->telegram_token }}</span>
+                </p>
+                <p>отправьте его нашему телеграм боту
+                    <span>
+                    <a href="https://t.me/RedboxNotificationBot" target="_blank">
+                        @RedboxNotificationBot
+                    </a>
+                </span>
+                    для того чтобы получать уведомления</p>
+            </div>
+
+            <div class="card-footer">
+                <form action="{{ route('verification.token', $user->telegram_token)}}"
+                      method="get">
+                    @csrf
+                    <button class="btn btn-secondary" type="submit">
+                        Я отправил токен боту
+                    </button>
+                </form>
+            </div>
+        @else
+            <div class="card-body">
+                <p>Вы настроили получение уведомлений от бота.</p>
+                <p>
+                    Хотите
+                    <a href="{{ route('reset.notification', $user->telegram_token) }}">
+                        перестать получать уведомления
+                    </a>
+                    ?</p>
+
+            </div>
+        @endif
     </div>
 @stop
 
@@ -104,7 +143,7 @@
         $(function () {
             bsCustomFileInput.init();
 
-            $('#generate').click(function(){
+            $('#generate').click(function () {
                 var password = generator.generate({
                     length: 12,
                     numbers: true,

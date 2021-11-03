@@ -11,15 +11,14 @@ class TelegramBot extends Model
 
     protected $table = 'telegram_bot';
 
-    public static function brokenDomenNotification($project)
+    public static function brokenDomenNotification($project, $chatId)
     {
-
-        TelegramBot::sendMessage($project, 'недоступен');
+        TelegramBot::sendMessage($project, 'недоступен', $chatId);
     }
 
-    public static function repairedDomenNotification($project)
+    public static function repairedDomenNotification($project, $chatId)
     {
-        TelegramBot::sendMessage($project, 'доступен');
+        TelegramBot::sendMessage($project, 'доступен', $chatId);
     }
 
     /**
@@ -49,11 +48,15 @@ class TelegramBot extends Model
         $updates = TelegramBot::getUpdates();
         while ($find) {
             foreach ($updates as $key => $element) {
-                if (isset($element['message']) && $element['message']['text'] === $token) {
-                    TelegramBot::where('token', '=', $token)->update([
-                        'active' => 1,
+                if (isset($element['message']) &&
+                    isset($element['message']['text']) &&
+                    $element['message']['text'] === $token
+                ) {
+                    User::where('telegram_token', '=', $token)->update([
+                        'telegram_bot_active' => 1,
                         'chat_id' => $element['message']['chat']['id'],
                     ]);
+                    TelegramBot::sendSuccessMessage($element['message']['chat']['id']);
                     return true;
                 }
                 if (count($updates) === 1) {
@@ -66,18 +69,47 @@ class TelegramBot extends Model
         }
     }
 
-    public static function sendMessage($project, $status)
+    public static function sendSuccessMessage($chatId)
+    {
+        $data = [
+            'text' => 'Вы успешно подписались на рассылку уведомлений',
+            'chat_id' => $chatId,
+            'parse_mode' => 'HTML'
+        ];
+
+        file_get_contents('https://api.telegram.org/bot'
+            . env('TELEGRAM_BOT_TOKEN', '2073017935:AAHgwY7d0TBAAUzNUyvsmH6QLH14nESQhOc') .
+            '/sendMessage?' . http_build_query($data));
+    }
+
+    /**
+     * @param $project
+     * @param $status
+     * @param $chatId
+     */
+    public static function sendMessage($project, $status, $chatId)
     {
         $uptimePercent = round($project->uptime_percent, 2);
-
-        $data = [
-            'text' => "Внимание: проект <code>$project->project_name</code> $status <code>недоступен</code>
-<code>$project->last_check</code>
+        if ($status === 'доступен') {
+            $text = "Внимание: проект <code>$project->project_name</code> $status
+Время проверки: <code>$project->last_check</code>
+Состояние: <code>$project->status</code>
+Текущий uptime: <code>$uptimePercent%</code>
+Общее время последней поломки: <code>$project->total_time_last_breakdown</code> минут
+Перейти в сервис:
+<a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>";
+        } else {
+            $text = "Внимание: проект <code>$project->project_name $status</code>
+Время проверки: <code>$project->last_check</code>
 Состояние: <code>$project->status</code>
 Текущий uptime: <code>$uptimePercent%</code>
 Перейти в сервис:
-<a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>",
-            'chat_id' => $project->telegramBot->chat_id,
+<a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>";
+        }
+
+        $data = [
+            'text' => $text,
+            'chat_id' => $chatId,
             'parse_mode' => 'HTML'
         ];
 
