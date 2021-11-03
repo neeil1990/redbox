@@ -300,6 +300,12 @@
   "Current uptime:": "Текущий uptime:",
   "Total time of the last breakdown:": "Общее время последней поломки:",
   "Go to the service:": "Перейти в сервис:",
+  "This is your special token, don't show it to anyone!": "Это ваш специальный токен, не показывайте его никому!",
+  "send it to our telegram bot": "отправьте его нашему телеграм боту",
+  "in order to receive notifications": "для того чтобы получать уведомления",
+  "I sent the token to the bot": "Я отправил токен боту",
+  "You have set up receiving notifications from the bot": "Вы настроили получение уведомлений от бота",
+  "stop receiving notifications": "перестать получать уведомления",
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
   "Step 1. Landing page": "Шаг 1. Целевая страница",

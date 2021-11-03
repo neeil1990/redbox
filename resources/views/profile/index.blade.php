@@ -98,16 +98,16 @@
         </div>
         @if(!$user->telegram_bot_active)
             <div class="card-body">
-                <p>Это ваш специальный токен, не показывайте его никому!<br>
+                <p>{{ __("This is your special token, don't show it to anyone!") }}<br>
                     <span class="text-info">{{ $user->telegram_token }}</span>
                 </p>
-                <p>отправьте его нашему телеграм боту
+                <p>{{ __('send it to our telegram bot') }}
                     <span>
                     <a href="https://t.me/RedboxNotificationBot" target="_blank">
                         @RedboxNotificationBot
                     </a>
                 </span>
-                    для того чтобы получать уведомления</p>
+                    {{ __('in order to receive notifications') }}</p>
             </div>
 
             <div class="card-footer">
@@ -115,17 +115,17 @@
                       method="get">
                     @csrf
                     <button class="btn btn-secondary" type="submit">
-                        Я отправил токен боту
+                        {{ __('I sent the token to the bot') }}
                     </button>
                 </form>
             </div>
         @else
             <div class="card-body">
-                <p>Вы настроили получение уведомлений от бота.</p>
+                <p>{{ __('You have set up receiving notifications from the bot') }}</p>
                 <p>
-                    Хотите
+                    {{ __('Want to') }}
                     <a href="{{ route('reset.notification', $user->telegram_token) }}">
-                        перестать получать уведомления
+                        {{ __('stop receiving notifications') }}
                     </a>
                     ?</p>
 
