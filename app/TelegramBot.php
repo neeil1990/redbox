@@ -96,7 +96,7 @@ class TelegramBot extends Model
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> минут
 " . __('Go to the service:') . "
-<a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>";
+<a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         } else {
             $text = __('Project') ."<code>$project->project_name $status</code>
 " . __('Check time:') . " <code>$project->last_check</code>
