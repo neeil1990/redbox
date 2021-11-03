@@ -103,10 +103,10 @@ class DomainMonitoring extends Model
     public static function searchPhrase($body, $project)
     {
         if (preg_match_all('(' . $project->phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            $project->status = 'Всё в порядке';
+            $project->status = __('Everything all right');
             $project->broken = false;
         } else {
-            $project->status = 'Ключевая фраза не найдена';
+            $project->status = __('Keyword not found');
             $project->broken = true;
         }
     }
@@ -121,17 +121,17 @@ class DomainMonitoring extends Model
                 if (isset($project->phrase)) {
                     DomainMonitoring::searchPhrase($res->getBody()->getContents(), $project);
                 } else {
-                    $project->status = 'Всё в порядке';
+                    $project->status = __('Everything all right');
                     $project->broken = false;
                 }
             } else {
-                $project->status = 'Код ответа не 200';
+                $project->status = __('The response code is not 200');
                 $project->broken = true;
             }
             $project->code = $res->getStatusCode();
         } catch (Exception $e) {
             $project->code = $e->getCode();
-            $project->status = 'Домен не отвечает';
+            $project->status = __('The domain is not responding');
             $project->broken = true;
         }
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);

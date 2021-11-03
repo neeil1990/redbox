@@ -21,12 +21,12 @@
     <table id="example1" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr role="row">
-            <th>Project name</th>
-            <th>Link</th>
-            <th>Phrase</th>
-            <th class="col-2">Timing</th>
-            <th>Status / Status code</th>
-            <th>Uptime</th>
+            <th>{{ __('Project name') }}</th>
+            <th>{{ __('Link') }}</th>
+            <th>{{ __('Keyword') }}</th>
+            <th class="col-2">{{ __('Frequency') }}</th>
+            <th>{{ __('Status / Status code') }}</th>
+            <th>{{ __('Uptime') }}</th>
             <th></th>
         </tr>
         </thead>
@@ -59,10 +59,10 @@
                     {!! Form::textarea('phrase', $project->phrase ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => 'Если фраза не выбрана, то сервер будет ожидать 200 код ответа']) !!}</td>
                 <td>
                     {!! Form::select('timing', [
-                        '1' => 'раз в минуту',
-                        '5' => 'каждые 5 минут',
-                        '10' => 'каждые 10 минут',
-                        '15' => 'каждые 15 минут',
+                        '1' => __('once a minute'),
+                        '5' => __('every 5 minutes'),
+                        '10' => __('every 10 minutes'),
+                        '15' => __('every 15 minutes'),
                         ], $project->timing , ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
                 <td>
@@ -91,12 +91,12 @@
         </tbody>
     </table>
     @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
-        <div class="pt-3">
-            Хотите
-            <a href="{{ route('profile.index') }}" target="_blank">
-                получать уведомления от нашего телеграм бота
-            </a> ?
-        </div>
+        <span>
+            {{ __('Want to') }}
+                <a href="{{ route('profile.index') }}" target="_blank">
+                    {{ __('receive notifications from our telegram bot') }}
+                </a> ?
+            </span>
     @endif
     @slot('js')
         <script>

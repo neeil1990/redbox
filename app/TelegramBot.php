@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\VarDumper\VarDumper;
 
 class TelegramBot extends Model
 {
@@ -13,12 +12,12 @@ class TelegramBot extends Model
 
     public static function brokenDomenNotification($project, $chatId)
     {
-        TelegramBot::sendMessage($project, 'недоступен', $chatId);
+        TelegramBot::sendMessage($project, 'broken', $chatId);
     }
 
     public static function repairedDomenNotification($project, $chatId)
     {
-        TelegramBot::sendMessage($project, 'доступен', $chatId);
+        TelegramBot::sendMessage($project, 'repair', $chatId);
     }
 
     /**
@@ -72,7 +71,7 @@ class TelegramBot extends Model
     public static function sendSuccessMessage($chatId)
     {
         $data = [
-            'text' => 'Вы успешно подписались на рассылку уведомлений',
+            'text' => __('You have successfully subscribed to the notification newsletter'),
             'chat_id' => $chatId,
             'parse_mode' => 'HTML'
         ];
@@ -90,20 +89,20 @@ class TelegramBot extends Model
     public static function sendMessage($project, $status, $chatId)
     {
         $uptimePercent = round($project->uptime_percent, 2);
-        if ($status === 'доступен') {
-            $text = "Внимание: проект <code>$project->project_name</code> $status
-Время проверки: <code>$project->last_check</code>
-Состояние: <code>$project->status</code>
-Текущий uptime: <code>$uptimePercent%</code>
-Общее время последней поломки: <code>$project->total_time_last_breakdown</code> минут
-Перейти в сервис:
+        if ($status === 'repair') {
+            $text = __('Project') . "<code>$project->project_name</code> $status
+" . __('Check time:') . " <code>$project->last_check</code>
+" . __('Condition:') . " <code>$project->status</code>
+" . __('Current uptime:') . " <code>$uptimePercent%</code>
+" . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> минут
+" . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>";
         } else {
-            $text = "Внимание: проект <code>$project->project_name $status</code>
-Время проверки: <code>$project->last_check</code>
-Состояние: <code>$project->status</code>
-Текущий uptime: <code>$uptimePercent%</code>
-Перейти в сервис:
+            $text = __('Project') ."<code>$project->project_name $status</code>
+" . __('Check time:') . " <code>$project->last_check</code>
+" . __('Condition:') . " <code>$project->status</code>
+" . __('Current uptime:') . " <code>$uptimePercent%</code>
+" . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>";
         }
 

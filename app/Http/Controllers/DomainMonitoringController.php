@@ -37,6 +37,7 @@ class DomainMonitoringController extends Controller
         $monitoring->user_id = $userId;
         $monitoring->save();
 
+        flash()->overlay(__('Monitoring was successfully created'), ' ')->success();
         return Redirect::route('domain.monitoring');
     }
 
