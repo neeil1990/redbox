@@ -56,7 +56,7 @@
                     {!! Form::textarea('link', $project->link ,['class' => 'form-control monitoring', 'rows' => 2]) !!}
                 </td>
                 <td>
-                    {!! Form::textarea('phrase', $project->phrase ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => 'Если фраза не выбрана, то сервер будет ожидать 200 код ответа']) !!}</td>
+                    {!! Form::textarea('phrase', $project->phrase ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => __('If the phrase is not selected, the server will wait for the 200 response code')]) !!}</td>
                 <td>
                     {!! Form::select('timing', [
                         '1' => __('once a minute'),
