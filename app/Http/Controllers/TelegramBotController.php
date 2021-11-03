@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\TelegramBot;
+use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
@@ -11,11 +12,11 @@ class TelegramBotController extends Controller
     public function verificationToken($token): RedirectResponse
     {
         if (TelegramBot::searchToken($token)) {
-            flash()->overlay(__('Теперь уведомления будут приходить к вам в телеграм'), ' ')->success();
+            flash()->overlay(__('Now notifications will come to you in a telegram'), ' ')->success();
             return Redirect::back();
         }
 
-        flash()->overlay(__('Токен проекта не найден в истории телеграм бота'), ' ')->error();
+        flash()->overlay(__("The project token was not found in the bot's telegram history"), ' ')->error();
         return Redirect::back();
     }
 
@@ -25,10 +26,10 @@ class TelegramBotController extends Controller
      */
     public function resetNotification($token): RedirectResponse
     {
-        TelegramBot::where('token', '=', $token)->update([
-            'active' => 0,
+        User::where('telegram_token', '=', $token)->update([
+            'telegram_bot_active' => 0,
         ]);
-        flash()->overlay(__('Вы успешно отписались от рассылки'), ' ')->success();
+        flash()->overlay(__('You have successfully unsubscribed from the mailing list'), ' ')->success();
 
         return Redirect::back();
     }

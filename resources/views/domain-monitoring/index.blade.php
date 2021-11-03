@@ -21,12 +21,12 @@
     <table id="example1" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr role="row">
-            <th>Project name</th>
-            <th>Link</th>
-            <th>Phrase</th>
-            <th class="col-2">Timing</th>
-            <th>Status / Status code</th>
-            <th>Uptime</th>
+            <th>{{ __('Project name') }}</th>
+            <th>{{ __('Link') }}</th>
+            <th>{{ __('Keyword') }}</th>
+            <th class="col-2">{{ __('Frequency') }}</th>
+            <th>{{ __('Status / Status code') }}</th>
+            <th>{{ __('Uptime') }}</th>
             <th></th>
         </tr>
         </thead>
@@ -56,13 +56,13 @@
                     {!! Form::textarea('link', $project->link ,['class' => 'form-control monitoring', 'rows' => 2]) !!}
                 </td>
                 <td>
-                    {!! Form::textarea('phrase', $project->phrase ,['class' => 'form-control monitoring', 'rows' => 2]) !!}</td>
+                    {!! Form::textarea('phrase', $project->phrase ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => __('If the phrase is not selected, the server will wait for the 200 response code')]) !!}</td>
                 <td>
                     {!! Form::select('timing', [
-                        '1' => 'раз в минуту',
-                        '5' => 'каждые 5 минут',
-                        '10' => 'каждые 10 минут',
-                        '15' => 'каждые 15 минут',
+                        '1' => __('once a minute'),
+                        '5' => __('every 5 minutes'),
+                        '10' => __('every 10 minutes'),
+                        '15' => __('every 15 minutes'),
                         ], $project->timing , ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
                 <td>
@@ -81,74 +81,6 @@
                             <i aria-hidden="true" class="fa fa-search"></i>
                         </button>
                     </form>
-                    @if(!$project->telegramBot->active)
-                        <button class="btn btn-default" data-toggle="modal" data-target="#exampleModal{{$project->id}}">
-                            <i class="fa fa-envelope"></i>
-                        </button>
-                        <div class="modal fade" id="exampleModal{{$project->id}}" tabindex="-1" role="dialog"
-                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">
-                                            Хотите получать уведомления о состоянии этой ссылки в телеграм?
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Это специальный токен привязанный к ссылке:<br>
-                                            <span class="text-info">{{ $project->telegramBot->token }}</span></p>
-                                        <p>отправьте его нашему телеграм боту
-                                            <span class="text-info">@RedboxNotificationBot </span>
-                                            боту, для того чтобы получать уведомления о состоянии ссылок</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <form action="{{ route('verification.token', $project->telegramBot->token)}}"
-                                              method="get">
-                                            @csrf
-                                            <button class="btn btn-secondary" type="submit">
-                                                Я отправил токен боту
-                                            </button>
-                                        </form>
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{ __('Close') }}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <button class="btn btn-default" data-toggle="modal"
-                                data-target="#resetNotivication{{$project->id}}">
-                            <i class="fa fa-fire"></i>
-                        </button>
-                        <div class="modal fade" id="resetNotivication{{$project->id}}" tabindex="-1" role="dialog"
-                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Хотите перестать получать
-                                            уведомления в телеграм?</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <form action="{{ route('reset.notification', $project->telegramBot->token)}}"
-                                              method="get">
-                                            @csrf
-                                            <button class="btn btn-secondary" type="submit">
-                                                Перестать получать уведомления
-                                            </button>
-                                        </form>
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{ __('Close') }}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
                     <button class="btn btn-default" data-toggle="modal"
                             data-target="#remove-project-id-{{$project->id}}">
                         <i class="fa fa-trash"></i>
@@ -158,6 +90,14 @@
         @endforeach
         </tbody>
     </table>
+    @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
+        <span>
+            {{ __('Want to') }}
+                <a href="{{ route('profile.index') }}" target="_blank">
+                    {{ __('receive notifications from our telegram bot') }}
+                </a> ?
+            </span>
+    @endif
     @slot('js')
         <script>
             var oldValue = ''
@@ -166,7 +106,7 @@
                 oldValue = $(this).val()
             })
             $(".monitoring").blur(function () {
-                if (oldValue !== $(this).val()) {
+                if (oldValue !== $(this).val() || $(this).attr('name') === 'phrase' && oldValue !== $(this).val()) {
                     $.ajax({
                         type: "POST",
                         dataType: "json",
