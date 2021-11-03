@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Http headers')])
+@component('component.card', ['title' => __('Meta tags')])
 
     @slot('css')
 
