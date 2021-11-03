@@ -76,6 +76,7 @@ class DomainMonitoring extends Model
             $user->repairDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::repairedDomenNotification($project, $user->chat_id);
+                $project->time_last_notification = Carbon::now();
             }
         }
 
@@ -83,6 +84,7 @@ class DomainMonitoring extends Model
             $user->brokenDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
+                $project->time_last_notification = Carbon::now();
             }
         }
 
@@ -90,9 +92,9 @@ class DomainMonitoring extends Model
             $lastNotification = new Carbon($project->time_last_notification);
             if ($lastNotification->diffInMinutes(Carbon::now()) > 60) {
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
+                $project->time_last_notification = Carbon::now();
             }
         }
-        $project->time_last_notification = Carbon::now();
 
     }
 
