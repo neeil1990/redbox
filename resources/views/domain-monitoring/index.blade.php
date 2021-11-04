@@ -3697,8 +3697,8 @@
             $(document).ready(function () {
                 $('#example').DataTable();
             });
-        </script>
-        <script>            var oldValue = ''
+
+            var oldValue = ''
             var oldProjectName = ''
             $(".monitoring").focus(function () {
                 oldValue = $(this).val()
@@ -3731,5 +3731,6 @@
                 }
             });
         </script>
+        <script defer src="{{ asset('plugins/domain-monitoring/js/localstorage.js') }}"></script>
     @endslot
 @endcomponent

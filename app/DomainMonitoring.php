@@ -72,7 +72,7 @@ class DomainMonitoring extends Model
         $user = User::where('id', '=', $project->user_id)->first();
 
         if ((boolean)$oldState == true && (boolean)$project->broken == false) {
-//            $user->repairDomenNotification($project);
+            $user->repairDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::repairedDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
@@ -80,7 +80,7 @@ class DomainMonitoring extends Model
         }
 
         if ((boolean)$oldState == false && (boolean)$project->broken == true) {
-//            $user->brokenDomenNotification($project);
+            $user->brokenDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
