@@ -89,6 +89,7 @@ class TelegramBot extends Model
     public static function sendMessage($project, $status, $chatId)
     {
         $uptimePercent = round($project->uptime_percent, 2);
+
         if ($status === 'repair') {
             $text = __('Project') . "  <code>$project->project_name</code>  " . __($status) . "
 " . __('Check time:') . " <code>$project->last_check</code>
@@ -103,8 +104,9 @@ class TelegramBot extends Model
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Go to the service:') . "
-<a href='https://lk.redbox.su/domain-monitoring'>https://lk.redbox.su/domain-monitoring</a>";
+<a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         }
+
 
         $data = [
             'text' => $text,

@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class DomainMonitoring extends Model
 {
@@ -34,18 +33,18 @@ class DomainMonitoring extends Model
         $totalTime = $created->diffInSeconds(Carbon::now());
         if ($project->last_check === null) {
             if ($project->broken) {
-                return 0;
+                return $project->uptime_percent = 0;
             } else {
                 $project->up_time = $totalTime;
-                return 100;
+                return $project->uptime_percent = 100;
             }
         }
         if ($project->broken) {
-            return $project->up_time / ($totalTime / 100);
+            return $project->uptime_percent = $project->up_time / ($totalTime / 100);
         }
 
         $project->up_time += $lastCheck->diffInSeconds(Carbon::now());
-        return $project->up_time / ($totalTime / 100);
+        return $project->uptime_percent = $project->up_time / ($totalTime / 100);
     }
 
     /**
@@ -73,7 +72,7 @@ class DomainMonitoring extends Model
         $user = User::where('id', '=', $project->user_id)->first();
 
         if ((boolean)$oldState == true && (boolean)$project->broken == false) {
-            $user->repairDomenNotification($project);
+//            $user->repairDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::repairedDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
@@ -81,7 +80,7 @@ class DomainMonitoring extends Model
         }
 
         if ((boolean)$oldState == false && (boolean)$project->broken == true) {
-            $user->brokenDomenNotification($project);
+//            $user->brokenDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
@@ -139,7 +138,7 @@ class DomainMonitoring extends Model
         }
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
         DomainMonitoring::sendNotifications($project, $oldState);
-        $project->uptime_percent = DomainMonitoring::calculateUpTime($project);
+        DomainMonitoring::calculateUpTime($project);
         $project->last_check = Carbon::now();
         $project->save();
     }
