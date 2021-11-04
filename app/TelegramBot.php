@@ -26,6 +26,7 @@ class TelegramBot extends Model
      */
     public static function getUpdates($offset = null): array
     {
+        dd(env('TELEGRAM_BOT_TOKEN', ''));
         $data = [];
         if (isset($offset)) {
             $data = ['offset' => $offset];
