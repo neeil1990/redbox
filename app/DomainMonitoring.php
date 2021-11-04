@@ -3,7 +3,6 @@
 namespace App;
 
 use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
@@ -101,27 +100,24 @@ class DomainMonitoring extends Model
 
     public static function httpCheck($project)
     {
-        $oldState = $project->broken;
         try {
-            $client = new Client();
+            $oldState = $project->broken;
             $startConnect = Carbon::now();
-            $res = $client->request('get', $project->link, [
-                'timeout' => 5,
-                'connect_timeout' => 5
-            ]);
-            if ($res->getStatusCode() === 200) {
+            $request = self::curlInit($project->link);
+            if (isset($request) && $request[1] === 200) {
                 if (isset($project->phrase)) {
-                    DomainMonitoring::searchPhrase($res->getBody()->getContents(), $project->phrase, $project);
+                    DomainMonitoring::searchPhrase($request[0], $project->phrase, $project);
                 } else {
                     $project->status = __('Everything all right');
+                    $project->code = $request[1];
                     $project->broken = false;
                 }
             } else {
                 Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
                 $project->status = __('The response code is not 200');
+                $project->code = $request[1];
                 $project->broken = true;
             }
-            $project->code = $res->getStatusCode();
         } catch (Exception $e) {
             $project->code = $e->getCode();
             $project->status = __('The domain is not responding');
@@ -132,6 +128,33 @@ class DomainMonitoring extends Model
         DomainMonitoring::calculateUpTime($project);
         $project->last_check = Carbon::now();
         $project->save();
+    }
+
+    /**
+     * @param $url
+     * @return array|false
+     */
+    public static function curlInit($url)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 6);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 6);
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        $html = curl_exec($curl);
+        $code = curl_getinfo($curl);
+        curl_close($curl);
+        if (!$html) {
+            return null;
+        }
+
+        $html = preg_replace('//i', '', $html);
+
+        return [$html, $code['http_code']];
     }
 
     /**
