@@ -103,14 +103,12 @@ class DomainMonitoring extends Model
     {
         $oldState = $project->broken;
         try {
-            $client = new Client([
-                'request.options' => [
-                    'timeout' => 5,
-                    'connect_timeout' => 5
-                ]
-            ]);
+            $client = new Client();
             $startConnect = Carbon::now();
-            $res = $client->request('get', $project->link);
+            $res = $client->request('get', $project->link, [
+                'timeout' => 5,
+                'connect_timeout' => 5
+            ]);
             if ($res->getStatusCode() === 200) {
                 if (isset($project->phrase)) {
                     DomainMonitoring::searchPhrase($res->getBody()->getContents(), $project->phrase, $project);
