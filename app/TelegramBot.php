@@ -90,7 +90,7 @@ class TelegramBot extends Model
     {
         $uptimePercent = round($project->uptime_percent, 2);
         if ($status === 'repair') {
-            $text = __('Project') . " <code>$project->project_name</code> {{ __('$status')}}
+            $text = __('Project') . " <code>$project->project_name</code> " . __($status) . "
 " . __('Check time:') . " <code>$project->last_check</code>
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
