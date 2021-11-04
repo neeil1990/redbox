@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoring extends Model
 {
@@ -98,21 +99,6 @@ class DomainMonitoring extends Model
 
     }
 
-    /**
-     * @param $body
-     * @param $project
-     */
-    public static function searchPhrase($body, $project)
-    {
-        if (preg_match_all('(' . $project->phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            $project->status = __('Everything all right');
-            $project->broken = false;
-        } else {
-            $project->status = __('Keyword not found');
-            $project->broken = true;
-        }
-    }
-
     public static function httpCheck($project)
     {
         $oldState = $project->broken;
@@ -121,7 +107,7 @@ class DomainMonitoring extends Model
             $res = $client->request('get', $project->link);
             if ($res->getStatusCode() === 200) {
                 if (isset($project->phrase)) {
-                    DomainMonitoring::searchPhrase($res->getBody()->getContents(), $project);
+                    DomainMonitoring::searchPhrase($res->getBody()->getContents(), $project->phrase, $project);
                 } else {
                     $project->status = __('Everything all right');
                     $project->broken = false;
@@ -141,5 +127,25 @@ class DomainMonitoring extends Model
         DomainMonitoring::calculateUpTime($project);
         $project->last_check = Carbon::now();
         $project->save();
+    }
+
+    /**
+     * @param $body
+     * @param $phrase
+     * @param $project
+     */
+    public static function searchPhrase($body, $phrase, $project)
+    {
+        if (preg_match('<meta http-equiv="Content-Type" content="text/html; charset=(.*)"*/>', $body, $matches, PREG_OFFSET_CAPTURE)) {
+            $phrase = mb_convert_encoding($project->phrase, substr($matches[1][0], 0, -2));
+        }
+
+        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
+            $project->status = __('Everything all right');
+            $project->broken = false;
+        } else {
+            $project->status = __('Keyword not found');
+            $project->broken = true;
+        }
     }
 }
