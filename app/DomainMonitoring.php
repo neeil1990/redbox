@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Symfony\Component\VarDumper\VarDumper;
+use Illuminate\Support\Facades\Log;
 
 class DomainMonitoring extends Model
 {
@@ -103,7 +103,13 @@ class DomainMonitoring extends Model
     {
         $oldState = $project->broken;
         try {
-            $client = new Client();
+            $client = new Client([
+                'request.options' => [
+                    'timeout' => 5,
+                    'connect_timeout' => 5
+                ]
+            ]);
+            $startConnect = Carbon::now();
             $res = $client->request('get', $project->link);
             if ($res->getStatusCode() === 200) {
                 if (isset($project->phrase)) {
@@ -113,6 +119,7 @@ class DomainMonitoring extends Model
                     $project->broken = false;
                 }
             } else {
+                Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
                 $project->status = __('The response code is not 200');
                 $project->broken = true;
             }
