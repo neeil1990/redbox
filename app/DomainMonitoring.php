@@ -70,7 +70,7 @@ class DomainMonitoring extends Model
      */
     public static function sendNotifications($project, $oldState)
     {
-        $user = User::find(Auth::id());
+        $user = User::where('id', '=', $project->user_id)->first();
 
         if ((boolean)$oldState == true && (boolean)$project->broken == false) {
             $user->repairDomenNotification($project);
@@ -89,6 +89,7 @@ class DomainMonitoring extends Model
         }
 
         if ((boolean)$oldState == true && (boolean)$project->broken == true) {
+            $user->brokenDomenNotification($project);
             $lastNotification = new Carbon($project->time_last_notification);
             if ($lastNotification->diffInMinutes(Carbon::now()) > 60) {
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
@@ -137,7 +138,6 @@ class DomainMonitoring extends Model
             $project->broken = true;
         }
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
-
         DomainMonitoring::sendNotifications($project, $oldState);
         $project->uptime_percent = DomainMonitoring::calculateUpTime($project);
         $project->last_check = Carbon::now();

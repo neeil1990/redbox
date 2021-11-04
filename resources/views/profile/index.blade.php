@@ -4,9 +4,17 @@
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.css') }}">
+    <link rel="stylesheet" type="text/css"
+          href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
 @stop
 
 @section('content')
+    <div id="toast-container" class="toast-top-right success-message" style="display: none">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('The token was copied to the clipboard') }}</div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-6">
             <div class="card card-primary">
@@ -98,9 +106,14 @@
         </div>
         @if(!$user->telegram_bot_active)
             <div class="card-body">
-                <p>{{ __("This is your special token, don't show it to anyone!") }}<br>
-                    <span class="text-info">{{ $user->telegram_token }}</span>
-                </p>
+                <div>{{ __("This is your special token, don't show it to anyone!") }}<br>
+                    <div class="text-info">
+                        <input type="text" value="{{ $user->telegram_token }}" id="special-token" class="form form-control w-75 d-inline">
+                        <button class="btn btn-default ml-2" id="saveInBufferButton">
+                            <i class="fa fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
                 <p>{{ __('send it to our telegram bot') }}
                     <span>
                     <a href="https://t.me/RedboxNotificationBot" target="_blank">
@@ -109,7 +122,6 @@
                 </span>
                     {{ __('in order to receive notifications') }}</p>
             </div>
-
             <div class="card-footer">
                 <form action="{{ route('verification.token', $user->telegram_token)}}"
                       method="get">
@@ -128,7 +140,6 @@
                         {{ __('stop receiving notifications') }}
                     </a>
                     ?</p>
-
             </div>
         @endif
     </div>
@@ -137,6 +148,7 @@
 @section('js')
     <!-- Select2 -->
     <script src="{{ asset('plugins/select2/js/select2.js') }}"></script>
+    <script src="{{ asset('plugins/select2/js/profile.js') }}"></script>
 
     <script src="{{ asset('plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
     <script>
