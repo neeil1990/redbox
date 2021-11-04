@@ -109,9 +109,9 @@ class DomainMonitoring extends Model
                     DomainMonitoring::searchPhrase($request[0], $project->phrase, $project);
                 } else {
                     $project->status = __('Everything all right');
-                    $project->code = $request[1];
                     $project->broken = false;
                 }
+                $project->code = 200;
             } else {
                 Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
                 $project->status = __('The response code is not 200');
