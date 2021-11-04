@@ -325,6 +325,7 @@
   "Delete selected projects": "Удалить выбранные проекты",
   "You need to select the projects you want to delete": "Нужно выбрать проекты, которые вы хотите удалить",
   "Successfully deleted": "Успешно удалено",
+  "Count tracked projects": "Количество отслеживаемых проектов",
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
   "Step 1. Landing page": "Шаг 1. Целевая страница",

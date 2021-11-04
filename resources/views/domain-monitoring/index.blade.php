@@ -36,7 +36,7 @@
         {{ __('Delete selected projects') }}
     </a>
     <input type="hidden" class="checked-projects">
-    <div>{{ __('You are tracking') }} <span id="count-projects">{{ $countProjects }}</span> {{ __('domains') }}</div>
+    <div>{{ __('Count tracked projects') }}: <span id="count-projects">{{ $countProjects }}</span></div>
     <table id="example" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr>
