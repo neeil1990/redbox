@@ -77,8 +77,8 @@ class DomainMonitoringController extends Controller
         foreach ($projects as $project) {
             DomainMonitoring::httpCheck($project);
         }
-        Log::debug('domain verification time', [$start->diffInSeconds(Carbon::now())]);
-        Log::debug('total verification projects', [count($projects)]);
+        Log::debug('domain verification time in seconds', [$start->diffInSeconds(Carbon::now())]);
+        Log::debug('total verification projects with timing ' . $timing, [count($projects)]);
     }
 
     /**
