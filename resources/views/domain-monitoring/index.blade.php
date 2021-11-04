@@ -5,14 +5,18 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <a href="{{ route('add.domain.monitoring.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
-        {{ __('Добавить отслеживаемый домен') }}
-    </a>
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
             <div class="toast-message">{{ __('Successfully changed') }}</div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-top-right delete-success-message" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('Successfully deleted') }}</div>
         </div>
     </div>
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
@@ -20,9 +24,23 @@
             <div class="toast-message error-msg">{{ __('The field must contain more than 0 characters') }}</div>
         </div>
     </div>
+    <div id="toast-container" class="toast-top-right delete-error-message" style="display:none;">
+        <div class="toast toast-error" aria-live="assertive">
+            <div class="toast-message error-msg">{{ __('You need to select the projects you want to delete') }}</div>
+        </div>
+    </div>
+    <a href="{{ route('add.domain.monitoring.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
+        {{ __('Add a monitored domain') }}
+    </a>
+    <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
+        {{ __('Delete selected projects') }}
+    </a>
+    <input type="hidden" class="checked-projects">
+    <div>{{ __('You are tracking') }} {{ $countProjects }} {{ __('domains') }}</div>
     <table id="example" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr>
+            <th></th>
             <th class="col-2">{{ __('Project name') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Link') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Keyword') }} <i class="fa fa-sort"></i></th>
@@ -56,6 +74,14 @@
                 </div>
             </div>
             <tr id="{{ $project->id }}">
+                <th>
+                    <div class="custom-control custom-checkbox checbox-for-remove-project">
+                        <input type="checkbox" id="project-{{ $project->id }}" class="checkbox custom-control-input"
+                               name="enums">
+                        <label for="project-{{ $project->id }}" class="custom-control-label">
+                        </label>
+                    </div>
+                </th>
                 <td>
                     {!! Form::textarea('project_name', $project->project_name ,['class' => 'form-control monitoring', 'rows' => 2, 'data-order' => $project->project_name]) !!}
                 </td>
@@ -72,7 +98,7 @@
                         '15' => __('every 15 minutes'),
                         ], $project->timing , ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
-                <td data-order="{{ $project->code }}">
+                <td data-order="{{ $project->status }}">
                     @if($project->broken)
                         <span class="text-danger">{{ $project->status }} <br> {{ $project->code }}</span>
                     @else
@@ -3729,6 +3755,44 @@
                         }
                     });
                 }
+            });
+            $('.checbox-for-remove-project').change(function () {
+                let selectedId = $(this).children(':first-child').attr('id').substr(8)
+                let text = $('.checked-projects').text();
+                if ($(this).children(':first-child').is(':checked')) {
+                    $(this).parent().parent().attr('data-select', true)
+                    $('.checked-projects').text(text + selectedId + ', ')
+                } else {
+                    $(this).parent().parent().attr('data-select', false)
+                    text = text.replace(selectedId + ', ', '')
+                    $('.checked-projects').text(text)
+                }
+            })
+            $('#selectedProjects').click(function () {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "{{ route('delete.domains') }}",
+                    data: {
+                        ids: $('.checked-projects').text(),
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        $('[data-select=true]').each(function () {
+                            $(this).remove();
+                        })
+                        $('.toast-top-right.delete-success-message').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.success-message').hide(300)
+                        }, 4000)
+                    },
+                    error: function () {
+                        $('.toast-top-right.delete-error-message').show()
+                        setTimeout(() => {
+                            $('.toast-top-right.delete-error-message').hide(300)
+                        }, 4000)
+                    }
+                });
             });
         </script>
         <script defer src="{{ asset('plugins/domain-monitoring/js/localstorage.js') }}"></script>

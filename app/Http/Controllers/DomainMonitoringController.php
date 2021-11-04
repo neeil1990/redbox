@@ -16,11 +16,12 @@ class DomainMonitoringController extends Controller
     public function index()
     {
         $projects = DomainMonitoring::where('user_id', '=', Auth::id())->get();
-        if (count($projects) === 0) {
+        $countProjects = count($projects);
+        if ($countProjects === 0) {
             return $this->createView();
         }
 
-        return view('domain-monitoring.index', compact('projects'));
+        return view('domain-monitoring.index', compact('projects', 'countProjects'));
     }
 
     public function createView()
@@ -91,6 +92,18 @@ class DomainMonitoringController extends Controller
             DomainMonitoring::where('id', $request->id)->update([
                 $request->name => $request->option,
             ]);
+            return response()->json([]);
+        }
+        return response()->json([], 400);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function removeDomains(Request $request): JsonResponse
+    {
+        if (DomainMonitoring::destroy(explode(',', $request->ids))) {
             return response()->json([]);
         }
         return response()->json([], 400);
