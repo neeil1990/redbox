@@ -36,7 +36,7 @@
         {{ __('Delete selected projects') }}
     </a>
     <input type="hidden" class="checked-projects">
-    <div>{{ __('You are tracking') }} {{ $countProjects }} {{ __('domains') }}</div>
+    <div>{{ __('You are tracking') }} <span id="count-projects">{{ $countProjects }}</span> {{ __('domains') }}</div>
     <table id="example" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr>
@@ -3778,12 +3778,15 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function () {
+                        let iterator = 0;
                         $('[data-select=true]').each(function () {
+                            iterator++
                             $(this).remove();
                         })
+                        $('#count-projects').text($('#count-projects').text() - iterator)
                         $('.toast-top-right.delete-success-message').show(300)
                         setTimeout(() => {
-                            $('.toast-top-right.success-message').hide(300)
+                            $('.toast-top-right.delete-success-message').hide(300)
                         }, 4000)
                     },
                     error: function () {
