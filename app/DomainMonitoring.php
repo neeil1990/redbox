@@ -88,9 +88,9 @@ class DomainMonitoring extends Model
         }
 
         if ((boolean)$oldState == true && (boolean)$project->broken == true) {
-            $user->brokenDomenNotification($project);
             $lastNotification = new Carbon($project->time_last_notification);
-            if ($lastNotification->diffInMinutes(Carbon::now()) > 60) {
+            if ($lastNotification->diffInMinutes(Carbon::now()) >= 360 && $user->telegram_bot_active) {
+                $user->brokenDomenNotification($project);
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
             }
@@ -115,7 +115,7 @@ class DomainMonitoring extends Model
             } else {
                 Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
                 $project->status = __('The response code is not 200');
-                $project->code = $request[1];
+                $project->code = 500;
                 $project->broken = true;
             }
         } catch (Exception $e) {

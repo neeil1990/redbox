@@ -31,7 +31,7 @@ class TelegramBot extends Model
             $data = ['offset' => $offset];
         }
         $updates = json_decode(file_get_contents('https://api.telegram.org/bot'
-            . env('TELEGRAM_BOT_TOKEN', '2073017935:AAHgwY7d0TBAAUzNUyvsmH6QLH14nESQhOc') .
+            . env('TELEGRAM_BOT_TOKEN', '') .
             '/getUpdates?' . http_build_query($data)), true);
 
         return $updates['result'];
@@ -77,7 +77,7 @@ class TelegramBot extends Model
         ];
 
         file_get_contents('https://api.telegram.org/bot'
-            . env('TELEGRAM_BOT_TOKEN', '2073017935:AAHgwY7d0TBAAUzNUyvsmH6QLH14nESQhOc') .
+            . env('TELEGRAM_BOT_TOKEN', '') .
             '/sendMessage?' . http_build_query($data));
     }
 
@@ -107,7 +107,6 @@ class TelegramBot extends Model
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         }
 
-
         $data = [
             'text' => $text,
             'chat_id' => $chatId,
@@ -115,7 +114,7 @@ class TelegramBot extends Model
         ];
 
         file_get_contents('https://api.telegram.org/bot'
-            . env('TELEGRAM_BOT_TOKEN', '2073017935:AAHgwY7d0TBAAUzNUyvsmH6QLH14nESQhOc') .
+            . env('TELEGRAM_BOT_TOKEN', '') .
             '/sendMessage?' . http_build_query($data));
     }
 }
