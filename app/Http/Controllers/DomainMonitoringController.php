@@ -73,15 +73,15 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
+        Log::debug('----------start--------------', []);
         $start = Carbon::now();
         $projects = DomainMonitoring::where('timing', '=', $timing)->get();
         foreach ($projects as $project) {
             DomainMonitoring::httpCheck($project);
         }
-        Log::debug('------------------------', []);
         Log::debug('domain verification time in seconds', [$start->diffInSeconds(Carbon::now())]);
         Log::debug('total verification projects with timing ' . $timing, [count($projects)]);
-        Log::debug('------------------------', []);
+        Log::debug('-----------end------------', []);
     }
 
     /**
