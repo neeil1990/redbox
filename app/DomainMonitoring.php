@@ -102,9 +102,9 @@ class DomainMonitoring extends Model
 
     public static function httpCheck($project)
     {
+        $startConnect = Carbon::now();
         try {
             $oldState = $project->broken;
-            $startConnect = Carbon::now();
             $curl = self::curlInit($project->link);
             if (isset($curl) && $curl[1]['http_code'] === 200) {
                 if (isset($project->phrase)) {
@@ -116,13 +116,14 @@ class DomainMonitoring extends Model
                 $project->code = 200;
             } else {
                 Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
-                $project->status = __('The domain is not responding');
-                $project->code = 404;
+                $project->status = __('unexpected response code');
+                $project->code = $curl[1]['http_code'];
                 $project->broken = true;
             }
         } catch (Exception $e) {
-            $project->code = 404;
-            $project->status = __('The domain is not responding');
+            Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
+            $project->status = __('the domain did not respond within 6 seconds');
+            $project->code = 0;
             $project->broken = true;
         }
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
