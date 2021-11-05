@@ -110,19 +110,19 @@ class DomainMonitoring extends Model
                 if (isset($project->phrase)) {
                     DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
                 } else {
-                    $project->status = __('Everything all right');
+                    $project->status = 'Everything all right';
                     $project->broken = false;
                 }
                 $project->code = 200;
             } else {
                 Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
-                $project->status = __('unexpected response code');
+                $project->status = 'unexpected response code';
                 $project->code = $curl[1]['http_code'];
                 $project->broken = true;
             }
         } catch (Exception $e) {
             Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
-            $project->status = __('the domain did not respond within 6 seconds');
+            $project->status = 'the domain did not respond within 6 seconds';
             $project->code = 0;
             $project->broken = true;
         }
@@ -173,10 +173,10 @@ class DomainMonitoring extends Model
         }
 
         if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            $project->status = __('Everything all right');
+            $project->status = 'Everything all right';
             $project->broken = false;
         } else {
-            $project->status = __('Keyword not found');
+            $project->status = 'Keyword not found';
             $project->broken = true;
         }
     }

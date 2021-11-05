@@ -61,7 +61,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <p>{{__('Delete a project')}} {{$project->project_name}}</p>
+                            <p>{{__('Delete a project')}} {{ $project->project_name }}</p>
                             <p>{{__('Are you sure?')}}</p>
                         </div>
                         <div class="modal-footer">
@@ -83,13 +83,13 @@
                     </div>
                 </th>
                 <td>
-                    {!! Form::textarea('project_name', $project->project_name ,['class' => 'form-control monitoring', 'rows' => 2, 'data-order' => $project->project_name]) !!}
+                    {!! Form::textarea('project_name', __($project->project_name) ,['class' => 'form-control monitoring', 'rows' => 2, 'data-order' => $project->project_name]) !!}
                 </td>
                 <td>
-                    {!! Form::textarea('link', $project->link ,['class' => 'form-control monitoring', 'rows' => 2, 'data-order' => $project->link]) !!}
+                    {!! Form::textarea('link', __($project->link) ,['class' => 'form-control monitoring', 'rows' => 2, 'data-order' => $project->link]) !!}
                 </td>
                 <td>
-                    {!! Form::textarea('phrase', $project->phrase ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => __('If the phrase is not selected, the server will wait for the 200 response code'), 'data-order' => $project->phrase]) !!}</td>
+                    {!! Form::textarea('phrase', __($project->phrase) ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => __('If the phrase is not selected, the server will wait for the 200 response code'), 'data-order' => $project->phrase]) !!}</td>
                 <td data-order="{{ $project->timing }}">
                     {!! Form::select('timing', [
                         '1' => __('once a minute'),
@@ -100,9 +100,9 @@
                 </td>
                 <td data-order="{{ $project->status }}">
                     @if($project->broken)
-                        <span class="text-danger">{{ $project->status }} <br> {{ $project->code }}</span>
+                        <span class="text-danger">{{ __($project->status) }} <br> {{ __($project->code) }}</span>
                     @else
-                        <span class="text-info">{{ $project->status }} <br> {{ $project->code }}</span>
+                        <span class="text-info">{{ __($project->status) }} <br> {{ __($project->code) }}</span>
                     @endif
                 </td>
                 <td data-order="{{ $project->uptime_percent }}">
