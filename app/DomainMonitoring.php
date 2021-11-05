@@ -89,9 +89,11 @@ class DomainMonitoring extends Model
 
         if ((boolean)$oldState == true && (boolean)$project->broken == true) {
             $lastNotification = new Carbon($project->time_last_notification);
-            if ($lastNotification->diffInMinutes(Carbon::now()) >= 360 && $user->telegram_bot_active) {
+            if ($lastNotification->diffInMinutes(Carbon::now()) >= 360) {
                 $user->brokenDomenNotification($project);
-                TelegramBot::brokenDomenNotification($project, $user->chat_id);
+                if($user->telegram_bot_active){
+                    TelegramBot::brokenDomenNotification($project, $user->chat_id);
+                }
                 $project->time_last_notification = Carbon::now();
             }
         }
