@@ -91,7 +91,7 @@ class DomainMonitoring extends Model
             $lastNotification = new Carbon($project->time_last_notification);
             if ($lastNotification->diffInMinutes(Carbon::now()) >= 360) {
                 $user->brokenDomenNotification($project);
-                if($user->telegram_bot_active){
+                if ($user->telegram_bot_active) {
                     TelegramBot::brokenDomenNotification($project, $user->chat_id);
                 }
                 $project->time_last_notification = Carbon::now();
@@ -105,10 +105,10 @@ class DomainMonitoring extends Model
         try {
             $oldState = $project->broken;
             $startConnect = Carbon::now();
-            $request = self::curlInit($project->link);
-            if (isset($request) && $request[1] === 200) {
+            $curl = self::curlInit($project->link);
+            if (isset($curl) && $curl[1]['http_code'] === 200) {
                 if (isset($project->phrase)) {
-                    DomainMonitoring::searchPhrase($request[0], $project->phrase, $project);
+                    DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
                 } else {
                     $project->status = __('Everything all right');
                     $project->broken = false;
@@ -116,18 +116,18 @@ class DomainMonitoring extends Model
                 $project->code = 200;
             } else {
                 Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
-                $project->status = __('The response code is not 200');
-                $project->code = 500;
+                $project->status = __('The domain is not responding');
+                $project->code = 404;
                 $project->broken = true;
             }
         } catch (Exception $e) {
-            $project->code = $e->getCode();
+            $project->code = 404;
             $project->status = __('The domain is not responding');
             $project->broken = true;
         }
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
-        DomainMonitoring::sendNotifications($project, $oldState);
         DomainMonitoring::calculateUpTime($project);
+        DomainMonitoring::sendNotifications($project, $oldState);
         $project->last_check = Carbon::now();
         $project->save();
     }
@@ -148,26 +148,27 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_TIMEOUT, 6);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         $html = curl_exec($curl);
-        $code = curl_getinfo($curl);
+        $headers = curl_getinfo($curl);
         curl_close($curl);
         if (!$html) {
             return null;
         }
-
         $html = preg_replace('//i', '', $html);
-
-        return [$html, $code['http_code']];
+        return [$html, $headers];
     }
 
     /**
-     * @param $body
+     * @param $curl
      * @param $phrase
      * @param $project
      */
-    public static function searchPhrase($body, $phrase, $project)
+    public static function searchPhrase($curl, $phrase, $project)
     {
-        if (preg_match('<meta http-equiv="Content-Type" content="text/html; charset=(.*)"*/>', $body, $matches, PREG_OFFSET_CAPTURE)) {
-            $phrase = mb_convert_encoding($project->phrase, substr($matches[1][0], 0, -2));
+        $body = $curl[0];
+        $contentType = $curl[1]['content_type'];
+        if (preg_match('(.*?charset=(.*))', $body, $contentType, PREG_OFFSET_CAPTURE)) {
+            $contentType = str_replace(array("\r","\n"), '', $contentType[1][0]);
+            $phrase = mb_convert_encoding($project->phrase, $contentType);
         }
 
         if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
