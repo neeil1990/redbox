@@ -79,10 +79,10 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
+        dd("php " . base_path('artisan') . " httpCheck {$timing} 1");
         for ($i = 1; $i <= 5; $i++) {
             shell_exec("php " . base_path('artisan') . " httpCheck {$timing} {$i}");
         }
-
     }
 
     /**
