@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\DomainMonitoring;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Spatie\Async\Pool;
 
 class DomainMonitoringController extends Controller
@@ -73,17 +75,17 @@ class DomainMonitoringController extends Controller
 
     /**
      * @param $timing
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkLinkCrone($timing)
     {
         $pool = Pool::create();
 
         foreach (range(1, 5) as $i) {
-            $pool[] = async(function () use ($i) {
-                $this->random($i);
-            })->then(function () {
-            });
+            $pool[] = async(function () {
+                    self::random(Str::random(3));
+                })->then(function () {
+                });
         }
         await($pool);
         dd($pool);
@@ -94,13 +96,13 @@ class DomainMonitoringController extends Controller
 
     /**
      * @param $i
-     * @throws \Exception
+     * @throws Exception
      */
     public function random($i): void
     {
-        Log::debug($i . 'start', [Carbon::now()]);
-        sleep(random_int(0, 5));
-        Log::debug($i . 'end', [Carbon::now()]);
+        Log::debug($i . ' start', [Carbon::now()]);
+        sleep(random_int(1, 3));
+        Log::debug($i . ' end', [Carbon::now()]);
     }
 
     /**
