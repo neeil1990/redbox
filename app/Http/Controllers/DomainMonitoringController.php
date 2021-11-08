@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use App\AsyncOperation;
 use App\DomainMonitoring;
 use App\Task;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Queue\Worker;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Pool;
+use Symfony\Component\Process\Process;
 
 class DomainMonitoringController extends Controller
 {
@@ -75,16 +79,21 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $stack = array();
-        foreach (range("A", "D") as $i) {
-            $stack[] = new AsyncOperation($i);
+        for ($i = 1; $i <= 5; $i++) {
+            shell_exec("php " . base_path('artisan') . " httpCheck {$timing} {$i} > /dev/null 2>&1 &");
         }
-        foreach ($stack as $t) {
-            $t->start();
-        }
-//        for ($i = 1; $i <= 5; $i++) {
-//            shell_exec("php " . base_path('artisan') . " httpCheck {$timing} {$i} &");
-//        }
+
+    }
+
+    /**
+     * @param $i
+     * @throws \Exception
+     */
+    public function random($i): void
+    {
+        Log::debug($i . 'start', [Carbon::now()]);
+        sleep(random_int(0, 5));
+        Log::debug($i . 'end', [Carbon::now()]);
     }
 
     /**
