@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\AsyncOperation;
 use App\DomainMonitoring;
-use App\Task;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Queue\Worker;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Pool;
-use Symfony\Component\Process\Process;
+use Spatie\Async\Pool;
 
 class DomainMonitoringController extends Controller
 {
+    public $counter;
+
     public function index()
     {
         $projects = DomainMonitoring::where('user_id', '=', Auth::id())->get();
@@ -76,9 +73,20 @@ class DomainMonitoringController extends Controller
 
     /**
      * @param $timing
+     * @throws \Exception
      */
     public function checkLinkCrone($timing)
     {
+        $pool = Pool::create();
+
+        foreach (range(1, 5) as $i) {
+            $pool[] = async(function () use ($i) {
+                $this->random($i);
+            })->then(function () {
+            });
+        }
+        await($pool);
+        dd($pool);
         for ($i = 1; $i <= 5; $i++) {
             shell_exec("php " . base_path('artisan') . " httpCheck {$timing} {$i} &");
         }
