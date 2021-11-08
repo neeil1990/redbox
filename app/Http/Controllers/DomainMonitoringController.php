@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\AsyncOperation;
 use App\DomainMonitoring;
-use Carbon\Carbon;
+use App\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Pool;
 
 class DomainMonitoringController extends Controller
 {
@@ -73,15 +75,16 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        Log::debug('----------start--------------', []);
-        $start = Carbon::now();
-        $projects = DomainMonitoring::where('timing', '=', $timing)->get();
-        foreach ($projects as $project) {
-            DomainMonitoring::httpCheck($project);
+        $stack = array();
+        foreach (range("A", "D") as $i) {
+            $stack[] = new AsyncOperation($i);
         }
-        Log::debug('domain verification time in seconds', [$start->diffInSeconds(Carbon::now())]);
-        Log::debug('total verification projects with timing ' . $timing, [count($projects)]);
-        Log::debug('-----------end------------', []);
+        foreach ($stack as $t) {
+            $t->start();
+        }
+//        for ($i = 1; $i <= 5; $i++) {
+//            shell_exec("php " . base_path('artisan') . " httpCheck {$timing} {$i} &");
+//        }
     }
 
     /**

@@ -2,11 +2,9 @@
 
 namespace App;
 
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class DomainMonitoring extends Model
 {
@@ -72,7 +70,7 @@ class DomainMonitoring extends Model
         $user = User::where('id', '=', $project->user_id)->first();
 
         if ((boolean)$oldState == true && (boolean)$project->broken == false) {
-            $user->repairDomenNotification($project);
+//            $user->repairDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::repairedDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
@@ -80,7 +78,7 @@ class DomainMonitoring extends Model
         }
 
         if ((boolean)$oldState == false && (boolean)$project->broken == true) {
-            $user->brokenDomenNotification($project);
+//            $user->brokenDomenNotification($project);
             if ($user->telegram_bot_active) {
                 TelegramBot::brokenDomenNotification($project, $user->chat_id);
                 $project->time_last_notification = Carbon::now();
@@ -90,7 +88,7 @@ class DomainMonitoring extends Model
         if ((boolean)$oldState == true && (boolean)$project->broken == true) {
             $lastNotification = new Carbon($project->time_last_notification);
             if ($lastNotification->diffInMinutes(Carbon::now()) >= 360) {
-                $user->brokenDomenNotification($project);
+//                $user->brokenDomenNotification($project);
                 if ($user->telegram_bot_active) {
                     TelegramBot::brokenDomenNotification($project, $user->chat_id);
                 }
@@ -100,38 +98,38 @@ class DomainMonitoring extends Model
 
     }
 
-    public static function httpCheck($project)
-    {
-        $startConnect = Carbon::now();
-        try {
-            $oldState = $project->broken;
-            $curl = self::curlInit($project->link);
-            if (isset($curl) && $curl[1]['http_code'] === 200) {
-                if (isset($project->phrase)) {
-                    DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
-                } else {
-                    $project->status = 'Everything all right';
-                    $project->broken = false;
-                }
-                $project->code = 200;
-            } else {
-                Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
-                $project->status = 'unexpected response code';
-                $project->code = $curl[1]['http_code'];
-                $project->broken = true;
-            }
-        } catch (Exception $e) {
-            Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
-            $project->status = 'the domain did not respond within 6 seconds';
-            $project->code = 0;
-            $project->broken = true;
-        }
-        DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
-        DomainMonitoring::calculateUpTime($project);
-        DomainMonitoring::sendNotifications($project, $oldState);
-        $project->last_check = Carbon::now();
-        $project->save();
-    }
+//    public static function httpCheck($project)
+//    {
+//        $startConnect = Carbon::now();
+//        try {
+//            $oldState = $project->broken;
+//            $curl = DomainMonitoring::curlInit($project->link);
+//            if (isset($curl) && $curl[1]['http_code'] === 200) {
+//                if (isset($project->phrase)) {
+//                    DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
+//                } else {
+//                    $project->status = 'Everything all right';
+//                    $project->broken = false;
+//                }
+//                $project->code = 200;
+//            } else {
+//                Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
+//                $project->status = 'unexpected response code';
+//                $project->code = $curl[1]['http_code'];
+//                $project->broken = true;
+//            }
+//        } catch (Exception $e) {
+//            Log::debug('connect time', [$startConnect->diffInSeconds(Carbon::now())]);
+//            $project->status = 'the domain did not respond within 6 seconds';
+//            $project->code = 0;
+//            $project->broken = true;
+//        }
+//        DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
+//        DomainMonitoring::calculateUpTime($project);
+////        DomainMonitoring::sendNotifications($project, $oldState);
+//        $project->last_check = Carbon::now();
+//        $project->save();
+//    }
 
     /**
      * @param $url
