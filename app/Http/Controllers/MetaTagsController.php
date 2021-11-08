@@ -58,16 +58,7 @@ class MetaTagsController extends Controller
         $result = [];
 
         foreach ($this->tags as $tag){
-
-            switch ($tag['type']) {
-                case 'string':
-                    $result[$tag['name']] = $this->getByString($tag['tag']);
-                    break;
-                case 'int':
-                    $result[$tag['name']] = $this->getByInt($tag['tag']);
-                    break;
-            }
-
+            $result[$tag['name']] = $this->getByString($tag['tag']);
         }
 
         return $result;
@@ -83,23 +74,15 @@ class MetaTagsController extends Controller
         $arr = [];
         foreach ($el as $e){
 
-            if($e->plaintext)
+            if(strlen(trim($e->plaintext)) > 1)
                 $arr[] = trim($e->plaintext);
             elseif(isset($e->attr['content']))
                 $arr[] = trim($e->attr['content']);
+            else
+                $arr[] = trim($e->outertext);
         }
 
         return $arr;
-    }
-
-    public function getByInt(string $tag)
-    {
-        $el = $this->html->find($tag);
-
-        if(!$el)
-            return false;
-
-        return count($el);
     }
 
     /**

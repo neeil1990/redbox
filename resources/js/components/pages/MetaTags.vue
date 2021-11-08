@@ -34,26 +34,18 @@
 
                     <div class="card-body">
 
-                        <div class="callout callout-danger" v-if="error.length">
-                            <h5>Bad request!</h5>
-
-                            <ul>
-                                <li v-for="(item, i) in error">
-                                    {{item.url}}
-                                </li>
-                            </ul>
-                        </div>
-
                         <div id="accordion">
 
-                            <div class="card card-secondary" v-for="(url, index) in result">
-                                <div class="card-header">
-                                    <h4 class="card-title w-100">
-                                        <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#collapse' + index" aria-expanded="false">
-                                            {{ url.title }}
+                            <div class="card" v-for="(url, index) in result">
+                                <div class="card-header card-header-accordion">
+                                    <h4 class="card-title">
+                                        <a class="d-block w-100 collapsed accordion-title" data-toggle="collapse" :href="'#collapse' + index" aria-expanded="false">
+                                            <i class="expandable-accordion-caret fas fa-caret-right fa-fw"></i> {{ url.title }}
                                         </a>
                                     </h4>
+                                    <base-tools :data="url.data"></base-tools>
                                 </div>
+
                                 <div :id="'collapse' + index" class="collapse" data-parent="#accordion" style="">
                                     <div class="card-body">
                                         <table class="table table-bordered">
@@ -62,18 +54,25 @@
                                                 <th>Tag</th>
                                                 <th>Content</th>
                                                 <th style="width: 40px">Count</th>
+                                                <th style="width: 150px">Main problems</th>
                                             </tr>
                                             </thead>
                                             <tbody>
 
                                                 <tr v-for="(item, tag) in url.data">
-                                                    <td><span class="badge badge-success"><{{ tag }} /></span></td>
+                                                    <td><span class="badge badge-success">< {{ tag }} ></span></td>
                                                     <td>
                                                         <span v-if="item.length"><textarea class="form-control">{{ item.join( ', \r\n' ) }}</textarea></span>
                                                         <span v-else class="badge badge-danger">{{ item }}</span>
                                                     </td>
                                                     <td>
                                                         <span class="badge bg-warning">{{ item.length }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <small v-if="item.length > 1 && (tag === 'title' || tag === 'description' || tag === 'canonical' || tag === 'h1')">
+                                                            Дублирующийся тег <span class="badge badge-danger">< {{tag}} ></span> Проверьте страницу и оставьте 1 тег
+                                                        </small>
+                                                        <span v-else class="badge badge-success">Без проблем</span>
                                                     </td>
                                                 </tr>
 
@@ -106,7 +105,6 @@
             }
         },
         methods: {
-
             onSubmitMetaTags(){
                 let url = '';
 
@@ -139,7 +137,7 @@
                     app.result.push(response.data);
                 }).catch(function (error) {
 
-                    app.error.push({url: url, status: error.response.status});
+                    console.log(error.response.status);
                 });
 
             }
