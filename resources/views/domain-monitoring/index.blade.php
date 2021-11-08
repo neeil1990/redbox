@@ -98,7 +98,7 @@
                         '15' => __('every 15 minutes'),
                         ], $project->timing , ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
-                <td data-order="{{ $project->status }}">
+                <td data-order="{{ $project->broken }}">
                     @if($project->broken)
                         <span class="text-danger">{{ __($project->status) }} <br> {{ __($project->code) }}</span>
                     @else
