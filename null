@@ -1,0 +1,29 @@
+
+   Swift_TransportException  : Failed to authenticate on SMTP server with username "ENTER_YOUR_GMAIL_USERNAME" using 3 possible authenticators. Authenticator LOGIN returned Expected response code 235 but got code "535", with message "535-5.7.8 Username and Password not accepted. Learn more at
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials f23sm391913ljg.90 - gsmtp
+". Authenticator PLAIN returned Expected response code 235 but got code "535", with message "535-5.7.8 Username and Password not accepted. Learn more at
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials f23sm391913ljg.90 - gsmtp
+". Authenticator XOAUTH2 returned Expected response code 250 but got code "535", with message "535-5.7.8 Username and Password not accepted. Learn more at
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials f23sm391913ljg.90 - gsmtp
+".
+
+  at C:\OpenServer\domains\redbox\vendor\swiftmailer\swiftmailer\lib\classes\Swift\Transport\Esmtp\AuthHandler.php:191
+    187|             $message = 'Failed to authenticate on SMTP server with username "'.$this->username.'" using '.$count.' possible authenticators.';
+    188|             foreach ($errors as $error) {
+    189|                 $message .= ' Authenticator '.$error[0].' returned '.$error[1].'.';
+    190|             }
+  > 191|             throw new Swift_TransportException($message);
+    192|         }
+    193|     }
+    194| 
+    195|     /**
+
+  Exception trace:
+
+  1   Swift_Transport_Esmtp_AuthHandler::afterEhlo(Object(Swift_SmtpTransport))
+      C:\OpenServer\domains\redbox\vendor\swiftmailer\swiftmailer\lib\classes\Swift\Transport\EsmtpTransport.php:371
+
+  2   Swift_Transport_EsmtpTransport::doHeloCommand()
+      C:\OpenServer\domains\redbox\vendor\swiftmailer\swiftmailer\lib\classes\Swift\Transport\AbstractSmtpTransport.php:148
+
+  Please use the argument -v to see more details.
