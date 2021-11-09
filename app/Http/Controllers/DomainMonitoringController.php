@@ -9,9 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Symfony\Component\Process\Process;
-use Symfony\Component\VarDumper\VarDumper;
+use Spatie\Async\Pool;
 
 class DomainMonitoringController extends Controller
 {
@@ -78,16 +78,21 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $process = new Process([
-            Artisan::call("httpCheck $timing 0"),
-            Artisan::call("httpCheck $timing 1"),
-            Artisan::call("httpCheck $timing 2"),
-            Artisan::call("httpCheck $timing 3"),
-            Artisan::call("httpCheck $timing 4"),
-            Artisan::call("httpCheck $timing 5"),
-        ]);
-        $process->start();
-        VarDumper::dump($process);
+        $pool = Pool::create();
+
+        for ($i = 0; $i < 5; $i++) {
+            $pool[] = async(function () use ($timing, $i) {
+                Artisan::call("httpCheck $timing $i");
+                return 2;
+            })->then(function (int $output) {
+                $this->counter += $output;
+            });
+        }
+
+
+        await($pool);
+
+        dd(1);
 //
 //        $command =
 //            "php /artisan httpCheck $timing 0 2>&1 & " .

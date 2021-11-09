@@ -39,16 +39,26 @@ class httpCheck extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $iterator = (integer)$this->argument('iterator');
         $timing = (integer)$this->argument('timing');
         Log::debug("process $iterator start", []);
-
         $projects = DomainMonitoring::where('timing', '=', $timing)->get();
-        $projects = $projects->chunk(count($projects) / 5);
+        $count = count($projects);
+        if ($count > 5) {
+            $projects = $projects->chunk($count / 5);
+            self::checkProjects($projects[$iterator]);
+        } else {
+            self::checkProjects($projects);
+        }
 
-        foreach ($projects[$iterator] as $project) {
+        Log::debug("process $iterator end", []);
+    }
+
+    public function checkProjects($projects)
+    {
+        foreach ($projects as $project) {
             try {
                 $oldState = $project->broken;
                 $curl = DomainMonitoring::curlInit($project->link);
@@ -72,10 +82,9 @@ class httpCheck extends Command
             }
             DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
             DomainMonitoring::calculateUpTime($project);
-            DomainMonitoring::sendNotifications($project, $oldState);
+//            DomainMonitoring::sendNotifications($project, $oldState);
             $project->last_check = Carbon::now();
             $project->save();
         }
-        Log::debug("process $iterator end", []);
     }
 }
