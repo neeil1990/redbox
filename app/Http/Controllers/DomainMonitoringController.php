@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\Process\Process;
 use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoringController extends Controller
@@ -77,15 +78,26 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $command =
-            "php /artisan httpCheck $timing 0 2>&1 & " .
-            "php ../../artisan httpCheck $timing 1 2>&1 & " .
-            "php ../../../artisan httpCheck $timing 2 2>&1 & " .
-            "php ../../../../artisan httpCheck $timing 3 2>&1 & " .
-            "php ../artisan httpCheck $timing 4 2>&1 & " .
-            "php ../artisan httpCheck $timing 5 2>&1 & ";
-        $shell = shell_exec($command);
-        VarDumper::dump($shell);
+        $process = new Process([
+            Artisan::call("httpCheck $timing 0 2>&1 &"),
+            Artisan::call("httpCheck $timing 1 2>&1 &"),
+            Artisan::call("httpCheck $timing 2 2>&1 &"),
+            Artisan::call("httpCheck $timing 3 2>&1 &"),
+            Artisan::call("httpCheck $timing 4 2>&1 &"),
+            Artisan::call("httpCheck $timing 5 2>&1 &"),
+        ]);
+        $process->start();
+        VarDumper::dump($process);
+//
+//        $command =
+//            "php /artisan httpCheck $timing 0 2>&1 & " .
+//            "php ../../artisan httpCheck $timing 1 2>&1 & " .
+//            "php ../../../artisan httpCheck $timing 2 2>&1 & " .
+//            "php ../../../../artisan httpCheck $timing 3 2>&1 & " .
+//            "php ../artisan httpCheck $timing 4 2>&1 & " .
+//            "php ../artisan httpCheck $timing 5 2>&1 & ";
+//        $shell = shell_exec($command);
+//        VarDumper::dump($shell);
     }
 
     /**
