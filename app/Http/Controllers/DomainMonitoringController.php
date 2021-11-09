@@ -78,12 +78,12 @@ class DomainMonitoringController extends Controller
     public function checkLinkCrone($timing)
     {
         $command =
-            "php " . base_path() . "/artisan httpCheck {$timing} 0 & " .
-            "php " . base_path() . "/artisan httpCheck {$timing} 1 & " .
-            "php " . base_path() . "/artisan httpCheck {$timing} 2 & " .
-            "php " . base_path() . "/artisan httpCheck {$timing} 3 & " .
-            "php " . base_path() . "/artisan httpCheck {$timing} 4 & " .
-            "php " . base_path() . "/artisan httpCheck {$timing} 5 & ";
+            "php " . base_path() . "/artisan httpCheck {$timing} 0 2>&1 & " .
+            "php " . base_path() . "/artisan httpCheck {$timing} 1 2>&1 & " .
+            "php " . base_path() . "/artisan httpCheck {$timing} 2 2>&1 & " .
+            "php " . base_path() . "/artisan httpCheck {$timing} 3 2>&1 & " .
+            "php " . base_path() . "/artisan httpCheck {$timing} 4 2>&1 & " .
+            "php " . base_path() . "/artisan httpCheck {$timing} 5 2>&1 & ";
         $shell = shell_exec($command);
         VarDumper::dump($shell);
     }
