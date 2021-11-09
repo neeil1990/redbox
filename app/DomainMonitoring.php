@@ -102,7 +102,7 @@ class DomainMonitoring extends Model
     {
         try {
             $oldState = $project->broken;
-            $curl = DomainMonitoring::curlInit($project->link);
+            $curl = DomainMonitoring::curlInit($project);
             if (isset($curl) && $curl[1]['http_code'] === 200) {
                 if (isset($project->phrase)) {
                     DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
@@ -129,19 +129,19 @@ class DomainMonitoring extends Model
     }
 
     /**
-     * @param $url
+     * @param $project
      * @return array|false
      */
-    public static function curlInit($url)
+    public static function curlInit($project)
     {
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_URL, $project->link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 6);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 6);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         $html = curl_exec($curl);
         $headers = curl_getinfo($curl);

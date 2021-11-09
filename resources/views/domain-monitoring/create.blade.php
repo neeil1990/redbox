@@ -23,6 +23,23 @@
                 '15' => __('every 15 minutes'),
                 ], null, ['class' => 'form-control custom-select rounded-0']) !!}
         </div>
+        <div class="form-group required">
+            {!! Form::label(__('Response waiting time in seconds')) !!}
+            {!! Form::select('waiting_time', [
+            '1' => 1,
+            '2' => 2,
+            '3' => 3,
+            '4' => 4,
+            '5' => 5,
+            '6' => 6,
+            '7' => 7,
+            '8' => 8,
+            '9' => 9,
+            '10' => 10,
+            ],
+            6,
+            ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
+        </div>
         <div id="searchPhrase">
             <div class="form-group required d-flex flex-column">
                 {!! Form::label(__('Keyword Search')) !!}
@@ -34,7 +51,8 @@
             </div>
         </div>
         <div id="notification" style="display:none;">
-            <span class="text-info">{{ __('If the phrase is not selected, the server will wait for the 200 response code') }}</span>
+            <span
+                class="text-info">{{ __('If the phrase is not selected, the server will wait for the 200 response code') }}</span>
         </div>
         @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
             <span>

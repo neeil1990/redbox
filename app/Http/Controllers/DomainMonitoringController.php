@@ -78,31 +78,10 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $pool = Pool::create();
-
-        for ($i = 0; $i < 5; $i++) {
-            $pool[] = async(function () use ($timing, $i) {
-                Artisan::call("httpCheck $timing $i");
-                return 2;
-            })->then(function (int $output) {
-                $this->counter += $output;
-            });
+        $projects = DomainMonitoring::where('timing', '=', $timing)->get();
+        foreach ($projects as $project) {
+            DomainMonitoring::httpCheck($project);
         }
-
-
-        await($pool);
-
-        dd(1);
-//
-//        $command =
-//            "php /artisan httpCheck $timing 0 2>&1 & " .
-//            "php ../../artisan httpCheck $timing 1 2>&1 & " .
-//            "php ../../../artisan httpCheck $timing 2 2>&1 & " .
-//            "php ../../../../artisan httpCheck $timing 3 2>&1 & " .
-//            "php ../artisan httpCheck $timing 4 2>&1 & " .
-//            "php ../artisan httpCheck $timing 5 2>&1 & ";
-//        $shell = shell_exec($command);
-//        VarDumper::dump($shell);
     }
 
     /**

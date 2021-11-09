@@ -45,13 +45,15 @@
             <th class="col-2">{{ __('Link') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Keyword') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Frequency') }} <i class="fa fa-sort"></i></th>
+            <th class="col-1">{{ __('Response waiting time in seconds') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">
                 {{ __('Status') }} {{ __('and') }}
                 <br>
-                {{ __('Status code') }}
+                {{ __('Status code') }} {{ __('and') }}
+                <br>
+                {{ __('Uptime') }}
                 <i class="fa fa-sort"></i>
             </th>
-            <th>{{ __('Uptime') }} <i class="fa fa-sort"></i></th>
             <th></th>
         </tr>
         </thead>
@@ -96,21 +98,46 @@
                         '5' => __('every 5 minutes'),
                         '10' => __('every 10 minutes'),
                         '15' => __('every 15 minutes'),
-                        ], $project->timing , ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
+                        ],
+                        $project->timing,
+                        ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
+                </td>
+                <td data-order="{{ $project->waiting_time }}">
+                    {!! Form::select('waiting_time', [
+                    '1' => 1,
+                    '2' => 2,
+                    '3' => 3,
+                    '4' => 4,
+                    '5' => 5,
+                    '6' => 6,
+                    '7' => 7,
+                    '8' => 8,
+                    '9' => 9,
+                    '10' => 10,
+                    ],
+                    $project->waiting_time,
+                    ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
+
                 </td>
                 <td data-order="{{ $project->broken }}">
                     @if($project->broken)
-                        <span class="text-danger">{{ __($project->status) }} <br> {{ __($project->code) }}</span>
+                        <span class="text-danger">
+                            {{ __($project->status) }} <br>
+                            {{ __($project->code) }} <br>
+                            @isset($project->uptime_percent)
+                                {{ $project->uptime_percent }}%
+                            @endisset
+                        </span>
                     @else
-                        <span class="text-info">{{ __($project->status) }} <br> {{ __($project->code) }}</span>
+                        <span class="text-info">
+                            {{ __($project->status) }} <br>
+                            {{ __($project->code) }} <br>
+                            @isset($project->uptime_percent)
+                                {{ $project->uptime_percent }}%
+                            @endisset
+                        </span>
                     @endif
                 </td>
-                <td data-order="{{ $project->uptime_percent }}">
-                    @isset($project->uptime_percent)
-                        {{ $project->uptime_percent }}%
-                    @endisset
-                </td>
-
                 <td class="d-flex justify-content-around m-auto border-bottom-0 border-left-0 border-right-0">
                     <form action="{{ route('check.domain', $project->id)}}" method="get">
                         @csrf
@@ -3731,6 +3758,9 @@
             })
             $(".monitoring").blur(function () {
                 if (oldValue !== $(this).val() || $(this).attr('name') === 'phrase' && oldValue !== $(this).val()) {
+                    console.log($(this).parent().parent().attr("id"))
+                    console.log($(this).attr('name'))
+                    console.log($(this).val())
                     $.ajax({
                         type: "POST",
                         dataType: "json",
