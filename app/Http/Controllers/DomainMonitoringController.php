@@ -77,6 +77,8 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
+        VarDumper::dump('php ' . base_path());
+        dd(12);
         $command =
             "cd ../../../ && php artisan httpCheck {$timing} 0 & " .
             "php artisan httpCheck {$timing} 1 & " .
