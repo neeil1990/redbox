@@ -79,12 +79,12 @@ class DomainMonitoringController extends Controller
     public function checkLinkCrone($timing)
     {
         $process = new Process([
-            Artisan::call("httpCheck $timing 0 2>&1 &"),
-            Artisan::call("httpCheck $timing 1 2>&1 &"),
-            Artisan::call("httpCheck $timing 2 2>&1 &"),
-            Artisan::call("httpCheck $timing 3 2>&1 &"),
-            Artisan::call("httpCheck $timing 4 2>&1 &"),
-            Artisan::call("httpCheck $timing 5 2>&1 &"),
+            Artisan::call("httpCheck $timing 0"),
+            Artisan::call("httpCheck $timing 1"),
+            Artisan::call("httpCheck $timing 2"),
+            Artisan::call("httpCheck $timing 3"),
+            Artisan::call("httpCheck $timing 4"),
+            Artisan::call("httpCheck $timing 5"),
         ]);
         $process->start();
         VarDumper::dump($process);
