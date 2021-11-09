@@ -77,7 +77,8 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        VarDumper::dump('php ' . base_path());
+        $test = exec('php ' . base_path() . 'artisan');
+        VarDumper::dump($test);
         dd(12);
         $command =
             "cd ../../../ && php artisan httpCheck {$timing} 0 & " .
@@ -85,7 +86,7 @@ class DomainMonitoringController extends Controller
             "php artisan httpCheck {$timing} 2 & " .
             "php artisan httpCheck {$timing} 3 & " .
             "php artisan httpCheck {$timing} 4 & " .
-            "php artisan httpCheck {$timing} 5 & " ;
+            "php artisan httpCheck {$timing} 5 & ";
         $shell = exec($command);
         VarDumper::dump($shell);
     }
