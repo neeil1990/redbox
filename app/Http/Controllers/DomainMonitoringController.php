@@ -85,7 +85,7 @@ class DomainMonitoringController extends Controller
             "php ../../../artisan httpCheck {$timing} 4 & " .
             "php ../../../artisan httpCheck {$timing} 5 & " ;
         $shell = exec($command);
-        VarDumper::dump(base_path('artisan'));
+        VarDumper::dump($shell);
     }
 
     /**
