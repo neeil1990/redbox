@@ -77,7 +77,7 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $test = exec('php ' . base_path() . 'artisan');
+        $test = exec('php ' . base_path() . '/artisan');
         VarDumper::dump($test);
         dd(12);
         $command =
