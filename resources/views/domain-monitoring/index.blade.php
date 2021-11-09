@@ -94,13 +94,14 @@
                     {!! Form::textarea('phrase', __($project->phrase) ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => __('If the phrase is not selected, the server will wait for the 200 response code'), 'data-order' => $project->phrase]) !!}</td>
                 <td data-order="{{ $project->timing }}">
                     {!! Form::select('timing', [
-                        '1' => __('once a minute'),
-                        '5' => __('every 5 minutes'),
-                        '10' => __('every 10 minutes'),
-                        '15' => __('every 15 minutes'),
-                        ],
-                        $project->timing,
-                        ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
+                    '5' => __('every 5 minutes'),
+                    '10' => __('every 10 minutes'),
+                    '15' => __('every 15 minutes'),
+                    '20' => __('every 20 minutes'),
+                    '30' => __('every 30 minutes'),
+                    '60' => __('every 60 minutes')],
+                     $project->timing,
+                     ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
                 <td data-order="{{ $project->waiting_time }}">
                     {!! Form::select('waiting_time', [

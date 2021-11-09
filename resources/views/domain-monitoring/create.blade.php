@@ -17,10 +17,12 @@
         <div class="form-group required">
             {!! Form::label(__('Frequency of checks')) !!}
             {!! Form::select('timing', [
-                '1' => __('once a minute'),
                 '5' => __('every 5 minutes'),
                 '10' => __('every 10 minutes'),
                 '15' => __('every 15 minutes'),
+                '20' => __('every 20 minutes'),
+                '30' => __('every 30 minutes'),
+                '60' => __('every 60 minutes'),
                 ], null, ['class' => 'form-control custom-select rounded-0']) !!}
         </div>
         <div class="form-group required">
