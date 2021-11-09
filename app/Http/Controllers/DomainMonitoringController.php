@@ -79,30 +79,8 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $pool = Pool::create();
-
-        foreach (range(1, 5) as $i) {
-            $pool[] = async(function () {
-                    self::random(Str::random(3));
-                })->then(function () {
-                });
-        }
-        await($pool);
-        dd($pool);
-        for ($i = 1; $i <= 5; $i++) {
-            shell_exec("php " . base_path('artisan') . " httpCheck {$timing} {$i} &");
-        }
-    }
-
-    /**
-     * @param $i
-     * @throws Exception
-     */
-    public function random($i): void
-    {
-        Log::debug($i . ' start', [Carbon::now()]);
-        sleep(random_int(1, 3));
-        Log::debug($i . ' end', [Carbon::now()]);
+        $command = "php artisan httpCheck {$timing} 0 & php artisan httpCheck {$timing} 1 & php artisan httpCheck {$timing} 2 & php artisan httpCheck {$timing} 3 & php artisan httpCheck {$timing} 4 &";
+        shell_exec($command);
     }
 
     /**
