@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
@@ -75,9 +76,14 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        $command = "php " . base_path('artisan') . " httpCheck {$timing} 0 & php " . base_path('artisan') . " httpCheck {$timing} 1 & php " . base_path('artisan') . " httpCheck {$timing} 2 & php " . base_path('artisan') . " httpCheck {$timing} 3 & php " . base_path('artisan') . " httpCheck {$timing} 4 &";
-        $shell = shell_exec($command);
-        dd($shell);
+        $command =
+            "php " . base_path('artisan') . " httpCheck {$timing} 0 & " .
+            "php " . base_path('artisan') . " httpCheck {$timing} 1 & " .
+            "php " . base_path('artisan') . " httpCheck {$timing} 2 & " .
+            "php " . base_path('artisan') . " httpCheck {$timing} 3 & " .
+            "php " . base_path('artisan') . " httpCheck {$timing} 4 & " .
+            "php " . base_path('artisan') . " httpCheck {$timing} 5 & " ;
+        $shell = exec($command);
     }
 
     /**

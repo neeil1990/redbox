@@ -6,6 +6,7 @@ use App\DomainMonitoring;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\VarDumper\VarDumper;
 
 class httpCheck extends Command
 {
@@ -40,12 +41,13 @@ class httpCheck extends Command
      */
     public function handle()
     {
-        $timing = (integer)$this->argument('timing');
         $iterator = (integer)$this->argument('iterator');
+        $timing = (integer)$this->argument('timing');
         Log::debug("process $iterator start", []);
 
         $projects = DomainMonitoring::where('timing', '=', $timing)->get();
         $projects = $projects->chunk(count($projects) / 5);
+
         foreach ($projects[$iterator] as $project) {
             try {
                 $oldState = $project->broken;
