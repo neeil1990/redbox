@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoringController extends Controller
 {
@@ -84,6 +85,7 @@ class DomainMonitoringController extends Controller
             "php " . base_path('artisan') . " httpCheck {$timing} 4 & " .
             "php " . base_path('artisan') . " httpCheck {$timing} 5 & " ;
         $shell = exec($command);
+        VarDumper::dump($shell);
     }
 
     /**
