@@ -79,12 +79,12 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        Log::debug('start scan', [Carbon::now()]);
+        Log::debug('start scan with timing ' . $timing, [Carbon::now()]);
         $projects = DomainMonitoring::where('timing', '=', $timing)->get();
         foreach ($projects as $project) {
             DomainMonitoring::httpCheck($project);
         }
-        Log::debug('end scan', [Carbon::now()]);
+        Log::debug('end scan  with timing ' . $timing, [Carbon::now()]);
     }
 
     /**
