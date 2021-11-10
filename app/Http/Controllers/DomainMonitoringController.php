@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DomainMonitoring;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -78,10 +79,12 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
+        Log::debug('start scan', [Carbon::now()]);
         $projects = DomainMonitoring::where('timing', '=', $timing)->get();
         foreach ($projects as $project) {
             DomainMonitoring::httpCheck($project);
         }
+        Log::debug('end scan', [Carbon::now()]);
     }
 
     /**
