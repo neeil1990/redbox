@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class DomainMonitoring extends Model
 {
@@ -117,6 +118,7 @@ class DomainMonitoring extends Model
                 $project->broken = true;
             }
         } catch (\Exception $e) {
+            Log::debug('broken project', [$project, $e]);
             $project->status = 'the domain did not respond';
             $project->code = 0;
             $project->broken = true;
@@ -163,7 +165,7 @@ class DomainMonitoring extends Model
         $body = $curl[0];
         $contentType = $curl[1]['content_type'];
         if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-            $contentType = str_replace(array("\r","\n"), '', $contentType[1][0]);
+            $contentType = str_replace(array("\r", "\n"), '', $contentType[1][0]);
             $phrase = mb_convert_encoding($project->phrase, $contentType);
         }
 
