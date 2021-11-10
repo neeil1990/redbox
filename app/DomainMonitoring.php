@@ -116,9 +116,12 @@ class DomainMonitoring extends Model
                 $project->status = 'unexpected response code';
                 $project->code = $curl[1]['http_code'];
                 $project->broken = true;
+                Log::debug('broken project', [$project]);
+                Log::debug('broken project', [$curl]);
             }
         } catch (\Exception $e) {
-            Log::debug('broken project', [$project, $e]);
+            Log::debug('broken project', [$project]);
+            Log::debug('broken project', [$curl]);
             $project->status = 'the domain did not respond';
             $project->code = 0;
             $project->broken = true;
@@ -175,6 +178,7 @@ class DomainMonitoring extends Model
         } else {
             $project->status = 'Keyword not found';
             $project->broken = true;
+            Log::debug('keyword not found', [$project]);
         }
     }
 }
