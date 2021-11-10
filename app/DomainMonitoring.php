@@ -162,7 +162,7 @@ class DomainMonitoring extends Model
     {
         $body = $curl[0];
         $contentType = $curl[1]['content_type'];
-        if (preg_match('(.*?charset=(.*))', $body, $contentType, PREG_OFFSET_CAPTURE)) {
+        if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
             $contentType = str_replace(array("\r","\n"), '', $contentType[1][0]);
             $phrase = mb_convert_encoding($project->phrase, $contentType);
         }

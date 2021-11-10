@@ -6,7 +6,6 @@ use App\DomainMonitoring;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\VarDumper\VarDumper;
 
 class httpCheck extends Command
 {
@@ -82,7 +81,7 @@ class httpCheck extends Command
             }
             DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
             DomainMonitoring::calculateUpTime($project);
-//            DomainMonitoring::sendNotifications($project, $oldState);
+            DomainMonitoring::sendNotifications($project, $oldState);
             $project->last_check = Carbon::now();
             $project->save();
         }
