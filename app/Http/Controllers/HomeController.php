@@ -10,7 +10,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -59,8 +58,6 @@ class HomeController extends Controller
         $projectsPositions->projects_positions = $positions;
 
         $projectsPositions->save();
-        Log::debug('pst', [$positions]);
-        Log::debug('pst2', [$projectsPositions]);
 
         return response('success');
     }
