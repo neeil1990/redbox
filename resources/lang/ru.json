@@ -294,7 +294,7 @@
   "You have successfully unsubscribed from the mailing list": "Вы успешно отписались от рассылки",
   "Everything all right": "Всё в порядке",
   "Keyword not found": "Ключевая фраза не найдена",
-  "the domain did not respond within 6 seconds": "домен не ответил в течении 6 секунд",
+  "the domain did not respond": "домен не ответил",
   "unexpected response code": "неожиданный код ответа",
   "unavailable": "недоступен",
   "available": "доступен",

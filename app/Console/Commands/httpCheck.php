@@ -76,7 +76,7 @@ class httpCheck extends Command
                     $project->broken = true;
                 }
             } catch (\Exception $e) {
-                $project->status = 'the domain did not respond within 6 seconds';
+                $project->status = 'the domain did not respond';
                 $project->code = 0;
                 $project->broken = true;
             }
