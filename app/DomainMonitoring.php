@@ -106,7 +106,7 @@ class DomainMonitoring extends Model
             $curl = DomainMonitoring::curlInit($project);
             if (isset($curl) && $curl[1]['http_code'] === 200) {
                 if (isset($project->phrase)) {
-                    DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
+                    DomainMonitoring::searchPhrase($curl[0], $project->phrase, $project);
                 } else {
                     $project->status = 'Everything all right';
                     $project->broken = false;
@@ -144,6 +144,7 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($curl, CURLOPT_HEADER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
@@ -163,15 +164,8 @@ class DomainMonitoring extends Model
      * @param $phrase
      * @param $project
      */
-    public static function searchPhrase($curl, $phrase, $project)
+    public static function searchPhrase($body, $phrase, $project)
     {
-        $body = $curl[0];
-        $contentType = $curl[1]['content_type'];
-        if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-            $contentType = str_replace(array("\r", "\n"), '', $contentType[1][0]);
-            $phrase = mb_convert_encoding($project->phrase, $contentType);
-        }
-
         if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
             $project->status = 'Everything all right';
             $project->broken = false;
