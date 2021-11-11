@@ -139,7 +139,7 @@
                         <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
                             <i aria-hidden="true" class="fa fa-search"></i>
                             <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
                                 {{__('Run the check manually')}}
                             </span>
                         </span>
@@ -149,7 +149,7 @@
                             data-target="#remove-project-id-{{$project->id}}">
                         <i class="fa fa-trash"></i>
                         <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
                                 {{__('Delete a project')}}
                             </span>
                         </span>
