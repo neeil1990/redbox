@@ -154,7 +154,7 @@
                             </span>
                         </span>
                     </button>
-                    <div class="btn btn-default __helper-link ui_tooltip_w send-notification-switch">
+                    <div class="btn __helper-link ui_tooltip_w send-notification-switch">
                         <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                             <input type="checkbox"
                                    class="custom-control-input send-notification-switch"
@@ -164,9 +164,9 @@
                         </div>
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Green - you will receive a newsletter of notifications')}}
+                                {{__('Green - you will receive a newsletter of notifications about the status of this project')}}
                                 <br>
-                                {{__('Red - you will not receive notifications')}}
+                                {{__('Red - you will not receive notifications about the status of this project')}}
                             </span>
                         </span>
                     </div>
@@ -3770,21 +3770,15 @@
         <script defer>
             var oldValue = ''
             var oldProjectName = ''
-            $('div.send-notification-switch').click(function () {
-                let id = '#' + $(this).children(":first").children(":first").attr('id')
-                if ($(id).is(':checked')) {
-                    $(id).attr('checked', false)
-                } else {
-                    $(id).attr('checked', true)
-                }
+            $('input.send-notification-switch').click(function () {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('edit.domain') }}",
                     data: {
-                        id: $(this).parent().parent().attr('id'),
+                        id: $(this).parent().parent().parent().parent().attr('id'),
                         name: 'send_notification',
-                        option: $(id).is(':checked') ? 1 : 0,
+                        option: $(this).is(':checked') ? 1 : 0,
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function () {
@@ -3801,34 +3795,6 @@
                     }
                 });
             })
-
-            $('input.send-notification-switch').hover(function () {
-                $('input.send-notification-switch').click(function () {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.domain') }}",
-                        data: {
-                            id: $(this).parent().parent().parent().parent().attr('id'),
-                            name: 'send_notification',
-                            option: $(this).is(':checked') ? 1 : 0,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function () {
-                            $('.toast-top-right.success-message').show(300)
-                            setTimeout(() => {
-                                $('.toast-top-right.success-message').hide(300)
-                            }, 4000)
-                        },
-                        error: function () {
-                            $('.toast-top-right.error-message').show()
-                            setTimeout(() => {
-                                $('.toast-top-right.error-message').hide(300)
-                            }, 4000)
-                        }
-                    });
-                })
-            });
             $(".monitoring").focus(function () {
                 oldValue = $(this).val()
             })

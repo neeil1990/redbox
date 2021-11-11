@@ -332,8 +332,8 @@
   "Receive notifications?": "Получать уведомления?",
   "Stop receiving notifications?": "Перестать получать уведомления?",
   "Run the check manually": "Запустить проверку вручную",
-  "Green - you will receive a newsletter of notifications": "Зелёный - вы будете получать рассылку уведомлений",
-  "Red - you will not receive notifications": "Красный - вы не будете получать рассылку уведомлений",
+  "Green - you will receive a newsletter of notifications about the status of this project": "Зелёный - вы будете получать рассылку уведомлений о состоянии этого проекта",
+  "Red - you will not receive notifications about the status of this project": "Красный - вы не будете получать рассылку уведомлений о состоянии этого проекта",
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
   "Step 1. Landing page": "Шаг 1. Целевая страница",
