@@ -154,12 +154,12 @@
                             </span>
                         </span>
                     </button>
-                    <div class="btn btn-default __helper-link ui_tooltip_w">
+                    <div class="btn btn-default __helper-link ui_tooltip_w send-notification-switch">
                         <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                             <input type="checkbox"
-                                   class="custom-control-input send-notification-switch pl-1"
-                                   id="customSwitch{{$project->id}}"
-                                   @if($project->send_notification) checked @endif>
+                                   class="custom-control-input send-notification-switch"
+                                   @if($project->send_notification) checked @endif
+                                   id="customSwitch{{$project->id}}">
                             <label class="custom-control-label" for="customSwitch{{$project->id}}"></label>
                         </div>
                         <span class="ui_tooltip __left __l">
@@ -3768,19 +3768,23 @@
 
         </script>
         <script defer>
-            $(document).ready(function () {
-                $('#example').DataTable();
-            });
-
-            $('.send-notification-switch').click(function () {
+            var oldValue = ''
+            var oldProjectName = ''
+            $('div.send-notification-switch').click(function () {
+                let id = '#' + $(this).children(":first").children(":first").attr('id')
+                if ($(id).is(':checked')) {
+                    $(id).attr('checked', false)
+                } else {
+                    $(id).attr('checked', true)
+                }
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('edit.domain') }}",
                     data: {
-                        id: $(this).parent().parent().parent().parent().attr('id'),
+                        id: $(this).parent().parent().attr('id'),
                         name: 'send_notification',
-                        option: $(this).is(':checked') ? 1 : 0,
+                        option: $(id).is(':checked') ? 1 : 0,
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function () {
@@ -3798,8 +3802,33 @@
                 });
             })
 
-            var oldValue = ''
-            var oldProjectName = ''
+            $('input.send-notification-switch').hover(function () {
+                $('input.send-notification-switch').click(function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.domain') }}",
+                        data: {
+                            id: $(this).parent().parent().parent().parent().attr('id'),
+                            name: 'send_notification',
+                            option: $(this).is(':checked') ? 1 : 0,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function () {
+                            $('.toast-top-right.success-message').show(300)
+                            setTimeout(() => {
+                                $('.toast-top-right.success-message').hide(300)
+                            }, 4000)
+                        },
+                        error: function () {
+                            $('.toast-top-right.error-message').show()
+                            setTimeout(() => {
+                                $('.toast-top-right.error-message').hide(300)
+                            }, 4000)
+                        }
+                    });
+                })
+            });
             $(".monitoring").focus(function () {
                 oldValue = $(this).val()
             })

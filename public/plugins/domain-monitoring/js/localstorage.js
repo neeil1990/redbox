@@ -1,4 +1,7 @@
 window.onload = function () {
+    $(document).ready(function () {
+        $('#example').DataTable();
+    });
     setTimeout(() => {
         var block = $('#example_length')
         if (localStorage.getItem('entries-option') !== undefined) {
