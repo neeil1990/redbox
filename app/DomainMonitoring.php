@@ -160,7 +160,7 @@ class DomainMonitoring extends Model
     }
 
     /**
-     * @param $curl
+     * @param $body
      * @param $phrase
      * @param $project
      */
