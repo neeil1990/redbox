@@ -45,13 +45,9 @@
             <th class="col-2">{{ __('Link') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Keyword') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Frequency') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Response waiting time in seconds') }} <i class="fa fa-sort"></i></th>
+            <th class="col-1">{{ __('Response waiting time') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">
-                {{ __('Status') }} {{ __('and') }}
-                <br>
-                {{ __('Status code') }} {{ __('and') }}
-                <br>
-                {{ __('Uptime') }}
+                {{ __('Status') }}
                 <i class="fa fa-sort"></i>
             </th>
             <th></th>
@@ -105,51 +101,75 @@
                 </td>
                 <td data-order="{{ $project->waiting_time }}">
                     {!! Form::select('waiting_time', [
-                    '1' => 1,
-                    '2' => 2,
-                    '3' => 3,
-                    '4' => 4,
-                    '5' => 5,
-                    '6' => 6,
-                    '7' => 7,
-                    '8' => 8,
-                    '9' => 9,
-                    '10' => 10,
-                    ],
+                    '1' => '1 ' . __("sec"),
+                    '2' => '2 ' . __("sec"),
+                    '3' => '3 ' . __("sec"),
+                    '4' => '4 ' . __("sec"),
+                    '5' => '5 ' . __("sec"),
+                    '6' => '6 ' . __("sec"),
+                    '7' => '7 ' . __("sec"),
+                    '8' => '8 ' . __("sec"),
+                    '9' => '9 ' . __("sec"),
+                    '10' => '10 ' . __("sec")],
                     $project->waiting_time,
                     ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
 
                 </td>
                 <td data-order="{{ $project->broken }}">
-                    @if($project->broken)
-                        <span class="text-danger">
+                    @isset($project->code)
+                        @if($project->broken)
+                            <span class="text-danger">
                             {{ __($project->status) }} <br>
-                            {{ __($project->code) }} <br>
-                            @isset($project->uptime_percent)
-                                {{ $project->uptime_percent }}%
-                            @endisset
+                            {{ __('http code') }} {{ __($project->code) }} <br>
+                            {{ __('Uptime') }} {{ $project->uptime_percent }}%
                         </span>
-                    @else
-                        <span class="text-info">
+                        @else
+                            <span class="text-info">
                             {{ __($project->status) }} <br>
-                            {{ __($project->code) }} <br>
-                            @isset($project->uptime_percent)
-                                {{ $project->uptime_percent }}%
-                            @endisset
+                            {{ __('http code') }}: {{ __($project->code) }} <br>
+                            {{ __('Uptime') }}: {{ $project->uptime_percent }}%
                         </span>
-                    @endif
+                        @endif
+                    @endisset
                 </td>
                 <td class="d-flex justify-content-around m-auto border-bottom-0 border-left-0 border-right-0">
-                    <form action="{{ route('check.domain', $project->id)}}" method="get">
+                    <form action="{{ route('check.domain', $project->id)}}" method="get"
+                          class="__helper-link ui_tooltip_w">
                         @csrf
-                        <button class="btn btn-default" type="submit">
+                        <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
                             <i aria-hidden="true" class="fa fa-search"></i>
+                            <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content">
+                                {{__('Run the check manually')}}
+                            </span>
+                        </span>
                         </button>
                     </form>
-                    <button class="btn btn-default" data-toggle="modal"
+                    <button class="btn btn-default __helper-link ui_tooltip_w" data-toggle="modal"
                             data-target="#remove-project-id-{{$project->id}}">
                         <i class="fa fa-trash"></i>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content">
+                                {{__('Delete a project')}}
+                            </span>
+                        </span>
                     </button>
+                    <div class="btn btn-default __helper-link ui_tooltip_w">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                            <input type="checkbox"
+                                   class="custom-control-input send-notification-switch pl-1"
+                                   id="customSwitch{{$project->id}}"
+                                   @if($project->send_notification) checked @endif>
+                            <label class="custom-control-label" for="customSwitch{{$project->id}}"></label>
+                        </div>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
+                                {{__('Green - you will receive a newsletter of notifications')}}
+                                <br>
+                                {{__('Red - you will not receive notifications')}}
+                            </span>
+                        </span>
+                    </div>
                 </td>
             </tr>
         @endforeach
@@ -3752,6 +3772,32 @@
                 $('#example').DataTable();
             });
 
+            $('.send-notification-switch').click(function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('edit.domain') }}",
+                    data: {
+                        id: $(this).parent().parent().parent().parent().attr('id'),
+                        name: 'send_notification',
+                        option: $(this).is(':checked') ? 1 : 0,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        $('.toast-top-right.success-message').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.success-message').hide(300)
+                        }, 4000)
+                    },
+                    error: function () {
+                        $('.toast-top-right.error-message').show()
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message').hide(300)
+                        }, 4000)
+                    }
+                });
+            })
+
             var oldValue = ''
             var oldProjectName = ''
             $(".monitoring").focus(function () {
@@ -3759,9 +3805,6 @@
             })
             $(".monitoring").blur(function () {
                 if (oldValue !== $(this).val() || $(this).attr('name') === 'phrase' && oldValue !== $(this).val()) {
-                    console.log($(this).parent().parent().attr("id"))
-                    console.log($(this).attr('name'))
-                    console.log($(this).val())
                     $.ajax({
                         type: "POST",
                         dataType: "json",

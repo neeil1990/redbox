@@ -68,35 +68,35 @@ class DomainMonitoring extends Model
      */
     public static function sendNotifications($project, $oldState)
     {
-        $user = User::where('id', '=', $project->user_id)->first();
-
-        if ((boolean)$oldState == true && (boolean)$project->broken == false) {
-            $user->repairDomenNotification($project);
-            if ($user->telegram_bot_active) {
-                TelegramBot::repairedDomenNotification($project, $user->chat_id);
-                $project->time_last_notification = Carbon::now();
+        if ($project->send_notification) {
+            $user = User::where('id', '=', $project->user_id)->first();
+            if ((boolean)$oldState == true && (boolean)$project->broken == false) {
+                $user->repairDomenNotification($project);
+                if ($user->telegram_bot_active) {
+                    TelegramBot::repairedDomenNotification($project, $user->chat_id);
+                    $project->time_last_notification = Carbon::now();
+                }
             }
-        }
 
-        if ((boolean)$oldState == false && (boolean)$project->broken == true) {
-            $user->brokenDomenNotification($project);
-            if ($user->telegram_bot_active) {
-                TelegramBot::brokenDomenNotification($project, $user->chat_id);
-                $project->time_last_notification = Carbon::now();
-            }
-        }
-
-        if ((boolean)$oldState == true && (boolean)$project->broken == true) {
-            $lastNotification = new Carbon($project->time_last_notification);
-            if ($lastNotification->diffInMinutes(Carbon::now()) >= 360) {
+            if ((boolean)$oldState == false && (boolean)$project->broken == true) {
                 $user->brokenDomenNotification($project);
                 if ($user->telegram_bot_active) {
                     TelegramBot::brokenDomenNotification($project, $user->chat_id);
+                    $project->time_last_notification = Carbon::now();
                 }
-                $project->time_last_notification = Carbon::now();
+            }
+
+            if ((boolean)$oldState == true && (boolean)$project->broken == true) {
+                $lastNotification = new Carbon($project->time_last_notification);
+                if ($lastNotification->diffInMinutes(Carbon::now()) >= 360) {
+                    $user->brokenDomenNotification($project);
+                    if ($user->telegram_bot_active) {
+                        TelegramBot::brokenDomenNotification($project, $user->chat_id);
+                    }
+                    $project->time_last_notification = Carbon::now();
+                }
             }
         }
-
     }
 
     public static function httpCheck($project)

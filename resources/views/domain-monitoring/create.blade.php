@@ -26,18 +26,18 @@
                 ], null, ['class' => 'form-control custom-select rounded-0']) !!}
         </div>
         <div class="form-group required">
-            {!! Form::label(__('Response waiting time in seconds')) !!}
+            {!! Form::label(__('Response waiting time')) !!}
             {!! Form::select('waiting_time', [
-            '1' => 1,
-            '2' => 2,
-            '3' => 3,
-            '4' => 4,
-            '5' => 5,
-            '6' => 6,
-            '7' => 7,
-            '8' => 8,
-            '9' => 9,
-            '10' => 10,
+            '1' => '1 ' . __("sec"),
+            '2' => '2 ' . __("sec"),
+            '3' => '3 ' . __("sec"),
+            '4' => '4 ' . __("sec"),
+            '5' => '5 ' . __("sec"),
+            '6' => '6 ' . __("sec"),
+            '7' => '7 ' . __("sec"),
+            '8' => '8 ' . __("sec"),
+            '9' => '9 ' . __("sec"),
+            '10' => '10 ' . __("sec"),
             ],
             6,
             ['class' => 'form-control custom-select rounded-0 monitoring']) !!}

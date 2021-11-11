@@ -93,6 +93,7 @@ class DomainMonitoringController extends Controller
      */
     public function edit(Request $request): JsonResponse
     {
+        Log::debug('d', $request->all());
         if (strlen($request->option) > 0 || $request->name === 'phrase') {
             DomainMonitoring::where('id', $request->id)->update([
                 $request->name => $request->option,
