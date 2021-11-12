@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoring extends Model
 {
@@ -101,9 +102,9 @@ class DomainMonitoring extends Model
 
     public static function httpCheck($project)
     {
+        $curl = DomainMonitoring::curlInit($project);
         try {
             $oldState = $project->broken;
-            $curl = DomainMonitoring::curlInit($project);
             if (isset($curl) && $curl[1]['http_code'] === 200) {
                 if (isset($project->phrase)) {
                     DomainMonitoring::searchPhrase($curl, $project->phrase, $project);

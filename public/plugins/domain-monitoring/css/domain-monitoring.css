@@ -401,3 +401,7 @@ a.paginate_button.current, .paginate_button {
 label:not(.form-check-label):not(.custom-file-label) {
     font-weight: normal !important;
 }
+
+.table td {
+    vertical-align: inherit !important;
+}

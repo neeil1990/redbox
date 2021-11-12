@@ -44,13 +44,14 @@
             <th class="col-2">{{ __('Project name') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Link') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">{{ __('Keyword') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Frequency') }} <i class="fa fa-sort"></i></th>
+            <th class="col-1">{{ __('Frequency every') }} <i class="fa fa-sort"></i></th>
             <th class="col-1">{{ __('Response waiting time') }} <i class="fa fa-sort"></i></th>
             <th class="col-2">
                 {{ __('Status') }}
                 <i class="fa fa-sort"></i>
             </th>
-            <th></th>
+            <th>{{ __('Receive notifications?') }}</th>
+            <th class="col-1"></th>
         </tr>
         </thead>
         <tbody>
@@ -72,14 +73,14 @@
                 </div>
             </div>
             <tr id="{{ $project->id }}">
-                <th>
+                <td>
                     <div class="custom-control custom-checkbox checbox-for-remove-project">
                         <input type="checkbox" id="project-{{ $project->id }}" class="checkbox custom-control-input"
                                name="enums">
                         <label for="project-{{ $project->id }}" class="custom-control-label">
                         </label>
                     </div>
-                </th>
+                </td>
                 <td>
                     {!! Form::textarea('project_name', __($project->project_name) ,['class' => 'form-control monitoring', 'rows' => 2, 'data-order' => $project->project_name]) !!}
                 </td>
@@ -90,12 +91,12 @@
                     {!! Form::textarea('phrase', __($project->phrase) ,['class' => 'form-control monitoring', 'rows' => 2,'placeholder' => __('If the phrase is not selected, the server will wait for the 200 response code'), 'data-order' => $project->phrase]) !!}</td>
                 <td data-order="{{ $project->timing }}">
                     {!! Form::select('timing', [
-                    '5' => __('every 5 minutes'),
-                    '10' => __('every 10 minutes'),
-                    '15' => __('every 15 minutes'),
-                    '20' => __('every 20 minutes'),
-                    '30' => __('every 30 minutes'),
-                    '60' => __('every 60 minutes')],
+                    '5' => __('5 minutes'),
+                    '10' => __('10 minutes'),
+                    '15' => __('15 minutes'),
+                    '20' => __('20 minutes'),
+                    '30' => __('30 minutes'),
+                    '60' => __('60 minutes')],
                      $project->timing,
                      ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
@@ -132,30 +133,9 @@
                         @endif
                     @endisset
                 </td>
-                <td class="d-flex justify-content-around m-auto border-bottom-0 border-left-0 border-right-0">
-                    <form action="{{ route('check.domain', $project->id)}}" method="get"
-                          class="__helper-link ui_tooltip_w">
-                        @csrf
-                        <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
-                            <i aria-hidden="true" class="fa fa-search"></i>
-                            <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Run the check manually')}}
-                            </span>
-                        </span>
-                        </button>
-                    </form>
-                    <button class="btn btn-default __helper-link ui_tooltip_w" data-toggle="modal"
-                            data-target="#remove-project-id-{{$project->id}}">
-                        <i class="fa fa-trash"></i>
-                        <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Delete a project')}}
-                            </span>
-                        </span>
-                    </button>
-                    <div class="btn __helper-link ui_tooltip_w send-notification-switch">
-                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                <td>
+                    <div class="__helper-link ui_tooltip_w send-notification-switch">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
                             <input type="checkbox"
                                    class="custom-control-input send-notification-switch"
                                    @if($project->send_notification) checked @endif
@@ -170,6 +150,29 @@
                             </span>
                         </span>
                     </div>
+                </td>
+                <td>
+                    <form action="{{ route('check.domain', $project->id)}}" method="get"
+                          class="__helper-link ui_tooltip_w  d-inline">
+                        @csrf
+                        <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
+                            <i aria-hidden="true" class="fa fa-search"></i>
+                            <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
+                                {{__('Run the check manually')}}
+                            </span>
+                        </span>
+                        </button>
+                    </form>
+                    <button class="btn btn-default __helper-link ui_tooltip_w d-inline" data-toggle="modal"
+                            data-target="#remove-project-id-{{$project->id}}">
+                        <i class="fa fa-trash"></i>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
+                                {{__('Delete a project')}}
+                            </span>
+                        </span>
+                    </button>
                 </td>
             </tr>
         @endforeach
