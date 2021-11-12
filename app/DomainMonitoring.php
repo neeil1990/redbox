@@ -174,9 +174,6 @@ class DomainMonitoring extends Model
             $headers = curl_getinfo($curl);
         }
         curl_close($curl);
-        if ($headers['http_code'] !== 200) {
-            return null;
-        }
 
         $html = preg_replace('//i', '', $html);
         return [$html, $headers];
