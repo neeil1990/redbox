@@ -146,16 +146,38 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        return DomainMonitoring::tryConnect($curl);
+    }
+
+    /**
+     * @param $curl
+     * @return array|null
+     */
+    public static function tryConnect($curl): ?array
+    {
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0');
         $html = curl_exec($curl);
         $headers = curl_getinfo($curl);
+
+        if ($headers['http_code'] !== 200) {
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
+            $html = curl_exec($curl);
+            $headers = curl_getinfo($curl);
+        }
+        if ($headers['http_code'] !== 200) {
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36 OPR/77.0.4054.146');
+            $html = curl_exec($curl);
+            $headers = curl_getinfo($curl);
+        }
         curl_close($curl);
-        if (!$html) {
+        if ($headers['http_code'] !== 200) {
             return null;
         }
+
         $html = preg_replace('//i', '', $html);
         return [$html, $headers];
     }
