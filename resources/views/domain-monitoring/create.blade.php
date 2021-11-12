@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Добавить отслеживаемый домен')])
+@component('component.card', ['title' => __('Add a monitored domain')])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
