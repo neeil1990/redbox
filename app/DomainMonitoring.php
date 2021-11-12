@@ -181,7 +181,7 @@ class DomainMonitoring extends Model
             $project->status = 'Keyword not found';
             $project->broken = true;
             Log::debug('keyword not found', [$project]);
-            Log::debug('curl', [$curl]);
+            Log::debug('curl', [$body]);
         }
     }
 }
