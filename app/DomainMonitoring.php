@@ -182,7 +182,9 @@ class DomainMonitoring extends Model
                 break 1;
             }
         }
-        Log::debug('curl error', [curl_error($curl)]);
+        if (!isset($headers)) {
+            Log::debug('curl error', [curl_error($curl)]);
+        }
         return [$html, $headers];
     }
 
