@@ -117,11 +117,11 @@ class DomainMonitoring extends Model
                 $project->code = $curl[1]['http_code'];
                 $project->broken = true;
                 Log::debug('broken project', [$project]);
-                Log::debug('curl error', [curl_error($curl[2])]);
+                Log::debug('curl error', [$curl[2]]);
             }
         } catch (\Exception $e) {
             Log::debug('broken project', [$project]);
-            Log::debug('curl error', [curl_error($curl[2])]);
+            Log::debug('curl error', [$curl[2]]);
             $project->status = 'the domain did not respond';
             $project->code = 0;
             $project->broken = true;
@@ -187,7 +187,7 @@ class DomainMonitoring extends Model
             }
         }
         $error = curl_error($curl);
-        return [$html, $headers,$error];
+        return [$html, $headers, $error];
     }
 
     /**
