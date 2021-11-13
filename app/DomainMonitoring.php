@@ -117,7 +117,7 @@ class DomainMonitoring extends Model
                 $project->code = $curl[1]['http_code'];
                 $project->broken = true;
                 Log::debug('broken project', [$project]);
-                Log::debug('curl', [$curl[1]]);
+                Log::debug('curl', [curl_error($curl)]);
             }
         } catch (\Exception $e) {
             Log::debug('broken project', [$project]);
@@ -145,6 +145,8 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
