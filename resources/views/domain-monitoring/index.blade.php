@@ -133,7 +133,7 @@
                         @endif
                     @endisset
                 </td>
-                <td>
+                <td data-order="{{ $project->send_notification }}">
                     <div class="__helper-link ui_tooltip_w send-notification-switch">
                         <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
                             <input type="checkbox"
