@@ -79,19 +79,24 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        Log::debug('start scan with timing ' . $timing, [Carbon::now()]);
-        $projects = DomainMonitoring::where('timing', '=', $timing)->get();
-        foreach ($projects as $project) {
-            DomainMonitoring::httpCheck($project);
+        if (!file_exists($timing . '.txt')) {
+            file_put_contents($timing . '.txt', '', 8);
+            Log::debug('start scan with timing ' . $timing, [Carbon::now()]);
+            $projects = DomainMonitoring::where('timing', '=', $timing)->get();
+            foreach ($projects as $project) {
+                DomainMonitoring::httpCheck($project);
+            }
+            Log::debug('end scan  with timing ' . $timing, [Carbon::now()]);
+            unlink($timing . '.txt');
         }
-        Log::debug('end scan  with timing ' . $timing, [Carbon::now()]);
     }
 
     /**
      * @param Request $request
      * @return JsonResponse
      */
-    public function edit(Request $request): JsonResponse
+    public
+    function edit(Request $request): JsonResponse
     {
         Log::debug('d', $request->all());
         if (strlen($request->option) > 0 || $request->name === 'phrase') {
@@ -107,7 +112,8 @@ class DomainMonitoringController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function removeDomains(Request $request): JsonResponse
+    public
+    function removeDomains(Request $request): JsonResponse
     {
         if (DomainMonitoring::destroy(explode(',', $request->ids))) {
             return response()->json([]);

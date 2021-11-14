@@ -102,19 +102,10 @@
                 </td>
                 <td data-order="{{ $project->waiting_time }}">
                     {!! Form::select('waiting_time', [
-                    '1' => '1 ' . __("sec"),
-                    '2' => '2 ' . __("sec"),
-                    '3' => '3 ' . __("sec"),
-                    '4' => '4 ' . __("sec"),
-                    '5' => '5 ' . __("sec"),
-                    '6' => '6 ' . __("sec"),
-                    '7' => '7 ' . __("sec"),
-                    '8' => '8 ' . __("sec"),
-                    '9' => '9 ' . __("sec"),
-                    '10' => '10 ' . __("sec")],
-                    $project->waiting_time,
-                    ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
-
+                    '10' => '10 ' . __("sec"),
+                    '15' => '15 ' . __("sec"),
+                    '20' => '20 ' . __("sec")
+                    ], $project->waiting_time, ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
                 </td>
                 <td data-order="{{ $project->broken }}">
                     @isset($project->code)
@@ -135,7 +126,8 @@
                 </td>
                 <td data-order="{{ $project->send_notification }}">
                     <div class="__helper-link ui_tooltip_w send-notification-switch">
-                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                        <div
+                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
                             <input type="checkbox"
                                    class="custom-control-input send-notification-switch"
                                    @if($project->send_notification) checked @endif
