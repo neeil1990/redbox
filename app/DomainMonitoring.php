@@ -170,14 +170,13 @@ class DomainMonitoring extends Model
             'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36'
         ];
 
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 2);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 2);
         for ($i = 0; $i < count($userAgents); $i++) {
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 2);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 2);
             curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
             if ($headers['http_code'] == 200) {
-                curl_close($curl);
                 $html = preg_replace('//i', '', $html);
                 break 1;
             }
@@ -186,6 +185,7 @@ class DomainMonitoring extends Model
             Log::debug('curl error number', [curl_errno($curl)]);
             Log::debug('curl error info', [curl_getinfo($curl)]);
         }
+        curl_close($curl);
         return [$html, $headers];
     }
 
