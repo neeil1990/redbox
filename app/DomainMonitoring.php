@@ -177,7 +177,7 @@ class DomainMonitoring extends Model
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
             if ($headers['http_code'] == 200) {
-                Log::debug('number of attempts', [$i + 1]);
+                Log::debug('number of attempts', [curl_getinfo($curl, CURLOPT_URL), $i + 1]);
                 $html = preg_replace('//i', '', $html);
                 break 1;
             }
