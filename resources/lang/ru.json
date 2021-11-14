@@ -309,6 +309,7 @@
   "Current uptime:": "Текущий uptime:",
   "Total time of the last breakdown:": "Общее время последней поломки:",
   "Go to the service:": "Перейти в сервис:",
+  "Go to the project:": "Перейти в проект:",
   "This is your special token, don't show it to anyone!": "Это ваш специальный токен, не показывайте его никому!",
   "send it to our telegram bot": "отправьте его нашему телеграм боту",
   "in order to receive notifications": "для того чтобы получать уведомления",
