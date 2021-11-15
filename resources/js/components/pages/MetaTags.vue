@@ -142,7 +142,7 @@
                                             <i class="fas fa-trash-alt"></i>
                                             Delete
                                         </a>
-                                        
+
                                     </td>
                                 </tr>
 

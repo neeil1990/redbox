@@ -23,6 +23,7 @@ class MetaTagsEmail extends Mailable
     public function __construct($name, $file)
     {
         $this->file = $file;
+
         $this->name = $name;
     }
 
@@ -36,8 +37,8 @@ class MetaTagsEmail extends Mailable
         return $this->subject($this->name)->markdown('emails.files.meta_tags', [
             'message' => 'Проверка выполнена, результат проверки вы можете скачать в приложении к письму.'
         ])->attach($this->file, [
-            'as' => Str::snake($this->name, '_') . '.pdf',
-            'mime' => 'application/pdf',
+            'as' => Str::snake($this->name, '_') . '.html',
+            'mime' => 'text/html',
         ]);
     }
 }
