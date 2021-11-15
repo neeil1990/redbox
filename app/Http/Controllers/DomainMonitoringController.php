@@ -81,12 +81,10 @@ class DomainMonitoringController extends Controller
     {
         if (!file_exists($timing . '.txt')) {
             file_put_contents($timing . '.txt', '', 8);
-            Log::debug('start scan with timing ' . $timing, [Carbon::now()]);
             $projects = DomainMonitoring::where('timing', '=', $timing)->get();
             foreach ($projects as $project) {
                 DomainMonitoring::httpCheck($project);
             }
-            Log::debug('end scan  with timing ' . $timing, [Carbon::now()]);
             unlink($timing . '.txt');
         }
     }
