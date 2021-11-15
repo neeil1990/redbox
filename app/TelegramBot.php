@@ -93,7 +93,7 @@ class TelegramBot extends Model
         $uptimePercent = round($project->uptime_percent, 2);
 
         if ($status === 'repair') {
-            $text = __('Project') . "  <code>$project->project_name</code>  " . __($status) . "
+            $text = __('Project') . " <code>$project->project_name</code>  " . __($status) . "
 " . __('Check time:') . " <code>$project->last_check</code>
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
@@ -103,7 +103,7 @@ class TelegramBot extends Model
 " . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         } else {
-            $text = __('Project') . "  <code>$project->project_name</code>  " . __($status) . "
+            $text = __('Project') . " <code>$project->project_name</code>  " . __($status) . "
 " . __('Check time:') . " <code>$project->last_check</code>
 " . __('http code:') . " <code>$project->code</code>
 " . __('Condition:') . " <code>$project->status</code>
