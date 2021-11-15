@@ -7686,6 +7686,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MetaTags",
   props: {
@@ -7715,6 +7717,13 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    StartMetaTags: function StartMetaTags(meta) {
+      $("html, body").stop().animate({
+        scrollTop: 200
+      }, 500, 'swing');
+      this.url = meta.links;
+      this.onSubmitMetaTags();
+    },
     onSubmitMetaTagsEdit: function onSubmitMetaTagsEdit(meta) {
       this.request = meta.id;
       this.value = meta;
@@ -71997,11 +72006,24 @@ var render = function() {
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(meta.period))]),
                           _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(meta.links))]),
+                          _c("td", [
+                            _c("textarea", {
+                              staticClass: "form-control",
+                              domProps: { textContent: _vm._s(meta.links) }
+                            })
+                          ]),
                           _vm._v(" "),
                           _c(
                             "td",
-                            { staticClass: "project-actions text-right" },
+                            {
+                              staticClass: "project-actions text-right",
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.StartMetaTags(meta)
+                                }
+                              }
+                            },
                             [
                               _vm._m(5, true),
                               _vm._v(" "),

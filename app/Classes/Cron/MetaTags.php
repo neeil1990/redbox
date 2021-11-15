@@ -21,11 +21,9 @@ class MetaTags extends MetaTagsController
     {
         $this->period = $period;
     }
-
-
+    
     public function __invoke()
     {
-
         $file = storage_path($this->path_pdf);
         $models = MetaTag::where('period', $this->period)->get();
 
