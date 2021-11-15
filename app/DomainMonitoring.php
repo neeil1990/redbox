@@ -185,6 +185,7 @@ class DomainMonitoring extends Model
         if ($headers['http_code'] !== 200) {
             Log::debug('curl error number', [curl_errno($curl)]);
             Log::debug('curl error info', [curl_getinfo($curl)]);
+            Log::debug('html', [$html]);
         }
         curl_close($curl);
         return [$html, $headers];
