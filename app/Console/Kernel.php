@@ -26,6 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        //test call as 6
+        $schedule->call(new MetaTags(6))->cron('* * * * *');
+
         $schedule->call(new MetaTags(6))->cron('*/6 * * * *');
         $schedule->call(new MetaTags(12))->cron('*/12 * * * *');
         $schedule->call(new MetaTags(24))->cron('*/24 * * * *');
