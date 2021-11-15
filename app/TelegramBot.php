@@ -98,14 +98,14 @@ class TelegramBot extends Model
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> минут
-" . __('Go to the project:') . "
+" . __('Go to the website') . "
 <a href='$link' target='_blank'>" . $link . "</a>
 " . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         } else {
             $text = __('Project') . "  <code>$project->project_name</code>  " . __($status) . "
 " . __('Check time:') . " <code>$project->last_check</code>
-" . __('http code') . " <code>$project->code</code>
+" . __('http code:') . " <code>$project->code</code>
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Go to the project:') . "
