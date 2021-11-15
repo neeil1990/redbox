@@ -171,13 +171,11 @@ class DomainMonitoring extends Model
         ];
 
         for ($i = 0; $i < count($userAgents); $i++) {
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 2);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 2);
             curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
-            if ($headers['http_code'] == 200) {
-                Log::debug('number of attempts', [curl_getinfo($curl, CURLOPT_URL), $i + 1]);
+            if ($headers['http_code'] == 200 && $html != false) {
+                Log::debug('number of attempts', [$i + 1]);
                 $html = preg_replace('//i', '', $html);
                 break 1;
             }
@@ -185,7 +183,6 @@ class DomainMonitoring extends Model
         if ($headers['http_code'] !== 200) {
             Log::debug('curl error number', [curl_errno($curl)]);
             Log::debug('curl error info', [curl_getinfo($curl)]);
-            Log::debug('html', [$html]);
         }
         curl_close($curl);
         return [$html, $headers];
