@@ -173,7 +173,7 @@ return [
         Jenssegers\Agent\AgentServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
         Yangqi\Htmldom\HtmldomServiceProvider::class,
-//        Barryvdh\DomPDF\ServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
          * Application Service Providers...
