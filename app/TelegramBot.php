@@ -88,8 +88,6 @@ class TelegramBot extends Model
      */
     public static function sendMessage($project, $status, $chatId)
     {
-        dd();
-
         $uptimePercent = round($project->uptime_percent, 2);
 
         if ($status === 'repair') {
