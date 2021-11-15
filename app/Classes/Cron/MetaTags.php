@@ -25,9 +25,8 @@ class MetaTags extends MetaTagsController
 
     public function __invoke()
     {
-        $PDF = \App::make('dompdf.wrapper');
-        $file = storage_path($this->path_pdf);
 
+        $file = storage_path($this->path_pdf);
         $models = MetaTag::where('period', $this->period)->get();
 
         if($models->isEmpty())
@@ -44,6 +43,7 @@ class MetaTags extends MetaTagsController
 
             $html = view('meta-tags.pdf', ['project' => $project])->render();
 
+            $PDF = \App::make('dompdf.wrapper');
             $PDF->loadHTML($html)->setPaper('a4', 'landscape')->save($file);
 
             Mail::to(User::findOrFail($model->user_id))->send(new MetaTagsEmail(Str::snake($project['name'], '_'), $file));

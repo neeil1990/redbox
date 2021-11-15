@@ -32,7 +32,7 @@ class MetaTagsEmail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.files.meta_tags', [
+        return $this->subject($this->name)->markdown('emails.files.meta_tags', [
             'message' => 'Проверка выполнена, результат проверки вы можете скачать в приложении к письму.'
         ])->attach($this->file, [
             'as' => $this->name . '.pdf',
