@@ -117,7 +117,8 @@ class TelegramBot extends Model
         $data = [
             'text' => $text,
             'chat_id' => $chatId,
-            'parse_mode' => 'HTML'
+            'parse_mode' => 'HTML',
+            'disable_web_page_preview' => true,
         ];
 
         file_get_contents('https://api.telegram.org/bot'
