@@ -46,7 +46,7 @@ class MetaTags extends MetaTagsController
             $PDF = \App::make('dompdf.wrapper');
             $PDF->loadHTML($html)->setPaper('a4', 'landscape')->save($file);
 
-            Mail::to(User::findOrFail($model->user_id))->send(new MetaTagsEmail(Str::snake($project['name'], '_'), $file));
+            Mail::to(User::findOrFail($model->user_id))->send(new MetaTagsEmail($project['name'], $file));
         }
     }
 

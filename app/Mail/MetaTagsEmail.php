@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Str;
 
 class MetaTagsEmail extends Mailable
 {
@@ -35,7 +36,7 @@ class MetaTagsEmail extends Mailable
         return $this->subject($this->name)->markdown('emails.files.meta_tags', [
             'message' => 'Проверка выполнена, результат проверки вы можете скачать в приложении к письму.'
         ])->attach($this->file, [
-            'as' => $this->name . '.pdf',
+            'as' => Str::snake($this->name, '_') . '.pdf',
             'mime' => 'application/pdf',
         ]);
     }
