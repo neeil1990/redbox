@@ -88,6 +88,8 @@ class TelegramBot extends Model
      */
     public static function sendMessage($project, $status, $chatId)
     {
+        dd();
+
         $uptimePercent = round($project->uptime_percent, 2);
 
         if ($status === 'repair') {
@@ -97,7 +99,7 @@ class TelegramBot extends Model
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> минут
 " . __('Go to the project:') . "
-<a href='$project->link' target='_blank'>$project->project_name</a>
+<a href='$project->link' target='_blank'>" . preg_replace('#^https?://#', '', rtrim($project->link, '/')) . "</a>
 " . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         } else {
@@ -107,7 +109,7 @@ class TelegramBot extends Model
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Go to the project:') . "
-<a href='$project->link' target='_blank'>$project->project_name</a>
+<a href='$project->link' target='_blank'>" . preg_replace('#^https?://#', '', rtrim($project->link, '/')) . "</a>
 " . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
         }
