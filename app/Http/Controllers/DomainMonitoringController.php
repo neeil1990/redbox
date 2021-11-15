@@ -95,10 +95,8 @@ class DomainMonitoringController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public
-    function edit(Request $request): JsonResponse
+    public function edit(Request $request): JsonResponse
     {
-        Log::debug('d', $request->all());
         if (strlen($request->option) > 0 || $request->name === 'phrase') {
             DomainMonitoring::where('id', $request->id)->update([
                 $request->name => $request->option,
@@ -112,8 +110,7 @@ class DomainMonitoringController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public
-    function removeDomains(Request $request): JsonResponse
+    public function removeDomains(Request $request): JsonResponse
     {
         if (DomainMonitoring::destroy(explode(',', $request->ids))) {
             return response()->json([]);
