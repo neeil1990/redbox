@@ -182,7 +182,7 @@ class DomainMonitoring extends Model
                 break 1;
             }
         }
-        if (!isset($headers)) {
+        if ($headers['http_code'] !== 200) {
             Log::debug('curl error number', [curl_errno($curl)]);
             Log::debug('curl error info', [curl_getinfo($curl)]);
         }
