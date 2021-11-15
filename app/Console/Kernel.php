@@ -2,9 +2,10 @@
 
 namespace App\Console;
 
+use App\Classes\Cron\MetaTags;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Log;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -25,6 +26,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        //test call as 6
+        $schedule->call(new MetaTags(6))->cron('* * * * *');
+
+        $schedule->call(new MetaTags(6))->cron('*/6 * * * *');
+        $schedule->call(new MetaTags(12))->cron('*/12 * * * *');
+        $schedule->call(new MetaTags(24))->cron('*/24 * * * *');
+
         // $schedule->command('inspire')
         //          ->hourly();
     }

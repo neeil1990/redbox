@@ -83,6 +83,14 @@
                             </div>
 
                         </div>
+
+                        <div class="row" v-if="FormShow">
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#ProjectModalForm" >Сохранить как проект</button>
+                                <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalForm" method="post" request="/meta-tags" :data="result" :links="url"></base-modal-form>
+                            </div>
+                        </div>
+
                     </div>
                     <!-- /.card-body -->
 
@@ -90,26 +98,102 @@
             </div>
 
         </div>
+
+        <div class="row" v-if="metas.length">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Проекты</h3>
+                    </div>
+
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-striped projects">
+                            <thead>
+                            <tr>
+                                <th style="width: 1%">ID</th>
+                                <th style="width: 20%">name</th>
+                                <th style="width: 20%">period</th>
+                                <th style="width: 30%">link</th>
+                                <th style="width: 20%"></th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr v-for="meta in metas" :key="meta.id">
+                                    <td>{{ meta.id }}</td>
+                                    <td>{{ meta.name }}</td>
+                                    <td>{{ meta.period }}</td>
+                                    <td>{{ meta.links }}</td>
+
+                                    <td class="project-actions text-right">
+                                        <a class="btn btn-info btn-sm" href="#">
+                                            <i class="fas fa-play-circle"></i>
+                                            Start
+                                        </a>
+                                        <a class="btn btn-info btn-sm" href="#" data-toggle="modal" data-target="#ProjectModalFormEdit" @click.prevent="onSubmitMetaTagsEdit(meta)">
+                                            <i class="fas fa-edit"></i>
+                                            Edit
+                                        </a>
+                                        <a class="btn btn-info btn-sm" @click.prevent="DeleteMetaTags(meta.id)">
+                                            <i class="fas fa-trash-alt"></i>
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                            <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalFormEdit" method="patch" :values="value" :request="'/meta-tags/' + request" ></base-modal-form>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
         name: "MetaTags",
+        props: {
+            meta: {
+                type: [Object, Array]
+            }
+        },
+        created() {
+
+            this.metas = this.meta;
+        },
         data() {
             return {
+                metas: [],
+                value: {},
+                request: null,
+                FormShow: false,
                 url: '',
                 time: 500,
                 result: [],
                 error: []
             }
         },
+        watch:{
+            result: function(val){
+                let url = this.StringAsObj(this.url);
+                this.FormShow = (url.length === val.length);
+            }
+        },
         methods: {
+            onSubmitMetaTagsEdit(meta) {
+                this.request = meta.id;
+                this.value = meta;
+            },
             onSubmitMetaTags(){
                 let url = '';
 
                 if(this.url.length){
-                    url = _.compact(this.url.split(/[\r\n]+/));
+                    url = this.StringAsObj(this.url);
                     this.result = [];
                     this.error = [];
 
@@ -139,7 +223,36 @@
 
                     console.log(error.response.status);
                 });
+            },
 
+            DeleteMetaTags(id) {
+
+                let del = confirm("Your sure?");
+                if(del){
+                    let idx = _.findIndex(this.metas, function(o) { return o.id === id; });
+
+                    axios.delete('/meta-tags/' + id);
+                    this.metas.splice(idx, 1);
+                }
+            },
+
+            CloseModalFormMetaTags: function(response) {
+
+                let idx = _.findIndex(this.metas, function(o) { return o.id === response.data.id; });
+
+                if(idx < 0){
+
+                    this.metas.push(response.data);
+                }else{
+
+                    _.merge(this.metas[idx], response.data);
+                }
+
+                $('.modal').modal('hide');
+            },
+
+            StringAsObj(str){
+                return _.compact(str.split(/[\r\n]+/));
             }
         }
     }

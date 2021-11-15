@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Moscow',
 
     /*
     |--------------------------------------------------------------------------
@@ -173,6 +173,7 @@ return [
         Jenssegers\Agent\AgentServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
         Yangqi\Htmldom\HtmldomServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -244,6 +245,7 @@ return [
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Curl' => Ixudra\Curl\Facades\Curl::class,
         'Htmldom' => Yangqi\Htmldom\Htmldom::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];
