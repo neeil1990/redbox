@@ -7688,6 +7688,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MetaTags",
   props: {
@@ -7718,6 +7720,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     StartMetaTags: function StartMetaTags(meta) {
+      console.log('StartMetaTags');
       $("html, body").stop().animate({
         scrollTop: 200
       }, 500, 'swing');
@@ -72015,17 +72018,29 @@ var render = function() {
                           _vm._v(" "),
                           _c(
                             "td",
-                            {
-                              staticClass: "project-actions text-right",
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.StartMetaTags(meta)
-                                }
-                              }
-                            },
+                            { staticClass: "project-actions text-right" },
                             [
-                              _vm._m(5, true),
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-info btn-sm",
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.StartMetaTags(meta)
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass: "fas fa-play-circle"
+                                  }),
+                                  _vm._v(
+                                    "\n                                        Start\n                                    "
+                                  )
+                                ]
+                              ),
                               _vm._v(" "),
                               _c(
                                 "a",
@@ -72158,21 +72173,6 @@ var staticRenderFns = [
         _c("th", { staticStyle: { width: "20%" } })
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      { staticClass: "btn btn-info btn-sm", attrs: { href: "#" } },
-      [
-        _c("i", { staticClass: "fas fa-play-circle" }),
-        _vm._v(
-          "\n                                        Start\n                                    "
-        )
-      ]
-    )
   }
 ]
 render._withStripped = true
