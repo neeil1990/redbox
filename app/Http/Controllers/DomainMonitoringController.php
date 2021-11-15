@@ -79,6 +79,7 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
+        Log::debug('start check', [$timing]);
         if (!file_exists($timing . '.txt')) {
             file_put_contents($timing . '.txt', '', 8);
             $projects = DomainMonitoring::where('timing', '=', $timing)->get();
@@ -87,6 +88,7 @@ class DomainMonitoringController extends Controller
             }
             unlink($timing . '.txt');
         }
+        Log::debug('end check', [$timing]);
     }
 
     /**
