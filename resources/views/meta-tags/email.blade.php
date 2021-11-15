@@ -6,7 +6,7 @@
 
     <h1>{{ $project['name'] }}</h1>
 
-    <table border="1" cellspacing="0" cellpadding="15">
+    <table border="1" cellspacing="0" cellpadding="15" width="100%">
         @foreach($project['data'] as $link => $td)
             <tr><td colspan="{{ count($td) }}">{{ $link }}</td></tr>
             <tr>

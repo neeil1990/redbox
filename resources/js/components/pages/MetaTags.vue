@@ -124,10 +124,13 @@
                                     <td>{{ meta.id }}</td>
                                     <td>{{ meta.name }}</td>
                                     <td>{{ meta.period }}</td>
-                                    <td>{{ meta.links }}</td>
+                                    <td>
+                                        <textarea class="form-control" v-text="meta.links"></textarea>
+                                    </td>
 
                                     <td class="project-actions text-right">
-                                        <a class="btn btn-info btn-sm" href="#">
+
+                                        <a class="btn btn-info btn-sm" href="#" @click.prevent="StartMetaTags(meta)">
                                             <i class="fas fa-play-circle"></i>
                                             Start
                                         </a>
@@ -139,6 +142,7 @@
                                             <i class="fas fa-trash-alt"></i>
                                             Delete
                                         </a>
+
                                     </td>
                                 </tr>
 
@@ -185,6 +189,13 @@
             }
         },
         methods: {
+            StartMetaTags(meta) {
+                console.log('StartMetaTags');
+
+                $("html, body").stop().animate({scrollTop : 200}, 500, 'swing');
+                this.url = meta.links;
+                this.onSubmitMetaTags();
+            },
             onSubmitMetaTagsEdit(meta) {
                 this.request = meta.id;
                 this.value = meta;
