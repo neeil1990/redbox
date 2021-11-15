@@ -26,7 +26,7 @@
         </style>
     @endslot
 
-    <meta-tags></meta-tags>
+    <meta-tags :meta="{{ $meta }}"></meta-tags>
 
     @slot('js')
 

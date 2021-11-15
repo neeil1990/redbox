@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MetaTagsEmail;
+use App\MetaTag;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Yangqi\Htmldom\Htmldom;
 use Ixudra\Curl\Facades\Curl;
 
@@ -36,7 +41,9 @@ class MetaTagsController extends Controller
             ];
         }
 
-        return view('meta-tags.index');
+        $meta = Auth::user()->metaTags()->get();
+
+        return view('meta-tags.index', compact('meta'));
     }
 
     /**
@@ -53,6 +60,11 @@ class MetaTagsController extends Controller
         return $this;
     }
 
+    /**
+     * Get array http
+     *
+     * @return array
+     */
     public function get()
     {
         $result = [];
@@ -86,16 +98,6 @@ class MetaTagsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -103,41 +105,22 @@ class MetaTagsController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $meta = Auth::user()->metaTags()->create($request->all());
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return $meta;
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return void
      */
     public function update(Request $request, $id)
     {
-        //
+       Auth::user()->metaTags()->find($id)->update($request->all(['name', 'period', 'links']));
+       return Auth::user()->metaTags()->find($id);
     }
 
     /**
@@ -148,6 +131,6 @@ class MetaTagsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Auth::user()->metaTags()->find($id)->delete();
     }
 }

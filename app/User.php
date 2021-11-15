@@ -128,6 +128,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Behavior::class);
     }
 
+    public function metaTags()
+    {
+        return $this->hasMany(MetaTag::class);
+    }
+
     public function deleteNoVerify()
     {
         $this->where('email_verified_at', '=', null)
