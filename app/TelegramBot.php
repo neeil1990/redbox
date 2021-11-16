@@ -90,7 +90,7 @@ class TelegramBot extends Model
         $text = __('Project') . " <code>$project->project_name</code>  " . __('broken') . "
 " . __('Check time:') . " <code>$project->last_check</code>
 " . __('http code:') . " <code>$project->code</code>
-" . __('Condition:') . " <code>$project->status</code>
+" . __('Condition:') . " <code>". __($project->status) ."</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Go to the website') . "
 <a href='$link' target='_blank'>" . $link . "</a>
@@ -108,7 +108,7 @@ class TelegramBot extends Model
 
         $text = __('Project') . " <code>$project->project_name</code>  " . __('repair') . "
 " . __('Check time:') . " <code>$project->last_check</code>
-" . __('Condition:') . " <code>$project->status</code>
+" . __('Condition:') . " <code>". __($project->status) ."</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
 " . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> минут
 " . __('Go to the website') . "
