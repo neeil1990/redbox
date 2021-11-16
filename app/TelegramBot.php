@@ -12,12 +12,12 @@ class TelegramBot extends Model
 
     public static function brokenDomenNotification($project, $chatId)
     {
-        TelegramBot::sendMessage($project, 'broken', $chatId);
+        TelegramBot::prepareBreakdownMessage($project, $chatId);
     }
 
     public static function repairedDomenNotification($project, $chatId)
     {
-        TelegramBot::sendMessage($project, 'repair', $chatId);
+        TelegramBot::PrepareRecoveryMessage($project, $chatId);
     }
 
     /**
@@ -81,19 +81,32 @@ class TelegramBot extends Model
             '/sendMessage?' . http_build_query($data));
     }
 
-    /**
-     * @param $project
-     * @param $status
-     * @param $chatId
-     */
-    public static function sendMessage($project, $status, $chatId)
+    public static function prepareBreakdownMessage($project, $chatId)
     {
         $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
         $link = preg_replace('/^www\./', '', $link);
         $uptimePercent = round($project->uptime_percent, 2);
 
-        if ($status === 'repair') {
-            $text = __('Project') . " <code>$project->project_name</code>  " . __($status) . "
+        $text = __('Project') . " <code>$project->project_name</code>  " . __('broken') . "
+" . __('Check time:') . " <code>$project->last_check</code>
+" . __('http code:') . " <code>$project->code</code>
+" . __('Condition:') . " <code>$project->status</code>
+" . __('Current uptime:') . " <code>$uptimePercent%</code>
+" . __('Go to the website') . "
+<a href='$link' target='_blank'>" . $link . "</a>
+" . __('Go to the service:') . "
+<a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
+
+        TelegramBot::sendMessage($text, $chatId);
+    }
+
+    public static function prepareRecoveryMessage($project, $chatId)
+    {
+        $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
+        $link = preg_replace('/^www\./', '', $link);
+        $uptimePercent = round($project->uptime_percent, 2);
+
+        $text = __('Project') . " <code>$project->project_name</code>  " . __('repair') . "
 " . __('Check time:') . " <code>$project->last_check</code>
 " . __('Condition:') . " <code>$project->status</code>
 " . __('Current uptime:') . " <code>$uptimePercent%</code>
@@ -102,18 +115,17 @@ class TelegramBot extends Model
 <a href='$link' target='_blank'>" . $link . "</a>
 " . __('Go to the service:') . "
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
-        } else {
-            $text = __('Project') . " <code>$project->project_name</code>  " . __($status) . "
-" . __('Check time:') . " <code>$project->last_check</code>
-" . __('http code:') . " <code>$project->code</code>
-" . __('Condition:') . " <code>$project->status</code>
-" . __('Current uptime:') . " <code>$uptimePercent%</code>
-" . __('Go to the project:') . "
-<a href='$link' target='_blank'>" . $link . "</a>
-" . __('Go to the service:') . "
-<a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
-        }
 
+        TelegramBot::sendMessage($text, $chatId);
+
+    }
+
+    /**
+     * @param $text
+     * @param $chatId
+     */
+    public static function sendMessage($text, $chatId)
+    {
         $data = [
             'text' => $text,
             'chat_id' => $chatId,
