@@ -24,12 +24,19 @@
         </div>
 
         <div class="row">
-
             <div class="col-md-12">
+
                 <div class="card" v-if="result.length">
 
                     <div class="card-header">
                         <h3 class="card-title">Check URL</h3>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" :style="'width: '+ loading +'%;'" :aria-valuenow="loading" aria-valuemin="0" aria-valuemax="100">
+                            <span v-if="loading === 100">Готово</span>
+                            <span v-else>{{ loading }}%</span>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -101,6 +108,7 @@
 
         <div class="row" v-if="metas.length">
             <div class="col-md-12">
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Проекты</h3>
@@ -172,6 +180,7 @@
         },
         data() {
             return {
+                loading: 0,
                 metas: [],
                 value: {},
                 request: null,
@@ -186,14 +195,17 @@
             result: function(val){
                 let url = this.StringAsObj(this.url);
                 this.FormShow = (url.length === val.length);
+
+                this.loading = Math.ceil(val.length / url.length * 100);
             }
         },
         methods: {
             StartMetaTags(meta) {
-                console.log('StartMetaTags');
-
                 $("html, body").stop().animate({scrollTop : 200}, 500, 'swing');
+
                 this.url = meta.links;
+                this.time = meta.timeout;
+
                 this.onSubmitMetaTags();
             },
             onSubmitMetaTagsEdit(meta) {
