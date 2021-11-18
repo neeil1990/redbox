@@ -7403,6 +7403,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "BaseModalForm",
   props: {
@@ -7436,6 +7441,7 @@ __webpack_require__.r(__webpack_exports__);
       name: 'My project',
       period: 6,
       link: '',
+      timeout: 500,
       radios: [{
         value: 6,
         text: '6 часов'
@@ -7453,6 +7459,7 @@ __webpack_require__.r(__webpack_exports__);
       this.name = val.name;
       this.period = val.period;
       this.link = val.links;
+      this.timeout = val.timeout;
     }
   },
   methods: {
@@ -7464,7 +7471,8 @@ __webpack_require__.r(__webpack_exports__);
         data: {
           name: app.name,
           period: app.period,
-          links: app.link
+          links: app.link,
+          timeout: app.timeout
         }
       }).then(function (response) {
         app.$emit('close-modal-form', response);
@@ -7690,6 +7698,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MetaTags",
   props: {
@@ -7702,6 +7718,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      loading: 0,
       metas: [],
       value: {},
       request: null,
@@ -7716,15 +7733,16 @@ __webpack_require__.r(__webpack_exports__);
     result: function result(val) {
       var url = this.StringAsObj(this.url);
       this.FormShow = url.length === val.length;
+      this.loading = Math.ceil(val.length / url.length * 100);
     }
   },
   methods: {
     StartMetaTags: function StartMetaTags(meta) {
-      console.log('StartMetaTags');
       $("html, body").stop().animate({
         scrollTop: 200
       }, 500, 'swing');
       this.url = meta.links;
+      this.time = meta.timeout;
       this.onSubmitMetaTags();
     },
     onSubmitMetaTagsEdit: function onSubmitMetaTagsEdit(meta) {
@@ -71564,6 +71582,32 @@ var render = function() {
               ),
               _vm._v(" "),
               _c("div", { staticClass: "form-group" }, [
+                _c("label", [_vm._v("Timeout:")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.timeout,
+                      expression: "timeout"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "number", min: "1" },
+                  domProps: { value: _vm.timeout },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.timeout = $event.target.value
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group" }, [
                 _c("label", { staticClass: "col-form-label" }, [
                   _vm._v("Ссылки:")
                 ]),
@@ -71791,6 +71835,27 @@ var render = function() {
         _vm.result.length
           ? _c("div", { staticClass: "card" }, [
               _vm._m(1),
+              _vm._v(" "),
+              _c("div", { staticClass: "progress" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass: "progress-bar",
+                    style: "width: " + _vm.loading + "%;",
+                    attrs: {
+                      role: "progressbar",
+                      "aria-valuenow": _vm.loading,
+                      "aria-valuemin": "0",
+                      "aria-valuemax": "100"
+                    }
+                  },
+                  [
+                    _vm.loading === 100
+                      ? _c("span", [_vm._v("Готово")])
+                      : _c("span", [_vm._v(_vm._s(_vm.loading) + "%")])
+                  ]
+                )
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "card-body" }, [
                 _c(

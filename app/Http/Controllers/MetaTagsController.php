@@ -106,7 +106,7 @@ class MetaTagsController extends Controller
      */
     public function store(Request $request)
     {
-        $meta = Auth::user()->metaTags()->create($request->all());
+        $meta = Auth::user()->metaTags()->create($request->all(['name', 'period', 'links', 'timeout']));
 
         return $meta;
     }
@@ -120,7 +120,7 @@ class MetaTagsController extends Controller
      */
     public function update(Request $request, $id)
     {
-       Auth::user()->metaTags()->find($id)->update($request->all(['name', 'period', 'links']));
+       Auth::user()->metaTags()->find($id)->update($request->all(['name', 'period', 'links', 'timeout']));
        return Auth::user()->metaTags()->find($id);
     }
 

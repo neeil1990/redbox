@@ -26,6 +26,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label>Timeout:</label>
+                            <input type="number" min="1" class="form-control" v-model="timeout">
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-form-label">Ссылки:</label>
                             <textarea class="form-control" v-model="link" required></textarea>
                         </div>
@@ -76,6 +81,7 @@
                 name: 'My project',
                 period: 6,
                 link: '',
+                timeout: 500,
                 radios: [
                     {value: 6, text: '6 часов'},
                     {value: 12, text: '12 часов'},
@@ -89,6 +95,7 @@
                 this.name = val.name;
                 this.period = val.period;
                 this.link = val.links;
+                this.timeout = val.timeout;
             }
         },
         methods: {
@@ -103,6 +110,7 @@
                         name: app.name,
                         period: app.period,
                         links: app.link,
+                        timeout: app.timeout,
                     }
                 }).then(function(response){
 
