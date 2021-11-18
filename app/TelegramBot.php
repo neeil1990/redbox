@@ -96,8 +96,7 @@ class TelegramBot extends Model
 
     public static function prepareBreakdownMessage($project, $chatId)
     {
-        $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
-        $link = preg_replace('/^www\./', '', $link);
+        $link = TelegramBot::removeProtocol($project);
         $uptimePercent = round($project->uptime_percent, 2);
 
         $text = __('Project') . " <code>$project->project_name</code>  " . __('broken') . "
@@ -115,8 +114,7 @@ class TelegramBot extends Model
 
     public static function prepareRecoveryMessage($project, $chatId)
     {
-        $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
-        $link = preg_replace('/^www\./', '', $link);
+        $link = TelegramBot::removeProtocol($project);
         $uptimePercent = round($project->uptime_percent, 2);
 
         $text = __('Project') . " <code>$project->project_name</code>  " . __('repair') . "
@@ -148,5 +146,11 @@ class TelegramBot extends Model
         file_get_contents('https://api.telegram.org/bot'
             . env('TELEGRAM_BOT_TOKEN', '') .
             '/sendMessage?' . http_build_query($data));
+    }
+
+    public static function removeProtocol($project)
+    {
+        $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
+        return preg_replace('/^www\./', '', $link);
     }
 }
