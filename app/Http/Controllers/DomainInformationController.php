@@ -104,7 +104,6 @@ class DomainInformationController extends Controller
      */
     public static function removeProtocol($request)
     {
-        $link = preg_replace('#^https?://#', '', rtrim($request->domain, '/'));
-        return preg_replace('/^www\./', '', $link);
+        return parse_url($request->domain, PHP_URL_HOST);
     }
 }
