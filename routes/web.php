@@ -24,7 +24,6 @@ Route::get('public/behavior/{id}/check', 'BehaviorController@check')->name('beha
 Route::post('public/behavior/verify', 'BehaviorController@verify')->name('behavior.verify');
 
 Route::middleware(['verified'])->group(function () {
-
     Route::get('test', 'TestController@index')->name('test');
 
     Route::get('/', 'HomeController@index')->name('home');
@@ -105,4 +104,12 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
     Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');
+
+    Route::get('domain-information', 'DomainInformationController@index')->name('domain.information');
+    Route::get('add-domain-information-view', 'DomainInformationController@createView')->name('add.domain.information.view');
+    Route::get('delete-domain-information/{id}', 'DomainInformationController@remove')->name('delete.domain.information');
+    Route::post('add-domain-information', 'DomainInformationController@store')->name('add.domain.information');
+    Route::post('edit-domain-information', 'DomainInformationController@edit')->name('edit.domain.information');
+    Route::post('delete-domains-information', 'DomainInformationController@removeDomains')->name('delete.domain-information');
+    Route::get('check-domain-information/{id}', 'DomainInformationController@checkDomain')->name('check.domain.information');
 });

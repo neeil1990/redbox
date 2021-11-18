@@ -203,6 +203,6 @@ label:not(.form-check-label):not(.custom-file-label) {
 
 .count-phrases {
     color: #888;
-    font: 13px/18px "Open Sans",sans-serif;
+    font: 13px/18px "Open Sans", sans-serif;
     padding-top: 6px;
 }

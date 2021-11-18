@@ -20,6 +20,19 @@ class TelegramBot extends Model
         TelegramBot::PrepareRecoveryMessage($project, $chatId);
     }
 
+    public static function prepareDomainInformationMessage($project, $chatId)
+    {
+        $text =
+            'Domain ' . $project->domain
+            . "\n"
+            . $project->domain_information
+            . "\n"
+            . __('Go to the service:')
+            . " <a href='https://lk.redbox.su/domain-information' target='_blank'>https://lk.redbox.su/domain-information</a>";
+
+        TelegramBot::sendMessage($text, $chatId);
+    }
+
     /**
      * @param false $offset
      * @return array
@@ -117,7 +130,6 @@ class TelegramBot extends Model
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
 
         TelegramBot::sendMessage($text, $chatId);
-
     }
 
     /**

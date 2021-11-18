@@ -103,23 +103,17 @@ class DomainMonitoring extends Model
     {
         $oldState = $project->broken;
         $curl = DomainMonitoring::curlInit($project);
-        try {
-            if (isset($curl) && $curl[1]['http_code'] === 200) {
-                if (isset($project->phrase)) {
-                    DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
-                } else {
-                    $project->status = 'Everything all right';
-                    $project->broken = false;
-                }
-                $project->code = 200;
+        if (isset($curl) && $curl[1]['http_code'] === 200) {
+            if (isset($project->phrase)) {
+                DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
             } else {
-                $project->status = 'unexpected response code';
-                $project->code = $curl[1]['http_code'];
-                $project->broken = true;
+                $project->status = 'Everything all right';
+                $project->broken = false;
             }
-        } catch (\Exception $e) {
-            $project->status = 'the domain did not respond';
-            $project->code = 0;
+            $project->code = 200;
+        } else {
+            $project->status = 'unexpected response code';
+            $project->code = $curl[1]['http_code'];
             $project->broken = true;
         }
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
