@@ -39,6 +39,7 @@ class DomainInformationController extends Controller
     {
         $userId = Auth::id();
         $monitoring = new DomainInformation($request->all());
+        $monitoring->domain = DomainInformationController::removeProtocol($request);
         $monitoring->user_id = $userId;
         $monitoring->save();
 
@@ -95,5 +96,15 @@ class DomainInformationController extends Controller
             return response()->json([]);
         }
         return response()->json([], 400);
+    }
+
+    /**
+     * @param $request
+     * @return string|string[]|null
+     */
+    public static function removeProtocol($request)
+    {
+        $link = preg_replace('#^https?://#', '', rtrim($request->domain, '/'));
+        return preg_replace('/^www\./', '', $link);
     }
 }
