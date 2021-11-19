@@ -30,7 +30,7 @@
         </div>
     </div>
     <a href="{{ route('add.domain.information.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
-        {{ __('Add tracking the domain registration period') }}
+        {{ __('Add tracking the registration period') }}
     </a>
     <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
         {{ __('Delete selected projects') }}
