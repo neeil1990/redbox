@@ -42,8 +42,9 @@
         <tr>
             <th></th>
             <th class="col-3">{{ __('Domain') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Check DNS') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Check registration Date') }} <i class="fa fa-sort"></i></th>
+            <th class="col-1">{{ __('Track DNS changes') }} <i class="fa fa-sort"></i></th>
+            <th class="col-1">{{ __('Track the registration period') }} <i class="fa fa-sort"></i></th>
+            <th class="col-2">{{ __('Last check') }} <i class="fa fa-sort"></i></th>
             <th class="col-4">{{ __('Domain information') }} <i class="fa fa-sort"></i></th>
             <th class="col-1"></th>
         </tr>
@@ -79,17 +80,45 @@
                     {!! Form::text('domain', $project->domain ,['class' => 'form-control information', 'rows' => 2, 'data-order' => $project->link]) !!}
                 </td>
                 <td data-order="{{ $project->check_dns }}">
-                    {!! Form::select('check_dns', [
-                    '1' => __('yes'),
-                    '0' => __('no')],
-                     $project->check_dns,
-                     ['class' => 'form-control custom-select rounded-0 information']) !!}
+                    <div class="__helper-link ui_tooltip_w check-dns">
+                        <div
+                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                            <input type="checkbox"
+                                   class="custom-control-input check-dns"
+                                   @if($project->check_dns) checked @endif
+                                   id="customSwitch{{$project->id}}">
+                            <label class="custom-control-label" for="customSwitch{{$project->id}}"></label>
+                        </div>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
+                                {{__('Green - you will receive a newsletter of notifications about the status of this project')}}
+                                <br>
+                                {{__('Red - you will not receive notifications about the status of this project')}}
+                            </span>
+                        </span>
+                    </div>
                 </td>
                 <td data-order="{{ $project->check_registration_date }}">
-                    {!! Form::select('check_registration_date', [
-                        '1' => __('yes'),
-                        '0' => __('no'),
-                    ], $project->check_registration_date, ['class' => 'form-control custom-select rounded-0 information']) !!}
+                    <div class="__helper-link ui_tooltip_w check-registration-date">
+                        <div
+                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                            <input type="checkbox"
+                                   class="custom-control-input check-registration-date"
+                                   @if($project->check_registration_date) checked @endif
+                                   id="customSwitch{{$project->id}}">
+                            <label class="custom-control-label" for="customSwitch{{$project->id}}"></label>
+                        </div>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content" style="width: 250px !important;">
+                                {{__('Green - you will receive a newsletter of notifications about the status of this project')}}
+                                <br>
+                                {{__('Red - you will not receive notifications about the status of this project')}}
+                            </span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    {{ $project->last_check }}
                 </td>
                 @if($project->broken)
                     <td data-order="{{ $project->domain_information }}">
@@ -3717,11 +3746,60 @@
                 });
                 return u
             });
-
         </script>
         <script defer>
             var oldValue = ''
             var oldProjectName = ''
+            $('input.check-dns').click(function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('edit.domain.information') }}",
+                    data: {
+                        id: $(this).parent().parent().parent().parent().attr('id'),
+                        name: 'check_dns',
+                        option: $(this).is(':checked') ? 1 : 0,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        $('.toast-top-right.success-message').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.success-message').hide(300)
+                        }, 4000)
+                    },
+                    error: function () {
+                        $('.toast-top-right.error-message').show()
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message').hide(300)
+                        }, 4000)
+                    }
+                });
+            })
+            $('input.check-registration-date').click(function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('edit.domain.information') }}",
+                    data: {
+                        id: $(this).parent().parent().parent().parent().attr('id'),
+                        name: 'check_registration_date',
+                        option: $(this).is(':checked') ? 1 : 0,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        $('.toast-top-right.success-message').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.success-message').hide(300)
+                        }, 4000)
+                    },
+                    error: function () {
+                        $('.toast-top-right.error-message').show()
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message').hide(300)
+                        }, 4000)
+                    }
+                });
+            })
             $(".information").focus(function () {
                 oldValue = $(this).val()
             })

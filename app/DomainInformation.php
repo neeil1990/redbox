@@ -17,8 +17,6 @@ class DomainInformation extends Model
     public static function checkDomainSock($project)
     {
         $oldState = $project->broken;
-        $dns = '';
-        $registrationDate = '';
         $socket = fsockopen('whois.tcinet.ru', 43);
         $project->last_check = Carbon::now();
         if ($socket) {
@@ -31,26 +29,38 @@ class DomainInformation extends Model
             if (preg_match('/(No entries found for the selected source\(s\).)/', $text, $matches, PREG_OFFSET_CAPTURE)) {
                 $project->domain_information = __("No records were found for the selected source");
                 $project->broken = true;
-                DomainInformation::sendNotification($project, $oldState);
-                return;
+            } else {
+                $dns = DomainInformation::getDNS($text);
+                $registrationDate = DomainInformation::getCreationDate($text);
+                $freeDate = DomainInformation::checkDate($text, $project);
+                $project->domain_information = DomainInformation::prepareStatus($dns, $registrationDate, $freeDate);
             }
-            if ($project->check_dns) {
-                $dns = DomainInformation::prepareDNS($text);
-            }
-            if ($project->check_registration_date) {
-                preg_match('/(created:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-                $registrationDate = __('Domain created') . ' ' . $matches[3][0];
-            }
-            $freeDate = DomainInformation::checkDate($text, $project);
-            $project->domain_information = DomainInformation::prepareStatus($dns, $registrationDate, $freeDate);
-            DomainInformation::sendNotification($project, $oldState);
+        } else {
+            $project->domain_information = __("No records were found for the selected source");
+            $project->broken = true;
         }
+        $project->save();
+        DomainInformation::sendNotification($project, $oldState);
     }
 
-    public static function prepareDNS($text)
+    /**
+     * @param $text
+     * @return string
+     */
+    public static function getCreationDate($text): string
+    {
+        preg_match('/(created:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
+        return __('Domain created') . ' ' . substr($matches[3][0], 0, 10);
+    }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public static function getDNS($text)
     {
         $dns = '';
-        preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(ns.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
         if (empty($matches[0])) {
             $dns = __('not found');
         } else {
@@ -58,14 +68,13 @@ class DomainInformation extends Model
                 $dns .= $item[0];
             }
         }
-
-        return $dns;
+        $dns = str_replace('nserver:       ', '', $dns);
+        return "DNS: \n" . $dns;
     }
 
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
     {
-        $dns = str_replace('nserver:       ', '', $dns);
-        $dns = "DNS:\n" . $dns;
+        $date = new Carbon($freeDate);
         return $dns . "\n"
             . $registrationDate . "\n"
             . __('Registration expires')
@@ -73,7 +82,7 @@ class DomainInformation extends Model
             . ' '
             . __('through')
             . ' '
-            . $freeDate->diffInDays(Carbon::now())
+            . $date->diffInDays(Carbon::now())
             . ' '
             . __('days');
     }
@@ -81,9 +90,9 @@ class DomainInformation extends Model
     /**
      * @param $text
      * @param $project
-     * @return Carbon
+     * @return string
      */
-    public static function checkDate($text, $project): Carbon
+    public static function checkDate($text, $project): string
     {
         preg_match('/(free-date:)(\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
         $freeDate = new Carbon($matches[3][0]);
@@ -93,8 +102,7 @@ class DomainInformation extends Model
         } else {
             $project->broken = false;
         }
-
-        return $freeDate;
+        return substr($matches[3][0], 0, 10);
     }
 
     /**
@@ -121,5 +129,19 @@ class DomainInformation extends Model
         return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check
             && preg_match("/^.{1,253}$/", $domain) //overall length check
             && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain)); //length of each label
+    }
+
+
+    /**
+     * @param $link
+     * @return string
+     */
+    public static function getDomain($link): string
+    {
+        $domain = preg_replace("#^[^:/.]*[:/]+#i", '', $link);
+        $domain = preg_replace('/www./', '', $domain);
+        $domain = explode(':', $domain);
+        $domain = explode('/', $domain[0]);
+        return $domain[0];
     }
 }

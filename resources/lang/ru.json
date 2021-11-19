@@ -375,6 +375,8 @@
   "DNS not found": "DNS не найден",
   "not found": "не найден",
   "Domain created": "Домен создан",
+  "Track DNS changes": "Отслеживать изменения DNS",
+  "Track the registration period": "Отслеживать регистрационный срок",
 
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",

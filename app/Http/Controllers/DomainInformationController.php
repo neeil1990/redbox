@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DomainInformationController extends Controller
 {
@@ -47,8 +48,10 @@ class DomainInformationController extends Controller
                 return Redirect::back();
             }
         } else {
-            if (DomainInformation::isValidDomain($request->domain)) {
+            $domain = DomainInformation::getDomain($request->domain);
+            if (DomainInformation::isValidDomain($domain)) {
                 $monitoring = new DomainInformation($request->all());
+                $monitoring->domain = $domain;
                 $monitoring->user_id = $userId;
                 $monitoring->save();
                 flash()->overlay(__('Domain added successfully'), ' ')->success();
@@ -70,14 +73,18 @@ class DomainInformationController extends Controller
     {
         $newRecord = [];
         $domains = explode("\r\n", $domains);
-        foreach ($domains as $domain) {
-            $domain = explode(':', $domain);
-            if (count($domain) == 3 && DomainInformation::isValidDomain($domain[0])) {
+        $domains = array_diff($domains, array(''));
+        foreach ($domains as $item) {
+            $domain = DomainInformation::getDomain($item);
+            $obj = explode(':', $item);
+            $counter = count($obj);
+            $checkRegistrationDate = explode('/', $obj[$counter - 1]);
+            if (count($obj) == 4 || count($obj) == 3 && DomainInformation::isValidDomain($domain)) {
                 $newRecord[] = [
                     'user_id' => $userId,
-                    'domain' => $domain[0],
-                    'check_dns' => (boolean)$domain[1],
-                    'check_registration_date' => (boolean)$domain[2],
+                    'domain' => $domain,
+                    'check_dns' => (boolean)$obj[$counter - 2],
+                    'check_registration_date' => (boolean)$checkRegistrationDate[0],
                 ];
             }
         }
@@ -109,7 +116,6 @@ class DomainInformationController extends Controller
     {
         $project = DomainInformation::findOrFail($id);
         DomainInformation::checkDomainSock($project);
-        $project->save();
 
         return Redirect::back();
     }
@@ -123,9 +129,8 @@ class DomainInformationController extends Controller
         $projects = DomainInformation::all();
         foreach ($projects as $project) {
             DomainInformation::checkDomainSock($project);
-            $project->save();
         }
-        Log::debug('end check information domains', [ ]);
+        Log::debug('end check information domains', []);
     }
 
     /**
@@ -140,11 +145,8 @@ class DomainInformationController extends Controller
                     $request->name => $request->option,
                 ]);
                 return response()->json([]);
-            } else {
-                return response()->json([], 400);
             }
-        }
-        if (strlen($request->option) > 0) {
+        } elseif (strlen($request->option) > 0) {
             DomainInformation::where('id', $request->id)->update([
                 $request->name => $request->option,
             ]);
