@@ -371,6 +371,7 @@
   "Tracking the domain registration period": "Отслеживание срока регистрации доменов",
   "Add tracking the domain registration period": "Добавить отслеживание периода регистрации домена",
   "Add tracking the registration period": "Добавить отслеживание периода регистрации",
+  "The domain must not contain the protocol and the characters after the slash": "Домен не должен содержать протокол и символы после слеша",
 
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",

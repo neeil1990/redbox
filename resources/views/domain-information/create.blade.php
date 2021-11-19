@@ -48,6 +48,7 @@
                         1 - {{ __('Show DNS information') }}<br>
                         0 - {{ __('Show information about the registration date') }}<br><br>
                         {{ __('Invalid domains (domain.com/my-page, exmpl.com/check/time.php) will not be saved') }} <br>
+                        {{ __('The domain must not contain the protocol and the characters after the slash') }} <br>
                         {{ __('Separate the lines using Shift + Enter') }}
                     </span>
                 </span>
