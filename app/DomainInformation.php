@@ -35,24 +35,31 @@ class DomainInformation extends Model
                 return;
             }
             if ($project->check_dns) {
-                preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(ns.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-                if (empty($matches[0])) {
-                    $dns = __('DNS not found');
-                } else {
-                    foreach ($matches[0] as $item) {
-                        $dns .= $item[0];
-                    }
-                }
-
+                $dns = DomainInformation::prepareDNS($text);
             }
             if ($project->check_registration_date) {
                 preg_match('/(created:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-                $registrationDate = $matches[0][0];
+                $registrationDate = __('Domain created') . ' ' . $matches[3][0];
             }
             $freeDate = DomainInformation::checkDate($text, $project);
             $project->domain_information = DomainInformation::prepareStatus($dns, $registrationDate, $freeDate);
             DomainInformation::sendNotification($project, $oldState);
         }
+    }
+
+    public static function prepareDNS($text)
+    {
+        $dns = '';
+        preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(ns.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
+        if (empty($matches[0])) {
+            $dns = __('not found');
+        } else {
+            foreach ($matches[0] as $item) {
+                $dns .= $item[0];
+            }
+        }
+
+        return $dns;
     }
 
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
