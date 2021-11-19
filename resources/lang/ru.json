@@ -368,6 +368,8 @@
   "No records were found for the selected source": "Для выбранного источника не найдено записей",
   "Domain information": "Информация о домене",
   "Delete a domain": "Удалить домен",
+  "Tracking the domain registration period": "Отслеживание срока регистрации доменов",
+  "Add tracking the domain registration period": "Add tracking the domain registration period",
 
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",

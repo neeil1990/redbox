@@ -94,7 +94,7 @@
         <li class="nav-item">
             <a href="{{ route('domain.information') }}" class="nav-link">
                 <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Domains information') }}</p>
+                <p>{{ __('Tracking the domain registration period') }}</p>
             </a>
         </li>
         <li class="nav-item">

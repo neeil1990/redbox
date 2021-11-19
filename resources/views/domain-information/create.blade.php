@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Add a monitored domain')])
+@component('component.card', ['title' => __('Add tracking the domain registration period')])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
