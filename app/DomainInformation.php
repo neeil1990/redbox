@@ -57,8 +57,10 @@ class DomainInformation extends Model
 
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
     {
+        $dns = str_replace('nserver:       ', '', $dns);
+        $dns = "DNS:\n" . $dns;
         return $dns . "\n"
-             . $registrationDate . "\n"
+            . $registrationDate . "\n"
             . __('Registration expires')
             . $freeDate
             . ' '
