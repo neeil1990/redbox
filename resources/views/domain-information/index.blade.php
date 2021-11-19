@@ -21,7 +21,7 @@
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
         <div class="toast toast-error" aria-live="assertive">
             <div
-                class="toast-message error-msg">{{ __('The domain must not contain the protocol and the characters after the slash') }}</div>
+                class="toast-message error-msg">{{ __('The domain must not contain the protocol, slash, and characters after the slash') }}</div>
         </div>
     </div>
     <div id="toast-container" class="toast-top-right delete-error-message" style="display:none;">
