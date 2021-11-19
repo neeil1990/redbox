@@ -37,7 +37,7 @@ class DomainInformation extends Model
             if ($project->check_dns) {
                 preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(ns.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
                 if (empty($matches[0])) {
-                    $dns = __('DNS not found') . "\n";
+                    $dns = __('DNS not found');
                 } else {
                     foreach ($matches[0] as $item) {
                         $dns .= $item[0];
@@ -57,7 +57,8 @@ class DomainInformation extends Model
 
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
     {
-        return $dns . $registrationDate . "\n"
+        return $dns . "\n"
+             . $registrationDate . "\n"
             . __('Registration expires')
             . $freeDate
             . ' '
