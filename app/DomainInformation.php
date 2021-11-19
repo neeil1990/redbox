@@ -36,8 +36,8 @@ class DomainInformation extends Model
             }
             if ($project->check_dns) {
                 preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(ns.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-                if(empty($matches[0])){
-                    $dns = __('DNS not found');
+                if (empty($matches[0])) {
+                    $dns = __('DNS not found') . "\n";
                 } else {
                     foreach ($matches[0] as $item) {
                         $dns .= $item[0];
