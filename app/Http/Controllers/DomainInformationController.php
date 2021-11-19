@@ -109,6 +109,7 @@ class DomainInformationController extends Controller
     {
         $project = DomainInformation::findOrFail($id);
         DomainInformation::checkDomainSock($project);
+        $project->save();
 
         return Redirect::back();
     }
@@ -122,6 +123,7 @@ class DomainInformationController extends Controller
         $projects = DomainInformation::all();
         foreach ($projects as $project) {
             DomainInformation::checkDomainSock($project);
+            $project->save();
         }
         Log::debug('end check information domains', [ ]);
     }

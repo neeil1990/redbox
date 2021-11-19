@@ -49,7 +49,6 @@ class DomainInformation extends Model
             $project->domain_information = DomainInformation::prepareStatus($dns, $registrationDate, $freeDate);
             DomainInformation::sendNotification($project, $oldState);
         }
-        $project->save();
     }
 
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
