@@ -4,14 +4,12 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\VarDumper\VarDumper;
 
 class DomainInformation extends Model
 {
     protected $table = 'domain_information';
 
     protected $guarded = [];
-
 
     /**
      * @param $project
@@ -31,7 +29,7 @@ class DomainInformation extends Model
             }
             fclose($socket);
             if (preg_match('/(No entries found for the selected source\(s\).)/', $text, $matches, PREG_OFFSET_CAPTURE)) {
-                $project->domain_information = "No records were found for the selected source or \nthe source is hidden from the database";
+                $project->domain_information = __("No records were found for the selected source");
                 $project->broken = true;
                 DomainInformation::sendNotification($project, $oldState);
                 return;
@@ -51,16 +49,20 @@ class DomainInformation extends Model
             $project->domain_information = DomainInformation::prepareStatus($dns, $registrationDate, $freeDate);
             DomainInformation::sendNotification($project, $oldState);
         }
+        $project->save();
     }
 
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
     {
-        return $dns
-            . $registrationDate . "\n"
-            . 'Регистрация истекает '
+        return $dns . $registrationDate . "\n"
+            . __('Registration expires')
             . $freeDate
-            . ' через '
-            . $freeDate->diffInDays(Carbon::now()) . ' дней';
+            . ' '
+            . __('through')
+            . ' '
+            . $freeDate->diffInDays(Carbon::now())
+            . ' '
+            . __('days');
     }
 
     /**
@@ -89,10 +91,22 @@ class DomainInformation extends Model
     public static function sendNotification($project, $oldState)
     {
         $user = User::find($project->user_id);
-        if ($user->telegram_bot_active) {
-            if ($project->broken != $oldState) {
+        if ($project->broken != $oldState) {
+            if ($user->telegram_bot_active) {
                 TelegramBot::prepareDomainInformationMessage($project, $user->chat_id);
             }
+            $user->DomainInformationNotification($project);
         }
+    }
+
+    /**
+     * @param $domain
+     * @return bool
+     */
+    public static function isValidDomain($domain): bool
+    {
+        return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check
+            && preg_match("/^.{1,253}$/", $domain) //overall length check
+            && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain)); //length of each label
     }
 }

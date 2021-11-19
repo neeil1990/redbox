@@ -20,7 +20,8 @@
     </div>
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
         <div class="toast toast-error" aria-live="assertive">
-            <div class="toast-message error-msg">{{ __('The field must contain more than 0 characters') }}</div>
+            <div
+                class="toast-message error-msg">{{ __('Домен не должен содержать протокол, и символы после слеша') }}</div>
         </div>
     </div>
     <div id="toast-container" class="toast-top-right delete-error-message" style="display:none;">
@@ -41,9 +42,9 @@
         <tr>
             <th></th>
             <th class="col-3">{{ __('Domain') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Check DNS') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Check Registration Date') }} <i class="fa fa-sort"></i></th>
-            <th class="col-4">{{ __('domain_information') }} <i class="fa fa-sort"></i></th>
+            <th class="col-1">{{ __('Check DNS') }} <i class="fa fa-sort"></i></th>
+            <th class="col-2">{{ __('Check registration Date') }} <i class="fa fa-sort"></i></th>
+            <th class="col-4">{{ __('Domain information') }} <i class="fa fa-sort"></i></th>
             <th class="col-1"></th>
         </tr>
         </thead>
@@ -58,7 +59,7 @@
                         </div>
                         <div class="modal-footer">
                             <a href="{{ route('delete.domain.information', $project->id) }}" class="btn btn-secondary">
-                                {{__('Delete a project')}}
+                                {{__('Delete a domain')}}
                             </a>
                             <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Back')}}</button>
                         </div>
@@ -74,7 +75,7 @@
                         </label>
                     </div>
                 </td>
-                <td>
+                <td data-order="{{ $project->domain }}">
                     {!! Form::text('domain', $project->domain ,['class' => 'form-control information', 'rows' => 2, 'data-order' => $project->link]) !!}
                 </td>
                 <td data-order="{{ $project->check_dns }}">
@@ -117,7 +118,7 @@
                         <i class="fa fa-trash"></i>
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Delete a project')}}
+                                {{__('Delete a domain')}}
                             </span>
                         </span>
                     </button>

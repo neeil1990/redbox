@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DomainInformation;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,13 +39,54 @@ class DomainInformationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $userId = Auth::id();
-        $monitoring = new DomainInformation($request->all());
-        $monitoring->domain = DomainInformationController::removeProtocol($request);
-        $monitoring->user_id = $userId;
-        $monitoring->save();
+        if (isset($request->domains)) {
+            if (DomainInformationController::multipleCreation($request->domains, $userId)) {
+                flash()->overlay(__('Domains added successfully'), ' ')->success();
+            } else {
+                flash()->overlay(__('All domains are not valid'), ' ')->error();
+                return Redirect::back();
+            }
+        } else {
+            if (DomainInformation::isValidDomain($request->domain)) {
+                $monitoring = new DomainInformation($request->all());
+                $monitoring->user_id = $userId;
+                $monitoring->save();
+                flash()->overlay(__('Domain added successfully'), ' ')->success();
+            } else {
+                flash()->overlay(__('There is no such domain'), ' ')->error();
+                return Redirect::back();
+            }
+        }
 
-        flash()->overlay(__('Monitoring was successfully created'), ' ')->success();
         return Redirect::route('domain.information');
+    }
+
+    /**
+     * @param $domains
+     * @param $userId
+     * @return bool|null
+     */
+    public static function multipleCreation($domains, $userId): ?bool
+    {
+        $newRecord = [];
+        $domains = explode("\r\n", $domains);
+        foreach ($domains as $domain) {
+            $domain = explode(':', $domain);
+            if (count($domain) == 3 && DomainInformation::isValidDomain($domain[0])) {
+                $newRecord[] = [
+                    'user_id' => $userId,
+                    'domain' => $domain[0],
+                    'check_dns' => (boolean)$domain[1],
+                    'check_registration_date' => (boolean)$domain[2],
+                ];
+            }
+        }
+        if (count($newRecord) >= 1) {
+            DomainInformation::insert($newRecord);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -54,7 +96,7 @@ class DomainInformationController extends Controller
     public function remove($id): RedirectResponse
     {
         DomainInformation::destroy($id);
-        flash()->overlay(__('Monitoring was successfully deleted'), ' ')->success();
+        flash()->overlay(__('Domain successfully deleted'), ' ')->success();
 
         return Redirect::route('domain.information');
     }
@@ -67,8 +109,21 @@ class DomainInformationController extends Controller
     {
         $project = DomainInformation::findOrFail($id);
         DomainInformation::checkDomainSock($project);
-        $project->save();
+
         return Redirect::back();
+    }
+
+    /**
+     * method for cron
+     */
+    public function checkDomains()
+    {
+        Log::debug('start check information domains', []);
+        $projects = DomainInformation::all();
+        foreach ($projects as $project) {
+            DomainInformation::checkDomainSock($project);
+        }
+        Log::debug('end check information domains', [ ]);
     }
 
     /**
@@ -77,6 +132,16 @@ class DomainInformationController extends Controller
      */
     public function edit(Request $request): JsonResponse
     {
+        if ($request->name === 'domain' && strlen($request->option) > 0) {
+            if (DomainInformation::isValidDomain($request->option)) {
+                DomainInformation::where('id', $request->id)->update([
+                    $request->name => $request->option,
+                ]);
+                return response()->json([]);
+            } else {
+                return response()->json([], 400);
+            }
+        }
         if (strlen($request->option) > 0) {
             DomainInformation::where('id', $request->id)->update([
                 $request->name => $request->option,
@@ -98,12 +163,4 @@ class DomainInformationController extends Controller
         return response()->json([], 400);
     }
 
-    /**
-     * @param $request
-     * @return string|string[]|null
-     */
-    public static function removeProtocol($request)
-    {
-        return parse_url($request->domain, PHP_URL_HOST);
-    }
 }

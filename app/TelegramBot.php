@@ -23,7 +23,8 @@ class TelegramBot extends Model
     public static function prepareDomainInformationMessage($project, $chatId)
     {
         $text =
-            'Domain ' . $project->domain
+            __('Domain') .
+            ' ' . $project->domain
             . "\n"
             . $project->domain_information
             . "\n"
