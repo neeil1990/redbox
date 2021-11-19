@@ -372,6 +372,7 @@
   "Add tracking the domain registration period": "Добавить отслеживание периода регистрации домена",
   "Add tracking the registration period": "Добавить отслеживание периода регистрации",
   "The domain must not contain the protocol, slash, and characters after the slash": "Домен не должен содержать протокол, слеш и символы после слеша",
+  "DNS not found": "DNS не найден",
 
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",

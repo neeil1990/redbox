@@ -36,10 +36,14 @@ class DomainInformation extends Model
             }
             if ($project->check_dns) {
                 preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(ns.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-                $dns = '';
-                foreach ($matches[0] as $item) {
-                    $dns .= $item[0];
+                if(empty($matches[0])){
+                    $dns = __('DNS not found');
+                } else {
+                    foreach ($matches[0] as $item) {
+                        $dns .= $item[0];
+                    }
                 }
+
             }
             if ($project->check_registration_date) {
                 preg_match('/(created:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
