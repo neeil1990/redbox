@@ -143,7 +143,7 @@ class DomainInformation extends Model
         if ($project->check_registration_date && isset($freeDate)) {
             $freeDate = new Carbon($freeDate);
             $diffInDays = $freeDate->diffInDays(Carbon::now());
-            if ($diffInDays < 500) {
+            if ($diffInDays < 10) {
                 if ($user->telegram_bot_active) {
                     TelegramBot::sendNotificationAboutExpirationRegistrationPeriod($project, $user->chat_id, $diffInDays);
                 }

@@ -159,13 +159,11 @@ class TelegramBot extends Model
     {
         $text = __('Domain') . ' ' . $project->domain
             . "\n"
-            . 'DNS CHANGED'
+            . __('DNS CHANGED')
             . "\n"
-            . "old "
-            . $dns
+            . __('old') . " " . $dns
             . "\n"
-            . "new "
-            . $project->dns
+            . __('new') . " " . $project->dns
             . "\n"
             . "\n"
             . __('Go to the service:')
@@ -179,9 +177,9 @@ class TelegramBot extends Model
     {
         $text = __('Domain') . ' ' . $project->domain
             . "\n"
-            . 'notification of the expiration of the registration period'
+            . __('Notification of the expiration of the registration period')
             . "\n"
-            . "Registration ends after $diffInDays days"
+            . __('Registration ends after') . " $diffInDays " . __('days')
             . "\n"
             . "\n"
             . __('Go to the service:')

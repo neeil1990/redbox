@@ -377,6 +377,11 @@
   "Domain created": "Домен создан",
   "Track DNS changes": "Отслеживать изменения DNS",
   "Track the registration period": "Отслеживать регистрационный срок",
+  "DNS CHANGED": "DNS ИЗМЕНЕН",
+  "old": "старый",
+  "new": "новый",
+  "Notification of the expiration of the registration period": "Уведомление об истечении срока регистрации",
+  "Registration ends after": "Registration ends after",
 
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
