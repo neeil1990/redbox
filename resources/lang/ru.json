@@ -371,7 +371,6 @@
   "Tracking the domain registration period": "Отслеживание срока регистрации доменов",
   "Add tracking the domain registration period": "Добавить отслеживание периода регистрации домена",
   "Add tracking the registration period": "Добавить отслеживание периода регистрации",
-  "The domain must not contain the protocol, slash, and characters after the slash": "Домен не должен содержать протокол, слеш и символы после слеша",
   "DNS not found": "DNS не найден",
   "not found": "не найден",
   "Domain created": "Домен создан",
@@ -382,7 +381,10 @@
   "new": "новый",
   "Notification of the expiration of the registration period": "Уведомление об истечении срока регистрации",
   "Registration ends after": "Registration ends after",
-
+  "Green - you will receive notifications when the domain registration expiration time is less than 10 days.": "Зелёный - вы будете получать уведомления, когда время истечения регистрации домена будет менее 10 дней.",
+  "Red - you will not receive notifications": "Красный - вы не будете получать уведомлений",
+  "Green - you will receive a notification about the DNS status change": "Зелёный - вы будете получать уведомление об изменении состояния DNS",
+  "The field cannot be empty": "Поле не может быть пустым",
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
   "Step 1. Landing page": "Шаг 1. Целевая страница",

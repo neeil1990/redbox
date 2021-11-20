@@ -140,11 +140,14 @@ class DomainInformationController extends Controller
     public function edit(Request $request): JsonResponse
     {
         if ($request->name === 'domain' && strlen($request->option) > 0) {
-            if (DomainInformation::isValidDomain($request->option)) {
+            $domain = DomainInformation::getDomain($request->option);
+            if (DomainInformation::isValidDomain($domain)) {
                 DomainInformation::where('id', $request->id)->update([
-                    $request->name => $request->option,
+                    $request->name => $domain,
                 ]);
-                return response()->json([]);
+                return response()->json([
+                    'message' => $domain
+                ]);
             }
         } elseif (strlen($request->option) > 0) {
             DomainInformation::where('id', $request->id)->update([

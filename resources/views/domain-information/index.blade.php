@@ -21,7 +21,7 @@
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
         <div class="toast toast-error" aria-live="assertive">
             <div
-                class="toast-message error-msg">{{ __('The domain must not contain the protocol, slash, and characters after the slash') }}</div>
+                class="toast-message error-msg">{{ __('The field cannot be empty') }}</div>
         </div>
     </div>
     <div id="toast-container" class="toast-top-right delete-error-message" style="display:none;">
@@ -91,9 +91,9 @@
                         </div>
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Green - you will receive a newsletter of notifications about the status of this project')}}
+                                {{__('Green - you will receive a notification about the DNS status change')}}
                                 <br>
-                                {{__('Red - you will not receive notifications about the status of this project')}}
+                                {{__('Red - you will not receive notifications')}}
                             </span>
                         </span>
                     </div>
@@ -110,9 +110,9 @@
                         </div>
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Green - you will receive a newsletter of notifications about the status of this project')}}
+                                {{__('Green - you will receive notifications when the domain registration expiration time is less than 10 days.')}}
                                 <br>
-                                {{__('Red - you will not receive notifications about the status of this project')}}
+                                {{__('Red - you will not receive notifications')}}
                             </span>
                         </span>
                     </div>
@@ -3805,6 +3805,7 @@
             })
             $(".information").blur(function () {
                 if (oldValue !== $(this).val()) {
+                    var obj = $(this)
                     $.ajax({
                         type: "POST",
                         dataType: "json",
@@ -3815,7 +3816,8 @@
                             option: $(this).val(),
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
-                        success: function () {
+                        success: function (response) {
+                            obj.val(response['message'])
                             $('.toast-top-right.success-message').show(300)
                             setTimeout(() => {
                                 $('.toast-top-right.success-message').hide(300)
