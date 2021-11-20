@@ -86,8 +86,8 @@
                             <input type="checkbox"
                                    class="custom-control-input check-dns"
                                    @if($project->check_dns) checked @endif
-                                   id="customSwitch{{$project->id}}">
-                            <label class="custom-control-label" for="customSwitch{{$project->id}}"></label>
+                                   id="customSwitchDNS{{$project->id}}">
+                            <label class="custom-control-label" for="customSwitchDNS{{$project->id}}"></label>
                         </div>
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
@@ -105,8 +105,8 @@
                             <input type="checkbox"
                                    class="custom-control-input check-registration-date"
                                    @if($project->check_registration_date) checked @endif
-                                   id="customSwitch{{$project->id}}">
-                            <label class="custom-control-label" for="customSwitch{{$project->id}}"></label>
+                                   id="customSwitchDate{{$project->id}}">
+                            <label class="custom-control-label" for="customSwitchDate{{$project->id}}"></label>
                         </div>
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">

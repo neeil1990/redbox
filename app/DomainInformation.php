@@ -4,6 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DomainInformation extends Model
 {
@@ -17,6 +18,7 @@ class DomainInformation extends Model
     public static function checkDomainSock($project)
     {
         $oldState = $project->broken;
+        $oldDNS = $project->dns;
         $socket = fsockopen('whois.tcinet.ru', 43);
         $project->last_check = Carbon::now();
         if ($socket) {
@@ -26,21 +28,33 @@ class DomainInformation extends Model
                 $text .= fgets($socket, 128);
             }
             fclose($socket);
-            if (preg_match('/(No entries found for the selected source\(s\).)/', $text, $matches, PREG_OFFSET_CAPTURE)) {
+            if (self::isNoEntries($text)) {
                 $project->domain_information = __("No records were found for the selected source");
                 $project->broken = true;
+                DomainInformation::sendNotifications($project, $oldState);
             } else {
-                $dns = DomainInformation::getDNS($text);
+                $project->dns = DomainInformation::getDNS($text);
                 $registrationDate = DomainInformation::getCreationDate($text);
                 $freeDate = DomainInformation::checkDate($text, $project);
-                $project->domain_information = DomainInformation::prepareStatus($dns, $registrationDate, $freeDate);
+                $project->domain_information = DomainInformation::prepareStatus($project->dns, $registrationDate, $freeDate);
+                DomainInformation::sendNotifications($project, $oldState, $oldDNS, $freeDate);
             }
         } else {
             $project->domain_information = __("No records were found for the selected source");
             $project->broken = true;
+            DomainInformation::sendNotifications($project, $oldState);
         }
         $project->save();
-        DomainInformation::sendNotification($project, $oldState);
+    }
+
+    /**
+     * @param $text
+     * @return bool
+     */
+    public static function isNoEntries($text): bool
+    {
+        return preg_match('/(No entries found for the selected source\(s\).)/',
+            $text, $matches, PREG_OFFSET_CAPTURE);
     }
 
     /**
@@ -57,7 +71,7 @@ class DomainInformation extends Model
      * @param $text
      * @return string
      */
-    public static function getDNS($text)
+    public static function getDNS($text): string
     {
         $dns = '';
         preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
@@ -108,15 +122,33 @@ class DomainInformation extends Model
     /**
      * @param $project
      * @param $oldState
+     * @param $oldDNS
+     * @param $freeDate
      */
-    public static function sendNotification($project, $oldState)
+    public static function sendNotifications($project, $oldState, $oldDNS = null, $freeDate = null)
     {
         $user = User::find($project->user_id);
         if ($project->broken != $oldState) {
             if ($user->telegram_bot_active) {
-                TelegramBot::prepareDomainInformationMessage($project, $user->chat_id);
+                TelegramBot::sendNotificationAboutChangeStateProject($project, $user->chat_id);
             }
             $user->DomainInformationNotification($project);
+        }
+        if ($project->check_dns && $project->dns !== $oldDNS && isset($oldDNS)) {
+            if ($user->telegram_bot_active) {
+                TelegramBot::sendNotificationAboutChangeDNS($project, $user->chat_id, $oldDNS);
+            }
+            $user->sendNotificationAboutChangeDNS($project);
+        }
+        if ($project->check_registration_date && isset($freeDate)) {
+            $freeDate = new Carbon($freeDate);
+            $diffInDays = $freeDate->diffInDays(Carbon::now());
+            if ($diffInDays < 98) {
+                if ($user->telegram_bot_active) {
+                    TelegramBot::sendNotificationAboutExpirationRegistrationPeriod($project, $user->chat_id, $diffInDays);
+                }
+                $user->sendNotificationAboutExpirationRegistrationPeriod($project, $diffInDays);
+            }
         }
     }
 
@@ -124,7 +156,8 @@ class DomainInformation extends Model
      * @param $domain
      * @return bool
      */
-    public static function isValidDomain($domain): bool
+    public
+    static function isValidDomain($domain): bool
     {
         return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check
             && preg_match("/^.{1,253}$/", $domain) //overall length check
@@ -136,7 +169,8 @@ class DomainInformation extends Model
      * @param $link
      * @return string
      */
-    public static function getDomain($link): string
+    public
+    static function getDomain($link): string
     {
         $domain = preg_replace("#^[^:/.]*[:/]+#i", '', $link);
         $domain = preg_replace('/www./', '', $domain);

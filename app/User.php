@@ -8,6 +8,8 @@ use App\Notifications\DomainInformationNotification;
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RegisterVerifyEmail;
 use App\Notifications\RepairDomenNotification;
+use App\Notifications\sendNotificationAboutChangeDNS;
+use App\Notifications\sendNotificationAboutExpirationRegistrationPeriod;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -98,9 +100,29 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new RepairDomenNotification($project));
     }
 
+    /**
+     * @param $project
+     */
     public function DomainInformationNotification($project)
     {
         $this->notify(new DomainInformationNotification($project));
+    }
+
+    /**
+     * @param $project
+     */
+    public function sendNotificationAboutChangeDNS($project)
+    {
+        $this->notify(new sendNotificationAboutChangeDNS($project));
+    }
+
+    /**
+     * @param $project
+     * @param $diffInDays
+     */
+    public function sendNotificationAboutExpirationRegistrationPeriod($project, $diffInDays)
+    {
+        $this->notify(new sendNotificationAboutExpirationRegistrationPeriod($project, $diffInDays));
     }
 
     /**

@@ -20,7 +20,7 @@ class TelegramBot extends Model
         TelegramBot::PrepareRecoveryMessage($project, $chatId);
     }
 
-    public static function prepareDomainInformationMessage($project, $chatId)
+    public static function sendNotificationAboutChangeStateProject($project, $chatId)
     {
         $text =
             __('Domain') .
@@ -153,5 +153,40 @@ class TelegramBot extends Model
     {
         $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
         return preg_replace('/^www\./', '', $link);
+    }
+
+    public static function sendNotificationAboutChangeDNS($project, $chatId, $dns)
+    {
+        $text = __('Domain') . ' ' . $project->domain
+            . "\n"
+            . 'DNS CHANGED'
+            . "\n"
+            . "old "
+            . $dns
+            . "\n"
+            . "new "
+            . $project->dns
+            . "\n"
+            . "\n"
+            . __('Go to the service:')
+            . " <a href='https://lk.redbox.su/domain-information' target='_blank'>https://lk.redbox.su/domain-information</a>";
+
+        TelegramBot::sendMessage($text, $chatId);
+
+    }
+
+    public static function sendNotificationAboutExpirationRegistrationPeriod($project, $chatId, $diffInDays)
+    {
+        $text = __('Domain') . ' ' . $project->domain
+            . "\n"
+            . 'notification of the expiration of the registration period'
+            . "\n"
+            . "Registration ends after $diffInDays days"
+            . "\n"
+            . "\n"
+            . __('Go to the service:')
+            . " <a href='https://lk.redbox.su/domain-information' target='_blank'>https://lk.redbox.su/domain-information</a>";
+
+        TelegramBot::sendMessage($text, $chatId);
     }
 }
