@@ -44,45 +44,6 @@ class DomainInformation extends Model
         $project->save();
     }
 
-    /**
-     * @param $text
-     * @return bool
-     */
-    public static function isNoEntries($text): bool
-    {
-        return preg_match('/(No entries found for the selected source\(s\).)/',
-            $text, $matches, PREG_OFFSET_CAPTURE);
-    }
-
-    /**
-     * @param $text
-     * @return string
-     */
-    public static function getCreationDate($text): string
-    {
-        preg_match('/(created:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-        return __('Domain created') . ' ' . substr($matches[3][0], 0, 10);
-    }
-
-    /**
-     * @param $text
-     * @return string
-     */
-    public static function getDNS($text): string
-    {
-        $dns = '';
-        preg_match_all('/(nserver:)(\s\s\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-        if (empty($matches[0])) {
-            $dns = __('not found');
-        } else {
-            foreach ($matches[0] as $item) {
-                $dns .= $item[0];
-            }
-        }
-        $dns = str_replace('nserver:       ', '', $dns);
-        return "DNS: \n" . $dns;
-    }
-
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
     {
         $date = new Carbon($freeDate);
@@ -96,24 +57,6 @@ class DomainInformation extends Model
             . $date->diffInDays(Carbon::now())
             . ' '
             . __('days');
-    }
-
-    /**
-     * @param $text
-     * @param $project
-     * @return string
-     */
-    public static function checkDate($text, $project): string
-    {
-        preg_match('/(free-date:)(\s\s\s\s\s)(.*)(\n)/', $text, $matches, PREG_OFFSET_CAPTURE);
-        $freeDate = new Carbon($matches[3][0]);
-        $countDays = $freeDate->diffInDays(Carbon::now());
-        if ($countDays <= 10) {
-            $project->broken = true;
-        } else {
-            $project->broken = false;
-        }
-        return substr($matches[3][0], 0, 10);
     }
 
     /**
@@ -161,7 +104,6 @@ class DomainInformation extends Model
             && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain)); //length of each label
     }
 
-
     /**
      * @param $link
      * @return string
@@ -175,4 +117,5 @@ class DomainInformation extends Model
         $domain = explode('/', $domain[0]);
         return $domain[0];
     }
+
 }
