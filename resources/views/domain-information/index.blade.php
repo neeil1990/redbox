@@ -3860,6 +3860,9 @@
                             $(this).remove();
                         })
                         $('#count-projects').text($('#count-projects').text() - iterator)
+                        if($('#count-projects').text()){
+                            window.location.replace('https://lk.redbox.su/add-domain-information-view');
+                        }
                         $('.toast-top-right.delete-success-message').show(300)
                         setTimeout(() => {
                             $('.toast-top-right.delete-success-message').hide(300)
