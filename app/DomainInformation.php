@@ -4,7 +4,10 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\VarDumper\VarDumper;
+use Iodev\Whois\Exceptions\ConnectionException;
+use Iodev\Whois\Exceptions\ServerMismatchException;
+use Iodev\Whois\Exceptions\WhoisException;
+use Iodev\Whois\Factory;
 
 class DomainInformation extends Model
 {
@@ -14,34 +17,28 @@ class DomainInformation extends Model
 
     /**
      * @param $project
+     * @throws ConnectionException
+     * @throws ServerMismatchException
+     * @throws WhoisException
      */
     public static function checkDomainSock($project)
     {
         $oldState = $project->broken;
         $oldDNS = $project->dns;
-        $socket = fsockopen('whois.tcinet.ru', 43);
+        $whois = Factory::get()->createWhois();
         $project->last_check = Carbon::now();
-        if ($socket) {
-            fputs($socket, $project->domain . PHP_EOL);
-            $text = '';
-            while (!feof($socket)) {
-                $text .= fgets($socket, 128);
-            }
-            fclose($socket);
-            if (self::isNoEntries($text)) {
-                $project->domain_information = __("No records were found for the selected source");
-                $project->broken = true;
-                DomainInformation::sendNotifications($project, $oldState);
-            } else {
-                $project->dns = DomainInformation::getDNS($text);
-                $registrationDate = DomainInformation::getCreationDate($text);
-                $freeDate = DomainInformation::checkDate($text, $project);
-                $project->domain_information = DomainInformation::prepareStatus($project->dns, $registrationDate, $freeDate);
-                DomainInformation::sendNotifications($project, $oldState, $oldDNS, $freeDate);
-            }
+
+        $info = $whois->loadDomainInfo($project->domain);
+        if (isset($info)) {
+            $project->broken = false;
+            $project->dns = "DNS:\n" . implode("\n", $info->nameServers);
+            $registrationDate = 'Дата регистрации ' . date("Y-m-d", $info->creationDate);
+            $freeDate = date("Y-m-d", $info->expirationDate);
+            $project->domain_information = DomainInformation::prepareStatus($project->dns, $registrationDate, $freeDate);
+            DomainInformation::sendNotifications($project, $oldState, $oldDNS, $freeDate);
         } else {
-            $project->domain_information = __("No records were found for the selected source");
             $project->broken = true;
+            $project->domain_information = __("No records were found for the selected source");
             DomainInformation::sendNotifications($project, $oldState);
         }
         $project->save();
@@ -89,7 +86,7 @@ class DomainInformation extends Model
     public static function prepareStatus($dns, $registrationDate, $freeDate): string
     {
         $date = new Carbon($freeDate);
-        return $dns . "\n"
+        return $dns . "\n\n"
             . $registrationDate . "\n"
             . __('Registration expires')
             . $freeDate
@@ -143,7 +140,7 @@ class DomainInformation extends Model
         if ($project->check_registration_date && isset($freeDate)) {
             $freeDate = new Carbon($freeDate);
             $diffInDays = $freeDate->diffInDays(Carbon::now());
-            if ($diffInDays < 10) {
+            if ($diffInDays < 20) {
                 if ($user->telegram_bot_active) {
                     TelegramBot::sendNotificationAboutExpirationRegistrationPeriod($project, $user->chat_id, $diffInDays);
                 }
