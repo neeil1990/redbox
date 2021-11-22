@@ -32,7 +32,7 @@ class DomainInformation extends Model
         if (isset($info)) {
             $project->broken = false;
             $project->dns = "DNS:\n" . implode("\n", $info->nameServers);
-            $registrationDate = __('registration date') . ' ' . date("Y-m-d", $info->creationDate);
+            $registrationDate = __('Registration date') . ' ' . date("Y-m-d", $info->creationDate);
             $freeDate = date("Y-m-d", $info->expirationDate);
             $project->domain_information = DomainInformation::prepareStatus($project->dns, $registrationDate, $freeDate);
             DomainInformation::sendNotifications($project, $oldState, $oldDNS, $freeDate);
