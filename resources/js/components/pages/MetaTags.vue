@@ -13,11 +13,29 @@
                         <label>Timeout request</label>
                         <input type="number" min="1" class="form-control" v-model="time">
                     </div>
+
+                    <div class="row" v-for="len in length">
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Длина {{ len.name }}</label>
+                                <input type="number" class="form-control" placeholder="min" v-model.number="len.val[0]">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="number" class="form-control" placeholder="max" v-model.number="len.val[1]">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <input type="submit" class="btn btn-secondary" value="submit">
                         </div>
                     </div>
+
                 </form>
 
             </div>
@@ -50,7 +68,8 @@
                                             <i class="expandable-accordion-caret fas fa-caret-right fa-fw"></i> {{ url.title }}
                                         </a>
                                     </h4>
-                                    <base-tools :data="url.data"></base-tools>
+
+                                    <base-tools :data="url.data" :length="length"></base-tools>
                                 </div>
 
                                 <div :id="'collapse' + index" class="collapse" data-parent="#accordion" style="">
@@ -79,6 +98,9 @@
                                                         <small v-if="item.length > 1 && (tag === 'title' || tag === 'description' || tag === 'canonical' || tag === 'h1')">
                                                             Дублирующийся тег <span class="badge badge-danger">< {{tag}} ></span> Проверьте страницу и оставьте 1 тег
                                                         </small>
+                                                        <span v-else-if="item.length === 1 && lengthError(item, tag)" class="badge badge-info">
+                                                            {{ lengthError(item, tag) }}
+                                                        </span>
                                                         <span v-else class="badge badge-success">Без проблем</span>
                                                     </td>
                                                 </tr>
@@ -120,9 +142,11 @@
                             <tr>
                                 <th style="width: 1%">ID</th>
                                 <th style="width: 20%">name</th>
-                                <th style="width: 20%">period</th>
-                                <th style="width: 30%">link</th>
-                                <th style="width: 20%"></th>
+                                <th style="width: 10%">period</th>
+                                <th style="width: 10%">timeout</th>
+                                <th style="width: 25%">link</th>
+                                <th style="width: 9%">status</th>
+                                <th style="width: 25%"></th>
                             </tr>
                             </thead>
 
@@ -131,13 +155,36 @@
                                 <tr v-for="meta in metas" :key="meta.id">
                                     <td>{{ meta.id }}</td>
                                     <td>{{ meta.name }}</td>
-                                    <td>{{ meta.period }}</td>
+                                    <td>
+                                        <select class="form-control" v-model.number="meta.period" @change.prevent="onSubmitMetaTagsEditField(meta)">
+                                            <option v-for="option in options" :value="option.value">{{option.text}}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" min="1" v-model.number="meta.timeout" @keyup.prevent="onSubmitMetaTagsEditField(meta)">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">ms.</span>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>
                                         <textarea class="form-control" v-text="meta.links"></textarea>
                                     </td>
-
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                <input type="checkbox" class="custom-control-input" :id="'customSwitchStatus' + meta.id" v-model="meta.status" @change.prevent="onSubmitMetaTagsEditField(meta)">
+                                                <label class="custom-control-label" :for="'customSwitchStatus' + meta.id">off / on</label>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td class="project-actions text-right">
 
+                                        <a class="btn btn-info btn-sm" :href="'/meta-tags/history/' + meta.id">
+                                            <i class="fas fa-list"></i>
+                                            History
+                                        </a>
                                         <a class="btn btn-info btn-sm" href="#" @click.prevent="StartMetaTags(meta)">
                                             <i class="fas fa-play-circle"></i>
                                             Start
@@ -175,7 +222,6 @@
             }
         },
         created() {
-
             this.metas = this.meta;
         },
         data() {
@@ -187,9 +233,23 @@
                 FormShow: false,
                 url: '',
                 time: 500,
+                length: [
+                    {key: 'title', name: 'title', val: [10, 30]},
+                    {key: 'description', name: 'description', val: [30, 120]},
+                    {key: 'keywords', name: 'keywords', val: [30, 120]},
+                ],
                 result: [],
-                error: []
+                error: [],
+                options: [
+                    {value: 0, text: 'manual'},
+                    {value: 6, text: '6 часов'},
+                    {value: 12, text: '12 часов'},
+                    {value: 24, text: '24 часов'},
+                ],
             }
+        },
+        computed: {
+
         },
         watch:{
             result: function(val){
@@ -200,15 +260,52 @@
             }
         },
         methods: {
+            lengthError(item, tag) {
+                let idx = _.findIndex(this.length, function(o) { return o.key === tag; });
+                if(this.length[idx]){
+                    let meta_count = item[0].length;
+                    let count_arr = this.length[idx].val;
+
+                    if(count_arr[0] && count_arr[1]){
+                        if(meta_count < count_arr[0] || meta_count > count_arr[1]){
+                            return 'Длина ' + tag + ': ' + meta_count;
+                        }else
+                            return false;
+                    }else
+                        return false;
+                }
+            },
             StartMetaTags(meta) {
                 $("html, body").stop().animate({scrollTop : 200}, 500, 'swing');
 
                 this.url = meta.links;
                 this.time = meta.timeout;
 
+                this.length[0].val[0] = meta.length_title_min;
+                this.length[0].val[1] = meta.length_title_max;
+                this.length[1].val[0] = meta.length_description_min;
+                this.length[1].val[1] = meta.length_description_max;
+                this.length[2].val[0] = meta.length_keywords_min;
+                this.length[2].val[1] = meta.length_keywords_max;
+
                 this.onSubmitMetaTags();
             },
+            onSubmitMetaTagsEditField(meta) {
+
+                axios.request({
+                    url: '/meta-tags/' + meta.id,
+                    method: 'patch',
+                    data: meta
+                }).then(function(response){
+
+                    console.log(response);
+                }).catch(function (error) {
+
+                    console.log(error);
+                });
+            },
             onSubmitMetaTagsEdit(meta) {
+
                 this.request = meta.id;
                 this.value = meta;
             },

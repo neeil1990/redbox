@@ -19,6 +19,7 @@ class MetaTagsController extends Controller
     protected $tags = [
         ['name' => 'title', 'tag' => 'title', 'type' => 'string'],
         ['name' => 'description', 'tag' => 'meta[name=description]', 'type' => 'string'],
+        ['name' => 'keywords', 'tag' => 'meta[name=keywords]', 'type' => 'string'],
         ['name' => 'canonical', 'tag' => 'link[rel=canonical]', 'type' => 'int'],
         ['name' => 'noindex', 'tag' => 'noindex', 'type' => 'int'],
         ['name' => 'robots', 'tag' => 'robots', 'type' => 'string'],
@@ -106,7 +107,15 @@ class MetaTagsController extends Controller
      */
     public function store(Request $request)
     {
-        $meta = Auth::user()->metaTags()->create($request->all(['name', 'period', 'links', 'timeout']));
+        $history = $request->input('result', false);
+
+        $meta = Auth::user()->metaTags()->create($request->all((new MetaTag)->getFillable()));
+
+        if($history){
+            $history_links = count($history);
+
+
+        }
 
         return $meta;
     }
@@ -120,7 +129,7 @@ class MetaTagsController extends Controller
      */
     public function update(Request $request, $id)
     {
-       Auth::user()->metaTags()->find($id)->update($request->all(['name', 'period', 'links', 'timeout']));
+       Auth::user()->metaTags()->find($id)->update($request->all((new MetaTag)->getFillable()));
        return Auth::user()->metaTags()->find($id);
     }
 
