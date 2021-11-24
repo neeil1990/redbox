@@ -29,7 +29,7 @@
             <div class="toast-message error-msg">{{ __('You need to select the projects you want to delete') }}</div>
         </div>
     </div>
-    <a href="{{ route('add.domain.information.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
+    <a href="{{ route('add.domain.information.view.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add tracking the registration period') }}
     </a>
     <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
@@ -3860,8 +3860,9 @@
                             $(this).remove();
                         })
                         $('#count-projects').text($('#count-projects').text() - iterator)
-                        if($('#count-projects').text()){
-                            window.location.replace('https://lk.redbox.su/add-domain-information-view');
+                        console.log($('#count-projects').text())
+                        if($('#count-projects').text() == 0){
+                            window.location.replace('https://lk.redbox.su/add-domain-information');
                         }
                         $('.toast-top-right.delete-success-message').show(300)
                         setTimeout(() => {
