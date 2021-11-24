@@ -1,6 +1,9 @@
 @component('component.card', ['title' => __('Meta tags')])
 
     @slot('css')
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+
         <style>
             a.accordion-title {
                 color: #212529;
@@ -29,7 +32,15 @@
     <meta-tags :meta="{{ $meta }}"></meta-tags>
 
     @slot('js')
+        <!-- Toastr -->
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 
+        <script>
+            toastr.options = {
+                "preventDuplicates": true,
+                "timeOut": "1500"
+            };
+        </script>
     @endslot
 
 

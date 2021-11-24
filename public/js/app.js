@@ -7408,6 +7408,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "BaseModalForm",
   props: {
@@ -7438,28 +7462,52 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      status: 0,
       name: 'My project',
       period: 6,
       link: '',
       timeout: 500,
+      length: [{
+        key: 'title',
+        name: 'title (recommend 30-70)',
+        val: [null, null]
+      }, {
+        key: 'description',
+        name: 'description (recommend 30-70)',
+        val: [null, null]
+      }, {
+        key: 'keywords',
+        name: 'keywords (recommend 30-70)',
+        val: [null, null]
+      }],
       radios: [{
+        value: 0,
+        text: 'manual'
+      }, {
         value: 6,
-        text: '6 часов'
+        text: 'Интервал проверки каждые 6 часов'
       }, {
         value: 12,
-        text: '12 часов'
+        text: 'Интервал проверки каждые 12 часов'
       }, {
         value: 24,
-        text: '24 часов'
+        text: 'Интервал проверки каждые 24 часов'
       }]
     };
   },
   watch: {
     values: function values(val) {
+      this.status = val.status;
       this.name = val.name;
       this.period = val.period;
       this.link = val.links;
       this.timeout = val.timeout;
+      this.length[0].val[0] = val.length_title_min;
+      this.length[0].val[1] = val.length_title_max;
+      this.length[1].val[0] = val.length_description_min;
+      this.length[1].val[1] = val.length_description_max;
+      this.length[2].val[0] = val.length_keywords_min;
+      this.length[2].val[1] = val.length_keywords_max;
     }
   },
   methods: {
@@ -7469,12 +7517,23 @@ __webpack_require__.r(__webpack_exports__);
         url: app.request,
         method: app.method,
         data: {
+          status: app.status,
           name: app.name,
           period: app.period,
           links: app.link,
-          timeout: app.timeout
+          timeout: app.timeout,
+          result: app.data,
+          length_title_min: app.length[0].val[0],
+          length_title_max: app.length[0].val[1],
+          length_description_min: app.length[1].val[0],
+          length_description_max: app.length[1].val[1],
+          length_keywords_min: app.length[2].val[0],
+          length_keywords_max: app.length[2].val[1]
         }
       }).then(function (response) {
+        console.log(response);
+        if (response.statusText === "OK") ;
+        toastr.success('Успешно изменено');
         app.$emit('close-modal-form', response);
       })["catch"](function (error) {
         console.log(error);
@@ -7501,26 +7560,49 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "BaseTools",
   props: {
     data: {
       required: true,
       type: Object
+    },
+    length: {
+      required: true
     }
   },
   data: function data() {
     return {
-      show: false
+      show: false,
+      error: []
     };
   },
   created: function created() {
     var app = this;
 
     _.forEach(this.data, function (value, key) {
-      if (key === 'title' || key === 'description' || key === 'canonical' || key === 'h1') {
+      if (key === 'title' || key === 'description' || key === 'keywords' || key === 'canonical' || key === 'h1') {
         if (value.length > 1) {
           app.show = true;
+        }
+
+        var idx = _.findIndex(app.length, function (o) {
+          return o.key === key;
+        });
+
+        if (app.length[idx] && value[0]) {
+          var meta_count = value[0].length;
+          var count_arr = app.length[idx].val;
+
+          if (count_arr[0] && count_arr[1]) {
+            if (meta_count < count_arr[0] || meta_count > count_arr[1]) {
+              app.show = true;
+              app.error.push('Длина ' + key + ': ' + meta_count);
+            }
+          }
         }
       }
     });
@@ -7538,6 +7620,51 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7725,10 +7852,37 @@ __webpack_require__.r(__webpack_exports__);
       FormShow: false,
       url: '',
       time: 500,
+      length: [{
+        key: 'title',
+        name: 'title (recommend 30-70)',
+        val: [null, null]
+      }, {
+        key: 'description',
+        name: 'description (recommend 30-70)',
+        val: [null, null]
+      }, {
+        key: 'keywords',
+        name: 'keywords (recommend 30-70)',
+        val: [null, null]
+      }],
       result: [],
-      error: []
+      error: [],
+      options: [{
+        value: 0,
+        text: 'manual'
+      }, {
+        value: 6,
+        text: '6 часов'
+      }, {
+        value: 12,
+        text: '12 часов'
+      }, {
+        value: 24,
+        text: '24 часов'
+      }]
     };
   },
+  computed: {},
   watch: {
     result: function result(val) {
       var url = this.StringAsObj(this.url);
@@ -7737,13 +7891,47 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    lengthError: function lengthError(item, tag) {
+      var idx = _.findIndex(this.length, function (o) {
+        return o.key === tag;
+      });
+
+      if (this.length[idx]) {
+        var meta_count = item[0].length;
+        var count_arr = this.length[idx].val;
+
+        if (count_arr[0] && count_arr[1]) {
+          if (meta_count < count_arr[0] || meta_count > count_arr[1]) {
+            return '<span class="badge badge-danger">Длина ' + tag + ': ' + meta_count + '</span><br/><small>Вы задали диапазон с ' + count_arr[0] + ' до ' + count_arr[1] + '</small>';
+          } else return false;
+        } else return false;
+      }
+    },
     StartMetaTags: function StartMetaTags(meta) {
       $("html, body").stop().animate({
         scrollTop: 200
       }, 500, 'swing');
       this.url = meta.links;
       this.time = meta.timeout;
+      this.length[0].val[0] = meta.length_title_min;
+      this.length[0].val[1] = meta.length_title_max;
+      this.length[1].val[0] = meta.length_description_min;
+      this.length[1].val[1] = meta.length_description_max;
+      this.length[2].val[0] = meta.length_keywords_min;
+      this.length[2].val[1] = meta.length_keywords_max;
       this.onSubmitMetaTags();
+    },
+    onSubmitMetaTagsEditField: function onSubmitMetaTagsEditField(meta) {
+      axios.request({
+        url: '/meta-tags/' + meta.id,
+        method: 'patch',
+        data: meta
+      }).then(function (response) {
+        if (response.statusText === "OK") ;
+        toastr.success('Успешно изменено');
+      })["catch"](function (error) {
+        console.log(error);
+      });
     },
     onSubmitMetaTagsEdit: function onSubmitMetaTagsEdit(meta) {
       this.request = meta.id;
@@ -7787,6 +7975,7 @@ __webpack_require__.r(__webpack_exports__);
 
         axios["delete"]('/meta-tags/' + id);
         this.metas.splice(idx, 1);
+        toastr.info('Успешно удалено');
       }
     },
     CloseModalFormMetaTags: function CloseModalFormMetaTags(response) {
@@ -71494,147 +71683,280 @@ var render = function() {
           _vm._m(0),
           _vm._v(" "),
           _c("div", { staticClass: "modal-body" }, [
-            _c("form", [
-              _c("div", { staticClass: "form-group" }, [
-                _c("label", { staticClass: "col-form-label" }, [
-                  _vm._v("Название проекта:")
-                ]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.name,
-                      expression: "name"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { type: "text", required: "" },
-                  domProps: { value: _vm.name },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.name = $event.target.value
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "form-group" },
-                [
+            _c(
+              "form",
+              [
+                _c("div", { staticClass: "form-group" }, [
                   _c("label", { staticClass: "col-form-label" }, [
-                    _vm._v("Частота проверок:")
+                    _vm._v("Название проекта:")
                   ]),
                   _vm._v(" "),
-                  _vm._l(_vm.radios, function(radio) {
-                    return _c(
-                      "div",
-                      { staticClass: "custom-control custom-radio" },
-                      [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.name,
+                        expression: "name"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", required: "" },
+                    domProps: { value: _vm.name },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.name = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "custom-control custom-switch custom-switch-off-danger custom-switch-on-success"
+                    },
+                    [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.status,
+                            expression: "status"
+                          }
+                        ],
+                        staticClass: "custom-control-input",
+                        attrs: {
+                          type: "checkbox",
+                          id: "customSwitchStatusForm" + _vm.target + _vm.status
+                        },
+                        domProps: {
+                          checked: Array.isArray(_vm.status)
+                            ? _vm._i(_vm.status, null) > -1
+                            : _vm.status
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.status,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = null,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 && (_vm.status = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.status = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.status = $$c
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "custom-control-label",
+                          attrs: {
+                            for:
+                              "customSwitchStatusForm" + _vm.target + _vm.status
+                          }
+                        },
+                        [_vm._v("Status")]
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "form-group" },
+                  [
+                    _c("label", { staticClass: "col-form-label" }, [
+                      _vm._v("Частота проверок:")
+                    ]),
+                    _vm._v(" "),
+                    _vm._l(_vm.radios, function(radio) {
+                      return _c(
+                        "div",
+                        { staticClass: "custom-control custom-radio" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.period,
+                                expression: "period",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "custom-control-input",
+                            attrs: {
+                              type: "radio",
+                              id: "Radio" + _vm.target + radio.value
+                            },
+                            domProps: {
+                              value: radio.value,
+                              checked: _vm._q(_vm.period, _vm._n(radio.value))
+                            },
+                            on: {
+                              change: function($event) {
+                                _vm.period = _vm._n(radio.value)
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "label",
+                            {
+                              staticClass: "custom-control-label",
+                              attrs: { for: "Radio" + _vm.target + radio.value }
+                            },
+                            [_vm._v(_vm._s(radio.text))]
+                          )
+                        ]
+                      )
+                    })
+                  ],
+                  2
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", [_vm._v("Timeout:")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.timeout,
+                        expression: "timeout"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "number", min: "1" },
+                    domProps: { value: _vm.timeout },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.timeout = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { staticClass: "col-form-label" }, [
+                    _vm._v("Ссылки:")
+                  ]),
+                  _vm._v(" "),
+                  _c("textarea", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.link,
+                        expression: "link"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { required: "" },
+                    domProps: { value: _vm.link },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.link = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _vm._l(_vm.length, function(len) {
+                  return _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-sm-6" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [_vm._v("Длина " + _vm._s(len.name))]),
+                        _vm._v(" "),
                         _c("input", {
                           directives: [
                             {
                               name: "model",
                               rawName: "v-model.number",
-                              value: _vm.period,
-                              expression: "period",
+                              value: len.val[0],
+                              expression: "len.val[0]",
                               modifiers: { number: true }
                             }
                           ],
-                          staticClass: "custom-control-input",
-                          attrs: {
-                            type: "radio",
-                            id: "Radio" + _vm.target + radio.value
-                          },
-                          domProps: {
-                            value: radio.value,
-                            checked: _vm._q(_vm.period, _vm._n(radio.value))
-                          },
+                          staticClass: "form-control",
+                          attrs: { type: "number", placeholder: "min" },
+                          domProps: { value: len.val[0] },
                           on: {
-                            change: function($event) {
-                              _vm.period = _vm._n(radio.value)
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(len.val, 0, _vm._n($event.target.value))
+                            },
+                            blur: function($event) {
+                              return _vm.$forceUpdate()
                             }
                           }
-                        }),
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-sm-6" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [_vm._v(" ")]),
                         _vm._v(" "),
-                        _c(
-                          "label",
-                          {
-                            staticClass: "custom-control-label",
-                            attrs: { for: "Radio" + _vm.target + radio.value }
-                          },
-                          [
-                            _vm._v(
-                              "Интервал проверки каждые " + _vm._s(radio.text)
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  })
-                ],
-                2
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group" }, [
-                _c("label", [_vm._v("Timeout:")]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.timeout,
-                      expression: "timeout"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { type: "number", min: "1" },
-                  domProps: { value: _vm.timeout },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.timeout = $event.target.value
-                    }
-                  }
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model.number",
+                              value: len.val[1],
+                              expression: "len.val[1]",
+                              modifiers: { number: true }
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { type: "number", placeholder: "max" },
+                          domProps: { value: len.val[1] },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(len.val, 1, _vm._n($event.target.value))
+                            },
+                            blur: function($event) {
+                              return _vm.$forceUpdate()
+                            }
+                          }
+                        })
+                      ])
+                    ])
+                  ])
                 })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group" }, [
-                _c("label", { staticClass: "col-form-label" }, [
-                  _vm._v("Ссылки:")
-                ]),
-                _vm._v(" "),
-                _c("textarea", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.link,
-                      expression: "link"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { required: "" },
-                  domProps: { value: _vm.link },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.link = $event.target.value
-                    }
-                  }
-                })
-              ])
-            ])
+              ],
+              2
+            )
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "modal-footer" }, [
@@ -71728,6 +72050,14 @@ var render = function() {
                 tag === "h1")
               ? _c("span", { staticClass: "badge badge-info mr-1" }, [
                   _vm._v("< " + _vm._s(tag) + " > : " + _vm._s(item.length))
+                ])
+              : _vm._e()
+          }),
+          _vm._v(" "),
+          _vm._l(_vm.error, function(e) {
+            return _vm.error
+              ? _c("span", { staticClass: "badge badge-info mr-1" }, [
+                  _vm._v(_vm._s(e))
                 ])
               : _vm._e()
           })
@@ -71824,8 +72154,77 @@ var render = function() {
               })
             ]),
             _vm._v(" "),
+            _vm._l(_vm.length, function(len) {
+              return _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col-sm-6" }, [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v("Длина " + _vm._s(len.name))]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model.number",
+                          value: len.val[0],
+                          expression: "len.val[0]",
+                          modifiers: { number: true }
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "number", placeholder: "min" },
+                      domProps: { value: len.val[0] },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(len.val, 0, _vm._n($event.target.value))
+                        },
+                        blur: function($event) {
+                          return _vm.$forceUpdate()
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-sm-6" }, [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v(" ")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model.number",
+                          value: len.val[1],
+                          expression: "len.val[1]",
+                          modifiers: { number: true }
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "number", placeholder: "max" },
+                      domProps: { value: len.val[1] },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(len.val, 1, _vm._n($event.target.value))
+                        },
+                        blur: function($event) {
+                          return _vm.$forceUpdate()
+                        }
+                      }
+                    })
+                  ])
+                ])
+              ])
+            }),
+            _vm._v(" "),
             _vm._m(0)
-          ]
+          ],
+          2
         )
       ])
     ]),
@@ -71893,7 +72292,9 @@ var render = function() {
                             )
                           ]),
                           _vm._v(" "),
-                          _c("base-tools", { attrs: { data: url.data } })
+                          _c("base-tools", {
+                            attrs: { data: url.data, length: _vm.length }
+                          })
                         ],
                         1
                       ),
@@ -71986,6 +72387,15 @@ var render = function() {
                                                 " Проверьте страницу и оставьте 1 тег\n                                                    "
                                               )
                                             ])
+                                          : item.length === 1 &&
+                                            _vm.lengthError(item, tag)
+                                          ? _c("span", {
+                                              domProps: {
+                                                innerHTML: _vm._s(
+                                                  _vm.lengthError(item, tag)
+                                                )
+                                              }
+                                            })
                                           : _c(
                                               "span",
                                               {
@@ -72072,7 +72482,99 @@ var render = function() {
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(meta.name))]),
                           _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(meta.period))]),
+                          _c("td", [
+                            _c(
+                              "select",
+                              {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model.number",
+                                    value: meta.period,
+                                    expression: "meta.period",
+                                    modifiers: { number: true }
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                on: {
+                                  change: [
+                                    function($event) {
+                                      var $$selectedVal = Array.prototype.filter
+                                        .call($event.target.options, function(
+                                          o
+                                        ) {
+                                          return o.selected
+                                        })
+                                        .map(function(o) {
+                                          var val =
+                                            "_value" in o ? o._value : o.value
+                                          return _vm._n(val)
+                                        })
+                                      _vm.$set(
+                                        meta,
+                                        "period",
+                                        $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      )
+                                    },
+                                    function($event) {
+                                      $event.preventDefault()
+                                      return _vm.onSubmitMetaTagsEditField(meta)
+                                    }
+                                  ]
+                                }
+                              },
+                              _vm._l(_vm.options, function(option) {
+                                return _c(
+                                  "option",
+                                  { domProps: { value: option.value } },
+                                  [_vm._v(_vm._s(option.text))]
+                                )
+                              }),
+                              0
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c("div", { staticClass: "input-group" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model.number",
+                                    value: meta.timeout,
+                                    expression: "meta.timeout",
+                                    modifiers: { number: true }
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: { type: "text", min: "1" },
+                                domProps: { value: meta.timeout },
+                                on: {
+                                  keyup: function($event) {
+                                    $event.preventDefault()
+                                    return _vm.onSubmitMetaTagsEditField(meta)
+                                  },
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      meta,
+                                      "timeout",
+                                      _vm._n($event.target.value)
+                                    )
+                                  },
+                                  blur: function($event) {
+                                    return _vm.$forceUpdate()
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _vm._m(5, true)
+                            ])
+                          ]),
                           _vm._v(" "),
                           _c("td", [
                             _c("textarea", {
@@ -72081,10 +72583,109 @@ var render = function() {
                             })
                           ]),
                           _vm._v(" "),
+                          _c("td", [
+                            _c("div", { staticClass: "form-group" }, [
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "custom-control custom-switch custom-switch-off-danger custom-switch-on-success"
+                                },
+                                [
+                                  _c("input", {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: meta.status,
+                                        expression: "meta.status"
+                                      }
+                                    ],
+                                    staticClass: "custom-control-input",
+                                    attrs: {
+                                      type: "checkbox",
+                                      id: "customSwitchStatus" + meta.id
+                                    },
+                                    domProps: {
+                                      checked: Array.isArray(meta.status)
+                                        ? _vm._i(meta.status, null) > -1
+                                        : meta.status
+                                    },
+                                    on: {
+                                      change: [
+                                        function($event) {
+                                          var $$a = meta.status,
+                                            $$el = $event.target,
+                                            $$c = $$el.checked ? true : false
+                                          if (Array.isArray($$a)) {
+                                            var $$v = null,
+                                              $$i = _vm._i($$a, $$v)
+                                            if ($$el.checked) {
+                                              $$i < 0 &&
+                                                _vm.$set(
+                                                  meta,
+                                                  "status",
+                                                  $$a.concat([$$v])
+                                                )
+                                            } else {
+                                              $$i > -1 &&
+                                                _vm.$set(
+                                                  meta,
+                                                  "status",
+                                                  $$a
+                                                    .slice(0, $$i)
+                                                    .concat($$a.slice($$i + 1))
+                                                )
+                                            }
+                                          } else {
+                                            _vm.$set(meta, "status", $$c)
+                                          }
+                                        },
+                                        function($event) {
+                                          $event.preventDefault()
+                                          return _vm.onSubmitMetaTagsEditField(
+                                            meta
+                                          )
+                                        }
+                                      ]
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "label",
+                                    {
+                                      staticClass: "custom-control-label",
+                                      attrs: {
+                                        for: "customSwitchStatus" + meta.id
+                                      }
+                                    },
+                                    [_vm._v("off / on")]
+                                  )
+                                ]
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
                           _c(
                             "td",
                             { staticClass: "project-actions text-right" },
                             [
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-info btn-sm",
+                                  attrs: {
+                                    href: "/meta-tags/history/" + meta.id
+                                  }
+                                },
+                                [
+                                  _c("i", { staticClass: "fas fa-list" }),
+                                  _vm._v(
+                                    "\n                                        History\n                                    "
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
                               _c(
                                 "a",
                                 {
@@ -72231,12 +72832,24 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { staticStyle: { width: "20%" } }, [_vm._v("name")]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "20%" } }, [_vm._v("period")]),
+        _c("th", { staticStyle: { width: "10%" } }, [_vm._v("period")]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "30%" } }, [_vm._v("link")]),
+        _c("th", { staticStyle: { width: "10%" } }, [_vm._v("timeout")]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "20%" } })
+        _c("th", { staticStyle: { width: "25%" } }, [_vm._v("link")]),
+        _vm._v(" "),
+        _c("th", { staticStyle: { width: "9%" } }, [_vm._v("status")]),
+        _vm._v(" "),
+        _c("th", { staticStyle: { width: "25%" } })
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("ms.")])
     ])
   }
 ]
