@@ -108,9 +108,9 @@
                 link: '',
                 timeout: 500,
                 length: [
-                    {key: 'title', name: 'title', val: [10, 30]},
-                    {key: 'description', name: 'description', val: [30, 120]},
-                    {key: 'keywords', name: 'keywords', val: [30, 120]},
+                    {key: 'title', name: 'title (recommend 30-70)', val: [null, null]},
+                    {key: 'description', name: 'description (recommend 30-70)', val: [null, null]},
+                    {key: 'keywords', name: 'keywords (recommend 30-70)', val: [null, null]},
                 ],
                 radios: [
                     {value: 0, text: 'manual'},
@@ -162,6 +162,9 @@
                     }
                 }).then(function(response){
                     console.log(response);
+
+                    if(response.statusText === "OK");
+                        toastr.success('Успешно изменено');
 
                     app.$emit('close-modal-form', response);
                 }).catch(function (error) {

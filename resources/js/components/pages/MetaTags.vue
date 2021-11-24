@@ -98,9 +98,7 @@
                                                         <small v-if="item.length > 1 && (tag === 'title' || tag === 'description' || tag === 'canonical' || tag === 'h1')">
                                                             Дублирующийся тег <span class="badge badge-danger">< {{tag}} ></span> Проверьте страницу и оставьте 1 тег
                                                         </small>
-                                                        <span v-else-if="item.length === 1 && lengthError(item, tag)" class="badge badge-info">
-                                                            {{ lengthError(item, tag) }}
-                                                        </span>
+                                                        <span v-else-if="item.length === 1 && lengthError(item, tag)" v-html="lengthError(item, tag)"></span>
                                                         <span v-else class="badge badge-success">Без проблем</span>
                                                     </td>
                                                 </tr>
@@ -162,7 +160,7 @@
                                     </td>
                                     <td>
                                         <div class="input-group">
-                                            <input type="number" class="form-control" min="1" v-model.number="meta.timeout" @keyup.prevent="onSubmitMetaTagsEditField(meta)">
+                                            <input type="text" class="form-control" min="1" v-model.number="meta.timeout" @keyup.prevent="onSubmitMetaTagsEditField(meta)">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">ms.</span>
                                             </div>
@@ -234,9 +232,9 @@
                 url: '',
                 time: 500,
                 length: [
-                    {key: 'title', name: 'title', val: [10, 30]},
-                    {key: 'description', name: 'description', val: [30, 120]},
-                    {key: 'keywords', name: 'keywords', val: [30, 120]},
+                    {key: 'title', name: 'title (recommend 30-70)', val: [null, null]},
+                    {key: 'description', name: 'description (recommend 30-70)', val: [null, null]},
+                    {key: 'keywords', name: 'keywords (recommend 30-70)', val: [null, null]},
                 ],
                 result: [],
                 error: [],
@@ -268,7 +266,7 @@
 
                     if(count_arr[0] && count_arr[1]){
                         if(meta_count < count_arr[0] || meta_count > count_arr[1]){
-                            return 'Длина ' + tag + ': ' + meta_count;
+                            return '<span class="badge badge-danger">Длина ' + tag + ': ' + meta_count + '</span><br/><small>Вы задали диапазон с ' + count_arr[0] + ' до ' + count_arr[1] + '</small>';
                         }else
                             return false;
                     }else
@@ -298,7 +296,9 @@
                     data: meta
                 }).then(function(response){
 
-                    console.log(response);
+                    if(response.statusText === "OK");
+                        toastr.success('Успешно изменено');
+
                 }).catch(function (error) {
 
                     console.log(error);
@@ -353,6 +353,8 @@
 
                     axios.delete('/meta-tags/' + id);
                     this.metas.splice(idx, 1);
+
+                    toastr.info('Успешно удалено');
                 }
             },
 

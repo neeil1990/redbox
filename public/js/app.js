@@ -7469,16 +7469,16 @@ __webpack_require__.r(__webpack_exports__);
       timeout: 500,
       length: [{
         key: 'title',
-        name: 'title',
-        val: [10, 30]
+        name: 'title (recommend 30-70)',
+        val: [null, null]
       }, {
         key: 'description',
-        name: 'description',
-        val: [30, 120]
+        name: 'description (recommend 30-70)',
+        val: [null, null]
       }, {
         key: 'keywords',
-        name: 'keywords',
-        val: [30, 120]
+        name: 'keywords (recommend 30-70)',
+        val: [null, null]
       }],
       radios: [{
         value: 0,
@@ -7532,6 +7532,8 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (response) {
         console.log(response);
+        if (response.statusText === "OK") ;
+        toastr.success('Успешно изменено');
         app.$emit('close-modal-form', response);
       })["catch"](function (error) {
         console.log(error);
@@ -7831,8 +7833,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MetaTags",
   props: {
@@ -7854,16 +7854,16 @@ __webpack_require__.r(__webpack_exports__);
       time: 500,
       length: [{
         key: 'title',
-        name: 'title',
-        val: [10, 30]
+        name: 'title (recommend 30-70)',
+        val: [null, null]
       }, {
         key: 'description',
-        name: 'description',
-        val: [30, 120]
+        name: 'description (recommend 30-70)',
+        val: [null, null]
       }, {
         key: 'keywords',
-        name: 'keywords',
-        val: [30, 120]
+        name: 'keywords (recommend 30-70)',
+        val: [null, null]
       }],
       result: [],
       error: [],
@@ -7902,7 +7902,7 @@ __webpack_require__.r(__webpack_exports__);
 
         if (count_arr[0] && count_arr[1]) {
           if (meta_count < count_arr[0] || meta_count > count_arr[1]) {
-            return 'Длина ' + tag + ': ' + meta_count;
+            return '<span class="badge badge-danger">Длина ' + tag + ': ' + meta_count + '</span><br/><small>Вы задали диапазон с ' + count_arr[0] + ' до ' + count_arr[1] + '</small>';
           } else return false;
         } else return false;
       }
@@ -7927,7 +7927,8 @@ __webpack_require__.r(__webpack_exports__);
         method: 'patch',
         data: meta
       }).then(function (response) {
-        console.log(response);
+        if (response.statusText === "OK") ;
+        toastr.success('Успешно изменено');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -7974,6 +7975,7 @@ __webpack_require__.r(__webpack_exports__);
 
         axios["delete"]('/meta-tags/' + id);
         this.metas.splice(idx, 1);
+        toastr.info('Успешно удалено');
       }
     },
     CloseModalFormMetaTags: function CloseModalFormMetaTags(response) {
@@ -72387,21 +72389,13 @@ var render = function() {
                                             ])
                                           : item.length === 1 &&
                                             _vm.lengthError(item, tag)
-                                          ? _c(
-                                              "span",
-                                              {
-                                                staticClass: "badge badge-info"
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                                                        " +
-                                                    _vm._s(
-                                                      _vm.lengthError(item, tag)
-                                                    ) +
-                                                    "\n                                                    "
+                                          ? _c("span", {
+                                              domProps: {
+                                                innerHTML: _vm._s(
+                                                  _vm.lengthError(item, tag)
                                                 )
-                                              ]
-                                            )
+                                              }
+                                            })
                                           : _c(
                                               "span",
                                               {
@@ -72555,7 +72549,7 @@ var render = function() {
                                   }
                                 ],
                                 staticClass: "form-control",
-                                attrs: { type: "number", min: "1" },
+                                attrs: { type: "text", min: "1" },
                                 domProps: { value: meta.timeout },
                                 on: {
                                   keyup: function($event) {
