@@ -29,7 +29,7 @@
             <div class="toast-message error-msg">{{ __('You need to select the projects you want to delete') }}</div>
         </div>
     </div>
-    <a href="{{ route('add.domain.information.view.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
+    <a href="{{ route('add.domain.information') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add tracking the registration period') }}
     </a>
     <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
