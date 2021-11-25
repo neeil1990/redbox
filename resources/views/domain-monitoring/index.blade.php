@@ -3847,7 +3847,7 @@
                             $(this).remove();
                         })
                         $('#count-projects').text($('#count-projects').text() - iterator)
-                        if($('#count-projects').text()){
+                        if($('#count-projects').text() == 0){
                             window.location.replace('https://lk.redbox.su/add-domain-monitoring');
                         }
                         $('.toast-top-right.delete-success-message').show(300)
