@@ -19,4 +19,9 @@ class MetaTag extends Model
         'length_keywords_min',
         'length_keywords_max',
     ];
+
+    public function histories()
+    {
+        return $this->hasMany(MetaTagsHistory::class);
+    }
 }
