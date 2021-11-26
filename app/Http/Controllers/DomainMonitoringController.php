@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoringController extends Controller
 {
@@ -62,12 +63,17 @@ class DomainMonitoringController extends Controller
      * @param $id
      * @return RedirectResponse
      */
-    public function checkLink($id): RedirectResponse
+    public function checkLink($id)
     {
-        $project = DomainMonitoring::findOrFail($id);
-        DomainMonitoring::httpCheck($project);
+        try {
+            $project = DomainMonitoring::findOrFail($id);
+            DomainMonitoring::httpCheck($project);
 
-        return Redirect::back();
+            return Redirect::back();
+        } catch (Exception $exception){
+            VarDumper::dump($exception);
+            VarDumper::dump($exception->getMessage());
+        }
     }
 
     /**
