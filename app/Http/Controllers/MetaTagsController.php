@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Mail\MetaTagsEmail;
 use App\MetaTag;
+use App\MetaTagsHistory;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Yangqi\Htmldom\Htmldom;
 use Ixudra\Curl\Facades\Curl;
 
+/**
+ * Class MetaTagsController
+ * @package App\Http\Controllers
+ */
 class MetaTagsController extends Controller
 {
     protected $html;
@@ -107,17 +113,34 @@ class MetaTagsController extends Controller
      */
     public function store(Request $request)
     {
-        $history = $request->input('result', false);
-
         $meta = Auth::user()->metaTags()->create($request->all((new MetaTag)->getFillable()));
+
+        $this->storeHistories($request, $meta->id);
+
+        return $meta;
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     */
+    public function storeHistories(Request $request, $id) {
+
+        $history = $request->input('histories', false);
 
         if($history){
             $history_links = count($history);
+            $history = collect($history)->toJson();
 
-
+            MetaTagsHistory::create(['meta_tag_id' => $id, 'quantity' => $history_links, 'data' => $history]);
         }
+    }
 
-        return $meta;
+    public function showHistories($id) {
+
+        $project = Auth::user()->metaTags()->find($id);
+
+        return view('meta-tags.show', compact('project'));
     }
 
     /**

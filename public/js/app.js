@@ -7522,7 +7522,7 @@ __webpack_require__.r(__webpack_exports__);
           period: app.period,
           links: app.link,
           timeout: app.timeout,
-          result: app.data,
+          histories: app.data,
           length_title_min: app.length[0].val[0],
           length_title_max: app.length[0].val[1],
           length_description_min: app.length[1].val[0],
@@ -7560,9 +7560,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "BaseTools",
   props: {
@@ -7587,6 +7584,7 @@ __webpack_require__.r(__webpack_exports__);
       if (key === 'title' || key === 'description' || key === 'keywords' || key === 'canonical' || key === 'h1') {
         if (value.length > 1) {
           app.show = true;
+          app.error.push('< ' + key + ' > : ' + value.length + ' шт.');
         }
 
         var idx = _.findIndex(app.length, function (o) {
@@ -7620,6 +7618,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -7879,7 +7878,8 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         value: 24,
         text: '24 часов'
-      }]
+      }],
+      startBtnProjectId: null
     };
   },
   computed: {},
@@ -7888,6 +7888,23 @@ __webpack_require__.r(__webpack_exports__);
       var url = this.StringAsObj(this.url);
       this.FormShow = url.length === val.length;
       this.loading = Math.ceil(val.length / url.length * 100);
+    },
+    loading: function loading(val) {
+      if (this.startBtnProjectId && val === 100 && this.FormShow) {
+        axios.request({
+          url: '/meta-tags/histories/' + this.startBtnProjectId,
+          method: 'patch',
+          data: {
+            histories: this.result
+          }
+        }).then(function (response) {
+          if (response.statusText === "OK") ;
+          toastr.success('История добавлена');
+        })["catch"](function (error) {
+          console.log(error);
+        });
+        this.startBtnProjectId = null;
+      }
     }
   },
   methods: {
@@ -7920,6 +7937,7 @@ __webpack_require__.r(__webpack_exports__);
       this.length[2].val[0] = meta.length_keywords_min;
       this.length[2].val[1] = meta.length_keywords_max;
       this.onSubmitMetaTags();
+      this.startBtnProjectId = meta.id;
     },
     onSubmitMetaTagsEditField: function onSubmitMetaTagsEditField(meta) {
       axios.request({
@@ -72042,18 +72060,6 @@ var render = function() {
             _vm._v("Обнаружены критические ошибки")
           ]),
           _vm._v(" "),
-          _vm._l(_vm.data, function(item, tag) {
-            return item.length > 1 &&
-              (tag === "title" ||
-                tag === "description" ||
-                tag === "canonical" ||
-                tag === "h1")
-              ? _c("span", { staticClass: "badge badge-info mr-1" }, [
-                  _vm._v("< " + _vm._s(tag) + " > : " + _vm._s(item.length))
-                ])
-              : _vm._e()
-          }),
-          _vm._v(" "),
           _vm._l(_vm.error, function(e) {
             return _vm.error
               ? _c("span", { staticClass: "badge badge-info mr-1" }, [
@@ -72675,7 +72681,8 @@ var render = function() {
                                 {
                                   staticClass: "btn btn-info btn-sm",
                                   attrs: {
-                                    href: "/meta-tags/history/" + meta.id
+                                    target: "_blank",
+                                    href: "/meta-tags/histories/" + meta.id
                                   }
                                 },
                                 [

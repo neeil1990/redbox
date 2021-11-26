@@ -179,7 +179,7 @@
                                     </td>
                                     <td class="project-actions text-right">
 
-                                        <a class="btn btn-info btn-sm" :href="'/meta-tags/history/' + meta.id">
+                                        <a class="btn btn-info btn-sm" target="_blank" :href="'/meta-tags/histories/' + meta.id">
                                             <i class="fas fa-list"></i>
                                             History
                                         </a>
@@ -208,6 +208,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -244,6 +245,7 @@
                     {value: 12, text: '12 часов'},
                     {value: 24, text: '24 часов'},
                 ],
+                startBtnProjectId: null
             }
         },
         computed: {
@@ -255,6 +257,27 @@
                 this.FormShow = (url.length === val.length);
 
                 this.loading = Math.ceil(val.length / url.length * 100);
+            },
+            loading: function(val){
+
+                if(this.startBtnProjectId && val === 100 && this.FormShow){
+
+                    axios.request({
+                        url: '/meta-tags/histories/' + this.startBtnProjectId,
+                        method: 'patch',
+                        data: { histories: this.result }
+                    }).then(function(response){
+
+                        if(response.statusText === "OK");
+                            toastr.success('История добавлена');
+
+                    }).catch(function (error) {
+
+                        console.log(error);
+                    });
+
+                    this.startBtnProjectId = null;
+                }
             }
         },
         methods: {
@@ -273,6 +296,7 @@
                         return false;
                 }
             },
+
             StartMetaTags(meta) {
                 $("html, body").stop().animate({scrollTop : 200}, 500, 'swing');
 
@@ -287,7 +311,10 @@
                 this.length[2].val[1] = meta.length_keywords_max;
 
                 this.onSubmitMetaTags();
+
+                this.startBtnProjectId = meta.id;
             },
+
             onSubmitMetaTagsEditField(meta) {
 
                 axios.request({
@@ -304,11 +331,13 @@
                     console.log(error);
                 });
             },
+
             onSubmitMetaTagsEdit(meta) {
 
                 this.request = meta.id;
                 this.value = meta;
             },
+
             onSubmitMetaTags(){
                 let url = '';
 

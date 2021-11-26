@@ -1,9 +1,6 @@
 <template>
     <div class="card-tools" v-if="show">
         <span class="badge badge-danger">Обнаружены критические ошибки</span>
-        <span v-for="(item, tag) in data" v-if="item.length > 1 && (tag === 'title' || tag === 'description' || tag === 'canonical' || tag === 'h1')"
-              class="badge badge-info mr-1">< {{ tag }} > : {{ item.length }}</span>
-
         <span v-if="error" v-for="e in error" class="badge badge-info mr-1">{{ e }}</span>
     </div>
 </template>
@@ -34,6 +31,7 @@
 
                     if(value.length > 1){
                         app.show = true;
+                        app.error.push('< ' + key + ' > : ' +  value.length + ' шт.');
                     }
 
                     let idx = _.findIndex(app.length, function(o) { return o.key === key; });

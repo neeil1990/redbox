@@ -151,7 +151,7 @@
                         period: app.period,
                         links: app.link,
                         timeout: app.timeout,
-                        result: app.data,
+                        histories: app.data,
 
                         length_title_min: app.length[0].val[0],
                         length_title_max: app.length[0].val[1],
