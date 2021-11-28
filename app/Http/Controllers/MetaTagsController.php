@@ -7,6 +7,7 @@ use App\MetaTag;
 use App\MetaTagsHistory;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -158,6 +159,22 @@ class MetaTagsController extends Controller
     public function showHistories($id) {
 
         $project = Auth::user()->metaTags()->find($id);
+
+        $project->histories->transform(function ($item, $key) {
+            $errors = json_decode($item->data);
+
+            $error_quantity = null;
+            foreach ($errors as $e){
+                if(isset($e->error)){
+                    $arr_error = Arr::flatten($e->error->badge);
+                    if(is_array($arr_error))
+                        $error_quantity += count($arr_error);
+                }
+            }
+
+            $item['error_quantity'] = $error_quantity;
+            return $item;
+        });
 
         return view('meta-tags.show', compact('project'));
     }

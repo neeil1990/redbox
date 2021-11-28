@@ -23,6 +23,7 @@
                             <th style="">time</th>
                             <th style="">show</th>
                             <th style="">link</th>
+                            <th style="">error</th>
                             <th style="">compare</th>
                             <th style="">ideal</th>
                             <th style=""></th>
@@ -42,6 +43,7 @@
                                     </a>
                                 </td>
                                 <td>{{$history->quantity}}</td>
+                                <td><span class="badge badge-danger">{{$history->error_quantity}}</span></td>
                                 <td>
                                     <select class="form-control">
                                         <option value=""></option>
