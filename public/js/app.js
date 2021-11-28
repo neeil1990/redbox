@@ -7468,17 +7468,26 @@ __webpack_require__.r(__webpack_exports__);
       link: '',
       timeout: 500,
       length: [{
-        key: 'title',
+        id: 'title',
         name: 'title (recommend 30-70)',
-        val: [null, null]
+        input: {
+          min: null,
+          max: null
+        }
       }, {
-        key: 'description',
+        id: 'description',
         name: 'description (recommend 30-70)',
-        val: [null, null]
+        input: {
+          min: null,
+          max: null
+        }
       }, {
-        key: 'keywords',
+        id: 'keywords',
         name: 'keywords (recommend 30-70)',
-        val: [null, null]
+        input: {
+          min: null,
+          max: null
+        }
       }],
       radios: [{
         value: 0,
@@ -7502,34 +7511,34 @@ __webpack_require__.r(__webpack_exports__);
       this.period = val.period;
       this.link = val.links;
       this.timeout = val.timeout;
-      this.length[0].val[0] = val.length_title_min;
-      this.length[0].val[1] = val.length_title_max;
-      this.length[1].val[0] = val.length_description_min;
-      this.length[1].val[1] = val.length_description_max;
-      this.length[2].val[0] = val.length_keywords_min;
-      this.length[2].val[1] = val.length_keywords_max;
+
+      _.forEach(this.length, function (value) {
+        value.input.min = val[value.id + '_min'];
+        value.input.max = val[value.id + '_max'];
+      });
     }
   },
   methods: {
     OnSubmitMetaForm: function OnSubmitMetaForm() {
       var app = this;
+      var data = {
+        status: app.status,
+        name: app.name,
+        period: app.period,
+        links: app.link,
+        timeout: app.timeout,
+        histories: app.data
+      };
+
+      _.forEach(this.length, function (value) {
+        data[value.id + '_min'] = value.input.min;
+        data[value.id + '_max'] = value.input.max;
+      });
+
       axios.request({
         url: app.request,
         method: app.method,
-        data: {
-          status: app.status,
-          name: app.name,
-          period: app.period,
-          links: app.link,
-          timeout: app.timeout,
-          histories: app.data,
-          length_title_min: app.length[0].val[0],
-          length_title_max: app.length[0].val[1],
-          length_description_min: app.length[1].val[0],
-          length_description_max: app.length[1].val[1],
-          length_keywords_min: app.length[2].val[0],
-          length_keywords_max: app.length[2].val[1]
-        }
+        data: data
       }).then(function (response) {
         console.log(response);
         if (response.statusText === "OK") ;
@@ -7544,71 +7553,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BaseTools.vue?vue&type=script&lang=js&":
-/*!********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/BaseTools.vue?vue&type=script&lang=js& ***!
-  \********************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: "BaseTools",
-  props: {
-    data: {
-      required: true,
-      type: Object
-    },
-    length: {
-      required: true
-    }
-  },
-  data: function data() {
-    return {
-      show: false,
-      error: []
-    };
-  },
-  created: function created() {
-    var app = this;
-
-    _.forEach(this.data, function (value, key) {
-      if (key === 'title' || key === 'description' || key === 'keywords' || key === 'canonical' || key === 'h1') {
-        if (value.length > 1) {
-          app.show = true;
-          app.error.push('< ' + key + ' > : ' + value.length + ' шт.');
-        }
-
-        var idx = _.findIndex(app.length, function (o) {
-          return o.key === key;
-        });
-
-        if (app.length[idx] && value[0]) {
-          var meta_count = value[0].length;
-          var count_arr = app.length[idx].val;
-
-          if (count_arr[0] && count_arr[1]) {
-            if (meta_count < count_arr[0] || meta_count > count_arr[1]) {
-              app.show = true;
-              app.error.push('Длина ' + key + ': ' + meta_count);
-            }
-          }
-        }
-      }
-    });
-  }
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/pages/MetaTags.vue?vue&type=script&lang=js&":
 /*!*************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/pages/MetaTags.vue?vue&type=script&lang=js& ***!
@@ -7618,8 +7562,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
 //
 //
 //
@@ -7852,20 +7794,28 @@ __webpack_require__.r(__webpack_exports__);
       url: '',
       time: 500,
       length: [{
-        key: 'title',
+        id: 'title',
         name: 'title (recommend 30-70)',
-        val: [null, null]
+        input: {
+          min: null,
+          max: null
+        }
       }, {
-        key: 'description',
+        id: 'description',
         name: 'description (recommend 30-70)',
-        val: [null, null]
+        input: {
+          min: null,
+          max: null
+        }
       }, {
-        key: 'keywords',
+        id: 'keywords',
         name: 'keywords (recommend 30-70)',
-        val: [null, null]
+        input: {
+          min: null,
+          max: null
+        }
       }],
       result: [],
-      error: [],
       options: [{
         value: 0,
         text: 'manual'
@@ -7908,34 +7858,18 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    lengthError: function lengthError(item, tag) {
-      var idx = _.findIndex(this.length, function (o) {
-        return o.key === tag;
-      });
-
-      if (this.length[idx]) {
-        var meta_count = item[0].length;
-        var count_arr = this.length[idx].val;
-
-        if (count_arr[0] && count_arr[1]) {
-          if (meta_count < count_arr[0] || meta_count > count_arr[1]) {
-            return '<span class="badge badge-danger">Длина ' + tag + ': ' + meta_count + '</span><br/><small>Вы задали диапазон с ' + count_arr[0] + ' до ' + count_arr[1] + '</small>';
-          } else return false;
-        } else return false;
-      }
-    },
     StartMetaTags: function StartMetaTags(meta) {
       $("html, body").stop().animate({
         scrollTop: 200
       }, 500, 'swing');
       this.url = meta.links;
       this.time = meta.timeout;
-      this.length[0].val[0] = meta.length_title_min;
-      this.length[0].val[1] = meta.length_title_max;
-      this.length[1].val[0] = meta.length_description_min;
-      this.length[1].val[1] = meta.length_description_max;
-      this.length[2].val[0] = meta.length_keywords_min;
-      this.length[2].val[1] = meta.length_keywords_max;
+
+      _.forEach(this.length, function (value) {
+        value.input.min = meta[value.id + '_min'];
+        value.input.max = meta[value.id + '_max'];
+      });
+
       this.onSubmitMetaTags();
       this.startBtnProjectId = meta.id;
     },
@@ -7963,7 +7897,6 @@ __webpack_require__.r(__webpack_exports__);
       if (this.url.length) {
         url = this.StringAsObj(this.url);
         this.result = [];
-        this.error = [];
         url.forEach(function (element, i) {
           setTimeout(function () {
             _this.HttpRequest(element, i);
@@ -7973,10 +7906,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     HttpRequest: function HttpRequest(url, i) {
       var app = this;
-      axios.get('/meta-tags', {
-        params: {
-          url: url
-        }
+      axios.post('/meta-tags/get', {
+        url: url,
+        length: app.length
       }).then(function (response) {
         app.result.push(response.data);
       })["catch"](function (error) {
@@ -71916,20 +71848,24 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model.number",
-                              value: len.val[0],
-                              expression: "len.val[0]",
+                              value: len.input.min,
+                              expression: "len.input.min",
                               modifiers: { number: true }
                             }
                           ],
                           staticClass: "form-control",
                           attrs: { type: "number", placeholder: "min" },
-                          domProps: { value: len.val[0] },
+                          domProps: { value: len.input.min },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.$set(len.val, 0, _vm._n($event.target.value))
+                              _vm.$set(
+                                len.input,
+                                "min",
+                                _vm._n($event.target.value)
+                              )
                             },
                             blur: function($event) {
                               return _vm.$forceUpdate()
@@ -71948,20 +71884,24 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model.number",
-                              value: len.val[1],
-                              expression: "len.val[1]",
+                              value: len.input.max,
+                              expression: "len.input.max",
                               modifiers: { number: true }
                             }
                           ],
                           staticClass: "form-control",
                           attrs: { type: "number", placeholder: "max" },
-                          domProps: { value: len.val[1] },
+                          domProps: { value: len.input.max },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.$set(len.val, 1, _vm._n($event.target.value))
+                              _vm.$set(
+                                len.input,
+                                "max",
+                                _vm._n($event.target.value)
+                              )
                             },
                             blur: function($event) {
                               return _vm.$forceUpdate()
@@ -72030,49 +71970,6 @@ var staticRenderFns = [
     ])
   }
 ]
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BaseTools.vue?vue&type=template&id=099b42af&":
-/*!************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/BaseTools.vue?vue&type=template&id=099b42af& ***!
-  \************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.show
-    ? _c(
-        "div",
-        { staticClass: "card-tools" },
-        [
-          _c("span", { staticClass: "badge badge-danger" }, [
-            _vm._v("Обнаружены критические ошибки")
-          ]),
-          _vm._v(" "),
-          _vm._l(_vm.error, function(e) {
-            return _vm.error
-              ? _c("span", { staticClass: "badge badge-info mr-1" }, [
-                  _vm._v(_vm._s(e))
-                ])
-              : _vm._e()
-          })
-        ],
-        2
-      )
-    : _vm._e()
-}
-var staticRenderFns = []
 render._withStripped = true
 
 
@@ -72170,24 +72067,18 @@ var render = function() {
                       directives: [
                         {
                           name: "model",
-                          rawName: "v-model.number",
-                          value: len.val[0],
-                          expression: "len.val[0]",
-                          modifiers: { number: true }
+                          rawName: "v-model.lazy",
+                          value: len.input.min,
+                          expression: "len.input.min",
+                          modifiers: { lazy: true }
                         }
                       ],
                       staticClass: "form-control",
                       attrs: { type: "number", placeholder: "min" },
-                      domProps: { value: len.val[0] },
+                      domProps: { value: len.input.min },
                       on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(len.val, 0, _vm._n($event.target.value))
-                        },
-                        blur: function($event) {
-                          return _vm.$forceUpdate()
+                        change: function($event) {
+                          return _vm.$set(len.input, "min", $event.target.value)
                         }
                       }
                     })
@@ -72202,24 +72093,18 @@ var render = function() {
                       directives: [
                         {
                           name: "model",
-                          rawName: "v-model.number",
-                          value: len.val[1],
-                          expression: "len.val[1]",
-                          modifiers: { number: true }
+                          rawName: "v-model.lazy",
+                          value: len.input.max,
+                          expression: "len.input.max",
+                          modifiers: { lazy: true }
                         }
                       ],
                       staticClass: "form-control",
                       attrs: { type: "number", placeholder: "max" },
-                      domProps: { value: len.val[1] },
+                      domProps: { value: len.input.max },
                       on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(len.val, 1, _vm._n($event.target.value))
-                        },
-                        blur: function($event) {
-                          return _vm.$forceUpdate()
+                        change: function($event) {
+                          return _vm.$set(len.input, "max", $event.target.value)
                         }
                       }
                     })
@@ -72298,11 +72183,21 @@ var render = function() {
                             )
                           ]),
                           _vm._v(" "),
-                          _c("base-tools", {
-                            attrs: { data: url.data, length: _vm.length }
-                          })
-                        ],
-                        1
+                          _c(
+                            "div",
+                            { staticClass: "card-tools" },
+                            _vm._l(url.error.badge, function(error_badge) {
+                              return error_badge.length
+                                ? _c("span", {
+                                    domProps: {
+                                      innerHTML: _vm._s(error_badge.join(""))
+                                    }
+                                  })
+                                : _vm._e()
+                            }),
+                            0
+                          )
+                        ]
                       ),
                       _vm._v(" "),
                       _c(
@@ -72367,50 +72262,13 @@ var render = function() {
                                         )
                                       ]),
                                       _vm._v(" "),
-                                      _c("td", [
-                                        item.length > 1 &&
-                                        (tag === "title" ||
-                                          tag === "description" ||
-                                          tag === "canonical" ||
-                                          tag === "h1")
-                                          ? _c("small", [
-                                              _vm._v(
-                                                "\n                                                        Дублирующийся тег "
-                                              ),
-                                              _c(
-                                                "span",
-                                                {
-                                                  staticClass:
-                                                    "badge badge-danger"
-                                                },
-                                                [
-                                                  _vm._v(
-                                                    "< " + _vm._s(tag) + " >"
-                                                  )
-                                                ]
-                                              ),
-                                              _vm._v(
-                                                " Проверьте страницу и оставьте 1 тег\n                                                    "
-                                              )
-                                            ])
-                                          : item.length === 1 &&
-                                            _vm.lengthError(item, tag)
-                                          ? _c("span", {
-                                              domProps: {
-                                                innerHTML: _vm._s(
-                                                  _vm.lengthError(item, tag)
-                                                )
-                                              }
-                                            })
-                                          : _c(
-                                              "span",
-                                              {
-                                                staticClass:
-                                                  "badge badge-success"
-                                              },
-                                              [_vm._v("Без проблем")]
-                                            )
-                                      ])
+                                      _c("td", {
+                                        domProps: {
+                                          innerHTML: _vm._s(
+                                            url.error.main[tag].join(" <br />")
+                                          )
+                                        }
+                                      })
                                     ])
                                   }),
                                   0
@@ -85423,8 +85281,7 @@ module.exports = function(module) {
 
 var map = {
 	"./components/BaseCheckbox.vue": "./resources/js/components/BaseCheckbox.vue",
-	"./components/BaseModalForm.vue": "./resources/js/components/BaseModalForm.vue",
-	"./components/BaseTools.vue": "./resources/js/components/BaseTools.vue"
+	"./components/BaseModalForm.vue": "./resources/js/components/BaseModalForm.vue"
 };
 
 
@@ -85492,6 +85349,11 @@ Vue.component('meta-tags', _components_pages_MetaTags__WEBPACK_IMPORTED_MODULE_2
 
 var vm = new Vue({
   el: '#app'
+});
+$.ajaxSetup({
+  headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+  }
 });
 
 /***/ }),
@@ -85668,75 +85530,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseModalForm_vue_vue_type_template_id_3d960ce5_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseModalForm_vue_vue_type_template_id_3d960ce5_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/BaseTools.vue":
-/*!***********************************************!*\
-  !*** ./resources/js/components/BaseTools.vue ***!
-  \***********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BaseTools_vue_vue_type_template_id_099b42af___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseTools.vue?vue&type=template&id=099b42af& */ "./resources/js/components/BaseTools.vue?vue&type=template&id=099b42af&");
-/* harmony import */ var _BaseTools_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BaseTools.vue?vue&type=script&lang=js& */ "./resources/js/components/BaseTools.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _BaseTools_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _BaseTools_vue_vue_type_template_id_099b42af___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _BaseTools_vue_vue_type_template_id_099b42af___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/BaseTools.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/BaseTools.vue?vue&type=script&lang=js&":
-/*!************************************************************************!*\
-  !*** ./resources/js/components/BaseTools.vue?vue&type=script&lang=js& ***!
-  \************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseTools_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./BaseTools.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BaseTools.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseTools_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/BaseTools.vue?vue&type=template&id=099b42af&":
-/*!******************************************************************************!*\
-  !*** ./resources/js/components/BaseTools.vue?vue&type=template&id=099b42af& ***!
-  \******************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseTools_vue_vue_type_template_id_099b42af___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./BaseTools.vue?vue&type=template&id=099b42af& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BaseTools.vue?vue&type=template&id=099b42af&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseTools_vue_vue_type_template_id_099b42af___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_BaseTools_vue_vue_type_template_id_099b42af___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

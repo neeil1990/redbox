@@ -1,6 +1,8 @@
 @component('component.card', ['title' => __('Histories')])
 
     @slot('css')
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
 
     @endslot
 
@@ -22,7 +24,8 @@
                             <th style="">show</th>
                             <th style="">link</th>
                             <th style="">compare</th>
-                            <th style="">delete</th>
+                            <th style="">ideal</th>
+                            <th style=""></th>
                         </tr>
                         </thead>
 
@@ -33,7 +36,7 @@
                                 <td>{{$history->created_at->format('d.m.Y')}}</td>
                                 <td>{{$history->created_at->format('H:m')}}</td>
                                 <td>
-                                    <a class="btn btn-info btn-sm" href="#">
+                                    <a class="btn btn-info btn-sm" href="/meta-tags/history/{{ $history->id }}">
                                         <i class="fas fa-play-circle"></i>
                                         Go
                                     </a>
@@ -42,10 +45,16 @@
                                 <td>
                                     <select class="form-control">
                                         <option value=""></option>
-                                        @foreach($project->histories as $history)
-                                            <option value="">{{$history->created_at->format('d.m.Y')}}</option>
+                                        @foreach($project->histories as $option)
+                                            <option value="">{{$option->created_at->format('d.m.Y')}}</option>
                                         @endforeach
                                     </select>
+                                </td>
+                                <td>
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="customRadioIdeal{{ $history->id }}" name="ideal" value="{{ $history->id }}" @if($history->ideal) checked @endif>
+                                        <label for="customRadioIdeal{{ $history->id }}" class="custom-control-label">Custom Radio {{ $history->id }}</label>
+                                    </div>
                                 </td>
                                 <td class="project-actions">
 
@@ -58,6 +67,7 @@
                                         <i class="fas fa-play-circle"></i>
                                         Delete
                                     </a>
+
                                 </td>
                             </tr>
                             @endforeach
@@ -71,6 +81,30 @@
     </div>
 
     @slot('js')
+        <!-- Toastr -->
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+
+        <script>
+            toastr.options = {
+                "timeOut": "1000"
+            };
+        </script>
+
+        <script>
+
+            $('input[name="ideal"]').change(function () {
+                let that = $(this);
+
+                $.ajax({
+                    method: "PUT",
+                    url: "/meta-tags/histories/ideal/{{ $project->id }}",
+                    data: { id: that.val() }
+                }).done(function ( msg ) {
+                    toastr.success('Успешно изменено');
+                });
+            });
+
+        </script>
 
     @endslot
 

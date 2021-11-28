@@ -37,3 +37,10 @@ Vue.component('meta-tags', MetaTags);
 const vm = new Vue({
     el: '#app',
 });
+
+
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});

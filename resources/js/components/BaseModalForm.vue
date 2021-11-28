@@ -47,13 +47,13 @@
                                 <!-- text input -->
                                 <div class="form-group">
                                     <label>Длина {{ len.name }}</label>
-                                    <input type="number" class="form-control" placeholder="min" v-model.number="len.val[0]">
+                                    <input type="number" class="form-control" placeholder="min" v-model.number="len.input.min">
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>&nbsp;</label>
-                                    <input type="number" class="form-control" placeholder="max" v-model.number="len.val[1]">
+                                    <input type="number" class="form-control" placeholder="max" v-model.number="len.input.max">
                                 </div>
                             </div>
                         </div>
@@ -108,9 +108,9 @@
                 link: '',
                 timeout: 500,
                 length: [
-                    {key: 'title', name: 'title (recommend 30-70)', val: [null, null]},
-                    {key: 'description', name: 'description (recommend 30-70)', val: [null, null]},
-                    {key: 'keywords', name: 'keywords (recommend 30-70)', val: [null, null]},
+                    {id: 'title', name: 'title (recommend 30-70)', input: {min: null, max: null}},
+                    {id: 'description', name: 'description (recommend 30-70)', input: {min: null, max: null}},
+                    {id: 'keywords', name: 'keywords (recommend 30-70)', input: {min: null, max: null}},
                 ],
                 radios: [
                     {value: 0, text: 'manual'},
@@ -129,12 +129,10 @@
                 this.link = val.links;
                 this.timeout = val.timeout;
 
-                this.length[0].val[0] = val.length_title_min;
-                this.length[0].val[1] = val.length_title_max;
-                this.length[1].val[0] = val.length_description_min;
-                this.length[1].val[1] = val.length_description_max;
-                this.length[2].val[0] = val.length_keywords_min;
-                this.length[2].val[1] = val.length_keywords_max;
+                _.forEach(this.length, function(value) {
+                    value.input.min = val[value.id + '_min'];
+                    value.input.max = val[value.id + '_max'];
+                });
             }
         },
         methods: {
@@ -142,24 +140,24 @@
             OnSubmitMetaForm() {
                 var app = this;
 
+                var data = {
+                    status: app.status,
+                    name: app.name,
+                    period: app.period,
+                    links: app.link,
+                    timeout: app.timeout,
+                    histories: app.data,
+                };
+
+                _.forEach(this.length, function(value) {
+                    data[value.id + '_min'] = value.input.min;
+                    data[value.id + '_max'] = value.input.max;
+                });
+
                 axios.request({
                     url: app.request,
                     method: app.method,
-                    data: {
-                        status: app.status,
-                        name: app.name,
-                        period: app.period,
-                        links: app.link,
-                        timeout: app.timeout,
-                        histories: app.data,
-
-                        length_title_min: app.length[0].val[0],
-                        length_title_max: app.length[0].val[1],
-                        length_description_min: app.length[1].val[0],
-                        length_description_max: app.length[1].val[1],
-                        length_keywords_min: app.length[2].val[0],
-                        length_keywords_max: app.length[2].val[1],
-                    }
+                    data: data,
                 }).then(function(response){
                     console.log(response);
 

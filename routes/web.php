@@ -33,8 +33,11 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('users', 'UsersController');
 
+    Route::post('/meta-tags/get', 'MetaTagsController@getMetaTags');
+    Route::put('/meta-tags/histories/ideal/{id}', 'MetaTagsController@updateHistoriesIdeal');
     Route::patch('/meta-tags/histories/{id}', 'MetaTagsController@storeHistories');
     Route::get('/meta-tags/histories/{id}', 'MetaTagsController@showHistories');
+    Route::get('/meta-tags/history/{id}', 'MetaTagsController@showHistory');
     Route::resource('meta-tags', 'MetaTagsController');
 
     Route::get('behavior/{behavior}/edit-project', 'BehaviorController@editProject')->name('behavior.edit_project');
