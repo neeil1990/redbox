@@ -19,13 +19,13 @@
                             <!-- text input -->
                             <div class="form-group">
                                 <label>Длина {{ len.name }}</label>
-                                <input type="number" class="form-control" placeholder="min" v-model.number="len.val[0]">
+                                <input type="number" class="form-control" placeholder="min" v-model.lazy="len.input.min">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>&nbsp;</label>
-                                <input type="number" class="form-control" placeholder="max" v-model.number="len.val[1]">
+                                <input type="number" class="form-control" placeholder="max" v-model.lazy="len.input.max">
                             </div>
                         </div>
                     </div>
@@ -69,7 +69,9 @@
                                         </a>
                                     </h4>
 
-                                    <base-tools :data="url.data" :length="length"></base-tools>
+                                    <div class="card-tools">
+                                        <span v-for="error_badge in url.error.badge" v-if="error_badge.length" v-html="error_badge.join('')"></span>
+                                    </div>
                                 </div>
 
                                 <div :id="'collapse' + index" class="collapse" data-parent="#accordion" style="">
@@ -94,13 +96,7 @@
                                                     <td>
                                                         <span class="badge bg-warning">{{ item.length }}</span>
                                                     </td>
-                                                    <td>
-                                                        <small v-if="item.length > 1 && (tag === 'title' || tag === 'description' || tag === 'canonical' || tag === 'h1')">
-                                                            Дублирующийся тег <span class="badge badge-danger">< {{tag}} ></span> Проверьте страницу и оставьте 1 тег
-                                                        </small>
-                                                        <span v-else-if="item.length === 1 && lengthError(item, tag)" v-html="lengthError(item, tag)"></span>
-                                                        <span v-else class="badge badge-success">Без проблем</span>
-                                                    </td>
+                                                    <td v-html="url.error.main[tag].join(' <br />')"></td>
                                                 </tr>
 
                                             </tbody>
@@ -119,11 +115,8 @@
                         </div>
 
                     </div>
-                    <!-- /.card-body -->
-
                 </div>
             </div>
-
         </div>
 
         <div class="row" v-if="metas.length">
@@ -201,7 +194,12 @@
 
                             </tbody>
 
-                            <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalFormEdit" method="patch" :values="value" :request="'/meta-tags/' + request" ></base-modal-form>
+                            <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags"
+                                             target="ProjectModalFormEdit"
+                                             method="patch"
+                                             :values="value"
+                                             :request="'/meta-tags/' + request"
+                            ></base-modal-form>
                         </table>
                     </div>
                     <!-- /.card-body -->
@@ -213,6 +211,7 @@
 </template>
 
 <script>
+
     export default {
         name: "MetaTags",
         props: {
@@ -233,12 +232,11 @@
                 url: '',
                 time: 500,
                 length: [
-                    {key: 'title', name: 'title (recommend 30-70)', val: [null, null]},
-                    {key: 'description', name: 'description (recommend 30-70)', val: [null, null]},
-                    {key: 'keywords', name: 'keywords (recommend 30-70)', val: [null, null]},
+                    {id: 'title', name: 'title (recommend 30-70)', input: {min: null, max: null}},
+                    {id: 'description', name: 'description (recommend 30-70)', input: {min: null, max: null}},
+                    {id: 'keywords', name: 'keywords (recommend 30-70)', input: {min: null, max: null}},
                 ],
                 result: [],
-                error: [],
                 options: [
                     {value: 0, text: 'manual'},
                     {value: 6, text: '6 часов'},
@@ -281,41 +279,26 @@
             }
         },
         methods: {
-            lengthError(item, tag) {
-                let idx = _.findIndex(this.length, function(o) { return o.key === tag; });
-                if(this.length[idx]){
-                    let meta_count = item[0].length;
-                    let count_arr = this.length[idx].val;
 
-                    if(count_arr[0] && count_arr[1]){
-                        if(meta_count < count_arr[0] || meta_count > count_arr[1]){
-                            return '<span class="badge badge-danger">Длина ' + tag + ': ' + meta_count + '</span><br/><small>Вы задали диапазон с ' + count_arr[0] + ' до ' + count_arr[1] + '</small>';
-                        }else
-                            return false;
-                    }else
-                        return false;
-                }
-            },
-
-            StartMetaTags(meta) {
+            StartMetaTags(meta)
+            {
                 $("html, body").stop().animate({scrollTop : 200}, 500, 'swing');
 
                 this.url = meta.links;
                 this.time = meta.timeout;
 
-                this.length[0].val[0] = meta.length_title_min;
-                this.length[0].val[1] = meta.length_title_max;
-                this.length[1].val[0] = meta.length_description_min;
-                this.length[1].val[1] = meta.length_description_max;
-                this.length[2].val[0] = meta.length_keywords_min;
-                this.length[2].val[1] = meta.length_keywords_max;
+                _.forEach(this.length, function(value) {
+                    value.input.min = meta[value.id + '_min'];
+                    value.input.max = meta[value.id + '_max'];
+                });
 
                 this.onSubmitMetaTags();
 
                 this.startBtnProjectId = meta.id;
             },
 
-            onSubmitMetaTagsEditField(meta) {
+            onSubmitMetaTagsEditField(meta)
+            {
 
                 axios.request({
                     url: '/meta-tags/' + meta.id,
@@ -332,19 +315,20 @@
                 });
             },
 
-            onSubmitMetaTagsEdit(meta) {
+            onSubmitMetaTagsEdit(meta)
+            {
 
                 this.request = meta.id;
                 this.value = meta;
             },
 
-            onSubmitMetaTags(){
+            onSubmitMetaTags()
+            {
                 let url = '';
 
                 if(this.url.length){
                     url = this.StringAsObj(this.url);
                     this.result = [];
-                    this.error = [];
 
                     url.forEach((element,i) => {
 
@@ -358,13 +342,13 @@
 
             },
 
-            HttpRequest(url, i) {
+            HttpRequest(url, i)
+            {
                 var app = this;
 
-                axios.get('/meta-tags', {
-                    params: {
-                        url: url
-                    }
+                axios.post('/meta-tags/get', {
+                    url: url,
+                    length: app.length,
                 }).then(function (response) {
 
                     app.result.push(response.data);
@@ -374,7 +358,8 @@
                 });
             },
 
-            DeleteMetaTags(id) {
+            DeleteMetaTags(id)
+            {
 
                 let del = confirm("Your sure?");
                 if(del){
@@ -402,7 +387,8 @@
                 $('.modal').modal('hide');
             },
 
-            StringAsObj(str){
+            StringAsObj(str)
+            {
                 return _.compact(str.split(/[\r\n]+/));
             }
         }

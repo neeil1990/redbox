@@ -12,12 +12,12 @@ class MetaTag extends Model
         'period',
         'links',
         'timeout',
-        'length_title_min',
-        'length_title_max',
-        'length_description_min',
-        'length_description_max',
-        'length_keywords_min',
-        'length_keywords_max',
+        'title_min',
+        'title_max',
+        'description_min',
+        'description_max',
+        'keywords_min',
+        'keywords_max',
     ];
 
     public function histories()
