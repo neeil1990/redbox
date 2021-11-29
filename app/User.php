@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Notifications\brokenDomainNotification;
+use App\Notifications\BrokenDomainNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\DomainInformationNotification;
 use App\Notifications\RegisterPasswordEmail;
@@ -89,7 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function brokenDomainNotification($project)
     {
-        $this->notify(new brokenDomainNotification($project));
+        $this->notify(new BrokenDomainNotification($project));
     }
 
     /**

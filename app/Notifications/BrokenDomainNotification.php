@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class brokenDomainNotification extends Notification
+class BrokenDomainNotification extends Notification
 {
     use Queueable;
 
