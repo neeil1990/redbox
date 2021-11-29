@@ -69,6 +69,9 @@ class Common extends Model
         $text = trim(strip_tags($text));
         $text = html_entity_decode($text);
         $text = str_replace(["\n", "\t", "\r"], '  ', $text);
+        $text = preg_replace("/[0-9]/", "", $text);
+        $text = preg_replace("#[[:punct:]]#", "", $text);
+        $text = preg_replace('| +|', ' ', $text);
         return preg_replace('| +|', ' ', $text);
     }
 }

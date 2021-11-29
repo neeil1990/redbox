@@ -6,11 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class TelegramBot extends Model
 {
+    /**
+     * @var array
+     */
     protected $guarded = [];
 
+    /**
+     * @var string
+     */
     protected $table = 'telegram_bot';
 
-    public static function brokenDomenNotification($project, $chatId)
+    public static function brokenDomainNotification($project, $chatId)
     {
         TelegramBot::prepareBreakdownMessage($project, $chatId);
     }
@@ -44,9 +50,11 @@ class TelegramBot extends Model
         if (isset($offset)) {
             $data = ['offset' => $offset];
         }
-        $updates = json_decode(file_get_contents('https://api.telegram.org/bot'
-            . env('TELEGRAM_BOT_TOKEN', '') .
-            '/getUpdates?' . http_build_query($data)), true);
+        $updates = json_decode(
+            file_get_contents(
+                'https://api.telegram.org/bot2073017935:AAFN_wcMJHHNdI_JOeIfbd7W65_GnqvcqHU/getUpdates?'
+                . http_build_query($data)
+            ), true);
 
         return $updates['result'];
     }
@@ -84,15 +92,9 @@ class TelegramBot extends Model
 
     public static function sendSuccessMessage($chatId)
     {
-        $data = [
-            'text' => __('You have successfully subscribed to the notification newsletter'),
-            'chat_id' => $chatId,
-            'parse_mode' => 'HTML'
-        ];
+        $text = __('You have successfully subscribed to the notification newsletter');
 
-        file_get_contents('https://api.telegram.org/bot'
-            . env('TELEGRAM_BOT_TOKEN', '') .
-            '/sendMessage?' . http_build_query($data));
+        TelegramBot::sendMessage($text, $chatId);
     }
 
     public static function prepareBreakdownMessage($project, $chatId)
@@ -129,24 +131,6 @@ class TelegramBot extends Model
 <a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
 
         TelegramBot::sendMessage($text, $chatId);
-    }
-
-    /**
-     * @param $text
-     * @param $chatId
-     */
-    public static function sendMessage($text, $chatId)
-    {
-        $data = [
-            'text' => $text,
-            'chat_id' => $chatId,
-            'parse_mode' => 'HTML',
-            'disable_web_page_preview' => true,
-        ];
-
-        file_get_contents('https://api.telegram.org/bot'
-            . env('TELEGRAM_BOT_TOKEN', '') .
-            '/sendMessage?' . http_build_query($data));
     }
 
     public static function removeProtocol($project)
@@ -186,5 +170,23 @@ class TelegramBot extends Model
             . " <a href='https://lk.redbox.su/domain-information' target='_blank'>https://lk.redbox.su/domain-information</a>";
 
         TelegramBot::sendMessage($text, $chatId);
+    }
+
+    /**
+     * @param $text
+     * @param $chatId
+     */
+    public static function sendMessage($text, $chatId)
+    {
+        $data = [
+            'text' => $text,
+            'chat_id' => $chatId,
+            'parse_mode' => 'HTML',
+            'disable_web_page_preview' => true,
+        ];
+
+        file_get_contents('https://api.telegram.org/bot2073017935:AAFN_wcMJHHNdI_JOeIfbd7W65_GnqvcqHU/sendMessage?'
+            . http_build_query($data)
+        );
     }
 }

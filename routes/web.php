@@ -115,6 +115,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('delete-domains-information', 'DomainInformationController@removeDomains')->name('delete.domain-information');
     Route::get('check-domain-information/{id}', 'DomainInformationController@checkDomain')->name('check.domain.information');
 
-//    Route::get('text-analyzer', 'TextAnalyzerController@index')->name('text.analyzer.view');
-//    Route::post('text-analyzer', 'TextAnalyzerController@analyze')->name('text.analyzer');
+    Route::get('text-analyzer', 'TextAnalyzerController@index')->name('text.analyzer.view');
+    Route::post('text-analyzer', 'TextAnalyzerController@analyze')->name('text.analyzer');
 });

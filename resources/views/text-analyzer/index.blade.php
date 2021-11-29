@@ -48,7 +48,9 @@
                     <input type="checkbox"
                            class="custom-control-input"
                            checked
-                           id="switchConjunctionsPrepositionsPronouns">
+                           id="switchConjunctionsPrepositionsPronouns"
+                           name="conjunctionsPrepositionsPronouns"
+                    >
                     <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
                 </div>
             </div>
