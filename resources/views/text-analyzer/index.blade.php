@@ -10,13 +10,14 @@
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
-    <div class="form-group required">
-        {!! Form::select('type', ['text' => __('TEXT'),'HTML code' => __('HTML code'), 'url' => __('URL')], null, ['class' => 'form-control col-4 type-analyzing']) !!}
-    </div>
-    <div class="form-group required text-or-html">
-        {!! Form::textarea('text', null, ['class' => 'form-control textarea-text-or-html', 'required']) !!}
-    </div>
-    <div class="form-group required url" style="display: none">
+{{--    <div class="form-group required">--}}
+{{--        {!! Form::select('type', ['text' => __('TEXT'),'HTML code' => __('HTML code'), 'url' => __('URL')], null, ['class' => 'form-control col-4 type-analyzing']) !!}--}}
+{{--    </div>--}}
+{{--    <div class="form-group required text-or-html">--}}
+{{--        {!! Form::textarea('text', null, ['class' => 'form-control textarea-text-or-html', 'required']) !!}--}}
+{{--    </div>--}}
+    <div class="form-group required url">
+        <label for="link">URL</label>
         {!! Form::text('link', null, ['class' => 'form-control col-8 url']) !!}
     </div>
     <div class="switch mt-5 mb-3">
@@ -187,20 +188,20 @@
     @slot('js')
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script>
-            $('.form-control.col-4.type-analyzing').change(function () {
-                let text = $('.textarea-text-or-html')
-                if ($(this).val() === 'text' || $(this).val() === 'HTML code') {
-                    $('.form-group.required.url').hide(300)
-                    $('.form-control.col-8.url').removeAttr('required')
-                    text.show(300)
-                    text.prop('required', true)
-                } else {
-                    $('.form-group.required.url').show(300)
-                    $('.form-control.col-8.url').prop('required', true)
-                    text.hide(300)
-                    text.removeAttr('required')
-                }
-            })
+            // $('.form-control.col-4.type-analyzing').change(function () {
+            //     let text = $('.textarea-text-or-html')
+            //     if ($(this).val() === 'text' || $(this).val() === 'HTML code') {
+            //         $('.form-group.required.url').hide(300)
+            //         $('.form-control.col-8.url').removeAttr('required')
+            //         text.show(300)
+            //         text.prop('required', true)
+            //     } else {
+            //         $('.form-group.required.url').show(300)
+            //         $('.form-control.col-8.url').prop('required', true)
+            //         text.hide(300)
+            //         text.removeAttr('required')
+            //     }
+            // })
 
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
@@ -242,7 +243,6 @@
                         b = array[i]
                         a.push(b);
                     }
-
                     return a;
                 }
             });
