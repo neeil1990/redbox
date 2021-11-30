@@ -187,7 +187,7 @@ class MetaTagsController extends Controller
             throw new \ErrorException('User not valid');
 
         $project = $history->project;
-        $data = json_decode($history->data);
+        $data = collect(json_decode($history->data));
 
         return view('meta-tags.history', compact('data', 'project'));
     }

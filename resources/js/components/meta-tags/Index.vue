@@ -59,33 +59,34 @@
 
                     <div class="card-body">
 
+                        <meta-filter :seen="seenCard" :metaTags="result"></meta-filter>
+
                         <div id="accordion">
+                            <div class="card" v-for="(url, index) in result" v-show="!seenCard.length || seenCard[index] === 1">
+                                    <div class="card-header card-header-accordion">
+                                        <h4 class="card-title">
+                                            <a class="d-block w-100 collapsed accordion-title" data-toggle="collapse" :href="'#collapse' + index" aria-expanded="false">
+                                                <i class="expandable-accordion-caret fas fa-caret-right fa-fw"></i> {{ url.title }}
+                                            </a>
+                                        </h4>
 
-                            <div class="card" v-for="(url, index) in result">
-                                <div class="card-header card-header-accordion">
-                                    <h4 class="card-title">
-                                        <a class="d-block w-100 collapsed accordion-title" data-toggle="collapse" :href="'#collapse' + index" aria-expanded="false">
-                                            <i class="expandable-accordion-caret fas fa-caret-right fa-fw"></i> {{ url.title }}
-                                        </a>
-                                    </h4>
-
-                                    <div class="card-tools">
-                                        <span v-for="error_badge in url.error.badge" v-if="error_badge.length" v-html="error_badge.join('')"></span>
+                                        <div class="card-tools">
+                                            <span v-for="error_badge in url.error.badge" v-if="error_badge.length" v-html="error_badge.join('')"></span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div :id="'collapse' + index" class="collapse" data-parent="#accordion" style="">
-                                    <div class="card-body">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                            <tr>
-                                                <th>Tag</th>
-                                                <th>Content</th>
-                                                <th style="width: 40px">Count</th>
-                                                <th style="width: 150px">Main problems</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
+                                    <div :id="'collapse' + index" class="collapse" data-parent="#accordion" style="">
+                                        <div class="card-body">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>Tag</th>
+                                                    <th>Content</th>
+                                                    <th style="width: 40px">Count</th>
+                                                    <th style="width: 150px">Main problems</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
 
                                                 <tr v-for="(item, tag) in url.data">
                                                     <td><span class="badge badge-success">< {{ tag }} ></span></td>
@@ -99,12 +100,11 @@
                                                     <td v-html="url.error.main[tag].join(' <br />')"></td>
                                                 </tr>
 
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
                         </div>
 
                         <div class="row" v-if="FormShow">
@@ -211,9 +211,13 @@
 </template>
 
 <script>
+    import MetaFilter from './Filter'
 
     export default {
         name: "MetaTags",
+        components: {
+            MetaFilter
+        },
         props: {
             meta: {
                 type: [Object, Array]
@@ -237,6 +241,7 @@
                     {id: 'keywords', name: 'keywords (recommend 30-70)', input: {min: null, max: null}},
                 ],
                 result: [],
+                seenCard: [],
                 options: [
                     {value: 0, text: 'manual'},
                     {value: 6, text: '6 часов'},
@@ -286,6 +291,7 @@
 
                 this.url = meta.links;
                 this.time = meta.timeout;
+                this.seenCard = [];
 
                 _.forEach(this.length, function(value) {
                     value.input.min = meta[value.id + '_min'];
@@ -396,5 +402,17 @@
 </script>
 
 <style scoped>
+
+    .list-item {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .list-enter-active, .list-leave-active {
+        transition: all 1s;
+    }
+    .list-enter, .list-leave-to /* .list-leave-active до версии 2.1.8 */ {
+        opacity: 0;
+        transform: translateY(30px);
+    }
 
 </style>
