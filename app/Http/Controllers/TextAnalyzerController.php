@@ -68,8 +68,8 @@ class TextAnalyzerController extends Controller
                     $dataText = TextAnalyzer::removeConjunctionsPrepositionsPronouns($dataText);
                 }
                 //clouds
-                $response['linksText'] = TextAnalyzer::prepareCloud($altText);
-                $response['textWithLinks'] = TextAnalyzer::prepareCloud($text . $altText . $titleText . $dataText);
+                $response['linksText'] = TextAnalyzer::prepareCloud($titleText);
+                $response['textWithLinks'] = TextAnalyzer::prepareCloud($text . $titleText . $dataText);
                 $response['textWithoutLinks'] = TextAnalyzer::prepareCloud($text);
 
                 $response['phrases'] = TextAnalyzer::searchPhrases($text);
