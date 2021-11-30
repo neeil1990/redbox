@@ -17,9 +17,6 @@ class DomainInformation extends Model
 
     /**
      * @param $project
-     * @throws ConnectionException
-     * @throws ServerMismatchException
-     * @throws WhoisException
      */
     public static function checkDomainSock($project)
     {

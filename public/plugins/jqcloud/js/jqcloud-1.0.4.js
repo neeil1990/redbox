@@ -12,6 +12,8 @@
 (function ($) {
     "use strict";
     $.fn.jQCloud = function (word_array, options) {
+        console.log(word_array)
+        console.log('ANOTHER')
         // Reference to the container element
         var $this = this;
         // Namespace word ids to avoid collisions between multiple clouds
@@ -243,3 +245,4 @@
         return $this;
     };
 })(jQuery);
+
