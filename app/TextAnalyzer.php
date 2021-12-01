@@ -2,9 +2,6 @@
 
 namespace App;
 
-use Illuminate\Support\Collection;
-use Symfony\Component\VarDumper\VarDumper;
-
 class TextAnalyzer
 {
     /**
@@ -62,10 +59,9 @@ class TextAnalyzer
 
     public static function deleteEverythingExceptCharacters($text)
     {
-        $text = preg_replace("'<style[^>]*?>.*?</style>'si", "", $text);
-        $text = preg_replace("'<script[^>]*?>.*?</script>'si", "", $text);
+        $text = preg_replace(["'<style[^>]*?>.*?</style>'si", "'<script[^>]*?>.*?</script>'si"], "", $text);
         $text = trim(strip_tags($text));
-        $text = str_replace(["\n", "\t", "\r", "&nbsp;", "»", "«", "-", ".", ",", "!", "?", "(", ")", "+"], ' ', $text);
+        $text = str_replace(["\n", "\t", "\r", "&nbsp;", "»", "«", ".", ",", "!", "?", "(", ")", "+", ";", ":", "-", "₽", "$"], ' ', $text);
         $text = preg_replace("/[0-9]/", "", $text);
         return preg_replace('| +|', ' ', $text);
     }
@@ -171,10 +167,7 @@ class TextAnalyzer
         $listWords = array_merge($pronouns, $preposition, $conjunctions);
 
         foreach ($listWords as $listWord) {
-            $text = str_replace([
-                ' ' . $listWord . ' ',
-                ' ' . mb_strtolower($listWord) . ' ',
-            ], ' ', $text);
+            $text = str_replace(' ' . $listWord . ' ', ' ', $text);
         }
 
         return $text;
@@ -216,13 +209,7 @@ class TextAnalyzer
         $countWords = count($array);
         foreach ($array as $item) {
             if (!in_array($item, $was) && $item != "") {
-                $weight = mb_substr_count($string, ' ' . $item . ' ');
-                if ($weight == 0) {
-                    $weight = mb_substr_count($string, $item . ' ');
-                }
-                if ($weight == 0) {
-                    $weight = mb_substr_count($string, ' ' . $item);
-                }
+                $weight = substr_count($string, ' ' . $item . ' ');
                 $words[] = [
                     'text' => $item,
                     'weight' => $weight,
@@ -236,7 +223,6 @@ class TextAnalyzer
         $words['count'] = count($words) - 1;
         $collection = collect($words);
         $collection = $collection->sortByDesc('weight')->toArray();
-
         return $collection;
     }
 
@@ -268,11 +254,9 @@ class TextAnalyzer
                 }
             }
         }
-
         foreach ($result as $item) {
             $resultWithDensity[] = array_merge($item, ['density' => round(100 / $density * $item['total'], 2)]);
         }
-
         $collection = collect($resultWithDensity);
 
         return $collection->sortByDesc('total')->toArray();
@@ -303,7 +287,7 @@ class TextAnalyzer
             $result[] = [
                 'phrase' => $phrase['phrase'],
                 'count' => $count,
-                'density' => (100 / $generalCount) * $count,
+                'density' => round((100 / $generalCount) * $count, 2),
             ];
         }
 
@@ -391,5 +375,46 @@ class TextAnalyzer
         }
 
         return TextAnalyzer::deleteEverythingExceptCharacters($hiddenText);
+    }
+
+    /**
+     * @param $html
+     * @return string|string[]|null
+     */
+    public static function getLinkText($html)
+    {
+        $linkText = '';
+        preg_match_all('(<a *href=["\']?(.*?)([\'"]+[^<>]*>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            $match = strip_tags($match[3]);
+            if ($match !== "") {
+                $linkText .= $match . " ";
+            }
+        }
+
+        return TextAnalyzer::deleteEverythingExceptCharacters($linkText);
+    }
+
+    /**
+     * @param $array
+     * @return array
+     */
+    public static function prepareDataGraph($array): array
+    {
+        $result = [];
+        $i = 0;
+        foreach ($array as $item) {
+            $result[] = [
+                'x' => $i + 5,
+                'y' => $item['total'],
+                'label' => $item['text'],
+            ];
+            if ($i == 20) {
+                break;
+            }
+            $i++;
+        }
+
+        return $result;
     }
 }
