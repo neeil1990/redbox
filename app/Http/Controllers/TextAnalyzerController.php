@@ -46,7 +46,6 @@ class TextAnalyzerController extends Controller
                 $response['noIndex'] = true;
             }
             $linkText = TextAnalyzer::getLinkText($html);
-            dd($linkText);
             if (isset($request->hiddenText)) {
                 $titleText = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*?>");
                 $altText = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*?>");
