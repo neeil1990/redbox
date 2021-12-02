@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\MetaTagsHistoriesExport;
 use App\Mail\MetaTagsEmail;
 use App\MetaTag;
 use App\MetaTagsHistory;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use Yangqi\Htmldom\Htmldom;
 use Ixudra\Curl\Facades\Curl;
 
@@ -35,6 +37,15 @@ class MetaTagsController extends Controller
         ['name' => 'h3', 'tag' => 'h3', 'type' => 'string'],
         ['name' => 'a', 'tag' => 'a', 'type' => 'string'],
     ];
+
+    /**
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export($id)
+    {
+        return Excel::download(new MetaTagsHistoriesExport($id), 'meta_tags.csv');
+    }
 
     /**
      * @param Request $request

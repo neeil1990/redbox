@@ -60,6 +60,11 @@
                                 </td>
                                 <td class="project-actions">
 
+                                    <a class="btn btn-info btn-sm" href="/meta-tags/history/{{ $history->id }}/export/">
+                                        <i class="fas fa-file-download"></i>
+                                        Export
+                                    </a>
+
                                     <a class="btn btn-info btn-sm" href="#">
                                         <i class="fas fa-play-circle"></i>
                                         Update

@@ -33,6 +33,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('users', 'UsersController');
 
+    Route::get('/meta-tags/history/{id}/export/', 'MetaTagsController@export');
     Route::post('/meta-tags/get', 'MetaTagsController@getMetaTags');
     Route::put('/meta-tags/histories/ideal/{id}', 'MetaTagsController@updateHistoriesIdeal');
     Route::patch('/meta-tags/histories/{id}', 'MetaTagsController@storeHistories');

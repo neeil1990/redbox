@@ -86,6 +86,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="/meta-tags" class="nav-link">
+                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
+                <p>Анализ и мониторинг тегов</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('domain.monitoring') }}" class="nav-link">
                 <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
                 <p>{{ __('Domains monitoring') }}</p>
