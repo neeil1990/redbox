@@ -7,6 +7,7 @@ use App\Mail\MetaTagsEmail;
 use App\MetaTag;
 use App\MetaTagsHistory;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -171,7 +172,13 @@ class MetaTagsController extends Controller
 
         $project = Auth::user()->metaTags()->find($id);
 
+        $project->histories()->where([
+            ['created_at', '<', Carbon::now()->subDays(90)],
+            ['ideal', '=', 0]
+        ])->delete();
+
         $project->histories->transform(function ($item, $key) {
+
             $errors = json_decode($item->data);
 
             $error_quantity = null;
@@ -301,5 +308,15 @@ class MetaTagsController extends Controller
     public function destroy($id)
     {
         Auth::user()->metaTags()->find($id)->delete();
+    }
+
+    public function destroyHistory($id)
+    {
+        $history = MetaTagsHistory::findOrFail($id);
+
+        if($history->project->user_id != Auth::id())
+            throw new \ErrorException('User not valid');
+
+        $history->delete();
     }
 }
