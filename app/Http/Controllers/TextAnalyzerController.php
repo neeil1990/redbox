@@ -29,9 +29,9 @@ class TextAnalyzerController extends Controller
     public function analyze(Request $request)
     {
         $response = [];
-        $titleText = '';
-        $altText = '';
-        $dataText = '';
+        $title = '';
+        $alt = '';
+        $data = '';
         $response['link'] = $request->link;
         $html = TextAnalyzer::curlInit($request->link);
         if ($html == false) {
@@ -39,71 +39,72 @@ class TextAnalyzerController extends Controller
         } else {
             $html = mb_strtolower($html);
             $html = TextAnalyzer::removeHeaders($html);
-
             if (empty($request->noIndex)) {
                 $html = TextAnalyzer::removeNoindexText($html);
             } else {
                 $response['noIndex'] = true;
             }
-            $linkText = TextAnalyzer::getLinkText($html);
+            $link = TextAnalyzer::getLinkText($html);
             if (isset($request->hiddenText)) {
-                $titleText = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*?>");
-                $altText = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*?>");
-                $dataText = TextAnalyzer::getHiddenText($html, "<.*?data-text=\"(.*?)\".*?>");
+                $title = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*>");
+                $alt = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*>");
+                $data = TextAnalyzer::getHiddenText($html, "<.*?data-text=\"(.*?)\".*>");
                 $response['hiddenText'] = true;
             }
 
+            $html = TextAnalyzer::clearHTMLFromLinks($html);
             $text = TextAnalyzer::deleteEverythingExceptCharacters($html);
             if (empty($request->conjunctionsPrepositionsPronouns)) {
                 $text = TextAnalyzer::removeConjunctionsPrepositionsPronouns($text);
-                $titleText = TextAnalyzer::removeConjunctionsPrepositionsPronouns($titleText);
-                $altText = TextAnalyzer::removeConjunctionsPrepositionsPronouns($altText);
-                $dataText = TextAnalyzer::removeConjunctionsPrepositionsPronouns($dataText);
-                $linkText = TextAnalyzer::removeConjunctionsPrepositionsPronouns($linkText);
+                $title = TextAnalyzer::removeConjunctionsPrepositionsPronouns($title);
+                $alt = TextAnalyzer::removeConjunctionsPrepositionsPronouns($alt);
+                $data = TextAnalyzer::removeConjunctionsPrepositionsPronouns($data);
+                $link = TextAnalyzer::removeConjunctionsPrepositionsPronouns($link);
             } else {
                 $response['conjunctionsPrepositionsPronouns'] = true;
             }
 
-            if (empty($request->listWords)) {
+            if (isset($request->switchMyListWords)) {
                 $text = TextAnalyzer::removeWords($request->listWords, $text);
-                $titleText = TextAnalyzer::removeWords($request->listWords, $titleText);
-                $altText = TextAnalyzer::removeWords($request->listWords, $altText);
-                $dataText = TextAnalyzer::removeWords($request->listWords, $dataText);
-                $linkText = TextAnalyzer::removeWords($request->listWords, $linkText);
-            } else {
+                $title = TextAnalyzer::removeWords($request->listWords, $title);
+                $alt = TextAnalyzer::removeWords($request->listWords, $alt);
+                $data = TextAnalyzer::removeWords($request->listWords, $data);
+                $link = TextAnalyzer::removeWords($request->listWords, $link);
                 $response['listWords'] = $request->listWords;
             }
 
+            $total = $text . ' ' . $alt . ' ' . $title . ' ' . $data;
+            $length = Str::length($total . ' ' . $link);
+            $countSpaces = substr_count($total . ' ' . $link, ' ');
             $response['general'] = [
-                'textLength' => Str::length($text),
-                'countSpaces' => substr_count($text, ' '),
-                'lengthWithOutSpaces' => Str::length($text) - substr_count($text, ' '),
+                'textLength' => $length,
+                'countSpaces' => $countSpaces,
+                'lengthWithOutSpaces' => $length - $countSpaces,
                 'countWords' => count(
                     str_word_count($text, 1, "аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъыЫьэЭюЮяЯ")
                 ),
             ];
 
             //clouds
-            $response['linksText'] = TextAnalyzer::prepareCloud($linkText);
-            $response['textWithoutLinks'] = TextAnalyzer::prepareCloud($text);
-            $response['textWithLinks'] = TextAnalyzer::prepareCloud($text . $altText . $titleText . $dataText . $linkText);
+            $textWithoutLinks = TextAnalyzer::prepareCloud($total);
+            $linksText = TextAnalyzer::prepareCloud($link);
+            $textWithLinks = TextAnalyzer::prepareCloud($total . $link);
 
-            $response['totalWords'] = TextAnalyzer::AnalyzeWords($response['textWithoutLinks'], $response['linksText']);
-            $response['phrases'] = TextAnalyzer::searchPhrases($text . $altText . $titleText . $dataText . $linkText);
-
-            $graph = TextAnalyzer::prepareDataGraph($response['totalWords']);
+            $response['totalWords'] = TextAnalyzer::AnalyzeWords($total, $link);
+            $response['phrases'] = TextAnalyzer::searchPhrases($total . $link);
 
             JavaScript::put([
-                'textWithoutLinks' => $response['textWithoutLinks'],
-                'linksText' => $response['linksText'],
-                'textWithLinks' => $response['textWithLinks'],
-                'graph' => $graph,
+                'textWithoutLinks' => $textWithoutLinks,
+                'textWithLinks' => $textWithLinks,
+                'linksText' => $linksText,
+                'graph' => TextAnalyzer::prepareDataGraph($response['totalWords']),
 
             ]);
             return view('text-analyzer.index', ['response' => $response]);
         }
 
         return Redirect::back();
+
     }
 
 }

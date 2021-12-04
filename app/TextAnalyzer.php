@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Symfony\Component\VarDumper\VarDumper;
+
 class TextAnalyzer
 {
     /**
@@ -61,7 +63,12 @@ class TextAnalyzer
     {
         $text = preg_replace(["'<style[^>]*?>.*?</style>'si", "'<script[^>]*?>.*?</script>'si"], "", $text);
         $text = trim(strip_tags($text));
-        $text = str_replace(["\n", "\t", "\r", "&nbsp;", "»", "«", ".", ",", "!", "?", "(", ")", "+", ";", ":", "-", "₽", "$"], ' ', $text);
+        $text = str_replace([
+            "\n", "\t", "\r", "&nbsp;",
+            "»", "«", ".", ",", "!", "?",
+            "(", ")", "+", ";", ":", "-",
+            "₽", "$", "/", "[", "]", "“"
+        ], ' ', $text);
         $text = preg_replace("/[0-9]/", "", $text);
         return preg_replace('| +|', ' ', $text);
     }
@@ -83,10 +90,8 @@ class TextAnalyzer
             $html,
             $matches,
             PREG_SET_ORDER);
-        foreach ($matches as $items) {
-            foreach ($items as $item) {
-                $html = str_replace($item, "", $html);
-            }
+        foreach ($matches as $item) {
+            $html = str_replace($item[0], "", $html);
         }
         return $html;
     }
@@ -112,7 +117,7 @@ class TextAnalyzer
         ];
         $preposition = [
             'без', 'безо', 'близ', 'в', 'во', 'вместо', 'вне', 'для', 'до', 'за', 'из', 'по',
-            'изо', 'из-за', 'из-под', 'к', 'ко', 'кроме', 'между', 'меж', 'на', 'над',
+            'изо', 'из-за', 'из-под', 'к', 'не', 'ко', 'кроме', 'между', 'меж', 'на', 'над',
             'о', 'об', 'обо', 'от', 'ото', 'перед', 'передо', 'пред', 'пред', 'пo', 'под',
             'подо', 'при', 'про', 'ради', 'с', 'со', 'сквозь', 'среди', 'у', 'через', 'чрез',
             'aboard', 'about', 'above', 'absent', 'across', 'before', 'after', 'against', 'along',
@@ -202,28 +207,35 @@ class TextAnalyzer
      */
     public static function prepareCloud($string): array
     {
-        $string = trim($string);
         $words = [];
         $was = [];
         $array = explode(" ", $string);
         $countWords = count($array);
         foreach ($array as $item) {
-            if (!in_array($item, $was) && $item != "") {
-                $weight = substr_count($string, ' ' . $item . ' ');
-                $words[] = [
-                    'text' => $item,
-                    'weight' => $weight,
-                    'html' => [
-                        'title' => (1 / $countWords) * $weight
-                    ],
-                ];
-                $was[] = $item;
+            if (strlen($item) >= 3) {
+                $item = addslashes($item);
+                preg_match_all("/.*?($item).*?/",
+                    $string,
+                    $matches,
+                    PREG_SET_ORDER);
+                if (!in_array($item, $was) && $item != "") {
+                    $weight = count($matches);
+                    $words[] = [
+                        'text' => $item,
+                        'weight' => $weight,
+                        'html' => [
+                            'title' => (1 / $countWords) * $weight
+                        ],
+                    ];
+                    $was[] = $item;
+                }
             }
         }
+
         $words['count'] = count($words) - 1;
         $collection = collect($words);
-        $collection = $collection->sortByDesc('weight')->toArray();
-        return $collection;
+
+        return $collection->sortByDesc('weight')->toArray();
     }
 
     /**
@@ -233,32 +245,47 @@ class TextAnalyzer
      */
     public static function AnalyzeWords($textWords, $linkWords): array
     {
+        $density = 0;
         $result = [];
         $resultWithDensity = [];
-        $density = 0;
-        foreach ($textWords as $keyT => $textWord) {
-            foreach ($linkWords as $keyW => $linkWord) {
-                if (
-                    array_key_last($linkWords) !== $keyW &&
-                    array_key_last($textWords) !== $keyT &&
-                    $textWord['text'] === $linkWord['text']
-                ) {
-                    $total = $textWord['weight'] + $linkWord['weight'];
-                    $result[] = [
-                        'text' => $textWord['text'],
-                        'inText' => $textWord['weight'],
-                        'inLink' => $linkWord['weight'],
-                        'total' => $total
+        $text = TextAnalyzer::countWordsInText($textWords);
+        $link = TextAnalyzer::countWordsInLink($linkWords);
+
+        foreach ($text as $key1 => $item1) {
+            foreach ($link as $key2 => $item2) {
+                similar_text($key1, $key2, $percent);
+                if ($percent > 82) {
+                    $wordForms = [
+                        'inLink' => array_shift($item2['wordForms']),
+                        'inText' => array_shift($item1['wordForms'])
                     ];
-                    $density += $total;
+                    $result[$key1] = [
+                        'text' => $key1,
+                        'inText' => $item1['inText'],
+                        'inLink' => $item2['inLink'],
+                        'total' => $item1['inText'] + $item2['inLink'],
+                        'wordForms' => $wordForms
+                    ];
+                    unset($link[$key2]);
+                    unset($text[$key1]);
+                    break;
                 }
             }
         }
-        foreach ($result as $item) {
-            $resultWithDensity[] = array_merge($item, ['density' => round(100 / $density * $item['total'], 2)]);
-        }
-        $collection = collect($resultWithDensity);
 
+        $result = array_merge($link, $text, $result);
+
+        foreach ($result as $item) {
+            $density += $item['total'];
+        }
+
+        foreach ($result as $item) {
+            $resultWithDensity[] = array_merge($item, [
+                'density' => round(100 / $density * $item['total'], 2)
+            ]);
+        }
+
+        $collection = collect($resultWithDensity);
         return $collection->sortByDesc('total')->toArray();
     }
 
@@ -367,7 +394,7 @@ class TextAnalyzer
     public static function getHiddenText($html, $regex)
     {
         $hiddenText = '';
-        preg_match_all($regex, $html, $matches, PREG_SET_ORDER);
+        preg_match_all($regex, $html, $matches, PREG_SET_ORDER);;
         foreach ($matches as $match) {
             if ($match[1] != "") {
                 $hiddenText .= $match[1] . ' ';
@@ -417,4 +444,116 @@ class TextAnalyzer
 
         return $result;
     }
+
+    /**
+     * @param $html
+     * @return string
+     */
+    public static function clearHTMLFromLinks($html): string
+    {
+        preg_match_all('(<a *href=["\']?(.*?)([\'"]+[^<>]*>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
+        foreach ($matches as $items) {
+            $html = str_replace($items[0], "", $html);
+        }
+        return $html;
+    }
+
+    /**
+     * @param $text
+     * @return array
+     */
+    public static function countWordsInText($text): array
+    {
+        $result = [];
+        $wordForms = [];
+        $will = [];
+        $text = explode(' ', $text);
+        $textAr = array_count_values($text);
+        asort($textAr);
+        $textAr = array_reverse($textAr);
+        foreach ($textAr as $key1 => $item1) {
+            if (!in_array($key1, $will)) {
+                foreach ($textAr as $key2 => $item2) {
+                    if (!in_array($key2, $will)) {
+                        similar_text($key1, $key2, $percent);
+                        if ($percent >= 82) {
+                            $wordForms[$key1][] = [$key2 => $textAr[$key2]];
+                            $will[] = $key2;
+                            $will[] = $key1;
+                        }
+                    }
+                }
+            }
+        }
+        foreach ($wordForms as $key => $wordForm) {
+            $extra = $textAr[$key];
+            $result[$key] = [
+                'text' => $key,
+                'inText' => $textAr[$key],
+                'inLink' => 0,
+                'total' => $textAr[$key],
+                'wordForms' => ['inText' => $wordForm]
+            ];
+            foreach ($wordForm as $key1 => $item) {
+                $count = array_shift($item);
+                $result[$key]['total'] += $count;
+                $result[$key]['inText'] += $count;
+            }
+            $result[$key]['total'] -= $extra;
+            $result[$key]['inText'] -= $extra;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $link
+     * @return array
+     */
+    public static function countWordsInLink($link): array
+    {
+        $links = [];
+        $wordForms = [];
+        $will = [];
+        $link = explode(' ', $link);
+        $linkAr = array_count_values($link);
+        asort($linkAr);
+        $linkAr = array_reverse($linkAr);
+
+        foreach ($linkAr as $key1 => $item1) {
+            if (!in_array($key1, $will)) {
+                foreach ($linkAr as $key2 => $item2) {
+                    if (!in_array($key2, $will)) {
+                        similar_text($key1, $key2, $percent);
+                        if ($percent > 82) {
+                            $wordForms[$key1][] = [$key2 => $linkAr[$key2]];
+                            $will[] = $key2;
+                            $will[] = $key1;
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach ($wordForms as $key => $wordForm) {
+            $extra = $linkAr[$key];
+            $links[$key] = [
+                'text' => $key,
+                'inLink' => $linkAr[$key],
+                'inText' => 0,
+                'total' => $linkAr[$key],
+                'wordForms' => ['inLink' => $wordForm]
+            ];
+            foreach ($wordForm as $key1 => $item) {
+                $count = array_shift($item);
+                $links[$key]['inLink'] += $count;
+                $links[$key]['total'] += $count;
+            }
+            $links[$key]['inLink'] -= $extra;
+            $links[$key]['total'] -= $extra;
+        }
+
+        return $links;
+    }
+
 }

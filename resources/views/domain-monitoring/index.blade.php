@@ -45,9 +45,7 @@
             <th class="col-2">{{ __('Keyword') }} <i class="fa fa-sort"></i></th>
             <th class="col-1">{{ __('Frequency every') }} <i class="fa fa-sort"></i></th>
             <th class="col-1">{{ __('Response waiting time') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">
-                {{ __('Status') }}
-                <i class="fa fa-sort"></i>
+            <th class="col-2">{{ __('Status') }}<i class="fa fa-sort"></i>
             </th>
             <th>{{ __('Receive notifications?') }}</th>
             <th class="col-1"></th>
@@ -3759,9 +3757,11 @@
                 });
                 return u
             });
-
         </script>
         <script defer>
+            $(document).ready(function () {
+                $('#example').DataTable();
+            });
             var oldValue = ''
             var oldProjectName = ''
             $('input.send-notification-switch').click(function () {
