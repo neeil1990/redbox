@@ -60,13 +60,18 @@
                                 </td>
                                 <td class="project-actions">
 
+                                    <a class="btn btn-info btn-sm" href="{{ route('meta.history.export', $history->id) }}">
+                                        <i class="fas fa-file-download"></i>
+                                        Export
+                                    </a>
+
                                     <a class="btn btn-info btn-sm" href="#">
                                         <i class="fas fa-play-circle"></i>
                                         Update
                                     </a>
 
-                                    <a class="btn btn-info btn-sm" href="#">
-                                        <i class="fas fa-play-circle"></i>
+                                    <a class="btn btn-info btn-sm delete-history" href="{{ route('meta.history.delete', $history->id) }}">
+                                        <i class="fas fa-trash-alt"></i>
                                         Delete
                                     </a>
 
@@ -104,6 +109,16 @@
                 }).done(function ( msg ) {
                     toastr.success('Успешно изменено');
                 });
+            });
+
+            $('.delete-history').click(function(e){
+                e.preventDefault();
+
+                let than = $(this);
+
+                axios.delete(than.attr('href'));
+                than.closest('tr').remove();
+                toastr.info('Успешно удалено');
             });
 
         </script>
