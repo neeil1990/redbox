@@ -262,14 +262,7 @@ class TextAnalyzer
     {
         $listWords = explode("\r\n", $listWords);
         foreach ($listWords as $listWord) {
-            $text = str_replace([
-                ' ' . $listWord . ' ',
-                ' ' . $listWord,
-                $listWord . ' ',
-                ' ' . mb_strtolower($listWord) . ' ',
-                ' ' . mb_strtolower($listWord),
-                mb_strtolower($listWord) . ' '
-            ], ' ', $text);
+            $text = str_replace([' ' . $listWord . ' ',], ' ', $text);
             $text = preg_replace('| +|', ' ', $text);
         }
 
