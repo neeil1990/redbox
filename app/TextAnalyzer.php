@@ -62,9 +62,10 @@ class TextAnalyzer
 
     /**
      * @param $string
+     * @param $request
      * @return array
      */
-    public static function analyze($string): array
+    public static function analyze($string, $request): array
     {
         $data = '';
         $alt = '';

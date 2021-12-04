@@ -32,11 +32,11 @@ class TextAnalyzerController extends Controller
                 return Redirect::back();
             } else {
                 $html = TextAnalyzer::removeHeaders($html);
-                $response = TextAnalyzer::analyze($html);
+                $response = TextAnalyzer::analyze($html, $request);
             }
         } else {
             if (strlen($request->text) > 200 && strlen($request->text) < 100000) {
-                $response = TextAnalyzer::analyze($request->text);
+                $response = TextAnalyzer::analyze($request->text, $request);
             } else {
                 flash()->overlay(__('The volume of the text should be from 200 to 100,000 characters'), ' ')->error();
                 return Redirect::back();
