@@ -2,7 +2,8 @@
 
 namespace App;
 
-use Symfony\Component\VarDumper\VarDumper;
+use Illuminate\Support\Str;
+use JavaScript;
 
 class TextAnalyzer
 {
@@ -57,6 +58,79 @@ class TextAnalyzer
 
         curl_close($curl);
         return $html;
+    }
+
+    /**
+     * @param $string
+     * @return array
+     */
+    public static function analyze($string): array
+    {
+        $data = '';
+        $alt = '';
+        $title = '';
+        $html = mb_strtolower($string);
+        if (empty($request->noIndex)) {
+            $html = TextAnalyzer::removeNoindexText($html);
+        } else {
+            $response['noIndex'] = true;
+        }
+        $link = TextAnalyzer::getLinkText($html);
+        if (isset($request->hiddenText)) {
+            $title = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*>");
+            $alt = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*>");
+            $data = TextAnalyzer::getHiddenText($html, "<.*?data-text=\"(.*?)\".*>");
+            $response['hiddenText'] = true;
+        }
+
+        $html = TextAnalyzer::clearHTMLFromLinks($html);
+        $text = TextAnalyzer::deleteEverythingExceptCharacters($html);
+        if (empty($request->conjunctionsPrepositionsPronouns)) {
+            $text = TextAnalyzer::removeConjunctionsPrepositionsPronouns($text);
+            $title = TextAnalyzer::removeConjunctionsPrepositionsPronouns($title);
+            $alt = TextAnalyzer::removeConjunctionsPrepositionsPronouns($alt);
+            $data = TextAnalyzer::removeConjunctionsPrepositionsPronouns($data);
+            $link = TextAnalyzer::removeConjunctionsPrepositionsPronouns($link);
+        } else {
+            $response['conjunctionsPrepositionsPronouns'] = true;
+        }
+
+        if (isset($request->switchMyListWords)) {
+            $text = TextAnalyzer::removeWords($request->listWords, $text);
+            $title = TextAnalyzer::removeWords($request->listWords, $title);
+            $alt = TextAnalyzer::removeWords($request->listWords, $alt);
+            $data = TextAnalyzer::removeWords($request->listWords, $data);
+            $link = TextAnalyzer::removeWords($request->listWords, $link);
+            $response['listWords'] = $request->listWords;
+        }
+
+        $total = trim($text . ' ' . $alt . ' ' . $title . ' ' . $data);
+        $length = Str::length(trim($total . ' ' . $link));
+        $countSpaces = substr_count(trim($total . ' ' . $link), ' ');
+        $response['general'] = [
+            'textLength' => $length,
+            'countSpaces' => $countSpaces,
+            'lengthWithOutSpaces' => $length - $countSpaces,
+            'countWords' => count(
+                str_word_count($text, 1, "аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъыЫьэЭюЮяЯ")
+            ),
+        ];
+
+        $textWithoutLinks = TextAnalyzer::prepareCloud($total);
+        $linksText = TextAnalyzer::prepareCloud($link);
+        $textWithLinks = TextAnalyzer::prepareCloud(trim($total . ' ' . $link));
+
+        $response['totalWords'] = TextAnalyzer::AnalyzeWords($total, $link);
+        $response['phrases'] = TextAnalyzer::searchPhrases(trim($total . ' ' . $link));
+
+        JavaScript::put([
+            'textWithoutLinks' => $textWithoutLinks,
+            'textWithLinks' => $textWithLinks,
+            'linksText' => $linksText,
+            'graph' => TextAnalyzer::prepareDataGraph($response['totalWords']),
+        ]);
+
+        return $response;
     }
 
     public static function deleteEverythingExceptCharacters($text)
@@ -245,48 +319,17 @@ class TextAnalyzer
      */
     public static function AnalyzeWords($textWords, $linkWords): array
     {
-        $density = 0;
-        $result = [];
-        $resultWithDensity = [];
+        $linkWords = explode(' ', $linkWords);
+        $textWords = explode(' ', $textWords);
+        $totalWords = array_merge($linkWords, $textWords);
         $text = TextAnalyzer::countWordsInText($textWords);
         $link = TextAnalyzer::countWordsInLink($linkWords);
+        $result = TextAnalyzer::mergeTextAndLinks($text, $link);
 
-        foreach ($text as $key1 => $item1) {
-            foreach ($link as $key2 => $item2) {
-                similar_text($key1, $key2, $percent);
-                if ($percent > 82) {
-                    $wordForms = [
-                        'inLink' => array_shift($item2['wordForms']),
-                        'inText' => array_shift($item1['wordForms'])
-                    ];
-                    $result[$key1] = [
-                        'text' => $key1,
-                        'inText' => $item1['inText'],
-                        'inLink' => $item2['inLink'],
-                        'total' => $item1['inText'] + $item2['inLink'],
-                        'wordForms' => $wordForms
-                    ];
-                    unset($link[$key2]);
-                    unset($text[$key1]);
-                    break;
-                }
-            }
-        }
+        $result = TextAnalyzer::calculateTFIDF($result, $totalWords, 'inLink');
+        $result = TextAnalyzer::calculateTFIDF($result, $totalWords, 'inText');
 
-        $result = array_merge($link, $text, $result);
-
-        foreach ($result as $item) {
-            $density += $item['total'];
-        }
-
-        foreach ($result as $item) {
-            $resultWithDensity[] = array_merge($item, [
-                'density' => round(100 / $density * $item['total'], 2)
-            ]);
-        }
-
-        $collection = collect($resultWithDensity);
-        return $collection->sortByDesc('total')->toArray();
+        return $result;
     }
 
     /**
@@ -394,7 +437,7 @@ class TextAnalyzer
     public static function getHiddenText($html, $regex)
     {
         $hiddenText = '';
-        preg_match_all($regex, $html, $matches, PREG_SET_ORDER);;
+        preg_match_all($regex, $html, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             if ($match[1] != "") {
                 $hiddenText .= $match[1] . ' ';
@@ -467,7 +510,6 @@ class TextAnalyzer
         $result = [];
         $wordForms = [];
         $will = [];
-        $text = explode(' ', $text);
         $textAr = array_count_values($text);
         asort($textAr);
         $textAr = array_reverse($textAr);
@@ -515,7 +557,6 @@ class TextAnalyzer
         $links = [];
         $wordForms = [];
         $will = [];
-        $link = explode(' ', $link);
         $linkAr = array_count_values($link);
         asort($linkAr);
         $linkAr = array_reverse($linkAr);
@@ -556,4 +597,70 @@ class TextAnalyzer
         return $links;
     }
 
+    /**
+     * @param $text
+     * @param $link
+     * @return array
+     */
+    public static function mergeTextAndLinks($text, $link): array
+    {
+        $result = [];
+        $resultWithDensity = [];
+        $density = 0;
+        foreach ($text as $key1 => $item1) {
+            foreach ($link as $key2 => $item2) {
+                similar_text($key1, $key2, $percent);
+                if ($percent > 82) {
+                    $wordForms = [
+                        'inLink' => array_shift($item2['wordForms']),
+                        'inText' => array_shift($item1['wordForms'])
+                    ];
+                    $result[$key1] = [
+                        'text' => $key1,
+                        'inText' => $item1['inText'],
+                        'inLink' => $item2['inLink'],
+                        'total' => $item1['inText'] + $item2['inLink'],
+                        'wordForms' => $wordForms
+                    ];
+                    unset($link[$key2]);
+                    unset($text[$key1]);
+                    break;
+                }
+            }
+        }
+
+        $result = array_merge($link, $text, $result);
+
+        foreach ($result as $item) {
+            $density += $item['total'];
+        }
+
+        foreach ($result as $item) {
+            $resultWithDensity[] = array_merge($item, [
+                'density' => round(100 / $density * $item['total'], 2)
+            ]);
+        }
+
+        $collect = collect($resultWithDensity);
+        return $collect->sortByDesc('total')->toArray();
+    }
+
+    public static function calculateTFIDF($array, $textAr, $type)
+    {
+        for ($i = 0; $i < count($array); $i++) {
+            if (isset($array[$i]['wordForms'][$type])) {
+                for ($j = 0; $j < count($array[$i]['wordForms'][$type]); $j++) {
+                    $word = array_key_first($array[$i]['wordForms'][$type][$j]);
+                    $count = array_shift($array[$i]['wordForms'][$type][$j]);
+                    $array[$i]['wordForms'][$type][$j] = [
+                        $word => $count
+                    ];
+                    $array[$i]['wordForms'][$type][$j]['tf'] = round($count / count($textAr), 4);
+                    $array[$i]['wordForms'][$type][$j]['idf'] = round(log10(count($textAr) / $count), 4);
+                }
+            }
+        }
+
+        return $array;
+    }
 }

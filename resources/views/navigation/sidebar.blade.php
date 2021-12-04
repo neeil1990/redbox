@@ -106,7 +106,7 @@
         <li class="nav-item">
             <a href="{{ route('text.analyzer.view') }}" class="nav-link">
                 <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Text analyzer') }}</p>
+                <p>{{ __('Text Analyzing') }}</p>
             </a>
         </li>
         <li class="nav-item">

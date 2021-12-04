@@ -8,10 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
-use JavaScript;
-use Symfony\Component\VarDumper\VarDumper;
 
 
 class TextAnalyzerController extends Controller
@@ -28,83 +25,26 @@ class TextAnalyzerController extends Controller
      */
     public function analyze(Request $request)
     {
-        $response = [];
-        $title = '';
-        $alt = '';
-        $data = '';
-        $response['link'] = $request->link;
-        $html = TextAnalyzer::curlInit($request->link);
-        if ($html == false) {
-            flash()->overlay('connection attempt failed', ' ')->error();
+        if ($request->type === 'url') {
+            $html = TextAnalyzer::curlInit($request->text);
+            if ($html == false) {
+                flash()->overlay('connection attempt failed', ' ')->error();
+                return Redirect::back();
+            } else {
+                $html = TextAnalyzer::removeHeaders($html);
+                $response = TextAnalyzer::analyze($html);
+            }
         } else {
-            $html = mb_strtolower($html);
-            $html = TextAnalyzer::removeHeaders($html);
-            if (empty($request->noIndex)) {
-                $html = TextAnalyzer::removeNoindexText($html);
+            if (strlen($request->text) > 200 && strlen($request->text) < 100000) {
+                $response = TextAnalyzer::analyze($request->text);
             } else {
-                $response['noIndex'] = true;
+                flash()->overlay(__('The volume of the text should be from 200 to 100,000 characters'), ' ')->error();
+                return Redirect::back();
             }
-            $link = TextAnalyzer::getLinkText($html);
-            if (isset($request->hiddenText)) {
-                $title = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*>");
-                $alt = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*>");
-                $data = TextAnalyzer::getHiddenText($html, "<.*?data-text=\"(.*?)\".*>");
-                $response['hiddenText'] = true;
-            }
-
-            $html = TextAnalyzer::clearHTMLFromLinks($html);
-            $text = TextAnalyzer::deleteEverythingExceptCharacters($html);
-            if (empty($request->conjunctionsPrepositionsPronouns)) {
-                $text = TextAnalyzer::removeConjunctionsPrepositionsPronouns($text);
-                $title = TextAnalyzer::removeConjunctionsPrepositionsPronouns($title);
-                $alt = TextAnalyzer::removeConjunctionsPrepositionsPronouns($alt);
-                $data = TextAnalyzer::removeConjunctionsPrepositionsPronouns($data);
-                $link = TextAnalyzer::removeConjunctionsPrepositionsPronouns($link);
-            } else {
-                $response['conjunctionsPrepositionsPronouns'] = true;
-            }
-
-            if (isset($request->switchMyListWords)) {
-                $text = TextAnalyzer::removeWords($request->listWords, $text);
-                $title = TextAnalyzer::removeWords($request->listWords, $title);
-                $alt = TextAnalyzer::removeWords($request->listWords, $alt);
-                $data = TextAnalyzer::removeWords($request->listWords, $data);
-                $link = TextAnalyzer::removeWords($request->listWords, $link);
-                $response['listWords'] = $request->listWords;
-            }
-
-            $total = $text . ' ' . $alt . ' ' . $title . ' ' . $data;
-            $length = Str::length($total . ' ' . $link);
-            $countSpaces = substr_count($total . ' ' . $link, ' ');
-            $response['general'] = [
-                'textLength' => $length,
-                'countSpaces' => $countSpaces,
-                'lengthWithOutSpaces' => $length - $countSpaces,
-                'countWords' => count(
-                    str_word_count($text, 1, "аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъыЫьэЭюЮяЯ")
-                ),
-            ];
-
-            //clouds
-            $textWithoutLinks = TextAnalyzer::prepareCloud($total);
-            $linksText = TextAnalyzer::prepareCloud($link);
-            $textWithLinks = TextAnalyzer::prepareCloud($total . $link);
-
-            $response['totalWords'] = TextAnalyzer::AnalyzeWords($total, $link);
-            $response['phrases'] = TextAnalyzer::searchPhrases($total . $link);
-
-            JavaScript::put([
-                'textWithoutLinks' => $textWithoutLinks,
-                'textWithLinks' => $textWithLinks,
-                'linksText' => $linksText,
-                'graph' => TextAnalyzer::prepareDataGraph($response['totalWords']),
-
-            ]);
-            return view('text-analyzer.index', ['response' => $response]);
         }
-
-        return Redirect::back();
-
+        $response['text'] = $request->text;
+        $response['type'] = $request->type;
+        return view('text-analyzer.index', ['response' => $response]);
     }
 
 }
