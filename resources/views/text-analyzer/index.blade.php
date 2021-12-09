@@ -147,8 +147,8 @@
                 <tbody>
                 @foreach($response['totalWords'] as $word)
                     <tr>
-                        <td data-order="{{ $word['text'] }}" class="w-50 unique-word">
-                            <u>{{ $word['text'] }}</u>
+                        <td data-order="{{ $word['text'] }}" class="w-50">
+                            <u class=" unique-word" style="cursor: pointer">{{ $word['text'] }}</u>
                             <span class="text-muted" style="display: none">
                                 @isset($word['wordForms']['inLink'])
                                     <p class="mt-2"><b>{{__('Link Zone')}}:</b></p>
@@ -156,7 +156,15 @@
                                     @foreach($word['wordForms']['inLink'] as $items)
                                             <div class="mr-3">
                                             @foreach($items as $key => $item)
-                                                    {{ $key }}:{{ $item }} <br>
+                                                    <div class="mt-2 mb-2">{{ $key }}:{{ $item }}
+{{--                                                        <span class="__helper-link ui_tooltip_w btn btn-default">--}}
+{{--                                                            <span class="hidden-password" style="display: none;"></span>--}}
+{{--                                                            <i aria-hidden="true" class="fa fa-clipboard"></i>--}}
+{{--                                                            <span class="ui_tooltip __right __l">--}}
+{{--                                                                <span class="ui_tooltip_content">Скопировать в буфер обмена</span>--}}
+{{--                                                            </span>--}}
+{{--                                                        </span>--}}
+                                                    </div>
                                                 @endforeach
                                             </div>
                                         @endforeach
@@ -322,19 +330,6 @@
             });
         </script>
         <script>
-            // $('.form-control.col-4.type-analyzing').change(function () {
-            //     if ($(this).val() === 'url') {
-            //         $('.form-control.col-8.url').prop('required', true)
-            //         $('.form-group.required.url').show()
-            //         $('.form-control.textarea-text-or-html').removeAttr('required')
-            //         $('.form-control.textarea-text-or-html').hide()
-            //     } else {
-            //         $('.form-control.col-8.url').removeAttr('required')
-            //         $('.form-group.required.url').hide()
-            //         $('.form-control.textarea-text-or-html').prop('required', true)
-            //         $('.form-control.textarea-text-or-html').show()
-            //     }
-            // });
             $(document).ready(function () {
                 $('#totalTable').DataTable({
                     "order": [[2, "desc"]]
@@ -345,10 +340,10 @@
             });
 
             $('.unique-word').click(function () {
-                if ($(this).children().eq(1).css('display') === 'none') {
-                    $(this).children().eq(1).show()
+                if ($(this).parent().children('span').css('display') === 'none') {
+                    $(this).parent().children('span').show()
                 } else {
-                    $(this).children().eq(1).hide()
+                    $(this).parent().children('span').hide()
                 }
             });
         </script>
