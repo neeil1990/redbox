@@ -71,6 +71,16 @@
                                         </h4>
 
                                         <div class="card-tools">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </button>
+
+                                                <div class="dropdown-menu dropdown-menu-right" role="menu" style="">
+                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.title)">Analyzer</a>
+                                                </div>
+                                            </div>
+
                                             <span v-for="error_badge in url.error.badge" v-if="error_badge.length" v-html="error_badge.join('')"></span>
                                         </div>
                                     </div>
@@ -284,7 +294,33 @@
             }
         },
         methods: {
+            Analyzer(link) {
+                var form = document.createElement("form");
+                form.action = "/text-analyzer";
+                form.method = "POST";
 
+                var _token = document.createElement("input");
+                _token.setAttribute("type", "text");
+                _token.setAttribute("name", "_token");
+                _token.setAttribute("value", $('meta[name="csrf-token"]').attr('content'));
+                form.appendChild(_token);
+
+                var type = document.createElement("input");
+                type.setAttribute("type", "text");
+                type.setAttribute("name", "type");
+                type.setAttribute("value", "url");
+                form.appendChild(type);
+
+                var text = document.createElement("input");
+                text.setAttribute("type", "text");
+                text.setAttribute("name", "text");
+                text.setAttribute("value", link);
+                form.appendChild(text);
+
+                document.body.appendChild(form);
+
+                form.submit();
+            },
             StartMetaTags(meta)
             {
                 $("html, body").stop().animate({scrollTop : 200}, 500, 'swing');

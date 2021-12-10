@@ -7704,6 +7704,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MetaTagsHistory",
@@ -7717,6 +7727,35 @@ __webpack_require__.r(__webpack_exports__);
     return {
       seenCard: []
     };
+  },
+  methods: {
+    Analyzer: function Analyzer(link) {
+      var form = document.createElement("form");
+      form.action = "/text-analyzer";
+      form.method = "POST";
+
+      var _token = document.createElement("input");
+
+      _token.setAttribute("type", "text");
+
+      _token.setAttribute("name", "_token");
+
+      _token.setAttribute("value", $('meta[name="csrf-token"]').attr('content'));
+
+      form.appendChild(_token);
+      var type = document.createElement("input");
+      type.setAttribute("type", "text");
+      type.setAttribute("name", "type");
+      type.setAttribute("value", "url");
+      form.appendChild(type);
+      var text = document.createElement("input");
+      text.setAttribute("type", "text");
+      text.setAttribute("name", "text");
+      text.setAttribute("value", link);
+      form.appendChild(text);
+      document.body.appendChild(form);
+      form.submit();
+    }
   }
 });
 
@@ -7732,6 +7771,16 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Filter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Filter */ "./resources/js/components/meta-tags/Filter.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8033,6 +8082,33 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    Analyzer: function Analyzer(link) {
+      var form = document.createElement("form");
+      form.action = "/text-analyzer";
+      form.method = "POST";
+
+      var _token = document.createElement("input");
+
+      _token.setAttribute("type", "text");
+
+      _token.setAttribute("name", "_token");
+
+      _token.setAttribute("value", $('meta[name="csrf-token"]').attr('content'));
+
+      form.appendChild(_token);
+      var type = document.createElement("input");
+      type.setAttribute("type", "text");
+      type.setAttribute("name", "type");
+      type.setAttribute("value", "url");
+      form.appendChild(type);
+      var text = document.createElement("input");
+      text.setAttribute("type", "text");
+      text.setAttribute("name", "text");
+      text.setAttribute("value", link);
+      form.appendChild(text);
+      document.body.appendChild(form);
+      form.submit();
+    },
     StartMetaTags: function StartMetaTags(meta) {
       $("html, body").stop().animate({
         scrollTop: 200
@@ -72945,16 +73021,46 @@ var render = function() {
                     _c(
                       "div",
                       { staticClass: "card-tools" },
-                      _vm._l(item.error.badge, function(error_badge) {
-                        return error_badge.length
-                          ? _c("span", {
-                              domProps: {
-                                innerHTML: _vm._s(error_badge.join(""))
-                              }
-                            })
-                          : _vm._e()
-                      }),
-                      0
+                      [
+                        _c("div", { staticClass: "btn-group" }, [
+                          _vm._m(0, true),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass: "dropdown-menu dropdown-menu-right",
+                              attrs: { role: "menu" }
+                            },
+                            [
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "dropdown-item",
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.Analyzer(item.title)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Analyzer")]
+                              )
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _vm._l(item.error.badge, function(error_badge) {
+                          return error_badge.length
+                            ? _c("span", {
+                                domProps: {
+                                  innerHTML: _vm._s(error_badge.join(""))
+                                }
+                              })
+                            : _vm._e()
+                        })
+                      ],
+                      2
                     )
                   ]
                 ),
@@ -72971,7 +73077,7 @@ var render = function() {
                   [
                     _c("div", { staticClass: "card-body" }, [
                       _c("table", { staticClass: "table table-bordered" }, [
-                        _vm._m(0, true),
+                        _vm._m(1, true),
                         _vm._v(" "),
                         _c(
                           "tbody",
@@ -73035,6 +73141,23 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "btn btn-tool dropdown-toggle",
+        attrs: {
+          type: "button",
+          "data-toggle": "dropdown",
+          "aria-expanded": "false"
+        }
+      },
+      [_c("i", { staticClass: "fas fa-external-link-alt" })]
+    )
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -73293,18 +73416,51 @@ var render = function() {
                               _c(
                                 "div",
                                 { staticClass: "card-tools" },
-                                _vm._l(url.error.badge, function(error_badge) {
-                                  return error_badge.length
-                                    ? _c("span", {
-                                        domProps: {
-                                          innerHTML: _vm._s(
-                                            error_badge.join("")
-                                          )
-                                        }
-                                      })
-                                    : _vm._e()
-                                }),
-                                0
+                                [
+                                  _c("div", { staticClass: "btn-group" }, [
+                                    _vm._m(2, true),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass:
+                                          "dropdown-menu dropdown-menu-right",
+                                        attrs: { role: "menu" }
+                                      },
+                                      [
+                                        _c(
+                                          "a",
+                                          {
+                                            staticClass: "dropdown-item",
+                                            attrs: { href: "#" },
+                                            on: {
+                                              click: function($event) {
+                                                $event.preventDefault()
+                                                return _vm.Analyzer(url.title)
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Analyzer")]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _vm._l(url.error.badge, function(
+                                    error_badge
+                                  ) {
+                                    return error_badge.length
+                                      ? _c("span", {
+                                          domProps: {
+                                            innerHTML: _vm._s(
+                                              error_badge.join("")
+                                            )
+                                          }
+                                        })
+                                      : _vm._e()
+                                  })
+                                ],
+                                2
                               )
                             ]
                           ),
@@ -73324,7 +73480,7 @@ var render = function() {
                                   "table",
                                   { staticClass: "table table-bordered" },
                                   [
-                                    _vm._m(2, true),
+                                    _vm._m(3, true),
                                     _vm._v(" "),
                                     _c(
                                       "tbody",
@@ -73455,14 +73611,14 @@ var render = function() {
       ? _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col-md-12" }, [
             _c("div", { staticClass: "card" }, [
-              _vm._m(3),
+              _vm._m(4),
               _vm._v(" "),
               _c("div", { staticClass: "card-body table-responsive p-0" }, [
                 _c(
                   "table",
                   { staticClass: "table table-striped projects" },
                   [
-                    _vm._m(4),
+                    _vm._m(5),
                     _vm._v(" "),
                     _c(
                       "tbody",
@@ -73562,7 +73718,7 @@ var render = function() {
                                 }
                               }),
                               _vm._v(" "),
-                              _vm._m(5, true)
+                              _vm._m(6, true)
                             ])
                           ]),
                           _vm._v(" "),
@@ -73788,6 +73944,23 @@ var staticRenderFns = [
     return _c("div", { staticClass: "card-header" }, [
       _c("h3", { staticClass: "card-title" }, [_vm._v("Check URL")])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "btn btn-tool dropdown-toggle",
+        attrs: {
+          type: "button",
+          "data-toggle": "dropdown",
+          "aria-expanded": "false"
+        }
+      },
+      [_c("i", { staticClass: "fas fa-external-link-alt" })]
+    )
   },
   function() {
     var _vm = this

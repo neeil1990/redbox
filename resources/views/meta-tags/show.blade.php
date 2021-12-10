@@ -25,7 +25,7 @@
                             <th style="">link</th>
                             <th style="">error</th>
                             <th style="">compare</th>
-                            <th style="">ideal</th>
+                            <th style="">ideal <i class="far fa-question-circle" data-toggle="tooltip" data-placement="right" title="Выберете историю за которой хотите следить."></i></th>
                             <th style=""></th>
                         </tr>
                         </thead>
@@ -55,7 +55,7 @@
                                 <td>
                                     <div class="custom-control custom-radio">
                                         <input class="custom-control-input" type="radio" id="customRadioIdeal{{ $history->id }}" name="ideal" value="{{ $history->id }}" @if($history->ideal) checked @endif>
-                                        <label for="customRadioIdeal{{ $history->id }}" class="custom-control-label">Custom Radio {{ $history->id }}</label>
+                                        <label for="customRadioIdeal{{ $history->id }}" class="custom-control-label"> #{{ $history->id }}</label>
                                     </div>
                                 </td>
                                 <td class="project-actions">
@@ -98,6 +98,9 @@
         </script>
 
         <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
 
             $('input[name="ideal"]').change(function () {
                 let that = $(this);

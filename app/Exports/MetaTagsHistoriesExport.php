@@ -28,10 +28,13 @@ class MetaTagsHistoriesExport implements FromCollection
 
             $obj->url = $item->title;
             foreach ($item->data as $tag => $val)
-                $obj->$tag = is_array($val) ? $tag. ': ' .implode(', ', $val) : $tag . ": Нет проблем";
+                $obj->$tag = is_array($val) ? implode(', ', $val) : "Нет проблем";
 
             return $obj;
         });
+
+        if($csv->first())
+            $csv->prepend(array_keys(get_object_vars($csv->first())));
 
         return $csv;
     }
