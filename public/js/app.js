@@ -7733,6 +7733,7 @@ __webpack_require__.r(__webpack_exports__);
       var form = document.createElement("form");
       form.action = "/text-analyzer";
       form.method = "POST";
+      form.target = "_blank";
 
       var _token = document.createElement("input");
 
@@ -7755,6 +7756,7 @@ __webpack_require__.r(__webpack_exports__);
       form.appendChild(text);
       document.body.appendChild(form);
       form.submit();
+      form.remove();
     }
   }
 });
@@ -73046,7 +73048,7 @@ var render = function() {
                                     }
                                   }
                                 },
-                                [_vm._v("Analyzer")]
+                                [_vm._v("Текстовый анализ")]
                               )
                             ]
                           )

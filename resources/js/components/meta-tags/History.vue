@@ -22,7 +22,7 @@
                                 </button>
 
                                 <div class="dropdown-menu dropdown-menu-right" role="menu" style="">
-                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(item.title)">Analyzer</a>
+                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(item.title)">Текстовый анализ</a>
                                 </div>
                             </div>
 
@@ -90,6 +90,7 @@
                 var form = document.createElement("form");
                 form.action = "/text-analyzer";
                 form.method = "POST";
+                form.target = "_blank";
 
                 var _token = document.createElement("input");
                 _token.setAttribute("type", "text");
@@ -112,6 +113,8 @@
                 document.body.appendChild(form);
 
                 form.submit();
+
+                form.remove();
             },
         }
     }
