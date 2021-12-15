@@ -33,8 +33,10 @@ class MetaTagsCompareHistoriesExport implements FromCollection
             $tags = [];
             foreach ($item['card']['tags'] as $tag => $val){
                 $tags['url'] = $url;
-                $tags[$tag] = is_array($val) ? implode(', ', $val) : "Нет проблем";;
-                $tags[$tag . '_compare'] = is_array($item['card_compare']['tags']->$tag) ? implode(', ', $item['card_compare']['tags']->$tag) : "Нет проблем";
+                $tags[$tag] = is_array($val) ? implode(', ', $val) : "Нет проблем";
+                
+                if(isset($item['card_compare']))
+                    $tags[$tag . '_compare'] = is_array($item['card_compare']['tags']->$tag) ? implode(', ', $item['card_compare']['tags']->$tag) : "Нет проблем";
             }
 
             $item = $tags;
@@ -59,7 +61,7 @@ class MetaTagsCompareHistoriesExport implements FromCollection
 
             $csv->prepend($csv_title);
         }
-        
+
         return $csv;
     }
 
