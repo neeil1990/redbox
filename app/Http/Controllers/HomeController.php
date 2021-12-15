@@ -109,11 +109,10 @@ class HomeController extends Controller
                     }
                 }
             }
-            Log::debug('be Merge', [$result]);
             $result = array_merge($result, $projects);
-            Log::debug('af Merge', [$result]);
             $result = array_unique($result, SORT_REGULAR);
-            Log::debug('af un', [$result]);
+            Log::debug('af un', $result);
+            Log::debug('af un', [count($result)]);
             for ($i = 0; $i < count($result); $i++) {
                 $result[$i]['title'] = __($result[$i]['title']);
             }
