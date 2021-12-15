@@ -114,6 +114,7 @@ class HomeController extends Controller
             Log::debug('af un', $result);
             Log::debug('af un', [count($result)]);
             for ($i = 0; $i < count($result); $i++) {
+                Log::debug('af un', [$result[$i]['title']]);
                 $result[$i]['title'] = __($result[$i]['title']);
             }
         }
