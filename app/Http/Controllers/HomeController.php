@@ -22,34 +22,38 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
-        if (empty($projectsPositions[0]['menu_positions'])) {
-            $result = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
-            for ($i = 0; $i < count($result); $i++) {
-                $result[$i]['title'] = __($result[$i]['title']);
-            }
-        } else {
-            $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
-            $projects = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
-            $result = [];
+        try {
+            $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
+            if (empty($projectsPositions[0]['menu_positions'])) {
+                $result = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
+                for ($i = 0; $i < count($result); $i++) {
+                    $result[$i]['title'] = __($result[$i]['title']);
+                }
+            } else {
+                $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
+                $projects = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
+                $result = [];
 
-            foreach ($projectsPositions as $projectsPosition) {
-                foreach ($projects as $project) {
-                    if ($project['id'] === (integer)$projectsPosition) {
-                        $result[] = $project;
+                foreach ($projectsPositions as $projectsPosition) {
+                    foreach ($projects as $project) {
+                        if ($project['id'] === (integer)$projectsPosition) {
+                            $result[] = $project;
+                        }
                     }
                 }
+                $result = array_merge($result, $projects);
+                $result = array_unique($result, SORT_REGULAR);
+                for ($i = 0; $i < count($result); $i++) {
+                    Log::debug('af un', [$result[$i]['title']]);
+                    $result[$i]['title'] = __($result[$i]['title']);
+                }
             }
-            $result = array_merge($result, $projects);
-            $result = array_unique($result, SORT_REGULAR);
-            for ($i = 0; $i < count($result); $i++) {
-                Log::debug('af un', [$result[$i]['title']]);
-                $result[$i]['title'] = __($result[$i]['title']);
-            }
+
+            return response((array)$result);
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
         }
 
-        dd($result);
-        return response((array)$result);
         $user_id = Auth::id();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user_id)->get('projects_positions');
         if (empty($projectsPositions[0])) {
