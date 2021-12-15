@@ -1,3 +1,7 @@
+.item_hide {
+    display: none;
+}
+
 .toast {
     min-width: 300px;
 }
@@ -23,16 +27,17 @@ img.img-flag {
     padding: 0 0 0 5px !important;
 }
 
-.login-box{
+.login-box {
     width: 600px;
 }
 
-.nav-sidebar>.nav-item .nav-icon{
+.nav-sidebar > .nav-item .nav-icon {
     vertical-align: sub;
 }
 
 @media (max-width: 768px) {
-    .login-box{
+    .login-box {
         width: 360px;
     }
 }
+

@@ -1,120 +1,30 @@
 <nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <li class="nav-header">{{ __('Menu') }}</li>
-        <li class="nav-item">
-            <a href="/" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Home') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('users.index') }}" class="nav-link">
-                <ion-icon name="people-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Users') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('behavior.index') }}" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Behavior') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.keyword') }}" class="nav-link">
-                <ion-icon name="text-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Keyword generator') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.password') }}" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Password generator') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.length') }}" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Counting text length') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('list.comparison') }}" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('List comparison') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('unique.words') }}" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{__("Highlighting unique words in the text")}}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('HTML.editor') }}" class="nav-link">
-                <ion-icon name="home-outline" class="nav-icon"></ion-icon>
-                <p>{{__('HTML editor')}}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.duplicates') }}" class="nav-link">
-                <ion-icon name="copy-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Remove Duplicates') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.utm') }}" class="nav-link">
-                <ion-icon name="bookmarks-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Utm builder') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.roi') }}" class="nav-link">
-                <ion-icon name="calculator-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('ROI calculator') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pages.headers') }}" class="nav-link">
-                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Http headers') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('backlink') }}" class="nav-link">
-                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Link tracking') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/meta-tags" class="nav-link">
-                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>Анализ и мониторинг тегов</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('domain.monitoring') }}" class="nav-link">
-                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Domains monitoring') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('domain.information') }}" class="nav-link">
-                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Tracking the domain registration period') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('text.analyzer.view') }}" class="nav-link">
-                <ion-icon name="code-slash-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Text Analyzing') }}</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="https://docs.google.com/document/d/1TpjCQjXYV_ZWyxD-c8plld7m2-dce4fSGuMz0fgytK4/edit"
-               target="_blank" class="nav-link">
-                <ion-icon name="document-text-outline" class="nav-icon"></ion-icon>
-                <p>{{ __('Documentation') }}</p>
-            </a>
-        </li>
+    <div class="js-toggle x-drop-down" data-qaid="dd_widget">
+        <div class="x-drop-down__dropped">
+            <div class="x-drop-down__list js-dropdown">
+                <div class="x-drop-down__search">
+                    <div class="x-input x-input_size_s">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="x-input__field form-control form-control-sidebar"
+                                   autocomplete="off"
+                                   placeholder="{{ __('Search') }}"
+                                   value="">
+                            <div class="input-group-append">
+                                <button class="btn btn-sidebar">
+                                    <i class="fas fa-search fa-fw"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false">
+        {{-- Cписок пунктов меню подргружается при помощи скрипта app.blade.php -> js -> getProjects() --}}
+        {{-- Это нужно для того, чтобы пользователь мог сортировать пункты меню так, как ему удобно --}}
+        {{-- Добавить пункт меню и вывод сервиса на главную можно тут /main-projects --}}
+        {{-- Контроллер с CRUD DescriptionProjectForAdminController--}}
     </ul>
 </nav>
