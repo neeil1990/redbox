@@ -94,9 +94,9 @@ class HomeController extends Controller
         $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
             $result = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
-//            for ($i = 0; $i < count($result); $i++) {
-//                $result[$i]['title'] = __($result[$i]['title']);
-//            }
+            for ($i = 0; $i < count($result); $i++) {
+                $result[$i]['title'] = __($result[$i]['title']);
+            }
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
             $projects = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
@@ -111,10 +111,10 @@ class HomeController extends Controller
             }
             $result = array_merge($result, $projects);
             $result = array_unique($result, SORT_REGULAR);
-//            for ($i = 0; $i < count($result); $i++) {
-//                Log::debug('af un', [$result[$i]['title']]);
-//                $result[$i]['title'] = __($result[$i]['title']);
-//            }
+            for ($i = 0; $i < count($result); $i++) {
+                Log::debug('af un', [$result[$i]['title']]);
+                $result[$i]['title'] = __($result[$i]['title']);
+            }
         }
 
         return response((array)$result);
