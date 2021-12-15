@@ -25,41 +25,5 @@
             </div>
         @endforeach
     </div>
-    @slot('js')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-        <script>
-            $(function () {
-                $("#tablecontents").sortable({
-                    items: 'div.card',
-                    cursor: 'move',
-                    opacity: 0.6,
-                    update: function () {
-                        sendOrderToServer();
-                    }
-                });
-
-                function sendOrderToServer() {
-                    var orders = [];
-                    var token = $('meta[name="csrf-token"]').attr('content');
-                    $('div.card').each(function (index) {
-                        orders.push({
-                            id: $(this).attr('data-id'),
-                        });
-                    });
-
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ url('project-sortable') }}",
-                        data: {
-                            orders: orders,
-                            _token: token
-                        },
-                    });
-                }
-            });
-        </script>
-    @endslot
 @endsection
 @endcomponent

@@ -61,19 +61,18 @@
         @endauth
 
         <!-- SidebarSearch Form -->
-            <div class="form-inline">
-                <div class="input-group" data-widget="sidebar-search">
-                    <input class="form-control form-control-sidebar" type="search" placeholder="Search"
-                           aria-label="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-sidebar">
-                            <i class="fas fa-search fa-fw"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar Menu -->
+        {{--            <div class="form-inline">--}}
+        {{--                <div class="input-group" data-widget="sidebar-search">--}}
+        {{--                    <input class="form-control form-control-sidebar" type="search" placeholder="Search"--}}
+        {{--                           aria-label="Search">--}}
+        {{--                    <div class="input-group-append">--}}
+        {{--                        <button class="btn btn-sidebar">--}}
+        {{--                            <i class="fas fa-search fa-fw"></i>--}}
+        {{--                        </button>--}}
+        {{--                    </div>--}}
+        {{--                </div>--}}
+        {{--            </div>--}}
+        <!-- Sidebar Menu -->
         @include('navigation.sidebar')
         <!-- /.sidebar-menu -->
         </div>
@@ -128,7 +127,164 @@
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script>
+    $(function () {
+        var token = $('meta[name="csrf-token"]').attr('content');
 
+        getProjects()
+
+        function getProjects() {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "{{ route('get.description.projects') }}",
+                data: {
+                    _token: token
+                },
+                success: function (response) {
+                    response.forEach((el) => {
+                        let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
+                            "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
+                            "<ion-icon name='document-text-outline' class='nav-icon md hydrated' role='img' aria-label='document text outline'></ion-icon> " +
+                            "<p>" + el.title + "</p> " +
+                            "</a></li>"
+                        $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
+                    })
+                },
+            });
+        }
+
+        $("#tablecontents").sortable({
+            items: 'div.card',
+            cursor: 'move',
+            opacity: 0.6,
+            update: function () {
+                movingProject();
+            }
+        });
+
+        $('.nav.nav-pills.nav-sidebar.flex-column').sortable({
+            items: 'li.nav-item',
+            cursor: 'move',
+            opacity: 0.6,
+            update: function () {
+                movingMenuItem()
+            }
+        });
+
+        function movingMenuItem() {
+            var orders = [];
+
+            $('li.menu-item').each(function () {
+                orders.push({
+                    id: $(this).attr('data-id'),
+                })
+            })
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "{{ url('menu-item-sortable') }}",
+                data: {
+                    orders: orders,
+                    _token: token
+                },
+            });
+        }
+
+        function movingProject() {
+            var orders = [];
+            $('div.card').each(function () {
+                orders.push({
+                    id: $(this).attr('data-id'),
+                });
+            });
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "{{ url('project-sortable') }}",
+                data: {
+                    orders: orders,
+                    _token: token
+                },
+            });
+        }
+
+        // $('.nav.nav-pills.nav-sidebar').sortable({
+        //     items: 'div.nav-item.text-white.pl-1',
+        //     cursor: 'move',
+        //     opacity: 0.6,
+        //     update: function () {
+        //         console.log(123);
+        //     }
+        // });
+
+        // $('#add-new-menu-item').click(function () {
+        //     $('#add-new-menu-item-block').show(300)
+        // })
+
+        // $('#confirm-new-menu-item').click(function () {
+        //     let name = $('#add-new-menu-item-input').val()
+        //     let item = "<div class='nav-item text-white pl-1'> " +
+        //         "<span>" + name + "<i class='fa fa-edit font-weight-light text-muted pl-3'></i></span> " +
+        //         "<li class='nav-item'> " +
+        //         "<a href='/' class='nav-link'> " +
+        //         "<ion-icon name='home-outline' class='nav-icon md hydrated' role='img' aria-label='home outline'></ion-icon> " +
+        //         "<p>Главная</p></a></li></div>"
+        //
+        //     $('#add-new-menu-item-input').val('')
+        //     $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
+        //     $('#add-new-menu-item-block').hide(300)
+        //
+        // })
+
+        $(".x-drop-down__value").click(function (event) {
+            toggleMenu();
+            event.stopPropagation();
+        });
+
+        $('.xx1').click(function () {
+            $('.x-drop-down__value').html($(this).text());
+            toggleMenu();
+        });
+
+        function toggleMenu() {
+            let menu = $(".x-drop-down__dropped");
+            if (!menu.hasClass('active')) {
+                window.addEventListener('click', closeMenu);
+            } else {
+                window.removeEventListener('click', closeMenu);
+            }
+            menu.toggleClass("active");
+        }
+
+        function closeMenu() {
+            $(".x-drop-down__dropped").removeClass("active")
+        }
+
+        $('.x-drop-down__dropped').click(function (event) {
+            event.stopPropagation();
+        });
+
+
+        $('.x-input__field').on('input', function () {
+            let search = $(this).val();
+            searchData(search);
+        });
+
+        function searchData(search) {
+            let items = $('.nav-link.search-link');
+            items.each(function () {
+                if ($(this).text().toLowerCase().indexOf(search.toLowerCase()) === -1) {
+                    $(this).addClass('item_hide');
+                } else {
+                    $(this).removeClass('item_hide');
+                }
+            });
+        }
+    });
+</script>
 @include('flash::message')
 </body>
 </html>
