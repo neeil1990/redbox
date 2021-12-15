@@ -134,7 +134,6 @@
                     response.forEach((el) => {
                         let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
                             "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
-                            "<ion-icon name='document-text-outline' class='nav-icon md hydrated' role='img' aria-label='document text outline'></ion-icon> " +
                             "<p>" + el.title + "</p> " +
                             "</a></li>"
                         $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
