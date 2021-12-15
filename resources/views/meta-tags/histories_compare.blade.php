@@ -114,7 +114,8 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="col-md-6">
+                                    @if(isset($item['card_compare']))
+                                        <div class="col-md-6">
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr align="center">
@@ -155,6 +156,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
