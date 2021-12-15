@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\MetaTagsHistoriesExport;
+use App\Exports\MetaTagsCompareHistoriesExport;
 use App\Mail\MetaTagsEmail;
 use App\MetaTag;
 use App\MetaTagsHistory;
@@ -46,6 +47,15 @@ class MetaTagsController extends Controller
     public function export($id)
     {
         return Excel::download(new MetaTagsHistoriesExport($id), 'meta_tags.csv');
+    }
+
+    /**
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportCompare($id, $id_compare)
+    {
+        return Excel::download(new MetaTagsCompareHistoriesExport($id, $id_compare), 'meta_tags_compare.csv');
     }
 
     /**
@@ -208,6 +218,52 @@ class MetaTagsController extends Controller
         $data = collect(json_decode($history->data));
 
         return view('meta-tags.history', compact('data', 'project'));
+    }
+
+    public function showHistoryCompare($id, $id_compare)
+    {
+        $response = [];
+
+        $history = MetaTagsHistory::findOrFail($id);
+        $history_compare = MetaTagsHistory::findOrFail($id_compare);
+
+        if($history->project->user_id != Auth::id() || $history_compare->project->user_id != Auth::id())
+            throw new \ErrorException('User not valid');
+
+        $this->createCompareArray($history, 'card', $response);
+        $this->createCompareArray($history_compare, 'card_compare', $response);
+
+        $collection = collect($response);
+
+        $filter = [];
+        foreach ($response as $r){
+            if(isset($r['badge'])){
+                $tags = collect($r['badge'])->collapse()->keys();
+                foreach($tags as $tag)
+                    $filter[$tag] = $tag;
+
+            }
+        }
+
+        return view('meta-tags.histories_compare', compact('collection', 'filter'));
+    }
+
+    protected function createCompareArray($model, $name = 'card', &$response = [])
+    {
+        $histories = json_decode($model->data);
+        foreach ($histories as $item){
+            $response[$item->title][$name]['id'] = $model->id;
+            $response[$item->title][$name]['date'] = $model->created_at->format('d.m.Y');
+            $response[$item->title][$name]['tags'] = $item->data;
+            $response[$item->title][$name]['error'] = $item->error->main;
+
+            foreach ($item->error->badge as $t => $b){
+                if(count($b))
+                    $response[$item->title]['badge'][$model->created_at->format('d.m.Y') . '(' . $model->id . ')'][$t] = $b;
+            }
+        }
+
+        return $response;
     }
 
     /**

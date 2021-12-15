@@ -30,6 +30,7 @@ Vue.component('response-http-code', ResponseHttpCode);
 Vue.component('meta-tags', MetaTags);
 Vue.component('meta-tags-history', MetaTagsHistory);
 
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

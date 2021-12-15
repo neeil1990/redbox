@@ -34,11 +34,13 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('users', 'UsersController');
 
     Route::delete('/meta-tags/history/{id}', 'MetaTagsController@destroyHistory')->name('meta.history.delete');
+    Route::get('/meta-tags/history/{id}/compare/{id_compare}/export/', 'MetaTagsController@exportCompare')->name('meta.history.export_compare');
     Route::get('/meta-tags/history/{id}/export/', 'MetaTagsController@export')->name('meta.history.export');
     Route::post('/meta-tags/get', 'MetaTagsController@getMetaTags');
     Route::put('/meta-tags/histories/ideal/{id}', 'MetaTagsController@updateHistoriesIdeal');
     Route::patch('/meta-tags/histories/{id}', 'MetaTagsController@storeHistories');
     Route::get('/meta-tags/histories/{id}', 'MetaTagsController@showHistories');
+    Route::get('/meta-tags/history/{id}/compare/{id_compare}', 'MetaTagsController@showHistoryCompare')->name('meta.history.compare');;
     Route::get('/meta-tags/history/{id}', 'MetaTagsController@showHistory');
     Route::resource('meta-tags', 'MetaTagsController');
 

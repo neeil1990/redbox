@@ -45,10 +45,10 @@
                                 <td>{{$history->quantity}}</td>
                                 <td><span class="badge badge-danger">{{$history->error_quantity}}</span></td>
                                 <td>
-                                    <select class="form-control">
+                                    <select name="compare" class="form-control">
                                         <option value=""></option>
                                         @foreach($project->histories as $option)
-                                            <option value="">{{$option->created_at->format('d.m.Y')}}</option>
+                                            <option value="{{$option->id}}">{{$option->created_at->format('d.m.Y')}} ({{$option->id}})</option>
                                         @endforeach
                                     </select>
                                 </td>
@@ -65,9 +65,9 @@
                                         Export
                                     </a>
 
-                                    <a class="btn btn-info btn-sm" href="#">
-                                        <i class="fas fa-play-circle"></i>
-                                        Update
+                                    <a class="btn btn-info btn-sm compare-history" href="{{ route('meta.history.compare', [$history->id, $history->id]) }}">
+                                        <i class="far fa-clone"></i>
+                                        Compare
                                     </a>
 
                                     <a class="btn btn-info btn-sm delete-history" href="{{ route('meta.history.delete', $history->id) }}">
@@ -122,6 +122,15 @@
                 axios.delete(than.attr('href'));
                 than.closest('tr').remove();
                 toastr.info('Успешно удалено');
+            });
+
+            $('select[name="compare"]').change(function () {
+                let self = $(this);
+                let id_compare = self.val();
+                let url = self.closest('tr').find('.compare-history').attr('href').split('/');
+                url.splice(-1, 1, id_compare);
+
+                self.closest('tr').find('.compare-history').attr('href', url.join('/'));
             });
 
         </script>
