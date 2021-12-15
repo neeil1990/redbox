@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Symfony\Component\VarDumper\VarDumper;
 
 
 class HomeController extends Controller
@@ -43,6 +44,7 @@ class HomeController extends Controller
                 }
                 $result = array_merge($result, $projects);
                 $result = array_unique($result, SORT_REGULAR);
+                VarDumper::dump($result);
                 for ($i = 0; $i < count($result); $i++) {
                     Log::debug('af un', [$result[$i]['title']]);
                     $result[$i]['title'] = __($result[$i]['title']);
