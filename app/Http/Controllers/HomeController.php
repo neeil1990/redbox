@@ -117,6 +117,6 @@ class HomeController extends Controller
 //            }
         }
 
-        return response($result);
+        return response((array)$result);
     }
 }
