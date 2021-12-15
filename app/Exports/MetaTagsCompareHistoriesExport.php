@@ -34,9 +34,11 @@ class MetaTagsCompareHistoriesExport implements FromCollection
             foreach ($item['card']['tags'] as $tag => $val){
                 $tags['url'] = $url;
                 $tags[$tag] = is_array($val) ? implode(', ', $val) : "Нет проблем";
-                
+
                 if(isset($item['card_compare']))
                     $tags[$tag . '_compare'] = is_array($item['card_compare']['tags']->$tag) ? implode(', ', $item['card_compare']['tags']->$tag) : "Нет проблем";
+                else
+                    $tags[$tag . '_compare'] = "Пусто";
             }
 
             $item = $tags;
