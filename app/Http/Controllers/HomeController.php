@@ -96,14 +96,6 @@ class HomeController extends Controller
         $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
             $result = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
-            foreach ($result as $item) {
-                $response[] = [
-                    'id' => $item['id'],
-                    'title' => __($item['title']),
-                    'description' => $item['description'],
-                    'link' => $item['link'],
-                ];
-            }
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
             $projects = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
@@ -118,15 +110,17 @@ class HomeController extends Controller
             }
             $result = array_merge($result, $projects);
             $result = array_unique($result, SORT_REGULAR);
-            foreach ($result as $item) {
-                $response[] = [
-                    'id' => $item['id'],
-                    'title' => __($item['title']),
-                    'description' => $item['description'],
-                    'link' => $item['link'],
-                ];
-            }
         }
+
+        foreach ($result as $item) {
+            $response[] = [
+                'id' => $item['id'],
+                'title' => __($item['title']),
+                'description' => $item['description'],
+                'link' => $item['link'],
+            ];
+        }
+
         return response($response);
     }
 }
