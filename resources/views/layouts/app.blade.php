@@ -130,6 +130,7 @@
                     _token: token
                 },
                 success: function (response) {
+                    console.log(response)
                     response.forEach((el) => {
                         let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
                             "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
