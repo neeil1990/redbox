@@ -91,10 +91,12 @@ class HomeController extends Controller
      */
     public function getDescriptionProjects()
     {
-        Log::debug('u_id', [Auth::id()]);
         $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
             $result = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
+            for ($i = 0; $i < count($result); $i++) {
+                $result[$i]['title'] = __($result[$i]['title']);
+            }
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
             $projects = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
