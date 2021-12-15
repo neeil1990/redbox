@@ -21,8 +21,7 @@
             </div>
         </div>
     </div>
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <li class="nav-header">{{ __('Menu') }}</li>
+    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false">
         {{-- Cписок пунктов меню подргружается при помощи скрипта app.blade.php -> js -> getProjects() --}}
         {{-- Это нужно для того, чтобы пользователь мог сортировать пункты меню так, как ему удобно --}}
         {{-- Добавить пункт меню и вывод сервиса на главную можно тут /main-projects --}}
