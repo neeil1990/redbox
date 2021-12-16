@@ -4,7 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DescriptionProject extends Model
+class MainProject extends Model
 {
+    protected $table = 'main_projects';
+
     protected $guarded = [];
 }

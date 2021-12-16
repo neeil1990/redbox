@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DescriptionProject;
+use App\MainProject;
 use App\ProjectsPositions;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -12,7 +12,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Symfony\Component\VarDumper\VarDumper;
 
 
 class HomeController extends Controller
@@ -26,10 +25,10 @@ class HomeController extends Controller
         $user_id = Auth::id();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user_id)->get('projects_positions');
         if (empty($projectsPositions[0])) {
-            $result = DescriptionProject::all()->toArray();
+            $result = MainProject::all()->toArray();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]->projects_positions, 0, -1));
-            $projects = DescriptionProject::all()->toArray();
+            $projects = MainProject::all()->toArray();
             $result = [];
 
             foreach ($projectsPositions as $projectsPosition) {
@@ -95,10 +94,10 @@ class HomeController extends Controller
         $response = [];
         $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
-            $result = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
+            $result = MainProject::all(['id', 'title', 'description', 'link', 'icon'])->toArray();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
-            $projects = DescriptionProject::all(['id', 'title', 'description', 'link'])->toArray();
+            $projects = MainProject::all(['id', 'title', 'description', 'link', 'icon'])->toArray();
             $result = [];
 
             foreach ($projectsPositions as $projectsPosition) {
@@ -118,6 +117,7 @@ class HomeController extends Controller
                 'title' => __($item['title']),
                 'description' => $item['description'],
                 'link' => $item['link'],
+                'icon' => $item['icon'],
             ];
         }
 

@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\DescriptionProject;
+use App\MainProject;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class DescriptionProjectForAdminController extends Controller
@@ -23,8 +22,8 @@ class DescriptionProjectForAdminController extends Controller
      */
     public function index()
     {
-        $data = DescriptionProject::all();
-        return view('main-projects.index', compact(['data']));
+        $data = MainProject::all();
+        return view('main-projects.index', compact('data'));
     }
 
     /**
@@ -35,16 +34,14 @@ class DescriptionProjectForAdminController extends Controller
         return view('main-projects.create');
     }
 
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'link' => 'required'
-        ]);
-
-        DescriptionProject::create($request->all());
-        return Redirect::refresh();
+        MainProject::create($request->all());
+        return redirect()->route('main-projects.index');
     }
 
     /**
@@ -53,31 +50,25 @@ class DescriptionProjectForAdminController extends Controller
      */
     public function edit($id)
     {
-        $data = DescriptionProject::find($id);
-        return view('main-projects.edit', compact(['data']));
+        $data = MainProject::find($id);
+        return view('main-projects.edit', compact('data'));
     }
 
     /**
      * @param Request $request
      * @param $id
-     * @return array|false|Application|Factory|View|mixed
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'link' => 'required'
-        ]);
-
-        DescriptionProject::where('id', $id)->update([
+        MainProject::where('id', $id)->update([
             'title' => $request->title,
             'description' => $request->description,
-            'link' => $request->link
+            'link' => $request->link,
+            'icon' => $request->icon,
         ]);
 
-        return self::index();
-
+        return redirect()->route('main-projects.index');
     }
 
     /**
@@ -86,7 +77,7 @@ class DescriptionProjectForAdminController extends Controller
      */
     public function destroy($id): RedirectResponse
     {
-        DescriptionProject::where('id', $id)->delete();
-        return redirect()->back();
+        MainProject::where('id', $id)->delete();
+        return redirect()->route('main-projects.index');
     }
 }

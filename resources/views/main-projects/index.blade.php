@@ -5,6 +5,7 @@
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                 <th>id</th>
+                <th>icon</th>
                 <th>title</th>
                 <th>description</th>
                 <th>link</th>
@@ -13,10 +14,11 @@
                 <tbody>
                 @foreach($data as $row)
                     <tr>
-                        <td>{{$row->id }}</td>
-                        <td>{{$row->title }}</td>
-                        <td class="w-50">{{$row->description }}</td>
-                        <td>{{$row->link }}</td>
+                        <td>{{ $row->id }}</td>
+                        <td>{!! $row->icon !!}</td>
+                        <td>{{ $row->title }}</td>
+                        <td class="w-50">{{ $row->description }}</td>
+                        <td>{{ $row->link }}</td>
                         <td class="d-flex flex-row">
                             <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default mr-2">
                                 <i class="fa fa-edit"></i>

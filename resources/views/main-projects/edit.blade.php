@@ -20,9 +20,13 @@
             {!! Form::label("link") !!}
             {!! Form::text("link", $data->link ,["class"=>"form-control","required"=>"required"]) !!}
         </div>
+        <div class="form-group required">
+            {!! Form::label("icon") !!}
+            {!! Form::text("icon", $data->icon ,["class"=>"form-control","required"=>"required", 'placeholder' => '<i class="fa fa-edit"></i>']) !!}
+        </div>
         <div class="well well-sm clearfix">
             <button class="btn btn-success pull-right" title="Save" type="submit">{{ __('Update') }}</button>
-            <a href="http://redbox/public/main-projects" class="btn btn-default"> {{ __('Back') }}</a>
+            <a href="{{ url('main-projects') }}" class="btn btn-default"> {{ __('Back') }}</a>
         </div>
     </div>
     {!! Form::close() !!}

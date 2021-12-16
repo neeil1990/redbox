@@ -134,7 +134,8 @@
                     response.forEach((el) => {
                         let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
                             "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
-                            "<p>" + el.title + "</p> " +
+                            el.icon +
+                            "<p class='ml-2'>" + el.title + "</p> " +
                             "</a></li>"
                         $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
                     })
