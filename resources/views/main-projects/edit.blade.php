@@ -22,9 +22,15 @@
         </div>
         <div class="form-group required">
             {!! Form::label("icon") !!}
-            {!! Form::text("icon", $data->icon ,["class"=>"form-control","required"=>"required", 'placeholder' => '<i class="fa fa-edit"></i>']) !!}
+            {!! Form::text("icon", $data->icon ,["class"=>"form-control","required"=>"required", 'placeholder' => '<i class="fas fa-address-book"></i>']) !!}
         </div>
-        <div class="well well-sm clearfix">
+        <div class="text-muted mb-3">
+            <span>Команды и сами иконки можно посмотреть на сайтах:</span> <br>
+            <span><a href="https://fontawesome.com/v5.15/icons?d=gallery&p=2" target="_blank">https://fontawesome.com</a></span> <br>
+            <span><a href="https://useiconic.com/open/" target="_blank">https://useiconic.com/open</a></span> <br>
+            <span><a href="https://ionic.io/ionicons" target="_blank">https://ionic.io/ionicons</a></span> <br>
+        </div>
+        <div class="well well-sm clearfix pb-5">
             <button class="btn btn-success pull-right" title="Save" type="submit">{{ __('Update') }}</button>
             <a href="{{ url('main-projects') }}" class="btn btn-default"> {{ __('Back') }}</a>
         </div>

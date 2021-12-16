@@ -34,7 +34,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <a href="{{ route('main-projects.create')}}" class="btn btn-secondary">{{ __('Create new') }}</a>
+            <a href="{{ route('main-projects.create')}}" class="btn btn-secondary mb-5">{{ __('Create new') }}</a>
         </div>
     </div>
 @endsection
