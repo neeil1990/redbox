@@ -40,6 +40,9 @@ class MetaTags extends MetaTagsController
 
             $ideal = $model->histories()->where('ideal', true)->firstOrFail();
 
+            if($ideal->isEmpty())
+                continue;
+
             $history = [];
             $links = preg_split('/\n|\r\n?/', $model->links);
             foreach ($links as $link){
