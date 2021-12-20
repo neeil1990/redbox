@@ -47,7 +47,7 @@
                                 <td>
                                     <select name="compare" class="form-control">
                                         <option value=""></option>
-                                        @foreach($project->histories as $option)
+                                        @foreach($project->histories->sortByDesc('id') as $option)
                                             <option value="{{$option->id}}">{{$option->created_at->format('d.m.Y')}} ({{$option->id}})</option>
                                         @endforeach
                                     </select>
