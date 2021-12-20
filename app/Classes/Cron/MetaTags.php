@@ -38,9 +38,9 @@ class MetaTags extends MetaTagsController
 
         foreach($models as $model){
 
-            $ideal = $model->histories()->where('ideal', true)->firstOrFail();
+            $ideal = $model->histories()->where('ideal', true)->first();
 
-            if($ideal->isEmpty())
+            if(!$ideal)
                 continue;
 
             $history = [];
