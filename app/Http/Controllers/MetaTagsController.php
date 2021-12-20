@@ -65,7 +65,7 @@ class MetaTagsController extends Controller
      */
     public function index()
     {
-        $meta = Auth::user()->metaTags()->get();
+        $meta = Auth::user()->metaTags()->latest()->get();
 
         return view('meta-tags.index', compact('meta'));
     }
