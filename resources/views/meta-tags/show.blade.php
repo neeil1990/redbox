@@ -31,7 +31,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach($project->histories as $history)
+                            @foreach($project->histories->sortByDesc('id') as $history)
                             <tr>
                                 <td>{{$history->id}}</td>
                                 <td>{{$history->created_at->format('d.m.Y')}}</td>

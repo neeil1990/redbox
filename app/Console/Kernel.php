@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Delete histories > 90 days
-        $schedule->call(new MetaTagsHistoriesDelete())->cron('* * * * *');
+        $schedule->call(new MetaTagsHistoriesDelete())->cron('*/24 * * * *');
 
         //test call as 6
         $schedule->call(new MetaTags(6))->cron('* * * * *');

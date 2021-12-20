@@ -7,6 +7,8 @@ namespace App\Classes\Cron;
 use App\Http\Controllers\MetaTagsController;
 use App\Mail\MetaTagsEmail;
 use App\MetaTag;
+use App\MetaTagsHistory;
+use App\TelegramBot;
 use App\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -15,15 +17,7 @@ use Illuminate\Support\Facades\Storage;
 class MetaTags extends MetaTagsController
 {
     protected $period;
-    protected $file = 'html/meta_tags.html';
 
-    /**
-     * @return mixed
-     */
-    public function getPath()
-    {
-        return storage_path('app/public/' . $this->file);
-    }
 
     public function __construct($period)
     {
@@ -35,26 +29,89 @@ class MetaTags extends MetaTagsController
      */
     public function __invoke()
     {
-        $models = MetaTag::where('period', $this->period)->get();
+        $models = MetaTag::where('period', $this->period)
+            ->where('status', true)
+            ->get();
 
         if($models->isEmpty())
             return;
 
         foreach($models as $model){
-            $project = ['name' => '', 'data' => []];
 
-            $arLinks = preg_split("/\r\n|\n|\r/", $model->links);
+            $ideal = $model->histories()->where('ideal', true)->firstOrFail();
 
-            $project['name'] = $model->name;
-            foreach ($arLinks as $arLink)
-                $project['data'][$arLink] = $this->domain($arLink)->get();
+            $history = [];
+            $links = preg_split('/\n|\r\n?/', $model->links);
+            foreach ($links as $link){
 
-            $html = view('meta-tags.email', ['project' => $project])->render();
+                $meta = [];
 
-            Storage::put($this->file, $html);
+                $meta['url'] = $link;
 
-            Mail::to(User::findOrFail($model->user_id))->send(new MetaTagsEmail($project['name'], $this->getPath()));
+                $meta['length'][] = [
+                    'id' => 'title',
+                    'name' => '',
+                    'input' => [
+                        'min' => $model->title_min,
+                        'max' => $model->title_max
+                    ],
+                ];
+
+                $meta['length'][] = [
+                    'id' => 'description',
+                    'name' => '',
+                    'input' => [
+                        'min' => $model->description_min,
+                        'max' => $model->description_max
+                    ],
+                ];
+
+                $meta['length'][] = [
+                    'id' => 'keywords',
+                    'name' => '',
+                    'input' => [
+                        'min' => $model->keywords_min,
+                        'max' => $model->keywords_max
+                    ],
+                ];
+
+                $history[] = $this->dataMetaTags($meta['url'], $meta['length']);
+            }
+
+            if($history){
+                $history_links = count($history);
+                $history = collect($history)->toJson();
+
+                $history = MetaTagsHistory::create(['meta_tag_id' => $model->id, 'quantity' => $history_links, 'data' => $history]);
+
+                $compare = [];
+
+                $this->createCompareArray($history, 'card', $compare);
+                $this->createCompareArray($ideal, 'card_compare', $compare);
+
+                $diff = [];
+                foreach ($compare as $c) {
+
+                    foreach ($c['card']['tags'] as $name => $val){
+
+                        if(isset($c['card_compare']['tags']->$name)){
+
+                            if($c['card_compare']['tags']->$name !== $val)
+                                $diff[] = $val;
+                        }
+                    }
+                }
+
+                if(count($diff) && $model->user->telegram_bot_active){
+
+                    //send telegram notification
+                    $link_compare = route('meta.history.compare', [$ideal->id, $history->id]);
+                    $telegram = view('meta-tags.telegram', compact('model', 'link_compare'))->render();
+                    TelegramBot::sendMessage($telegram, $model->user->chat_id);
+                }
+            }
         }
+
     }
 
 }

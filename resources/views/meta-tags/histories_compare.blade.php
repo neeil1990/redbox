@@ -206,6 +206,13 @@
 
             });
 
+            $('#accordion .card').each(function(i, el){
+                let self = $(el);
+
+                if(self.find('tr[style]').length)
+                    self.addClass('card-warning')
+            });
+
         </script>
 
 
