@@ -4,7 +4,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Сохранить проект</h5>
+                    <h5 class="modal-title">{{ lang.save_project }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -12,19 +12,19 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label class="col-form-label">Название проекта:</label>
+                            <label class="col-form-label">{{ lang.project_name }}:</label>
                             <input type="text" class="form-control" v-model="name" required>
                         </div>
 
                         <div class="form-group">
                             <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                                 <input type="checkbox" class="custom-control-input" :id="'customSwitchStatusForm' + target + status" v-model="status">
-                                <label class="custom-control-label" :for="'customSwitchStatusForm' + target + status">Status</label>
+                                <label class="custom-control-label" :for="'customSwitchStatusForm' + target + status">{{ lang.status }}</label>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-form-label">Частота проверок:</label>
+                            <label class="col-form-label">{{ lang.period }}:</label>
 
                             <div v-for="radio in radios" class="custom-control custom-radio">
                                 <input v-model.number="period" class="custom-control-input" type="radio" :id="'Radio' + target + radio.value" :value="radio.value">
@@ -33,12 +33,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Timeout:</label>
+                            <label>{{ lang.timeout }}:</label>
                             <input type="number" min="1" class="form-control" v-model="timeout">
                         </div>
 
                         <div class="form-group">
-                            <label class="col-form-label">Ссылки:</label>
+                            <label class="col-form-label">{{ lang.link }}:</label>
                             <textarea class="form-control" v-model="link" required></textarea>
                         </div>
 
@@ -46,7 +46,7 @@
                             <div class="col-sm-6">
                                 <!-- text input -->
                                 <div class="form-group">
-                                    <label>Длина {{ len.name }}</label>
+                                    <label>{{ lang.length_word }} {{ len.name }}</label>
                                     <input type="number" class="form-control" placeholder="min" v-model.number="len.input.min">
                                 </div>
                             </div>
@@ -61,8 +61,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button @click.prevent="OnSubmitMetaForm" type="button" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.close }}</button>
+                    <button @click.prevent="OnSubmitMetaForm" type="button" class="btn btn-primary">{{ lang.save }}</button>
                 </div>
             </div>
         </div>
@@ -95,6 +95,9 @@
             links: {
                 type: String
             },
+            lang: {
+                type: [Array, Object]
+            },
         },
         created(){
 
@@ -108,15 +111,15 @@
                 link: '',
                 timeout: 500,
                 length: [
-                    {id: 'title', name: 'title (recommend 30-70)', input: {min: null, max: null}},
-                    {id: 'description', name: 'description (recommend 30-70)', input: {min: null, max: null}},
-                    {id: 'keywords', name: 'keywords (recommend 30-70)', input: {min: null, max: null}},
+                    {id: 'title', name: this.lang.title, input: {min: null, max: null}},
+                    {id: 'description', name: this.lang.description, input: {min: null, max: null}},
+                    {id: 'keywords', name: this.lang.keywords, input: {min: null, max: null}},
                 ],
                 radios: [
                     {value: 0, text: 'manual'},
-                    {value: 6, text: 'Интервал проверки каждые 6 часов'},
-                    {value: 12, text: 'Интервал проверки каждые 12 часов'},
-                    {value: 24, text: 'Интервал проверки каждые 24 часов'},
+                    {value: 6, text: this.lang.check_interval_every + ' 6 ' + this.lang.hours},
+                    {value: 12, text: this.lang.check_interval_every + ' 12 ' + this.lang.hours},
+                    {value: 24, text: this.lang.check_interval_every + ' 24 ' + this.lang.hours},
                 ],
             }
         },

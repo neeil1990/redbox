@@ -29,7 +29,7 @@
         </style>
     @endslot
 
-    <meta-tags :meta="{{ $meta }}"></meta-tags>
+    <meta-tags :meta="{{ $meta }}" :lang="{{ $lang }}"></meta-tags>
 
     @slot('js')
         <!-- Toastr -->

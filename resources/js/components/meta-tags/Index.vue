@@ -6,11 +6,11 @@
 
                 <form @submit.prevent="onSubmitMetaTags">
                     <div class="form-group">
-                        <label>Check URL</label>
+                        <label>{{ lang.check_url }}</label>
                         <textarea type="text" class="form-control" rows="10" v-model="url"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Timeout request</label>
+                        <label>{{ lang.timeout_request }}</label>
                         <input type="number" min="1" class="form-control" v-model="time">
                     </div>
 
@@ -18,21 +18,21 @@
                         <div class="col-sm-6">
                             <!-- text input -->
                             <div class="form-group">
-                                <label>Длина {{ len.name }}</label>
-                                <input type="number" class="form-control" placeholder="min" v-model.lazy="len.input.min">
+                                <label>{{ lang.length_word }} {{ len.name }}</label>
+                                <input type="number" class="form-control" :placeholder="lang.min" v-model.lazy="len.input.min">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>&nbsp;</label>
-                                <input type="number" class="form-control" placeholder="max" v-model.lazy="len.input.max">
+                                <input type="number" class="form-control" :placeholder="lang.max" v-model.lazy="len.input.max">
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
-                            <input type="submit" class="btn btn-secondary" value="submit">
+                            <input type="submit" class="btn btn-secondary" :value="lang.send">
                         </div>
                     </div>
 
@@ -47,19 +47,19 @@
                 <div class="card" v-if="result.length">
 
                     <div class="card-header">
-                        <h3 class="card-title">Check URL</h3>
+                        <h3 class="card-title">{{ lang.check_url }}</h3>
                     </div>
 
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" :style="'width: '+ loading +'%;'" :aria-valuenow="loading" aria-valuemin="0" aria-valuemax="100">
-                            <span v-if="loading === 100">Готово</span>
+                            <span v-if="loading === 100">{{ lang.done }}</span>
                             <span v-else>{{ loading }}%</span>
                         </div>
                     </div>
 
                     <div class="card-body">
 
-                        <meta-filter :seen="seenCard" :metaTags="result"></meta-filter>
+                        <meta-filter :seen="seenCard" :metaTags="result" :lang="lang"></meta-filter>
 
                         <div id="accordion">
                             <div class="card" v-for="(url, index) in result" v-show="!seenCard.length || seenCard[index] === 1">
@@ -77,7 +77,7 @@
                                                 </button>
 
                                                 <div class="dropdown-menu dropdown-menu-right" role="menu" style="">
-                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.title)">Текстовый анализ</a>
+                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.title)">{{ lang.text_analysis }}</a>
                                                 </div>
                                             </div>
 
@@ -90,10 +90,10 @@
                                             <table class="table table-bordered">
                                                 <thead>
                                                 <tr>
-                                                    <th>Tag</th>
-                                                    <th>Content</th>
-                                                    <th style="width: 40px">Count</th>
-                                                    <th style="width: 150px">Main problems</th>
+                                                    <th>{{ lang.tag }}</th>
+                                                    <th>{{ lang.content }}</th>
+                                                    <th style="width: 40px">{{ lang.count }}</th>
+                                                    <th style="width: 150px">{{ lang.main_problems }}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -119,8 +119,8 @@
 
                         <div class="row" v-if="FormShow">
                             <div class="col-md-12">
-                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#ProjectModalForm" >Сохранить как проект</button>
-                                <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalForm" method="post" request="/meta-tags" :data="result" :links="url"></base-modal-form>
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#ProjectModalForm" >{{ lang.save_as_project }}</button>
+                                <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalForm" method="post" request="/meta-tags" :data="result" :links="url" :lang="lang"></base-modal-form>
                             </div>
                         </div>
 
@@ -134,25 +134,24 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Проекты</h3>
+                        <h3 class="card-title">{{ lang.projects }}</h3>
                     </div>
 
                     <div class="card-body table-responsive p-0">
                         <table class="table table-striped projects">
                             <thead>
                             <tr>
-                                <th style="width: 1%">ID</th>
-                                <th style="width: 20%">name</th>
-                                <th style="width: 10%">period</th>
-                                <th style="width: 10%">timeout</th>
-                                <th style="width: 25%">link</th>
-                                <th style="width: 9%">status</th>
-                                <th style="width: 25%"></th>
+                                <th style="width: 1%">{{ lang.id }}</th>
+                                <th style="width: 15%">{{ lang.name }}</th>
+                                <th style="width: 10%">{{ lang.period }}</th>
+                                <th style="width: 10%">{{ lang.timeout }}</th>
+                                <th style="width: 25%">{{ lang.link }}</th>
+                                <th style="width: 9%">{{ lang.status }}</th>
+                                <th style="width: 30%"></th>
                             </tr>
                             </thead>
 
                             <tbody>
-
                                 <tr v-for="meta in metas" :key="meta.id">
                                     <td>{{ meta.id }}</td>
                                     <td>{{ meta.name }}</td>
@@ -176,7 +175,7 @@
                                         <div class="form-group">
                                             <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                                                 <input type="checkbox" class="custom-control-input" :id="'customSwitchStatus' + meta.id" v-model="meta.status" @change.prevent="onSubmitMetaTagsEditField(meta)">
-                                                <label class="custom-control-label" :for="'customSwitchStatus' + meta.id">off / on</label>
+                                                <label class="custom-control-label" :for="'customSwitchStatus' + meta.id">{{ lang.off }} / {{ lang.on }}</label>
                                             </div>
                                         </div>
                                     </td>
@@ -184,19 +183,19 @@
 
                                         <a class="btn btn-info btn-sm" target="_blank" :href="'/meta-tags/histories/' + meta.id">
                                             <i class="fas fa-list"></i>
-                                            History
+                                            {{ lang.history }}
                                         </a>
                                         <a class="btn btn-info btn-sm" href="#" @click.prevent="StartMetaTags(meta)">
                                             <i class="fas fa-play-circle"></i>
-                                            Start
+                                            {{ lang.start }}
                                         </a>
                                         <a class="btn btn-info btn-sm" href="#" data-toggle="modal" data-target="#ProjectModalFormEdit" @click.prevent="onSubmitMetaTagsEdit(meta)">
                                             <i class="fas fa-edit"></i>
-                                            Edit
+                                            {{ lang.edit }}
                                         </a>
                                         <a class="btn btn-info btn-sm" @click.prevent="DeleteMetaTags(meta.id)">
                                             <i class="fas fa-trash-alt"></i>
-                                            Delete
+                                            {{ lang.delete }}
                                         </a>
 
                                     </td>
@@ -209,6 +208,7 @@
                                              method="patch"
                                              :values="value"
                                              :request="'/meta-tags/' + request"
+                                             :lang="lang"
                             ></base-modal-form>
                         </table>
                     </div>
@@ -231,6 +231,9 @@
         props: {
             meta: {
                 type: [Object, Array]
+            },
+            lang: {
+                type: [Object, Array]
             }
         },
         created() {
@@ -246,9 +249,9 @@
                 url: '',
                 time: 500,
                 length: [
-                    {id: 'title', name: 'title (recommend 30-70)', input: {min: null, max: null}},
-                    {id: 'description', name: 'description (recommend 30-70)', input: {min: null, max: null}},
-                    {id: 'keywords', name: 'keywords (recommend 30-70)', input: {min: null, max: null}},
+                    {id: 'title', name: this.lang.title, input: {min: null, max: null}},
+                    {id: 'description', name: this.lang.description, input: {min: null, max: null}},
+                    {id: 'keywords', name: this.lang.keywords, input: {min: null, max: null}},
                 ],
                 result: [],
                 seenCard: [],

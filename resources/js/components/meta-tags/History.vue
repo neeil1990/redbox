@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-12">
 
-            <meta-filter :seen="seenCard" :metaTags="history"></meta-filter>
+            <meta-filter :seen="seenCard" :metaTags="history" :lang="lang"></meta-filter>
 
             <div id="accordion">
 
@@ -22,7 +22,7 @@
                                 </button>
 
                                 <div class="dropdown-menu dropdown-menu-right" role="menu" style="">
-                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(item.title)">Текстовый анализ</a>
+                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(item.title)">{{ lang.text_analysis }}</a>
                                 </div>
                             </div>
 
@@ -35,10 +35,10 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Tag</th>
-                                        <th>Content</th>
-                                        <th style="width: 40px">Count</th>
-                                        <th style="width: 150px">Main problems</th>
+                                        <th>{{ lang.tag }}</th>
+                                        <th>{{ lang.content }}</th>
+                                        <th style="width: 40px">{{ lang.count }}</th>
+                                        <th style="width: 150px">{{ lang.main_problems }}</th>
                                     </tr>
                                 </thead>
 
@@ -77,7 +77,8 @@
             MetaFilter
         },
         props: {
-            history: [Object, Array]
+            history: [Object, Array],
+            lang: [Object, Array],
         },
         data() {
             return {

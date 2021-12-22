@@ -34,9 +34,9 @@
         <div class="col-md-12">
 
             <div class="form-group">
-                <label for="filter">Filter</label>
+                <label for="filter">{{ __('Filter') }}</label>
                 <select class="custom-select" id="filter">
-                    <option value="all">Все</option>
+                    <option value="all">{{ __('All') }}</option>
                     @foreach($filter as $f)
                         <option value="{{$f}}">{{$f}}</option>
                     @endforeach
@@ -80,10 +80,10 @@
                                                 <th colspan="4">{{$item['card']['date']}} ({{$item['card']['id']}})</th>
                                             </tr>
                                             <tr>
-                                                <th>Tag</th>
-                                                <th>Content</th>
-                                                <th style="width: 40px">Count</th>
-                                                <th style="width: 150px">Main problems</th>
+                                                <th>{{ __('Tag') }}</th>
+                                                <th>{{ __('Content') }}</th>
+                                                <th style="width: 40px">{{ __('Count') }}</th>
+                                                <th style="width: 150px">{{ __('Main problems') }}</th>
                                             </tr>
                                             </thead>
 
@@ -122,10 +122,10 @@
                                                 <th colspan="4">{{$item['card_compare']['date']}} ({{$item['card_compare']['id']}})</th>
                                             </tr>
                                             <tr>
-                                                <th>Tag</th>
-                                                <th>Content</th>
-                                                <th style="width: 40px">Count</th>
-                                                <th style="width: 150px">Main problems</th>
+                                                <th>{{ __('Tag') }}</th>
+                                                <th>{{ __('Content') }}</th>
+                                                <th style="width: 40px">{{ __('Count') }}</th>
+                                                <th style="width: 150px">{{ __('Main problems') }}</th>
                                             </tr>
                                             </thead>
 
@@ -166,7 +166,7 @@
 
             <a href="{{ route('meta.history.export_compare', [request('id'), request('id_compare')]) }}" class="btn btn-info btn-sm">
                 <i class="fas fa-file-download"></i>
-                Export
+                {{ __('Export') }}
             </a>
 
         </div>

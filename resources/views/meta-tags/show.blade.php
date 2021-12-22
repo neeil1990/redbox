@@ -11,7 +11,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Проекты</h3>
+                    <h3 class="card-title">{{ __('Projects') }}</h3>
                 </div>
 
                 <div class="card-body table-responsive p-0">
@@ -19,13 +19,15 @@
                         <thead>
                         <tr>
                             <th style="width: 1%">#</th>
-                            <th style="">date</th>
-                            <th style="">time</th>
-                            <th style="">show</th>
-                            <th style="">link</th>
-                            <th style="">error</th>
-                            <th style="">compare</th>
-                            <th style="">ideal <i class="far fa-question-circle" data-toggle="tooltip" data-placement="right" title="Выберете историю за которой хотите следить."></i></th>
+                            <th style="">{{ __('Date') }}</th>
+                            <th style="">{{ __('Time') }}</th>
+                            <th style="">{{ __('Show') }}</th>
+                            <th style="">{{ __('Link') }}</th>
+                            <th style="">{{ __('Errors') }}</th>
+                            <th style="">{{ __('Compare') }}</th>
+                            <th style="">
+                                <span data-toggle="tooltip" data-placement="left" title="{{ __('Select the story you want to follow.') }}">{{ __('Ideal') }} <i class="far fa-question-circle"></i></span>
+                            </th>
                             <th style=""></th>
                         </tr>
                         </thead>
@@ -39,7 +41,7 @@
                                 <td>
                                     <a class="btn btn-info btn-sm" href="/meta-tags/history/{{ $history->id }}">
                                         <i class="fas fa-play-circle"></i>
-                                        Go
+                                        {{ __('Start') }}
                                     </a>
                                 </td>
                                 <td>{{$history->quantity}}</td>
@@ -62,17 +64,17 @@
 
                                     <a class="btn btn-info btn-sm" href="{{ route('meta.history.export', $history->id) }}">
                                         <i class="fas fa-file-download"></i>
-                                        Export
+                                        {{ __('Export') }}
                                     </a>
 
                                     <a class="btn btn-info btn-sm compare-history" href="{{ route('meta.history.compare', [$history->id, $history->id]) }}">
                                         <i class="far fa-clone"></i>
-                                        Compare
+                                        {{ __('Compare') }}
                                     </a>
 
                                     <a class="btn btn-info btn-sm delete-history" href="{{ route('meta.history.delete', $history->id) }}">
                                         <i class="fas fa-trash-alt"></i>
-                                        Delete
+                                        {{ __('Delete') }}
                                     </a>
 
                                 </td>
