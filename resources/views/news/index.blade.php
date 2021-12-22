@@ -124,7 +124,7 @@
     @slot('js')
         <script>
             $(document).ready(function () {
-                $('html').height($('.col-lg-8.col-md-12.pb-3').height() + 150)
+                $('html').height($('.col-lg-8.col-md-12.pb-3').height() + 200)
             });
             $('.btn.btn-secondary.remove-news').click(function () {
                 var id = $(this).attr('data-target')
