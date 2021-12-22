@@ -59,6 +59,51 @@ class MetaTagsController extends Controller
         return Excel::download(new MetaTagsCompareHistoriesExport($id, $id_compare), 'meta_tags_compare.csv');
     }
 
+    protected function lang() {
+
+        return collect([
+            'check_url' => __('Check URL'),
+            'timeout_request' => __('Timeout request'),
+            'length_word' => __('Length'),
+            'title' => __('title (recommend 70-80)'),
+            'description' => __('description (recommend 180-300)'),
+            'keywords' => __('keywords'),
+            'min' => __('Minimum'),
+            'max' => __('Maximum'),
+            'send' => __('Send'),
+            'projects' => __('Projects'),
+            'id' => __('ID'),
+            'name' => __('Name'),
+            'period' => __('Period'),
+            'timeout' => __('Timeout'),
+            'link' => __('Link'),
+            'status' => __('Status'),
+            'off' => __('Off'),
+            'on' => __('On'),
+            'history' => __('History'),
+            'start' => __('Start'),
+            'edit' => __('Edit'),
+            'delete' => __('Delete'),
+            'filter' => __('Filter'),
+            'all' => __('All'),
+            'done' => __('Done'),
+            'text_analysis' => __('Text analysis'),
+            'save_as_project' => __('Save as project'),
+            'check_interval_every' => __('Check interval every'),
+            'hours' => __('hours'),
+            'save_project' => __('Save project'),
+            'project_name' => __('Project name'),
+            'close' => __('Close'),
+            'save' => __('Save'),
+            'export' => __('Export'),
+            'tag' => __('Tag'),
+            'content' => __('Content'),
+            'count' => __('Count'),
+            'main_problems' => __('Main problems'),
+            'go_to_site' => __('Go to site'),
+        ]);
+    }
+
     /**
      * @param Request $request
      * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
@@ -67,7 +112,9 @@ class MetaTagsController extends Controller
     {
         $meta = Auth::user()->metaTags()->latest()->get();
 
-        return view('meta-tags.index', compact('meta'));
+        $lang = $this->lang();
+
+        return view('meta-tags.index', compact('meta', 'lang'));
     }
 
     /**
@@ -236,7 +283,9 @@ class MetaTagsController extends Controller
         $project = $history->project;
         $data = collect(json_decode($history->data));
 
-        return view('meta-tags.history', compact('data', 'project'));
+        $lang = $this->lang();
+
+        return view('meta-tags.history', compact('data', 'project', 'lang'));
     }
 
     public function showHistoryCompare($id, $id_compare)

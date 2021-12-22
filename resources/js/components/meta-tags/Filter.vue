@@ -1,9 +1,9 @@
 <template>
 
     <div class="form-group">
-        <label for="filter">Filter</label>
-        <select class="custom-select form-control-border" id="filter" v-model="selected" @change.prevent="onChange">
-            <option value="all">Все</option>
+        <label for="filter">{{ lang.filter }}</label>
+        <select class="custom-select" id="filter" v-model="selected" @change.prevent="onChange">
+            <option value="all">{{ lang.all }}</option>
             <option v-for="option in options" v-bind:value="option.value">{{ option.text }}</option>
         </select>
     </div>
@@ -15,7 +15,8 @@
         name: "MetaFilter",
         props: {
             metaTags: [Object, Array],
-            seen: [Object, Array]
+            seen: [Object, Array],
+            lang: [Object, Array],
         },
         created() {
 

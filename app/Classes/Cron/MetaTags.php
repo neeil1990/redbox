@@ -10,6 +10,7 @@ use App\MetaTag;
 use App\MetaTagsHistory;
 use App\TelegramBot;
 use App\User;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -106,6 +107,8 @@ class MetaTags extends MetaTagsController
                 }
 
                 if(count($diff) && $model->user->telegram_bot_active){
+
+                    App::setLocale($model->user->lang);
 
                     //send telegram notification
                     $link_compare = route('meta.history.compare', [$ideal->id, $history->id]);
