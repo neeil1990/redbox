@@ -138,7 +138,8 @@
                         $('#news-' + id).remove()
                         $('.modal-backdrop.fade.show').remove()
                         $('html').css({
-                            'overflow': 'auto'
+                            'overflow': 'auto',
+                            'height': 'auto',
                         })
                     }
                 });
