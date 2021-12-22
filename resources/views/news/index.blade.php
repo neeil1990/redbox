@@ -3,7 +3,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <a href="{{ route('create.news') }}" class="btn btn-secondary mb-3" style="margin-left: 7.5px">{{ __('Add News') }}</a>
     @isset($news[0])
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-8 col-md-12 pb-3">
             <div class="card">
                 <div class="card-body">
                     <div class="tab-content">
