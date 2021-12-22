@@ -8,4 +8,10 @@
     <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">2 Contact</a>
     </li>
+    <li>
+        <a class="nav-link" href="{{ route('news') }}">
+            <span>News</span>
+            <span class="badge badge-warning navbar-badge news">0</span>
+        </a>
+    </li>
 </ul>

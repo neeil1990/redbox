@@ -90,3 +90,7 @@
 .content-wrapper {
     height: inherit !important;
 }
+
+.ui-tooltip.ui-widget.ui-corner-all.ui-widget-content {
+    display: none;
+}

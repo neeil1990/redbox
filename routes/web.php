@@ -126,4 +126,16 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('text-analyzer', 'TextAnalyzerController@index')->name('text.analyzer.view');
     Route::post('text-analyzer', 'TextAnalyzerController@analyze')->name('text.analyzer');
+
+    Route::get('news', 'NewsController@index')->name('news');
+    Route::get('/create-news', 'NewsController@createView')->name('create.news');
+    Route::post('/save-news', 'NewsController@store')->name('save.news');
+    Route::post('/remove-news', 'NewsController@remove')->name('remove.news');
+    Route::post('/create-comment', 'NewsController@storeComment')->name('create.comment');
+    Route::post('/remove-comment', 'NewsController@removeComment')->name('remove.comment');
+    Route::post('/like-news', 'NewsController@likeNews')->name('like');
+    Route::get('/edit-news/{id}', 'NewsController@editNewsView')->name('edit.news');
+    Route::post('/save-edit-news', 'NewsController@editNews')->name('save.edit.news');
+    Route::post('/edit-comment', 'NewsController@editComment')->name('edit.comment');
+    Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
 });

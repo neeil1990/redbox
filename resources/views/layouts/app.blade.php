@@ -118,7 +118,7 @@
 <script>
     $(function () {
         var token = $('meta[name="csrf-token"]').attr('content');
-
+        getCountNewNews()
         getProjects()
 
         function getProjects() {
@@ -130,7 +130,6 @@
                     _token: token
                 },
                 success: function (response) {
-                    console.log(response)
                     response.forEach((el) => {
                         let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
                             "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
@@ -141,6 +140,21 @@
                     })
                 },
             });
+        }
+
+        function getCountNewNews() {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "{{ route('get.count.new.news') }}",
+                data: {
+                    _token: token
+                },
+                success: function (response) {
+                    $('.badge.badge-warning.navbar-badge.news').text(response.count)
+                },
+            });
+
         }
 
         $("#tablecontents").sortable({
@@ -198,34 +212,6 @@
                 },
             });
         }
-
-        // $('.nav.nav-pills.nav-sidebar').sortable({
-        //     items: 'div.nav-item.text-white.pl-1',
-        //     cursor: 'move',
-        //     opacity: 0.6,
-        //     update: function () {
-        //         console.log(123);
-        //     }
-        // });
-
-        // $('#add-new-menu-item').click(function () {
-        //     $('#add-new-menu-item-block').show(300)
-        // })
-
-        // $('#confirm-new-menu-item').click(function () {
-        //     let name = $('#add-new-menu-item-input').val()
-        //     let item = "<div class='nav-item text-white pl-1'> " +
-        //         "<span>" + name + "<i class='fa fa-edit font-weight-light text-muted pl-3'></i></span> " +
-        //         "<li class='nav-item'> " +
-        //         "<a href='/' class='nav-link'> " +
-        //         "<ion-icon name='home-outline' class='nav-icon md hydrated' role='img' aria-label='home outline'></ion-icon> " +
-        //         "<p>Главная</p></a></li></div>"
-        //
-        //     $('#add-new-menu-item-input').val('')
-        //     $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
-        //     $('#add-new-menu-item-block').hide(300)
-        //
-        // })
 
         $(".x-drop-down__value").click(function (event) {
             toggleMenu();
