@@ -73,7 +73,7 @@
                                                         @endif
                                                 </span>
                                                 </div>
-                                                <img class="direct-chat-img" src="{{ $comment->user->image}}"
+                                                <img class="direct-chat-img" src="https://lk.redbox.su/storage/{{ $comment->user->image}}"
                                                      alt="avatar">
                                                 <div class="direct-chat-text">
                                                     <span>{{ $comment->comment }}</span>
