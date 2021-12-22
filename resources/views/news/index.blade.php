@@ -137,7 +137,6 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function () {
-                        $('.modal-backdrop.fade.show').hide()
                         $('#news-' + id).remove()
                     }
                 });
@@ -161,7 +160,6 @@
                         let number = Number(span.text())
                         span.text(number - 1)
                         $('#comment-' + id).hide(300)
-                        $('.modal-backdrop.fade.show').hide()
                     }
                 });
             })
