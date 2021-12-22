@@ -33,6 +33,15 @@ class NewsController extends Controller
         $news = News::all();
         $news = $news->sortByDesc('created_at');
         $admin = NewsController::isUserAdmin();
+        if ($admin) {
+            JavaScript::put([
+                'role' => __('Admin'),
+            ]);
+        } else {
+            JavaScript::put([
+                'role' => __('User'),
+            ]);
+        }
 
         return view('news.index', compact('news', 'admin'));
     }

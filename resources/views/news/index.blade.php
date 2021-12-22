@@ -1,7 +1,8 @@
 @component('component.card', ['title' => __('News')])
 @section('content')
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <a href="{{ route('create.news') }}" class="btn btn-secondary mb-3" style="margin-left: 7.5px">{{ __('Add News') }}</a>
+    <a href="{{ route('create.news') }}" class="btn btn-secondary mb-3"
+       style="margin-left: 7.5px">{{ __('Add News') }}</a>
     @isset($news[0])
         <div class="col-lg-8 col-md-12 pb-3">
             <div class="card">
@@ -10,7 +11,8 @@
                         @foreach($news as $item)
                             <div class="post" id="news-{{ $item->id }}">
                                 <div class="user-block">
-                                    <img class="img-circle img-bordered-sm" src="https://lk.redbox.su/storage/{{ $item->user->image}}" alt="avatar">
+                                    <img class="img-circle img-bordered-sm"
+                                         src="https://lk.redbox.su/storage/{{ $item->user->image}}" alt="avatar">
                                     <span class="username">
                                         <span>{{ $item->user->name }}</span>
                                     @if($item->user_id === \Illuminate\Support\Facades\Auth::id() || $admin)
@@ -49,7 +51,8 @@
                                         <input type="hidden" name="news_id" value="{{ $item->id }}">
                                         <textarea name="comment" class="form-control" rows="3" required></textarea>
                                         <div class="input-group-append">
-                                            <button type="submit" class="btn btn-secondary send-comment">{{ __('Send') }}</button>
+                                            <button type="submit"
+                                                    class="btn btn-secondary send-comment">{{ __('Send') }}</button>
                                         </div>
                                     </div>
                                     <div class="mt-3 ml-2 news-comments">
@@ -58,6 +61,8 @@
                                                 <div class="direct-chat-infos clearfix">
                                                     <div class="direct-chat-name float-left">
                                                         {{ $comment->user->name }}
+                                                        (<span
+                                                            class="text-info">@if($admin){{ __('Admin') }}@else{{ __('User') }}@endif</span>)
                                                         <span class="text-muted font-weight-normal ml-2">
                                                             {{ $comment->created_at->diffForHumans() }}
                                                         </span>
@@ -73,7 +78,8 @@
                                                         @endif
                                                 </span>
                                                 </div>
-                                                <img class="direct-chat-img" src="https://lk.redbox.su/storage/{{ $comment->user->image}}"
+                                                <img class="direct-chat-img"
+                                                     src="https://lk.redbox.su/storage/{{ $comment->user->image}}"
                                                      alt="avatar">
                                                 <div class="direct-chat-text">
                                                     <span>{{ $comment->comment }}</span>
@@ -206,7 +212,7 @@
                     comments.append(
                         "<div id='comment-" + response.commentId + "' class='direct-chat-msg'> " +
                         "<div class='direct-chat-infos clearfix'>" +
-                        "<div class='direct-chat-name float-left'>" + response.userName + "" +
+                        "<div class='direct-chat-name float-left'>" + response.userName + "(<span class='text-info'>" + role + "</span>)" +
                         "<span class='text-muted font-weight-normal ml-2'>{{__('Just now')}}</span></div>" +
                         "<span class='float-right'> " +
                         "<span><i class='fa fa-edit btn-tool' onclick='editComment(this)'></i> " +

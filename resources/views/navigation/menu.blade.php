@@ -10,7 +10,7 @@
     </li>
     <li>
         <a class="nav-link" href="{{ route('news') }}">
-            <span>News</span>
+            <span>{{ __('News and updates') }}</span>
             <span class="badge badge-warning navbar-badge news">0</span>
         </a>
     </li>
