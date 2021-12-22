@@ -10,7 +10,7 @@
                         @foreach($news as $item)
                             <div class="post" id="news-{{ $item->id }}">
                                 <div class="user-block">
-                                    <img class="img-circle img-bordered-sm" src="https://lk.redbox.su/storage{{ $item->user->image}}" alt="avatar">
+                                    <img class="img-circle img-bordered-sm" src="https://lk.redbox.su/storage/{{ $item->user->image}}" alt="avatar">
                                     <span class="username">
                                         <span>{{ $item->user->name }}</span>
                                     @if($item->user_id === \Illuminate\Support\Facades\Auth::id() || $admin)
