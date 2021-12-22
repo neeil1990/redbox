@@ -84,7 +84,7 @@
         {!! Form::textarea(
             'listWords',
             isset($response['listWords'])? $response['listWords']: null,
-            ['class' => 'form-control listWords col-8', 'cols' => 8, 'rows' => 5],
+            ['class' => 'form-control listWords col-8', 'cols' => 8, 'rows' => 5]
         ) !!}
     </div>
     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
@@ -156,15 +156,7 @@
                                     @foreach($word['wordForms']['inLink'] as $items)
                                             <div class="mr-3">
                                             @foreach($items as $key => $item)
-                                                    <div class="mt-2 mb-2">{{ $key }}:{{ $item }}
-{{--                                                        <span class="__helper-link ui_tooltip_w btn btn-default">--}}
-{{--                                                            <span class="hidden-password" style="display: none;"></span>--}}
-{{--                                                            <i aria-hidden="true" class="fa fa-clipboard"></i>--}}
-{{--                                                            <span class="ui_tooltip __right __l">--}}
-{{--                                                                <span class="ui_tooltip_content">Скопировать в буфер обмена</span>--}}
-{{--                                                            </span>--}}
-{{--                                                        </span>--}}
-                                                    </div>
+                                                    <div>{{ $key }}: {{ $item }}</div>
                                                 @endforeach
                                             </div>
                                         @endforeach
@@ -176,7 +168,7 @@
                                     @foreach($word['wordForms']['inText'] as $items)
                                             <div class="mr-3">
                                             @foreach($items as $key => $item)
-                                                    {{ $key }}: {{ $item }}<br>
+                                                    <div>{{ $key }}: {{ $item }}</div>
                                                 @endforeach
                                             </div>
                                         @endforeach
