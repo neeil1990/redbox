@@ -27,7 +27,7 @@
             @csrf
             <div class="form-group">
                 <label>{{__('Content')}}</label>
-                {!! Form::textarea('content', null, ['id' => 'content','class' => 'form-control mb-3']) !!}
+                {!! Form::textarea('content', null, ['id' => 'content','class' => 'form-control mb-3', 'required']) !!}
             </div>
             <div>
                 <input type="submit" class="btn btn-secondary mr-2" value="{{__('Save')}}">

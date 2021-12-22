@@ -99,14 +99,12 @@
                                                 <p>{{__('Are you sure?')}}</p>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button"
-                                                        class="btn btn-secondary remove-news"
+                                                <button class="btn btn-secondary remove-news"
                                                         data-dismiss="modal"
                                                         target="{{ $item->id }}">
                                                     {{ __('Remove') }}
                                                 </button>
-                                                <button type="button"
-                                                        class="btn btn-default btn-flat"
+                                                <button class="btn btn-default btn-flat"
                                                         data-dismiss="modal">
                                                     {{__('Back')}}
                                                 </button>
