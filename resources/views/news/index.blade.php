@@ -214,7 +214,7 @@
                         "<span data-toggle='modal' data-target='" + response.commentId + "' class='remove-comment btn-tool' onclick='removeComment(this)'> " +
                         "<i class='fas fa-times'></i> " +
                         "</span></span></div> " +
-                        "<img src='" + response.avatar + "' alt='avatar' class='direct-chat-img'>" +
+                        "<img src='https://lk.redbox.su/storage/" + response.avatar + "' alt='avatar' class='direct-chat-img'>" +
                         "<div class='direct-chat-text'> " +
                         "<span>" + response.comment + "</span> " +
                         "<textarea rows='5' data-target='" + response.commentId + "' class='form form-control' style='display: none;'>" + response.comment + "</textarea>" +
