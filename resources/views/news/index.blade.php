@@ -95,15 +95,15 @@
                                     <div class="modal-dialog w-25" role="document">
                                         <div class="modal-content">
                                             <div class="modal-body">
-                                                <p>{{__('Удалить новость')}}</p>
+                                                <p>{{__('Delete a news item')}}</p>
                                                 <p>{{__('Are you sure?')}}</p>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button"
                                                         class="btn btn-secondary remove-news"
                                                         data-dismiss="modal"
-                                                        data-target="{{ $item->id }}">
-                                                    Удалить
+                                                        target="{{ $item->id }}">
+                                                    {{ __('Remove') }}
                                                 </button>
                                                 <button type="button"
                                                         class="btn btn-default btn-flat"
@@ -127,7 +127,7 @@
                 $('html').height($('.col-lg-8.col-md-12.pb-3').height() + 200)
             });
             $('.btn.btn-secondary.remove-news').click(function () {
-                var id = $(this).attr('data-target')
+                var id = $(this).attr('target')
                 $.ajax({
                     type: "post",
                     dataType: "json",
