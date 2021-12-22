@@ -14,8 +14,6 @@ use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoringController extends Controller
 {
-    public $counter;
-
     public function index()
     {
         $projects = DomainMonitoring::where('user_id', '=', Auth::id())->get();

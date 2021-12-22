@@ -27,7 +27,9 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $userId = Auth::id();
+        $notification = NewsNotification::firstOrNew(['user_id' => Auth::id()]);
+        $notification->last_check = Carbon::now();
+        $notification->save();
         $news = News::all();
         $news = $news->sortByDesc('created_at');
         $admin = NewsController::isUserAdmin();
@@ -146,7 +148,7 @@ class NewsController extends Controller
             'content' => $request['content']
         ]);
 
-       return Redirect::route('news');
+        return Redirect::route('news');
     }
 
     public function editComment(Request $request)
@@ -182,14 +184,9 @@ class NewsController extends Controller
         $notification = NewsNotification::where('user_id', '=', Auth::id())->first();
         if (isset($notification)) {
             $count = News::where('created_at', '>=', $notification->last_check)->get()->count();
-            $notification->last_check = Carbon::now();
         } else {
-            $notification = new NewsNotification();
-            $notification->last_check = Carbon::now();
-            $notification->user_id = Auth::id();
             $count = News::all()->count();
         }
-        $notification->save();
 
         return response([
             'count' => $count
