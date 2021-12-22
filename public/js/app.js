@@ -72906,7 +72906,7 @@ var render = function() {
             expression: "selected"
           }
         ],
-        staticClass: "custom-select form-control-border",
+        staticClass: "custom-select",
         attrs: { id: "filter" },
         on: {
           change: [

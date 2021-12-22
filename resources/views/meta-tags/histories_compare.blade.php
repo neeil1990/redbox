@@ -35,7 +35,7 @@
 
             <div class="form-group">
                 <label for="filter">Filter</label>
-                <select class="custom-select form-control-border" id="filter">
+                <select class="custom-select" id="filter">
                     <option value="all">Все</option>
                     @foreach($filter as $f)
                         <option value="{{$f}}">{{$f}}</option>

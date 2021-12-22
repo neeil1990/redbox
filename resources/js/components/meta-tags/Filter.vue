@@ -2,7 +2,7 @@
 
     <div class="form-group">
         <label for="filter">Filter</label>
-        <select class="custom-select form-control-border" id="filter" v-model="selected" @change.prevent="onChange">
+        <select class="custom-select" id="filter" v-model="selected" @change.prevent="onChange">
             <option value="all">Все</option>
             <option v-for="option in options" v-bind:value="option.value">{{ option.text }}</option>
         </select>
