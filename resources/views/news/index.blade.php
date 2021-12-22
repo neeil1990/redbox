@@ -236,7 +236,9 @@
                 let comments = $(this).parent().parent().parent().children('div').eq(3);
                 if (comments.is(':visible')) {
                     comments.slideUp(300);
+                    $('html').height($('html').height() - $(this).parent().parent().parent().children('div').eq(3).height())
                 } else {
+                    $('html').height($('html').height() + $(this).parent().parent().parent().children('div').eq(3).height())
                     comments.slideDown(300);
                 }
             });
