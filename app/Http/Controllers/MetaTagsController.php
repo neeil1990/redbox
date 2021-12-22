@@ -65,9 +65,9 @@ class MetaTagsController extends Controller
             'check_url' => __('Check URL'),
             'timeout_request' => __('Timeout request'),
             'length_word' => __('Length'),
-            'title' => __('title (recommend 30-70)'),
-            'description' => __('description (recommend 30-70)'),
-            'keywords' => __('keywords (recommend 30-70)'),
+            'title' => __('title (recommend 70-80)'),
+            'description' => __('description (recommend 180-300)'),
+            'keywords' => __('keywords'),
             'min' => __('Minimum'),
             'max' => __('Maximum'),
             'send' => __('Send'),
@@ -100,6 +100,7 @@ class MetaTagsController extends Controller
             'content' => __('Content'),
             'count' => __('Count'),
             'main_problems' => __('Main problems'),
+            'go_to_site' => __('Go to site'),
         ]);
     }
 

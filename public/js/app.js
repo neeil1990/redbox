@@ -7718,6 +7718,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MetaTagsHistory",
@@ -7778,6 +7785,13 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Filter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Filter */ "./resources/js/components/meta-tags/Filter.vue");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -73060,6 +73074,24 @@ var render = function() {
                                 "a",
                                 {
                                   staticClass: "dropdown-item",
+                                  attrs: { href: item.title, target: "_blank" }
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass: "fas fa-external-link-alt"
+                                  }),
+                                  _vm._v(
+                                    "\n                                    " +
+                                      _vm._s(_vm.lang.go_to_site) +
+                                      "\n                                "
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "dropdown-item",
                                   attrs: { href: "#" },
                                   on: {
                                     click: function($event) {
@@ -73068,7 +73100,14 @@ var render = function() {
                                     }
                                   }
                                 },
-                                [_vm._v(_vm._s(_vm.lang.text_analysis))]
+                                [
+                                  _c("i", { staticClass: "fas fa-chart-pie" }),
+                                  _vm._v(
+                                    "\n                                    " +
+                                      _vm._s(_vm.lang.text_analysis) +
+                                      "\n                                "
+                                  )
+                                ]
                               )
                             ]
                           )
@@ -73474,6 +73513,28 @@ var render = function() {
                                           "a",
                                           {
                                             staticClass: "dropdown-item",
+                                            attrs: {
+                                              href: url.title,
+                                              target: "_blank"
+                                            }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass:
+                                                "fas fa-external-link-alt"
+                                            }),
+                                            _vm._v(
+                                              "\n                                                    " +
+                                                _vm._s(_vm.lang.go_to_site) +
+                                                "\n                                                "
+                                            )
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "a",
+                                          {
+                                            staticClass: "dropdown-item",
                                             attrs: { href: "#" },
                                             on: {
                                               click: function($event) {
@@ -73483,8 +73544,13 @@ var render = function() {
                                             }
                                           },
                                           [
+                                            _c("i", {
+                                              staticClass: "fas fa-chart-pie"
+                                            }),
                                             _vm._v(
-                                              _vm._s(_vm.lang.text_analysis)
+                                              "\n                                                    " +
+                                                _vm._s(_vm.lang.text_analysis) +
+                                                "\n                                                "
                                             )
                                           ]
                                         )

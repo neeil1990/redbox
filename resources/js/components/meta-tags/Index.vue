@@ -77,7 +77,14 @@
                                                 </button>
 
                                                 <div class="dropdown-menu dropdown-menu-right" role="menu" style="">
-                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.title)">{{ lang.text_analysis }}</a>
+                                                    <a :href="url.title" target="_blank" class="dropdown-item">
+                                                        <i class="fas fa-external-link-alt"></i>
+                                                        {{ lang.go_to_site }}
+                                                    </a>
+                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.title)">
+                                                        <i class="fas fa-chart-pie"></i>
+                                                        {{ lang.text_analysis }}
+                                                    </a>
                                                 </div>
                                             </div>
 
