@@ -24,4 +24,9 @@ class MetaTag extends Model
     {
         return $this->hasMany(MetaTagsHistory::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

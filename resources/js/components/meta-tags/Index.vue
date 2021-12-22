@@ -294,6 +294,7 @@
             }
         },
         methods: {
+
             Analyzer(link) {
                 var form = document.createElement("form");
                 form.action = "/text-analyzer";

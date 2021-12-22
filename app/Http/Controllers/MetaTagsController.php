@@ -7,6 +7,7 @@ use App\Exports\MetaTagsCompareHistoriesExport;
 use App\Mail\MetaTagsEmail;
 use App\MetaTag;
 use App\MetaTagsHistory;
+use App\TelegramBot;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -64,25 +65,35 @@ class MetaTagsController extends Controller
      */
     public function index()
     {
-        $meta = Auth::user()->metaTags()->get();
+        $meta = Auth::user()->metaTags()->latest()->get();
 
         return view('meta-tags.index', compact('meta'));
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     public function getMetaTags(Request $request) {
-
-        $error = [];
 
         $title = $request->input('url', false);
         $length = $request->input('length', false);
 
+        return $this->dataMetaTags($title, $length);
+    }
+
+    protected function dataMetaTags($title, $length)
+    {
+        $error = [];
         $recommend_length = [];
+
         foreach ($length as $len) {
             $recommend_length[$len['id'].'_min'] = $len['input']['min'];
             $recommend_length[$len['id'].'_max'] = $len['input']['max'];
         }
 
         $data = $this->domain($title)->get();
+
         foreach ($data as $tag => $value){
             $error['main'][$tag] = $this->errorsMetaTags($tag, $value, 'main', $recommend_length);
             $error['badge'][$tag] = $this->errorsMetaTags($tag, $value, 'badge', $recommend_length);
@@ -174,6 +185,7 @@ class MetaTagsController extends Controller
     }
 
     /**
+     * All histories by meta tags
      *
      * @param $id
      * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
@@ -207,6 +219,13 @@ class MetaTagsController extends Controller
         return view('meta-tags.show', compact('project'));
     }
 
+    /**
+     * One history by meta tags
+     *
+     * @param $id
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @throws \ErrorException
+     */
     public function showHistory($id){
 
         $history = MetaTagsHistory::findOrFail($id);
