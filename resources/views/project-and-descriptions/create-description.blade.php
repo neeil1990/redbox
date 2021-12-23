@@ -1,14 +1,9 @@
 @component('component.card', ['title' => __('Add text')])
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/summernote.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/scroll/style.css') }}"/>
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
     @endslot
-    <div class="scroll-to d-flex flex-column">
-        <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow text-muted"></a>
-        <a href="#scroll_to_bottom" class="fa fa-arrow-circle-down scroll_arrow text-muted"></a>
-    </div>
     <form action="{{ route('save.description') }}" method="POST" class="col-lg-12 col-sm-12" id="summernote-form">
         <div class="modal fade" id="clear-text" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog w-25" role="document">
@@ -76,14 +71,6 @@
                         $('#description').summernote('code', '');
                     }
                 });
-            });
-
-            $(".scroll_arrow").on("click", function (e) {
-                e.preventDefault();
-                var anchor = $(this).attr('href');
-                $('html, body').stop().animate({
-                    scrollTop: $(anchor).offset().top - 60
-                }, 800);
             });
 
             $(document).on("submit", "#summernote-form", function (e) {

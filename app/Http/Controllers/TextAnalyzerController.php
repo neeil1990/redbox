@@ -14,6 +14,9 @@ use Illuminate\View\View;
 class TextAnalyzerController extends Controller
 {
 
+    /**
+     * @return array|false|Application|Factory|View|mixed
+     */
     public function index()
     {
         return view('text-analyzer.index');

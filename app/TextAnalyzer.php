@@ -86,6 +86,7 @@ class TextAnalyzer
 
         $html = TextAnalyzer::clearHTMLFromLinks($html);
         $text = TextAnalyzer::deleteEverythingExceptCharacters($html);
+
         if (empty($request->conjunctionsPrepositionsPronouns)) {
             $text = TextAnalyzer::removeConjunctionsPrepositionsPronouns($text);
             $title = TextAnalyzer::removeConjunctionsPrepositionsPronouns($title);
@@ -134,6 +135,10 @@ class TextAnalyzer
         return $response;
     }
 
+    /**
+     * @param $text
+     * @return array|string|string[]|null
+     */
     public static function deleteEverythingExceptCharacters($text)
     {
         $text = preg_replace(["'<style[^>]*?>.*?</style>'si", "'<script[^>]*?>.*?</script>'si"], "", $text);
@@ -257,9 +262,9 @@ class TextAnalyzer
     /**
      * @param $listWords
      * @param $text
-     * @return mixed|string|string[]
+     * @return string
      */
-    public static function removeWords($listWords, $text)
+    public static function removeWords($listWords, $text): string
     {
         $listWords = explode("\r\n", $listWords);
         foreach ($listWords as $listWord) {
@@ -281,9 +286,9 @@ class TextAnalyzer
         $array = explode(" ", $string);
         $countWords = count($array);
         foreach ($array as $item) {
-            if (strlen($item) >= 3) {
+            if (mb_strlen($item) > 2) {
                 $item = addslashes($item);
-                preg_match_all("/.*?($item).*?/",
+                preg_match_all("/.*?\s($item)\s.*?/",
                     $string,
                     $matches,
                     PREG_SET_ORDER);
@@ -303,7 +308,6 @@ class TextAnalyzer
 
         $words['count'] = count($words) - 1;
         $collection = collect($words);
-
         return $collection->sortByDesc('weight')->toArray();
     }
 
