@@ -1,9 +1,7 @@
 @component('component.card', ['title' => __('HTML editor')])
-
+@section('content')
     @slot('css')
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/summernote.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/style.css') }}"/>
-        <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
     @endslot
     <div class="d-flex">
         <a class="btn btn-secondary mt-3 mb-3 mr-2" href="{{ route('create.project') }}">
@@ -34,7 +32,8 @@
                                         <a href="{{ route('delete.project', $project->id) }}" class="btn btn-secondary">
                                             {{__('Delete a project')}}
                                         </a>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Back')}}</button>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{__('Back')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -138,4 +137,5 @@
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/summernote-bs4.css') }}"></script>
     @endslot
+@endsection
 @endcomponent

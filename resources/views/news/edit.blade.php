@@ -1,7 +1,6 @@
 @component('component.card', ['title' => __('Edit news')])
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/summernote.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/style.css') }}"/>
     @endslot
     <div class="card-body">
         <form action="{{ route('save.edit.news') }}" method="POST" class="col-lg-12 col-sm-12" id="summernote-form">

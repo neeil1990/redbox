@@ -1,10 +1,17 @@
 @component('component.card', ['title' => __('News and updates')])
 @section('content')
+    @slot('css')
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/scroll/style.css') }}"/>
+    @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <a href="{{ route('create.news') }}" class="btn btn-secondary mb-3" style="margin-left: 7.5px">
         {{ __('Add News') }}
     </a>
     @isset($news[0])
+        <div class="scroll-to d-flex flex-column">
+            <a href="#header-nav-bar" class="fa fa-arrow-circle-up scroll_arrow text-muted"></a>
+            <a href="#main-footer" class="fa fa-arrow-circle-down scroll_arrow text-muted"></a>
+        </div>
         <div class="col-lg-8 col-md-12 pb-3">
             <div class="card">
                 <div class="card-body">
@@ -121,6 +128,14 @@
     @endisset
     @slot('js')
         <script>
+            $(".scroll_arrow").on("click", function (e) {
+                e.preventDefault();
+                var anchor = $(this).attr('href');
+                $('html, body').stop().animate({
+                    scrollTop: $(anchor).offset().top - 60
+                }, 800);
+            });
+
             $(document).ready(function () {
                 $('html').height($('.col-lg-8.col-md-12.pb-3').height() + 200)
             });

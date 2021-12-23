@@ -80,7 +80,7 @@
     <!-- /.content-wrapper -->
 
     <!-- Main Footer -->
-    <footer class="main-footer">
+    <footer class="main-footer" id="main-footer">
         <strong>Copyright &copy; 2014-2021 <a href="#">AdminLTE.io</a>.</strong>
         All rights reserved.
         <div class="float-right d-none d-sm-inline-block">
