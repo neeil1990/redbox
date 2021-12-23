@@ -11,7 +11,7 @@
     <li>
         <a class="nav-link" href="{{ route('news') }}">
             <span>{{ __('News and updates') }}</span>
-            <span class="badge badge-warning navbar-badge news">0</span>
+            <span class="badge badge-warning navbar-badge news" style="right: 0 !important;">0</span>
         </a>
     </li>
 </ul>
