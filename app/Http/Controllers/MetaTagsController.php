@@ -41,6 +41,8 @@ class MetaTagsController extends Controller
         ['name' => 'a', 'tag' => 'a', 'type' => 'string'],
     ];
 
+    protected $response;
+
     /**
      * @param $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -129,6 +131,11 @@ class MetaTagsController extends Controller
         return $this->dataMetaTags($title, $length);
     }
 
+    /**
+     * @param $title
+     * @param $length
+     * @return array
+     */
     protected function dataMetaTags($title, $length)
     {
         $error = [];
@@ -143,6 +150,13 @@ class MetaTagsController extends Controller
 
         foreach ($data as $tag => $value){
             $error['main'][$tag] = $this->errorsMetaTags($tag, $value, 'main', $recommend_length);
+
+
+            if($this->response['status'] !== 200 && $tag === 'title'){
+                $status = 'code:' . $this->response['status'];
+                $error['badge'][$status] = [$this->templateErrors( __('Error') . ' ' . __('code') . ': ' . $this->response['status'], '')];
+            }
+
             $error['badge'][$tag] = $this->errorsMetaTags($tag, $value, 'badge', $recommend_length);
         }
 
@@ -156,6 +170,8 @@ class MetaTagsController extends Controller
     public function domain(string $domain)
     {
         $html = Curl::to($domain)->returnResponseArray()->get();
+
+        $this->response = $html;
 
         $DOM = new Htmldom();
         $this->html = $DOM->load($html['content']);
@@ -309,7 +325,6 @@ class MetaTagsController extends Controller
                 $tags = collect($r['badge'])->collapse()->keys();
                 foreach($tags as $tag)
                     $filter[$tag] = $tag;
-
             }
         }
 
@@ -354,7 +369,7 @@ class MetaTagsController extends Controller
             if(count($val) > 1 && ($tag === 'title' || $tag === 'description' || $tag === 'keywords' || $tag === 'canonical' || $tag === 'h1')){
 
                 if($type === 'main')
-                    $strSmall = 'Дублирующийся тег, Проверьте страницу и оставьте 1 тег';
+                    $strSmall = __('Duplicate tag, Check the page and leave 1 tag');
 
                 $errors[] = $this->templateErrors('< '.$tag.' > ' . count($val) . 'шт.', $strSmall);
             }
@@ -369,9 +384,9 @@ class MetaTagsController extends Controller
                         if( strlen($val[0]) < $min || strlen($val[0]) > $max){
 
                             if($type === 'main')
-                                $strSmall = 'Вы задали диапазон с '.$min.' до '.$max;
+                                $strSmall = __('You have set a range from') . ' '.$min.' '. __('to') .' '.$max;
 
-                            $errors[] = $this->templateErrors('Длина '.$tag.': '.strlen($val[0]), $strSmall);
+                            $errors[] = $this->templateErrors( __('Length') . ' '.$tag.': '.strlen($val[0]), $strSmall);
                         }
                     }
                 }
@@ -380,7 +395,7 @@ class MetaTagsController extends Controller
 
         if($type === 'main'){
             if(empty($errors))
-                $errors[] = '<span class="badge badge-success">Без проблем</span>';
+                $errors[] = '<span class="badge badge-success">'. __('No problem') .'</span>';
         }
 
         return $errors;
