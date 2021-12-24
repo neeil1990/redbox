@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Support\Str;
 use JavaScript;
+use Symfony\Component\VarDumper\VarDumper;
 
 class TextAnalyzer
 {
@@ -506,26 +507,11 @@ class TextAnalyzer
      */
     public static function countWordsInText($text): array
     {
-        $result = [];
-        $wordForms = [];
-        $will = [];
+        $wordForms = TextAnalyzer::searchWordForms($text);
         $textAr = array_count_values($text);
         asort($textAr);
         $textAr = array_reverse($textAr);
-        foreach ($textAr as $key1 => $item1) {
-            if (!in_array($key1, $will)) {
-                foreach ($textAr as $key2 => $item2) {
-                    if (!in_array($key2, $will)) {
-                        similar_text($key1, $key2, $percent);
-                        if ($percent >= 82) {
-                            $wordForms[$key1][] = [$key2 => $textAr[$key2]];
-                            $will[] = $key2;
-                            $will[] = $key1;
-                        }
-                    }
-                }
-            }
-        }
+
         foreach ($wordForms as $key => $wordForm) {
             $extra = $textAr[$key];
             $result[$key] = [
@@ -535,7 +521,7 @@ class TextAnalyzer
                 'total' => $textAr[$key],
                 'wordForms' => ['inText' => $wordForm]
             ];
-            foreach ($wordForm as $key1 => $item) {
+            foreach ($wordForm as $item) {
                 $count = array_shift($item);
                 $result[$key]['total'] += $count;
                 $result[$key]['inText'] += $count;
@@ -548,25 +534,31 @@ class TextAnalyzer
     }
 
     /**
-     * @param $link
+     * @param $string
      * @return array
      */
-    public static function countWordsInLink($link): array
+    public static function searchWordForms($string): array
     {
-        $links = [];
+        $stemmer = new LinguaStem();
         $wordForms = [];
         $will = [];
-        $linkAr = array_count_values($link);
-        asort($linkAr);
-        $linkAr = array_reverse($linkAr);
+        $array = array_count_values($string);
+        asort($array);
+        $array = array_reverse($array);
 
-        foreach ($linkAr as $key1 => $item1) {
+        foreach ($array as $key1 => $item1) {
             if (!in_array($key1, $will)) {
-                foreach ($linkAr as $key2 => $item2) {
+                foreach ($array as $key2 => $item2) {
                     if (!in_array($key2, $will)) {
                         similar_text($key1, $key2, $percent);
-                        if ($percent > 82) {
-                            $wordForms[$key1][] = [$key2 => $linkAr[$key2]];
+                        if (preg_match("/[А-Яа-я]/", $key1)
+                            && $stemmer->stem_word($key2) == $stemmer->stem_word($key1)) {
+                            $wordForms[$key1][] = [$key2 => $array[$key2]];
+                            $will[] = $key2;
+                            $will[] = $key1;
+                        } elseif (preg_match("/[A-Za-z]/", $key1)
+                            && $percent >= 82) {
+                            $wordForms[$key1][] = [$key2 => $array[$key2]];
                             $will[] = $key2;
                             $will[] = $key1;
                         }
@@ -574,6 +566,20 @@ class TextAnalyzer
                 }
             }
         }
+
+        return $wordForms;
+    }
+
+    /**
+     * @param $link
+     * @return array
+     */
+    public static function countWordsInLink($link): array
+    {
+        $wordForms = TextAnalyzer::searchWordForms($link);
+        $linkAr = array_count_values($link);
+        asort($linkAr);
+        $linkAr = array_reverse($linkAr);
 
         foreach ($wordForms as $key => $wordForm) {
             $extra = $linkAr[$key];
@@ -584,7 +590,7 @@ class TextAnalyzer
                 'total' => $linkAr[$key],
                 'wordForms' => ['inLink' => $wordForm]
             ];
-            foreach ($wordForm as $key1 => $item) {
+            foreach ($wordForm as $item) {
                 $count = array_shift($item);
                 $links[$key]['inLink'] += $count;
                 $links[$key]['total'] += $count;

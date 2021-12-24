@@ -10,7 +10,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 
@@ -75,7 +74,6 @@ class HomeController extends Controller
         foreach ($request->orders as $order) {
             $positions .= $order['id'] . ',';
         }
-        Log::debug('sort', [$positions]);
         $projectsPositions = ProjectsPositions::firstOrNew([
             'user_id' => Auth::id(),
         ]);

@@ -99,8 +99,7 @@ class DomainInformation extends Model
      * @param $domain
      * @return bool
      */
-    public
-    static function isValidDomain($domain): bool
+    public static function isValidDomain($domain): bool
     {
         return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check
             && preg_match("/^.{1,253}$/", $domain) //overall length check
@@ -111,8 +110,7 @@ class DomainInformation extends Model
      * @param $link
      * @return string
      */
-    public
-    static function getDomain($link): string
+    public static function getDomain($link): string
     {
         $domain = preg_replace("#^[^:/.]*[:/]+#i", '', $link);
         $domain = preg_replace('/www./', '', $domain);
