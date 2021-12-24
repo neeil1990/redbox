@@ -5,6 +5,7 @@
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                 <th>id</th>
+                <th>access</th>
                 <th>icon</th>
                 <th>title</th>
                 <th>description</th>
@@ -15,6 +16,7 @@
                 @foreach($data as $row)
                     <tr>
                         <td>{{ $row->id }}</td>
+                        <td>{{ $row->access_as_string }}</td>
                         <td>{!! $row->icon !!}</td>
                         <td>{{ $row->title }}</td>
                         <td class="w-50">{{ $row->description }}</td>
