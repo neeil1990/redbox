@@ -7,14 +7,19 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
 class DescriptionProjectForAdminController extends Controller
 {
+    protected $roles;
 
     public function __construct()
     {
         $this->middleware('role:admin');
+
+        $this->roles = Role::all()->pluck('name', 'name');
     }
 
     /**
@@ -31,7 +36,8 @@ class DescriptionProjectForAdminController extends Controller
      */
     public function create()
     {
-        return view('main-projects.create');
+        $roles = $this->roles;
+        return view('main-projects.create', compact('roles'));
     }
 
     /**
@@ -51,7 +57,8 @@ class DescriptionProjectForAdminController extends Controller
     public function edit($id)
     {
         $data = MainProject::find($id);
-        return view('main-projects.edit', compact('data'));
+        $roles = $this->roles;
+        return view('main-projects.edit', compact('data', 'roles'));
     }
 
     /**
@@ -61,7 +68,8 @@ class DescriptionProjectForAdminController extends Controller
      */
     public function update(Request $request, $id): RedirectResponse
     {
-        MainProject::where('id', $id)->update([
+        MainProject::find($id)->update([
+            'access' => $request->access,
             'title' => $request->title,
             'description' => $request->description,
             'link' => $request->link,

@@ -92,12 +92,14 @@ class HomeController extends Controller
     public function getDescriptionProjects()
     {
         $response = [];
-        $projectsPositions = ProjectsPositions::where('user_id', '=', Auth::id())->get('menu_positions')->toArray();
+
+        $user = Auth::user();
+        $projectsPositions = ProjectsPositions::where('user_id', '=', $user->id)->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
-            $result = MainProject::all(['id', 'title', 'description', 'link', 'icon'])->toArray();
+            $result = MainProject::all()->toArray();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
-            $projects = MainProject::all(['id', 'title', 'description', 'link', 'icon'])->toArray();
+            $projects = MainProject::all()->toArray();
             $result = [];
 
             foreach ($projectsPositions as $projectsPosition) {
@@ -112,13 +114,17 @@ class HomeController extends Controller
         }
 
         foreach ($result as $item) {
-            $response[] = [
-                'id' => $item['id'],
-                'title' => __($item['title']),
-                'description' => $item['description'],
-                'link' => $item['link'],
-                'icon' => $item['icon'],
-            ];
+
+            $access = (is_null($item['access'])) ? [] : $item['access'];
+
+            if($user->hasRole($access))
+                $response[] = [
+                    'id' => $item['id'],
+                    'title' => __($item['title']),
+                    'description' => $item['description'],
+                    'link' => $item['link'],
+                    'icon' => $item['icon'],
+                ];
         }
 
         return response($response);

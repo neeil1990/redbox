@@ -24,6 +24,7 @@ Route::get('public/behavior/{id}/check', 'BehaviorController@check')->name('beha
 Route::post('public/behavior/verify', 'BehaviorController@verify')->name('behavior.verify');
 
 Route::middleware(['verified'])->group(function () {
+
     Route::get('test', 'TestController@index')->name('test');
 
     Route::get('/', 'HomeController@index')->name('home');
