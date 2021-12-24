@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
-
 class TextAnalyzerController extends Controller
 {
 
@@ -31,7 +30,7 @@ class TextAnalyzerController extends Controller
         if ($request->type === 'url') {
             $html = TextAnalyzer::curlInit($request->text);
             if ($html == false) {
-                flash()->overlay('connection attempt failed', ' ')->error();
+                flash()->overlay(__('connection attempt failed'), ' ')->error();
                 return Redirect::back();
             } else {
                 $html = TextAnalyzer::removeHeaders($html);
@@ -47,7 +46,7 @@ class TextAnalyzerController extends Controller
         }
         $response['text'] = $request->text;
         $response['type'] = $request->type;
-        return view('text-analyzer.index', ['response' => $response]);
+        return view('text-analyzer.index', compact('response'));
     }
 
 }

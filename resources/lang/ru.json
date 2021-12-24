@@ -453,6 +453,7 @@
     "Repetitions": "Повторений",
     "Analyse": "Анализировать",
     "The volume of the text should be from 200 to 100,000 characters": "Объем текста должен быть от 200 до 100000 символов",
+    "connection attempt failed": "попытка подключения не удалась",
 
 
   "######################## Генератор UTM-меток https://lk.redbox.su/utm-marks ###############################": "",
