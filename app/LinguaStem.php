@@ -32,7 +32,7 @@ class LinguaStem
         return preg_match($re, $s);
     }
 
-    public function stem_word($word)
+    public function getRootWord($word)
     {
         $word = mb_strtolower($word);
         $word = str_replace('ё', 'е', $word);
