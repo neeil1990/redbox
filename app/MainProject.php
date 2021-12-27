@@ -10,7 +10,6 @@ class MainProject extends Model
 
     protected $guarded = [];
 
-    protected $fillable = ['access'];
     protected $casts = [
         'access' => 'array',
     ];
