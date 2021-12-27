@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckForMaintenanceMode;
 use App\Http\Middleware\CheckHttpHeadersDataBase;
+use App\Http\Middleware\CheckUserRoles;
 use App\Http\Middleware\DeleteUsersNoVerify;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\LastOnline;
@@ -58,6 +59,7 @@ class Kernel extends HttpKernel
             StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             ShareErrorsFromSession::class,
+            CheckUserRoles::class,
             VerifyCsrfToken::class,
             SubstituteBindings::class,
             CheckHttpHeadersDataBase::class,
