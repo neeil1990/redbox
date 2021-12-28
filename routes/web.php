@@ -11,8 +11,16 @@
 |
 */
 
+use App\TelegramBot;
+
 Route::get('info', function () {
     phpinfo();
+});
+
+Route::get('telegram', function () {
+
+    $user = \Illuminate\Support\Facades\Auth::user();
+    TelegramBot::sendMessage("test", $user->chat_id);
 });
 
 Auth::routes(['verify' => true]);
