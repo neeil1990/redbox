@@ -60,6 +60,10 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <a class="btn btn-info btn-sm" @click.prevent="ExportItems">
+                            <i class="fas fa-file-download"></i>
+                            {{ exportBtn }}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -85,6 +89,9 @@
             },
             timeoutTitle: {
                 type: String
+            },
+            exportBtn: {
+                type: String
             }
         },
         data(){
@@ -104,6 +111,13 @@
             }
         },
         methods: {
+            ExportItems() {
+                let str = JSON.stringify(this.items);
+                let buf = new Buffer(str);
+                let base64data = buf.toString('base64');
+
+                window.location.href = "http-headers/"+ base64data +"/export/";
+            },
             ShowHttpResponse() {
                 var app = this;
 

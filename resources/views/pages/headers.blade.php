@@ -32,6 +32,7 @@
                         code-title="{{ __('code') }}"
                         text-title="{{ __('Bulk check up to 500 pieces at a time') }}"
                         timeout-title="{{ __('Timeout between requests in ms') }}"
+                        export-btn="{{ __('Export') }}"
     ></response-http-code>
 
     @if($response)

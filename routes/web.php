@@ -60,6 +60,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('description/{description}/edit/{position?}', 'DescriptionController@edit')->name('description.edit');
     Route::patch('description/{description}', 'DescriptionController@update')->name('description.update');
 
+    Route::get('http-headers/{object}/export', 'PagesController@httpHeadersExport');
+
     $arPages = config('pages.link');
     foreach ($arPages as $page)
         Route::get($page['url'], "PagesController@{$page['method']}")->name($page['name']);

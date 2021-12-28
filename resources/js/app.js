@@ -8,6 +8,9 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+var VueCookie = require('vue-cookie');
+window.Vue.use(VueCookie);
+
 var requireComponent = require.context('./', true, /Base[A-Z]\w+\.(vue|js)$/)
 requireComponent.keys().forEach(function (fileName) {
     var baseComponentConfig = requireComponent(fileName)

@@ -7,6 +7,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use App\Classes\Curl\CurlFacade;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\HttpHeadersExport;
 
 class PagesController extends Controller
 {
@@ -24,6 +26,12 @@ class PagesController extends Controller
         $id = $header->saveData($response);
 
         return view('pages.headers', compact('response', 'id'));
+    }
+
+    public function httpHeadersExport($object)
+    {
+        $items = json_decode(base64_decode($object), true);
+        return Excel::download(new HttpHeadersExport($items), 'http_headers.csv');
     }
 
     /**
