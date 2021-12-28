@@ -16,16 +16,31 @@ class TelegramBot extends Model
      */
     protected $table = 'telegram_bot';
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @return void
+     */
     public static function brokenDomainNotification($project, $chatId)
     {
         TelegramBot::prepareBreakdownMessage($project, $chatId);
     }
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @return void
+     */
     public static function repairedDomenNotification($project, $chatId)
     {
         TelegramBot::PrepareRecoveryMessage($project, $chatId);
     }
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @return void
+     */
     public static function sendNotificationAboutChangeStateProject($project, $chatId)
     {
         $text =
@@ -52,7 +67,7 @@ class TelegramBot extends Model
         }
         $updates = json_decode(
             file_get_contents(
-                'https://api.telegram.org/bot2073017935:AAFN_wcMJHHNdI_JOeIfbd7W65_GnqvcqHU/getUpdates?'
+                'https://api.telegram.org/bot' . env('TELEGRAM_BOT_TOKEN') . '/getUpdates?'
                 . http_build_query($data)
             ), true);
 
@@ -90,6 +105,10 @@ class TelegramBot extends Model
         }
     }
 
+    /**
+     * @param $chatId
+     * @return void
+     */
     public static function sendSuccessMessage($chatId)
     {
         $text = __('You have successfully subscribed to the notification newsletter');
@@ -97,6 +116,11 @@ class TelegramBot extends Model
         TelegramBot::sendMessage($text, $chatId);
     }
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @return void
+     */
     public static function prepareBreakdownMessage($project, $chatId)
     {
         $link = TelegramBot::removeProtocol($project);
@@ -115,6 +139,11 @@ class TelegramBot extends Model
         TelegramBot::sendMessage($text, $chatId);
     }
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @return void
+     */
     public static function prepareRecoveryMessage($project, $chatId)
     {
         $link = TelegramBot::removeProtocol($project);
@@ -133,12 +162,22 @@ class TelegramBot extends Model
         TelegramBot::sendMessage($text, $chatId);
     }
 
+    /**
+     * @param $project
+     * @return array|string|string[]|null
+     */
     public static function removeProtocol($project)
     {
         $link = preg_replace('#^https?://#', '', rtrim($project->link, '/'));
         return preg_replace('/^www\./', '', $link);
     }
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @param $dns
+     * @return void
+     */
     public static function sendNotificationAboutChangeDNS($project, $chatId, $dns)
     {
         $text = __('Domain') . ' ' . $project->domain
@@ -157,6 +196,12 @@ class TelegramBot extends Model
 
     }
 
+    /**
+     * @param $project
+     * @param $chatId
+     * @param $diffInDays
+     * @return void
+     */
     public static function sendNotificationAboutExpirationRegistrationPeriod($project, $chatId, $diffInDays)
     {
         $text = __('Domain') . ' ' . $project->domain
@@ -185,7 +230,7 @@ class TelegramBot extends Model
             'disable_web_page_preview' => true,
         ];
 
-        file_get_contents('https://api.telegram.org/bot2073017935:AAFN_wcMJHHNdI_JOeIfbd7W65_GnqvcqHU/sendMessage?'
+        file_get_contents('https://api.telegram.org/bot' . env('TELEGRAM_BOT_TOKEN') . '/sendMessage?'
             . http_build_query($data)
         );
     }
