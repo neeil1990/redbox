@@ -11,7 +11,7 @@
 |
 */
 
-use App\TelegramBot;
+use App\ Bot;
 
 Route::get('info', function () {
     phpinfo();
@@ -149,4 +149,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/save-edit-news', 'NewsController@editNews')->name('save.edit.news');
     Route::post('/edit-comment', 'NewsController@editComment')->name('edit.comment');
     Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
+
+    Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
+    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyze');
 });

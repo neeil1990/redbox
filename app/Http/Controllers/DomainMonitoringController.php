@@ -80,7 +80,6 @@ class DomainMonitoringController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        Log::debug('start check', [$timing]);
         try {
             if (!file_exists($timing . '.txt')) {
                 file_put_contents($timing . '.txt', '', 8);
@@ -94,7 +93,6 @@ class DomainMonitoringController extends Controller
             Log::debug('scan error', [$exception->getMessage()]);
             unlink($timing . '.txt');
         }
-        Log::debug('end check', [$timing]);
     }
 
     /**

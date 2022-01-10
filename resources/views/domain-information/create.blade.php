@@ -57,7 +57,7 @@
 domain2.com:0:1 '. __('etc..')]) !!}
         </div>
         <div class="pt-1 pb-1 multi">
-            <a href="#">Добавить один домен</a>
+            <a href="#">{{ __('Add one domain') }}</a>
         </div>
         <div class='pt-3'>
             <button class='btn btn-secondary mr-2' type='submit'>{{ __('Add to Tracking') }}</button>

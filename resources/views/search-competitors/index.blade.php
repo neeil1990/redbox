@@ -1,171 +1,322 @@
-@component('component.card', ['title' => __('Tracking the domain registration period')])
+@component('component.card', ['title' => __('Competitor analysis')])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/domain-information/css/domain-information.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
     @endslot
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">{{ __('Successfully changed') }}</div>
+    {!! Form::open(['action' =>'SearchCompetitorsController@analyze', 'method' => 'POST'])!!}
+    <div class="col-md-6 mt-3">
+        <div class="form-group required">
+            <label>{{ __('List of phrases') }}</label>
+            {!! Form::textarea("keywords", $keywords ?? null ,["class"=>"form-control","required"=>"required"]) !!}
+        </div>
+        <div class="form-group required">
+            <label>{{ __('Region') }}</label>
+            {!! Form::select('region', [
+                    '1' => __('Москва и Московская область'),
+                    '20' => __('Arkhangelsk'),
+                    '37' => __('Astrakhan'),
+                    '197' => __('Barnaul'),
+                    '4' => __('Belgorod'),
+                    '77' => __('Blagoveshchensk'),
+                    '191' => __('Bryansk'),
+                    '24' => __('Veliky Novgorod'),
+                    '75' => __('Vladivostok'),
+                    '33' => __('Vladikavkaz'),
+                    '192' => __('Vladimir'),
+                    '38' => __('Volgograd'),
+                    '21' => __('Vologda'),
+                    '193' => __('Voronezh'),
+                    '1106' => __('Grozny'),
+                    '54' => __('Ekaterinburg'),
+                    '5' => __('Ivanovo'),
+                    '63' => __('Irkutsk'),
+                    '41' => __('Yoshkar-ola'),
+                    '43' => __('Kazan'),
+                    '22' => __('Kaliningrad'),
+                    '64' => __('Kemerovo'),
+                    '7' => __('Kostroma'),
+                    '35' => __('Krasnodar'),
+                    '62' => __('Krasnoyarsk'),
+                    '53' => __('Kurgan'),
+                    '8' => __('Kursk'),
+                    '9' => __('Lipetsk'),
+                    '28' => __('Makhachkala'),
+                    '213' => __('Moscow'),
+                    '23' => __('Murmansk'),
+                    '1092' => __('Nazran'),
+                    '30' => __('Nalchik'),
+                    '47' => __('Nizhniy Novgorod'),
+                    '65' => __('Novosibirsk'),
+                    '66' => __('Omsk'),
+                    '10' => __('Eagle'),
+                    '48' => __('Orenburg'),
+                    '49' => __('Penza'),
+                    '50' => __('Perm'),
+                    '25' => __('Pskov'),
+                    '39' => __('Rostov-on-Don'),
+                    '11' => __('Ryazan'),
+                    '51' => __('Samara'),
+                    '42' => __('Saransk'),
+                    '2' => __('Saint-Petersburg'),
+                    '12' => __('Smolensk'),
+                    '239' => __('Sochi'),
+                    '36' => __('Stavropol'),
+                    '973' => __('Surgut'),
+                    '13' => __('Tambov'),
+                    '14' => __('Tver'),
+                    '67' => __('Tomsk'),
+                    '15' => __('Tula'),
+                    '195' => __('Ulyanovsk'),
+                    '172' => __('Ufa'),
+                    '76' => __('Khabarovsk'),
+                    '45' => __('Cheboksary'),
+                    '56' => __('Chelyabinsk'),
+                    '1104' => __('Cherkessk'),
+                    '16' => __('Yaroslavl'),
+                    ], $region ?? null, ['class' => 'custom-select rounded-0']) !!}
+        </div>
+        <div class="well well-sm clearfix pb-5">
+            <button class="btn btn-success pull-right" type="submit">{{ __('Analyze') }}</button>
         </div>
     </div>
-    <div id="toast-container" class="toast-top-right delete-success-message" style="display:none;">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">{{ __('Successfully deleted') }}</div>
-        </div>
-    </div>
-    <div id="toast-container" class="toast-top-right error-message" style="display:none;">
-        <div class="toast toast-error" aria-live="assertive">
-            <div
-                class="toast-message error-msg">{{ __('The field cannot be empty') }}</div>
-        </div>
-    </div>
-    <div id="toast-container" class="toast-top-right delete-error-message" style="display:none;">
-        <div class="toast toast-error" aria-live="assertive">
-            <div class="toast-message error-msg">{{ __('You need to select the projects you want to delete') }}</div>
-        </div>
-    </div>
-    <a href="{{ route('add.domain.information.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
-        {{ __('Add tracking the registration period') }}
-    </a>
-    <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
-        {{ __('Delete selected projects') }}
-    </a>
-    <input type="hidden" class="checked-projects">
-    <div>{{ __('Count tracked projects') }}: <span id="count-projects">{{ $countProjects }}</span></div>
-    <table id="example" class="table table-bordered table-striped dataTable dtr-inline">
-        <thead>
-        <tr>
-            <th></th>
-            <th class="col-3">{{ __('Domain') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Track DNS changes') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Track the registration period') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Last check') }} <i class="fa fa-sort"></i></th>
-            <th class="col-4">{{ __('Domain information') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1"></th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($projects as $project)
-            <div class="modal fade" id="remove-project-id-{{$project->id}}" role="dialog" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <p>{{__('Delete a project')}} {{ $project->project_name }}</p>
-                            <p>{{__('Are you sure?')}}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="{{ route('delete.domain.information', $project->id) }}" class="btn btn-secondary">
-                                {{__('Delete a domain')}}
-                            </a>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Back')}}</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <tr id="{{ $project->id }}">
-                <td>
-                    <div class="custom-control custom-checkbox checbox-for-remove-project">
-                        <input type="checkbox" id="project-{{ $project->id }}" class="checkbox custom-control-input"
-                               name="enums">
-                        <label for="project-{{ $project->id }}" class="custom-control-label">
-                        </label>
-                    </div>
-                </td>
-                <td data-order="{{ $project->domain }}">
-                    {!! Form::text('domain', $project->domain ,['class' => 'form-control information', 'rows' => 2, 'data-order' => $project->link]) !!}
-                </td>
-                <td data-order="{{ $project->check_dns }}">
-                    <div class="__helper-link ui_tooltip_w check-dns">
-                        <div
-                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
-                            <input type="checkbox"
-                                   class="custom-control-input check-dns"
-                                   @if($project->check_dns) checked @endif
-                                   id="customSwitchDNS{{$project->id}}">
-                            <label class="custom-control-label" for="customSwitchDNS{{$project->id}}"></label>
-                        </div>
-                        <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Green - you will receive a notification about the DNS status change')}}
-                                <br>
-                                {{__('Red - you will not receive notifications')}}
-                            </span>
-                        </span>
-                    </div>
-                </td>
-                <td data-order="{{ $project->check_registration_date }}">
-                    <div class="__helper-link ui_tooltip_w check-registration-date">
-                        <div
-                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
-                            <input type="checkbox"
-                                   class="custom-control-input check-registration-date"
-                                   @if($project->check_registration_date) checked @endif
-                                   id="customSwitchDate{{$project->id}}">
-                            <label class="custom-control-label" for="customSwitchDate{{$project->id}}"></label>
-                        </div>
-                        <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Green - you will receive notifications when the domain registration expiration time is less than 10 days.')}}
-                                <br>
-                                {{__('Red - you will not receive notifications')}}
-                            </span>
-                        </span>
-                    </div>
-                </td>
-                <td>
-                    {{ $project->last_check }}
-                </td>
-                @if($project->broken)
-                    <td data-order="{{ $project->domain_information }}">
-                        <pre class="text-danger">{{ $project->domain_information }}</pre>
-                    </td>
-                @else
-                    <td data-order="{{ $project->domain_information }}">
-                        <pre class="text-info">{{ $project->domain_information }}</pre>
-                    </td>
-                @endif
-                <td>
-                    <form action="{{ route('check.domain.information', $project->id)}}" method="get"
-                          class="__helper-link ui_tooltip_w  d-inline">
-                        @csrf
-                        <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
-                            <i aria-hidden="true" class="fa fa-search"></i>
-                            <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Run the check manually')}}
-                            </span>
-                        </span>
-                        </button>
-                    </form>
-                    <button class="btn btn-default __helper-link ui_tooltip_w d-inline" data-toggle="modal"
-                            data-target="#remove-project-id-{{$project->id}}">
-                        <i class="fa fa-trash"></i>
-                        <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Delete a domain')}}
-                            </span>
-                        </span>
-                    </button>
-                </td>
+    {!! Form::close() !!}
+    @isset($result)
+        <h2>{{ __('Top 10 sites based on your keywords') }}</h2>
+        <table class="table table-bordered table-striped dataTable dtr-inline"
+               style="display: block; overflow-x: auto;">
+            <thead>
+            <tr>
+                <th class="sorting sorting_asc">{{ __('Phrase') }}</th>
+                <th>{{ __('First place') }}</th>
+                <th>{{ __('Second place') }}</th>
+                <th>{{ __('Third place') }}</th>
+                <th>{{ __('Fourth place') }}</th>
+                <th>{{ __('Fifth place') }}</th>
+                <th>{{ __('Sixth place') }}</th>
+                <th>{{ __('Seventh place') }}</th>
+                <th>{{ __('Eighth place') }}</th>
+                <th>{{ __('Ninth place') }}</th>
+                <th>{{ __('Tenth place') }}</th>
             </tr>
-        @endforeach
-        </tbody>
-    </table>
-    @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
-        <span>
-            {{ __('Want to') }}
-                <a href="{{ route('profile.index') }}" target="_blank">
-                    {{ __('receive notifications from our telegram bot') }}
-                </a> ?
-            </span>
-    @endif
+            </thead>
+            <tbody>
+            @foreach($result as $key => $items)
+                <tr>
+                    <td>{{ $key }}</td>
+                    @foreach($items as $item)
+                        <td style="min-width:400px; max-width: 400px">
+                            <span class="domain">
+                                {{ $item['doc']['domain'] }}</a>
+                            </span>
+                            <div style="display: none">
+                                <div class="text-muted d-flex justify-content-between">
+                                    {{ $item['doc']['domain'] }}
+                                    <span class="close-icon" style="font-weight: 600; cursor: pointer">&times;</span>
+                                </div>
+                                <div>
+                                    <a href="{{ $item['doc']['url'] }}" target="_blank">
+                                        {{ __('Go to the landing page') }}
+                                    </a>
+                                    <br>
+                                    <a href="{{ $item['doc']['domain'] }}" target="_blank">{{ __('Website') }}</a>
+                                </div>
+                                @if(empty($item['doc']['title']['hlword']))
+                                    <div>
+                                        <div class="text-info">Title:</div>
+                                        {{ $item['doc']['title'] }}
+                                    </div>
+                                @endif
+                                @if(isset($item['doc']['headline']) && !is_array($item['doc']['headline']))
+                                    <div>
+                                        <div class="text-info">Headline:</div>
+                                        {{ $item['doc']['headline'] }}
+                                    </div>
+                                @endif
+                                @if(count($item['meta']['description'])> 0)
+                                    <div class="text-info">Description:</div>
+                                    @foreach($item['meta']['description'] as $description)
+                                        <div> {{ $description }}</div>
+                                    @endforeach
+                                @endif
+                                @if(count($item['meta']['h1'])> 0)
+                                    <div class="text-info">H1:</div>
+                                    @foreach($item['meta']['h1'] as $h1)
+                                        <div> {{ $h1 }}</div>
+                                    @endforeach
+                                @endif
+                                @if(count($item['meta']['h2'])> 0)
+                                    <div class="text-info">H2:</div>
+                                    @foreach($item['meta']['h2'] as $h2)
+                                        <div> {{ $h2 }}</div>
+                                    @endforeach
+                                @endif
+                                @if(count($item['meta']['h3'])> 0)
+                                    <div class="text-info">H3:</div>
+                                    @foreach($item['meta']['h3'] as $h3)
+                                        <div> {{ $h3 }}</div>
+                                    @endforeach
+                                @endif
+                                @if(count($item['meta']['h4'])> 0)
+                                    <div class="text-info">H4:</div>
+                                    @foreach($item['meta']['h4'] as $h4)
+                                        <div> {{ $h4 }}</div>
+                                    @endforeach
+                                @endif
+                                @if(count($item['meta']['h5'])> 0)
+                                    <div class="text-info">H5:</div>
+                                    @foreach($item['meta']['h5'] as $h5)
+                                        <div> {{ $h5 }}</div>
+                                    @endforeach
+                                @endif
+                                @if(count($item['meta']['h6'])> 0)
+                                    <div class="text-info">H6:</div>
+                                    @foreach($item['meta']['h6'] as $h6)
+                                        <div> {{ $h6 }}</div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                    @endforeach
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <h2 class="mt-5">{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
+        <table id="positions" class="table table-bordered table-striped dataTable dtr-inline">
+            <thead>
+            <tr role="row">
+                <th class="sorting sorting_asc">
+                    {{ __('Domain') }}
+                </th>
+                <th class="sorting">
+                    {{ __('Percentage of getting into the top') }}
+                </th>
+                <th class="sorting">
+                    {{ __('Middle position') }}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($positions as $key => $position)
+                <tr>
+                    <td>{{ $key }}</td>
+                    <td>{{ $position['percent'] }}%</td>
+                    <td>{{ $position['avg'] }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <h2 class="mt-5">{{ __('Tag Analysis') }}</h2>
+        <table class="table table-bordered table-striped dataTable dtr-inline" id="headline-analysis">
+            <thead>
+            <tr role="row">
+                <th class="sorting sorting_asc">{{ __("Phrase") }}</th>
+                <th class="sorting sorting_asc">title</th>
+                <th class="sorting sorting_asc">H1</th>
+                <th class="sorting sorting_asc">H2</th>
+                <th class="sorting sorting_asc">H3</th>
+                <th class="sorting sorting_asc">H4</th>
+                <th class="sorting sorting_asc">H5</th>
+                <th class="sorting sorting_asc">H6</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($meta as $key => $item)
+                <tr>
+                    <td>{{ $key }}</td>
+                    <td>
+                        <div style="height: 260px; overflow-x: auto;">
+                            @if(isset($item['title']))
+                                @foreach($item['title'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div style="height: 260px;
+                               overflow-x: auto;">
+                            @if(isset($item['h1']))
+                                @foreach($item['h1'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div style="height: 260px;
+                               overflow-x: auto;">
+                            @if(isset($item['h2']))
+                                @foreach($item['h2'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div style="height: 260px;
+                               overflow-x: auto;">
+                            @if(isset($item['h3']))
+                                @foreach($item['h3'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div style="height: 260px;
+                               overflow-x: auto;">
+                            @if(isset($item['h4']))
+                                @foreach($item['h4'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div style="height: 260px;
+                               overflow-x: auto;">
+                            @if(isset($item['h5']))
+                                @foreach($item['h5'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        <div style="height: 260px;
+                               overflow-x: auto;">
+                            @if(isset($item['h6']))
+                                @foreach($item['h6'] as $key => $elem)
+                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @endisset
     @slot('js')
+        <script>
+            $(document).ready(function () {
+                $('#headline-analysis').DataTable();
+                $('#positions').DataTable({
+                    "order": [[2, "asc"]]
+                });
+            });
+
+            $('.domain').click(function () {
+                $(this).hide()
+                $(this).parent().children('div').eq(0).show()
+            })
+
+            $('.close-icon').click(function () {
+                let td = $(this).parent().parent().parent()
+                td.children('span').eq(0).show()
+                td.children('div').eq(0).hide()
+            })
+        </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}
         <script>
             var $jscomp = $jscomp || {};
@@ -3748,137 +3899,5 @@
                 return u
             });
         </script>
-        <script defer>
-            var oldValue = ''
-            var oldProjectName = ''
-            $('input.check-dns').click(function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('edit.domain.information') }}",
-                    data: {
-                        id: $(this).parent().parent().parent().parent().attr('id'),
-                        name: 'check_dns',
-                        option: $(this).is(':checked') ? 1 : 0,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function () {
-                        $('.toast-top-right.success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.success-message').hide(300)
-                        }, 4000)
-                    },
-                    error: function () {
-                        $('.toast-top-right.error-message').show()
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message').hide(300)
-                        }, 4000)
-                    }
-                });
-            })
-            $('input.check-registration-date').click(function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('edit.domain.information') }}",
-                    data: {
-                        id: $(this).parent().parent().parent().parent().attr('id'),
-                        name: 'check_registration_date',
-                        option: $(this).is(':checked') ? 1 : 0,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function () {
-                        $('.toast-top-right.success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.success-message').hide(300)
-                        }, 4000)
-                    },
-                    error: function () {
-                        $('.toast-top-right.error-message').show()
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message').hide(300)
-                        }, 4000)
-                    }
-                });
-            })
-            $(".information").focus(function () {
-                oldValue = $(this).val()
-            })
-            $(".information").blur(function () {
-                if (oldValue !== $(this).val()) {
-                    var obj = $(this)
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.domain.information') }}",
-                        data: {
-                            id: $(this).parent().parent().attr("id"),
-                            name: $(this).attr('name'),
-                            option: $(this).val(),
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function (response) {
-                            obj.val(response['message'])
-                            $('.toast-top-right.success-message').show(300)
-                            setTimeout(() => {
-                                $('.toast-top-right.success-message').hide(300)
-                            }, 4000)
-                        },
-                        error: function () {
-                            $('.toast-top-right.error-message').show()
-                            setTimeout(() => {
-                                $('.toast-top-right.error-message').hide(300)
-                            }, 4000)
-                        }
-                    });
-                }
-            });
-            $('.checbox-for-remove-project').change(function () {
-                let selectedId = $(this).children(':first-child').attr('id').substr(8)
-                let text = $('.checked-projects').text();
-                if ($(this).children(':first-child').is(':checked')) {
-                    $(this).parent().parent().attr('data-select', true)
-                    $('.checked-projects').text(text + selectedId + ', ')
-                } else {
-                    $(this).parent().parent().attr('data-select', false)
-                    text = text.replace(selectedId + ', ', '')
-                    $('.checked-projects').text(text)
-                }
-            })
-            $('#selectedProjects').click(function () {
-                $.ajax({
-                    type: "post",
-                    dataType: "json",
-                    url: "{{ route('delete.domain-information') }}",
-                    data: {
-                        ids: $('.checked-projects').text(),
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function () {
-                        let iterator = 0;
-                        $('[data-select=true]').each(function () {
-                            iterator++
-                            $(this).remove();
-                        })
-                        $('#count-projects').text($('#count-projects').text() - iterator)
-                        console.log($('#count-projects').text())
-                        if($('#count-projects').text() == 0){
-                            window.location.replace('https://lk.redbox.su/add-domain-information');
-                        }
-                        $('.toast-top-right.delete-success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.delete-success-message').hide(300)
-                        }, 4000)
-                    },
-                    error: function () {
-                        $('.toast-top-right.delete-error-message').show()
-                        setTimeout(() => {
-                            $('.toast-top-right.delete-error-message').hide(300)
-                        }, 4000)
-                    }
-                });
-            });
-        </script>
-        <script defer src="{{ asset('plugins/domain-information/js/domain-information.js') }}"></script>
     @endslot
 @endcomponent

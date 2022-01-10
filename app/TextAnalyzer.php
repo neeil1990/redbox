@@ -443,7 +443,6 @@ class TextAnalyzer
                 $hiddenText .= $match[1] . ' ';
             }
         }
-
         return TextAnalyzer::deleteEverythingExceptCharacters($hiddenText);
     }
 
@@ -557,7 +556,7 @@ class TextAnalyzer
                             || preg_match("/[A-Za-z]/", $key1)
                             && $percent >= 82
                         ) {
-                            $wordForms[$key1][] = [$key2 => $array[$key2]];
+                            $wordForms[$key1][] = [$key2 => $item2];
                             $will[] = $key2;
                             $will[] = $key1;
                         }

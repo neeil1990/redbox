@@ -33,7 +33,7 @@
             <span><a href="https://ionic.io/ionicons" target="_blank">https://ionic.io/ionicons</a></span> <br>
         </div>
         <div class="well well-sm clearfix pb-5">
-            <button class="btn btn-success pull-right" title="Save" type="submit">{{ __('Update') }}</button>
+            <button class="btn btn-success pull-right" title="Save" type="submit">{{ __('Add') }}</button>
             <a href="{{ url('main-projects') }}" class="btn btn-default"> {{ __('Back') }}</a>
         </div>
     </div>
