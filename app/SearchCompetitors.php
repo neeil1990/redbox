@@ -53,7 +53,7 @@ class SearchCompetitors
                 $contentType = $site[1]['content_type'];
                 if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
                     $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-                    $site = mb_convert_encoding($site, $contentType);
+                    $site = mb_convert_encoding($site, str_replace('"', '', $contentType));
                 }
 
                 $description = SearchCompetitors::getHiddenText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
