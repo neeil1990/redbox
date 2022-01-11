@@ -22,19 +22,15 @@ class SearchCompetitors
      */
     public function analyzeList($request)
     {
-        $array = explode("\r\n", $request['keywords']);
+        $array = explode("\r\n", $request['phrases']);
         $this->phrases = array_diff($array, ['']);
         $this->xml = new XmlFacade();
-
-        $this->xml->setPath('https://xmlproxy.ru/search/xml');
-        $this->xml->setUser('sv@prime-ltd.su');
-        $this->xml->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
         $this->xml->setLr($request['region']);
 
-        foreach ($this->phrases as $keyword) {
-            $this->xml->setQuery($keyword);
+        foreach ($this->phrases as $phrase) {
+            $this->xml->setQuery($phrase);
             $result = $this->xml->getByArray();
-            $this->result[$keyword] = $result['response']['results']['grouping']['group'];
+            $this->result[$phrase] = $result['response']['results']['grouping']['group'];
         }
 
         return $this->result;
@@ -155,73 +151,6 @@ class SearchCompetitors
     }
 
     /**
-     * @param $site
-     * @return array|null
-     */
-    public static function curlInit($site): ?array
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $site);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 1);
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
-
-        return SearchCompetitors::tryConnect($curl);
-    }
-
-    /**
-     * @param $curl
-     * @return array|null
-     */
-    public static function tryConnect($curl): ?array
-    {
-        $html = null;
-        $headers = null;
-        $userAgents = [
-            //Mozilla Firefox
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0',
-            //opera
-            'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 OPR/77.0.4054.60',
-            // chrome
-            'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36'
-        ];
-
-        for ($i = 0; $i < count($userAgents); $i++) {
-            curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
-            $html = curl_exec($curl);
-            $headers = curl_getinfo($curl);
-            if ($headers['http_code'] == 200 && $html != false) {
-                $html = preg_replace('//i', '', $html);
-                break 1;
-            }
-        }
-        curl_close($curl);
-        return [$html, $headers];
-    }
-
-    /**
-     * @param $wordForm
-     * @return array
-     */
-    public static function sortWordForm($wordForm): array
-    {
-        $wordForms = [];
-        foreach ($wordForm as $key => $item) {
-            if (mb_strlen($key) >= 3) {
-                $wordForms[$key] = count($item);
-            }
-        }
-        arsort($wordForms);
-
-        return $wordForms;
-    }
-
-    /**
      * @param $html
      * @param $regex
      * @return array
@@ -243,27 +172,27 @@ class SearchCompetitors
      */
     public function calculatePositions(): array
     {
-        $countKeyWords = count($this->phrases);
-        $percent = 100 / $countKeyWords;
+        $countPhrases = count($this->phrases);
+        $percent = 100 / $countPhrases;
         foreach ($this->result as $item) {
             for ($i = 0; $i < count($item); $i++) {
                 $this->sites[$item[$i]['doc']['domain']][] = $i + 1;
             }
         }
-
         foreach ($this->sites as $key => $site) {
-            $count = count($site);
-            $this->sites[$key]['percent'] = $percent * $count;
+            $this->sites[$key]['count'] = 0;
             $avg = 0.0;
-            for ($i = 0; $i < $countKeyWords; $i++) {
+            for ($i = 0; $i < $countPhrases; $i++) {
                 if (isset($site[$i])) {
                     $avg += $site[$i];
-                    unset($site[$i]);
+                    $this->sites[$key]['count'] += 1;
                 } else {
                     $avg += 11;
                 }
             }
-            $this->sites[$key]['avg'] = $avg / $countKeyWords;
+            $this->sites[$key]['percent'] = round($percent * $this->sites[$key]['count'], 1);
+            $this->sites[$key]['count'] .= '/' . $countPhrases;
+            $this->sites[$key]['avg'] = round($avg / $countPhrases, 1);
         }
 
         return $this->sites;
@@ -312,5 +241,55 @@ class SearchCompetitors
         }
 
         return $wordForms;
+    }
+
+    /**
+     * @param $site
+     * @return array|null
+     */
+    public static function curlInit($site): ?array
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $site);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 1);
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        return SearchCompetitors::tryConnect($curl);
+    }
+
+    /**
+     * @param $curl
+     * @return array|null
+     */
+    public static function tryConnect($curl): ?array
+    {
+        $html = null;
+        $headers = null;
+        $userAgents = [
+            //Mozilla Firefox
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0',
+            //opera
+            'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 OPR/77.0.4054.60',
+            // chrome
+            'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36'
+        ];
+
+        for ($i = 0; $i < count($userAgents); $i++) {
+            curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
+            $html = curl_exec($curl);
+            $headers = curl_getinfo($curl);
+            if ($headers['http_code'] == 200 && $html != false) {
+                $html = preg_replace('//i', '', $html);
+                break 1;
+            }
+        }
+        curl_close($curl);
+        return [$html, $headers];
     }
 }

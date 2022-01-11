@@ -6,7 +6,7 @@
     <div class="col-md-6 mt-3">
         <div class="form-group required">
             <label>{{ __('List of phrases') }}</label>
-            {!! Form::textarea("keywords", $keywords ?? null ,["class"=>"form-control","required"=>"required"]) !!}
+            {!! Form::textarea("phrases", $phrases ?? null ,["class"=>"form-control","required"=>"required"]) !!}
         </div>
         <div class="form-group required">
             <label>{{ __('Region') }}</label>
@@ -75,10 +75,13 @@
                     ], $region ?? null, ['class' => 'custom-select rounded-0']) !!}
         </div>
         <div class="well well-sm clearfix pb-5">
-            <button class="btn btn-success pull-right" type="submit">{{ __('Analyze') }}</button>
+            <button class="btn btn-secondary pull-right" type="submit">{{ __('Analyze') }}</button>
         </div>
     </div>
     {!! Form::close() !!}
+    <div id="progress-bar">
+        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+    </div>
     @isset($result)
         <h2>{{ __('Top 10 sites based on your keywords') }}</h2>
         <table class="table table-bordered table-striped dataTable dtr-inline"
@@ -103,9 +106,9 @@
                 <tr>
                     <td>{{ $key }}</td>
                     @foreach($items as $item)
-                        <td style="min-width:400px; max-width: 400px">
-                            <span class="domain">
-                                {{ $item['doc']['domain'] }}</a>
+                        <td style="min-width:250px; max-width: 250px">
+                            <span class="domain" style="cursor: pointer">
+                                <u>{{ $item['doc']['domain'] }}</u>
                             </span>
                             <div style="display: none">
                                 <div class="text-muted d-flex justify-content-between">
@@ -199,7 +202,7 @@
             @foreach($positions as $key => $position)
                 <tr>
                     <td>{{ $key }}</td>
-                    <td>{{ $position['percent'] }}%</td>
+                    <td>{{ $position['percent'] }}% <span class="text-muted">({{ $position['count'] }})</span></td>
                     <td>{{ $position['avg'] }}</td>
                 </tr>
             @endforeach
@@ -316,6 +319,13 @@
                 td.children('span').eq(0).show()
                 td.children('div').eq(0).hide()
             })
+
+            function setProgressBarStyles(percent) {
+                $('.progress-bar').css({
+                    width: percent + '%'
+                })
+                document.querySelector('.progress-bar').innerText = percent + '%'
+            }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}
         <script>

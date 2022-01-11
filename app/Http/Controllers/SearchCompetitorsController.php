@@ -17,11 +17,12 @@ class SearchCompetitorsController extends Controller
     {
         $searchCompetitors = new SearchCompetitors();
         $searchCompetitors->analyzeList($request->all());
+
         return view('search-competitors.index', [
             'result' => $searchCompetitors->scanSites(),
             'meta' => $searchCompetitors->scanTags(),
             'positions' => $searchCompetitors->calculatePositions(),
-            'keywords' => $request->keywords,
+            'phrases' => $request->phrases,
             'region' => $request->region,
         ]);
     }

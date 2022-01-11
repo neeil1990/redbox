@@ -3,7 +3,6 @@
 
 namespace App\Classes\Xml;
 
-use http\Exception\InvalidArgumentException;
 use Ixudra\Curl\Facades\Curl;
 
 class XmlFacade
