@@ -19,10 +19,20 @@ class TestController extends Controller
          */
         $xmlstock = new XmlFacade();
         $xmlstock->setQuery('Привет мир!');
-        $array = $xmlstock->getByArray();
-        $obj = $xmlstock->getByObject();
 
-        dump($array, $obj);
+        // Number pages
+        $xmlstock->setPage(0);
+
+        $array_1 = $xmlstock->getByArray();
+        $obj_1 = $xmlstock->getByObject();
+
+        // Number pages
+        $xmlstock->setPage(1);
+
+        $array_2 = $xmlstock->getByArray();
+        $obj_2 = $xmlstock->getByObject();
+
+        dump($array_1, $array_2);
 
 
         /**
