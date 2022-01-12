@@ -91,7 +91,7 @@
     </div>
     @isset($result)
         <div class="top-sites">
-            <h2>{{ __('Top 10 sites based on your keywords') }}</h2>
+            <h2>{{ __('Top sites based on your keywords') }}</h2>
             <div class="topscroll">
                 <div class="fake"></div>
             </div>
