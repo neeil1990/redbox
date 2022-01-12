@@ -145,7 +145,7 @@
                                                 <i class="fas fa-external-link-alt"></i>
                                                 {{ __('Go to the landing page') }}
                                             </a> <a href="https:\\{{ $item['doc']['domain'] }}" class="dropdown-item">
-                                                i class="fas fa-external-link-alt"></i>
+                                                <i class="fas fa-external-link-alt"></i>
                                                 {{ __('Website') }}
                                             </a>
                                         </div>
