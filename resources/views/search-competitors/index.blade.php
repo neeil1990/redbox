@@ -9,6 +9,13 @@
             {!! Form::textarea("phrases", $phrases ?? null ,["class"=>"form-control","required"=>"required"]) !!}
         </div>
         <div class="form-group required">
+            <label>{{ __('Top 10/20') }}</label>
+            {!! Form::select('count', [
+                    '10' => 10,
+                    '20' => 20,
+                    ], $count ?? null, ['class' => 'custom-select rounded-0']) !!}
+        </div>
+        <div class="form-group required">
             <label>{{ __('Region') }}</label>
             {!! Form::select('region', [
                     '1' => __('Москва и Московская область'),
@@ -83,106 +90,147 @@
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
     @isset($result)
-        <h2>{{ __('Top 10 sites based on your keywords') }}</h2>
-        <table class="table table-bordered table-striped dataTable dtr-inline"
-               style="display: block; overflow-x: auto;">
-            <thead>
-            <tr>
-                <th class="sorting sorting_asc">{{ __('Phrase') }}</th>
-                <th>{{ __('First place') }}</th>
-                <th>{{ __('Second place') }}</th>
-                <th>{{ __('Third place') }}</th>
-                <th>{{ __('Fourth place') }}</th>
-                <th>{{ __('Fifth place') }}</th>
-                <th>{{ __('Sixth place') }}</th>
-                <th>{{ __('Seventh place') }}</th>
-                <th>{{ __('Eighth place') }}</th>
-                <th>{{ __('Ninth place') }}</th>
-                <th>{{ __('Tenth place') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($result as $key => $items)
+        <div class="top-sites">
+            <h2>{{ __('Top 10 sites based on your keywords') }}</h2>
+            <div class="topscroll">
+                <div class="fake"></div>
+            </div>
+            <table class="table table-bordered table-striped dataTable dtr-inline top-sites-table"
+                   style="display: block; overflow-x: auto;">
+                <thead>
                 <tr>
-                    <td>{{ $key }}</td>
-                    @foreach($items as $item)
-                        <td style="min-width:250px; max-width: 250px">
-                            <span class="domain" style="cursor: pointer">
-                                <u>{{ $item['doc']['domain'] }}</u>
-                            </span>
-                            <div style="display: none">
-                                <div class="text-muted d-flex justify-content-between">
-                                    {{ $item['doc']['domain'] }}
-                                    <span class="close-icon" style="font-weight: 600; cursor: pointer">&times;</span>
-                                </div>
-                                <div>
-                                    <a href="{{ $item['doc']['url'] }}" target="_blank">
-                                        {{ __('Go to the landing page') }}
-                                    </a>
-                                    <br>
-                                    <a href="{{ $item['doc']['domain'] }}" target="_blank">{{ __('Website') }}</a>
-                                </div>
-                                @if(empty($item['doc']['title']['hlword']))
-                                    <div>
-                                        <div class="text-info">Title:</div>
-                                        {{ $item['doc']['title'] }}
-                                    </div>
-                                @endif
-                                @if(isset($item['doc']['headline']) && !is_array($item['doc']['headline']))
-                                    <div>
-                                        <div class="text-info">Headline:</div>
-                                        {{ $item['doc']['headline'] }}
-                                    </div>
-                                @endif
-                                @if(count($item['meta']['description'])> 0)
-                                    <div class="text-info">Description:</div>
-                                    @foreach($item['meta']['description'] as $description)
-                                        <div> {{ $description }}</div>
-                                    @endforeach
-                                @endif
-                                @if(count($item['meta']['h1'])> 0)
-                                    <div class="text-info">H1:</div>
-                                    @foreach($item['meta']['h1'] as $h1)
-                                        <div> {{ $h1 }}</div>
-                                    @endforeach
-                                @endif
-                                @if(count($item['meta']['h2'])> 0)
-                                    <div class="text-info">H2:</div>
-                                    @foreach($item['meta']['h2'] as $h2)
-                                        <div> {{ $h2 }}</div>
-                                    @endforeach
-                                @endif
-                                @if(count($item['meta']['h3'])> 0)
-                                    <div class="text-info">H3:</div>
-                                    @foreach($item['meta']['h3'] as $h3)
-                                        <div> {{ $h3 }}</div>
-                                    @endforeach
-                                @endif
-                                @if(count($item['meta']['h4'])> 0)
-                                    <div class="text-info">H4:</div>
-                                    @foreach($item['meta']['h4'] as $h4)
-                                        <div> {{ $h4 }}</div>
-                                    @endforeach
-                                @endif
-                                @if(count($item['meta']['h5'])> 0)
-                                    <div class="text-info">H5:</div>
-                                    @foreach($item['meta']['h5'] as $h5)
-                                        <div> {{ $h5 }}</div>
-                                    @endforeach
-                                @endif
-                                @if(count($item['meta']['h6'])> 0)
-                                    <div class="text-info">H6:</div>
-                                    @foreach($item['meta']['h6'] as $h6)
-                                        <div> {{ $h6 }}</div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                    @endforeach
+                    <th class="sorting sorting_asc">{{ __('Phrase') }}</th>
+                    <th>{{ __('First place') }}</th>
+                    <th>{{ __('Second place') }}</th>
+                    <th>{{ __('Third place') }}</th>
+                    <th>{{ __('Fourth place') }}</th>
+                    <th>{{ __('Fifth place') }}</th>
+                    <th>{{ __('Sixth place') }}</th>
+                    <th>{{ __('Seventh place') }}</th>
+                    <th>{{ __('Eighth place') }}</th>
+                    <th>{{ __('Ninth place') }}</th>
+                    <th>{{ __('Tenth place') }}</th>
+                    @if($count == 20)
+                        <th>{{ __('Eleventh place') }}</th>
+                        <th>{{ __('Twelfth place') }}</th>
+                        <th>{{ __('Thirteenth place') }}</th>
+                        <th>{{ __('Fourteenth place') }}</th>
+                        <th>{{ __('Fifteenth place') }}</th>
+                        <th>{{ __('Sixteenth place') }}</th>
+                        <th>{{ __('Seventeenth place') }}</th>
+                        <th>{{ __('Eighteenth place') }}</th>
+                        <th>{{ __('Nineteenth place') }}</th>
+                        <th>{{ __('Twentieth place') }}</th>
+                    @endif
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach($result as $key => $items)
+                    <tr>
+                        <td>{{ $key }}</td>
+                        @foreach($items as $item)
+                            <td style="min-width:250px; max-width: 250px">
+                                <div class="d-flex justify-content-between">
+                                    <span class="domain" style="cursor: pointer">
+                                    <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                    <u>{{ $item['doc']['domain'] }}</u>
+                                </span>
+                                    <div class="btn-group">
+                                        <button type="button" data-toggle="dropdown" aria-expanded="false"
+                                                class="btn btn-tool dropdown-toggle">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </button>
+                                        <div role="menu" class="dropdown-menu dropdown-menu-left">
+                                            <a href="{{ $item['doc']['url'] }}" target="_blank" class="dropdown-item">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                {{ __('Go to the landing page') }}
+                                            </a> <a href="https:\\{{ $item['doc']['domain'] }}" class="dropdown-item">
+                                                i class="fas fa-external-link-alt"></i>
+                                                {{ __('Website') }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: none" class="pl-1">
+                                    @if(isset($item['doc']['title']['hlword']) && is_array($item['doc']['title']['hlword']))
+                                        <div>
+                                            <div class="text-info">Title(keywords):</div>
+                                            {{ implode(' ',$item['doc']['title']['hlword']) }}
+                                        </div>
+                                    @elseif(isset($item['doc']['title']['hlword']))
+                                        <div>
+                                            <div class="text-info">Title:</div>
+                                            {{ $item['doc']['title']['hlword'] }}
+                                        </div>
+                                    @else
+                                        <div>
+                                            <div class="text-info">Title:</div>
+                                            {{ $item['doc']['title'] }}
+                                        </div>
+                                    @endif
+                                    @if(isset($item['doc']['headline']) && !is_array($item['doc']['headline']))
+                                        <div>
+                                            <div class="text-info">Headline:</div>
+                                            {{ $item['doc']['headline'] }}
+                                        </div>
+                                    @endif
+                                    @if(count($item['meta']['description']) > 0)
+                                        <div class="text-info">Description:</div>
+                                        @foreach($item['meta']['description'] as $description)
+                                            <div> {{ $description }}</div>
+                                        @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h1']) == 0
+                                        && count($item['meta']['h2']) == 0
+                                        && count($item['meta']['h3']) == 0)
+                                        <span class="text-info">
+                                        {{ __('The site is protected from information collection, we recommend analyzing it manually') }}
+                                    </span>
+                                    @endif
+                                    @if(count($item['meta']['h1']) > 0)
+                                        <div class="text-info">H1:</div>
+                                        @foreach($item['meta']['h1'] as $h1)
+                                            <div> {{ $h1 }}</div>
+                                        @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h2']) > 0)
+                                        <div class="text-info">H2:</div>
+                                        @foreach($item['meta']['h2'] as $h2)
+                                            <div> {{ $h2 }}</div>
+                                        @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h3']) > 0)
+                                        <div class="text-info">H3:</div>
+                                        @foreach($item['meta']['h3'] as $h3)
+                                            <div> {{ $h3 }}</div>
+                                        @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h4']) > 0)
+                                        <div class="text-info">H4:</div>
+                                        @foreach($item['meta']['h4'] as $h4)
+                                            <div> {{ $h4 }}</div>
+                                        @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h5']) > 0)
+                                        <div class="text-info">H5:</div>
+                                        @foreach($item['meta']['h5'] as $h5)
+                                            <div> {{ $h5 }}</div>
+                                        @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h6']) > 0)
+                                        <div class="text-info">H6:</div>
+                                        @foreach($item['meta']['h6'] as $h6)
+                                            <div> {{ $h6 }}</div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </td>
+                        @endforeach
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
         <h2 class="mt-5">{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
         <table id="positions" class="table table-bordered table-striped dataTable dtr-inline">
             <thead>
@@ -310,14 +358,23 @@
             });
 
             $('.domain').click(function () {
-                $(this).hide()
-                $(this).parent().children('div').eq(0).show()
+                if ($(this).parent().parent().children('div').eq(1).is(':visible')) {
+                    $(this).children('i').eq(0).css({
+                        "transform": "rotate(0deg)"
+                    })
+                    $(this).parent().parent().children('div').eq(1).hide()
+                } else {
+                    $(this).children('i').eq(0).css({
+                        "transform": "rotate(90deg)"
+                    })
+                    $(this).parent().parent().children('div').eq(1).show()
+                }
             })
 
             $('.close-icon').click(function () {
                 let td = $(this).parent().parent().parent()
                 td.children('span').eq(0).show()
-                td.children('div').eq(0).hide()
+                // td.children('div').eq(1).hide()
             })
 
             function setProgressBarStyles(percent) {

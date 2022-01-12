@@ -29,8 +29,14 @@ class SearchCompetitors
 
         foreach ($this->phrases as $phrase) {
             $this->xml->setQuery($phrase);
+            $this->xml->setPage(1);
             $result = $this->xml->getByArray();
             $this->result[$phrase] = $result['response']['results']['grouping']['group'];
+            if ($request['count'] == 20) {
+                $this->xml->setPage(2);
+                $result = $this->xml->getByArray();
+                $this->result[$phrase] = array_merge($this->result[$phrase], $result['response']['results']['grouping']['group']);
+            }
         }
 
         return $this->result;
@@ -45,11 +51,10 @@ class SearchCompetitors
         foreach ($result as $key => $items) {
             foreach ($items as $key1 => $item) {
                 $site = SearchCompetitors::curlInit($item['doc']['url']);
-
                 $contentType = $site[1]['content_type'];
                 if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
                     $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-                    $site = mb_convert_encoding($site, str_replace('"', '', $contentType));
+                    $site = mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
                 }
 
                 $description = SearchCompetitors::getHiddenText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");

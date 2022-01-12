@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Support\Str;
 use JavaScript;
-use Symfony\Component\VarDumper\VarDumper;
 
 class TextAnalyzer
 {

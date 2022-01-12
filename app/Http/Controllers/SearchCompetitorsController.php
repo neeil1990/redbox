@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\SearchCompetitors;
-use App\TextAnalyzer;
 use Illuminate\Http\Request;
 
 class SearchCompetitorsController extends Controller
@@ -18,12 +17,15 @@ class SearchCompetitorsController extends Controller
         $searchCompetitors = new SearchCompetitors();
         $searchCompetitors->analyzeList($request->all());
 
-        return view('search-competitors.index', [
+        $result = [
             'result' => $searchCompetitors->scanSites(),
-            'meta' => $searchCompetitors->scanTags(),
             'positions' => $searchCompetitors->calculatePositions(),
+            'meta' => $searchCompetitors->scanTags(),
             'phrases' => $request->phrases,
             'region' => $request->region,
-        ]);
+            'count' => $request->count,
+        ];
+
+        return view('search-competitors.index', $result);
     }
 }
