@@ -44,6 +44,12 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('users', 'UsersController');
 
+    Route::post('/manage-access/assignPermission', 'ManageAccessController@assignPermission');
+    Route::get('manage-access/destroy/{id}/where/{type}', 'ManageAccessController@destroy');
+    Route::resource('manage-access', 'ManageAccessController')->only([
+        'index', 'store', 'update'
+    ]);
+
     Route::delete('/meta-tags/history/{id}', 'MetaTagsController@destroyHistory')->name('meta.history.delete');
     Route::get('/meta-tags/history/{id}/compare/{id_compare}/export/', 'MetaTagsController@exportCompare')->name('meta.history.export_compare');
     Route::get('/meta-tags/history/{id}/export/', 'MetaTagsController@export')->name('meta.history.export');
