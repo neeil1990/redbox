@@ -2,18 +2,19 @@
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
     @endslot
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! Form::open(['action' =>'SearchCompetitorsController@analyze', 'method' => 'POST'])!!}
     <div class="col-md-6 mt-3">
         <div class="form-group required">
             <label>{{ __('List of phrases') }}</label>
-            {!! Form::textarea("phrases", $phrases ?? null ,["class"=>"form-control","required"=>"required"]) !!}
+            {!! Form::textarea("phrases", $phrases ?? null ,["class"=>"form-control phrases","required"=>"required"]) !!}
         </div>
         <div class="form-group required">
             <label>{{ __('Top 10/20') }}</label>
             {!! Form::select('count', [
                     '10' => 10,
                     '20' => 20,
-                    ], $count ?? null, ['class' => 'custom-select rounded-0']) !!}
+                    ], $count ?? null, ['class' => 'custom-select rounded-0 count']) !!}
         </div>
         <div class="form-group required">
             <label>{{ __('Region') }}</label>
@@ -79,7 +80,7 @@
                     '56' => __('Chelyabinsk'),
                     '1104' => __('Cherkessk'),
                     '16' => __('Yaroslavl'),
-                    ], $region ?? null, ['class' => 'custom-select rounded-0']) !!}
+                    ], $region ?? null, ['class' => 'custom-select rounded-0 region']) !!}
         </div>
         <div class="well well-sm clearfix pb-5">
             <button class="btn btn-secondary pull-right" type="submit">{{ __('Analyze') }}</button>
@@ -145,7 +146,8 @@
                                                 <i class="fas fa-external-link-alt"></i>
                                                 {{ __('Go to the landing page') }}
                                             </a>
-                                            <a href="https:\\{{ $item['doc']['domain'] }}"  target="_blank" class="dropdown-item">
+                                            <a href="https:\\{{ $item['doc']['domain'] }}" target="_blank"
+                                               class="dropdown-item">
                                                 <i class="fas fa-external-link-alt"></i>
                                                 {{ __('Website') }}
                                             </a>
@@ -153,22 +155,10 @@
                                     </div>
                                 </div>
                                 <div style="display: none" class="pl-1">
-                                    @if(isset($item['doc']['title']['hlword']) && is_array($item['doc']['title']['hlword']))
-                                        <div>
-                                            <div class="text-info">Title(keywords):</div>
-                                            {{ implode(' ',$item['doc']['title']['hlword']) }}
-                                        </div>
-                                    @elseif(isset($item['doc']['title']['hlword']))
-                                        <div>
-                                            <div class="text-info">Title:</div>
-                                            {{ $item['doc']['title']['hlword'] }}
-                                        </div>
-                                    @else
-                                        <div>
-                                            <div class="text-info">Title:</div>
-                                            {{ $item['doc']['title'] }}
-                                        </div>
-                                    @endif
+                                    <div>
+                                        <div class="text-info">Title:</div>
+                                        {{ implode(' ',$item['meta']['title']) }}
+                                    </div>
                                     @if(isset($item['doc']['headline']) && !is_array($item['doc']['headline']))
                                         <div>
                                             <div class="text-info">Headline:</div>
@@ -232,122 +222,149 @@
                 </tbody>
             </table>
         </div>
-        <h2 class="mt-5">{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
-        <table id="positions" class="table table-bordered table-striped dataTable dtr-inline">
-            <thead>
-            <tr role="row">
-                <th class="sorting sorting_asc">
-                    {{ __('Domain') }}
-                </th>
-                <th class="sorting">
-                    {{ __('Percentage of getting into the top') }}
-                </th>
-                <th class="sorting">
-                    {{ __('Middle position') }}
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($positions as $key => $position)
-                <tr>
-                    <td>{{ $key }}</td>
-                    <td>{{ $position['percent'] }}% <span class="text-muted">({{ $position['count'] }})</span></td>
-                    <td>{{ $position['avg'] }}</td>
+        <div class="better-percent mt-5">
+            <h2>{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
+            <table id="positions" class="table table-bordered table-striped dataTable dtr-inline">
+                <thead>
+                <tr role="row">
+                    <th class="sorting sorting_asc">
+                        {{ __('Domain') }}
+                    </th>
+                    <th class="sorting">
+                        {{ __('Percentage of getting into the top') }}
+                    </th>
+                    <th class="sorting">
+                        {{ __('Middle position') }}
+                    </th>
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
-        <h2 class="mt-5">{{ __('Tag Analysis') }}</h2>
-        <table class="table table-bordered table-striped dataTable dtr-inline" id="headline-analysis">
-            <thead>
-            <tr role="row">
-                <th class="sorting sorting_asc">{{ __("Phrase") }}</th>
-                <th class="sorting sorting_asc">title</th>
-                <th class="sorting sorting_asc">H1</th>
-                <th class="sorting sorting_asc">H2</th>
-                <th class="sorting sorting_asc">H3</th>
-                <th class="sorting sorting_asc">H4</th>
-                <th class="sorting sorting_asc">H5</th>
-                <th class="sorting sorting_asc">H6</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($meta as $key => $item)
+                </thead>
+                <tbody>
+                @foreach($positions as $key => $position)
+                    <tr>
+                        <td>{{ $key }}</td>
+                        <td>{{ $position['percent'] }}% <span class="text-muted">({{ $position['count'] }})</span></td>
+                        <td>{{ $position['avg'] }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="nested mt-5">
+            <h2>{{ __('Analysis of page nesting') }}</h2>
+            <table class="table table-bordered table-striped dataTable dtr-inline">
+                <thead>
                 <tr>
-                    <td>{{ $key }}</td>
-                    <td>
-                        <div style="height: 260px; overflow-x: auto;">
-                            @if(isset($item['title']))
-                                @foreach($item['title'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
-                    <td>
-                        <div style="height: 260px;
-                               overflow-x: auto;">
-                            @if(isset($item['h1']))
-                                @foreach($item['h1'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
-                    <td>
-                        <div style="height: 260px;
-                               overflow-x: auto;">
-                            @if(isset($item['h2']))
-                                @foreach($item['h2'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
-                    <td>
-                        <div style="height: 260px;
-                               overflow-x: auto;">
-                            @if(isset($item['h3']))
-                                @foreach($item['h3'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
-                    <td>
-                        <div style="height: 260px;
-                               overflow-x: auto;">
-                            @if(isset($item['h4']))
-                                @foreach($item['h4'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
-                    <td>
-                        <div style="height: 260px;
-                               overflow-x: auto;">
-                            @if(isset($item['h5']))
-                                @foreach($item['h5'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
-                    <td>
-                        <div style="height: 260px;
-                               overflow-x: auto;">
-                            @if(isset($item['h6']))
-                                @foreach($item['h6'] as $key => $elem)
-                                    <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </td>
+                    <th>{{ __('Page') }}</th>
+                    <th>{{ __('Count') }}</th>
+                    <th>{{ __('Ratio') }}</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="dtr-control sorting_1">{{ __('Main') }}</td>
+                    <td>{{ $nested['mainPageCounter'] }}</td>
+                    <td>{{ $nested['mainPagePercent'] }} %</td>
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
+                <tr>
+                    <td class="dtr-control sorting_1">{{ __('Nested') }}</td>
+                    <td>{{ $nested['nestedPageCounter'] }}</td>
+                    <td>{{ $nested['nestedPagePercent'] }} %</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tag-analysis mt-5">
+            <h2>{{ __('Tag Analysis') }}</h2>
+            <table class="table table-bordered table-striped dataTable dtr-inline" id="headline-analysis">
+                <thead>
+                <tr role="row">
+                    <th class="sorting sorting_asc">{{ __("Phrase") }}</th>
+                    <th class="sorting sorting_asc">title</th>
+                    <th class="sorting sorting_asc">H1</th>
+                    <th class="sorting sorting_asc">H2</th>
+                    <th class="sorting sorting_asc">H3</th>
+                    <th class="sorting sorting_asc">H4</th>
+                    <th class="sorting sorting_asc">H5</th>
+                    <th class="sorting sorting_asc">H6</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($meta as $key => $item)
+                    <tr>
+                        <td>{{ $key }}</td>
+                        <td>
+                            <div style="height: 260px; overflow-x: auto;">
+                                @if(isset($item['title']))
+                                    @foreach($item['title'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div style="height: 260px;
+                               overflow-x: auto;">
+                                @if(isset($item['h1']))
+                                    @foreach($item['h1'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div style="height: 260px;
+                               overflow-x: auto;">
+                                @if(isset($item['h2']))
+                                    @foreach($item['h2'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div style="height: 260px;
+                               overflow-x: auto;">
+                                @if(isset($item['h3']))
+                                    @foreach($item['h3'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div style="height: 260px;
+                               overflow-x: auto;">
+                                @if(isset($item['h4']))
+                                    @foreach($item['h4'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div style="height: 260px;
+                               overflow-x: auto;">
+                                @if(isset($item['h5']))
+                                    @foreach($item['h5'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div style="height: 260px;
+                               overflow-x: auto;">
+                                @if(isset($item['h6']))
+                                    @foreach($item['h6'] as $key => $elem)
+                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
     @endisset
     @slot('js')
         <script>
@@ -357,6 +374,61 @@
                     "order": [[2, "asc"]]
                 });
             });
+
+            {{--$('.btn.btn-secondary.pull-right').click(function () {--}}
+            {{--    $.ajax({--}}
+            {{--        type: "POST",--}}
+            {{--        dataType: "json",--}}
+            {{--        url: "{{ route('competitor.analysis') }}",--}}
+            {{--        data: {--}}
+            {{--            phrases: $('.form-control.phrases').val(),--}}
+            {{--            count: $('.custom-select.rounded-0.count').val(),--}}
+            {{--            region: $('.custom-select.rounded-0.region').val(),--}}
+            {{--            _token: $('meta[name="csrf-token"]').attr('content')--}}
+            {{--        },--}}
+            {{--        // xhr: function () {--}}
+            {{--        //     let xhr = $.ajaxSettings.xhr();--}}
+            {{--        //     xhr.upload.addEventListener('progress', function (evt) {--}}
+            {{--        //         $('.progress-bar').css({--}}
+            {{--        //             opacity: 1--}}
+            {{--        //         });--}}
+            {{--        //         $("#progress-bar").show(300)--}}
+            {{--        //         if (evt.lengthComputable) {--}}
+            {{--        //             console.log(evt.loaded)--}}
+            {{--        //             console.log(evt.total)--}}
+            {{--        //             let percent = Math.floor((evt.loaded / evt.total) * 100);--}}
+            {{--        //             setProgressBarStyles(percent)--}}
+            {{--        //             if (percent === 100) {--}}
+            {{--        //                 setTimeout(() => {--}}
+            {{--        //                     $('.progress-bar').css({--}}
+            {{--        //                         opacity: 0,--}}
+            {{--        //                         width: 0 + '%'--}}
+            {{--        //                     });--}}
+            {{--        //                     $("#progress-bar").hide(300)--}}
+            {{--        //                 }, 2000)--}}
+            {{--        //             }--}}
+            {{--        //         }--}}
+            {{--        //     }, false);--}}
+            {{--        //     return xhr;--}}
+            {{--        // },--}}
+            {{--        xhr: function() {--}}
+            {{--            var xhr = new window.XMLHttpRequest();--}}
+            {{--            xhr.upload.addEventListener("progress", function(evt) {--}}
+            {{--                if (evt.lengthComputable) {--}}
+            {{--                    var percentComplete = (evt.loaded / evt.total) * 100;--}}
+            {{--                    // Place upload progress bar visibility code here--}}
+            {{--                    console.log(percentComplete);--}}
+            {{--                }--}}
+            {{--            }, false);--}}
+            {{--            return xhr;--}}
+            {{--        },--}}
+            {{--        success: function (response) {--}}
+            {{--            console.log(--}}
+            {{--                response--}}
+            {{--            )--}}
+            {{--        },--}}
+            {{--    });--}}
+            {{--});--}}
 
             $('.domain').click(function () {
                 if ($(this).parent().parent().children('div').eq(1).is(':visible')) {
@@ -375,7 +447,6 @@
             $('.close-icon').click(function () {
                 let td = $(this).parent().parent().parent()
                 td.children('span').eq(0).show()
-                // td.children('div').eq(1).hide()
             })
 
             function setProgressBarStyles(percent) {
