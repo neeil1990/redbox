@@ -76,7 +76,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('http-headers/{object}/export', 'PagesController@httpHeadersExport');
 
-    Route::get('duplicates/{quantity?}', "PagesController@duplicates")->name('pages.duplicates')->middleware('permission:Duplicates');
+    Route::get('duplicates/{quantity?}', "PagesController@duplicates")->name('pages.duplicates');
     $arPages = config('pages.link');
     foreach ($arPages as $page)
         Route::get($page['url'], "PagesController@{$page['method']}")->name($page['name']);
