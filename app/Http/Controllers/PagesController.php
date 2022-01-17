@@ -59,7 +59,7 @@ class PagesController extends Controller
         if($user->hasRole('Optimal'))
             $require = 10;
 
-        if($quantity > $require)
+        if(isset($require) && $quantity > $require)
             return collect(['require' => $require, 'quantity' => $quantity]);
 
         $options = collect([
