@@ -18,7 +18,7 @@
         <div class="form-group required">
             <label>{{ __('Region') }}</label>
             {!! Form::select('region', [
-                    '1' => __('Москва и Московская область'),
+                    '1' => __('Moscow'),
                     '20' => __('Arkhangelsk'),
                     '37' => __('Astrakhan'),
                     '197' => __('Barnaul'),
@@ -144,7 +144,8 @@
                                             <a href="{{ $item['doc']['url'] }}" target="_blank" class="dropdown-item">
                                                 <i class="fas fa-external-link-alt"></i>
                                                 {{ __('Go to the landing page') }}
-                                            </a> <a href="https:\\{{ $item['doc']['domain'] }}" class="dropdown-item">
+                                            </a>
+                                            <a href="https:\\{{ $item['doc']['domain'] }}"  target="_blank" class="dropdown-item">
                                                 <i class="fas fa-external-link-alt"></i>
                                                 {{ __('Website') }}
                                             </a>
@@ -183,7 +184,7 @@
                                     @if(count($item['meta']['h1']) == 0
                                         && count($item['meta']['h2']) == 0
                                         && count($item['meta']['h3']) == 0)
-                                        <span class="text-info">
+                                        <span class="text-danger">
                                         {{ __('The site is protected from information collection, we recommend analyzing it manually') }}
                                     </span>
                                     @endif
