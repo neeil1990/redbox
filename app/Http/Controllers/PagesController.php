@@ -49,8 +49,19 @@ class PagesController extends Controller
      *
      * @return Factory|View
      */
-    public function duplicates()
+    public function duplicates($quantity = 0)
     {
+        $user = auth()->user();
+
+        if($user->hasRole('Free'))
+            $require = 5;
+
+        if($user->hasRole('Optimal'))
+            $require = 10;
+
+        if($quantity > $require)
+            return collect(['require' => $require, 'quantity' => $quantity]);
+
         $options = collect([
             1 => __('remove duplicate spaces between words'),
             2 => __('remove spaces and tabs at the beginning and end of the line'),
