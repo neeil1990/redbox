@@ -87,9 +87,6 @@
         </div>
     </div>
     {!! Form::close() !!}
-    <div id="progress-bar">
-        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
-    </div>
     @isset($result)
         <div class="top-sites">
             <h2>{{ __('Top sites based on your keywords') }}</h2>
@@ -156,8 +153,10 @@
                                 </div>
                                 <div style="display: none" class="pl-1">
                                     <div>
-                                        <div class="text-info">Title:</div>
-                                        {{ implode(' ',$item['meta']['title']) }}
+                                        @if(count($item['meta']['title']) > 0)
+                                            <div class="text-info">Title:</div>
+                                            {{ implode(' ',$item['meta']['title']) }}
+                                        @endif
                                     </div>
                                     @if(isset($item['doc']['headline']) && !is_array($item['doc']['headline']))
                                         <div>
@@ -375,61 +374,6 @@
                 });
             });
 
-            {{--$('.btn.btn-secondary.pull-right').click(function () {--}}
-            {{--    $.ajax({--}}
-            {{--        type: "POST",--}}
-            {{--        dataType: "json",--}}
-            {{--        url: "{{ route('competitor.analysis') }}",--}}
-            {{--        data: {--}}
-            {{--            phrases: $('.form-control.phrases').val(),--}}
-            {{--            count: $('.custom-select.rounded-0.count').val(),--}}
-            {{--            region: $('.custom-select.rounded-0.region').val(),--}}
-            {{--            _token: $('meta[name="csrf-token"]').attr('content')--}}
-            {{--        },--}}
-            {{--        // xhr: function () {--}}
-            {{--        //     let xhr = $.ajaxSettings.xhr();--}}
-            {{--        //     xhr.upload.addEventListener('progress', function (evt) {--}}
-            {{--        //         $('.progress-bar').css({--}}
-            {{--        //             opacity: 1--}}
-            {{--        //         });--}}
-            {{--        //         $("#progress-bar").show(300)--}}
-            {{--        //         if (evt.lengthComputable) {--}}
-            {{--        //             console.log(evt.loaded)--}}
-            {{--        //             console.log(evt.total)--}}
-            {{--        //             let percent = Math.floor((evt.loaded / evt.total) * 100);--}}
-            {{--        //             setProgressBarStyles(percent)--}}
-            {{--        //             if (percent === 100) {--}}
-            {{--        //                 setTimeout(() => {--}}
-            {{--        //                     $('.progress-bar').css({--}}
-            {{--        //                         opacity: 0,--}}
-            {{--        //                         width: 0 + '%'--}}
-            {{--        //                     });--}}
-            {{--        //                     $("#progress-bar").hide(300)--}}
-            {{--        //                 }, 2000)--}}
-            {{--        //             }--}}
-            {{--        //         }--}}
-            {{--        //     }, false);--}}
-            {{--        //     return xhr;--}}
-            {{--        // },--}}
-            {{--        xhr: function() {--}}
-            {{--            var xhr = new window.XMLHttpRequest();--}}
-            {{--            xhr.upload.addEventListener("progress", function(evt) {--}}
-            {{--                if (evt.lengthComputable) {--}}
-            {{--                    var percentComplete = (evt.loaded / evt.total) * 100;--}}
-            {{--                    // Place upload progress bar visibility code here--}}
-            {{--                    console.log(percentComplete);--}}
-            {{--                }--}}
-            {{--            }, false);--}}
-            {{--            return xhr;--}}
-            {{--        },--}}
-            {{--        success: function (response) {--}}
-            {{--            console.log(--}}
-            {{--                response--}}
-            {{--            )--}}
-            {{--        },--}}
-            {{--    });--}}
-            {{--});--}}
-
             $('.domain').click(function () {
                 if ($(this).parent().parent().children('div').eq(1).is(':visible')) {
                     $(this).children('i').eq(0).css({
@@ -448,13 +392,6 @@
                 let td = $(this).parent().parent().parent()
                 td.children('span').eq(0).show()
             })
-
-            function setProgressBarStyles(percent) {
-                $('.progress-bar').css({
-                    width: percent + '%'
-                })
-                document.querySelector('.progress-bar').innerText = percent + '%'
-            }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}
         <script>

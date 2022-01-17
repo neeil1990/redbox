@@ -43,9 +43,6 @@ class SearchCompetitorsController extends Controller
             'count' => $request->count,
         ];
 
-//        return response()->json([
-//            'result' => $result
-//        ]);
         return view('search-competitors.index', $result);
     }
 }
