@@ -8718,6 +8718,12 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     CalculateDuplicates: function CalculateDuplicates() {
       var app = this;
+      axios.get("/duplicates/".concat(app.text.length)).then(function (response) {
+        if (response.data.require) {
+          alert("\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432: ".concat(response.data.quantity, " \u0411\u043E\u043B\u044C\u0448\u0435 \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u043E\u0433\u043E: ").concat(response.data.require));
+          window.location.reload();
+        }
+      });
 
       var array = _.concat(this.checkbox.left, this.checkbox.right);
 

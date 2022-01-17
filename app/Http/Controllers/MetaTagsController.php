@@ -44,6 +44,15 @@ class MetaTagsController extends Controller
     protected $response;
 
     /**
+     * MetaTagsController constructor.
+     */
+    public function __construct()
+    {
+
+        $this->middleware(['permission:Meta tags']);
+    }
+
+    /**
      * @param $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */

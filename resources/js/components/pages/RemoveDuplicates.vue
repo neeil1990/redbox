@@ -84,6 +84,14 @@
             CalculateDuplicates(){
                 var app = this;
 
+                axios.get(`/duplicates/${app.text.length}`).then(function(response){
+
+                    if(response.data.require){
+                        alert(`Количество символов: ${response.data.quantity} Больше допустимого: ${response.data.require}`);
+                        window.location.reload();
+                    }
+                });
+
                 let array = _.concat(this.checkbox.left, this.checkbox.right);
                 let options = _.filter(array, function(n) {
                     return n.selected;

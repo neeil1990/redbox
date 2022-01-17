@@ -11,6 +11,8 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\LastOnline;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RoleMiddleware;
+use \Spatie\Permission\Middlewares\PermissionMiddleware;
+use \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use App\Http\Middleware\SetLocaleToAuthUser;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -92,6 +94,8 @@ class Kernel extends HttpKernel
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
         'role' => RoleMiddleware::class,
+        'permission' => PermissionMiddleware::class,
+        'role_or_permission' => RoleOrPermissionMiddleware::class,
     ];
 
     /**
