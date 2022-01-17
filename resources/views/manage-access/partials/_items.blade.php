@@ -14,8 +14,10 @@
 
     <span class="text">{{ $item->name }}</span>
 
+    @if(!in_array($item->name, ['admin', 'user', 'Super Admin']))
     <div class="tools">
         <i class="fas fa-edit update-item"></i>
         <i class="fas fa-trash delete-item"></i>
     </div>
+    @endif
 </li>
