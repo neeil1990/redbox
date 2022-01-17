@@ -75,6 +75,7 @@ class SearchCompetitors
                 $this->metaTags[$key]['h6'][] = $h6;
 
                 $result[$key][$key1]['meta'] = [
+                    'title' => $title,
                     'h1' => $h1,
                     'h2' => $h2,
                     'h3' => $h3,
@@ -89,6 +90,34 @@ class SearchCompetitors
         return $result;
     }
 
+    /**
+     * @return array
+     */
+    public function analysisPageNesting(): array
+    {
+        $pagesCounter = [
+            'mainPageCounter' => 0,
+            'nestedPageCounter' => 0
+        ];
+        $counter = 0;
+        foreach ($this->result as $items) {
+            foreach ($items as $item) {
+                $url = parse_url($item['doc']['url']);
+                $domain = parse_url($item['doc']['domain']);
+                unset($url['scheme']);
+                if (array_diff($url, $domain) == array("")) {
+                    $pagesCounter['mainPageCounter']++;
+                } else {
+                    $pagesCounter['nestedPageCounter']++;
+                }
+                $counter++;
+            }
+        }
+        $pagesCounter['mainPagePercent'] = (100 / $counter) * $pagesCounter['mainPageCounter'];
+        $pagesCounter['nestedPagePercent'] = (100 / $counter) * $pagesCounter['nestedPageCounter'];
+
+        return $pagesCounter;
+    }
 
     /**
      * @return array
