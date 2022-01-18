@@ -113,8 +113,8 @@ class SearchCompetitors
                 $counter++;
             }
         }
-        $pagesCounter['mainPagePercent'] = (100 / $counter) * $pagesCounter['mainPageCounter'];
-        $pagesCounter['nestedPagePercent'] = (100 / $counter) * $pagesCounter['nestedPageCounter'];
+        $pagesCounter['mainPagePercent'] = round((100 / $counter) * $pagesCounter['mainPageCounter'], 1);
+        $pagesCounter['nestedPagePercent'] = round((100 / $counter) * $pagesCounter['nestedPageCounter'], 1);
 
         return $pagesCounter;
     }
