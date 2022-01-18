@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\FreeTariff;
+use App\Classes\Tariffs\OptimalTariff;
 use App\HttpHeader;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
@@ -44,6 +46,18 @@ class PagesController extends Controller
         return view('pages.keyword');
     }
 
+    protected function getTariff()
+    {
+        $user = auth()->user();
+
+        if($user->hasRole('Free'))
+            $tariff = (new FreeTariff())->get();
+        elseif($user->hasRole('Optimal'))
+            $tariff = (new OptimalTariff())->get();
+
+        return (isset($tariff)) ? $tariff : null;
+    }
+
     /**
      * Word duplicates
      *
@@ -51,13 +65,9 @@ class PagesController extends Controller
      */
     public function duplicates($quantity = 0)
     {
-        $user = auth()->user();
 
-        if($user->hasRole('Free'))
-            $require = 5;
-
-        if($user->hasRole('Optimal'))
-            $require = 10;
+        $tariff = $this->getTariff();
+        $require = $tariff['settings']['duplicates_str_length'];
 
         if(isset($require) && $quantity > $require)
             return collect(['require' => $require, 'quantity' => $quantity]);
@@ -73,7 +83,6 @@ class PagesController extends Controller
             8 => __('remove duplicates'),
             9 => __('replace'),
         ])->toJson();
-
 
         return view('pages.duplicates', compact('options'));
     }
