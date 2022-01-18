@@ -66,11 +66,13 @@ class PagesController extends Controller
     public function duplicates($quantity = 0)
     {
 
-        $tariff = $this->getTariff();
-        $require = $tariff['settings']['duplicates_str_length'];
+        if($tariff = $this->getTariff()){
 
-        if(isset($require) && $quantity > $require)
-            return collect(['require' => $require, 'quantity' => $quantity]);
+            $require = $tariff['settings']['duplicates_str_length'];
+
+            if(isset($require) && $quantity > $require)
+                return collect(['require' => $require, 'quantity' => $quantity]);
+        }
 
         $options = collect([
             1 => __('remove duplicate spaces between words'),
