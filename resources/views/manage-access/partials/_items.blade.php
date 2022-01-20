@@ -16,8 +16,12 @@
 
     @if(!in_array($item->name, ['admin', 'user', 'Super Admin']))
     <div class="tools">
-        <i class="fas fa-edit update-item"></i>
-        <i class="fas fa-trash delete-item"></i>
+
+        <i class="fas fa-external-link-alt" onclick="window.open('/{{ str_replace(' ', '-', strtolower($item->name)) }}', '_blank')" title="{{ __('Open') }}"></i>
+        <i class="far fa-copy copy-item" data-copy="{{ $item->name }}" title="{{ __('Copied') }}"></i>
+
+        <i class="fas fa-edit update-item" title="{{ __('Edit') }}"></i>
+        <i class="fas fa-trash delete-item" title="{{ __('Delete') }}"></i>
     </div>
     @endif
 </li>
