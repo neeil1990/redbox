@@ -22,7 +22,7 @@ class SearchCompetitors
      */
     public function analyzeList($request)
     {
-        $array = explode("\r\n", $request['phrases']);
+        $array = explode("\n", $request['phrases']);
         $this->phrases = array_diff($array, ['']);
         $this->xml = new XmlFacade();
         $this->xml->setLr($request['region']);
@@ -91,16 +91,18 @@ class SearchCompetitors
     }
 
     /**
-     * @return array
+     * @param $scanResult
+     * @return int[]
      */
-    public function analysisPageNesting(): array
+    public static function analysisPageNesting($scanResult): array
     {
         $pagesCounter = [
             'mainPageCounter' => 0,
             'nestedPageCounter' => 0
         ];
+
         $counter = 0;
-        foreach ($this->result as $items) {
+        foreach ($scanResult as $items) {
             foreach ($items as $item) {
                 $url = parse_url($item['doc']['url']);
                 $domain = parse_url($item['doc']['domain']);

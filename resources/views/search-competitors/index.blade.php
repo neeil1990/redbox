@@ -1,9 +1,16 @@
 @component('component.card', ['title' => __('Competitor analysis')])
     @slot('css')
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              href="{{ asset('plugins/toastr/toastr.css') }}"/>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {!! Form::open(['action' =>'SearchCompetitorsController@analyze', 'method' => 'POST'])!!}
     <div class="col-md-6 mt-3">
         <div class="form-group required">
             <label>{{ __('List of phrases') }}</label>
@@ -82,17 +89,77 @@
                     '16' => __('Yaroslavl'),
                     ], $region ?? null, ['class' => 'custom-select rounded-0 region']) !!}
         </div>
-        <div class="well well-sm clearfix pb-5">
-            <button class="btn btn-secondary pull-right" type="submit">{{ __('Analyze') }}</button>
+        <div class="well well-sm clearfix">
+            <button class="btn btn-secondary pull-left" type="button">{{ __('Analyze') }}</button>
         </div>
     </div>
-    {!! Form::close() !!}
+    <div id="toast-container" class="toast-top-right error-message" style="display: none">
+        <div class="toast toast-error" aria-live="assertive">
+            <div class="toast-message">Список фраз не должен быть пустым</div>
+        </div>
+    </div>
+    <div id="progress-bar">
+        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+    </div>
+    <div class="top-sites mt-5" style="display: none">
+        <h2>{{ __('Top sites based on your keywords') }}</h2>
+        <table class="table table-bordered table-striped dataTable dtr-inline top-sites-table"
+               style="display: block; overflow-x: auto;">
+            <thead>
+            <tr>
+                <th style="min-width:250px; max-width: 250px">{{ __('Phrase') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('First place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Second place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Third place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Fourth place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Fifth place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Sixth place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Seventh place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Eighth place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Ninth place') }}</th>
+                <th style="min-width:250px; max-width: 250px">{{ __('Tenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Eleventh place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Twelfth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Thirteenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Fourteenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Fifteenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Sixteenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Seventeenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Eighteenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Nineteenth place') }}</th>
+                <th style="min-width:250px; max-width: 250px" class="extra-th">{{ __('Twentieth place') }}</th>
+            </tr>
+            </thead>
+            <tbody id="top-sites-body">
+            </tbody>
+        </table>
+    </div>
+    <div class="nested mt-5" style="display:none;">
+        <h2>{{ __('Analysis of page nesting') }}</h2>
+        <table class="table table-bordered table-striped dataTable dtr-inline">
+            <thead>
+            <tr>
+                <th>{{ __('Page') }}</th>
+                <th>{{ __('Count') }}</th>
+                <th>{{ __('Ratio') }}</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="dtr-control sorting_1">{{ __('Main') }}</td>
+                <td class="mainPageCounter"></td>
+                <td class="mainPagePercent"></td>
+            </tr>
+            <tr>
+                <td class="dtr-control sorting_1">{{ __('Nested') }}</td>
+                <td class="nestedPageCounter"></td>
+                <td class="nestedPagePercent"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     @isset($result)
-        <div class="top-sites">
+        <div class="top-sites mt-5">
             <h2>{{ __('Top sites based on your keywords') }}</h2>
-            <div class="topscroll">
-                <div class="fake"></div>
-            </div>
             <table class="table table-bordered table-striped dataTable dtr-inline top-sites-table"
                    style="display: block; overflow-x: auto;">
                 <thead>
@@ -122,7 +189,7 @@
                     @endif
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="top-sites-body">
                 @foreach($result as $key => $items)
                     <tr>
                         <td>{{ $key }}</td>
@@ -170,13 +237,6 @@
                                             <div> {{ $description }}</div>
                                         @endforeach
                                     @endif
-                                    @if(count($item['meta']['h1']) == 0
-                                        && count($item['meta']['h2']) == 0
-                                        && count($item['meta']['h3']) == 0)
-                                        <span class="text-danger">
-                                        {{ __('The site is protected from information collection, we recommend analyzing it manually') }}
-                                    </span>
-                                    @endif
                                     @if(count($item['meta']['h1']) > 0)
                                         <div class="text-info">H1:</div>
                                         @foreach($item['meta']['h1'] as $h1)
@@ -212,6 +272,13 @@
                                         @foreach($item['meta']['h6'] as $h6)
                                             <div> {{ $h6 }}</div>
                                         @endforeach
+                                    @endif
+                                    @if(count($item['meta']['h1']) == 0
+                                        && count($item['meta']['h2']) == 0
+                                        && count($item['meta']['h3']) == 0)
+                                        <span class="text-danger">
+                                        {{ __('The site is protected from information collection, we recommend analyzing it manually') }}
+                                    </span>
                                     @endif
                                 </div>
                             </td>
@@ -301,7 +368,7 @@
                         </td>
                         <td>
                             <div style="height: 260px;
-                               overflow-x: auto;">
+                                       overflow-x: auto;">
                                 @if(isset($item['h1']))
                                     @foreach($item['h1'] as $key => $elem)
                                         <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
@@ -311,7 +378,7 @@
                         </td>
                         <td>
                             <div style="height: 260px;
-                               overflow-x: auto;">
+                                       overflow-x: auto;">
                                 @if(isset($item['h2']))
                                     @foreach($item['h2'] as $key => $elem)
                                         <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
@@ -321,7 +388,7 @@
                         </td>
                         <td>
                             <div style="height: 260px;
-                               overflow-x: auto;">
+                                       overflow-x: auto;">
                                 @if(isset($item['h3']))
                                     @foreach($item['h3'] as $key => $elem)
                                         <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
@@ -331,7 +398,7 @@
                         </td>
                         <td>
                             <div style="height: 260px;
-                               overflow-x: auto;">
+                                       overflow-x: auto;">
                                 @if(isset($item['h4']))
                                     @foreach($item['h4'] as $key => $elem)
                                         <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
@@ -341,7 +408,7 @@
                         </td>
                         <td>
                             <div style="height: 260px;
-                               overflow-x: auto;">
+                                       overflow-x: auto;">
                                 @if(isset($item['h5']))
                                     @foreach($item['h5'] as $key => $elem)
                                         <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
@@ -351,7 +418,7 @@
                         </td>
                         <td>
                             <div style="height: 260px;
-                               overflow-x: auto;">
+                                       overflow-x: auto;">
                                 @if(isset($item['h6']))
                                     @foreach($item['h6'] as $key => $elem)
                                         <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
@@ -366,12 +433,59 @@
         </div>
     @endisset
     @slot('js')
+        <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites.js') }}"></script>
         <script>
             $(document).ready(function () {
                 $('#headline-analysis').DataTable();
                 $('#positions').DataTable({
                     "order": [[2, "asc"]]
                 });
+            });
+
+            $('.btn.btn-secondary.pull-left').click(() => {
+                if ($.trim($('.form-control.phrases').val())) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('analyze.sites') }}",
+                        data: {
+                            phrases: $('.form-control.phrases').val(),
+                            region: $('.custom-select.rounded-0.region').val(),
+                            count: $('.custom-select.rounded-0.count').val(),
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        beforeSend: function () {
+                            if ($('.custom-select.rounded-0.count').val() === '20') {
+                                $('.extra-th').show()
+                            } else {
+                                $('.extra-th').hide()
+                            }
+                            $('.progress-bar').css({
+                                opacity: 1
+                            });
+                            $("#progress-bar").show()
+                            $('.top-sites').hide()
+                            $('.render').remove()
+                            setProgressBarStyles(3)
+                        },
+                        success: function (response) {
+                            renderTopSites(response)
+                            nestedRequest(response.scanResult)
+                        },
+                        error: function () {
+                            setProgressBarStyles(0)
+                            $('.progress-bar').css({
+                                opacity: 0
+                            });
+                            console.log('error')
+                        }
+                    });
+                } else {
+                    $('.toast-top-right.error-message').show(300)
+                    setTimeout(() => {
+                        $('.toast-top-right.error-message').hide(300)
+                    }, 4000)
+                }
             });
 
             $('.domain').click(function () {
@@ -392,6 +506,48 @@
                 let td = $(this).parent().parent().parent()
                 td.children('span').eq(0).show()
             })
+
+            function setProgressBarStyles(percent) {
+                $('.progress-bar').css({
+                    width: percent + '%'
+                })
+                document.querySelector('.progress-bar').innerText = percent + '%'
+            }
+
+            function getErrorMessage() {
+                return "{{ __('The site is protected from information collection, we recommend analyzing it manually') }}"
+            }
+
+            function nestedRequest(scanResult) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('analyze.nesting') }}",
+                    data: {
+                        scanResult: scanResult,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    beforeSend: function () {
+                        setProgressBarStyles(25)
+                    },
+                    success: function (response) {
+                        console.log(response)
+                        $('.mainPageCounter').html(response.nesting['mainPageCounter'])
+                        $('.mainPagePercent').html(response.nesting['mainPagePercent'] + '%')
+                        $('.nestedPageCounter').html(response.nesting['nestedPageCounter'])
+                        $('.nestedPagePercent').html(response.nesting['nestedPagePercent'] + '%')
+                        $('.nested').show()
+                        setProgressBarStyles(45)
+                    },
+                    error: function () {
+                        setProgressBarStyles(0)
+                        $('.progress-bar').css({
+                            opacity: 0
+                        });
+                        console.log('error')
+                    }
+                });
+            }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}
         <script>

@@ -158,5 +158,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
 
     Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
-    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyze')->name('competitor.analysis');
+    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyzeSites')->name('analyze.sites');
+    Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analyze.nesting');
 });
