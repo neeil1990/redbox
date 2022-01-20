@@ -26,6 +26,8 @@ class BacklinkController extends Controller
      */
     public function __construct()
     {
+        $this->middleware(['permission:Backlink']);
+
         $this->result = [];
     }
 

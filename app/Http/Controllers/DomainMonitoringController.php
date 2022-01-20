@@ -14,6 +14,12 @@ use Symfony\Component\VarDumper\VarDumper;
 
 class DomainMonitoringController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['permission:Domain monitoring']);
+    }
+
     public function index()
     {
         $projects = DomainMonitoring::where('user_id', '=', Auth::id())->get();

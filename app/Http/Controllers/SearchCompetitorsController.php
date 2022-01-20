@@ -12,6 +12,12 @@ use Illuminate\View\View;
 
 class SearchCompetitorsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['permission:Competitor analysis']);
+    }
+
     /**
      * @return array|false|Application|Factory|View|mixed
      */

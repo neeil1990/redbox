@@ -77,9 +77,10 @@ Route::middleware(['verified'])->group(function () {
     Route::get('http-headers/{object}/export', 'PagesController@httpHeadersExport');
 
     Route::get('duplicates/{quantity?}', "PagesController@duplicates")->name('pages.duplicates')->middleware('permission:Duplicates');
-    $arPages = config('pages.link');
-    foreach ($arPages as $page)
-        Route::get($page['url'], "PagesController@{$page['method']}")->name($page['name']);
+    Route::get('keyword-generator', "PagesController@keywordGenerator")->name('pages.keyword')->middleware('permission:Keyword generator');
+    Route::get('utm-marks', "PagesController@utmMarks")->name('pages.utm')->middleware('permission:Utm marks');
+    Route::get('roi-calculator', "PagesController@roiCalculator")->name('pages.roi')->middleware('permission:Roi calculator');
+    Route::get('http-headers/{url?}', "PagesController@httpHeaders")->name('pages.headers')->middleware('permission:Http headers');
 
     Route::post('generate-password', 'PasswordGeneratorController@createPassword')->name('generate.password');
     Route::get('password-generator', 'PasswordGeneratorController@index')->name('pages.password');

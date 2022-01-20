@@ -19,6 +19,12 @@ use JavaScript;
 
 class TextEditorController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['permission:Html editor']);
+    }
+
     /**
      * @return array|false|Application|Factory|RedirectResponse|View|mixed
      */

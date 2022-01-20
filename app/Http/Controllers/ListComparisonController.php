@@ -12,6 +12,11 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class ListComparisonController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(['permission:List comparison']);
+    }
+
     /**
      * @return View
      */

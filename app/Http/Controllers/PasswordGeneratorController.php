@@ -13,6 +13,10 @@ use Illuminate\View\View;
 
 class PasswordGeneratorController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['permission:Password generator']);
+    }
 
     /**
      * @return Factory|View

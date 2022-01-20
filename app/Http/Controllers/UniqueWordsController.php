@@ -16,6 +16,12 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class UniqueWordsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['permission:Unique words']);
+    }
+
     /**
      * @return array|false|Application|Factory|View|mixed
      */

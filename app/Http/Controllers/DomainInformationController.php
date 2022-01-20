@@ -16,6 +16,11 @@ class DomainInformationController extends Controller
 {
     public $counter;
 
+    public function __construct()
+    {
+        $this->middleware(['permission:Domain information']);
+    }
+
     public function index()
     {
         $projects = DomainInformation::where('user_id', '=', Auth::id())->get();
