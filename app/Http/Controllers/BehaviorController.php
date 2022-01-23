@@ -13,6 +13,11 @@ use Illuminate\Support\Str;
 class BehaviorController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(['permission:Behavior']);
+    }
+
     /**
      * Id
      *

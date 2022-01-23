@@ -10,6 +10,11 @@ use Illuminate\View\View;
 class TextLengthController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(['permission:Counting text length']);
+    }
+
     /**
      * @return Factory|View
      */

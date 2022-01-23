@@ -17,7 +17,7 @@ class DescriptionProjectForAdminController extends Controller
 
     public function __construct()
     {
-        $this->middleware('role:admin');
+        $this->middleware(['permission:Main projects']);
 
         $this->roles = Role::all()->pluck('name', 'name');
     }

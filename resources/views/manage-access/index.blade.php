@@ -1,7 +1,8 @@
 @component('component.card', ['title' => __('Manage access')])
 
     @slot('css')
-
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
     @endslot
 
     <div class="row">
@@ -24,8 +25,23 @@
 
         <!-- jQuery UI 1.11.4 -->
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+        <!-- Toastr -->
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 
         <script>
+
+            toastr.options = {
+                "timeOut": "1000"
+            };
+
+            $('.copy-item').click(function(){
+                let str = $(this);
+                let strFormat = str.data('copy').toLowerCase().replace(/\s/g, '-');
+
+                copy(strFormat);
+
+                toastr.success('Copied successfully!');
+            });
 
             $('.add-item').click(function(){
                 let type = $(this).closest('.card').attr('id');
@@ -78,8 +94,10 @@
             });
 
             $('.delete-item').click(function(){
+                let verify = confirm('You sure?');
                 let type = $(this).closest('.card').attr('id');
-                if(type){
+
+                if(type && verify){
                     let id = $(this).closest('li').data('id');
                     axios.get(`manage-access/destroy/${id}/where/${type}`).then(function (response) {
                         if(response.status === 200){

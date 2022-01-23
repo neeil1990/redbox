@@ -48,7 +48,6 @@ class MetaTagsController extends Controller
      */
     public function __construct()
     {
-
         $this->middleware(['permission:Meta tags']);
     }
 
