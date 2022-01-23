@@ -7,7 +7,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class SearchCompetitorsController extends Controller
@@ -24,50 +23,59 @@ class SearchCompetitorsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analyzeSites(Request $request)
+    public function analyzeSites(Request $request): JsonResponse
     {
-        Log::debug('debug', $request->all());
         $searchCompetitors = new SearchCompetitors();
         $scanResult = $searchCompetitors->analyzeList($request->all());
         $sites = $searchCompetitors->scanSites($scanResult);
-//        $positions = $searchCompetitors->calculatePositions();
 
         return response()->json([
-            'sites' => $sites,
+            'sites' => $sites['sites'],
+            'metaTags' => $sites['metaTags'],
             'scanResult' => $scanResult
         ]);
-
-//        $metaTags = $searchCompetitors->scanTags();
-//
-//        $result = [
-//            'result' => $sites,
-//            'nested' => $pageNesting,
-//            'positions' => $positions,
-//            'meta' => $metaTags,
-//            'phrases' => $request->phrases,
-//            'region' => $request->region,
-//            'count' => $request->count,
-//        ];
-//
-//        return view('search-competitors.index', $result);
     }
 
     /**
      * @param Request $request
      * @return JsonResponse
      */
-    public function analyseNesting(Request $request)
+    public function analyseNesting(Request $request): JsonResponse
     {
         $pageNesting = SearchCompetitors::analysisPageNesting($request->scanResult);
 
         return response()->json([
+            'sites' => $request->sites,
+            'scanResult' => $request->scanResult,
             'nesting' => $pageNesting,
-            'scanResult' => $request->scanResult
         ]);
     }
 
-    public function analysePositions(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function analysePositions(Request $request): JsonResponse
     {
         $positions = SearchCompetitors::calculatePositions($request);
+
+        return response()->json([
+            'sites' => $request->sites,
+            'scanResult' => $request->scanResult,
+            'positions' => $positions
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function analyseTags(Request $request): JsonResponse
+    {
+        $tags = SearchCompetitors::scanTags($request->metaTags);
+
+        return response()->json([
+            'metaTags' => $tags,
+        ]);
     }
 }

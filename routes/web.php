@@ -160,4 +160,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
     Route::post('/competitor-analysis', 'SearchCompetitorsController@analyzeSites')->name('analyze.sites');
     Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analyze.nesting');
+    Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analyze.positions');
+    Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analyze.tags');
 });

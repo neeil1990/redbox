@@ -23,38 +23,44 @@ class SearchCompetitors
     public function analyzeList($request)
     {
         $array = explode("\n", $request['phrases']);
-        $this->phrases = array_diff($array, ['']);
+        $phrases = array_diff($array, ['']);
+        $resultArray = [];
         $this->xml = new XmlFacade();
         $this->xml->setLr($request['region']);
 
-        foreach ($this->phrases as $phrase) {
+        foreach ($phrases as $phrase) {
             $this->xml->setQuery($phrase);
             $this->xml->setPage(1);
             $result = $this->xml->getByArray();
-            $this->result[$phrase] = $result['response']['results']['grouping']['group'];
+            $resultArray[$phrase] = $result['response']['results']['grouping']['group'];
             if ($request['count'] == 20) {
                 $this->xml->setPage(2);
                 $result = $this->xml->getByArray();
-                $this->result[$phrase] = array_merge($this->result[$phrase], $result['response']['results']['grouping']['group']);
+                $resultArray[$phrase] = array_merge($resultArray[$phrase], $result['response']['results']['grouping']['group']);
             }
         }
 
-        return $this->result;
+        return $resultArray;
     }
 
     /**
+     * @param $scanResult
      * @return array
      */
-    public function scanSites(): array
+    public function scanSites($scanResult): array
     {
-        $result = $this->result;
+        $metaTags = [];
+        $result = $scanResult;
         foreach ($result as $key => $items) {
             foreach ($items as $key1 => $item) {
                 $site = SearchCompetitors::curlInit($item['doc']['url']);
-                $contentType = $site[1]['content_type'];
-                if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-                    $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-                    $site = mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
+                try {
+                    $contentType = $site[1]['content_type'];
+                    if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
+                        $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
+                        $site = mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
+                    }
+                } catch (\Exception $exception) {
                 }
 
                 $description = SearchCompetitors::getHiddenText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
@@ -66,13 +72,13 @@ class SearchCompetitors
                 $h5 = SearchCompetitors::getHiddenText($site[0], "/<h5.*?>(.*?)<\/h5>/");
                 $h6 = SearchCompetitors::getHiddenText($site[0], "/<h6.*?>(.*?)<\/h6>/");
 
-                $this->metaTags[$key]['title'][] = $title;
-                $this->metaTags[$key]['h1'][] = $h1;
-                $this->metaTags[$key]['h2'][] = $h2;
-                $this->metaTags[$key]['h3'][] = $h3;
-                $this->metaTags[$key]['h4'][] = $h4;
-                $this->metaTags[$key]['h5'][] = $h5;
-                $this->metaTags[$key]['h6'][] = $h6;
+                $metaTags[$key]['title'][] = $title;
+                $metaTags[$key]['h1'][] = $h1;
+                $metaTags[$key]['h2'][] = $h2;
+                $metaTags[$key]['h3'][] = $h3;
+                $metaTags[$key]['h4'][] = $h4;
+                $metaTags[$key]['h5'][] = $h5;
+                $metaTags[$key]['h6'][] = $h6;
 
                 $result[$key][$key1]['meta'] = [
                     'title' => $title,
@@ -87,7 +93,10 @@ class SearchCompetitors
             }
         }
 
-        return $result;
+        return [
+            'sites' => $result,
+            'metaTags' => $metaTags
+        ];
     }
 
     /**
@@ -122,15 +131,16 @@ class SearchCompetitors
     }
 
     /**
+     * @param $metaTagsArray
      * @return array
      */
-    public function scanTags(): array
+    public static function scanTags($metaTagsArray): array
     {
         $tags = [];
         $wordForms = [];
         $result = [];
 
-        foreach ($this->metaTags as $key => $metaTags) {
+        foreach ($metaTagsArray as $key => $metaTags) {
             foreach ($metaTags as $key1 => $metaTag) {
                 foreach ($metaTag as $items) {
                     foreach ($items as $item) {
@@ -204,34 +214,41 @@ class SearchCompetitors
     }
 
     /**
+     * @param $request
      * @return array
      */
-    public function calculatePositions(): array
+    public static function calculatePositions($request): array
     {
-        $countPhrases = count($this->phrases);
-        $percent = 100 / $countPhrases;
-        foreach ($this->result as $item) {
+        $array = explode("\n", $request['phrases']);
+        $phrases = array_diff($array, ['']);
+        $countPhrases = count($phrases);
+        $sites = $request->sites;
+        foreach ($request->scanResult as $item) {
             for ($i = 0; $i < count($item); $i++) {
-                $this->sites[$item[$i]['doc']['domain']][] = $i + 1;
+                $sites[$item[$i]['doc']['domain']][] = $i + 1;
             }
         }
-        foreach ($this->sites as $key => $site) {
-            $this->sites[$key]['count'] = 0;
+        $positions = 0;
+        foreach ($sites as $key => $site) {
+            $sites[$key]['count'] = 0;
             $avg = 0.0;
             for ($i = 0; $i < $countPhrases; $i++) {
                 if (isset($site[$i])) {
-                    $avg += $site[$i];
-                    $this->sites[$key]['count'] += 1;
+                    $avg += $positions++;
+                    $sites[$key]['count'] += 1;
                 } else {
                     $avg += 11;
                 }
             }
-            $this->sites[$key]['percent'] = round($percent * $this->sites[$key]['count'], 1);
-            $this->sites[$key]['count'] .= '/' . $countPhrases;
-            $this->sites[$key]['avg'] = round($avg / $countPhrases, 1);
+            $sites[$key]['percent'] = round(100 / $countPhrases * $sites[$key]['count'], 1);
+            $sites[$key]['count'] .= '/' . $countPhrases;
+            $sites[$key]['avg'] = round($avg / $countPhrases, 1);
         }
 
-        return $this->sites;
+        foreach ($phrases as $phrase) {
+            unset($sites[$phrase]);
+        }
+        return $sites;
     }
 
     /**

@@ -587,7 +587,11 @@
   "Nested": "Вложенная",
   "Main": "Главная",
   "Top 10/20": "Топ 10/20",
-
+  "Page": "Страница",
+  "The list of phrases should not be empty": "Список фраз не должен быть пустым",
+  "Something went wrong, if the error repeats, report it to the administrator": "Что-то пошло не так, если ошибка повторяется, доложите о ней администратору",
+  "Processing the XML service response": "Обработка ответа XML сервиса",
+  "Generating tables": "Генерация таблиц",
 
   "######################## Калькулятор ROI https://lk.redbox.su/roi-calculator ###############################": "",
   "######################## Проверка HTTP заголовков https://lk.redbox.su/http-headers ###############################": "",

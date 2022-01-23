@@ -61,17 +61,17 @@ class DomainMonitoringController extends Controller
      * @param $id
      * @return RedirectResponse
      */
-    public function checkLink($id)
+    public function checkLink($id): RedirectResponse
     {
         try {
             $project = DomainMonitoring::findOrFail($id);
             DomainMonitoring::httpCheck($project);
 
-            return Redirect::back();
-        } catch (Exception $exception){
-            VarDumper::dump($exception);
-            VarDumper::dump($exception->getMessage());
+        } catch (Exception $exception) {
+            flash()->overlay(__('Error'), ' ')->success();
         }
+
+        return Redirect::back();
     }
 
     /**

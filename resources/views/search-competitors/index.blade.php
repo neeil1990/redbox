@@ -95,11 +95,18 @@
     </div>
     <div id="toast-container" class="toast-top-right error-message" style="display: none">
         <div class="toast toast-error" aria-live="assertive">
-            <div class="toast-message">Список фраз не должен быть пустым</div>
+            <div class="toast-message">{{ __('The list of phrases should not be empty') }}</div>
         </div>
     </div>
-    <div id="progress-bar">
-        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+    <div id="toast-container" class="toast-top-right broken-script-message" style="display: none">
+        <div class="toast toast-error" aria-live="assertive">
+            <div
+                class="toast-message">{{ __('Something went wrong, if the error repeats, report it to the administrator') }}</div>
+        </div>
+    </div>
+    <div id="progress-bar" style="display: none">
+        <div class="progress-bar mt-5" role="progressbar"></div>
+        <div id="stage" class="text-muted"></div>
     </div>
     <div class="top-sites mt-5" style="display: none">
         <h2>{{ __('Top sites based on your keywords') }}</h2>
@@ -157,327 +164,68 @@
             </tbody>
         </table>
     </div>
-    @isset($result)
-        <div class="top-sites mt-5">
-            <h2>{{ __('Top sites based on your keywords') }}</h2>
-            <table class="table table-bordered table-striped dataTable dtr-inline top-sites-table"
-                   style="display: block; overflow-x: auto;">
-                <thead>
-                <tr>
-                    <th class="sorting sorting_asc">{{ __('Phrase') }}</th>
-                    <th>{{ __('First place') }}</th>
-                    <th>{{ __('Second place') }}</th>
-                    <th>{{ __('Third place') }}</th>
-                    <th>{{ __('Fourth place') }}</th>
-                    <th>{{ __('Fifth place') }}</th>
-                    <th>{{ __('Sixth place') }}</th>
-                    <th>{{ __('Seventh place') }}</th>
-                    <th>{{ __('Eighth place') }}</th>
-                    <th>{{ __('Ninth place') }}</th>
-                    <th>{{ __('Tenth place') }}</th>
-                    @if($count == 20)
-                        <th>{{ __('Eleventh place') }}</th>
-                        <th>{{ __('Twelfth place') }}</th>
-                        <th>{{ __('Thirteenth place') }}</th>
-                        <th>{{ __('Fourteenth place') }}</th>
-                        <th>{{ __('Fifteenth place') }}</th>
-                        <th>{{ __('Sixteenth place') }}</th>
-                        <th>{{ __('Seventeenth place') }}</th>
-                        <th>{{ __('Eighteenth place') }}</th>
-                        <th>{{ __('Nineteenth place') }}</th>
-                        <th>{{ __('Twentieth place') }}</th>
-                    @endif
-                </tr>
-                </thead>
-                <tbody id="top-sites-body">
-                @foreach($result as $key => $items)
-                    <tr>
-                        <td>{{ $key }}</td>
-                        @foreach($items as $item)
-                            <td style="min-width:250px; max-width: 250px">
-                                <div class="d-flex justify-content-between">
-                                    <span class="domain" style="cursor: pointer">
-                                    <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
-                                    <u>{{ $item['doc']['domain'] }}</u>
-                                </span>
-                                    <div class="btn-group">
-                                        <button type="button" data-toggle="dropdown" aria-expanded="false"
-                                                class="btn btn-tool dropdown-toggle">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </button>
-                                        <div role="menu" class="dropdown-menu dropdown-menu-left">
-                                            <a href="{{ $item['doc']['url'] }}" target="_blank" class="dropdown-item">
-                                                <i class="fas fa-external-link-alt"></i>
-                                                {{ __('Go to the landing page') }}
-                                            </a>
-                                            <a href="https:\\{{ $item['doc']['domain'] }}" target="_blank"
-                                               class="dropdown-item">
-                                                <i class="fas fa-external-link-alt"></i>
-                                                {{ __('Website') }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display: none" class="pl-1">
-                                    <div>
-                                        @if(count($item['meta']['title']) > 0)
-                                            <div class="text-info">Title:</div>
-                                            {{ implode(' ',$item['meta']['title']) }}
-                                        @endif
-                                    </div>
-                                    @if(isset($item['doc']['headline']) && !is_array($item['doc']['headline']))
-                                        <div>
-                                            <div class="text-info">Headline:</div>
-                                            {{ $item['doc']['headline'] }}
-                                        </div>
-                                    @endif
-                                    @if(count($item['meta']['description']) > 0)
-                                        <div class="text-info">Description:</div>
-                                        @foreach($item['meta']['description'] as $description)
-                                            <div> {{ $description }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h1']) > 0)
-                                        <div class="text-info">H1:</div>
-                                        @foreach($item['meta']['h1'] as $h1)
-                                            <div> {{ $h1 }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h2']) > 0)
-                                        <div class="text-info">H2:</div>
-                                        @foreach($item['meta']['h2'] as $h2)
-                                            <div> {{ $h2 }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h3']) > 0)
-                                        <div class="text-info">H3:</div>
-                                        @foreach($item['meta']['h3'] as $h3)
-                                            <div> {{ $h3 }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h4']) > 0)
-                                        <div class="text-info">H4:</div>
-                                        @foreach($item['meta']['h4'] as $h4)
-                                            <div> {{ $h4 }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h5']) > 0)
-                                        <div class="text-info">H5:</div>
-                                        @foreach($item['meta']['h5'] as $h5)
-                                            <div> {{ $h5 }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h6']) > 0)
-                                        <div class="text-info">H6:</div>
-                                        @foreach($item['meta']['h6'] as $h6)
-                                            <div> {{ $h6 }}</div>
-                                        @endforeach
-                                    @endif
-                                    @if(count($item['meta']['h1']) == 0
-                                        && count($item['meta']['h2']) == 0
-                                        && count($item['meta']['h3']) == 0)
-                                        <span class="text-danger">
-                                        {{ __('The site is protected from information collection, we recommend analyzing it manually') }}
-                                    </span>
-                                    @endif
-                                </div>
-                            </td>
-                        @endforeach
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="better-percent mt-5">
-            <h2>{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
-            <table id="positions" class="table table-bordered table-striped dataTable dtr-inline">
-                <thead>
-                <tr role="row">
-                    <th class="sorting sorting_asc">
-                        {{ __('Domain') }}
-                    </th>
-                    <th class="sorting">
-                        {{ __('Percentage of getting into the top') }}
-                    </th>
-                    <th class="sorting">
-                        {{ __('Middle position') }}
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($positions as $key => $position)
-                    <tr>
-                        <td>{{ $key }}</td>
-                        <td>{{ $position['percent'] }}% <span class="text-muted">({{ $position['count'] }})</span></td>
-                        <td>{{ $position['avg'] }}</td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="nested mt-5">
-            <h2>{{ __('Analysis of page nesting') }}</h2>
-            <table class="table table-bordered table-striped dataTable dtr-inline">
-                <thead>
-                <tr>
-                    <th>{{ __('Page') }}</th>
-                    <th>{{ __('Count') }}</th>
-                    <th>{{ __('Ratio') }}</th>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="dtr-control sorting_1">{{ __('Main') }}</td>
-                    <td>{{ $nested['mainPageCounter'] }}</td>
-                    <td>{{ $nested['mainPagePercent'] }} %</td>
-                </tr>
-                <tr>
-                    <td class="dtr-control sorting_1">{{ __('Nested') }}</td>
-                    <td>{{ $nested['nestedPageCounter'] }}</td>
-                    <td>{{ $nested['nestedPagePercent'] }} %</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="tag-analysis mt-5">
-            <h2>{{ __('Tag Analysis') }}</h2>
-            <table class="table table-bordered table-striped dataTable dtr-inline" id="headline-analysis">
-                <thead>
-                <tr role="row">
-                    <th class="sorting sorting_asc">{{ __("Phrase") }}</th>
-                    <th class="sorting sorting_asc">title</th>
-                    <th class="sorting sorting_asc">H1</th>
-                    <th class="sorting sorting_asc">H2</th>
-                    <th class="sorting sorting_asc">H3</th>
-                    <th class="sorting sorting_asc">H4</th>
-                    <th class="sorting sorting_asc">H5</th>
-                    <th class="sorting sorting_asc">H6</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($meta as $key => $item)
-                    <tr>
-                        <td>{{ $key }}</td>
-                        <td>
-                            <div style="height: 260px; overflow-x: auto;">
-                                @if(isset($item['title']))
-                                    @foreach($item['title'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div style="height: 260px;
-                                       overflow-x: auto;">
-                                @if(isset($item['h1']))
-                                    @foreach($item['h1'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div style="height: 260px;
-                                       overflow-x: auto;">
-                                @if(isset($item['h2']))
-                                    @foreach($item['h2'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div style="height: 260px;
-                                       overflow-x: auto;">
-                                @if(isset($item['h3']))
-                                    @foreach($item['h3'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div style="height: 260px;
-                                       overflow-x: auto;">
-                                @if(isset($item['h4']))
-                                    @foreach($item['h4'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div style="height: 260px;
-                                       overflow-x: auto;">
-                                @if(isset($item['h5']))
-                                    @foreach($item['h5'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div style="height: 260px;
-                                       overflow-x: auto;">
-                                @if(isset($item['h6']))
-                                    @foreach($item['h6'] as $key => $elem)
-                                        <div>{{ $key }}: <span class="text-muted">{{ $elem }}</span></div>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endisset
+    <div class="positions mt-5" style="display: none">
+        <h2>{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
+    </div>
+    <div class="tag-analysis mt-5" style="display: none">
+        <h2>{{ __('Tag Analysis') }}</h2>
+        <table class="table table-bordered table-striped dataTable dtr-inline" id="tag-analysis"
+               style="display: block; overflow-x: auto;">
+            <thead>
+            <tr id="tag-analysis-row">
+                <th style="min-width:200px; max-width: 200px">{{ __("Phrase") }}</th>
+                <th style="min-width:200px; max-width: 200px">title</th>
+                <th style="min-width:200px; max-width: 200px">H1</th>
+                <th style="min-width:200px; max-width: 200px">H2</th>
+                <th style="min-width:200px; max-width: 200px">H3</th>
+                <th style="min-width:200px; max-width: 200px">H4</th>
+                <th style="min-width:200px; max-width: 200px">H5</th>
+                <th style="min-width:200px; max-width: 200px">H6</th>
+            </tr>
+            </thead>
+            <tbody id="tag-analysis-tbody">
+            </tbody>
+        </table>
+    </div>
     @slot('js')
-        <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-site-positions-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-tags-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/actions-on-the-page.js') }}"></script>
         <script>
-            $(document).ready(function () {
-                $('#headline-analysis').DataTable();
-                $('#positions').DataTable({
-                    "order": [[2, "asc"]]
-                });
-            });
-
             $('.btn.btn-secondary.pull-left').click(() => {
+                var metaTags = ''
+                var phrases = $('.form-control.phrases').val()
+                var interval = null
                 if ($.trim($('.form-control.phrases').val())) {
                     $.ajax({
                         type: "POST",
                         dataType: "json",
                         url: "{{ route('analyze.sites') }}",
                         data: {
-                            phrases: $('.form-control.phrases').val(),
+                            phrases: phrases,
                             region: $('.custom-select.rounded-0.region').val(),
                             count: $('.custom-select.rounded-0.count').val(),
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         beforeSend: function () {
-                            if ($('.custom-select.rounded-0.count').val() === '20') {
-                                $('.extra-th').show()
-                            } else {
-                                $('.extra-th').hide()
-                            }
-                            $('.progress-bar').css({
-                                opacity: 1
-                            });
-                            $("#progress-bar").show()
-                            $('.top-sites').hide()
-                            $('.render').remove()
-                            setProgressBarStyles(3)
+                            refreshAll()
+                            let percent = 0.0;
+                            interval = setInterval(() => {
+                                percent += 0.5
+                                setProgressBarStyles(percent)
+                            }, 1000)
                         },
                         success: function (response) {
+                            $('#stage').text("{{ __('Generating tables') }}")
+                            metaTags = response.metaTags
                             renderTopSites(response)
-                            nestedRequest(response.scanResult)
+                            nestedRequest(response)
                         },
                         error: function () {
-                            setProgressBarStyles(0)
-                            $('.progress-bar').css({
-                                opacity: 0
-                            });
-                            console.log('error')
+                            getBrokenScriptMessage()
                         }
                     });
                 } else {
@@ -486,67 +234,113 @@
                         $('.toast-top-right.error-message').hide(300)
                     }, 4000)
                 }
+
+                async function nestedRequest(response) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('analyze.nesting') }}",
+                        data: {
+                            scanResult: response.scanResult,
+                            sites: response.sites,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: async function (response) {
+                            await clearInterval(interval);
+                            await setProgressBarStyles(45)
+                            await renderNestingTable(response)
+                            await positionsRequest(response)
+                        },
+                        error: function () {
+                            getBrokenScriptMessage()
+                        }
+                    });
+                }
+
+                async function positionsRequest(response) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('analyze.positions') }}",
+                        data: {
+                            phrases: phrases,
+                            scanResult: response.scanResult,
+                            sites: response.sites,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: async function (response) {
+                            await setProgressBarStyles(75)
+                            await renderSitePositionsTable(response)
+                            await metaTagsRequest(metaTags)
+                        },
+                        error: function () {
+                            getBrokenScriptMessage()
+                        }
+                    });
+                }
+
+                async function metaTagsRequest(metaTags) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('analyze.tags') }}",
+                        data: {
+                            metaTags: metaTags,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: async function (response) {
+                            await setProgressBarStyles(100)
+                            setTimeout(() => {
+                                $("#progress-bar").hide(300)
+                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                            }, 2000)
+                            await renderTagsTable(response.metaTags)
+                        },
+                        error: function () {
+                            getBrokenScriptMessage()
+                        }
+                    });
+                }
             });
 
-            $('.domain').click(function () {
-                if ($(this).parent().parent().children('div').eq(1).is(':visible')) {
-                    $(this).children('i').eq(0).css({
-                        "transform": "rotate(0deg)"
-                    })
-                    $(this).parent().parent().children('div').eq(1).hide()
-                } else {
-                    $(this).children('i').eq(0).css({
-                        "transform": "rotate(90deg)"
-                    })
-                    $(this).parent().parent().children('div').eq(1).show()
-                }
-            })
+            function getBrokenScriptMessage() {
+                $('.toast-top-right.broken-script-message').show(300)
+                setTimeout(() => {
+                    $('.toast-top-right.broken-script-message').hide(300)
+                }, 10000)
+                refreshAll()
 
-            $('.close-icon').click(function () {
-                let td = $(this).parent().parent().parent()
-                td.children('span').eq(0).show()
-            })
-
-            function setProgressBarStyles(percent) {
-                $('.progress-bar').css({
-                    width: percent + '%'
-                })
-                document.querySelector('.progress-bar').innerText = percent + '%'
+                setTimeout(() => {
+                    $("#progress-bar").hide(300)
+                    $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                }, 2000)
             }
 
             function getErrorMessage() {
                 return "{{ __('The site is protected from information collection, we recommend analyzing it manually') }}"
             }
 
-            function nestedRequest(scanResult) {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('analyze.nesting') }}",
-                    data: {
-                        scanResult: scanResult,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function () {
-                        setProgressBarStyles(25)
-                    },
-                    success: function (response) {
-                        console.log(response)
-                        $('.mainPageCounter').html(response.nesting['mainPageCounter'])
-                        $('.mainPagePercent').html(response.nesting['mainPagePercent'] + '%')
-                        $('.nestedPageCounter').html(response.nesting['nestedPageCounter'])
-                        $('.nestedPagePercent').html(response.nesting['nestedPagePercent'] + '%')
-                        $('.nested').show()
-                        setProgressBarStyles(45)
-                    },
-                    error: function () {
-                        setProgressBarStyles(0)
-                        $('.progress-bar').css({
-                            opacity: 0
-                        });
-                        console.log('error')
-                    }
-                });
+            function getStringDomain() {
+                return "{{ __('Domain') }}"
+            }
+
+            function getStringPercent() {
+                return "{{ __('Percentage of getting into the top') }}"
+            }
+
+            function getStringPosition() {
+                return "{{ __('Middle position') }}"
+            }
+
+            function setProgressBarStyles(percent) {
+                $('.progress-bar').css({
+                    width: percent + '%'
+                })
+                $('.progress-bar').text(percent + '%')
+            }
+
+            function getXMLMessage() {
+                return "{{ __('Processing the XML service response') }}"
             }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}

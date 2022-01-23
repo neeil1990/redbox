@@ -125,12 +125,10 @@ class DomainInformationController extends Controller
      */
     public function checkDomains()
     {
-        Log::debug('start check information domains', []);
         $projects = DomainInformation::all();
         foreach ($projects as $project) {
             DomainInformation::checkDomainSock($project);
         }
-        Log::debug('end check information domains', []);
     }
 
     /**

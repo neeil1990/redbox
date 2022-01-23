@@ -84,7 +84,6 @@ function renderTopSites(response) {
             }
 
             if (response.sites[keyword][items].doc.headline && typeof response.sites[keyword][items].doc.headline !== 'object') {
-                console.log(response.sites[keyword][items].doc.headline)
                 let headline = document.createElement('div')
                 headline.className = 'text-info'
                 headline.textContent = 'Headline:'
@@ -191,7 +190,12 @@ function renderTopSites(response) {
             if (!(
                 response.sites[keyword][items].meta.title.join(' ') &&
                 response.sites[keyword][items].meta.description.join(' ') &&
-                response.sites[keyword][items].meta.h1.join(' ')
+                response.sites[keyword][items].meta.h1.join(' ') ||
+                response.sites[keyword][items].meta.h2.join(' ') ||
+                response.sites[keyword][items].meta.h3.join(' ') ||
+                response.sites[keyword][items].meta.h4.join(' ') ||
+                response.sites[keyword][items].meta.h5.join(' ') ||
+                response.sites[keyword][items].meta.h6.join(' ')
             )) {
                 let danger = document.createElement('span')
                 danger.className = 'text-danger'
@@ -221,5 +225,4 @@ function renderTopSites(response) {
         }
         tbody.appendChild(tr);
     }
-    setProgressBarStyles(20)
 }
