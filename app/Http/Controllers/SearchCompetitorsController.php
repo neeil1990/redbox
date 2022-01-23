@@ -7,6 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class SearchCompetitorsController extends Controller
@@ -31,6 +32,7 @@ class SearchCompetitorsController extends Controller
      */
     public function analyzeSites(Request $request): JsonResponse
     {
+        Log::debug('start competitor analyse', $request->all());
         $searchCompetitors = new SearchCompetitors();
         $scanResult = $searchCompetitors->analyzeList($request->all());
         $sites = $searchCompetitors->scanSites($scanResult);
