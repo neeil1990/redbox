@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Xml\XmlFacade;
 use App\SearchCompetitors;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -85,5 +86,14 @@ class SearchCompetitorsController extends Controller
         return response()->json([
             'metaTags' => $tags,
         ]);
+    }
+
+    public function test($phrase)
+    {
+        $this->xml = new XmlFacade();
+        $this->xml->setQuery($phrase);
+        $this->xml->setPage(1);
+        $result = $this->xml->getByArray();
+        dd($result['response']['results']['grouping']['group']);
     }
 }
