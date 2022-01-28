@@ -14,14 +14,14 @@
     <div class="col-md-6 mt-3">
         <div class="form-group required">
             <label>{{ __('List of phrases') }}</label>
-            {!! Form::textarea("phrases", $phrases ?? null ,["class"=>"form-control phrases","required"=>"required"]) !!}
+            {!! Form::textarea("phrases", null ,["class"=>"form-control phrases","required"=>"required"]) !!}
         </div>
         <div class="form-group required">
             <label>{{ __('Top 10/20') }}</label>
             {!! Form::select('count', [
                     '10' => 10,
                     '20' => 20,
-                    ], $count ?? null, ['class' => 'custom-select rounded-0 count']) !!}
+                    ], null, ['class' => 'custom-select rounded-0 count']) !!}
         </div>
         <div class="form-group required">
             <label>{{ __('Region') }}</label>
@@ -247,7 +247,7 @@
                         },
                         success: async function (response) {
                             await clearInterval(interval);
-                            await setProgressBarStyles(45)
+                            await setProgressBarStyles(65)
                             await renderNestingTable(response)
                             await positionsRequest(response)
                         },
@@ -341,6 +341,18 @@
 
             function getXMLMessage() {
                 return "{{ __('Processing the XML service response') }}"
+            }
+
+            function stringGoToPage() {
+                return "{{ __('Go to the landing page') }}"
+            }
+
+            function stringGoToSite() {
+                return "{{ __('Go to site') }}"
+            }
+
+            function stringGoToAnalyse() {
+                return "{{ __('Analyze the text') }}"
             }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}

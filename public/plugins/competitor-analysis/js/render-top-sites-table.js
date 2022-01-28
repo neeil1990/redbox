@@ -11,7 +11,7 @@ function renderTopSites(response) {
             let td = document.createElement('td')
 
             let div = document.createElement('div')
-            div.className = 'd-flex justify-content-between'
+            div.className = 'd-flex justify-content-between pb-5'
 
             let span = document.createElement('span')
             span.className = 'domain'
@@ -56,16 +56,24 @@ function renderTopSites(response) {
             aUrl.target = '_blank';
             aUrl.className = 'dropdown-item'
             aUrl.href = response.sites[keyword][items].doc.url
-            aUrl.textContent = 'Перейти на посадочную страницу'
+            aUrl.innerHTML = '<i class="fas fa-external-link-alt"></i> ' + stringGoToPage()
 
             let aDomain = document.createElement('a')
             aDomain.target = '_blank';
             aDomain.className = 'dropdown-item'
             aDomain.href = "https:\\" + response.sites[keyword][items].doc.domain
-            aDomain.textContent = 'Перейти на сайт'
+            aDomain.innerHTML = '<i class="fas fa-external-link-alt"></i> ' + stringGoToSite()
+
+            let aTextAnalyse = document.createElement('a')
+            aTextAnalyse.target = '_blank';
+            aTextAnalyse.className = 'dropdown-item'
+            let url = response.sites[keyword][items].doc.url
+            aTextAnalyse.href = location.origin + "/text-analyzer/" + url.replace(/\\|\//g, 'abc')
+            aTextAnalyse.innerHTML = '<i class="fas fa-external-link-alt"></i> ' + stringGoToAnalyse()
 
             let hiddenDiv = document.createElement('div')
             hiddenDiv.className = 'pl-1'
+            hiddenDiv.style.marginTop = '-35px'
             hiddenDiv.style.display = 'none'
 
             if (response.sites[keyword][items].meta.title.join(' ')) {
@@ -203,13 +211,15 @@ function renderTopSites(response) {
                 hiddenDiv.appendChild(danger)
             }
 
-            // let linkIcon = document.createElement('i')
-            // linkIcon.className = 'fas fa-external-link-alt'
+            let linkIcon = document.createElement('i')
+            linkIcon.className = 'fas fa-external-link-alt'
             // aUrl.appendChild(linkIcon)
             // aDomain.appendChild(linkIcon)
+            // aTextAnalyse.appendChild(linkIcon)
 
             div3.appendChild(aUrl)
             div3.appendChild(aDomain)
+            div3.appendChild(aTextAnalyse)
 
             span.appendChild(i)
             span.appendChild(u)

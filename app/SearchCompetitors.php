@@ -3,40 +3,37 @@
 namespace App;
 
 use App\Classes\Xml\XmlFacade;
+use Illuminate\Support\Facades\Log;
 
 class SearchCompetitors
 {
-    public $phrases;
-
-    public $result;
-
-    public $xml;
-
-    public $sites;
-
-    public $metaTags;
-
     /**
      * @param $request
      * @return mixed
      */
-    public function analyzeList($request)
+    public static function analyzeList($request)
     {
         $array = explode("\n", $request['phrases']);
         $phrases = array_diff($array, ['']);
         $resultArray = [];
-        $this->xml = new XmlFacade();
-        $this->xml->setLr($request['region']);
+        $xml = new XmlFacade();
+        $xml->setLr($request['region']);
 
         foreach ($phrases as $phrase) {
-            $this->xml->setQuery($phrase);
-            $this->xml->setPage(1);
-            $result = $this->xml->getByArray();
+            $xml->setQuery($phrase);
+            $xml->setPage(0);
+            $result = $xml->getByArray();
             $resultArray[$phrase] = $result['response']['results']['grouping']['group'];
             if ($request['count'] == 20) {
-                $this->xml->setPage(2);
-                $result = $this->xml->getByArray();
+                $xml->setPage(1);
+                $result = $xml->getByArray();
                 $resultArray[$phrase] = array_merge($resultArray[$phrase], $result['response']['results']['grouping']['group']);
+                if (count($resultArray[$phrase]) < 20) {
+                    $xml->setPage(2);
+                    $result = $xml->getByArray();
+                    $resultArray[$phrase] = array_merge($resultArray[$phrase], $result['response']['results']['grouping']['group']);
+                    $resultArray[$phrase] = array_slice($resultArray[$phrase], 0, 20, true);
+                }
             }
         }
 
@@ -47,7 +44,7 @@ class SearchCompetitors
      * @param $scanResult
      * @return array
      */
-    public function scanSites($scanResult): array
+    public static function scanSites($scanResult): array
     {
         $metaTags = [];
         $result = $scanResult;
@@ -115,8 +112,7 @@ class SearchCompetitors
             foreach ($items as $item) {
                 $url = parse_url($item['doc']['url']);
                 $domain = parse_url($item['doc']['domain']);
-                unset($url['scheme']);
-                if (array_diff($url, $domain) == array("")) {
+                if ($url['host'] . $url['path'] === $domain['path'] . '/') {
                     $pagesCounter['mainPageCounter']++;
                 } else {
                     $pagesCounter['nestedPageCounter']++;

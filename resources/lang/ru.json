@@ -592,6 +592,7 @@
   "Something went wrong, if the error repeats, report it to the administrator": "Что-то пошло не так, если ошибка повторяется, доложите о ней администратору",
   "Processing the XML service response": "Обработка ответа XML сервиса",
   "Generating tables": "Генерация таблиц",
+  "Analyze the text": "Проанализировать текст",
 
   "######################## Калькулятор ROI https://lk.redbox.su/roi-calculator ###############################": "",
   "######################## Проверка HTTP заголовков https://lk.redbox.su/http-headers ###############################": "",

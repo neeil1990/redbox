@@ -145,6 +145,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('check-domain-information/{id}', 'DomainInformationController@checkDomain')->name('check.domain.information');
 
     Route::get('text-analyzer', 'TextAnalyzerController@index')->name('text.analyzer.view');
+    Route::get('text-analyzer/{url}', 'TextAnalyzerController@redirectToAnalyse')->name('text.analyzer.redirect');
     Route::post('text-analyzer', 'TextAnalyzerController@analyze')->name('text.analyzer');
 
     Route::get('news', 'NewsController@index')->name('news');
@@ -160,7 +161,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
 
     Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
-    Route::get('/competitor-analysis/{phrase}', 'SearchCompetitorsController@test');
     Route::post('/competitor-analysis', 'SearchCompetitorsController@analyzeSites')->name('analyze.sites');
     Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analyze.nesting');
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analyze.positions');

@@ -54,4 +54,15 @@ class TextAnalyzerController extends Controller
         return view('text-analyzer.index', compact('response'));
     }
 
+    /**
+     * @param $url
+     * @return array|false|Application|Factory|View|mixed
+     */
+    public function redirectToAnalyse($url)
+    {
+        $url = str_replace('abc', '/', $url);
+
+        return view('text-analyzer.index', compact('url'));
+    }
+
 }

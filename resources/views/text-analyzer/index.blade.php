@@ -10,10 +10,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
     <div class="form-group required">
-        {!! Form::select('type', ['text' => __('text/html'), 'url' => __('URL')], isset($response['type'])?$response['type']:null, ['class' => 'form-control col-4 type-analyzing']) !!}
+        {!! Form::select('type', ['url' => __('URL'),'text' => __('text/html')], isset($response['type'])?$response['type']:null, ['class' => 'form-control col-4 type-analyzing']) !!}
     </div>
     <div class="form-group required text-or-html">
-        {!! Form::textarea('text', isset($response['text'])?$response['text']:null, ['class' => 'form-control textarea-text-or-html', 'required']) !!}
+        {!! Form::textarea('text', isset($response['text']) ? $response['text'] : (isset($url) ? $url : null), ['class' => 'form-control textarea-text-or-html', 'required']) !!}
     </div>
     <div class="switch mt-3 mb-3">
         <div class="d-flex">
@@ -229,6 +229,9 @@
         </div>
     @endif
     @slot('js')
+        @isset($url)
+            <script defer src="{{ asset('plugins/text-analyzer/js/run-script.js') }}"></script>
+        @endisset
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script>

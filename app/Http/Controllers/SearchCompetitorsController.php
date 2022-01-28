@@ -34,9 +34,8 @@ class SearchCompetitorsController extends Controller
     public function analyzeSites(Request $request): JsonResponse
     {
         Log::debug('start competitor analyse', $request->all());
-        $searchCompetitors = new SearchCompetitors();
-        $scanResult = $searchCompetitors->analyzeList($request->all());
-        $sites = $searchCompetitors->scanSites($scanResult);
+        $scanResult = SearchCompetitors::analyzeList($request->all());
+        $sites = SearchCompetitors::scanSites($scanResult);
 
         return response()->json([
             'sites' => $sites['sites'],
@@ -88,12 +87,4 @@ class SearchCompetitorsController extends Controller
         ]);
     }
 
-    public function test($phrase)
-    {
-        $this->xml = new XmlFacade();
-        $this->xml->setQuery($phrase);
-        $this->xml->setPage(1);
-        $result = $this->xml->getByArray();
-        dd($result['response']['results']['grouping']['group']);
-    }
 }
