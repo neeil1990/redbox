@@ -198,6 +198,7 @@
             $('.btn.btn-secondary.pull-left').click(() => {
                 var metaTags = ''
                 var phrases = $('.form-control.phrases').val()
+                var count = $('.custom-select.rounded-0.count').val()
                 var interval = null
                 if ($.trim($('.form-control.phrases').val())) {
                     $.ajax({
@@ -206,8 +207,8 @@
                         url: "{{ route('analyze.sites') }}",
                         data: {
                             phrases: phrases,
+                            count: count,
                             region: $('.custom-select.rounded-0.region').val(),
-                            count: $('.custom-select.rounded-0.count').val(),
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         beforeSend: function () {
@@ -264,6 +265,7 @@
                         url: "{{ route('analyze.positions') }}",
                         data: {
                             phrases: phrases,
+                            count: count,
                             scanResult: response.scanResult,
                             sites: response.sites,
                             _token: $('meta[name="csrf-token"]').attr('content')

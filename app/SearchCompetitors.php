@@ -239,6 +239,10 @@ class SearchCompetitors
             $sites[$key]['percent'] = round(100 / $countPhrases * $sites[$key]['count'], 1);
             $sites[$key]['count'] .= '/' . $countPhrases;
             $sites[$key]['avg'] = round($avg / $countPhrases, 1);
+
+            if ($positions == $request['conut']) {
+                $positions = 0;
+            }
         }
 
         foreach ($phrases as $phrase) {
