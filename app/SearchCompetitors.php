@@ -2,39 +2,25 @@
 
 namespace App;
 
-use App\Classes\Xml\XmlFacade;
-use Illuminate\Support\Facades\Log;
+use App\Classes\Xml\SimplifiedXmlFacade;
 
 class SearchCompetitors
 {
     /**
      * @param $request
-     * @return mixed
+     * @return array
      */
     public static function analyzeList($request)
     {
         $array = explode("\n", $request['phrases']);
         $phrases = array_diff($array, ['']);
         $resultArray = [];
-        $xml = new XmlFacade();
-        $xml->setLr($request['region']);
+        $xml = new SimplifiedXmlFacade($request['count'], $request['region']);
 
         foreach ($phrases as $phrase) {
             $xml->setQuery($phrase);
-            $xml->setPage(0);
-            $result = $xml->getByArray();
+            $result = $xml->getXMLResponse();
             $resultArray[$phrase] = $result['response']['results']['grouping']['group'];
-            if ($request['count'] == 20) {
-                $xml->setPage(1);
-                $result = $xml->getByArray();
-                $resultArray[$phrase] = array_merge($resultArray[$phrase], $result['response']['results']['grouping']['group']);
-                if (count($resultArray[$phrase]) < 20) {
-                    $xml->setPage(2);
-                    $result = $xml->getByArray();
-                    $resultArray[$phrase] = array_merge($resultArray[$phrase], $result['response']['results']['grouping']['group']);
-                    $resultArray[$phrase] = array_slice($resultArray[$phrase], 0, 20, true);
-                }
-            }
         }
 
         return $resultArray;
