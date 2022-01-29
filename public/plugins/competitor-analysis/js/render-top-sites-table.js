@@ -61,7 +61,7 @@ function renderTopSites(response) {
             let aDomain = document.createElement('a')
             aDomain.target = '_blank';
             aDomain.className = 'dropdown-item'
-            aDomain.href = response.sites[keyword][items].doc.domain
+            aDomain.href = "https:\\" + response.sites[keyword][items].doc.domain
             aDomain.innerHTML = '<i class="fas fa-external-link-alt"></i> ' + stringGoToSite()
 
             let aTextAnalyse = document.createElement('a')
