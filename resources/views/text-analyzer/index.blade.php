@@ -6,6 +6,8 @@
               href="{{ asset('plugins/domain-information/css/domain-information.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable-extra.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
