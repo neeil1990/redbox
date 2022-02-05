@@ -41,6 +41,11 @@ img.img-flag {
     }
 }
 
+div.sidebar i {
+    margin-left: 5px;
+}
+
 div.sidebar .icon-inner {
     width: auto !important;
 }
+
