@@ -21,22 +21,9 @@
 
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light" id="header-nav-bar">
-        <!-- Left navbar links -->
-    @include('navigation.menu')
-
-    <!-- Right navbar links -->
+        @include('navigation.menu')
         <ul class="navbar-nav ml-auto">
-            <!-- Navbar Search -->
-        @include('component.search')
-
-        <!-- Messages Dropdown Menu -->
-        @include('component.messages')
-
-        <!-- Notifications Dropdown Menu -->
-            @include('component.notifications')
-
             <li class="nav-item">
                 <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                     <i class="fas fa-expand-arrows-alt"></i>
@@ -44,28 +31,17 @@
             </li>
         </ul>
     </nav>
-    <!-- /.navbar -->
-
-    <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <!-- Brand Logo -->
         <a href="index3.html" class="brand-link">
             <img src="/img/logo.svg" alt="RedBox" class="brand-image">
         </a>
-
-        <!-- Sidebar -->
         <div class="sidebar">
-            <!-- Sidebar user panel (optional) -->
-        @auth
-            @include('users.panel')
-        @endauth
-        <!-- Sidebar Menu -->
-        @include('navigation.sidebar')
-        <!-- /.sidebar-menu -->
+            @auth
+                @include('users.panel')
+            @endauth
+            @include('navigation.sidebar')
         </div>
-        <!-- /.sidebar -->
     </aside>
-
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Main content -->
@@ -81,11 +57,8 @@
 
     <!-- Main Footer -->
     <footer class="main-footer" id="main-footer">
-        <strong>Copyright &copy; 2014-2021 <a href="#">AdminLTE.io</a>.</strong>
+        <strong>Copyright &copy; 2014-{{ date('Y') }} <a href="https://redbox.su/">redbox.su</a>.</strong>
         All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 3.1.0
-        </div>
     </footer>
 </div>
 <!-- ./wrapper -->
@@ -117,9 +90,30 @@
 <script defer src="{{ asset('plugins/jquery-ui/custom-jquery-ui.js') }}"></script>
 <script>
     $(function () {
+        let visible = true;
         var token = $('meta[name="csrf-token"]').attr('content');
         getCountNewNews()
         getProjects()
+
+        $('#show-and-hide').click(() => {
+            if (visible) {
+                visible = false;
+                $('div.info').css({
+                    'margin-top': '10px'
+                })
+                $('.brand-link').css({
+                    'opacity': "0"
+                })
+            } else {
+                visible = true;
+                $('div.info').css({
+                    'margin-top': '0'
+                })
+                $('.brand-link').css({
+                    'opacity': "1"
+                })
+            }
+        })
 
         function getProjects() {
             $.ajax({
@@ -131,8 +125,12 @@
                 },
                 success: function (response) {
                     response.forEach((el) => {
+                        let target = "target='_blank'";
+                        if (el.link === 'https://lk.redbox.su/') {
+                            target = ''
+                        }
                         let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
-                            "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
+                            "<a href='" + el.link + target + "' class='nav-link search-link'> " +
                             el.icon +
                             "<p class='ml-2'>" + el.title + "</p> " +
                             "</a></li>"

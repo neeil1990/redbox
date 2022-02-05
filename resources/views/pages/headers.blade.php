@@ -12,19 +12,19 @@
     @endslot
 
     @if(Auth()->check())
-    <div class="row mb-4">
-        <div class="col-md-6">
-            {!! Form::open(['method' => 'GET', 'route' => 'pages.headers']) !!}
-            <label>{{ __('To check one link') }}</label>
-            <div class="input-group input-group-sm">
-                {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
-                <span class="input-group-append">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {!! Form::open(['method' => 'GET', 'route' => 'pages.headers']) !!}
+                <label>{{ __('To check one link') }}</label>
+                <div class="input-group input-group-sm">
+                    {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
+                    <span class="input-group-append">
                     {!! Form::submit(__('Check URL'), ['class' => 'btn btn-secondary btn-flat']) !!}
                 </span>
+                </div>
+                {!! Form::close() !!}
             </div>
-            {!! Form::close() !!}
         </div>
-    </div>
     @endif
 
     <response-http-code submit="{{ __('Send') }}"
@@ -41,9 +41,11 @@
                 <div class="form-group">
                     <label>{{ __('Copy link') }}:</label>
                     <div class="input-group input-group-sm">
-                        <input type="text" id="inputCopy" value="{{ request()->getHost() }}/public/http-headers/{{$id}}" class="form-control">
+                        <input type="text" id="inputCopy" value="{{ request()->getHost() }}/public/http-headers/{{$id}}"
+                               class="form-control">
                         <div class="input-group-append">
-                            <span class="input-group-text" onclick="copy()" style="cursor: pointer"><i class="fas fa-copy"></i></span>
+                            <span class="input-group-text" onclick="copy()" style="cursor: pointer"><i
+                                    class="fas fa-copy"></i></span>
                         </div>
                     </div>
                 </div>
@@ -52,29 +54,29 @@
 
         <div class="row">
             @foreach($response as $arItems)
-            <div class="col-md-6">
-                <div class="card card-outline @if($arItems['status'] == 200) card-success @else card-danger @endif">
-                    <div class="card-header">
-                        <h3 class="card-title">{{ __('HTTP Code') }}: {{ $arItems['status'] }}</h3>
-                    </div>
-                    <div class="card-body p-0 overflow-auto">
-                        <table class="table table-striped">
-                            <tbody>
+                <div class="col-md-12">
+                    <div class="card card-outline @if($arItems['status'] == 200) card-success @else card-danger @endif">
+                        <div class="card-header">
+                            <h3 class="card-title">{{ __('HTTP Code') }}: {{ $arItems['status'] }}</h3>
+                        </div>
+                        <div class="card-body p-0 overflow-auto">
+                            <table class="table table-striped" style="display: block; overflow: auto">
+                                <tbody>
                                 <tr>
                                     <td><strong>{{ __('contentType') }}</strong></td>
                                     <td>{{ $arItems['contentType'] }}</td>
                                 </tr>
                                 @foreach($arItems['headers'] as $name => $val)
-                                <tr>
-                                    <td><strong>{{ $name }}</strong></td>
-                                    <td>@if(is_array($val)) {{implode(', ', $val)}} @else {{ $val }} @endif</td>
-                                </tr>
+                                    <tr>
+                                        <td><strong>{{ $name }}</strong></td>
+                                        <td>@if(is_array($val)) {{implode(', ', $val)}} @else {{ $val }} @endif</td>
+                                    </tr>
                                 @endforeach
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
             @endforeach
         </div>
 
@@ -111,8 +113,8 @@
 
             <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
             <script>
-                $(function(){
-                    $( ".CodeMirror" ).resizable();
+                $(function () {
+                    $(".CodeMirror").resizable();
                 });
 
                 function copy() {

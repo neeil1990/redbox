@@ -6,7 +6,7 @@
             <img src="img\profile-image.jpg" class="img-circle elevation-2" alt="avatar">
         @endif
     </div>
-    <div class="info">
+    <div class="info d-flex justify-content-center align-items-center">
         <a href="{{ route('profile.index') }}" class="d-block">{{ $user->name }} {{ $user->last_name }}</a>
     </div>
 </div>
