@@ -39,3 +39,7 @@
   text-decoration: underline;
   color: white !important;
 }
+.table.dataTable.table-bordered{
+    display: block;
+    overflow: auto;
+}
