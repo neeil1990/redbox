@@ -3,7 +3,7 @@
     <div>
 
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-12">
 
                 <form @submit.prevent="ShowHttpResponse">
                     <div class="form-group">
