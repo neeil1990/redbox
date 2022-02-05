@@ -41,8 +41,8 @@ img.img-flag {
     }
 }
 
-body > div > aside > div > nav > ul > li > a > ion-icon,
-body > div > aside > div > nav > ul > li > a > i {
+body div aside ion-icon,
+body div aside i {
     width: 25px;
 }
 
