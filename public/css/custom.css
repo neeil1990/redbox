@@ -41,17 +41,17 @@ img.img-flag {
     }
 }
 
-div.sidebar i {
-    margin-left: 5px;
-}
+/*div.sidebar i {*/
+/*    margin-left: 5px;*/
+/*}*/
 
-div.sidebar .icon-inner {
-    width: auto !important;
-}
+/*div.sidebar .icon-inner {*/
+/*    width: auto !important;*/
+/*}*/
 
-div > svg {
-    padding-left: 4px;
-}
+/*div > svg {*/
+/*    padding-left: 4px;*/
+/*}*/
 
 body > div > aside > div > nav > ul > li > a > ion-icon,
 body > div > aside > div > nav > ul > li > a > i {
