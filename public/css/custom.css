@@ -49,6 +49,6 @@ div.sidebar .icon-inner {
     width: auto !important;
 }
 
-div.sidebar svg {
+div > svg{
     padding-right: 4px;
 }
