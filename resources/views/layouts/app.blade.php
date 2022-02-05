@@ -102,7 +102,7 @@
                     'margin-top': '10px'
                 })
                 $('.brand-link').css({
-                    'opacity': "0"
+                    'display': "none"
                 })
             } else {
                 visible = true;
@@ -110,7 +110,7 @@
                     'margin-top': '0'
                 })
                 $('.brand-link').css({
-                    'opacity': "1"
+                    'display': "block"
                 })
             }
         })
