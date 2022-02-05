@@ -41,6 +41,6 @@ img.img-flag {
     }
 }
 
-.mt-2 i, .mt-2 svg, .mt-2 ion-icon {
-    width: 20px;
+div.sidebar i {
+    margin-left: 5px;
 }
