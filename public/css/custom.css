@@ -41,3 +41,6 @@ img.img-flag {
     }
 }
 
+.nav-item.menu-item > i, .nav-item.menu-item > svg, .nav-item.menu-item > ion-icon {
+    width: 20px;
+}
