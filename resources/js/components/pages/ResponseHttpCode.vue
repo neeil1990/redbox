@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="row mb-12">
+        <div class="row mb-12 test-class">
             <div class="col-md-12">
                 <div class="card" v-if="cardDisplay">
                     <div class="card-header">
