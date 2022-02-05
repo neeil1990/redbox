@@ -49,6 +49,12 @@ div.sidebar .icon-inner {
     width: auto !important;
 }
 
-div > svg{
+div > svg {
     padding-left: 4px;
 }
+
+body > div > aside > div > nav > ul > li > a > ion-icon,
+body > div > aside > div > nav > ul > li > a > i {
+    width: 25px;
+}
+
