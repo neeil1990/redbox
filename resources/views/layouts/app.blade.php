@@ -125,15 +125,21 @@
                 },
                 success: function (response) {
                     response.forEach((el) => {
-                        let target = "target='_blank'";
+                        var item = '';
                         if (el.link === 'https://lk.redbox.su/') {
-                            target = ''
+                            item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
+                                "<a href=" + el.link + " class='nav-link search-link'> " +
+                                el.icon +
+                                "<p class='ml-2'>" + el.title + "</p> " +
+                                "</a></li>"
+                        } else {
+                            item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
+                                "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
+                                el.icon +
+                                "<p class='ml-2'>" + el.title + "</p> " +
+                                "</a></li>"
                         }
-                        let item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
-                            "<a href='" + el.link + target + "' class='nav-link search-link'> " +
-                            el.icon +
-                            "<p class='ml-2'>" + el.title + "</p> " +
-                            "</a></li>"
+
                         $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
                     })
                 },
