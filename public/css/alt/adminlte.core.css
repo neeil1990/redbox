@@ -13272,7 +13272,6 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 }
 
 .nav-sidebar > .nav-item .nav-icon {
-  margin-left: .05rem;
   font-size: 1.2rem;
   margin-right: .2rem;
   text-align: center;
