@@ -41,6 +41,6 @@ img.img-flag {
     }
 }
 
-.nav-item.menu-item i, .nav-item.menu-item svg, .nav-item.menu-item ion-icon {
+.mt-2 i, .mt-2 svg, .mt-2 ion-icon {
     width: 20px;
 }
