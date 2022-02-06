@@ -32,7 +32,7 @@
         </ul>
     </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="index3.html" class="brand-link">
+        <a href="{{ route('home') }}" class="brand-link">
             <img src="/img/logo.svg" alt="RedBox" class="brand-image">
         </a>
         <div class="sidebar">
