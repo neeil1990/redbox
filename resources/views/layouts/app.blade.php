@@ -261,6 +261,8 @@
                 }
             });
         }
+
+        console.log($('#app > div > div > div.card-body > div:nth-child(2) > div:nth-child(2)'))
     });
 </script>
 @include('flash::message')
