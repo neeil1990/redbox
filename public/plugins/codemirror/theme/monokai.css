@@ -41,5 +41,6 @@
 }
 
 #app > div > div > div.card-body > div:nth-child(2) > div:nth-child(2) > div > div > div.card-body > table > tbody > tr > td{
-    max-width: 250px;
+    max-width: 400px;
+    min-width: 100px;
 }
