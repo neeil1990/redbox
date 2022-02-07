@@ -57,7 +57,7 @@
 
     <!-- Main Footer -->
     <footer class="main-footer" id="main-footer">
-        <strong>Copyright &copy; 2014-{{ date('Y') }} <a href="https://redbox.su/">redbox.su</a>.</strong>
+        <strong>Copyright &copy; 2021-{{ date('Y') }} <a href="https://redbox.su/">redbox.su</a>.</strong>
         All rights reserved.
     </footer>
 </div>

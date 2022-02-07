@@ -20,7 +20,7 @@
                     {!! Form::text('url', request('url', $default = null), ['class' => 'form-control' . ($errors->has('url') ? ' is-invalid' : ''), 'placeholder' => __('URL')]) !!}
                     <span class="input-group-append">
                     {!! Form::submit(__('Check URL'), ['class' => 'btn btn-secondary btn-flat']) !!}
-                </span>
+                    </span>
                 </div>
                 {!! Form::close() !!}
             </div>
@@ -37,7 +37,7 @@
 
     @if($response)
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <label>{{ __('Copy link') }}:</label>
                     <div class="input-group input-group-sm">
@@ -60,7 +60,7 @@
                             <h3 class="card-title">{{ __('HTTP Code') }}: {{ $arItems['status'] }}</h3>
                         </div>
                         <div class="card-body p-0 overflow-auto">
-                            <table class="table table-striped" style="display: block; overflow: auto">
+                            <table class="table table-striped">
                                 <tbody>
                                 <tr>
                                     <td><strong>{{ __('contentType') }}</strong></td>
