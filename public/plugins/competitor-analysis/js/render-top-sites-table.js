@@ -195,8 +195,10 @@ function renderTopSites(response) {
                 hiddenDiv.appendChild(h6)
             }
 
-            if (!(response.sites[keyword][items].meta.title.join(' ') ||
-                response.sites[keyword][items].meta.description.join(' '))) {
+            if (!(response.sites[keyword][items].meta.title.join(' ') &&
+                response.sites[keyword][items].meta.description.join(' ') ||
+                response.sites[keyword][items].meta.h1.join(' ')
+            )) {
                 let danger = document.createElement('span')
                 danger.className = 'text-danger'
                 danger.textContent = getErrorMessage()
