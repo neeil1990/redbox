@@ -224,4 +224,8 @@ function renderTopSites(response) {
         }
         tbody.appendChild(tr);
     }
+
+    $('.text-danger').parent().parent().css({
+        'background': '#ff9898'
+    })
 }
