@@ -195,16 +195,8 @@ function renderTopSites(response) {
                 hiddenDiv.appendChild(h6)
             }
 
-            if (!(
-                response.sites[keyword][items].meta.title.join(' ') &&
-                response.sites[keyword][items].meta.description.join(' ') &&
-                response.sites[keyword][items].meta.h1.join(' ') ||
-                response.sites[keyword][items].meta.h2.join(' ') ||
-                response.sites[keyword][items].meta.h3.join(' ') ||
-                response.sites[keyword][items].meta.h4.join(' ') ||
-                response.sites[keyword][items].meta.h5.join(' ') ||
-                response.sites[keyword][items].meta.h6.join(' ')
-            )) {
+            if (!(response.sites[keyword][items].meta.title.join(' ') ||
+                response.sites[keyword][items].meta.description.join(' '))) {
                 let danger = document.createElement('span')
                 danger.className = 'text-danger'
                 danger.textContent = getErrorMessage()
@@ -213,9 +205,6 @@ function renderTopSites(response) {
 
             let linkIcon = document.createElement('i')
             linkIcon.className = 'fas fa-external-link-alt'
-            // aUrl.appendChild(linkIcon)
-            // aDomain.appendChild(linkIcon)
-            // aTextAnalyse.appendChild(linkIcon)
 
             div3.appendChild(aUrl)
             div3.appendChild(aDomain)

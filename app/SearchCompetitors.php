@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use Illuminate\Support\Facades\Log;
 
 class SearchCompetitors
 {
@@ -292,11 +293,12 @@ class SearchCompetitors
         curl_setopt($curl, CURLOPT_URL, $site);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 1);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 3);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
         return SearchCompetitors::tryConnect($curl);
@@ -313,10 +315,13 @@ class SearchCompetitors
         $userAgents = [
             //Mozilla Firefox
             'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0',
+            'Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0',
             //opera
             'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/79.0.4143.72',
+            'Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/79.0.4143.72',
             // chrome
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
         ];
 
         for ($i = 0; $i < count($userAgents); $i++) {
@@ -325,7 +330,7 @@ class SearchCompetitors
             $headers = curl_getinfo($curl);
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
-                break 1;
+                break;
             }
         }
         curl_close($curl);

@@ -33,13 +33,13 @@ class SearchCompetitorsController extends Controller
     public function analyzeSites(Request $request): JsonResponse
     {
         Log::debug('start competitor analyse', $request->all());
-        $scanResult = SearchCompetitors::analyzeList($request->all());
-        $sites = SearchCompetitors::scanSites($scanResult);
+        $xmlResult = SearchCompetitors::analyzeList($request->all());
+        $sites = SearchCompetitors::scanSites($xmlResult);
 
         return response()->json([
             'sites' => $sites['sites'],
             'metaTags' => $sites['metaTags'],
-            'scanResult' => $scanResult
+            'scanResult' => $xmlResult
         ]);
     }
 
