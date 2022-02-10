@@ -226,6 +226,6 @@ function renderTopSites(response) {
     }
 
     $('.text-danger').parent().parent().css({
-        'background': '#ff9898'
+        'background': '#fff3cd'
     })
 }
