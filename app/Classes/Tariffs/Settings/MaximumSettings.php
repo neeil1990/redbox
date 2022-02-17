@@ -7,9 +7,9 @@ namespace App\Classes\Tariffs\Settings;
 use App\Classes\Tariffs\Interfaces\Settings;
 use App\TariffSettingValue;
 
-class OptimalSettings implements Settings
+class MaximumSettings implements Settings
 {
-    protected $tariff = 'optimal';
+    protected $tariff = 'maximum';
 
     protected $settings;
 

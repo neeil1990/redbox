@@ -51,6 +51,12 @@ Route::middleware(['verified'])->group(function () {
         'index', 'store', 'update'
     ]);
 
+    Route::resource('tariff-settings', 'TariffSettingsController');
+    Route::get('tariff-setting-values/{id}/create', 'TariffSettingValuesController@create')->name('tariff-setting-values.create');
+    Route::resource('tariff-setting-values', 'TariffSettingValuesController')->except([
+        'create', 'index', 'show', 'edit', 'update'
+    ]);
+
     Route::delete('/meta-tags/history/{id}', 'MetaTagsController@destroyHistory')->name('meta.history.delete');
     Route::get('/meta-tags/history/{id}/compare/{id_compare}/export/', 'MetaTagsController@exportCompare')->name('meta.history.export_compare');
     Route::get('/meta-tags/history/{id}/export/', 'MetaTagsController@export')->name('meta.history.export');

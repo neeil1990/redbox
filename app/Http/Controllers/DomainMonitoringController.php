@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\Tariffs;
 use App\DomainMonitoring;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -42,6 +43,19 @@ class DomainMonitoringController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Проверка тарифа
+        $tariff = Tariffs::get();
+        $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
+        if(isset($tariff['settings']['domainMonitoringProject']) && $tariff['settings']['domainMonitoringProject'] > 0){
+            if($count >= $tariff['settings']['domainMonitoringProject']){
+
+                //abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['domainMonitoringProject'] . ' проект.');
+
+                flash()->overlay('Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['domainMonitoringProject'] . ' проект.', ' ')->error();
+                return Redirect::route('domain.monitoring');
+            }
+        }
+
         $userId = Auth::id();
         $monitoring = new DomainMonitoring($request->all());
         $monitoring->user_id = $userId;
