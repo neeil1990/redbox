@@ -378,7 +378,7 @@ class Relevance
                 }
             }
         } else {
-            $this->domains = $xmlResponse;
+            $this->domains = array_slice($xmlResponse, 0, $count - 1);
         }
     }
 
@@ -387,6 +387,5 @@ class Relevance
         foreach ($this->domains as $item) {
             $this->sites[] = $item['doc']['url'];
         }
-        Log::debug('sites', $this->sites);
     }
 }
