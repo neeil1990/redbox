@@ -46,34 +46,13 @@ class PagesController extends Controller
         return view('pages.keyword');
     }
 
-    protected function getTariff()
-    {
-        $user = auth()->user();
-
-        if($user->hasRole('Free'))
-            $tariff = (new FreeTariff())->get();
-        elseif($user->hasRole('Optimal'))
-            $tariff = (new OptimalTariff())->get();
-
-        return (isset($tariff)) ? $tariff : null;
-    }
-
     /**
      * Word duplicates
      *
      * @return Factory|View
      */
-    public function duplicates($quantity = 0)
+    public function duplicates()
     {
-
-        if($tariff = $this->getTariff()){
-
-            $require = $tariff['settings']['duplicates_str_length'];
-
-            if(isset($require) && $quantity > $require)
-                return collect(['require' => $require, 'quantity' => $quantity]);
-        }
-
         $options = collect([
             1 => __('remove duplicate spaces between words'),
             2 => __('remove spaces and tabs at the beginning and end of the line'),

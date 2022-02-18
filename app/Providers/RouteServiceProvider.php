@@ -32,6 +32,9 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         Route::model('user', \App\User::class);
+
+        Route::model('tariff_setting', \App\TariffSetting::class);
+        Route::model('tariff_setting_value', \App\TariffSettingValue::class);
     }
 
     /**

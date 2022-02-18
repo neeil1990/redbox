@@ -5,17 +5,25 @@ namespace App\Classes\Tariffs\Settings;
 
 
 use App\Classes\Tariffs\Interfaces\Settings;
+use App\TariffSetting;
+use App\TariffSettingValue;
 
 class FreeSettings implements Settings
 {
+    protected $tariff = 'free';
+
     protected $settings;
 
     public function get(): array
     {
-        $this->settings = [
-            'duplicates_str_length' => 2
-        ];
+        $this->settings = [];
+
+        $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
+        foreach ($settings as $setting){
+            $this->settings[$setting->property->code] = $setting->value;
+        }
 
         return $this->settings;
     }
+
 }
