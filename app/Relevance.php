@@ -57,10 +57,11 @@ class Relevance
     public function parseXmlResponse(): Relevance
     {
         foreach ($this->domains as $item) {
-            $this->pages[$item['doc']['url']]['html'] = mb_strtolower(TextAnalyzer::removeHeaders(
+            $result = mb_strtolower(TextAnalyzer::removeHeaders(
                 TextAnalyzer::curlInit($item['doc']['url'])
             ));
-            if ($this->pages[$item['doc']['url']]['html'] == "" || $this->pages[$item['doc']['url']]['html'] == null) {
+            $this->pages[$item['doc']['url']]['html'] = $result;
+            if ($result == "" || $result == null) {
                 $this->sites[] = [
                     'site' => $item['doc']['url'],
                     'danger' => true,
