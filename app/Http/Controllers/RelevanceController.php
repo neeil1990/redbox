@@ -26,7 +26,6 @@ class RelevanceController extends Controller
             $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
             $relevance->parseXmlResponse();
             $relevance->analyse($request);
-            $relevance->getSites();
 
             return response()->json([
                 'clouds' => [

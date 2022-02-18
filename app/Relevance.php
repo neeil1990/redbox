@@ -60,6 +60,17 @@ class Relevance
             $this->pages[$item['doc']['url']]['html'] = mb_strtolower(TextAnalyzer::removeHeaders(
                 TextAnalyzer::curlInit($item['doc']['url'])
             ));
+            if ($this->pages[$item['doc']['url']]['html'] == "" || $this->pages[$item['doc']['url']]['html'] == null) {
+                $this->sites[] = [
+                    'site' => $item['doc']['url'],
+                    'danger' => true,
+                ];
+            } else {
+                $this->sites[] = [
+                    'site' => $item['doc']['url'],
+                    'danger' => false,
+                ];
+            }
         }
 
         return $this;

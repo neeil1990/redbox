@@ -221,8 +221,16 @@
     </div>
     <div class="pb-3 sites" style="display: none">
         <h3>Проанализированные сайты</h3>
-        <ul id="scaned-sites">
-        </ul>
+        <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
+            <thead>
+            <tr role="row">
+                <th class="sorting sorting_asc">Домен</th>
+                <th class="sorting sorting_asc">Результат</th>
+            </tr>
+            </thead>
+            <tbody id="scaned-sites-tbody">
+            </tbody>
+        </table>
     </div>
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
