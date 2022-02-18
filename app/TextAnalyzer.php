@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use JavaScript;
 
@@ -142,6 +144,7 @@ class TextAnalyzer
     public static function deleteEverythingExceptCharacters($text)
     {
         $text = preg_replace(["'<style[^>]*?>.*?</style>'si", "'<script[^>]*?>.*?</script>'si"], "", $text);
+        $text = str_replace(">", "> ", $text);
         $text = trim(strip_tags($text));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
         $text = str_replace([
@@ -266,13 +269,29 @@ class TextAnalyzer
      */
     public static function removeWords($listWords, $text): string
     {
-        $listWords = explode("\r\n", $listWords);
+        $listWords = str_replace("\r\n", "\n", $listWords);
+        $listWords = explode("\n", $listWords);
         foreach ($listWords as $listWord) {
-            $text = str_replace([' ' . $listWord . ' ',], ' ', $text);
+            $text = TextAnalyzer::mbStrReplace([' ' . $listWord . ' '], ' ', $text);
             $text = preg_replace('| +|', ' ', $text);
         }
 
         return trim($text);
+    }
+
+    /**
+     * @param $search
+     * @param $replace
+     * @param $string
+     * @return array|false|string|string[]
+     */
+    public static function mbStrReplace($search, $replace, $string)
+    {
+        $charset = mb_detect_encoding($string);
+
+        $unicodeString = iconv($charset, "UTF-8", $string);
+
+        return str_replace($search, $replace, $unicodeString);
     }
 
     /**
@@ -286,6 +305,9 @@ class TextAnalyzer
         $array = explode(" ", $string);
         $countWords = count($array);
         foreach ($array as $item) {
+            if (count($words) == 200) {
+                break;
+            }
             if (mb_strlen($item) > 2) {
                 $item = addslashes($item);
                 preg_match_all("/.*?\s($item)\s.*?/",
@@ -333,9 +355,9 @@ class TextAnalyzer
 
     /**
      * @param $string
-     * @return array
+     * @return Collection
      */
-    public static function searchPhrases($string): array
+    public static function searchPhrases($string)
     {
         $phrases = [];
         $array = explode(' ', $string);
@@ -532,15 +554,15 @@ class TextAnalyzer
     }
 
     /**
-     * @param $string
+     * @param $array
      * @return array
      */
-    public static function searchWordForms($string): array
+    public static function searchWordForms($array): array
     {
         $stemmer = new LinguaStem();
         $wordForms = [];
         $will = [];
-        $array = array_count_values($string);
+        $array = array_count_values($array);
         asort($array);
         $array = array_reverse($array);
 

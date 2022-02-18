@@ -165,4 +165,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analyze.nesting');
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analyze.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analyze.tags');
+
+    Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analyzer');
+    Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance-analyzer');
 });
