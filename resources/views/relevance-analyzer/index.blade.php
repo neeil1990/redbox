@@ -219,11 +219,17 @@
             </tbody>
         </table>
     </div>
+    <div class="pb-3 sites" style="display: none">
+        <h3>Проанализированные сайты</h3>
+        <ul id="scaned-sites">
+        </ul>
+    </div>
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderClouds.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderUnigramTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderScanedSitesList.js') }}"></script>
         <script>
             $('.btn.btn-secondary.pull-left').click(() => {
                 var interval = startProgressBar()
@@ -252,6 +258,7 @@
                         clearClouds()
                         renderClouds(response.clouds);
                         renderUnigramTable(response.unigramTable);
+                        renderScanedSitesList(response.sites);
                         stopProgressBar()
                         window.clearInterval(interval);
                         $('.btn.btn-secondary.pull-left').prop("disabled", false);
@@ -269,6 +276,7 @@
             function removeAllRenderElements() {
                 $('.render').remove();
                 $('.pb-3.unigram').hide(300)
+                $('.pb-3.sites').hide(300)
                 $('.clouds').hide(300)
             }
 

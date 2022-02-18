@@ -17,7 +17,7 @@ class RelevanceController extends Controller
     public function analyse(Request $request)
     {
         try {
-            $xml = new SimplifiedXmlFacade($request->count, $request->lr);
+            $xml = new SimplifiedXmlFacade(20, $request->lr);
             $xml->setQuery($request->phrase);
             $xmlResponse = $xml->getXMLResponse();
 
@@ -26,6 +26,7 @@ class RelevanceController extends Controller
             $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
             $relevance->parseXmlResponse();
             $relevance->analyse($request);
+            $relevance->getSites();
 
             return response()->json([
                 'clouds' => [
@@ -36,7 +37,8 @@ class RelevanceController extends Controller
                     'mainPageTextWithLinksCloud' => $relevance->mainPage['textWithLinksCloud'],
                     'mainPageTextCloud' => $relevance->mainPage['textCloud'],
                 ],
-                'unigramTable' => $relevance->wordForms
+                'unigramTable' => $relevance->wordForms,
+                'sites' => $relevance->sites,
             ]);
         } catch (\Exception $e) {
             return response()->json([

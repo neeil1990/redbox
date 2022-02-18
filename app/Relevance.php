@@ -27,6 +27,8 @@ class Relevance
 
     public $domains;
 
+    public $sites;
+
     public function __construct()
     {
         $this->mainPage = [];
@@ -378,5 +380,13 @@ class Relevance
         } else {
             $this->domains = $xmlResponse;
         }
+    }
+
+    public function getSites()
+    {
+        foreach ($this->domains as $item) {
+            $this->sites[] = $item['doc']['url'];
+        }
+        Log::debug('sites', $this->sites);
     }
 }
