@@ -1,17 +1,17 @@
 function renderScanedSitesList(sites) {
-    var message
+    var td
     $('.pb-3.sites').show(300)
-    let ul = $('#scaned-sites-tbody')
+    let tbody = $('#scaned-sites-tbody')
     $.each(sites, function (key, value) {
         if (value['danger']) {
-            message = "<td class='bg-warning render'> Не удалось получить данные со страницы</td>"
+            td = "<td class='bg-warning'> Не удалось получить данные со страницы</td>"
         } else {
-            message = "<td class='render'> Страница успешно проанализирована</td>"
+            td = "<td> Страница успешно проанализирована</td>"
         }
-        ul.append(
-            "<tr class='rendeer'>" +
+        tbody.append(
+            "<tr class='render'>" +
                 "<td>" + value['site'] + "</td>" +
-                message +
+            td +
             "</tr>"
         )
     });
