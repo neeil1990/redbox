@@ -2,6 +2,11 @@
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <style>
+            .bg-warning-elem {
+                background-color: #f5e2aa !important;
+            }
+        </style>
     @endslot
     <div class="col-5 pb-3">
         <div class="form-group required">

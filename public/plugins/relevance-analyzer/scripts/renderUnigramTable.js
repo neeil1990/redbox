@@ -3,15 +3,17 @@ function renderUnigramTable(unigramTable) {
     let tBody = $('#unigramTBody')
 
     $.each(unigramTable, function (key, wordWorm) {
-        let className = wordWorm['total']['danger'] ? "bg-warning" : ""
+        let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
         let tf = substringNumber(wordWorm['total']['tf'])
         let idf = substringNumber(wordWorm['total']['idf'])
         let numberOccurrences = substringNumber(wordWorm['total']['numberOccurrences'])
         let reSpam = substringNumber(wordWorm['total']['reSpam'])
         let avgInText = substringNumber(wordWorm['total']['avgInText'])
         let repeatInTextMainPage = substringNumber(wordWorm['total']['avgInText'])
+        let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
         let avgInLink = substringNumber(wordWorm['total']['avgInLink'])
         let repeatInLinkMainPage = substringNumber(wordWorm['total']['repeatInLinkMainPage'])
+        let repeatInLinkMainPageWarning = repeatInLinkMainPage === '0' ? " class='bg-warning-elem'" : ""
         tBody.append(
             "<tr class='render'>" +
             "<td class='" + className + "' onclick='showWordWorms(this)' data-target='" + key + "'>" +
@@ -23,28 +25,35 @@ function renderUnigramTable(unigramTable) {
             "<td>" + numberOccurrences + "</td>" +
             "<td>" + reSpam + "</td>" +
             "<td>" + avgInText + "</td>" +
-            "<td>" + repeatInTextMainPage + "</td>" +
+            "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
             "<td>" + avgInLink + "</td>" +
-            "<td>" + repeatInLinkMainPage + "</td>" +
+            "<td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
             "</tr>"
         )
         $.each(wordWorm, function (word, stats) {
             if (word !== 'total') {
-                var classN = ''
-                if (stats['repeatInTextMainPage'] === 0 || stats['repeatInLinkMainPage'] === 0) {
-                    classN = 'bg-warning'
-                }
+                let bgWarn = ''
+                let textWarn = ''
+                let linkWarn = ''
                 let tf = substringNumber(stats['tf'])
                 let idf = substringNumber(stats['idf'])
                 let numberOccurrences = substringNumber(stats['numberOccurrences'])
                 let reSpam = substringNumber(stats['reSpam'])
                 let avgInText = substringNumber(stats['avgInText'])
-                let repeatInTextMainPage = substringNumber(stats['avgInText'])
+                let repeatInTextMainPage = substringNumber(stats['repeatInTextMainPage'])
                 let avgInLink = substringNumber(stats['avgInLink'])
                 let repeatInLinkMainPage = substringNumber(stats['repeatInLinkMainPage'])
+                if (repeatInTextMainPage === '0') {
+                    textWarn = "class='bg-warning-elem'"
+                    bgWarn = "class='bg-warning-elem'"
+                }
+                if (repeatInLinkMainPage === '0') {
+                    linkWarn = "class='bg-warning-elem'"
+                    bgWarn = "class='bg-warning-elem'"
+                }
                 tBody.append(
                     "<tr style='display: none; background-color: #f4f6f9;' data-order='" + key + "' class='render'>" +
-                    "<td class='" + classN + "' onclick='hideWordWorms(this)' data-target='" + key + "'>" +
+                    "<td " + bgWarn + " onclick='hideWordWorms(this)' data-target='" + key + "'>" +
                     "<i class='fa fa-minus'></i>" +
                     "</td>" +
                     "<td>" + word + "</td>" +
@@ -53,9 +62,9 @@ function renderUnigramTable(unigramTable) {
                     "<td>" + numberOccurrences + "</td>" +
                     "<td>" + reSpam + "</td>" +
                     "<td>" + avgInText + "</td>" +
-                    "<td>" + repeatInTextMainPage + "</td>" +
+                    "<td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
                     "<td>" + avgInLink + "</td>" +
-                    "<td>" + repeatInLinkMainPage + "</td>" +
+                    "<td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
                     "</tr>"
                 )
             }
