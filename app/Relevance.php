@@ -29,6 +29,8 @@ class Relevance
 
     public $sites;
 
+    public $ignoredWords;
+
     public function __construct()
     {
         $this->mainPage = [];
@@ -86,7 +88,6 @@ class Relevance
 
         $this->getHiddenData($request);
 
-
         $this->removeConjunctionsPrepositionsPronouns($request);
 
         $this->removeListWords($request);
@@ -98,11 +99,6 @@ class Relevance
             $this->competitorsTextAndLinks .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ' . $this->pages[$key]['linkText'] . ' ';
         }
 
-        Log::debug('compet',[
-            $this->competitorsLinks,
-            $this->competitorsText,
-            $this->competitorsTextAndLinks,
-        ]);
         $this->prepareClouds();
 
         $this->searchWordForms();
@@ -186,15 +182,14 @@ class Relevance
     {
         if ($request->switchMyListWords == 'true') {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
-            $arList = explode("\n", $listWords);
-            Log::debug('arList', $arList);
-            $this->mainPage['html'] = Relevance::mbStrReplace($arList, '', $this->mainPage['html']);
-            $this->mainPage['linkText'] = Relevance::mbStrReplace($arList, '', $this->mainPage['linkText']);
-            $this->mainPage['hiddenText'] = Relevance::mbStrReplace($arList, '', $this->mainPage['hiddenText']);
+            $this->ignoredWords = explode("\n", $listWords);
+            $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
+            $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
+            $this->mainPage['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
             foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = Relevance::mbStrReplace($arList, '', $this->pages[$key]['html']);
-                $this->pages[$key]['linkText'] = Relevance::mbStrReplace($arList, '', $this->pages[$key]['linkText']);
-                $this->pages[$key]['hiddenText'] = Relevance::mbStrReplace($arList, '', $this->pages[$key]['hiddenText']);
+                $this->pages[$key]['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['html']);
+                $this->pages[$key]['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['linkText']);
+                $this->pages[$key]['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['hiddenText']);
             }
         }
     }
@@ -232,7 +227,7 @@ class Relevance
             $this->mainPage['linkText'] . ' ' .
             $this->mainPage['hiddenText'] . ' ';
         $strLen = str_word_count($this->competitorsTextAndLinks);
-
+//        $this->ignoredWords
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = 0;
@@ -290,7 +285,7 @@ class Relevance
 
     public function searchWordForms()
     {
-        $will = [];
+        $will = $this->ignoredWords;
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
 
@@ -329,6 +324,9 @@ class Relevance
         }
     }
 
+    /**
+     * @return void
+     */
     public function prepareUnigramTable()
     {
         foreach ($this->wordForms as $key => $wordForm) {
