@@ -518,7 +518,8 @@ class TextAnalyzer
         foreach ($matches as $items) {
             $html = str_replace($items[0], "", $html);
         }
-        return $html;
+
+        return TextAnalyzer::deleteEverythingExceptCharacters($html);
     }
 
     /**

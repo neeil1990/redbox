@@ -37,6 +37,7 @@ class RelevanceController extends Controller
                     'mainPageTextCloud' => $relevance->mainPage['textCloud'],
                 ],
                 'unigramTable' => $relevance->wordForms,
+                // список сайтов, которые были проанализированы
                 'sites' => $relevance->sites,
             ]);
         } catch (\Exception $e) {

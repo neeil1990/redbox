@@ -91,7 +91,49 @@
 
         <div class="form-group required">
             <label>Игнорируемые домены</label>
-            {!! Form::textarea("ignoredDomains", null ,["class" => "form-control ignoredDomains"] ) !!}
+            {!! Form::textarea("ignoredDomains",
+                "2gis.ru\n".
+                "aliexpress.com\n".
+                "AliExpress.ru\n".
+                "auto.ru\n".
+                "avito.ru\n".
+                "banki.ru\n".
+                "beru.ru\n".
+                "blizko.ru\n".
+                "cataloxy.ru\n".
+                "deal.by\n".
+                "domclick.ru\n".
+                "ebay.com\n".
+                "edadeal.ru\n".
+                "e-katalog.ru\n".
+                "hh.ru\n".
+                "instagram.com\n".
+                "irecommend.ru\n".
+                "irr.ru\n".
+                "leroymerlin.ru\n".
+                "market.yandex.ru\n".
+                "mvideo.ru\n".
+                "onliner.by\n".
+                "otzovik.com\n".
+                "ozon.ru\n".
+                "pandao.ru\n".
+                "price.ru\n".
+                "prodoctorov.ru\n".
+                "profi.ru\n".
+                "pulscen.ru\n".
+                "quto.ru\n".
+                "rambler.ru\n".
+                "regmarkets.ru\n".
+                "satom.ru\n".
+                "shop.by\n".
+                "sravni.ru\n".
+                "tiu.ru\n".
+                "toshop.ru\n".
+                "wikipedia.org\n".
+                "wildberries.ru\n".
+                "yandex.ru\n".
+                "yell.ru\n".
+                "zoon.ru\n" ,["class" => "form-control ignoredDomains"] ) !!}
         </div>
 
         <div class="switch mt-3 mb-3">
@@ -224,8 +266,9 @@
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row">
-                <th class="sorting sorting_asc">Домен</th>
-                <th class="sorting sorting_asc">Результат</th>
+                <th>№</th>
+                <th>Домен</th>
+                <th>Результат</th>
             </tr>
             </thead>
             <tbody id="scaned-sites-tbody">

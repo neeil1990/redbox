@@ -3,8 +3,6 @@
 namespace App;
 
 
-use Illuminate\Support\Facades\Log;
-
 class Relevance
 {
     public $mainPage;
@@ -61,6 +59,7 @@ class Relevance
                 TextAnalyzer::curlInit($item['doc']['url'])
             ));
             $this->pages[$item['doc']['url']]['html'] = $result;
+            //for scaned table
             if ($result == "" || $result == null) {
                 $this->sites[] = [
                     'site' => $item['doc']['url'],
@@ -85,7 +84,6 @@ class Relevance
 
         $this->getHiddenData($request);
 
-        $this->getHtml();
 
         $this->removeConjunctionsPrepositionsPronouns($request);
 
@@ -95,10 +93,7 @@ class Relevance
         foreach ($this->pages as $key => $page) {
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
             $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
-            $this->competitorsTextAndLinks .=
-                ' ' . $this->pages[$key]['hiddenText'] . ' ' .
-                $this->pages[$key]['html'] . ' ' .
-                $this->pages[$key]['linkText'] . ' ';
+            $this->competitorsTextAndLinks .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ' . $this->pages[$key]['linkText'] . ' ';
         }
 
         $this->prepareClouds();
@@ -151,7 +146,7 @@ class Relevance
 
     public function getHiddenData($request)
     {
-        if ($request->hiddenText == "true") {
+        if ($request->hiddenText == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
                 $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($page['html']);
@@ -169,7 +164,7 @@ class Relevance
 
     public function removeConjunctionsPrepositionsPronouns($request)
     {
-        if ($request->conjunctionsPrepositionsPronouns == "false") {
+        if ($request->conjunctionsPrepositionsPronouns == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['hiddenText']);
@@ -183,8 +178,9 @@ class Relevance
 
     public function removeListWords($request)
     {
-        if ($request->switchMyListWords == "true") {
-            $arList = explode("\n", $request->listWords);
+        if ($request->switchMyListWords == 'true') {
+            $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
+            $arList = explode("\n", $listWords);
             $this->mainPage['html'] = Relevance::mbStrReplace($arList, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = Relevance::mbStrReplace($arList, '', $this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = Relevance::mbStrReplace($arList, '', $this->mainPage['hiddenText']);
@@ -211,15 +207,13 @@ class Relevance
     public function prepareClouds()
     {
         $this->mainPage['textCloud'] = TextAnalyzer::prepareCloud(
-            $this->mainPage['html'] . ' ' .
-            $this->mainPage['hiddenText']
+            $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText']
         );
         $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud(
-            $this->mainPage['html'] . ' ' .
-            $this->mainPage['hiddenText'] . ' ' .
-            $this->mainPage['linkText']
+            $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'] . ' ' . $this->mainPage['linkText']
         );
         $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
+
         $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
         $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
         $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
@@ -391,13 +385,6 @@ class Relevance
             }
         } else {
             $this->domains = array_slice($xmlResponse, 0, $count - 1);
-        }
-    }
-
-    public function getSites()
-    {
-        foreach ($this->domains as $item) {
-            $this->sites[] = $item['doc']['url'];
         }
     }
 }

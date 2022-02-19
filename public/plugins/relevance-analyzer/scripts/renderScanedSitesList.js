@@ -1,5 +1,6 @@
 function renderScanedSitesList(sites) {
     var td
+    var iterator = 1;
     $('.pb-3.sites').show(300)
     let tbody = $('#scaned-sites-tbody')
     $.each(sites, function (key, value) {
@@ -10,9 +11,11 @@ function renderScanedSitesList(sites) {
         }
         tbody.append(
             "<tr class='render'>" +
+                "<td>" + iterator + "</td>" +
                 "<td>" + value['site'] + "</td>" +
-            td +
+                td +
             "</tr>"
         )
+        iterator++
     });
 }
