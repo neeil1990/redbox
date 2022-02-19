@@ -333,12 +333,12 @@
             }
 
             function clearClouds() {
-                $("#competitorsLinksCloud").children().remove();
-                $("#mainPageLinksCloud").children().remove();
-                $("#competitorsTextAndLinksCloud").children().remove();
-                $("#competitorsTextCloud").children().remove();
-                $("#mainPageTextWithLinksCloud").children().remove();
-                $("#mainPageTextCloud").children().remove();
+                $("#competitorsLinksCloud").html("")
+                $("#mainPageLinksCloud").html("")
+                $("#competitorsTextAndLinksCloud").html("")
+                $("#competitorsTextCloud").html("")
+                $("#mainPageTextWithLinksCloud").html("")
+                $("#mainPageTextCloud").html("")
             }
 
             function setProgressBarStyles(percent) {

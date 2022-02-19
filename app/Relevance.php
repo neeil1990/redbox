@@ -34,6 +34,7 @@ class Relevance
     public function __construct()
     {
         $this->mainPage = [];
+        $this->ignoredWords = [];
         $this->domains = [];
         $this->pages = [];
         $this->competitorsLinks = '';
@@ -183,8 +184,6 @@ class Relevance
         if ($request->switchMyListWords == 'true') {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
             $this->ignoredWords = explode("\n", $listWords);
-            Log::debug('be', [$request->listWords]);
-            Log::debug('af', [$this->ignoredWords]);
             $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
@@ -382,10 +381,10 @@ class Relevance
         if (isset($ignoredDomains)) {
             $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
             $ignoredDomains = explode("\n", $ignoredDomains);
+            $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
             foreach ($xmlResponse as $item) {
                 if (
-                    !in_array(mb_strtolower($item['doc']['domain']), $ignoredDomains) ||
-                    !in_array($item['doc']['domain'], $ignoredDomains)
+                    !in_array(mb_strtolower($item['doc']['domain']), $ignoredDomains)
                 ) {
                     $this->domains[] = $item;
                 }

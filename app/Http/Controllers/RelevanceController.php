@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Relevance;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceController extends Controller
 {
