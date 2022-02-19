@@ -98,6 +98,11 @@ class Relevance
             $this->competitorsTextAndLinks .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ' . $this->pages[$key]['linkText'] . ' ';
         }
 
+        Log::debug('compet',[
+            $this->competitorsLinks,
+            $this->competitorsText,
+            $this->competitorsTextAndLinks,
+        ]);
         $this->prepareClouds();
 
         $this->searchWordForms();
