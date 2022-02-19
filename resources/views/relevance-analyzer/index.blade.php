@@ -325,6 +325,7 @@
             })
 
             function removeAllRenderElements() {
+                $("#unigram").dataTable().fnDestroy();
                 $('.render').remove();
                 $('.pb-3.unigram').hide(300)
                 $('.pb-3.sites').hide(300)

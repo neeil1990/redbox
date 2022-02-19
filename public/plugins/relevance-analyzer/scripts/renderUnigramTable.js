@@ -62,7 +62,6 @@ function renderUnigramTable(unigramTable) {
         })
     })
 
-    $("#unigram").dataTable().fnDestroy();
     $('#unigram').DataTable({
         "order": [[6, "desc"]],
         "pageLength": 50,
