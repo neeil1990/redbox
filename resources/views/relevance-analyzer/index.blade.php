@@ -6,6 +6,10 @@
             .bg-warning-elem {
                 background-color: #f5e2aa !important;
             }
+
+            #unigramTBody > tr > td:nth-child(1) {
+                text-align: center;
+            }
         </style>
     @endslot
     <div class="col-5 pb-3">
