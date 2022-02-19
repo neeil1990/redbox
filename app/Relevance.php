@@ -3,6 +3,8 @@
 namespace App;
 
 
+use Illuminate\Support\Facades\Log;
+
 class Relevance
 {
     public $mainPage;
@@ -103,7 +105,6 @@ class Relevance
         $this->processingOfGeneralInformation($request->count);
 
         $this->prepareUnigramTable();
-
     }
 
     public static function getHiddenText($html)
@@ -181,6 +182,7 @@ class Relevance
         if ($request->switchMyListWords == 'true') {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
             $arList = explode("\n", $listWords);
+            Log::debug('arList', $arList);
             $this->mainPage['html'] = Relevance::mbStrReplace($arList, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = Relevance::mbStrReplace($arList, '', $this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = Relevance::mbStrReplace($arList, '', $this->mainPage['hiddenText']);
