@@ -55,7 +55,7 @@ class SearchCompetitorsController extends Controller
         if(isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0){
 
             if($count > $tariff['settings']['CompetitorAnalysisPhrases']){
-                abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['CompetitorAnalysisPhrases'] . ' проект`a.');
+                abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['CompetitorAnalysisPhrases'] . ' фраз`ы.');
             }
         }
     }
