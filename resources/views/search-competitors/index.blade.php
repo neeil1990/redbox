@@ -225,7 +225,11 @@
                             renderTopSites(response)
                             nestedRequest(response)
                         },
-                        error: function () {
+                        error: function (error) {
+                            if(error.responseJSON.message){
+                                alert(error.responseJSON.message);
+                            }
+
                             getBrokenScriptMessage()
                         }
                     });

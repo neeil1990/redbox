@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\Tariffs;
 use App\SearchCompetitors;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -32,6 +33,8 @@ class SearchCompetitorsController extends Controller
      */
     public function analyzeSites(Request $request): JsonResponse
     {
+        $this->checkTariff($request);
+
         Log::debug('start competitor analyse', $request->all());
         $xmlResult = SearchCompetitors::analyzeList($request->all());
         $sites = SearchCompetitors::scanSites($xmlResult);
@@ -41,6 +44,20 @@ class SearchCompetitorsController extends Controller
             'metaTags' => $sites['metaTags'],
             'scanResult' => $xmlResult
         ]);
+    }
+
+    protected function checkTariff(Request $request)
+    {
+        $phrases = explode("\n", $request->input('phrases'));
+        $count = count($phrases);
+
+        $tariff = Tariffs::get();
+        if(isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0){
+
+            if($count > $tariff['settings']['CompetitorAnalysisPhrases']){
+                abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['CompetitorAnalysisPhrases'] . ' проект`a.');
+            }
+        }
     }
 
     /**
