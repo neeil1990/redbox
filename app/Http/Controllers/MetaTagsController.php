@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\Tariffs;
 use App\Exports\MetaTagsHistoriesExport;
 use App\Exports\MetaTagsCompareHistoriesExport;
 use App\Mail\MetaTagsEmail;
@@ -232,7 +233,16 @@ class MetaTagsController extends Controller
      */
     public function store(Request $request)
     {
-        $meta = Auth::user()->metaTags()->create($request->all((new MetaTag)->getFillable()));
+        $model = Auth::user()->metaTags();
+
+        $tariff = Tariffs::get();
+        if(isset($tariff['settings']['MetaTagsProject']) && $tariff['settings']['MetaTagsProject'] > 0){
+            if($model->count() >= $tariff['settings']['MetaTagsProject']){
+                throw new \ErrorException('Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['MetaTagsProject'] . ' проект`а.');
+            }
+        }
+
+        $meta = $model->create($request->all((new MetaTag)->getFillable()));
 
         $this->storeHistories($request, $meta->id);
 

@@ -7910,7 +7910,9 @@ __webpack_require__.r(__webpack_exports__);
         toastr.success('Успешно изменено');
         app.$emit('close-modal-form', response);
       })["catch"](function (error) {
-        console.log(error);
+        if (error.response) {
+          toastr.error(error.response.data.message);
+        }
       });
     }
   }
@@ -75156,7 +75158,7 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "row mb-4" }, [
-      _c("div", { staticClass: "col-md-6" }, [
+      _c("div", { staticClass: "col-md-12" }, [
         _vm.cardDisplay
           ? _c("div", { staticClass: "card" }, [
               _c(

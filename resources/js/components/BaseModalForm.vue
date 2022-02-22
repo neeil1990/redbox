@@ -169,8 +169,9 @@
 
                     app.$emit('close-modal-form', response);
                 }).catch(function (error) {
-
-                    console.log(error);
+                    if(error.response){
+                        toastr.error(error.response.data.message);
+                    }
                 });
             }
         }
