@@ -238,7 +238,7 @@ class MetaTagsController extends Controller
         $tariff = Tariffs::get();
         if(isset($tariff['settings']['MetaTagsProject']) && $tariff['settings']['MetaTagsProject'] > 0){
             if($model->count() >= $tariff['settings']['MetaTagsProject']){
-                throw new \ErrorException('Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['MetaTagsProject'] . ' проект`а.');
+                abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['MetaTagsProject'] . ' проект`а');
             }
         }
 
