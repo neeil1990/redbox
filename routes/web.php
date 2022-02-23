@@ -11,7 +11,7 @@
 |
 */
 
-use App\ Bot;
+use App\TelegramBot;
 
 Route::get('info', function () {
     phpinfo();
@@ -174,4 +174,9 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analyzer');
     Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance-analyzer');
+});
+
+
+Route::get('/ttt', function (){
+    dd(\App\RelevanceAnalyseResults::where('user_id','=',\Illuminate\Support\Facades\Auth::id())->get('html_relevance'));
 });
