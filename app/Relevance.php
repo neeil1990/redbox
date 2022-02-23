@@ -2,7 +2,7 @@
 
 namespace App;
 
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class Relevance
@@ -31,15 +31,50 @@ class Relevance
 
     public $ignoredWords;
 
-    public function __construct()
+    public $params;
+
+    public $separator = "\n\nseparator\n\n";
+
+    public function __construct($request)
     {
-        $this->mainPage = [];
-        $this->ignoredWords = [];
-        $this->domains = [];
         $this->pages = [];
-        $this->competitorsLinks = '';
+        $this->domains = [];
+        $this->mainPage = [];
+        $this->wordForms = [];
+        $this->ignoredWords = [];
         $this->competitorsText = '';
+        $this->competitorsLinks = '';
         $this->competitorsTextAndLinks = '';
+
+        $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
+        $this->params['phrase'] = $request->phrase;
+        $this->params['main_page_link'] = $request->link;
+        $this->params['region'] = $request->region;
+        $this->params['count'] = $request->count;
+        $this->params['xml_hash'] = RelevanceAnalyseResults::calculateHash([
+            $request->phrase,
+            $request->link,
+            $request->region,
+            $request->count
+        ]);
+
+        $this->params['check_no_index'] = $request->noIndex;
+        $this->params['check_hidden_text'] = $request->hiddenText;
+        $this->params['check_parts_of_speech'] = $request->conjunctionsPrepositionsPronouns;
+        $this->params['remove_list_words'] = $request->switchMyListWords;
+        $this->params['list_words'] = $request->listWords;
+        $this->params['config_hash'] = RelevanceAnalyseResults::calculateHash([
+            $request->noIndex,
+            $request->hiddenText,
+            $request->conjunctionsPrepositionsPronouns,
+            $request->switchMyListWords,
+            $request->listWords
+        ]);
+
+        $this->params['ignored_domains'] = $request->ignoredDomains;
+        $this->params['sites'] = '';
+        $this->params['html_relevance'] = '';
+        $this->params['html_main_page'] = '';
     }
 
     /**
@@ -48,8 +83,9 @@ class Relevance
      */
     public function getMainPageHtml($link): Relevance
     {
-        $this->mainPage['html'] = TextAnalyzer::curlInit($link);
-        $this->mainPage['html'] = mb_strtolower(TextAnalyzer::removeHeaders($this->mainPage['html']));
+        $html = TextAnalyzer::curlInit($link);
+        $this->setMainPage(TextAnalyzer::removeHeaders($html));
+        $this->params['html_main_page'] = $this->mainPage['html'];
 
         return $this;
     }
@@ -64,8 +100,8 @@ class Relevance
                 TextAnalyzer::curlInit($item['doc']['url'])
             ));
             $this->pages[$item['doc']['url']]['html'] = $result;
-            //for scaned table
-            if ($result == "" || $result == null) {
+            $this->params['html_relevance'] .= $result . $this->separator;
+            if ($result == '' || $result == null) {
                 $this->sites[] = [
                     'site' => $item['doc']['url'],
                     'danger' => true,
@@ -76,6 +112,7 @@ class Relevance
                     'danger' => false,
                 ];
             }
+            $this->params['sites'] .= $item['doc']['url'] . $this->separator;
         }
 
         return $this;
@@ -89,16 +126,11 @@ class Relevance
 
         $this->getHiddenData($request);
 
-        $this->removeConjunctionsPrepositionsPronouns($request);
+        $this->removePartsOfSpeech($request);
 
         $this->removeListWords($request);
 
-        //Вся информация с сайтов конкурентов с сайтов конкурентов
-        foreach ($this->pages as $key => $page) {
-            $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
-            $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
-            $this->competitorsTextAndLinks .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ' . $this->pages[$key]['linkText'] . ' ';
-        }
+        $this->getInfoFromCompetitors();
 
         $this->prepareClouds();
 
@@ -109,6 +141,51 @@ class Relevance
         $this->prepareUnigramTable();
     }
 
+    /**
+     * Отчистить документ от тегов и лишних символов
+     * @return void
+     */
+    public function getHtml()
+    {
+        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->mainPage['html']);
+        foreach ($this->pages as $key => $page) {
+            $this->pages[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($page['html']);
+        }
+    }
+
+    /**
+     * @param $request
+     * @return void
+     */
+    public function getHiddenData($request)
+    {
+        if ($request->hiddenText == 'true') {
+            Log::debug('getHiddenData');
+            $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
+            foreach ($this->pages as $key => $page) {
+                $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($page['html']);
+            }
+        }
+    }
+
+    /**
+     * Вся информация с сайтов конкурентов с сайтов конкурентов
+     * @return void
+     */
+    public function getInfoFromCompetitors()
+    {
+        foreach ($this->pages as $key => $page) {
+            $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
+            $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
+            $this->competitorsTextAndLinks .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ' . $this->pages[$key]['linkText'] . ' ';
+        }
+    }
+
+    /**
+     * Получить скрытый текст из alt,title,data-text атрибутов
+     * @param $html
+     * @return array|string|string[]|null
+     */
     public static function getHiddenText($html)
     {
         $hiddenText = '';
@@ -125,16 +202,25 @@ class Relevance
         return TextAnalyzer::deleteEverythingExceptCharacters($hiddenText);
     }
 
+    /**
+     * Удалить текст, который находится в не индексируемых частях кода
+     * @param $request
+     * @return void
+     */
     public function removeNoIndex($request)
     {
-        if ($request->noIndex == "false") {
-            $this->mainPage['html'] = mb_strtolower(TextAnalyzer::removeNoindexText($this->mainPage['html']));
+        if ($request->noIndex == 'false') {
+            $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = mb_strtolower(TextAnalyzer::removeNoindexText($page['html']));
+                $this->pages[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
             }
         }
     }
 
+    /**
+     * Разделение ссылочного текста от другого текста
+     * @return void
+     */
     public function getTextWithoutLinks()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
@@ -147,25 +233,12 @@ class Relevance
         }
     }
 
-    public function getHiddenData($request)
-    {
-        if ($request->hiddenText == 'true') {
-            $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($page['html']);
-            }
-        }
-    }
-
-    public function getHtml()
-    {
-        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->mainPage['html']);
-        foreach ($this->pages as $key => $page) {
-            $this->pages[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($page['html']);
-        }
-    }
-
-    public function removeConjunctionsPrepositionsPronouns($request)
+    /**
+     * Удаляем союзы, предлоги, местоимения
+     * @param $request
+     * @return void
+     */
+    public function removePartsOfSpeech($request)
     {
         if ($request->conjunctionsPrepositionsPronouns == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
@@ -179,6 +252,11 @@ class Relevance
         }
     }
 
+    /**
+     * Удаляем полученного текста слова
+     * @param $request
+     * @return void
+     */
     public function removeListWords($request)
     {
         if ($request->switchMyListWords == 'true') {
@@ -195,6 +273,14 @@ class Relevance
         }
     }
 
+    /**
+     * Преобразование слова
+     *
+     * @param $search
+     * @param $replace
+     * @param $string
+     * @return array|false|string|string[]
+     */
     public static function mbStrReplace($search, $replace, $string)
     {
         $charset = mb_detect_encoding($string);
@@ -205,6 +291,7 @@ class Relevance
     }
 
     /**
+     * Подготовка облаков (http://cavaliercoder.com/jclouds)
      * @return void
      */
     public function prepareClouds()
@@ -222,13 +309,17 @@ class Relevance
         $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
     }
 
+    /**
+     * Обработка информации для таблицы unigram
+     * @param $countSites
+     * @return void
+     */
     public function processingOfGeneralInformation($countSites)
     {
         $mainPage = ' ' . $this->mainPage['html'] . ' ' .
             $this->mainPage['linkText'] . ' ' .
             $this->mainPage['hiddenText'] . ' ';
         $strLen = str_word_count($this->competitorsTextAndLinks);
-//        $this->ignoredWords
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = 0;
@@ -284,9 +375,12 @@ class Relevance
         }
     }
 
+    /**
+     * Поиск словоформ
+     * @return void
+     */
     public function searchWordForms()
     {
-        $will = $this->ignoredWords;
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
 
@@ -302,9 +396,9 @@ class Relevance
         }
 
         foreach ($array as $key1 => $item1) {
-            if (!in_array($key1, $will)) {
+            if (!in_array($key1, $this->ignoredWords)) {
                 foreach ($array as $key2 => $item2) {
-                    if (!in_array($key2, $will)) {
+                    if (!in_array($key2, $this->ignoredWords)) {
                         similar_text($key1, $key2, $percent);
                         if (
                             preg_match("/[А-Яа-я]/", $key1)
@@ -313,8 +407,8 @@ class Relevance
                             && $percent >= 82
                         ) {
                             $this->wordForms[$key1][$key2] = $item2;
-                            $will[] = $key2;
-                            $will[] = $key1;
+                            $this->ignoredWords[] = $key2;
+                            $this->ignoredWords[] = $key1;
                         }
                     }
                 }
@@ -372,6 +466,8 @@ class Relevance
     }
 
     /**
+     * Удаление игнорируемых доменов из ответа xml сервиса
+     *
      * @param $count
      * @param $ignoredDomains
      * @param $xmlResponse
@@ -395,5 +491,50 @@ class Relevance
         } else {
             $this->domains = array_slice($xmlResponse, 0, $count - 1);
         }
+    }
+
+    /**
+     * @param $html
+     * @return $this
+     */
+    public function setMainPage($html): Relevance
+    {
+        $this->mainPage['html'] = $html;
+
+        return $this;
+    }
+
+    /**
+     * @param $array
+     * @return $this
+     */
+    public function setSites($array): Relevance
+    {
+        foreach ($array as $site) {
+            $this->sites[] = [
+                'site' => $site,
+                'danger' => false
+            ];
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $sites
+     * @param $html_relevance
+     * @return $this
+     */
+    public function setPages($sites, $html_relevance): Relevance
+    {
+        $html = explode($this->separator, $html_relevance);
+        unset($html[count($html) - 1]);
+
+        $pages = array_combine($sites, $html);
+        foreach ($pages as $key => $page) {
+            $this->pages[$key]['html'] = $page;
+        }
+
+        return $this;
     }
 }

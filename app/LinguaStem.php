@@ -32,6 +32,13 @@ class LinguaStem
         return preg_match($re, $s);
     }
 
+    /**
+     * Получения корня слова
+     * Не всегда корректно определяется корень слова
+     *
+     * @param $word
+     * @return array|mixed|string|string[]
+     */
     public function getRootWord($word)
     {
         $word = mb_strtolower($word);

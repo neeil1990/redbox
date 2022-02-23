@@ -152,10 +152,7 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchNoindex"
-                               name="noIndex"
-                               @isset($response['noIndex'])
-                               checked
-                            @endisset>
+                               name="noIndex">
                         <label class="custom-control-label" for="switchNoindex"></label>
                     </div>
                 </div>
@@ -167,10 +164,7 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchAltAndTitle"
-                               name="hiddenText"
-                               @isset($response['hiddenText'])
-                               checked
-                            @endisset>
+                               name="hiddenText">
                         <label class="custom-control-label" for="switchAltAndTitle"></label>
                     </div>
                 </div>
@@ -182,10 +176,7 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchConjunctionsPrepositionsPronouns"
-                               name="conjunctionsPrepositionsPronouns"
-                               @isset($response['conjunctionsPrepositionsPronouns'])
-                               checked
-                            @endisset>
+                               name="conjunctionsPrepositionsPronouns">
                         <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
                     </div>
                 </div>
@@ -197,10 +188,7 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchMyListWords"
-                               name="switchMyListWords"
-                               @isset($response['listWords'])
-                               checked
-                            @endisset>
+                               name="switchMyListWords">
                         <label class="custom-control-label" for="switchMyListWords"></label>
                     </div>
                 </div>
@@ -323,12 +311,18 @@
                         window.clearInterval(interval);
                         $('.btn.btn-secondary.pull-left').prop("disabled", false);
                     },
-                    error: function () {
+                    error: function (response) {
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
                         $('.btn.btn-secondary.pull-left').prop("disabled", false);
                         clearClouds()
+                        if (response.responseJSON.repeat) {
+                            let ask = confirm(response.responseJSON.message)
+                            if (ask) {
+                                repeatRequest()
+                            }
+                        }
                     }
                 });
             })
@@ -386,6 +380,45 @@
                     percent += 1;
                     setProgressBarStyles(percent)
                 }, 1000)
+            }
+
+            function repeatRequest() {
+                $('.btn.btn-secondary.pull-left').prop("disabled", true);
+                var interval = startProgressBar()
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('repeat.relevance-analyzer') }}",
+                    data: {
+                        link: $('.form-control.link').val(),
+                        phrase: $('.form-control.phrase').val(),
+                        noIndex: $('#switchNoindex').is(':checked'),
+                        listWords: $('.form-control.listWords').val(),
+                        count: $('.custom-select.rounded-0.count').val(),
+                        region: $('.custom-select.rounded-0.region').val(),
+                        hiddenText: $('#switchAltAndTitle').is(':checked'),
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ignoredDomains: $('.form-control.ignoredDomains').val(),
+                        switchMyListWords: $('#switchMyListWords').is(':checked'),
+                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
+                    },
+                    success: function (response) {
+                        clearClouds()
+                        renderClouds(response.clouds);
+                        renderUnigramTable(response.unigramTable);
+                        renderScanedSitesList(response.sites);
+                        stopProgressBar()
+                        window.clearInterval(interval);
+                        $('.btn.btn-secondary.pull-left').prop("disabled", false);
+                    },
+                    error: function () {
+                        stopProgressBar()
+                        window.clearInterval(interval);
+                        removeAllRenderElements()
+                        $('.btn.btn-secondary.pull-left').prop("disabled", false);
+                        clearClouds()
+                    }
+                });
             }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}

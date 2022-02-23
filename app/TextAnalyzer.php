@@ -165,7 +165,7 @@ class TextAnalyzer
     {
         $withoutSubject = explode("\n\r", $html);
         unset($withoutSubject[0]);
-        return implode("\n", $withoutSubject);
+        return mb_strtolower(implode("\n", $withoutSubject));
     }
 
     public static function removeNoindexText($html)
@@ -177,7 +177,7 @@ class TextAnalyzer
         foreach ($matches as $item) {
             $html = str_replace($item[0], "", $html);
         }
-        return $html;
+        return mb_strtolower($html);
     }
 
     /**

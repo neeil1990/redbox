@@ -174,6 +174,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analyzer');
     Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance-analyzer');
+    Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatAnalyse')->name('repeat.relevance-analyzer');
 });
 
 
