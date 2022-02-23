@@ -220,6 +220,7 @@ class TelegramBot extends Model
     /**
      * @param $text
      * @param $chatId
+     * @return false|string
      */
     public static function sendMessage($text, $chatId)
     {
@@ -230,8 +231,10 @@ class TelegramBot extends Model
             'disable_web_page_preview' => true,
         ];
 
-        file_get_contents('https://api.telegram.org/bot' . env('TELEGRAM_BOT_TOKEN') . '/sendMessage?'
+        file_get_contents("https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/sendMessage?"
             . http_build_query($data)
         );
+
+        return http_response_code(200);
     }
 }
