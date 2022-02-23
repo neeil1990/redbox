@@ -67,7 +67,7 @@ class TelegramBot extends Model
         }
         $updates = json_decode(
             file_get_contents(
-                'https://api.telegram.org/bot' . env('TELEGRAM_BOT_TOKEN') . '/getUpdates?'
+                'https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/getUpdates?'
                 . http_build_query($data)
             ), true);
 
@@ -220,7 +220,7 @@ class TelegramBot extends Model
     /**
      * @param $text
      * @param $chatId
-     * @return false|string
+     * @return bool|int
      */
     public static function sendMessage($text, $chatId)
     {
