@@ -95,7 +95,7 @@
                     '56' => __('Chelyabinsk'),
                     '1104' => __('Cherkessk'),
                     '16' => __('Yaroslavl'),
-                    ], $region ?? null, ['class' => 'custom-select rounded-0 region']) !!}
+                    ], null, ['class' => 'custom-select rounded-0 region']) !!}
         </div>
 
         <div class="form-group required">
@@ -198,8 +198,16 @@
                 {!! Form::textarea('listWords',null,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
             </div>
         </div>
-        <button class="btn btn-secondary pull-left">{{ __('Analyze') }}</button>
     </div>
+    <button class="btn btn-secondary pull-left" id="full-analyse">
+        Полный анализ
+    </button>
+    <button class="btn btn-secondary pull-left" id="repeat-main-page-analyse" disabled>
+        Повторный анализ посадочной страницы
+    </button>
+    <button class="btn btn-secondary pull-left" id="repeat-relevance-analyse" disabled>
+        Повторный анализ сайтов конкурентов
+    </button>
     <div id="progress-bar">
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
@@ -279,12 +287,12 @@
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderUnigramTable.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderScanedSitesList.js') }}"></script>
         <script>
-            $('.btn.btn-secondary.pull-left').click(() => {
+            $('#full-analyse').click(() => {
                 var interval = startProgressBar()
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('analyse.relevance-analyzer') }}",
+                    url: "{{ route('analyse.relevance') }}",
                     data: {
                         link: $('.form-control.link').val(),
                         phrase: $('.form-control.phrase').val(),
@@ -299,30 +307,130 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
-                        removeAllRenderElements()
-                        $('.btn.btn-secondary.pull-left').prop("disabled", true);
+                        $('#full-analyse').prop("disabled", true);
+                        $('#repeat-main-page-analyse').prop("disabled", true);
+                        $('#repeat-relevance-analyse').prop("disabled", true);
                     },
                     success: function (response) {
+                        removeAllRenderElements()
                         clearClouds()
                         renderClouds(response.clouds);
                         renderUnigramTable(response.unigramTable);
                         renderScanedSitesList(response.sites);
                         stopProgressBar()
                         window.clearInterval(interval);
-                        $('.btn.btn-secondary.pull-left').prop("disabled", false);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", false);
+                        $("#repeat-relevance-analyse").prop("disabled", false);
                     },
                     error: function (response) {
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        $('.btn.btn-secondary.pull-left').prop("disabled", false);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", true);
+                        $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
-                        if (response.responseJSON.repeat) {
-                            let ask = confirm(response.responseJSON.message)
-                            if (ask) {
-                                repeatRequest()
-                            }
-                        }
+                        // if (response.responseJSON.repeat) {
+                        //     let ask = confirm(response.responseJSON.message)
+                        //     if (ask) {
+                        //         repeatRequest()
+                        //     }
+                        // }
+                    }
+                });
+            })
+            $('#repeat-main-page-analyse').click(() => {
+                var interval = startProgressBar()
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('repeat.main.page.analyse') }}",
+                    data: {
+                        link: $('.form-control.link').val(),
+                        phrase: $('.form-control.phrase').val(),
+                        noIndex: $('#switchNoindex').is(':checked'),
+                        listWords: $('.form-control.listWords').val(),
+                        count: $('.custom-select.rounded-0.count').val(),
+                        region: $('.custom-select.rounded-0.region').val(),
+                        hiddenText: $('#switchAltAndTitle').is(':checked'),
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ignoredDomains: $('.form-control.ignoredDomains').val(),
+                        switchMyListWords: $('#switchMyListWords').is(':checked'),
+                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
+                    },
+                    beforeSend: function () {
+                        $('#full-analyse').prop("disabled", true);
+                        $('#repeat-main-page-analyse').prop("disabled", true);
+                        $('#repeat-relevance-analyse').prop("disabled", true);
+                    },
+                    success: function (response) {
+                        removeAllRenderElements()
+                        clearClouds()
+                        renderClouds(response.clouds);
+                        renderUnigramTable(response.unigramTable);
+                        renderScanedSitesList(response.sites);
+                        stopProgressBar()
+                        window.clearInterval(interval);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", false);
+                        $("#repeat-relevance-analyse").prop("disabled", false);
+                    },
+                    error: function () {
+                        stopProgressBar()
+                        window.clearInterval(interval);
+                        removeAllRenderElements()
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", true);
+                        $("#repeat-relevance-analyse").prop("disabled", true);
+                        clearClouds()
+                    }
+                });
+            })
+            $('#repeat-relevance-analyse').click(() => {
+                var interval = startProgressBar()
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('repeat.relevance.analyse') }}",
+                    data: {
+                        link: $('.form-control.link').val(),
+                        phrase: $('.form-control.phrase').val(),
+                        noIndex: $('#switchNoindex').is(':checked'),
+                        listWords: $('.form-control.listWords').val(),
+                        count: $('.custom-select.rounded-0.count').val(),
+                        region: $('.custom-select.rounded-0.region').val(),
+                        hiddenText: $('#switchAltAndTitle').is(':checked'),
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ignoredDomains: $('.form-control.ignoredDomains').val(),
+                        switchMyListWords: $('#switchMyListWords').is(':checked'),
+                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
+                    },
+                    beforeSend: function () {
+                        $('#full-analyse').prop("disabled", true);
+                        $('#repeat-main-page-analyse').prop("disabled", true);
+                        $('#repeat-relevance-analyse').prop("disabled", true);
+                    },
+                    success: function (response) {
+                        removeAllRenderElements()
+                        clearClouds()
+                        renderClouds(response.clouds);
+                        renderUnigramTable(response.unigramTable);
+                        renderScanedSitesList(response.sites);
+                        stopProgressBar()
+                        window.clearInterval(interval);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", false);
+                        $("#repeat-relevance-analyse").prop("disabled", false);
+                    },
+                    error: function () {
+                        stopProgressBar()
+                        window.clearInterval(interval);
+                        removeAllRenderElements()
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", true);
+                        $("#repeat-relevance-analyse").prop("disabled", true);
+                        clearClouds()
                     }
                 });
             })
@@ -330,9 +438,9 @@
             function removeAllRenderElements() {
                 $("#unigram").dataTable().fnDestroy();
                 $('.render').remove();
-                $('.pb-3.unigram').hide(300)
-                $('.pb-3.sites').hide(300)
-                $('.clouds').hide(300)
+                $('.pb-3.unigram').hide()
+                $('.pb-3.sites').hide()
+                $('.clouds').hide()
             }
 
             function clearClouds() {
@@ -380,45 +488,6 @@
                     percent += 1;
                     setProgressBarStyles(percent)
                 }, 1000)
-            }
-
-            function repeatRequest() {
-                $('.btn.btn-secondary.pull-left').prop("disabled", true);
-                var interval = startProgressBar()
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('repeat.relevance-analyzer') }}",
-                    data: {
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
-                    success: function (response) {
-                        clearClouds()
-                        renderClouds(response.clouds);
-                        renderUnigramTable(response.unigramTable);
-                        renderScanedSitesList(response.sites);
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        $('.btn.btn-secondary.pull-left').prop("disabled", false);
-                    },
-                    error: function () {
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        removeAllRenderElements()
-                        $('.btn.btn-secondary.pull-left').prop("disabled", false);
-                        clearClouds()
-                    }
-                });
             }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}

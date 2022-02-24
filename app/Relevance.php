@@ -83,8 +83,9 @@ class Relevance
      */
     public function getMainPageHtml($link): Relevance
     {
-        $html = TextAnalyzer::curlInit($link);
-        $this->setMainPage(TextAnalyzer::removeHeaders($html));
+        $response = TextAnalyzer::curlInit($link);
+        $html = TextAnalyzer::removeHeaders($response);
+        $this->setMainPage($html);
         $this->params['html_main_page'] = $this->mainPage['html'];
 
         return $this;

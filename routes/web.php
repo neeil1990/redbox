@@ -173,8 +173,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analyze.tags');
 
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analyzer');
-    Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance-analyzer');
-    Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatAnalyse')->name('repeat.relevance-analyzer');
+    Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance');
+    Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalyse')->name('repeat.main.page.analyse');
+    Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalyse')->name('repeat.relevance.analyse');
 });
 
 

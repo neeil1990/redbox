@@ -15,7 +15,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param $count
-     * @param $lr
+     * @param $lr -- region
      */
     public function __construct($count, $lr)
     {
