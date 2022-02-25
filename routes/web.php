@@ -43,6 +43,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('main-projects', 'DescriptionProjectForAdminController');
 
+    Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::resource('users', 'UsersController');
 
     Route::post('/manage-access/assignPermission', 'ManageAccessController@assignPermission');

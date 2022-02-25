@@ -29,6 +29,11 @@
                     <i class="fas fa-expand-arrows-alt"></i>
                 </a>
             </li>
+            <li class="nav-item dropdown">
+                {!! Form::open(['class' => '', 'method' => 'POST', 'route' => ['logout']]) !!}
+                {!! Form::button( '<i class="fas fa-sign-out-alt"></i>', ['type' => 'submit', 'class' => 'nav-link border-0']) !!}
+                {!! Form::close() !!}
+            </li>
         </ul>
     </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4">

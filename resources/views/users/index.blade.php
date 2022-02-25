@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', __('Users'))
+
 @section('content')
     <div class="card">
         <div class="card-header">
@@ -89,6 +91,11 @@
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>
                         <td class="project-actions text-right">
+                            <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">
+                                <i class="fas fa-pencil-alt">
+                                </i>
+                                {{ __('Login') }}
+                            </a>
                             <a class="btn btn-info btn-sm" href="{{ route('users.edit', $user->id) }}">
                                 <i class="fas fa-pencil-alt">
                                 </i>

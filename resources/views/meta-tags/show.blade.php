@@ -142,14 +142,21 @@
                 self.closest('tr').find('.compare-history').attr('href', url.join('/'));
             });
 
-            $('#lazy-load').click(function(){
+            var LazyLoad = function(){
+
+                var self = $(this);
                 var pagination = $('.pagination');
                 var current = pagination.find('li.active');
                 var next = current.next();
 
                 if(next.find('a').length){
 
+                    self.prop( "disabled", true );
+
+                    tbody.css('cursor', 'wait');
+
                     var href = next.find('a').attr('href');
+
                     $.get(href, function(response) {
 
                         var category = $(response);
@@ -162,12 +169,20 @@
                         pagination.after(paging);
                         pagination.remove();
                         pagination = paging;
+
+                        self.prop( "disabled", false );
+
+                        tbody.css('cursor', 'auto');
                     });
                 }else{
                     toastr.success('Пока что больше данных нет.');
                 }
-            });
+            };
 
+            $('#lazy-load').click(_.debounce(LazyLoad, 500, {
+                'leading': true,
+                'trailing': false
+            }));
         </script>
 
     @endslot
