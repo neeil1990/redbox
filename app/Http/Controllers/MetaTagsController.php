@@ -275,12 +275,9 @@ class MetaTagsController extends Controller
 
         $project = Auth::user()->metaTags()->find($id);
 
-        $project->histories()->where([
-            ['created_at', '<', Carbon::now()->subDays(90)],
-            ['ideal', '=', 0]
-        ])->delete();
+        $histories = $project->histories()->orderBy('ideal', 'desc')->orderBy('id', 'desc')->paginate(50);
 
-        $project->histories->transform(function ($item, $key) {
+        $histories->transform(function ($item, $key) {
 
             $errors = json_decode($item->data);
 
@@ -297,7 +294,7 @@ class MetaTagsController extends Controller
             return $item;
         });
 
-        return view('meta-tags.show', compact('project'));
+        return view('meta-tags.show', compact('project', 'histories'));
     }
 
     /**
@@ -435,7 +432,7 @@ class MetaTagsController extends Controller
     public function updateHistoriesIdeal(Request $request, $id) {
 
         $project = Auth::user()->metaTags()->find($id);
-        $project->histories()->update(['ideal' => false]);
+        $project->histories()->where('ideal', true)->update(['ideal' => false]);
 
         $history_id = $request->input('id', false);
         $project->histories()->where('id', $history_id)->update(['ideal' => true]);

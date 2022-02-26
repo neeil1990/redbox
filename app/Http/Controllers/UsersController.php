@@ -41,6 +41,18 @@ class UsersController extends Controller
     }
 
     /**
+     * @param $id
+     * @return \Illuminate\Contracts\Auth\Authenticatable
+     */
+    public function login($id)
+    {
+        if(Auth::loginUsingId($id))
+            return redirect('/');
+        else
+            return redirect('users');
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
