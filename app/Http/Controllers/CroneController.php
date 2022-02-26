@@ -15,7 +15,7 @@ class CroneController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        Log::debug('start scan', [Carbon::now()]);
+        Log::debug("start scan with timing {$timing}", [Carbon::now()]);
         try {
 //            if (!file_exists($timing . '.txt')) {
 //                file_put_contents($timing . '.txt', '', 8);
@@ -29,5 +29,6 @@ class CroneController extends Controller
             Log::debug('scan error', [$exception->getMessage()]);
 //            unlink($timing . '.txt');
         }
+        Log::debug("end scan with timing {$timing}", [Carbon::now()]);
     }
 }
