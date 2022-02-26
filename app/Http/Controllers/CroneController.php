@@ -23,7 +23,7 @@ class CroneController extends Controller
             foreach ($projects as $project) {
                 DomainMonitoring::httpCheck($project);
             }
-            unlink($timing . '.txt');
+//            unlink($timing . '.txt');
 //            }
         } catch (Exception $exception) {
             Log::debug('scan error', [$exception->getMessage()]);
