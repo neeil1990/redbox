@@ -19,5 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('/backlink/scan-links', 'BacklinkController@scanLinks');
 Route::get('/backlink/scan-broken-links', 'BacklinkController@scanBrokenLinks');
-Route::get('/domain-monitoring/check-link-crone/{timing}', 'DomainMonitoringController@checkLinkCrone');
+Route::get('/domain-monitoring/check-link-crone/{timing}', 'CroneController@checkLinkCrone');
 Route::get('/domain-information/check-domain-crone/', 'DomainInformationController@checkDomains');

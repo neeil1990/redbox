@@ -86,7 +86,6 @@ class Relevance
         $response = TextAnalyzer::curlInit($link);
         $html = TextAnalyzer::removeHeaders($response);
         $this->setMainPage($html);
-        $this->params['html_main_page'] = $this->mainPage['html'];
 
         return $this;
     }
@@ -501,15 +500,17 @@ class Relevance
     public function setMainPage($html): Relevance
     {
         $this->mainPage['html'] = $html;
+        $this->params['html_main_page'] = $html;
 
         return $this;
     }
 
     /**
      * @param $array
+     * @param $sites
      * @return $this
      */
-    public function setSites($array): Relevance
+    public function setSites($array, $sites): Relevance
     {
         foreach ($array as $site) {
             $this->sites[] = [
@@ -517,6 +518,8 @@ class Relevance
                 'danger' => false
             ];
         }
+
+        $this->params['sites'] = $sites;
 
         return $this;
     }
@@ -530,6 +533,7 @@ class Relevance
     {
         $html = explode($this->separator, $html_relevance);
         unset($html[count($html) - 1]);
+        $this->params['html_relevance'] = $html_relevance;
 
         $pages = array_combine($sites, $html);
         foreach ($pages as $key => $page) {

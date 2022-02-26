@@ -307,6 +307,7 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
+                        sessionStorage.clear()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -327,9 +328,9 @@
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", true);
-                        $("#repeat-relevance-analyse").prop("disabled", true);
+                        // $("#full-analyse").prop("disabled", false);
+                        // $("#repeat-main-page-analyse").prop("disabled", true);
+                        // $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
                         // if (response.responseJSON.repeat) {
                         //     let ask = confirm(response.responseJSON.message)
@@ -360,6 +361,7 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
+                        sessionStorage.clear()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -380,9 +382,9 @@
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", true);
-                        $("#repeat-relevance-analyse").prop("disabled", true);
+                        // $("#full-analyse").prop("disabled", false);
+                        // $("#repeat-main-page-analyse").prop("disabled", true);
+                        // $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
                     }
                 });
@@ -407,6 +409,7 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
+                        sessionStorage.clear()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -427,9 +430,9 @@
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", true);
-                        $("#repeat-relevance-analyse").prop("disabled", true);
+                        // $("#full-analyse").prop("disabled", false);
+                        // $("#repeat-main-page-analyse").prop("disabled", true);
+                        // $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
                     }
                 });

@@ -1,19 +1,14 @@
 function renderUnigramTable(unigramTable) {
+    sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
     $.each(unigramTable, function (key, wordWorm) {
         renderMainTr(tBody, key, wordWorm)
-        $.each(wordWorm, function (word, stats) {
-            if (word !== 'total') {
-                renderChildTr(tBody, key, word, stats)
-            }
-        })
     })
 
     $('#unigram').DataTable({
         "order": [[6, "desc"]],
         "pageLength": 50,
-        "ordering": false
     });
 }
 
@@ -32,7 +27,7 @@ function renderMainTr(tBody, key, wordWorm) {
     let repeatInLinkMainPageWarning = repeatInLinkMainPage === '0' ? " class='bg-warning-elem'" : ""
     tBody.append(
         "<tr class='render'>" +
-        "<td class='" + className + "' onclick='showWordWorms(this)' data-target='" + key + "'>" +
+        "<td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
         "<i class='fa fa-plus'></i>" +
         "</td>" +
         "<td>" + key + "</td>" +
@@ -48,7 +43,7 @@ function renderMainTr(tBody, key, wordWorm) {
     )
 }
 
-function renderChildTr(tBody, key, word, stats) {
+function renderChildTr(elem, key, word, stats) {
     let bgWarn = ''
     let textWarn = ''
     let linkWarn = ''
@@ -68,9 +63,9 @@ function renderChildTr(tBody, key, word, stats) {
         linkWarn = "class='bg-warning-elem'"
         bgWarn = "class='bg-warning-elem'"
     }
-    tBody.append(
-        "<tr style='display: none; background-color: #f4f6f9;' data-order='" + key + "' class='render'>" +
-        "<td " + bgWarn + " onclick='hideWordWorms(this)' data-target='" + key + "'>" +
+    elem.after(
+        "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render'>" +
+        "<td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +
         "<i class='fa fa-minus'></i>" +
         "</td>" +
         "<td>" + word + "</td>" +
@@ -87,21 +82,29 @@ function renderChildTr(tBody, key, word, stats) {
 }
 
 function showWordWorms(elem) {
-    let target = $(elem).attr('data-target')
-    if ($('tr[data-order=' + target + ']').is(':visible')) {
-        $('tr[data-order=' + target + ']').hide()
-    } else {
-        $('tr[data-order=' + target + ']').show()
+    let check = $(elem).attr('generated-child')
+    if (check === 'false' || check === undefined) {
+        let obj = JSON.parse(sessionStorage.childTableRows)
+        let target = $(elem).attr('data-target')
+        let parent = elem.parent()
+        $(elem).attr('generated-child', true)
+        $.each(obj[target], function (word, stats) {
+            if (word !== 'total') {
+                renderChildTr(parent, target, word, stats)
+            }
+        })
     }
 }
 
 function hideWordWorms(elem) {
-    let target = $(elem).attr('data-target')
-    if ($('tr[data-order=' + target + ']').is(':visible')) {
-        $('tr[data-order=' + target + ']').hide()
-    } else {
-        $('tr[data-order=' + target + ']').show()
-    }
+    let target = elem.attr('data-target')
+    let objects = $('[data-target = ' + target + ']')
+    $.each(objects, function () {
+        if ($(this).attr('generated-child')) {
+            $(this).attr('generated-child', false)
+        }
+    })
+    $('tr[data-order=' + target + ']').remove()
 }
 
 function substringNumber(string) {
