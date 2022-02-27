@@ -64,7 +64,7 @@ function renderChildTr(elem, key, word, stats) {
         bgWarn = "class='bg-warning-elem'"
     }
     elem.after(
-        "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render'>" +
+        "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
         "<td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +
         "<i class='fa fa-minus'></i>" +
         "</td>" +
@@ -94,6 +94,7 @@ function showWordWorms(elem) {
             }
         })
     }
+    elem.addClass('show-children')
 }
 
 function hideWordWorms(elem) {
@@ -106,6 +107,14 @@ function hideWordWorms(elem) {
     })
     $('tr[data-order=' + target + ']').remove()
 }
+
+$('th.sorting').click(() => {
+    $('.child-table-row').remove();
+    let objects = $('.show-children')
+    $.each(objects, function () {
+        $(this).attr('generated-child', false)
+    })
+})
 
 function substringNumber(string) {
     let number = string.toString()
