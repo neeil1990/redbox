@@ -142,18 +142,6 @@ class Relevance
     }
 
     /**
-     * Отчистить документ от тегов и лишних символов
-     * @return void
-     */
-    public function getHtml()
-    {
-        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->mainPage['html']);
-        foreach ($this->pages as $key => $page) {
-            $this->pages[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($page['html']);
-        }
-    }
-
-    /**
      * @param $request
      * @return void
      */

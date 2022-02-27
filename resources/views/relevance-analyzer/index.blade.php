@@ -211,7 +211,48 @@
     <div id="progress-bar">
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
+    <div class="pb-3 pt-3 text" style="display:none !important;">
+        <h3>Сравнение количества текста</h3>
+        <table class="table table-bordered table-striped dataTable dtr-inline">
+            <thead>
+            <tr>
+                <th class="col-3"></th>
+                <th>Средние значения конкурентов</th>
+                <th>Значения посадочной страницы</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <b>{{ __('Number of words') }}</b>
+                </td>
+                <td id="avgCountWords">1</td>
+                <td id="mainPageCountWords">2</td>
+            </tr>
+            <tr>
+                <td>
+                    <b>{{ __('Number of spaces') }}</b>
+                </td>
+                <td id="avgCountSpaces">3</td>
+                <td id="mainPageCountSpaces">4</td>
+            </tr>
+            <tr>
+                <td><b>{{ __('Number of characters') }}</b></td>
+                <td id="avgCountSymbols">5</td>
+                <td id="mainPageCountSymbols">6</td>
+            </tr>
+            <tr>
+                <td>
+                    <b>{{ __('Number of characters without spaces') }}</b>
+                </td>
+                <td id="avgCountSymbolsWithoutSpaces">7</td>
+                <td id="mainPageCountSymbolsWithoutSpaces">8</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="pb-3 clouds" style="display:none !important;">
+        <h3>Облака</h3>
         <div class="d-flex flex-column pb-3">
             <div class="d-lg-flex mt-4">
                 <div class="col-lg-6 col-md-12">
@@ -286,6 +327,7 @@
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderClouds.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderUnigramTable.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderScanedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderTextTable.js') }}"></script>
         <script>
             $('#full-analyse').click(() => {
                 var interval = startProgressBar()
@@ -318,26 +360,21 @@
                         renderClouds(response.clouds);
                         renderUnigramTable(response.unigramTable);
                         renderScanedSitesList(response.sites);
+                        renderTextTable(response.avg, response.mainPage)
                         stopProgressBar()
                         window.clearInterval(interval);
                         $("#full-analyse").prop("disabled", false);
                         $("#repeat-main-page-analyse").prop("disabled", false);
                         $("#repeat-relevance-analyse").prop("disabled", false);
                     },
-                    error: function (response) {
+                    error: function () {
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        // $("#full-analyse").prop("disabled", false);
-                        // $("#repeat-main-page-analyse").prop("disabled", true);
-                        // $("#repeat-relevance-analyse").prop("disabled", true);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", true);
+                        $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
-                        // if (response.responseJSON.repeat) {
-                        //     let ask = confirm(response.responseJSON.message)
-                        //     if (ask) {
-                        //         repeatRequest()
-                        //     }
-                        // }
                     }
                 });
             })
@@ -372,6 +409,7 @@
                         renderClouds(response.clouds);
                         renderUnigramTable(response.unigramTable);
                         renderScanedSitesList(response.sites);
+                        renderTextTable(response.avg, response.mainPage)
                         stopProgressBar()
                         window.clearInterval(interval);
                         $("#full-analyse").prop("disabled", false);
@@ -382,9 +420,9 @@
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        // $("#full-analyse").prop("disabled", false);
-                        // $("#repeat-main-page-analyse").prop("disabled", true);
-                        // $("#repeat-relevance-analyse").prop("disabled", true);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", true);
+                        $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
                     }
                 });
@@ -420,6 +458,7 @@
                         renderClouds(response.clouds);
                         renderUnigramTable(response.unigramTable);
                         renderScanedSitesList(response.sites);
+                        renderTextTable(response.avg, response.mainPage)
                         stopProgressBar()
                         window.clearInterval(interval);
                         $("#full-analyse").prop("disabled", false);
@@ -430,9 +469,9 @@
                         stopProgressBar()
                         window.clearInterval(interval);
                         removeAllRenderElements()
-                        // $("#full-analyse").prop("disabled", false);
-                        // $("#repeat-main-page-analyse").prop("disabled", true);
-                        // $("#repeat-relevance-analyse").prop("disabled", true);
+                        $("#full-analyse").prop("disabled", false);
+                        $("#repeat-main-page-analyse").prop("disabled", true);
+                        $("#repeat-relevance-analyse").prop("disabled", true);
                         clearClouds()
                     }
                 });
@@ -441,6 +480,7 @@
             function removeAllRenderElements() {
                 $("#unigram").dataTable().fnDestroy();
                 $('.render').remove();
+                $('.pb-3.text').hide()
                 $('.pb-3.unigram').hide()
                 $('.pb-3.sites').hide()
                 $('.clouds').hide()

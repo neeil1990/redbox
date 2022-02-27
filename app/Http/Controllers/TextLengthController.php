@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -25,9 +26,9 @@ class TextLengthController extends Controller
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return JsonResponse
      */
-    public function countingTextLength(Request $request)
+    public function countingTextLength(Request $request): JsonResponse
     {
         $length = Str::length($request->text);
         $countSpaces = self::countingSpaces($request->text);

@@ -305,6 +305,7 @@ class TextAnalyzer
         $array = explode(" ", $string);
         $countWords = count($array);
         foreach ($array as $item) {
+            // максимальное кол-во слов в облаке - 200
             if (count($words) == 200) {
                 break;
             }
@@ -348,9 +349,8 @@ class TextAnalyzer
         $result = TextAnalyzer::mergeTextAndLinks($text, $link);
 
         $result = TextAnalyzer::calculateTFIDF($result, $totalWords, 'inLink');
-        $result = TextAnalyzer::calculateTFIDF($result, $totalWords, 'inText');
 
-        return $result;
+        return TextAnalyzer::calculateTFIDF($result, $totalWords, 'inText');
     }
 
     /**
@@ -428,7 +428,6 @@ class TextAnalyzer
 
         return TextAnalyzer::deleteEverythingExceptCharacters($titleText);
     }
-
 
     /**
      * @param $html

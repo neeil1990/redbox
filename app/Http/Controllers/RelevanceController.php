@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class RelevanceController extends Controller
 {
@@ -39,7 +40,7 @@ class RelevanceController extends Controller
         $delta = $finish - $start;
         Log::debug('analyse', [$delta]);
 
-        return RelevanceController::prepareResponse($relevance);
+        return RelevanceController::prepareResponse($relevance, $request);
     }
 
     /**
@@ -48,8 +49,6 @@ class RelevanceController extends Controller
      */
     public function repeatMainPageAnalyse(Request $request): JsonResponse
     {
-        $start = microtime(true);
-
         $relevance = new Relevance($request);
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
         $sites = explode($relevance->separator, $params->sites);
@@ -61,11 +60,7 @@ class RelevanceController extends Controller
         $relevance->analyse($request);
         $relevance->params->save();
 
-        $finish = microtime(true);
-        $delta = $finish - $start;
-        Log::debug('repeatMainPageAnalyse', [$delta]);
-
-        return RelevanceController::prepareResponse($relevance);
+        return RelevanceController::prepareResponse($relevance, $request);
     }
 
     /**
@@ -74,8 +69,6 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalyse(Request $request): JsonResponse
     {
-        $start = microtime(true);
-
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
         $xml = new SimplifiedXmlFacade(20, $request->region);
         $xml->setQuery($request->phrase);
@@ -88,30 +81,49 @@ class RelevanceController extends Controller
         $relevance->analyse($request);
         $relevance->params->save();
 
-        $finish = microtime(true);
-        $delta = $finish - $start;
-        Log::debug('repeatRelevanceAnalyse', [$delta]);
-
-        return RelevanceController::prepareResponse($relevance);
+        return RelevanceController::prepareResponse($relevance, $request);
     }
 
     /**
      * @param $relevance
+     * @param $request
      * @return JsonResponse
      */
-    public function prepareResponse($relevance): JsonResponse
+    public function prepareResponse($relevance, $request): JsonResponse
     {
+        $text = $relevance->competitorsText . ' ' . $relevance->competitorsLinks;
+        $avgLength = Str::length($text) / $request->count;
+        $avgSpaces = TextLengthController::countingSpaces($text) / $request->count - 1;
+        $avgCountWords = TextLengthController::countingWord($text) / $request->count;
+
+        $mainPageText = $relevance->mainPage['html'] . ' ' . $relevance->mainPage['linkText'];
+        $length = Str::length($mainPageText);
+        $countSpaces = TextLengthController::countingSpaces($mainPageText) - 1;
+        $countWords = TextLengthController::countingWord($mainPageText);
+
         return response()->json([
             'clouds' => [
-                'competitorsLinksCloud' => $relevance->competitorsLinksCloud,
-                'mainPageLinksCloud' => $relevance->mainPage['linksCloud'],
                 'competitorsTextAndLinksCloud' => $relevance->competitorsTextAndLinksCloud,
+                'competitorsLinksCloud' => $relevance->competitorsLinksCloud,
                 'competitorsTextCloud' => $relevance->competitorsTextCloud,
                 'mainPageTextWithLinksCloud' => $relevance->mainPage['textWithLinksCloud'],
+                'mainPageLinksCloud' => $relevance->mainPage['linksCloud'],
                 'mainPageTextCloud' => $relevance->mainPage['textCloud'],
             ],
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
+            'avg' => [
+                'countWords' => $avgCountWords,
+                'countSpaces' => $avgSpaces,
+                'countSymbols' => $avgLength,
+                'countSymbolsWithoutSpaces' => $avgLength - $avgSpaces
+            ],
+            'mainPage' => [
+                'countWords' => $countWords,
+                'countSpaces' => $countSpaces,
+                'countSymbols' => $length,
+                'countSymbolsWithoutSpaces' => $length - $countSpaces
+            ]
         ]);
     }
 
