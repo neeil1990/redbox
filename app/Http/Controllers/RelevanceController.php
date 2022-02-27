@@ -52,12 +52,8 @@ class RelevanceController extends Controller
 
         $relevance = new Relevance($request);
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-//        Log::debug('sites', [$params->sites]);
         $sites = explode($relevance->separator, $params->sites);
         unset($sites[count($sites) - 1]);
-//        Log::debug('sites', [count($sites)]);
-//        Log::debug('sites', [$sites]);
-//        die();
         $relevance->getMainPageHtml($request->link);
         $relevance->setSites($sites, $params->sites);
         $relevance->setPages($sites, $params->html_relevance);
@@ -118,53 +114,5 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
         ]);
     }
-
-    //    /**
-//     * @param $request
-//     * @return JsonResponse
-//     */
-//    public function analyseWithXmlRequest($request): JsonResponse
-//    {
-//        $xml = new SimplifiedXmlFacade(20, $request->region);
-//        $xml->setQuery($request->phrase);
-//        $xmlResponse = $xml->getXMLResponse();
-//
-//        $relevance = new Relevance($request);
-//        $relevance->getMainPageHtml($request->link);
-//        $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
-//        $relevance->parseXmlResponse();
-//        $relevance->analyse($request);
-//        $relevance->params->save();
-//
-//        return RelevanceController::prepareResponse($relevance);
-//    }
-//    /**
-//     * @param $request
-//     * @param $params
-//     * @return JsonResponse
-//     */
-//    public function analyseWithoutXmlRequest($request, $params): JsonResponse
-//    {
-//        $relevance = new Relevance($request);
-//        $sites = explode($relevance->separator, $params->sites);
-//        unset($sites[count($sites) - 1]);
-//
-//        $relevance->setMainPage($params->html_main_page);
-//        $relevance->setSites($sites);
-//        $relevance->setPages($sites, $params->html_relevance);
-//
-//        $relevance->analyse($request);
-//        $relevance->params->save();
-//
-//        return RelevanceController::prepareResponse($relevance);
-//    }
-//    /**
-//     * @param Request $request
-//     * @return JsonResponse
-//     */
-//    public function repeatAnalyse(Request $request): JsonResponse
-//    {
-//        return RelevanceController::analyseWithXmlRequest($request);
-//    }
 
 }
