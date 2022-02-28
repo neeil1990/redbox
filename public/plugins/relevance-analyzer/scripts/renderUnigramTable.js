@@ -7,11 +7,10 @@ function renderUnigramTable(unigramTable) {
     })
 
     $('#unigram').DataTable({
-        "order": [[6, "desc"]],
+        "order": [[2, "desc"]],
         "pageLength": 50,
     });
 }
-
 
 function renderMainTr(tBody, key, wordWorm) {
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
@@ -19,6 +18,8 @@ function renderMainTr(tBody, key, wordWorm) {
     let idf = substringNumber(wordWorm['total']['idf'])
     let numberOccurrences = substringNumber(wordWorm['total']['numberOccurrences'])
     let reSpam = substringNumber(wordWorm['total']['reSpam'])
+    let totalInText = substringNumber(wordWorm['total']['totalInText'])
+    let totalInLink = substringNumber(wordWorm['total']['totalInLink'])
     let avgInText = substringNumber(wordWorm['total']['avgInText'])
     let repeatInTextMainPage = substringNumber(wordWorm['total']['repeatInTextMainPage'])
     let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
@@ -35,8 +36,10 @@ function renderMainTr(tBody, key, wordWorm) {
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "</td>" +
         "<td>" + reSpam + "</td>" +
+        "<td>" + totalInText + "</td>" +
         "<td>" + avgInText + "</td>" +
         "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
+        "<td>" + totalInLink + "</td>" +
         "<td>" + avgInLink + "</td>" +
         "<td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
         "</tr>"
@@ -52,6 +55,8 @@ function renderChildTr(elem, key, word, stats) {
     let numberOccurrences = substringNumber(stats['numberOccurrences'])
     let reSpam = substringNumber(stats['reSpam'])
     let avgInText = substringNumber(stats['avgInText'])
+    let totalInText = substringNumber(stats['totalInText'])
+    let totalInLink = substringNumber(stats['totalInLink'])
     let repeatInTextMainPage = substringNumber(stats['repeatInTextMainPage'])
     let avgInLink = substringNumber(stats['avgInLink'])
     let repeatInLinkMainPage = substringNumber(stats['repeatInLinkMainPage'])
@@ -73,8 +78,10 @@ function renderChildTr(elem, key, word, stats) {
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "</td>" +
         "<td>" + reSpam + "</td>" +
+        "<td>" + totalInText + "</td>" +
         "<td>" + avgInText + "</td>" +
         "<td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
+        "<td>" + totalInLink + "</td>" +
         "<td>" + avgInLink + "</td>" +
         "<td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
         "</tr>"
@@ -117,6 +124,13 @@ $('th.sorting').click(() => {
 })
 
 function substringNumber(string) {
+    var position
     let number = string.toString()
-    return number.substring(0, 6)
+    if (string[5] === '.') {
+        position = 4
+    } else {
+        position = 5
+    }
+
+    return number.substring(0, position)
 }

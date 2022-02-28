@@ -4,13 +4,15 @@
         <div class="table-responsive">
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
-                <th>id</th>
-                <th>access</th>
-                <th>icon</th>
-                <th>title</th>
-                <th>description</th>
-                <th>link</th>
-                <th>action</th>
+                <tr>
+                    <td>id</td>
+                    <td>access</td>
+                    <td>icon</td>
+                    <td>title</td>
+                    <td>description</td>
+                    <td>link</td>
+                    <td>action</td>
+                </tr>
                 </thead>
                 <tbody>
                 @foreach($data as $row)

@@ -2,6 +2,7 @@
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
             .bg-warning-elem {
                 background-color: #f5e2aa !important;
@@ -12,6 +13,16 @@
             }
         </style>
     @endslot
+    <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">
+        <div class="toast toast-error" aria-live="polite">
+            <div class="toast-message">Произошла ошибка, повторите запрос.</div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
+        <div class="toast toast-error" aria-live="polite">
+            <div class="toast-message">Поле "ключевая фраза" и "посадочная страница" не должны быть пустыми</div>
+        </div>
+    </div>
     <div class="col-5 pb-3">
         <div class="form-group required">
             <label>Ключевая фраза</label>
@@ -229,25 +240,25 @@
                 <td id="avgCountWords">1</td>
                 <td id="mainPageCountWords">2</td>
             </tr>
-            <tr>
-                <td>
-                    <b>{{ __('Number of spaces') }}</b>
-                </td>
-                <td id="avgCountSpaces">3</td>
-                <td id="mainPageCountSpaces">4</td>
-            </tr>
+            {{--            <tr>--}}
+            {{--                <td>--}}
+            {{--                    <b>{{ __('Number of spaces') }}</b>--}}
+            {{--                </td>--}}
+            {{--                <td id="avgCountSpaces">3</td>--}}
+            {{--                <td id="mainPageCountSpaces">4</td>--}}
+            {{--            </tr>--}}
             <tr>
                 <td><b>{{ __('Number of characters') }}</b></td>
                 <td id="avgCountSymbols">5</td>
                 <td id="mainPageCountSymbols">6</td>
             </tr>
-            <tr>
-                <td>
-                    <b>{{ __('Number of characters without spaces') }}</b>
-                </td>
-                <td id="avgCountSymbolsWithoutSpaces">7</td>
-                <td id="mainPageCountSymbolsWithoutSpaces">8</td>
-            </tr>
+            {{--            <tr>--}}
+            {{--                <td>--}}
+            {{--                    <b>{{ __('Number of characters without spaces') }}</b>--}}
+            {{--                </td>--}}
+            {{--                <td id="avgCountSymbolsWithoutSpaces">7</td>--}}
+            {{--                <td id="mainPageCountSymbolsWithoutSpaces">8</td>--}}
+            {{--            </tr>--}}
             </tbody>
         </table>
     </div>
@@ -291,16 +302,18 @@
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row">
-                <th class="sorting sorting_asc"></th>
-                <th class="sorting sorting_asc">Слова</th>
-                <th class="sorting">tf</th>
-                <th class="sorting">idf</th>
-                <th class="sorting">Пересечение</th>
-                <th class="sorting">Переспам</th>
-                <th class="sorting">Среднее кол-во повторений в тексте</th>
-                <th class="sorting">Кол-во повторений в тексте у вашей страницы</th>
-                <th class="sorting">Среднее кол-во повторений в ссылках</th>
-                <th class="sorting">Кол-во повторений в ссылках у вашей страницы</th>
+                <th></th>
+                <th>Слова</th>
+                <th>tf</th>
+                <th>idf</th>
+                <th>Пересечение</th>
+                <th>Переспам</th>
+                <th>Общее кол-во повторений в тексте</th>
+                <th>Среднее кол-во повторений в тексте</th>
+                <th>Кол-во повторений в тексте у вашей страницы</th>
+                <th>Общее кол-во повторений в ссылках</th>
+                <th>Среднее кол-во повторений в ссылках</th>
+                <th>Кол-во повторений в ссылках у вашей страницы</th>
             </tr>
             </thead>
             <tbody id="unigramTBody">
@@ -330,6 +343,9 @@
         <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderTextTable.js') }}"></script>
         <script>
             $('#full-analyse').click(() => {
+                if (validate()) {
+                    return;
+                }
                 var interval = startProgressBar()
                 $.ajax({
                     type: "POST",
@@ -355,30 +371,17 @@
                         $('#repeat-relevance-analyse').prop("disabled", true);
                     },
                     success: function (response) {
-                        removeAllRenderElements()
-                        clearClouds()
-                        renderClouds(response.clouds);
-                        renderUnigramTable(response.unigramTable);
-                        renderScanedSitesList(response.sites);
-                        renderTextTable(response.avg, response.mainPage)
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", false);
-                        $("#repeat-relevance-analyse").prop("disabled", false);
+                        successRequest(response, interval)
                     },
                     error: function () {
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        removeAllRenderElements()
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", true);
-                        $("#repeat-relevance-analyse").prop("disabled", true);
-                        clearClouds()
+                        errorRequest(interval)
                     }
                 });
             })
             $('#repeat-main-page-analyse').click(() => {
+                if (validate()) {
+                    return;
+                }
                 var interval = startProgressBar()
                 $.ajax({
                     type: "POST",
@@ -404,30 +407,17 @@
                         $('#repeat-relevance-analyse').prop("disabled", true);
                     },
                     success: function (response) {
-                        removeAllRenderElements()
-                        clearClouds()
-                        renderClouds(response.clouds);
-                        renderUnigramTable(response.unigramTable);
-                        renderScanedSitesList(response.sites);
-                        renderTextTable(response.avg, response.mainPage)
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", false);
-                        $("#repeat-relevance-analyse").prop("disabled", false);
+                        successRequest(response, interval)
                     },
                     error: function () {
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        removeAllRenderElements()
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", true);
-                        $("#repeat-relevance-analyse").prop("disabled", true);
-                        clearClouds()
+                        errorRequest(interval)
                     }
                 });
             })
             $('#repeat-relevance-analyse').click(() => {
+                if (validate()) {
+                    return;
+                }
                 var interval = startProgressBar()
                 $.ajax({
                     type: "POST",
@@ -453,29 +443,37 @@
                         $('#repeat-relevance-analyse').prop("disabled", true);
                     },
                     success: function (response) {
-                        removeAllRenderElements()
-                        clearClouds()
-                        renderClouds(response.clouds);
-                        renderUnigramTable(response.unigramTable);
-                        renderScanedSitesList(response.sites);
-                        renderTextTable(response.avg, response.mainPage)
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", false);
-                        $("#repeat-relevance-analyse").prop("disabled", false);
+                        successRequest(response, interval)
                     },
                     error: function () {
-                        stopProgressBar()
-                        window.clearInterval(interval);
-                        removeAllRenderElements()
-                        $("#full-analyse").prop("disabled", false);
-                        $("#repeat-main-page-analyse").prop("disabled", true);
-                        $("#repeat-relevance-analyse").prop("disabled", true);
-                        clearClouds()
+                        errorRequest(interval)
                     }
                 });
             })
+
+            function successRequest(response, interval) {
+                stopProgressBar(interval)
+                removeAllRenderElements()
+                clearClouds()
+                renderClouds(response.clouds);
+                renderUnigramTable(response.unigramTable);
+                renderScanedSitesList(response.sites);
+                renderTextTable(response.avg, response.mainPage)
+                $("#full-analyse").prop("disabled", false);
+                $("#repeat-main-page-analyse").prop("disabled", false);
+                $("#repeat-relevance-analyse").prop("disabled", false);
+            }
+
+            function errorRequest(interval) {
+                stopProgressBar(interval)
+                $("#full-analyse").prop("disabled", false);
+                $("#repeat-main-page-analyse").prop("disabled", true);
+                $("#repeat-relevance-analyse").prop("disabled", true);
+                $('.toast-top-right.error-message.analyse').show(300)
+                setTimeout(() => {
+                    $('.toast-top-right.error-message.analyse').hide(300)
+                }, 5000)
+            }
 
             function removeAllRenderElements() {
                 $("#unigram").dataTable().fnDestroy();
@@ -512,13 +510,17 @@
                 }
             })
 
-            function stopProgressBar() {
+            function stopProgressBar(interval) {
+                window.clearInterval(interval)
                 setProgressBarStyles(100)
-                $('.progress-bar').css({
-                    opacity: 0,
-                    width: 0 + '%'
-                });
-                $("#progress-bar").hide(300)
+                setTimeout(() => {
+                    $('.progress-bar').css({
+                        opacity: 0,
+                        width: 0 + '%'
+                    });
+                    $("#progress-bar").hide(300)
+                }, 1000)
+
             }
 
             function startProgressBar() {
@@ -531,6 +533,17 @@
                     percent += 1;
                     setProgressBarStyles(percent)
                 }, 1000)
+            }
+
+            function validate() {
+                if ($('.form-control.phrase').val() == '' || $('.form-control.link').val() == '') {
+                    $('.toast-top-right.error-message.empty').show(300)
+                    setTimeout(() => {
+                        $('.toast-top-right.error-message.empty').hide(300)
+                    }, 5000)
+                    return true;
+                }
+                return false;
             }
         </script>
         {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}

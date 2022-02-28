@@ -47,31 +47,7 @@ class Relevance
         $this->competitorsTextAndLinks = '';
 
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
-        $this->params['phrase'] = $request->phrase;
         $this->params['main_page_link'] = $request->link;
-        $this->params['region'] = $request->region;
-        $this->params['count'] = $request->count;
-        $this->params['xml_hash'] = RelevanceAnalyseResults::calculateHash([
-            $request->phrase,
-            $request->link,
-            $request->region,
-            $request->count
-        ]);
-
-        $this->params['check_no_index'] = $request->noIndex;
-        $this->params['check_hidden_text'] = $request->hiddenText;
-        $this->params['check_parts_of_speech'] = $request->conjunctionsPrepositionsPronouns;
-        $this->params['remove_list_words'] = $request->switchMyListWords;
-        $this->params['list_words'] = $request->listWords;
-        $this->params['config_hash'] = RelevanceAnalyseResults::calculateHash([
-            $request->noIndex,
-            $request->hiddenText,
-            $request->conjunctionsPrepositionsPronouns,
-            $request->switchMyListWords,
-            $request->listWords
-        ]);
-
-        $this->params['ignored_domains'] = $request->ignoredDomains;
         $this->params['sites'] = '';
         $this->params['html_relevance'] = '';
         $this->params['html_main_page'] = '';
@@ -112,8 +88,9 @@ class Relevance
                     'danger' => false,
                 ];
             }
-            $this->params['sites'] .= $item['doc']['url'] . $this->separator;
         }
+
+        $this->params['sites'] = json_encode($this->sites);
 
         return $this;
     }
@@ -121,23 +98,14 @@ class Relevance
     public function analyse($request)
     {
         $this->removeNoIndex($request);
-
-        $this->getTextWithoutLinks();
-
+        $this->separateLinksFromText();
         $this->getHiddenData($request);
-
         $this->removePartsOfSpeech($request);
-
         $this->removeListWords($request);
-
-        $this->getInfoFromCompetitors();
-
+        $this->getTextFromCompetitors();
         $this->prepareClouds();
-
         $this->searchWordForms();
-
         $this->processingOfGeneralInformation($request->count);
-
         $this->prepareUnigramTable();
     }
 
@@ -160,7 +128,7 @@ class Relevance
      * Вся информация с сайтов конкурентов с сайтов конкурентов
      * @return void
      */
-    public function getInfoFromCompetitors()
+    public function getTextFromCompetitors()
     {
         foreach ($this->pages as $key => $page) {
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
@@ -191,7 +159,7 @@ class Relevance
     }
 
     /**
-     * Удалить текст, который находится в не индексируемых частях кода
+     * Удалить текст, который находится вне индексируемых местах html разметки
      * @param $request
      * @return void
      */
@@ -206,10 +174,10 @@ class Relevance
     }
 
     /**
-     * Разделение ссылочного текста от другого текста
+     * Разделение ссылок и текста
      * @return void
      */
-    public function getTextWithoutLinks()
+    public function separateLinksFromText()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
         $this->mainPage['html'] = TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']);
@@ -354,9 +322,11 @@ class Relevance
                     'idf' => $idf,
                     'numberOccurrences' => $numberOccurrences,
                     'reSpam' => $reSpam,
+                    'totalInLink' => $numberLinkOccurrences,
+                    'totalInText' => $numberTextOccurrences,
                     'avgInLink' => $numberLinkOccurrences / $countSites,
-                    'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'avgInText' => $numberTextOccurrences / $countSites,
+                    'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
                 ];
             }
@@ -421,13 +391,14 @@ class Relevance
             $repeatInLink = 0;
             $avgInText = 0;
             $avgInLink = 0;
-            $danger = false;
+            $totalInText = 0;
+            $totalInLink = 0;
             foreach ($wordForm as $word) {
-                if ($word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0) {
-                    $danger = true;
-                }
+                $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
                 $tf += $word['tf'];
                 $idf += $word['idf'];
+                $totalInText += $word['totalInText'];
+                $totalInLink += $word['totalInLink'];
                 $avgInText += $word['avgInText'];
                 $avgInLink += $word['avgInLink'];
                 $repeatInText += $word['repeatInTextMainPage'];
@@ -442,6 +413,8 @@ class Relevance
             $this->wordForms[$key]['total'] = [
                 'tf' => $tf,
                 'idf' => $idf,
+                'totalInText' => $totalInText,
+                'totalInLink' => $totalInLink,
                 'avgInText' => $avgInText,
                 'avgInLink' => $avgInLink,
                 'repeatInTextMainPage' => $repeatInText,
@@ -494,38 +467,28 @@ class Relevance
     }
 
     /**
-     * @param $array
      * @param $sites
      * @return $this
      */
-    public function setSites($array, $sites): Relevance
+    public function setSites($sites): Relevance
     {
-        foreach ($array as $site) {
-            $this->sites[] = [
-                'site' => $site,
-                'danger' => false
-            ];
-        }
-
         $this->params['sites'] = $sites;
+        $this->sites = json_decode($sites, true);
 
         return $this;
     }
 
     /**
-     * @param $sites
      * @param $html_relevance
      * @return $this
      */
-    public function setPages($sites, $html_relevance): Relevance
+    public function setPages($html_relevance): Relevance
     {
-        $html = explode($this->separator, $html_relevance);
-        unset($html[count($html) - 1]);
         $this->params['html_relevance'] = $html_relevance;
-
-        $pages = array_combine($sites, $html);
-        foreach ($pages as $key => $page) {
-            $this->pages[$key]['html'] = $page;
+        $html = explode($this->separator, $this->params['html_relevance']);
+        unset($html[count($html) - 1]);
+        for ($i = 0; $i < 10; $i++) {
+            $this->pages[$this->sites[$i]['site']]['html'] = $html[$i];
         }
 
         return $this;

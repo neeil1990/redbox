@@ -24,23 +24,24 @@ class RelevanceController extends Controller
      */
     public function analyse(Request $request): JsonResponse
     {
-        $start = microtime(true);
-        $xml = new SimplifiedXmlFacade(20, $request->region);
-        $xml->setQuery($request->phrase);
-        $xmlResponse = $xml->getXMLResponse();
+        try {
+            $xml = new SimplifiedXmlFacade(20, $request->region);
+            $xml->setQuery($request->phrase);
+            $xmlResponse = $xml->getXMLResponse();
 
-        $relevance = new Relevance($request);
-        $relevance->getMainPageHtml($request->link);
-        $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
-        $relevance->parseXmlResponse();
-        $relevance->analyse($request);
-        $relevance->params->save();
+            $relevance = new Relevance($request);
+            $relevance->getMainPageHtml($request->link);
+            $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
+            $relevance->parseXmlResponse();
+            $relevance->analyse($request);
+            $relevance->params->save();
+            return RelevanceController::prepareResponse($relevance, $request);
 
-        $finish = microtime(true);
-        $delta = $finish - $start;
-        Log::debug('analyse', [$delta]);
+        } catch (\Exception $e) {
+            self::logError($request, $e);
 
-        return RelevanceController::prepareResponse($relevance, $request);
+            return response()->json()->setStatusCode(500);
+        }
     }
 
     /**
@@ -49,18 +50,22 @@ class RelevanceController extends Controller
      */
     public function repeatMainPageAnalyse(Request $request): JsonResponse
     {
-        $relevance = new Relevance($request);
-        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-        $sites = explode($relevance->separator, $params->sites);
-        unset($sites[count($sites) - 1]);
-        $relevance->getMainPageHtml($request->link);
-        $relevance->setSites($sites, $params->sites);
-        $relevance->setPages($sites, $params->html_relevance);
+        try {
+            $relevance = new Relevance($request);
+            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+            $relevance->getMainPageHtml($request->link);
+            $relevance->setSites($params->sites);
+            $relevance->setPages($params->html_relevance);
 
-        $relevance->analyse($request);
-        $relevance->params->save();
+            $relevance->analyse($request);
+            $relevance->params->save();
 
-        return RelevanceController::prepareResponse($relevance, $request);
+            return RelevanceController::prepareResponse($relevance, $request);
+        } catch (\Exception $e) {
+            self::logError($request, $e);
+
+            return response()->json()->setStatusCode(500);
+        }
     }
 
     /**
@@ -69,19 +74,25 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalyse(Request $request): JsonResponse
     {
-        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-        $xml = new SimplifiedXmlFacade(20, $request->region);
-        $xml->setQuery($request->phrase);
-        $xmlResponse = $xml->getXMLResponse();
+        try {
+            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+            $xml = new SimplifiedXmlFacade(20, $request->region);
+            $xml->setQuery($request->phrase);
+            $xmlResponse = $xml->getXMLResponse();
 
-        $relevance = new Relevance($request);
-        $relevance->setMainPage($params->html_main_page);
-        $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
-        $relevance->parseXmlResponse();
-        $relevance->analyse($request);
-        $relevance->params->save();
+            $relevance = new Relevance($request);
+            $relevance->setMainPage($params->html_main_page);
+            $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
+            $relevance->parseXmlResponse();
+            $relevance->analyse($request);
+            $relevance->params->save();
 
-        return RelevanceController::prepareResponse($relevance, $request);
+            return RelevanceController::prepareResponse($relevance, $request);
+        } catch (\Exception $e) {
+            self::logError($request, $e);
+
+            return response()->json()->setStatusCode(500);
+        }
     }
 
     /**
@@ -91,14 +102,21 @@ class RelevanceController extends Controller
      */
     public function prepareResponse($relevance, $request): JsonResponse
     {
-        $text = $relevance->competitorsText . ' ' . $relevance->competitorsLinks;
+//        $avgSpaces = TextLengthController::countingSpaces($text) / $request->count - 1;
+//        $countSpaces = TextLengthController::countingSpaces($mainPageText) - 1;
+
+        $text =
+            $relevance->competitorsText . ' ' .
+            $relevance->competitorsLinks;
         $avgLength = Str::length($text) / $request->count;
-        $avgSpaces = TextLengthController::countingSpaces($text) / $request->count - 1;
         $avgCountWords = TextLengthController::countingWord($text) / $request->count;
 
-        $mainPageText = $relevance->mainPage['html'] . ' ' . $relevance->mainPage['linkText'];
+        $mainPageText =
+            $relevance->mainPage['html'] . ' ' .
+            $relevance->mainPage['linkText'] . ' ' .
+            $relevance->mainPage['hiddenText'];
+
         $length = Str::length($mainPageText);
-        $countSpaces = TextLengthController::countingSpaces($mainPageText) - 1;
         $countWords = TextLengthController::countingWord($mainPageText);
 
         return response()->json([
@@ -114,16 +132,26 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
             'avg' => [
                 'countWords' => $avgCountWords,
-                'countSpaces' => $avgSpaces,
+//                'countSpaces' => $avgSpaces,
                 'countSymbols' => $avgLength,
-                'countSymbolsWithoutSpaces' => $avgLength - $avgSpaces
+//                'countSymbolsWithoutSpaces' => $avgLength - $avgSpaces
             ],
             'mainPage' => [
                 'countWords' => $countWords,
-                'countSpaces' => $countSpaces,
+//                'countSpaces' => $countSpaces,
                 'countSymbols' => $length,
-                'countSymbolsWithoutSpaces' => $length - $countSpaces
+//                'countSymbolsWithoutSpaces' => $length - $countSpaces
             ]
+        ]);
+    }
+
+    public function logError($request, $e)
+    {
+        Log::debug('repeat relevance scan error', [
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+            'request' => $request->all()
         ]);
     }
 

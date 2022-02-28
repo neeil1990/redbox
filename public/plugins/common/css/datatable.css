@@ -400,3 +400,19 @@ a.paginate_button.current, .paginate_button {
 label:not(.form-check-label):not(.custom-file-label) {
     font-weight: normal !important;
 }
+
+table.dataTable thead th {
+    margin: 0 auto;
+}
+
+table.dataTable thead .sorting {
+    background-image: url(../../../img/sort_both.png);
+}
+
+table.dataTable thead .sorting_asc{
+    background-image: url(../../../img/sort_asc.png);
+}
+
+table.dataTable thead .sorting_desc{
+    background-image: url(../../../img/sort_desc.png);
+}
