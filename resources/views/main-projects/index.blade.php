@@ -15,7 +15,7 @@
                 <tbody>
                 @foreach($data as $row)
                     <tr>
-                        <td>{{ $row->id }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $row->access_as_string }}</td>
                         <td>{!! $row->icon !!}</td>
                         <td>{{ $row->title }}</td>
