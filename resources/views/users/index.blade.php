@@ -92,7 +92,7 @@
                         </td>
                         <td class="project-actions text-right">
                             <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">
-                                <i class="fas fa-pencil-alt">
+                                <i class="fas fa-user-alt">
                                 </i>
                                 {{ __('Login') }}
                             </a>
