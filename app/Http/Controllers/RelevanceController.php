@@ -105,11 +105,12 @@ class RelevanceController extends Controller
 //        $avgSpaces = TextLengthController::countingSpaces($text) / $request->count - 1;
 //        $countSpaces = TextLengthController::countingSpaces($mainPageText) - 1;
 
+        $count = count($relevance->sites);
         $text =
             $relevance->competitorsText . ' ' .
             $relevance->competitorsLinks;
-        $avgLength = Str::length($text) / $request->count;
-        $avgCountWords = TextLengthController::countingWord($text) / $request->count;
+        $avgLength = Str::length($text) / $count;
+        $avgCountWords = TextLengthController::countingWord($text) / $count;
 
         $mainPageText =
             $relevance->mainPage['html'] . ' ' .
