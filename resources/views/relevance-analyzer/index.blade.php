@@ -15,22 +15,22 @@
     @endslot
     <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message">Произошла ошибка, повторите запрос.</div>
+            <div class="toast-message">{{ __('An error has occurred, repeat the request.') }}</div>
         </div>
     </div>
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message">Поле "ключевая фраза" и "посадочная страница" не должны быть пустыми</div>
+            <div class="toast-message">{{ __("The 'keyword' and 'landing page' fields should not be empty") }}</div>
         </div>
     </div>
     <div class="col-5 pb-3">
         <div class="form-group required">
-            <label>Ключевая фраза</label>
+            <label>{{ __('Keyword') }}</label>
             {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
         </div>
 
         <div class="form-group required">
-            <label>Ваша посадочная страница</label>
+            <label>{{ __('Your landing page') }}</label>
             {!! Form::text("link", null ,["class" => "form-control link", "required"]) !!}
         </div>
 
@@ -110,7 +110,7 @@
         </div>
 
         <div class="form-group required">
-            <label>Игнорируемые домены</label>
+            <label>{{ __('Ignored domains') }}</label>
             {!! Form::textarea("ignoredDomains",
                 "2gis.ru\n".
                 "aliexpress.com\n".
@@ -211,25 +211,25 @@
         </div>
     </div>
     <button class="btn btn-secondary pull-left" id="full-analyse">
-        Полный анализ
+        {{ __('Full analysis') }}
     </button>
     <button class="btn btn-secondary pull-left" id="repeat-main-page-analyse" disabled>
-        Повторный анализ посадочной страницы
+        {{ __('Repeated analysis of the landing page') }}
     </button>
     <button class="btn btn-secondary pull-left" id="repeat-relevance-analyse" disabled>
-        Повторный анализ сайтов конкурентов
+        {{ __('Repeated analysis of competitor sites') }}
     </button>
     <div id="progress-bar">
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
     <div class="pb-3 pt-3 text" style="display:none !important;">
-        <h3>Сравнение количества текста</h3>
+        <h3>{{ __('Comparing the amount of text') }}</h3>
         <table class="table table-bordered table-striped dataTable dtr-inline">
             <thead>
             <tr>
                 <th class="col-3"></th>
-                <th>Средние значения конкурентов</th>
-                <th>Значения посадочной страницы</th>
+                <th>{{ __('Average values of competitors') }}</th>
+                <th>{{ __('Landing Page Values') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -237,8 +237,8 @@
                 <td>
                     <b>{{ __('Number of words') }}</b>
                 </td>
-                <td id="avgCountWords">1</td>
-                <td id="mainPageCountWords">2</td>
+                <td id="avgCountWords"></td>
+                <td id="mainPageCountWords"></td>
             </tr>
             {{--            <tr>--}}
             {{--                <td>--}}
@@ -249,8 +249,8 @@
             {{--            </tr>--}}
             <tr>
                 <td><b>{{ __('Number of characters') }}</b></td>
-                <td id="avgCountSymbols">5</td>
-                <td id="mainPageCountSymbols">6</td>
+                <td id="avgCountSymbols"></td>
+                <td id="mainPageCountSymbols"></td>
             </tr>
             {{--            <tr>--}}
             {{--                <td>--}}
@@ -263,57 +263,57 @@
         </table>
     </div>
     <div class="pb-3 clouds" style="display:none !important;">
-        <h3>Облака</h3>
+        <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
             <div class="d-lg-flex mt-4">
                 <div class="col-lg-6 col-md-12">
-                    <span>Зона ссылок конкурентов</span>
+                    <span>{{ __('Competitors Link Zone') }}</span>
                     <div style="height: 350px !important;" id="competitorsLinksCloud"></div>
                 </div>
                 <div class="col-lg-6 col-md-12">
-                    <span>Зона ссылок вашей страницы</span>
+                    <span>{{ __('The link zone of your page') }}</span>
                     <div style="height: 350px !important;" id="mainPageLinksCloud"></div>
                 </div>
             </div>
             <div class="d-lg-flex mt-4">
                 <div class="col-lg-6 col-md-12">
-                    <span>Зона текста конкурентов</span>
+                    <span>{{ __('Competitors text area') }}</span>
                     <div style="height: 350px !important;" id="competitorsTextCloud"></div>
                 </div>
                 <div class="col-lg-6 col-md-12">
-                    <span>Зона текста вашей страницы</span>
+                    <span>{{ __('The text area of your page') }}</span>
                     <div style="height: 350px !important;" id="mainPageTextCloud"></div>
                 </div>
             </div>
             <div class="d-lg-flex mt-4">
                 <div class="col-lg-6 col-md-12">
-                    <span>Зона ссылок и текста конкурентов</span>
+                    <span>{{ __('Competitors Link and Text area') }}</span>
                     <div style="height: 350px !important;" id="competitorsTextAndLinksCloud"></div>
                 </div>
                 <div class="col-lg-6 col-md-12">
-                    <span>Зона ссылок и текста вашей страницы</span>
+                    <span>{{ __('The zone of links and text of your page') }}</span>
                     <div style="height: 350px !important;" id="mainPageTextWithLinksCloud"></div>
                 </div>
             </div>
         </div>
     </div>
     <div class="pb-3 unigram" style="display: none !important;">
-        <h2>Униграм</h2>
+        <h2>{{ __('Unigram') }}</h2>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row">
                 <th></th>
-                <th>Слова</th>
+                <th>{{ __('Words') }}</th>
                 <th>tf</th>
                 <th>idf</th>
-                <th>Пересечение</th>
-                <th>Переспам</th>
-                <th>Общее кол-во повторений в тексте</th>
-                <th>Среднее кол-во повторений в тексте</th>
-                <th>Кол-во повторений в тексте у вашей страницы</th>
-                <th>Общее кол-во повторений в ссылках</th>
-                <th>Среднее кол-во повторений в ссылках</th>
-                <th>Кол-во повторений в ссылках у вашей страницы</th>
+                <th>{{ __('Intersection') }}</th>
+                <th>{{ __('Re - spam') }}</th>
+                <th>{{ __('Total number of repetitions in the text') }}</th>
+                <th>{{ __('Average number of repetitions in the text') }}</th>
+                <th>{{ __('Number of repetitions in the text of your page') }}</th>
+                <th>{{ __('Total number of repetitions in links') }}</th>
+                <th>{{ __('Average number of repetitions in links') }}</th>
+                <th>{{ __('Number of repetitions in links on your page') }}</th>
             </tr>
             </thead>
             <tbody id="unigramTBody">
@@ -321,13 +321,13 @@
         </table>
     </div>
     <div class="pb-3 sites" style="display: none">
-        <h3>Проанализированные сайты</h3>
+        <h3>{{ __('Analyzed sites') }}</h3>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row">
                 <th>№</th>
-                <th>Домен</th>
-                <th>Результат</th>
+                <th>{{ __('Domain') }}</th>
+                <th>{{ __('Result') }}</th>
             </tr>
             </thead>
             <tbody id="scaned-sites-tbody">
