@@ -105,7 +105,7 @@ class Relevance
         $this->getTextFromCompetitors();
         $this->prepareClouds();
         $this->searchWordForms();
-        $this->processingOfGeneralInformation($request->count);
+        $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
     }
 
@@ -267,10 +267,9 @@ class Relevance
 
     /**
      * Обработка информации для таблицы unigram
-     * @param $countSites
      * @return void
      */
-    public function processingOfGeneralInformation($countSites)
+    public function processingOfGeneralInformation()
     {
         $mainPage = ' ' . $this->mainPage['html'] . ' ' .
             $this->mainPage['linkText'] . ' ' .
@@ -324,8 +323,8 @@ class Relevance
                     'reSpam' => $reSpam,
                     'totalInLink' => $numberLinkOccurrences,
                     'totalInText' => $numberTextOccurrences,
-                    'avgInLink' => $numberLinkOccurrences / $countSites,
-                    'avgInText' => $numberTextOccurrences / $countSites,
+                    'avgInLink' => $numberLinkOccurrences / count($this->sites),
+                    'avgInText' => $numberTextOccurrences / count($this->sites),
                     'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
                 ];
