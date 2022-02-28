@@ -271,6 +271,7 @@ class Relevance
      */
     public function processingOfGeneralInformation()
     {
+        $countSites = count($this->sites);
         $mainPage = ' ' . $this->mainPage['html'] . ' ' .
             $this->mainPage['linkText'] . ' ' .
             $this->mainPage['hiddenText'] . ' ';
@@ -321,12 +322,12 @@ class Relevance
                     'idf' => $idf,
                     'numberOccurrences' => $numberOccurrences,
                     'reSpam' => $reSpam,
-                    'totalInLink' => $numberLinkOccurrences,
-                    'totalInText' => $numberTextOccurrences,
-                    'avgInLink' => $numberLinkOccurrences / count($this->sites),
-                    'avgInText' => $numberTextOccurrences / count($this->sites),
+                    'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
+                    'avgInLink' => $numberLinkOccurrences / $countSites,
+                    'avgInText' => $numberTextOccurrences / $countSites,
                     'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
+                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage
                 ];
             }
         }
@@ -390,14 +391,14 @@ class Relevance
             $repeatInLink = 0;
             $avgInText = 0;
             $avgInLink = 0;
-            $totalInText = 0;
-            $totalInLink = 0;
+            $avgInTotalCompetitors = 0;
+            $totalRepeatMainPage = 0;
             foreach ($wordForm as $word) {
                 $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
                 $tf += $word['tf'];
                 $idf += $word['idf'];
-                $totalInText += $word['totalInText'];
-                $totalInLink += $word['totalInLink'];
+                $avgInTotalCompetitors += $word['avgInTotalCompetitors'];
+                $totalRepeatMainPage += $word['totalRepeatMainPage'];
                 $avgInText += $word['avgInText'];
                 $avgInLink += $word['avgInLink'];
                 $repeatInText += $word['repeatInTextMainPage'];
@@ -412,12 +413,12 @@ class Relevance
             $this->wordForms[$key]['total'] = [
                 'tf' => $tf,
                 'idf' => $idf,
-                'totalInText' => $totalInText,
-                'totalInLink' => $totalInLink,
+                'avgInTotalCompetitors' => $avgInTotalCompetitors,
                 'avgInText' => $avgInText,
                 'avgInLink' => $avgInLink,
                 'repeatInTextMainPage' => $repeatInText,
                 'repeatInLinkMainPage' => $repeatInLink,
+                'totalRepeatMainPage' => $totalRepeatMainPage,
                 'numberOccurrences' => $occurrences,
                 'reSpam' => $reSpam,
                 'danger' => $danger,

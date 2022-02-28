@@ -749,11 +749,10 @@
     "Unigram": "Униграм",
     "Intersection": "Пересечение",
     "Re - spam": "Переспам",
-    "Total number of repetitions in the text": "Общее кол-во повторений в тексте",
-    "Average number of repetitions in the text": "Среднее кол-во повторений в тексте",
-    "Number of repetitions in the text of your page": "Кол-во повторений в тексте у вашей страницы",
-    "Total number of repetitions in links": "Общее кол-во повторений в ссылках",
-    "Average number of repetitions in links": "Среднее кол-во повторений в ссылках",
-    "Number of repetitions in links on your page": "Кол-во повторений в ссылках у вашей страницы",
+    "Average for all zones": "Средняя по всем зонам",
+    "Your page for all zones": "Ваша страница по всем зонам",
+    "Your page by text": "Ваша страница по тексту",
+    "Average by links": "Средняя по ссылкам",
+    "Your page is linked": "Ваша страница по ссылкам",
     "Analyzed sites": "Проанализированные сайты"
 }

@@ -308,12 +308,12 @@
                 <th>idf</th>
                 <th>{{ __('Intersection') }}</th>
                 <th>{{ __('Re - spam') }}</th>
-                <th>{{ __('Total number of repetitions in the text') }}</th>
-                <th>{{ __('Average number of repetitions in the text') }}</th>
-                <th>{{ __('Number of repetitions in the text of your page') }}</th>
-                <th>{{ __('Total number of repetitions in links') }}</th>
-                <th>{{ __('Average number of repetitions in links') }}</th>
-                <th>{{ __('Number of repetitions in links on your page') }}</th>
+                <th>{{ __('Average for all zones') }}</th>
+                <th>{{ __('Your page for all zones') }}</th>
+                <th>{{ __('Average by text') }}</th>
+                <th>{{ __('Your page by text') }}</th>
+                <th>{{ __('Average by links') }}</th>
+                <th>{{ __('Your page is linked') }}</th>
             </tr>
             </thead>
             <tbody id="unigramTBody">

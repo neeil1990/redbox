@@ -18,8 +18,8 @@ function renderMainTr(tBody, key, wordWorm) {
     let idf = substringNumber(wordWorm['total']['idf'])
     let numberOccurrences = substringNumber(wordWorm['total']['numberOccurrences'])
     let reSpam = substringNumber(wordWorm['total']['reSpam'])
-    let totalInText = substringNumber(wordWorm['total']['totalInText'])
-    let totalInLink = substringNumber(wordWorm['total']['totalInLink'])
+    let avgInTotalCompetitors = substringNumber(wordWorm['total']['avgInTotalCompetitors'])
+    let totalRepeatMainPage = substringNumber(wordWorm['total']['totalRepeatMainPage'])
     let avgInText = substringNumber(wordWorm['total']['avgInText'])
     let repeatInTextMainPage = substringNumber(wordWorm['total']['repeatInTextMainPage'])
     let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
@@ -36,10 +36,13 @@ function renderMainTr(tBody, key, wordWorm) {
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "</td>" +
         "<td>" + reSpam + "</td>" +
-        "<td>" + totalInText + "</td>" +
+
+        "<td>" + avgInTotalCompetitors + "</td>" +
+        "<td>" + totalRepeatMainPage + "</td>" +
+
         "<td>" + avgInText + "</td>" +
         "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
-        "<td>" + totalInLink + "</td>" +
+
         "<td>" + avgInLink + "</td>" +
         "<td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
         "</tr>"
@@ -55,8 +58,8 @@ function renderChildTr(elem, key, word, stats) {
     let numberOccurrences = substringNumber(stats['numberOccurrences'])
     let reSpam = substringNumber(stats['reSpam'])
     let avgInText = substringNumber(stats['avgInText'])
-    let totalInText = substringNumber(stats['totalInText'])
-    let totalInLink = substringNumber(stats['totalInLink'])
+    let avgInTotalCompetitors = substringNumber(stats['avgInTotalCompetitors'])
+    let totalRepeatMainPage = substringNumber(stats['totalRepeatMainPage'])
     let repeatInTextMainPage = substringNumber(stats['repeatInTextMainPage'])
     let avgInLink = substringNumber(stats['avgInLink'])
     let repeatInLinkMainPage = substringNumber(stats['repeatInLinkMainPage'])
@@ -78,10 +81,10 @@ function renderChildTr(elem, key, word, stats) {
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "</td>" +
         "<td>" + reSpam + "</td>" +
-        "<td>" + totalInText + "</td>" +
+        "<td>" + avgInTotalCompetitors + "</td>" +
         "<td>" + avgInText + "</td>" +
         "<td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
-        "<td>" + totalInLink + "</td>" +
+        "<td>" + totalRepeatMainPage + "</td>" +
         "<td>" + avgInLink + "</td>" +
         "<td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
         "</tr>"
