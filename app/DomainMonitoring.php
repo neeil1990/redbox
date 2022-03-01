@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class DomainMonitoring extends Model
 {
@@ -197,7 +196,6 @@ class DomainMonitoring extends Model
         } else {
             $project->status = 'Keyword not found';
             $project->broken = true;
-            Log::debug('keyword not found', [$project]);
         }
     }
 }
