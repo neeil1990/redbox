@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\DomainMonitoring;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use PHPUnit\Exception;
 
@@ -15,6 +14,7 @@ class CroneController extends Controller
      */
     public function checkLinkCrone($timing)
     {
+        Log::debug('start monitoring with timing', [$timing]);
         try {
             if (!file_exists($timing . '.txt')) {
                 file_put_contents($timing . '.txt', '', 8);
