@@ -1,5 +1,8 @@
 @component('component.card', ['title' => 'Анализ релевантности'])
     @slot('css')
+        <link rel="stylesheet" type="text/css"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
@@ -10,6 +13,12 @@
 
             #unigramTBody > tr > td:nth-child(1) {
                 text-align: center;
+            }
+
+            #full-analyse > span > i,
+            #repeat-main-page-analyse > span > i,
+            #repeat-relevance-analyse > span > i {
+                color: #fffdfd !important;
             }
         </style>
     @endslot
@@ -210,19 +219,59 @@
             </div>
         </div>
     </div>
-    <button class="btn btn-secondary pull-left" id="full-analyse">
-        {{ __('Full analysis') }}
-    </button>
-    <button class="btn btn-secondary pull-left" id="repeat-main-page-analyse" disabled>
-        {{ __('Repeated analysis of the landing page') }}
-    </button>
-    <button class="btn btn-secondary pull-left" id="repeat-relevance-analyse" disabled>
-        {{ __('Repeated analysis of competitor sites') }}
-    </button>
+    <div class="d-flex flex-column">
+        <div class="d-flex">
+            <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="full-analyse">
+                {{ __('Full analysis') }}
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            <b>Полный анализ</b> будет проведён опрос xml сервиса, для того чтобы получить релевантный
+                            топ сайтов конкурентов. Так же произойдёт парсинг посадочной страницы. <br>
+                            На основе всех полученных данных будет производиться анализ. <br>
+                    </span>
+                </span>
+            </button>
+        </div>
+        <div class="d-flexj ">
+            <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="repeat-main-page-analyse" disabled>
+                {{ __('Repeated analysis of the landing page') }}
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            <b>Повторный анализ посадочной страницы</b> будут опрошены сайты конкуренты, которые были
+                            получены в результате прошлого запроса. Поля (регион, топ 10/20, ключевая фраза) учитываться не будут.
+                            У вас есть возможность изменить ссылку на посадочную страницу и переключатели.
+                            На основе всех полученных данных будет производиться анализ. <br> <br>
+                            Сайты конкуренты вы можете увидеть в таблице "{{ __('Analyzed sites') }}"
+                        </span>
+                    </span>
+                </span>
+            </button>
+        </div>
+        <div class="d-flex">
+            <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="repeat-relevance-analyse" disabled>
+                {{ __('Repeated analysis of competitor sites') }}
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            <b>Повторный анализ сайтов конкурентов</b> будет проведён опрос xml сервиса, для того чтобы
+                            получить релевантный топ сайтов конкурентов. Будет взяты данные посадочной страницы, к
+                            оторые были получены в прошлом запросе. <br>
+                            На основе всех полученных данных будет производиться анализ. <br>
+                        </span>
+                    </span>
+                </span>
+            </button>
+        </div>
+    </div>
     <div id="progress-bar">
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
-    <div class="pb-3 pt-3 text" style="display:none !important;">
+    <div class="pb-3 pt-3 text" style="display:none">
         <h3>{{ __('Comparing the amount of text') }}</h3>
         <table class="table table-bordered table-striped dataTable dtr-inline">
             <thead>
@@ -262,7 +311,7 @@
             </tbody>
         </table>
     </div>
-    <div class="pb-3 clouds" style="display:none !important;">
+    <div class="pb-3 clouds" style="display:none ">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
             <div class="d-lg-flex mt-4">
@@ -297,7 +346,7 @@
             </div>
         </div>
     </div>
-    <div class="pb-3 unigram" style="display: none !important;">
+    <div class="pb-3 unigram" style="display: none">
         <h2>{{ __('Unigram') }}</h2>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
