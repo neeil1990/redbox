@@ -761,5 +761,6 @@
     "Based on all the data received, an analysis will be performed.": "На основе всех полученных данных будет производиться анализ.",
     "You can see the competitor sites in the table": "Сайты конкуренты вы можете увидеть в таблице",
     "A survey of the xml service will be conducted in order to get the relevant top sites of competitors.": "Будет проведён опрос xml сервиса, для того чтобы получить релевантный топ сайтов конкурентов. ",
-    "The landing page data that was received in the last request will be taken.": "Будет взяты данные посадочной страницы, которые были получены в прошлом запросе."
+    "The landing page data that was received in the last request will be taken.": "Будет взяты данные посадочной страницы, которые были получены в прошлом запросе.",
+    "A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.": "Будет проведен опрос xml-сервиса, чтобы получить соответствующие топовые сайты конкурентов. Целевая страница также будет проанализирована."
 }

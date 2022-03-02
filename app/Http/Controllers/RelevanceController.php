@@ -57,7 +57,7 @@ class RelevanceController extends Controller
             $relevance->setSites($params->sites);
             $relevance->setPages($params->html_relevance);
 
-            $relevance->analyse($request);
+            $relevance->analysis($request);
             $relevance->params->save();
 
             return RelevanceController::prepareResponse($relevance, $request);
@@ -84,7 +84,7 @@ class RelevanceController extends Controller
             $relevance->setMainPage($params->html_main_page);
             $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
             $relevance->parseXmlResponse();
-            $relevance->analyse($request);
+            $relevance->analysis($request);
             $relevance->params->save();
 
             return RelevanceController::prepareResponse($relevance, $request);

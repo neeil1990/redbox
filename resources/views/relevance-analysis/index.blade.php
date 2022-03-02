@@ -433,7 +433,7 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('repeat.main.page.analyse') }}",
+                    url: "{{ route('repeat.main.page.analysis') }}",
                     data: {
                         link: $('.form-control.link').val(),
                         phrase: $('.form-control.phrase').val(),
@@ -469,7 +469,7 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('repeat.relevance.analyse') }}",
+                    url: "{{ route('repeat.relevance.analysis') }}",
                     data: {
                         link: $('.form-control.link').val(),
                         phrase: $('.form-control.phrase').val(),
