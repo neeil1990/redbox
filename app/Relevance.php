@@ -445,9 +445,7 @@ class Relevance
             $ignoredDomains = explode("\n", $ignoredDomains);
             $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
             foreach ($xmlResponse as $item) {
-                if (
-                    !in_array(mb_strtolower($item['doc']['domain']), $ignoredDomains)
-                ) {
+                if (!in_array(str_replace('www.', "", mb_strtolower($item['doc']['domain'])), $ignoredDomains)) {
                     $this->domains[] = $item;
                 }
                 if (count($this->domains) == $count) {
