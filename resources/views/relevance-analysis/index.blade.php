@@ -397,7 +397,7 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('analyse.relevance') }}",
+                    url: "{{ route('analysis.relevance') }}",
                     data: {
                         link: $('.form-control.link').val(),
                         phrase: $('.form-control.phrase').val(),

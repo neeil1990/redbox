@@ -22,7 +22,7 @@ class RelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analyse(Request $request): JsonResponse
+    public function analysis(Request $request): JsonResponse
     {
         try {
             $xml = new SimplifiedXmlFacade(20, $request->region);
@@ -33,7 +33,7 @@ class RelevanceController extends Controller
             $relevance->getMainPageHtml($request->link);
             $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
             $relevance->parseXmlResponse();
-            $relevance->analyse($request);
+            $relevance->analysis($request);
             $relevance->params->save();
             return RelevanceController::prepareResponse($relevance, $request);
 
@@ -48,7 +48,7 @@ class RelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function repeatMainPageAnalyse(Request $request): JsonResponse
+    public function repeatMainPageAnalysis(Request $request): JsonResponse
     {
         try {
             $relevance = new Relevance($request);
@@ -72,7 +72,7 @@ class RelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function repeatRelevanceAnalyse(Request $request): JsonResponse
+    public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
         try {
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();

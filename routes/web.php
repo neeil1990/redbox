@@ -175,7 +175,17 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
 
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
-    Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance');
-    Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalyse')->name('repeat.main.page.analyse');
-    Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalyse')->name('repeat.relevance.analyse');
+    Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
+    Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analyse');
+    Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analyse');
+});
+
+
+Route::get('/ttt', function () {
+    define("LINK", 'https://KaWe.su/catalog/laringoskopy/');
+    $request['link'] = LINK;
+    $rel = new \App\Relevance($request);
+
+    $rel->getMainPageHtml(LINK);
+    dd($rel->mainPage['html']);
 });

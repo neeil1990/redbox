@@ -95,7 +95,11 @@ class Relevance
         return $this;
     }
 
-    public function analyse($request)
+    /**
+     * @param $request
+     * @return void
+     */
+    public function analysis($request)
     {
         $this->removeNoIndex($request);
         $this->separateLinksFromText();
@@ -107,6 +111,42 @@ class Relevance
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
+    }
+
+    /**
+     * Удалить текст, который помечен <noindex>
+     * @param $request
+     * @return void
+     */
+    public function removeNoIndex($request)
+    {
+        if ($request->noIndex == 'false') {
+            $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
+            foreach ($this->pages as $key => $page) {
+                $this->pages[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
+            }
+        }
+    }
+
+    /**
+     * Разделение ссылок и текста
+     * @return void
+     */
+    public function separateLinksFromText()
+    {
+        $this->mainPage['hiddenText'] = '';
+        $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
+        $this->mainPage['html'] = TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']);
+        foreach ($this->pages as $key => $page) {
+            $this->pages[$key]['hiddenText'] = '';
+            $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($page['html']);
+            $this->pages[$key]['html'] = TextAnalyzer::clearHTMLFromLinks($page['html']);
+        }
+    }
+
+    public function countNumberSpaces()
+    {
+
     }
 
     /**
@@ -156,37 +196,6 @@ class Relevance
         }
 
         return TextAnalyzer::deleteEverythingExceptCharacters($hiddenText);
-    }
-
-    /**
-     * Удалить текст, который помечен <noindex>
-     * @param $request
-     * @return void
-     */
-    public function removeNoIndex($request)
-    {
-        if ($request->noIndex == 'false') {
-            $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
-            }
-        }
-    }
-
-    /**
-     * Разделение ссылок и текста
-     * @return void
-     */
-    public function separateLinksFromText()
-    {
-        $this->mainPage['hiddenText'] = '';
-        $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']);
-        foreach ($this->pages as $key => $page) {
-            $this->pages[$key]['hiddenText'] = '';
-            $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($page['html']);
-            $this->pages[$key]['html'] = TextAnalyzer::clearHTMLFromLinks($page['html']);
-        }
     }
 
     /**
