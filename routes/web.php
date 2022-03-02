@@ -169,23 +169,13 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
 
     Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
-    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyzeSites')->name('analyze.sites');
-    Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analyze.nesting');
-    Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analyze.positions');
-    Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analyze.tags');
+    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyzeSites')->name('analysis.sites');
+    Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analysis.nesting');
+    Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
+    Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
 
-    Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analyzer');
+    Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
     Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analyse.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalyse')->name('repeat.main.page.analyse');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalyse')->name('repeat.relevance.analyse');
-});
-
-
-Route::get('/ttt', function () {
-    define("LINK", 'https://KaWe.su/catalog/laringoskopy/');
-    $request['link'] = LINK;
-    $rel = new \App\Relevance($request);
-
-    $rel->getMainPageHtml(LINK);
-    dd($rel->mainPage['html']);
 });

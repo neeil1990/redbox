@@ -1,4 +1,4 @@
-@component('component.card', ['title' => 'Анализ релевантности'])
+@component('component.card', ['title' =>  __('Relevance analysis') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -227,25 +227,24 @@
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
                         <span class="ui_tooltip_content">
-                            <b>Полный анализ</b> будет проведён опрос xml сервиса, для того чтобы получить релевантный
-                            топ сайтов конкурентов. Так же произойдёт парсинг посадочной страницы. <br>
-                            На основе всех полученных данных будет производиться анализ. <br>
+                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
+                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
                     </span>
+                </span>
                 </span>
             </button>
         </div>
-        <div class="d-flexj ">
+        <div class="d-flex">
             <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="repeat-main-page-analyse" disabled>
                 {{ __('Repeated analysis of the landing page') }}
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
                         <span class="ui_tooltip_content">
-                            <b>Повторный анализ посадочной страницы</b> будут опрошены сайты конкуренты, которые были
-                            получены в результате прошлого запроса. Поля (регион, топ 10/20, ключевая фраза) учитываться не будут.
-                            У вас есть возможность изменить ссылку на посадочную страницу и переключатели.
-                            На основе всех полученных данных будет производиться анализ. <br> <br>
-                            Сайты конкуренты вы можете увидеть в таблице "{{ __('Analyzed sites') }}"
+                            {{ __('The competitor sites that were received as a result of the last request will be interviewed.') }}
+                            {{ __('Fields (region, top 10/20, keyword) will not be taken into account.') }}
+                            {{ __('Based on all the data received, an analysis will be performed.') }} <br> <br>
+                            {{ __('You can see the competitor sites in the table') }} "{{ __('Analyzed sites') }}"
                         </span>
                     </span>
                 </span>
@@ -258,10 +257,9 @@
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
                         <span class="ui_tooltip_content">
-                            <b>Повторный анализ сайтов конкурентов</b> будет проведён опрос xml сервиса, для того чтобы
-                            получить релевантный топ сайтов конкурентов. Будет взяты данные посадочной страницы, к
-                            оторые были получены в прошлом запросе. <br>
-                            На основе всех полученных данных будет производиться анализ. <br>
+                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors.') }}
+                            {{ __('The landing page data that was received in the last request will be taken.') }} <br>
+                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
                         </span>
                     </span>
                 </span>
@@ -386,10 +384,10 @@
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderScanedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analyzer/scripts/renderTextTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
         <script>
             $('#full-analyse').click(() => {
                 if (validate()) {

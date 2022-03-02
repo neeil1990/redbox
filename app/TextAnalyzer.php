@@ -168,15 +168,17 @@ class TextAnalyzer
         return mb_strtolower(implode("\n", $withoutSubject));
     }
 
+    /**
+     * @param $html
+     * @return array|false|string|string[]|null
+     */
     public static function removeNoindexText($html)
     {
-        preg_match_all('#<noindex>(.+?)</noindex>#su',
-            $html,
-            $matches,
-            PREG_SET_ORDER);
+        preg_match_all('#<noindex>(.+?)</noindex>#su', $html, $matches, PREG_SET_ORDER);
         foreach ($matches as $item) {
             $html = str_replace($item[0], "", $html);
         }
+
         return mb_strtolower($html);
     }
 

@@ -15,7 +15,7 @@ class RelevanceController extends Controller
 {
     public function index()
     {
-        return view('relevance-analyzer.index');
+        return view('relevance-analysis.index');
     }
 
     /**

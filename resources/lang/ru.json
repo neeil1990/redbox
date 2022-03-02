@@ -754,5 +754,12 @@
     "Your page by text": "Ваша страница по тексту",
     "Average by links": "Средняя по ссылкам",
     "Your page is linked": "Ваша страница по ссылкам",
-    "Analyzed sites": "Проанализированные сайты"
+    "Analyzed sites": "Проанализированные сайты",
+    "Relevance analysis": "Анализ релевантности",
+    "The competitor sites that were received as a result of the last request will be interviewed.": "Будут опрошены сайты конкуренты, которые были получены в результате прошлого запроса.",
+    "Fields (region, top 10/20, keyword) will not be taken into account.": "Поля (регион, топ 10/20, ключевая фраза) учитываться не будут.",
+    "Based on all the data received, an analysis will be performed.": "На основе всех полученных данных будет производиться анализ.",
+    "You can see the competitor sites in the table": "Сайты конкуренты вы можете увидеть в таблице",
+    "A survey of the xml service will be conducted in order to get the relevant top sites of competitors.": "Будет проведён опрос xml сервиса, для того чтобы получить релевантный топ сайтов конкурентов. ",
+    "The landing page data that was received in the last request will be taken.": "Будет взяты данные посадочной страницы, которые были получены в прошлом запросе."
 }

@@ -204,7 +204,7 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "{{ route('analyze.sites') }}",
+                        url: "{{ route('analysis.sites') }}",
                         data: {
                             phrases: phrases,
                             count: count,
@@ -244,7 +244,7 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "{{ route('analyze.nesting') }}",
+                        url: "{{ route('analysis.nesting') }}",
                         data: {
                             scanResult: response.scanResult,
                             sites: response.sites,
@@ -266,7 +266,7 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "{{ route('analyze.positions') }}",
+                        url: "{{ route('analysis.positions') }}",
                         data: {
                             phrases: phrases,
                             count: count,
@@ -289,7 +289,7 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "{{ route('analyze.tags') }}",
+                        url: "{{ route('analysis.tags') }}",
                         data: {
                             metaTags: metaTags,
                             _token: $('meta[name="csrf-token"]').attr('content')

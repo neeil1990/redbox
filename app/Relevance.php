@@ -159,7 +159,7 @@ class Relevance
     }
 
     /**
-     * Удалить текст, который находится вне индексируемых местах html разметки
+     * Удалить текст, который помечен <noindex>
      * @param $request
      * @return void
      */
@@ -179,13 +179,13 @@ class Relevance
      */
     public function separateLinksFromText()
     {
+        $this->mainPage['hiddenText'] = '';
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
         $this->mainPage['html'] = TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']);
-        $this->mainPage['hiddenText'] = '';
         foreach ($this->pages as $key => $page) {
+            $this->pages[$key]['hiddenText'] = '';
             $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($page['html']);
             $this->pages[$key]['html'] = TextAnalyzer::clearHTMLFromLinks($page['html']);
-            $this->pages[$key]['hiddenText'] = '';
         }
     }
 
@@ -276,6 +276,7 @@ class Relevance
             $this->mainPage['linkText'] . ' ' .
             $this->mainPage['hiddenText'] . ' ';
         $strLen = str_word_count($this->competitorsTextAndLinks);
+
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = 0;
@@ -359,10 +360,10 @@ class Relevance
                     if (!in_array($key2, $this->ignoredWords)) {
                         similar_text($key1, $key2, $percent);
                         if (
-                            preg_match("/[А-Яа-я]/", $key1)
-                            && $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1)
-                            || preg_match("/[A-Za-z]/", $key1)
-                            && $percent >= 82
+                            preg_match("/[А-Яа-я]/", $key1) &&
+                            $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1) ||
+                            preg_match("/[A-Za-z]/", $key1) &&
+                            $percent >= 82
                         ) {
                             $this->wordForms[$key1][$key2] = $item2;
                             $this->ignoredWords[] = $key2;
