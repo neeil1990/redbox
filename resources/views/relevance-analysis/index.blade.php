@@ -15,9 +15,9 @@
                 text-align: center;
             }
 
-            #full-analyse > span > i,
-            #repeat-main-page-analyse > span > i,
-            #repeat-relevance-analyse > span > i {
+            #app > div > div > div.card-body > div.d-flex.flex-column > div:nth-child(1) > button.btn.btn-secondary.col-2 > span > i,
+            #app > div > div > div.card-body > div.d-flex.flex-column > div:nth-child(2) > button.btn.btn-secondary.col-2 > span > i,
+            #app > div > div > div.card-body > div.d-flex.flex-column > div:nth-child(3) > button.btn.btn-secondary.col-2 > span > i {
                 color: #fffdfd !important;
             }
         </style>
@@ -220,23 +220,44 @@
         </div>
     </div>
     <div class="d-flex flex-column">
-        <div class="d-flex">
-            <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="full-analyse">
+        <div class="btn-group col-lg-3 col-md-5 mb-2">
+            <button class="btn btn-secondary" id="full-analyse">
                 {{ __('Full analysis') }}
+            </button>
+            <button type="button" class="btn btn-secondary col-2">
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
                         <span class="ui_tooltip_content">
                             {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
                             {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                        </span>
                     </span>
-                </span>
                 </span>
             </button>
         </div>
-        <div class="d-flex">
-            <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="repeat-main-page-analyse" disabled>
+        <div class="btn-group col-lg-3 col-md-5 mb-2">
+            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse" disabled>
+                {{ __('Repeated analysis of competitor sites') }}
+            </button>
+            <button type="button" class="btn btn-secondary col-2">
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors.') }}
+                            {{ __('The landing page data that was received in the last request will be taken.') }} <br>
+                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                        </span>
+                    </span>
+                </span>
+            </button>
+        </div>
+        <div class="btn-group col-lg-3 col-md-5 mb-2">
+            <button class="btn btn-secondary" id="repeat-main-page-analyse" disabled>
                 {{ __('Repeated analysis of the landing page') }}
+            </button>
+            <button type="button" class="btn btn-secondary col-2">
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
@@ -245,21 +266,6 @@
                             {{ __('Fields (region, top 10/20, keyword) will not be taken into account.') }}
                             {{ __('Based on all the data received, an analysis will be performed.') }} <br> <br>
                             {{ __('You can see the competitor sites in the table') }} "{{ __('Analyzed sites') }}"
-                        </span>
-                    </span>
-                </span>
-            </button>
-        </div>
-        <div class="d-flex">
-            <button class="btn btn-secondary col-lg-3 col-md-5 mb-2" id="repeat-relevance-analyse" disabled>
-                {{ __('Repeated analysis of competitor sites') }}
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right __l">
-                        <span class="ui_tooltip_content">
-                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors.') }}
-                            {{ __('The landing page data that was received in the last request will be taken.') }} <br>
-                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
                         </span>
                     </span>
                 </span>
@@ -287,25 +293,11 @@
                 <td id="avgCountWords"></td>
                 <td id="mainPageCountWords"></td>
             </tr>
-            {{--            <tr>--}}
-            {{--                <td>--}}
-            {{--                    <b>{{ __('Number of spaces') }}</b>--}}
-            {{--                </td>--}}
-            {{--                <td id="avgCountSpaces">3</td>--}}
-            {{--                <td id="mainPageCountSpaces">4</td>--}}
-            {{--            </tr>--}}
             <tr>
                 <td><b>{{ __('Number of characters') }}</b></td>
                 <td id="avgCountSymbols"></td>
                 <td id="mainPageCountSymbols"></td>
             </tr>
-            {{--            <tr>--}}
-            {{--                <td>--}}
-            {{--                    <b>{{ __('Number of characters without spaces') }}</b>--}}
-            {{--                </td>--}}
-            {{--                <td id="avgCountSymbolsWithoutSpaces">7</td>--}}
-            {{--                <td id="mainPageCountSymbolsWithoutSpaces">8</td>--}}
-            {{--            </tr>--}}
             </tbody>
         </table>
     </div>
@@ -350,17 +342,118 @@
             <thead>
             <tr role="row">
                 <th></th>
-                <th>{{ __('Words') }}</th>
-                <th>tf</th>
-                <th>idf</th>
-                <th>{{ __('Intersection') }}</th>
-                <th>{{ __('Re - spam') }}</th>
-                <th>{{ __('Average for all zones') }}</th>
-                <th>{{ __('Your page for all zones') }}</th>
-                <th>{{ __('Average by text') }}</th>
-                <th>{{ __('Your page by text') }}</th>
-                <th>{{ __('Average by links') }}</th>
-                <th>{{ __('Your page is linked') }}</th>
+                <th>
+                    {{ __('Words') }}
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ui_tooltip __right __l">
+                        <span class="ui_tooltip_content">
+                            {{ __('Words and their word forms that are present on competitors websites.') }}
+                        </span>
+                    </span>
+                </span>
+                </th>
+                <th>tf
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The weight of the phrase relative to others') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>idf
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The weight of the phrase relative to others.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>
+                    {{ __('Intersection') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The number of sites in which the word is present.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Re - spam') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The maximum number of times that was found on the competitors website.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Average for all zones') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The average value of the number of repetitions in the text and links.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Your page for all zones') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The total number of repetitions on your page in links and text') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Average by text') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The average value of the number of repetitions in the text.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Your page by text') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The number of repetitions in the text on your page.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Average by links') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content">
+                                {{ __('The average value of the number of repetitions in the links.') }}
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>{{ __('Your page is linked') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __left __l">
+                            <span class="ui_tooltip_content">
+                                Количество повторений в ссылках на вашей странице.
+                            </span>
+                        </span>
+                    </span>
+                </th>
             </tr>
             </thead>
             <tbody id="unigramTBody">

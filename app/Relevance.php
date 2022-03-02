@@ -144,11 +144,6 @@ class Relevance
         }
     }
 
-    public function countNumberSpaces()
-    {
-
-    }
-
     /**
      * @param $request
      * @return void
