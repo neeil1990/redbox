@@ -15,11 +15,16 @@
                 text-align: center;
             }
 
-            #app > div > div > div.card-body > div.d-flex.flex-column > div:nth-child(1) > button.btn.btn-secondary.col-2 > span > i,
-            #app > div > div > div.card-body > div.d-flex.flex-column > div:nth-child(2) > button.btn.btn-secondary.col-2 > span > i,
-            #app > div > div > div.card-body > div.d-flex.flex-column > div:nth-child(3) > button.btn.btn-secondary.col-2 > span > i {
+            #app > div > div > div.card-body > div.d-flex.flex-column > div > button.btn.btn-secondary.col-2 > span > i {
                 color: #fffdfd !important;
             }
+
+            th {
+                background: white;
+                position: sticky;
+                top: 0;
+            }
+
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">
@@ -344,7 +349,7 @@
                 <th></th>
                 <th>
                     {{ __('Words') }}
-                <span class="__helper-link ui_tooltip_w">
+                    <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right __l">
                         <span class="ui_tooltip_content">
@@ -358,7 +363,7 @@
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right __l">
                             <span class="ui_tooltip_content">
-                                {{ __('The weight of the phrase relative to others') }}
+                                {{ __('The weight of the phrase relative to others.') }}
                             </span>
                         </span>
                     </span>
@@ -597,7 +602,7 @@
                 clearClouds()
                 renderClouds(response.clouds);
                 renderUnigramTable(response.unigramTable);
-                renderScanedSitesList(response.sites);
+                renderScanedSitesList(response.sites, response.link);
                 renderTextTable(response.avg, response.mainPage)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
@@ -670,9 +675,9 @@
                 });
                 $("#progress-bar").show(300)
                 return setInterval(() => {
-                    percent += 1;
-                    setProgressBarStyles(percent)
-                }, 1000)
+                    percent += Math.random();
+                    setProgressBarStyles(percent.toFixed(2))
+                }, 500)
             }
 
             function validate() {

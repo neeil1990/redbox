@@ -26,15 +26,25 @@ class RelevanceController extends Controller
     {
         try {
             $xml = new SimplifiedXmlFacade(20, $request->region);
+            $start = microtime(true);
             $xml->setQuery($request->phrase);
             $xmlResponse = $xml->getXMLResponse();
 
             $relevance = new Relevance($request);
             $relevance->getMainPageHtml($request->link);
-            $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
-            $relevance->parseXmlResponse();
+            Log::debug('getMainPageHtml', [$start - microtime(true)]);
+            $relevance->removeIgnoredDomains(
+                $request->count,
+                $request->ignoredDomains,
+                $xmlResponse['response']['results']['grouping']['group']
+            );
+            Log::debug('removeIgnoredDomains', [$start - microtime(true)]);
+            $relevance->parseXmlResponse($request->link);
+            Log::debug('parseXmlResponse', [$start - microtime(true)]);
             $relevance->analysis($request);
+            Log::debug('analysis', [$start - microtime(true)]);
             $relevance->params->save();
+
             return RelevanceController::prepareResponse($relevance, $request);
 
         } catch (\Exception $e) {
@@ -82,8 +92,12 @@ class RelevanceController extends Controller
 
             $relevance = new Relevance($request);
             $relevance->setMainPage($params->html_main_page);
-            $relevance->removeIgnoredDomains($request->count, $request->ignoredDomains, $xmlResponse['response']['results']['grouping']['group']);
-            $relevance->parseXmlResponse();
+            $relevance->removeIgnoredDomains(
+                $request->count,
+                $request->ignoredDomains,
+                $xmlResponse['response']['results']['grouping']['group']
+            );
+            $relevance->parseXmlResponse($request->link);
             $relevance->analysis($request);
             $relevance->params->save();
 
@@ -102,23 +116,17 @@ class RelevanceController extends Controller
      */
     public function prepareResponse($relevance, $request): JsonResponse
     {
-//        $avgSpaces = TextLengthController::countingSpaces($text) / $request->count - 1;
-//        $countSpaces = TextLengthController::countingSpaces($mainPageText) - 1;
-
         $count = count($relevance->sites);
-        $text =
-            $relevance->competitorsText . ' ' .
-            $relevance->competitorsLinks;
+        $text = implode(' ', [$relevance->competitorsText, $relevance->competitorsLinks]);
         $avgLength = Str::length($text) / $count;
         $avgCountWords = TextLengthController::countingWord($text) / $count;
-
-        $mainPageText =
-            $relevance->mainPage['html'] . ' ' .
-            $relevance->mainPage['linkText'] . ' ' .
-            $relevance->mainPage['hiddenText'];
-
-        $length = Str::length($mainPageText);
+        $mainPageText = implode(' ', [
+            $relevance->mainPage['html'],
+            $relevance->mainPage['linkText'],
+            $relevance->mainPage['hiddenText']
+        ]);
         $countWords = TextLengthController::countingWord($mainPageText);
+        $length = Str::length($mainPageText);
 
         return response()->json([
             'clouds' => [
@@ -133,16 +141,13 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
             'avg' => [
                 'countWords' => $avgCountWords,
-//                'countSpaces' => $avgSpaces,
                 'countSymbols' => $avgLength,
-//                'countSymbolsWithoutSpaces' => $avgLength - $avgSpaces
             ],
             'mainPage' => [
                 'countWords' => $countWords,
-//                'countSpaces' => $countSpaces,
                 'countSymbols' => $length,
-//                'countSymbolsWithoutSpaces' => $length - $countSpaces
-            ]
+            ],
+            'link' => $request->link
         ]);
     }
 

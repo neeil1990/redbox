@@ -50,6 +50,9 @@ function renderMainTr(tBody, key, wordWorm) {
 }
 
 function renderChildTr(elem, key, word, stats) {
+    if (word === 'total') {
+        return;
+    }
     let bgWarn = ''
     let textWarn = ''
     let linkWarn = ''
@@ -92,19 +95,18 @@ function renderChildTr(elem, key, word, stats) {
 }
 
 function showWordWorms(elem) {
-    let check = $(elem).attr('generated-child')
-    if (check === 'false' || check === undefined) {
+    if ($(elem).attr('generated-child') === 'true') {
+        hideWordWorms(elem)
+    } else {
         let obj = JSON.parse(sessionStorage.childTableRows)
         let target = $(elem).attr('data-target')
         let parent = elem.parent()
         $(elem).attr('generated-child', true)
         $.each(obj[target], function (word, stats) {
-            if (word !== 'total') {
-                renderChildTr(parent, target, word, stats)
-            }
+            renderChildTr(parent, target, word, stats)
         })
+        elem.addClass('show-children')
     }
-    elem.addClass('show-children')
 }
 
 function hideWordWorms(elem) {
@@ -137,3 +139,9 @@ function substringNumber(string) {
 
     return number.substring(0, position)
 }
+
+$('#unigram > thead > tr > th').click(() => {
+    $.each($('[generated-child=true]'), function () {
+        $(this).attr('generated-child', false)
+    })
+});

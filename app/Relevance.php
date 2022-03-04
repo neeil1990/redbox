@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -67,27 +68,31 @@ class Relevance
     }
 
     /**
+     * @param $link
      * @return $this
      */
-    public function parseXmlResponse(): Relevance
+    public function parseXmlResponse($link): Relevance
     {
         foreach ($this->domains as $item) {
+            $domain = strtolower($item['doc']['url']);
             $result = mb_strtolower(TextAnalyzer::removeHeaders(
-                TextAnalyzer::curlInit($item['doc']['url'])
+                TextAnalyzer::curlInit($domain)
             ));
-            $this->pages[$item['doc']['url']]['html'] = $result;
+            $this->pages[$domain]['html'] = $result;
             $this->params['html_relevance'] .= $result . $this->separator;
+            // если ответ от сервера не был получен
             if ($result == '' || $result == null) {
                 $this->sites[] = [
-                    'site' => $item['doc']['url'],
+                    'site' => $domain,
                     'danger' => true,
                 ];
             } else {
                 $this->sites[] = [
-                    'site' => $item['doc']['url'],
+                    'site' => $domain,
                     'danger' => false,
                 ];
             }
+            $this->sites[array_key_last($this->sites)]['mainPage'] = $domain == $link;
         }
 
         $this->params['sites'] = json_encode($this->sites);
@@ -432,11 +437,10 @@ class Relevance
     }
 
     /**
-     * Удаление игнорируемых доменов из ответа xml сервиса
-     *
      * @param $count
      * @param $ignoredDomains
      * @param $xmlResponse
+     * @return void
      */
     public function removeIgnoredDomains($count, $ignoredDomains, $xmlResponse)
     {
@@ -445,7 +449,8 @@ class Relevance
             $ignoredDomains = explode("\n", $ignoredDomains);
             $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
             foreach ($xmlResponse as $item) {
-                if (!in_array(str_replace('www.', "", mb_strtolower($item['doc']['domain'])), $ignoredDomains)) {
+                $domain = str_replace('www.', "", mb_strtolower($item['doc']['domain']));
+                if (!in_array($domain, $ignoredDomains)) {
                     $this->domains[] = $item;
                 }
                 if (count($this->domains) == $count) {
