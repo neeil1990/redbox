@@ -26,23 +26,18 @@ class RelevanceController extends Controller
     {
         try {
             $xml = new SimplifiedXmlFacade(20, $request->region);
-            $start = microtime(true);
             $xml->setQuery($request->phrase);
             $xmlResponse = $xml->getXMLResponse();
 
             $relevance = new Relevance($request);
             $relevance->getMainPageHtml($request->link);
-            Log::debug('getMainPageHtml', [$start - microtime(true)]);
             $relevance->removeIgnoredDomains(
                 $request->count,
                 $request->ignoredDomains,
                 $xmlResponse['response']['results']['grouping']['group']
             );
-            Log::debug('removeIgnoredDomains', [$start - microtime(true)]);
             $relevance->parseXmlResponse($request->link);
-            Log::debug('parseXmlResponse', [$start - microtime(true)]);
             $relevance->analysis($request);
-            Log::debug('analysis', [$start - microtime(true)]);
             $relevance->params->save();
 
             return RelevanceController::prepareResponse($relevance, $request);
@@ -117,14 +112,13 @@ class RelevanceController extends Controller
     public function prepareResponse($relevance, $request): JsonResponse
     {
         $count = count($relevance->sites);
-        $text = implode(' ', [$relevance->competitorsText, $relevance->competitorsLinks]);
+        $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
         $avgLength = Str::length($text) / $count;
         $avgCountWords = TextLengthController::countingWord($text) / $count;
-        $mainPageText = implode(' ', [
+        $mainPageText = Relevance::concatenation([
             $relevance->mainPage['html'],
             $relevance->mainPage['linkText'],
-            $relevance->mainPage['hiddenText']
-        ]);
+            $relevance->mainPage['hiddenText']]);
         $countWords = TextLengthController::countingWord($mainPageText);
         $length = Str::length($mainPageText);
 

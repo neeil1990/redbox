@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class Relevance
 {
@@ -156,7 +154,6 @@ class Relevance
     public function getHiddenData($request)
     {
         if ($request->hiddenText == 'true') {
-            Log::debug('getHiddenData');
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
                 $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($page['html']);
@@ -262,10 +259,17 @@ class Relevance
     public function prepareClouds()
     {
         $this->mainPage['textCloud'] = TextAnalyzer::prepareCloud(
-            $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText']
+            Relevance::concatenation([
+                $this->mainPage['html'],
+                $this->mainPage['hiddenText']
+            ])
         );
         $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud(
-            $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'] . ' ' . $this->mainPage['linkText']
+            Relevance::concatenation([
+                $this->mainPage['html'],
+                $this->mainPage['hiddenText'],
+                $this->mainPage['linkText']
+            ])
         );
         $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
 
@@ -281,9 +285,11 @@ class Relevance
     public function processingOfGeneralInformation()
     {
         $countSites = count($this->sites);
-        $mainPage = ' ' . $this->mainPage['html'] . ' ' .
-            $this->mainPage['linkText'] . ' ' .
-            $this->mainPage['hiddenText'] . ' ';
+        $mainPage = Relevance::concatenation([
+            $this->mainPage['html'],
+            $this->mainPage['linkText'],
+            $this->mainPage['hiddenText']
+        ]);
         $strLen = str_word_count($this->competitorsTextAndLinks);
 
         foreach ($this->wordForms as $root => $wordForm) {
@@ -500,5 +506,14 @@ class Relevance
         }
 
         return $this;
+    }
+
+    /**
+     * @param array $array
+     * @return string
+     */
+    public static function concatenation(array $array): string
+    {
+        return implode(' ', $array);
     }
 }

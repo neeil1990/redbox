@@ -773,5 +773,8 @@
     "The average value of the number of repetitions in the text of your competitors.": "Усреднённое значение количества повторений в тексте у ваших конкурентов.",
     "The number of repetitions in the text on your page.": "Количество повторений в тексте на вашей странице.",
     "The average value of the number of repetitions in the links of your competitors.": "Усреднённое значение количества повторений в ссылках у ваших конкурентов.",
-    "The number of repetitions in the links on your page.": "Количество повторений в ссылках на вашей странице."
+    "The number of repetitions in the links on your page.": "Количество повторений в ссылках на вашей странице.",
+    "Maximum intersection value": "Максимальное значение пересечения",
+    "Minimum intersection value": "Минимальное значение пересечения",
+    "Ranges": "Диапазоны"
 }
