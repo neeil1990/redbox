@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\FreeTariff;
+use App\Classes\Tariffs\MaximumTariff;
+use App\Classes\Tariffs\OptimalTariff;
 use App\TariffSettingValue;
 use Illuminate\Http\Request;
 
 class TariffSettingValuesController extends Controller
 {
-    protected $tariffs = [
-        'free' => 'Free',
-        'optimal' => 'Optimal',
-        'maximum' => 'Maximum',
-    ];
+    protected $tariffs;
+
+    public function __construct()
+    {
+        $this->tariffs = [
+            new FreeTariff(),
+            new OptimalTariff(),
+            new MaximumTariff()
+        ];
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -20,8 +28,11 @@ class TariffSettingValuesController extends Controller
      */
     public function create()
     {
-        $tariffs = $this->tariffs;
-        return view('tariff-setting-values.create', compact('tariffs'));
+        $select = [];
+        foreach ($this->tariffs as $tariff)
+            $select[$tariff->code()] = $tariff->name();
+
+        return view('tariff-setting-values.create', compact('select'));
     }
 
     /**

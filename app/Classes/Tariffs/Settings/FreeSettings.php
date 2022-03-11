@@ -10,9 +10,13 @@ use App\TariffSettingValue;
 
 class FreeSettings implements Settings
 {
-    protected $tariff = 'free';
-
+    protected $tariff;
     protected $settings;
+
+    public function __construct(string $code)
+    {
+        $this->tariff = $code;
+    }
 
     public function get(): array
     {

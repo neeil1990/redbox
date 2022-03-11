@@ -14,11 +14,11 @@ class Tariffs
         $tariff = null;
 
         if($user->hasRole('Free'))
-            $tariff = (new FreeTariff())->get();
+            $tariff = (new FreeTariff())->getAsArray();
         elseif($user->hasRole('Optimal'))
-            $tariff = (new OptimalTariff())->get();
+            $tariff = (new OptimalTariff())->getAsArray();
         elseif($user->hasRole('Maximum'))
-            $tariff = (new OptimalTariff())->get();
+            $tariff = (new OptimalTariff())->getAsArray();
 
         return $tariff;
     }

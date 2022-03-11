@@ -156,6 +156,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Behavior::class);
     }
 
+    public function balances()
+    {
+        return $this->hasMany(Balance::class);
+    }
+
+    public function pay()
+    {
+        return $this->hasMany(TariffPay::class);
+    }
+
     public function metaTags()
     {
         return $this->hasMany(MetaTag::class);
