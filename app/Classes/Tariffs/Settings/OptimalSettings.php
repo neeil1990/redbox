@@ -9,9 +9,13 @@ use App\TariffSettingValue;
 
 class OptimalSettings implements Settings
 {
-    protected $tariff = 'optimal';
-
+    protected $tariff;
     protected $settings;
+
+    public function __construct(string $code)
+    {
+        $this->tariff = $code;
+    }
 
     public function get(): array
     {

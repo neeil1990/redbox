@@ -1,7 +1,7 @@
 
 <div class="form-group">
     {!! Form::label('tariff', 'Тариф') !!}
-    {!! Form::select('tariff', $tariffs, null, ['class' => 'form-control']) !!}
+    {!! Form::select('tariff', $select, null, ['class' => 'form-control']) !!}
     @error('tariff') <span class="error invalid-feedback">{{ $message }}</span> @enderror
 </div>
 

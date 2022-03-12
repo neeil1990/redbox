@@ -78,6 +78,7 @@ class BehaviorController extends Controller
         ]);
 
         $domain = $request->input('domain');
+
         Auth::user()->behaviors()->create([
             'id' => $this->getId(),
             'domain' => $domain,

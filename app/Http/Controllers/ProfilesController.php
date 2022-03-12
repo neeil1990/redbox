@@ -41,7 +41,12 @@ class ProfilesController extends Controller
         });
 
         $user = $this->user;
-        return view('profile.index', compact('user', 'lang'));
+
+        $tariff = __('You are guest!');
+        if($model = $user->pay()->where('status', true)->first())
+            $tariff = (new $model->class_tariff)->name();
+
+        return view('profile.index', compact('user', 'lang', 'tariff'));
     }
 
     /**

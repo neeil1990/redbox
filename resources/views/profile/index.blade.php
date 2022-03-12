@@ -10,11 +10,52 @@
 @stop
 
 @section('content')
-    <div id="toast-container" class="toast-top-right success-message" style="display: none">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">{{ __('The token was copied to the clipboard') }}</div>
+
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ __('Balance') }}</h3>
+
+                    <p>{{ __('Your balance:') }} {{ $user->balance }}</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <a href="{{ route('balance.index') }}" class="small-box-footer">
+                    {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ __('Tariff') }}</h3>
+
+                    <p>{{ $tariff }}</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="{{ route('tariff.index') }}" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
+
+    <div class="row">
+        <div id="toast-container" class="toast-top-right success-message" style="display: none">
+            <div class="toast toast-success" aria-live="polite">
+                <div class="toast-message">{{ __('The token was copied to the clipboard') }}</div>
+            </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card card-primary">
