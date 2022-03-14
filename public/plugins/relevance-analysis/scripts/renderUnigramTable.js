@@ -218,21 +218,21 @@ function renderUnigramTable(unigramTable) {
     });
 }
 
-
 function renderMainTr(tBody, key, wordWorm) {
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
-    let tf = substringNumber(wordWorm['total']['tf'])
-    let idf = substringNumber(wordWorm['total']['idf'])
-    let numberOccurrences = substringNumber(wordWorm['total']['numberOccurrences'])
-    let reSpam = substringNumber(wordWorm['total']['reSpam'])
-    let avgInTotalCompetitors = substringNumber(wordWorm['total']['avgInTotalCompetitors'])
-    let totalRepeatMainPage = substringNumber(wordWorm['total']['totalRepeatMainPage'])
-    let avgInText = substringNumber(wordWorm['total']['avgInText'])
-    let repeatInTextMainPage = substringNumber(wordWorm['total']['repeatInTextMainPage'])
+    let tf = crop(wordWorm['total']['tf'])
+    let idf = crop(wordWorm['total']['idf'])
+    let numberOccurrences = crop(wordWorm['total']['numberOccurrences'])
+    let reSpam = crop(wordWorm['total']['reSpam'])
+    let avgInTotalCompetitors = crop(wordWorm['total']['avgInTotalCompetitors'], true)
+    let totalRepeatMainPage = crop(wordWorm['total']['totalRepeatMainPage'])
+    let avgInText = crop(wordWorm['total']['avgInText'], true)
+    let repeatInTextMainPage = crop(wordWorm['total']['repeatInTextMainPage'])
+    let avgInLink = crop(wordWorm['total']['avgInLink'], true)
+    let repeatInLinkMainPage = crop(wordWorm['total']['repeatInLinkMainPage'])
     let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
-    let avgInLink = substringNumber(wordWorm['total']['avgInLink'])
-    let repeatInLinkMainPage = substringNumber(wordWorm['total']['repeatInLinkMainPage'])
     let repeatInLinkMainPageWarning = repeatInLinkMainPage === '0' ? " class='bg-warning-elem'" : ""
+    let totalInMainPage = repeatInLinkMainPage === '0' && repeatInTextMainPage === '0' ? " class='bg-warning-elem'" : ""
     tBody.append(
         "<tr class='render'>" +
         "<td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
@@ -245,7 +245,7 @@ function renderMainTr(tBody, key, wordWorm) {
         "<td>" + reSpam + "</td>" +
 
         "<td>" + avgInTotalCompetitors + "</td>" +
-        "<td>" + totalRepeatMainPage + "</td>" +
+        "<td " + totalInMainPage + ">" + totalRepeatMainPage + "</td>" +
 
         "<td>" + avgInText + "</td>" +
         "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
@@ -260,26 +260,26 @@ function renderChildTr(elem, key, word, stats) {
     if (word === 'total') {
         return;
     }
-    let bgWarn = ''
-    let textWarn = ''
-    let linkWarn = ''
-    let tf = substringNumber(stats['tf'])
-    let idf = substringNumber(stats['idf'])
-    let numberOccurrences = substringNumber(stats['numberOccurrences'])
-    let reSpam = substringNumber(stats['reSpam'])
-    let avgInText = substringNumber(stats['avgInText'])
-    let avgInTotalCompetitors = substringNumber(stats['avgInTotalCompetitors'])
-    let totalRepeatMainPage = substringNumber(stats['totalRepeatMainPage'])
-    let repeatInTextMainPage = substringNumber(stats['repeatInTextMainPage'])
-    let avgInLink = substringNumber(stats['avgInLink'])
-    let repeatInLinkMainPage = substringNumber(stats['repeatInLinkMainPage'])
+    let tf = crop(stats['tf'])
+    let idf = crop(stats['idf'])
+    let numberOccurrences = crop(stats['numberOccurrences'])
+    let reSpam = crop(stats['reSpam'])
+    let avgInText = crop(stats['avgInText'], true)
+    let avgInTotalCompetitors = crop(stats['avgInTotalCompetitors'], true)
+    let totalRepeatMainPage = crop(stats['totalRepeatMainPage'])
+    let repeatInTextMainPage = crop(stats['repeatInTextMainPage'])
+    let avgInLink = crop(stats['avgInLink'], true)
+    let repeatInLinkMainPage = crop(stats['repeatInLinkMainPage'])
     if (repeatInTextMainPage === '0') {
-        textWarn = "class='bg-warning-elem'"
-        bgWarn = "class='bg-warning-elem'"
+        var textWarn = "class='bg-warning-elem'"
+        var bgWarn = "class='bg-warning-elem'"
     }
     if (repeatInLinkMainPage === '0') {
-        linkWarn = "class='bg-warning-elem'"
-        bgWarn = "class='bg-warning-elem'"
+        var linkWarn = "class='bg-warning-elem'"
+        var bgWarn = "class='bg-warning-elem'"
+    }
+    if (repeatInLinkMainPage === '0' && repeatInTextMainPage === '0') {
+        var bgTotalWarn = "class='bg-warning-elem'"
     }
     elem.after(
         "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
@@ -292,9 +292,9 @@ function renderChildTr(elem, key, word, stats) {
         "<td>" + numberOccurrences + "</td>" +
         "<td>" + reSpam + "</td>" +
         "<td>" + avgInTotalCompetitors + "</td>" +
+        "<td " + bgTotalWarn + ">" + totalRepeatMainPage + "</td>" +
         "<td>" + avgInText + "</td>" +
         "<td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
-        "<td>" + totalRepeatMainPage + "</td>" +
         "<td>" + avgInLink + "</td>" +
         "<td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
         "</tr>"
@@ -309,7 +309,7 @@ function showWordWorms(elem) {
         let target = $(elem).attr('data-target')
         let parent = elem.parent()
         $(elem).attr('generated-child', true)
-        $.each(obj[target], function (word, stats) {
+        $.each(reverseObj(obj[target]), function (word, stats) {
             renderChildTr(parent, target, word, stats)
         })
         elem.addClass('show-children')
@@ -335,16 +335,21 @@ $('th.sorting').click(() => {
     })
 })
 
-function substringNumber(string) {
-    var position
-    let number = string.toString()
-    if (string[5] === '.') {
-        position = 4
+function crop(number, decimal = false) {
+    let position
+    let string = number.toString()
+    if (decimal) {
+        return number.toFixed(1)
     } else {
-        position = 5
+        if (number[5] === '.') {
+            position = 4
+        } else {
+            position = 5
+        }
     }
 
-    return number.substring(0, position)
+
+    return string.substring(0, position)
 }
 
 $('#unigram > thead > tr > th').click(() => {
@@ -360,3 +365,12 @@ $('#filters').click(() => {
         $('.pb-2.filters').show()
     }
 })
+
+function reverseObj(obj) {
+    let newObj = {}
+    let reverseObj = Object.keys(obj).reverse();
+    reverseObj.forEach(function (i) {
+        newObj[i] = obj[i];
+    })
+    return newObj;
+}

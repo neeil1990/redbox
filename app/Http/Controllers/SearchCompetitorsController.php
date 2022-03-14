@@ -36,7 +36,6 @@ class SearchCompetitorsController extends Controller
     {
         $this->checkTariff($request);
 
-        Log::debug('start competitor analyse', $request->all());
         $xmlResult = SearchCompetitors::analyzeList($request->all());
         $sites = SearchCompetitors::scanSites($xmlResult);
 

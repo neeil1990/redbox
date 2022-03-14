@@ -29,6 +29,11 @@
                 top: 0;
             }
 
+            #unigramTBody > tr > td:nth-child(8),
+            #unigramTBody > tr > td:nth-child(10),
+            #unigramTBody > tr > td:nth-child(12) {
+                background: #ebf0f5;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">

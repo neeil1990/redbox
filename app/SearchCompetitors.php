@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use Illuminate\Support\Facades\Log;
 
 class SearchCompetitors
 {
@@ -11,7 +10,7 @@ class SearchCompetitors
      * @param $request
      * @return array
      */
-    public static function analyzeList($request)
+    public static function analyzeList($request): array
     {
         $array = explode("\n", $request['phrases']);
         $phrases = array_diff($array, ['']);
