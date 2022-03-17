@@ -126,17 +126,6 @@ class DomainInformationController extends Controller
     }
 
     /**
-     * method for cron
-     */
-    public function checkDomains()
-    {
-        $projects = DomainInformation::all();
-        foreach ($projects as $project) {
-            DomainInformation::checkDomainSock($project);
-        }
-    }
-
-    /**
      * @param Request $request
      * @return JsonResponse
      */

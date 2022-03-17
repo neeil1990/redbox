@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\DomainMonitoring;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class DomainMonitoringController extends Controller
 {
@@ -19,6 +22,9 @@ class DomainMonitoringController extends Controller
         $this->middleware(['permission:Domain monitoring']);
     }
 
+    /**
+     * @return array|false|Application|Factory|View|mixed
+     */
     public function index()
     {
         $projects = DomainMonitoring::where('user_id', '=', Auth::id())->get();
@@ -30,6 +36,9 @@ class DomainMonitoringController extends Controller
         return view('domain-monitoring.index', compact('projects', 'countProjects'));
     }
 
+    /**
+     * @return array|false|Application|Factory|View|mixed
+     */
     public function createView()
     {
         return view('domain-monitoring.create');

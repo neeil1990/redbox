@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/backlink/scan-links', 'BacklinkController@scanLinks');
-Route::get('/backlink/scan-broken-links', 'BacklinkController@scanBrokenLinks');
+Route::get('/backlink/scan-links', 'CroneController@scanLinks');
+Route::get('/backlink/scan-broken-links', 'CroneController@scanBrokenLinks');
 Route::get('/domain-monitoring/check-link-crone/{timing}', 'CroneController@checkLinkCrone');
-Route::get('/domain-information/check-domain-crone/', 'DomainInformationController@checkDomains');
+Route::get('/domain-information/check-domain-crone/', 'CroneController@checkDomains');
