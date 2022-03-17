@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckForMaintenanceMode;
 use App\Http\Middleware\CheckHttpHeadersDataBase;
+use App\Http\Middleware\DeleteTariffByUsers;
 use App\Http\Middleware\DeleteUsersNoVerify;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\LastOnline;
@@ -64,6 +65,7 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
             CheckHttpHeadersDataBase::class,
             SetLocaleToAuthUser::class,
+            DeleteTariffByUsers::class,
             DeleteUsersNoVerify::class,
             LastOnline::class,
         ],

@@ -11,13 +11,21 @@ use App\Classes\Tariffs\Settings\OptimalSettings;
 class OptimalTariff extends Tariff
 {
     public $name = 'Optimal tariff!';
-    protected $code = 'optimal';
+    protected $code = 'Optimal';
 
     public function __construct()
     {
         parent::__construct(new ThreeMonthsTariff());
 
-        $this->price = 10;
+        $settings = $this->settings()->get();
+        if(array_key_exists('price', $settings)){
+            $this->setPrice($settings['price']);
+        }
+    }
+
+    private function setPrice(int $price)
+    {
+        $this->price = $price;
     }
 
     /**

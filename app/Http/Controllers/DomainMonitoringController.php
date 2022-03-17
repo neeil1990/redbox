@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\Tariffs;
+use App\Classes\Tariffs\Facades\Tariffs;
 use App\DomainMonitoring;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -42,7 +42,9 @@ class DomainMonitoringController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // Проверка тарифа
-        $tariff = Tariffs::get();
+        if(!empty($tariff = (new Tariffs())->getTariffByUser()))
+            $tariff = $tariff->getAsArray();
+
         $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
         if(isset($tariff['settings']['domainMonitoringProject']) && $tariff['settings']['domainMonitoringProject'] > 0){
             if($count >= $tariff['settings']['domainMonitoringProject']){

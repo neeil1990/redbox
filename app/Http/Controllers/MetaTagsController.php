@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\Tariffs;
+
+use App\Classes\Tariffs\Facades\Tariffs;
 use App\Exports\MetaTagsHistoriesExport;
 use App\Exports\MetaTagsCompareHistoriesExport;
 use App\Mail\MetaTagsEmail;
@@ -235,7 +236,9 @@ class MetaTagsController extends Controller
     {
         $model = Auth::user()->metaTags();
 
-        $tariff = Tariffs::get();
+        if(!empty($tariff = (new Tariffs())->getTariffByUser()))
+            $tariff = $tariff->getAsArray();
+
         if(isset($tariff['settings']['MetaTagsProject']) && $tariff['settings']['MetaTagsProject'] > 0){
             if($model->count() >= $tariff['settings']['MetaTagsProject']){
                 abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['MetaTagsProject'] . ' проект`а');

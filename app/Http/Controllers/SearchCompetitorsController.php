@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\Tariffs;
+
+use App\Classes\Tariffs\Facades\Tariffs;
 use App\SearchCompetitors;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -50,7 +51,9 @@ class SearchCompetitorsController extends Controller
         $phrases = explode("\n", $request->input('phrases'));
         $count = count($phrases);
 
-        $tariff = Tariffs::get();
+        if(!empty($tariff = (new Tariffs())->getTariffByUser()))
+            $tariff = $tariff->getAsArray();
+
         if(isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0){
 
             if($count > $tariff['settings']['CompetitorAnalysisPhrases']){

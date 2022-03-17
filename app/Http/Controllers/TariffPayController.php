@@ -2,19 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\FreeTariff;
+use App\Classes\Tariffs\Facades\Tariffs;
 use App\Classes\Tariffs\Interfaces\Period;
-use App\Classes\Tariffs\MaximumTariff;
-use App\Classes\Tariffs\OptimalTariff;
-use App\Classes\Tariffs\Period\FiveDaysTariff;
-use App\Classes\Tariffs\Period\OneDayTariff;
-use App\Classes\Tariffs\Period\PeriodTariff;
-use App\Classes\Tariffs\Period\SixMonthsTariff;
-use App\Classes\Tariffs\Period\ThreeMonthsTariff;
-use App\Classes\Tariffs\Period\TwelveMonthsTariff;
 use App\Classes\Tariffs\Tariff;
-use App\TariffPay;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -42,19 +32,9 @@ class TariffPayController extends Controller
             return $next($request);
         });
 
-        $this->tariffs = [
-            new FreeTariff(),
-            new OptimalTariff(),
-            new MaximumTariff()
-        ];
-
-        $this->periods = [
-            new OneDayTariff(),
-            new FiveDaysTariff(),
-            new ThreeMonthsTariff(),
-            new SixMonthsTariff(),
-            new TwelveMonthsTariff()
-        ];
+        $tariff = new Tariffs();
+        $this->tariffs = $tariff->getTariffs();
+        $this->periods = $tariff->getPeriods();
     }
 
     /**
