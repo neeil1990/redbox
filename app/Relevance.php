@@ -114,6 +114,7 @@ class Relevance
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
+        $this->params->save();
     }
 
     /**
@@ -298,32 +299,32 @@ class Relevance
                 $numberTextOccurrences = 0;
                 $numberLinkOccurrences = 0;
                 $numberOccurrences = 0;
-                foreach ($this->pages as $page) {
+                foreach ($this->pages as $key => $page) {
                     if (preg_match("/($word)/", $page['html'])) {
-                        $count = substr_count($page['html'], " $word ");
+                        $count = substr_count($this->pages[$key]['html'], " $word ");
                         $numberTextOccurrences += $count;
                         if ($reSpam < $count) {
                             $reSpam = $count;
                         }
                     }
-                    if (preg_match("/($word)/", $page['hiddenText'])) {
-                        $count = substr_count($page['hiddenText'], " $word ");
+                    if (preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
+                        $count = substr_count($this->pages[$key]['hiddenText'], " $word ");
                         $numberTextOccurrences += $count;
                         if ($reSpam < $count) {
                             $reSpam = $count;
                         }
                     }
-                    if (preg_match("/($word)/", $page['linkText'])) {
-                        $count = substr_count($page['linkText'], " $word ");
+                    if (preg_match("/($word)/", $this->pages[$key]['linkText'])) {
+                        $count = substr_count($this->pages[$key]['linkText'], " $word ");
                         $numberLinkOccurrences += $count;
                         if ($reSpam < $count) {
                             $reSpam = $count;
                         }
                     }
 
-                    if (preg_match("/($word)/", $page['html']) ||
-                        preg_match("/($word)/", $page['linkText']) ||
-                        preg_match("/($word)/", $page['hiddenText'])) {
+                    if (preg_match("/($word)/", $this->pages[$key]['html']) ||
+                        preg_match("/($word)/", $this->pages[$key]['linkText']) ||
+                        preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
                         $numberOccurrences++;
                     }
                 }
@@ -419,11 +420,9 @@ class Relevance
                 $avgInLink += $word['avgInLink'];
                 $repeatInText += $word['repeatInTextMainPage'];
                 $repeatInLink += $word['repeatInLinkMainPage'];
+                $reSpam += $word['reSpam'];
                 if ($word['numberOccurrences'] > $occurrences) {
                     $occurrences = $word['numberOccurrences'];
-                }
-                if ($word['reSpam'] > $reSpam) {
-                    $reSpam = $word['reSpam'];
                 }
             }
             $this->wordForms[$key]['total'] = [

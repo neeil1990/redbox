@@ -38,7 +38,6 @@ class RelevanceController extends Controller
             );
             $relevance->parseXmlResponse($request->link);
             $relevance->analysis($request);
-            $relevance->params->save();
 
             return RelevanceController::prepareResponse($relevance, $request);
 
@@ -61,9 +60,7 @@ class RelevanceController extends Controller
             $relevance->getMainPageHtml($request->link);
             $relevance->setSites($params->sites);
             $relevance->setPages($params->html_relevance);
-
             $relevance->analysis($request);
-            $relevance->params->save();
 
             return RelevanceController::prepareResponse($relevance, $request);
         } catch (\Exception $e) {
@@ -79,6 +76,7 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
+        // TODO Обновляем содержимое конкурентов, которое было получено в результате прошлого запроса
         try {
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
             $xml = new SimplifiedXmlFacade(20, $request->region);
@@ -94,7 +92,6 @@ class RelevanceController extends Controller
             );
             $relevance->parseXmlResponse($request->link);
             $relevance->analysis($request);
-            $relevance->params->save();
 
             return RelevanceController::prepareResponse($relevance, $request);
         } catch (\Exception $e) {

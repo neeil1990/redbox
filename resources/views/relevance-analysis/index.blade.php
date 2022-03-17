@@ -34,6 +34,10 @@
             #unigramTBody > tr > td:nth-child(12) {
                 background: #ebf0f5;
             }
+
+            .ui_tooltip.__left, .ui_tooltip.__right {
+                width: auto;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">
@@ -241,7 +245,7 @@
             <button type="button" class="btn btn-secondary col-2">
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right __l">
+                    <span class="ui_tooltip __right">
                         <span class="ui_tooltip_content">
                             {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
                             {{ __('Based on all the data received, an analysis will be performed.') }} <br>
@@ -257,11 +261,9 @@
             <button type="button" class="btn btn-secondary col-2">
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right __l">
+                    <span class="ui_tooltip __right">
                         <span class="ui_tooltip_content">
-                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors.') }}
-                            {{ __('The landing page data that was received in the last request will be taken.') }} <br>
-                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                            Обновляем содержимое конкурентов, которое было получено в результате прошлого запроса
                         </span>
                     </span>
                 </span>
@@ -274,12 +276,9 @@
             <button type="button" class="btn btn-secondary col-2">
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right __l">
+                    <span class="ui_tooltip __right">
                         <span class="ui_tooltip_content">
-                            {{ __('The competitor sites that were received as a result of the last request will be interviewed.') }}
-                            {{ __('Fields (region, top 10/20, keyword) will not be taken into account.') }}
-                            {{ __('Based on all the data received, an analysis will be performed.') }} <br> <br>
-                            {{ __('You can see the competitor sites in the table') }} "{{ __('Analyzed sites') }}"
+                            Повторно опрашиваем посадочную страницу и берём данные с сайтов конкурентов, которые были получены в результате прошлого запроса
                         </span>
                     </span>
                 </span>
@@ -352,90 +351,79 @@
     </div>
     <div class="pb-3 unigram" style="display: none">
         <h2>{{ __('Unigram') }}</h2>
-        <span id="filters" style="cursor: pointer"><u>{{ __('Ranges') }}</u></span>
-        <div class="pb-2 filters" style="display: none">
-            <div class="d-flex flex-row flex-wrap">
-                <div class="p-2">
-                    <p class="text-muted">tf</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxTF" id="maxTF" placeholder="max">
-                        <input class="w-50" type="number" name="minTF" id="minTF" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">idf</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxIdf" id="maxIdf" placeholder="max">
-                        <input class="w-50" type="number" name="minIdf" id="minIdf" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Intersection') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxInter" id="maxInter" placeholder="max">
-                        <input class="w-50" type="number" name="minInter" id="minInter" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Re - spam') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxReSpam" id="maxReSpam" placeholder="max">
-                        <input class="w-50" type="number" name="minReSpam" id="minReSpam" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Average number of repetitions in the text and links') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxAVG" id="maxAVG" placeholder="max">
-                        <input class="w-50" type="number" name="minAVG" id="minAVG" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('The total number of repetitions in the text and links') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxAVGText" id="maxAVGText" placeholder="max">
-                        <input class="w-50" type="number" name="minAVGText" id="minAVGText" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Average number of repetitions in the text') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxInYourPage" id="maxInYourPage" placeholder="max">
-                        <input class="w-50" type="number" name="minInYourPage" id="minInYourPage" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Number of repetitions in text') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxTextIYP" id="maxTextIYP" placeholder="max">
-                        <input class="w-50" type="number" name="minTextIYP" id="minTextIYP" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Average number of repetitions in links') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxAVGLink" id="maxAVGLink" placeholder="max">
-                        <input class="w-50" type="number" name="minAVGLink" id="minAVGLink" placeholder="min">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <p class="text-muted">{{ __('Number of repetitions in links') }}</p>
-                    <div class="d-flex flex-row">
-                        <input class="w-50" type="number" name="maxLinkIYP" id="maxLinkIYP" placeholder="max">
-                        <input class="w-50" type="number" name="minLinkIYP" id="minLinkIYP" placeholder="min">
-                    </div>
-                </div>
-            </div>
-        </div>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
-            <tr role="row">
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="col-1">
+                    <div>
+                        <input class="w-100" type="number" name="minTF" id="minTF" placeholder="min">
+                        <input class="w-100" type="number" name="maxTF" id="maxTF" placeholder="max">
+                    </div>
+                </th>
+                <th class="col-1">
+                    <div>
+                        <input class="w-100" type="number" name="minIdf" id="minIdf" placeholder="min">
+                        <input class="w-100" type="number" name="maxIdf" id="maxIdf" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minInter" id="minInter" placeholder="min">
+                        <input class="w-100" type="number" name="maxInter" id="maxInter" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minReSpam" id="minReSpam" placeholder="min">
+                        <input class="w-100" type="number" name="maxReSpam" id="maxReSpam" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minAVG" id="minAVG" placeholder="min">
+                        <input class="w-100" type="number" name="maxAVG" id="maxAVG" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minAVGText" id="minAVGText" placeholder="min">
+                        <input class="w-100" type="number" name="maxAVGText" id="maxAVGText" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minInYourPage" id="minInYourPage" placeholder="min">
+                        <input class="w-100" type="number" name="maxInYourPage" id="maxInYourPage" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minTextIYP" id="minTextIYP" placeholder="min">
+                        <input class="w-100" type="number" name="maxTextIYP" id="maxTextIYP" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minAVGLink" id="minAVGLink" placeholder="min">
+                        <input class="w-100" type="number" name="maxAVGLink" id="maxAVGLink" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" name="minLinkIYP" id="minLinkIYP" placeholder="min">
+                        <input class="w-100" type="number" name="maxLinkIYP" id="maxLinkIYP" placeholder="max">
+                    </div>
+                </th>
+            </tr>
+            <tr>
                 <th></th>
                 <th>
                     {{ __('Words') }}
                     <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __left __l">
+                    <span class="ui_tooltip __right">
                         <span class="ui_tooltip_content" style="text-align: right">
                             {{ __('Words and their word forms that are present on competitors websites.') }}
                         </span>
@@ -445,7 +433,7 @@
                 <th>tf
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The weight of the phrase relative to others.') }}
                             </span>
@@ -455,7 +443,7 @@
                 <th>idf
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The weight of the phrase relative to others.') }}
                             </span>
@@ -466,7 +454,7 @@
                     {{ __('Intersection') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The number of sites in which the word is present.') }}
                             </span>
@@ -476,7 +464,7 @@
                 <th>{{ __('Re - spam') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The maximum number of repetitions found on the competitors website.') }}
                             </span>
@@ -486,7 +474,7 @@
                 <th>{{ __('Average number of repetitions in the text and links') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
                             </span>
@@ -496,7 +484,7 @@
                 <th>{{ __('The total number of repetitions in the text and links') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The total number of repetitions on your page in links and text.') }}
                             </span>
@@ -506,7 +494,7 @@
                 <th>{{ __('Average number of repetitions in the text') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The average value of the number of repetitions in the text of your competitors.') }}
                             </span>
@@ -516,7 +504,7 @@
                 <th>{{ __('Number of repetitions in text') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The number of repetitions in the text on your page.') }}
                             </span>
@@ -526,7 +514,7 @@
                 <th>{{ __('Average number of repetitions in links') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The average value of the number of repetitions in the links of your competitors.') }}
                             </span>
@@ -536,7 +524,7 @@
                 <th>{{ __('Number of repetitions in links') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left __l">
+                        <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">
                                 {{ __('The number of repetitions in the links on your page.') }}
                             </span>
@@ -681,16 +669,17 @@
             })
 
             function successRequest(response, interval) {
+                clearClouds()
                 stopProgressBar(interval)
                 removeAllRenderElements()
-                clearClouds()
-                renderClouds(response.clouds);
                 renderUnigramTable(response.unigramTable);
                 renderScanedSitesList(response.sites, response.link);
                 renderTextTable(response.avg, response.mainPage)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
+                clearClouds()
+                renderClouds(response.clouds);
             }
 
             function errorRequest(interval) {
