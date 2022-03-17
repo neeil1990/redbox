@@ -323,32 +323,32 @@
     <div class="pb-3 clouds" style="display:none ">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
-            <div class="d-lg-flex mt-4">
-                <div class="col-lg-6 col-md-12">
+            <div class="d-lg-flex mt-4 justify-content-around">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('Competitors Link Zone') }}</span>
                     <div style="height: 350px !important;" id="competitorsLinksCloud"></div>
                 </div>
-                <div class="col-lg-6 col-md-12">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('The link zone of your page') }}</span>
                     <div style="height: 350px !important;" id="mainPageLinksCloud"></div>
                 </div>
             </div>
-            <div class="d-lg-flex mt-4">
-                <div class="col-lg-6 col-md-12">
+            <div class="d-lg-flex mt-4 justify-content-around">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('Competitors text area') }}</span>
                     <div style="height: 350px !important;" id="competitorsTextCloud"></div>
                 </div>
-                <div class="col-lg-6 col-md-12">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('The text area of your page') }}</span>
                     <div style="height: 350px !important;" id="mainPageTextCloud"></div>
                 </div>
             </div>
-            <div class="d-lg-flex mt-4">
-                <div class="col-lg-6 col-md-12">
+            <div class="d-lg-flex mt-4 justify-content-around">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('Competitors Link and Text area') }}</span>
                     <div style="height: 350px !important;" id="competitorsTextAndLinksCloud"></div>
                 </div>
-                <div class="col-lg-6 col-md-12">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('The zone of links and text of your page') }}</span>
                     <div style="height: 350px !important;" id="mainPageTextWithLinksCloud"></div>
                 </div>
@@ -361,7 +361,7 @@
             <thead>
             <tr>
                 <th></th>
-                <th></th>
+                <th class="font-weight-normal text-muted">Диапазоны для фильтрации таблицы</th>
                 <th class="col-1">
                     <div>
                         <input class="w-100" type="number" name="minTF" id="minTF" placeholder="min">
