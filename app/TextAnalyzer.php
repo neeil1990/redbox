@@ -298,9 +298,10 @@ class TextAnalyzer
 
     /**
      * @param $string
+     * @param int $separator
      * @return array
      */
-    public static function prepareCloud($string): array
+    public static function prepareCloud($string, $separator = 2): array
     {
         $words = [];
         $was = [];
@@ -311,7 +312,7 @@ class TextAnalyzer
             if (count($words) == 200) {
                 break;
             }
-            if (mb_strlen($item) > 2) {
+            if (mb_strlen($item) > $separator) {
                 $item = addslashes($item);
                 preg_match_all("/.*?\s($item)\s.*?/",
                     $string,

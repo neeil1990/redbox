@@ -183,6 +183,12 @@
                 "zoon.ru\n" ,["class" => "form-control ignoredDomains"] ) !!}
         </div>
 
+        <div class="form-group required d-flex align-items-center">
+            <span>Обрезать слова короче</span>
+            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator" id="separator" value="4">
+            <span>символов</span>
+        </div>
+
         <div class="switch mt-3 mb-3">
             <div class="d-flex">
                 <div class="__helper-link ui_tooltip_w">
@@ -351,7 +357,7 @@
     </div>
     <div class="pb-3 unigram" style="display: none">
         <h2>{{ __('Unigram') }}</h2>
-        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
+        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline" style="width: auto">
             <thead>
             <tr>
                 <th></th>
@@ -570,6 +576,7 @@
                     url: "{{ route('analysis.relevance') }}",
                     data: {
                         link: $('.form-control.link').val(),
+                        separator: $('#separator').val(),
                         phrase: $('.form-control.phrase').val(),
                         noIndex: $('#switchNoindex').is(':checked'),
                         listWords: $('.form-control.listWords').val(),
@@ -606,6 +613,7 @@
                     url: "{{ route('repeat.main.page.analysis') }}",
                     data: {
                         link: $('.form-control.link').val(),
+                        separator: $('#separator').val(),
                         phrase: $('.form-control.phrase').val(),
                         noIndex: $('#switchNoindex').is(':checked'),
                         listWords: $('.form-control.listWords').val(),
@@ -642,6 +650,7 @@
                     url: "{{ route('repeat.relevance.analysis') }}",
                     data: {
                         link: $('.form-control.link').val(),
+                        separator: $('#separator').val(),
                         phrase: $('.form-control.phrase').val(),
                         noIndex: $('#switchNoindex').is(':checked'),
                         listWords: $('.form-control.listWords').val(),

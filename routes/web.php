@@ -11,8 +11,11 @@
 |
 */
 
+use App\LinguaStem;
+use App\RelevanceAnalyseResults;
 use App\TelegramBot;
 use App\TextAnalyzer;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
     phpinfo();
@@ -189,10 +192,9 @@ Route::middleware(['verified'])->group(function () {
 
 
 Route::get('/ttt', function () {
-    define("LINK", 'https://KaWe.su/catalog/laringoskopy/');
-    $request['link'] = LINK;
-    $rel = new \App\Relevance($request);
-
-    $rel->getMainPageHtml(LINK);
-    dd($rel->mainPage['html']);
+    $stemmer = new LinguaStem();
+    dump($stemmer->getRootWord('отоскопам'));
+    dump($stemmer->getRootWord('отоскопами'));
+    dump($stemmer->getRootWord('отоскоп'));
+    dump($stemmer->getRootWord('отоскопом'));
 });

@@ -36,7 +36,7 @@ class RelevanceController extends Controller
                 $request->ignoredDomains,
                 $xmlResponse['response']['results']['grouping']['group']
             );
-            $relevance->parseXmlResponse($request->link);
+            $relevance->parseSites($request->link);
             $relevance->analysis($request);
 
             return RelevanceController::prepareResponse($relevance, $request);
@@ -76,21 +76,12 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
-        // TODO Обновляем содержимое конкурентов, которое было получено в результате прошлого запроса
         try {
-            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-            $xml = new SimplifiedXmlFacade(20, $request->region);
-            $xml->setQuery($request->phrase);
-            $xmlResponse = $xml->getXMLResponse();
-
             $relevance = new Relevance($request);
+            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
             $relevance->setMainPage($params->html_main_page);
-            $relevance->removeIgnoredDomains(
-                $request->count,
-                $request->ignoredDomains,
-                $xmlResponse['response']['results']['grouping']['group']
-            );
-            $relevance->parseXmlResponse($request->link);
+            $relevance->setDomains($params->sites);
+            $relevance->parseSites($request->link);
             $relevance->analysis($request);
 
             return RelevanceController::prepareResponse($relevance, $request);

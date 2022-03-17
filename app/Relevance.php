@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Relevance
 {
@@ -69,10 +70,13 @@ class Relevance
      * @param $link
      * @return $this
      */
-    public function parseXmlResponse($link): Relevance
+    public function parseSites($link): Relevance
     {
         foreach ($this->domains as $item) {
-            $domain = strtolower($item['doc']['url']);
+            Log::debug('msg', [$item]);
+            $domain = isset($item['doc']['url'])
+                ? strtolower($item['doc']['url'])
+                : $item;
             $result = mb_strtolower(TextAnalyzer::removeHeaders(
                 TextAnalyzer::curlInit($domain)
             ));
@@ -110,8 +114,8 @@ class Relevance
         $this->removePartsOfSpeech($request);
         $this->removeListWords($request);
         $this->getTextFromCompetitors();
-        $this->prepareClouds();
-        $this->searchWordForms();
+        $this->prepareClouds($request->separator);
+        $this->searchWordForms($request->separator);
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
         $this->params->save();
@@ -257,26 +261,26 @@ class Relevance
      * Подготовка облаков (http://cavaliercoder.com/jclouds)
      * @return void
      */
-    public function prepareClouds()
+    public function prepareClouds($separator)
     {
         $this->mainPage['textCloud'] = TextAnalyzer::prepareCloud(
             Relevance::concatenation([
                 $this->mainPage['html'],
                 $this->mainPage['hiddenText']
-            ])
+            ]), $separator
         );
         $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud(
             Relevance::concatenation([
                 $this->mainPage['html'],
                 $this->mainPage['hiddenText'],
                 $this->mainPage['linkText']
-            ])
+            ]), $separator
         );
-        $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
+        $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText'], $separator);
 
-        $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
-        $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
-        $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
+        $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks, $separator);
+        $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText, $separator);
+        $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks, $separator);
     }
 
     /**
@@ -351,10 +355,10 @@ class Relevance
     }
 
     /**
-     * Поиск словоформ
+     * @param $separator
      * @return void
      */
-    public function searchWordForms()
+    public function searchWordForms($separator)
     {
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
@@ -363,9 +367,9 @@ class Relevance
         asort($array);
         $array = array_reverse($array);
 
-        // удаляем все слова в которых кол-во символов меньше 3
+        // удаляем все слова в которых кол-во символов меньше $separator
         foreach ($array as $key => $item) {
-            if (mb_strlen($key) <= 3) {
+            if (mb_strlen($key) <= $separator) {
                 unset($array[$key]);
             }
         }
@@ -514,5 +518,19 @@ class Relevance
     public static function concatenation(array $array): string
     {
         return implode(' ', $array);
+    }
+
+    /**
+     * @param $sites
+     * @return $this
+     */
+    public function setDomains($sites): Relevance
+    {
+        $array = json_decode($sites, true);
+        foreach ($array as $item) {
+            $this->domains[] = $item['site'];
+        }
+
+        return $this;
     }
 }
