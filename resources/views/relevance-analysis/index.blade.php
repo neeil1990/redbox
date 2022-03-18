@@ -325,32 +325,42 @@
         <div class="d-flex flex-column pb-3">
             <div class="d-lg-flex mt-4 justify-content-around">
                 <div class="col-lg-5 col-md-10">
+                    <span>tf-idf конкурентов</span>
+                    <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
+                </div>
+                <div class="col-lg-5 col-md-10">
+                    <span>tf-idf посадочной страницы</span>
+                    <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
+                </div>
+            </div>
+            <div class="d-lg-flex mt-4 justify-content-around">
+                <div class="col-lg-5 col-md-10">
                     <span>{{ __('Competitors Link Zone') }}</span>
-                    <div style="height: 350px !important;" id="competitorsLinksCloud"></div>
+                    <div style="height: 350px" id="competitorsLinksCloud" class="generated-cloud"></div>
                 </div>
                 <div class="col-lg-5 col-md-10">
                     <span>{{ __('The link zone of your page') }}</span>
-                    <div style="height: 350px !important;" id="mainPageLinksCloud"></div>
+                    <div style="height: 350px" id="mainPageLinksCloud" class="generated-cloud"></div>
                 </div>
             </div>
             <div class="d-lg-flex mt-4 justify-content-around">
                 <div class="col-lg-5 col-md-10">
                     <span>{{ __('Competitors text area') }}</span>
-                    <div style="height: 350px !important;" id="competitorsTextCloud"></div>
+                    <div style="height: 350px" id="competitorsTextCloud" class="generated-cloud"></div>
                 </div>
                 <div class="col-lg-5 col-md-10">
                     <span>{{ __('The text area of your page') }}</span>
-                    <div style="height: 350px !important;" id="mainPageTextCloud"></div>
+                    <div style="height: 350px" id="mainPageTextCloud" class="generated-cloud"></div>
                 </div>
             </div>
             <div class="d-lg-flex mt-4 justify-content-around">
                 <div class="col-lg-5 col-md-10">
                     <span>{{ __('Competitors Link and Text area') }}</span>
-                    <div style="height: 350px !important;" id="competitorsTextAndLinksCloud"></div>
+                    <div style="height: 350px" id="competitorsTextAndLinksCloud" class="generated-cloud"></div>
                 </div>
                 <div class="col-lg-5 col-md-10">
                     <span>{{ __('The zone of links and text of your page') }}</span>
-                    <div style="height: 350px !important;" id="mainPageTextWithLinksCloud"></div>
+                    <div style="height: 350px" id="mainPageTextWithLinksCloud" class="generated-cloud"></div>
                 </div>
             </div>
         </div>
@@ -712,12 +722,7 @@
             }
 
             function clearClouds() {
-                $("#competitorsLinksCloud").html("")
-                $("#mainPageLinksCloud").html("")
-                $("#competitorsTextAndLinksCloud").html("")
-                $("#competitorsTextCloud").html("")
-                $("#mainPageTextWithLinksCloud").html("")
-                $("#mainPageTextCloud").html("")
+                $(".generated-cloud").html("")
             }
 
             function setProgressBarStyles(percent) {
@@ -763,7 +768,7 @@
             }
 
             function validate() {
-                if ($('.form-control.phrase').val() == '' || $('.form-control.link').val() == '') {
+                if ($('.form-control.phrase').val() === '' || $('.form-control.link').val() === '') {
                     $('.toast-top-right.error-message.empty').show(300)
                     setTimeout(() => {
                         $('.toast-top-right.error-message.empty').hide(300)
@@ -773,7 +778,6 @@
                 return false;
             }
         </script>
-        {{--Этот скрипт располагается тут, так как иначе невозможно добавить локализацию--}}
         <script>
             var $jscomp = $jscomp || {};
             $jscomp.scope = {}, $jscomp.findInternal = function (t, e, n) {
@@ -1008,8 +1012,7 @@
                 }
 
                 function y(e, n, r, o) {
-                    var i = e.aoData.length,
-                        l = t.extend(!0, {}, Vt.models.oRow, {src: r ? "dom" : "data", idx: i});
+                    var i = e.aoData.length, l = t.extend(!0, {}, Vt.models.oRow, {src: r ? "dom" : "data", idx: i});
                     l._aData = n, e.aoData.push(l);
                     for (var s = e.aoColumns, u = 0, c = s.length; u < c; u++) s[u].sType = null;
                     return e.aiDisplayMaster.push(i), (n = e.rowIdFn(n)) !== a && (e.aIds[n] = l), !r && e.oFeatures.bDeferRender || j(e, i, r, o), i
@@ -1030,7 +1033,7 @@
                     if (u !== l && null !== u || null === s || r === a) {
                         if ("function" == typeof u) return u.call(l)
                     } else u = s;
-                    return null === u && "display" === r ? "" : ("filter" === r && ((t = Vt.ext.type.search)[i.sType] && (u = t[i.sType](u))), u)
+                    return null === u && "display" === r ? "" : ("filter" === r && (t = Vt.ext.type.search)[i.sType] && (u = t[i.sType](u)), u)
                 }
 
                 function T(t, e, n, a) {
@@ -1278,8 +1281,7 @@
                 }
 
                 function $(e) {
-                    var n = e.aoColumns, a = n.length, r = e.oFeatures, o = e.oPreviousSearch,
-                        i = e.aoPreSearchCols,
+                    var n = e.aoColumns, a = n.length, r = e.oFeatures, o = e.oPreviousSearch, i = e.aoPreSearchCols,
                         l = [], s = vt(e), u = e._iDisplayStart, c = !1 !== r.bPaginate ? e._iDisplayLength : -1,
                         f = function (t, e) {
                             l.push({name: t, value: e})
@@ -1304,10 +1306,7 @@
                         }), f("mDataProp_" + u, c), r.bFilter && (f("sSearch_" + u, p.sSearch), f("bRegex_" + u, p.bRegex), f("bSearchable_" + u, h.bSearchable)), r.bSort && f("bSortable_" + u, h.bSortable)
                     }
                     return r.bFilter && (f("sSearch", o.sSearch), f("bRegex", o.bRegex)), r.bSort && (t.each(s, function (t, e) {
-                        d.order.push({
-                            column: e.col,
-                            dir: e.dir
-                        }), f("iSortCol_" + t, e.col), f("sSortDir_" + t, e.dir)
+                        d.order.push({column: e.col, dir: e.dir}), f("iSortCol_" + t, e.col), f("sSortDir_" + t, e.dir)
                     }), f("iSortingCols", s.length)), null === (n = Vt.ext.legacy.ajax) ? e.sAjaxSource ? l : d : n ? l : d
                 }
 
@@ -1427,21 +1426,11 @@
                 }
 
                 function Z(t) {
-                    return {
-                        search: t.sSearch,
-                        smart: t.bSmart,
-                        regex: t.bRegex,
-                        caseInsensitive: t.bCaseInsensitive
-                    }
+                    return {search: t.sSearch, smart: t.bSmart, regex: t.bRegex, caseInsensitive: t.bCaseInsensitive}
                 }
 
                 function K(t) {
-                    return {
-                        sSearch: t.search,
-                        bSmart: t.smart,
-                        bRegex: t.regex,
-                        bCaseInsensitive: t.caseInsensitive
-                    }
+                    return {sSearch: t.search, bSmart: t.smart, bRegex: t.regex, bCaseInsensitive: t.caseInsensitive}
                 }
 
                 function Q(e) {
@@ -1463,8 +1452,7 @@
                 }
 
                 function et(t, e) {
-                    var n = t.fnFormatNumber, a = t._iDisplayStart + 1, r = t._iDisplayLength,
-                        o = t.fnRecordsDisplay(),
+                    var n = t.fnFormatNumber, a = t._iDisplayStart + 1, r = t._iDisplayLength, o = t.fnRecordsDisplay(),
                         i = -1 === r;
                     return e.replace(/_START_/g, n.call(t, a)).replace(/_END_/g, n.call(t, t.fnDisplayEnd())).replace(/_MAX_/g, n.call(t, t.fnRecordsTotal())).replace(/_TOTAL_/g, n.call(t, o)).replace(/_PAGE_/g, n.call(t, i ? 1 : Math.ceil(a / r))).replace(/_PAGES_/g, n.call(t, i ? 1 : Math.ceil(o / r)))
                 }
@@ -1497,8 +1485,7 @@
                 }
 
                 function ot(e) {
-                    var n = e.oClasses, a = e.sTableId, r = e.aLengthMenu, o = Array.isArray(r[0]),
-                        i = o ? r[0] : r;
+                    var n = e.oClasses, a = e.sTableId, r = e.aLengthMenu, o = Array.isArray(r[0]), i = o ? r[0] : r;
                     r = o ? r[1] : r, o = t("<select/>", {
                         name: a + "_length",
                         "aria-controls": a,
@@ -1550,8 +1537,7 @@
                     var n = t(e.nTable), a = e.oScroll;
                     if ("" === a.sX && "" === a.sY) return e.nTable;
                     var r = a.sX, o = a.sY, i = e.oClasses, l = n.children("caption"),
-                        s = l.length ? l[0]._captionSide : null, u = t(n[0].cloneNode(!1)),
-                        c = t(n[0].cloneNode(!1)),
+                        s = l.length ? l[0]._captionSide : null, u = t(n[0].cloneNode(!1)), c = t(n[0].cloneNode(!1)),
                         f = n.children("tfoot");
                     f.length || (f = null), u = t("<div/>", {class: i.sScrollWrapper}).append(t("<div/>", {class: i.sScrollHead}).css({
                         overflow: "hidden",
@@ -1720,7 +1706,7 @@
                             var a, o = l.length, i = r[t]._aSortData, s = r[e]._aSortData;
                             for (a = 0; a < o; a++) {
                                 var u = l[a], c = i[u.col], f = s[u.col];
-                                if (0 !== (c = c < f ? -1 : c > f ? 1 : 0)) return "asc" === u.dir ? c : -c
+                                if (0 != (c = c < f ? -1 : c > f ? 1 : 0)) return "asc" === u.dir ? c : -c
                             }
                             return (c = n[t]) < (f = n[e]) ? -1 : c > f ? 1 : 0
                         }) : i.sort(function (t, e) {
@@ -2083,7 +2069,7 @@
                         var a = "string" == typeof t;
                         return !!Zt(t) || (e && a && (t = Qt(t, e)), n && a && (t = t.replace(zt, "")), !isNaN(parseFloat(t)) && isFinite(t))
                     }, ee = function (t, e, n) {
-                        return !!Zt(t) || ((Zt(t) || "string" == typeof t) && !!te(t.replace(qt, ""), e, n) || null)
+                        return !!Zt(t) || (Zt(t) || "string" == typeof t) && !!te(t.replace(qt, ""), e, n) || null
                     }, ne = function (t, e, n) {
                         var r = [], o = 0, i = t.length;
                         if (n !== a) for (; o < i; o++) t[o] && t[o][e] && r.push(t[o][e][n]); else for (; o < i; o++) t[o] && r.push(t[o][e]);
@@ -2389,8 +2375,7 @@
                     })
                 }), Bt("page.info()", function (t) {
                     if (0 === this.context.length) return a;
-                    var e = (t = this.context[0])._iDisplayStart,
-                        n = t.oFeatures.bPaginate ? t._iDisplayLength : -1,
+                    var e = (t = this.context[0])._iDisplayStart, n = t.oFeatures.bPaginate ? t._iDisplayLength : -1,
                         r = t.fnRecordsDisplay(), o = -1 === n;
                     return {
                         page: o ? 0 : Math.floor(e / n),
@@ -2719,8 +2704,7 @@
                     }
                 }), Bt("column()", function (t, e) {
                     return xe(this.columns(t, e))
-                });
-                Bt("cells()", function (e, n, r) {
+                }), Bt("cells()", function (e, n, r) {
                     if (t.isPlainObject(e) && (e.row === a ? (r = e, e = null) : (r = n, n = null)), t.isPlainObject(n) && (r = n, n = null), null === n || n === a) return this.iterator("table", function (n) {
                         return function (e, n, r) {
                             var o, i, l, s, u, c, f, d = e.aoData, h = Ae(e, r), p = oe(ae(d, h, "anCells")),
@@ -2886,8 +2870,7 @@
                     }).flatten()
                 }), Bt("destroy()", function (n) {
                     return n = n || !1, this.iterator("table", function (a) {
-                        var r = a.nTableWrapper.parentNode, o = a.oClasses, i = a.nTable, l = a.nTBody,
-                            s = a.nTHead,
+                        var r = a.nTableWrapper.parentNode, o = a.oClasses, i = a.nTable, l = a.nTBody, s = a.nTHead,
                             u = a.nTFoot, c = t(i);
                         l = t(l);
                         var f, d = t(a.nTableWrapper), h = t.map(a.aoData, function (t) {
@@ -3261,8 +3244,7 @@
                 }), t.extend(!0, Vt.ext.renderer, {
                     pageButton: {
                         _: function (e, r, o, i, l, s) {
-                            var u, c, f = e.oClasses, d = e.oLanguage.oPaginate,
-                                h = e.oLanguage.oAria.paginate || {},
+                            var u, c, f = e.oClasses, d = e.oLanguage.oPaginate, h = e.oLanguage.oAria.paginate || {},
                                 p = 0, g = function (n, a) {
                                     var r, i = f.sPageButtonDisabled, b = function (t) {
                                         lt(e, t.data.action, !0)

@@ -39,12 +39,10 @@ class RelevanceController extends Controller
             $relevance->parseSites($request->link);
             $relevance->analysis($request);
 
-            return RelevanceController::prepareResponse($relevance, $request);
-
+            return RelevanceController::successResponse($relevance, $request);
         } catch (\Exception $e) {
-            self::logError($request, $e);
 
-            return response()->json()->setStatusCode(500);
+            return RelevanceController::errorResponse($request, $e);
         }
     }
 
@@ -62,11 +60,10 @@ class RelevanceController extends Controller
             $relevance->setPages($params->html_relevance);
             $relevance->analysis($request);
 
-            return RelevanceController::prepareResponse($relevance, $request);
+            return RelevanceController::successResponse($relevance, $request);
         } catch (\Exception $e) {
-            self::logError($request, $e);
 
-            return response()->json()->setStatusCode(500);
+            return RelevanceController::errorResponse($request, $e);
         }
     }
 
@@ -84,11 +81,10 @@ class RelevanceController extends Controller
             $relevance->parseSites($request->link);
             $relevance->analysis($request);
 
-            return RelevanceController::prepareResponse($relevance, $request);
+            return RelevanceController::successResponse($relevance, $request);
         } catch (\Exception $e) {
-            self::logError($request, $e);
 
-            return response()->json()->setStatusCode(500);
+            return RelevanceController::errorResponse($request, $e);
         }
     }
 
@@ -97,21 +93,20 @@ class RelevanceController extends Controller
      * @param $request
      * @return JsonResponse
      */
-    public function prepareResponse($relevance, $request): JsonResponse
+    public function successResponse($relevance, $request): JsonResponse
     {
         $count = count($relevance->sites);
         $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
-        $avgLength = Str::length($text) / $count;
         $avgCountWords = TextLengthController::countingWord($text) / $count;
         $mainPageText = Relevance::concatenation([
             $relevance->mainPage['html'],
             $relevance->mainPage['linkText'],
             $relevance->mainPage['hiddenText']]);
-        $countWords = TextLengthController::countingWord($mainPageText);
-        $length = Str::length($mainPageText);
 
         return response()->json([
             'clouds' => [
+                'competitorsTfCloud' => $relevance->competitorsTfCloud,
+                'mainPageTfCloud' => $relevance->mainPageTfCloud,
                 'competitorsTextAndLinksCloud' => $relevance->competitorsTextAndLinksCloud,
                 'competitorsLinksCloud' => $relevance->competitorsLinksCloud,
                 'competitorsTextCloud' => $relevance->competitorsTextCloud,
@@ -123,24 +118,30 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
             'avg' => [
                 'countWords' => $avgCountWords,
-                'countSymbols' => $avgLength,
+                'countSymbols' => Str::length($text) / $count,
             ],
             'mainPage' => [
-                'countWords' => $countWords,
-                'countSymbols' => $length,
+                'countWords' => TextLengthController::countingWord($mainPageText),
+                'countSymbols' => Str::length($mainPageText),
             ],
             'link' => $request->link
         ]);
     }
 
-    public function logError($request, $e)
+    /**
+     * @param $request
+     * @param $e
+     * @return JsonResponse
+     */
+    public static function errorResponse($request, $e): JsonResponse
     {
-        Log::debug('repeat relevance scan error', [
+        Log::debug('relevance scan error', [
             'message' => $e->getMessage(),
             'line' => $e->getLine(),
             'file' => $e->getFile(),
             'request' => $request->all()
         ]);
-    }
 
+        return response()->json()->setStatusCode(500);
+    }
 }

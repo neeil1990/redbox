@@ -35,6 +35,10 @@ class Relevance
 
     public $separator = "\n\nseparator\n\n";
 
+    public $competitorsTfCloud;
+
+    public $mainPageTfCloud;
+
     public function __construct($request)
     {
         $this->pages = [];
@@ -73,7 +77,6 @@ class Relevance
     public function parseSites($link): Relevance
     {
         foreach ($this->domains as $item) {
-            Log::debug('msg', [$item]);
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;
@@ -108,27 +111,27 @@ class Relevance
      */
     public function analysis($request)
     {
-        $this->removeNoIndex($request);
+        $this->removeNoIndex($request->noIndex);
         $this->separateLinksFromText();
-        $this->getHiddenData($request);
-        $this->removePartsOfSpeech($request);
+        $this->getHiddenData($request->hiddenText);
+        $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
         $this->removeListWords($request);
         $this->getTextFromCompetitors();
-        $this->prepareClouds($request->separator);
         $this->searchWordForms($request->separator);
         $this->processingOfGeneralInformation();
+        $this->prepareClouds($request->separator);
         $this->prepareUnigramTable();
         $this->params->save();
     }
 
     /**
      * Удалить текст, который помечен <noindex>
-     * @param $request
+     * @param $noIndex
      * @return void
      */
-    public function removeNoIndex($request)
+    public function removeNoIndex($noIndex)
     {
-        if ($request->noIndex == 'false') {
+        if ($noIndex == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
                 $this->pages[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
@@ -153,12 +156,12 @@ class Relevance
     }
 
     /**
-     * @param $request
+     * @param $hiddenText
      * @return void
      */
-    public function getHiddenData($request)
+    public function getHiddenData($hiddenText)
     {
-        if ($request->hiddenText == 'true') {
+        if ($hiddenText == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
                 $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($page['html']);
@@ -202,12 +205,12 @@ class Relevance
 
     /**
      * Удаляем союзы, предлоги, местоимения
-     * @param $request
+     * @param $conjunctionsPrepositionsPronouns
      * @return void
      */
-    public function removePartsOfSpeech($request)
+    public function removePartsOfSpeech($conjunctionsPrepositionsPronouns)
     {
-        if ($request->conjunctionsPrepositionsPronouns == 'false') {
+        if ($conjunctionsPrepositionsPronouns == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['hiddenText']);
@@ -263,24 +266,24 @@ class Relevance
      */
     public function prepareClouds($separator)
     {
+        $mainPageText = Relevance::concatenation([
+            $this->mainPage['html'],
+            $this->mainPage['hiddenText'],
+            $this->mainPage['linkText']
+        ]);
+        $this->mainPageTfCloud = Relevance::prepareMainPageCloud($mainPageText, $separator);
+        $this->competitorsTfCloud = Relevance::prepareTFCloud($separator);
         $this->mainPage['textCloud'] = TextAnalyzer::prepareCloud(
             Relevance::concatenation([
                 $this->mainPage['html'],
                 $this->mainPage['hiddenText']
-            ]), $separator
-        );
-        $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud(
-            Relevance::concatenation([
-                $this->mainPage['html'],
-                $this->mainPage['hiddenText'],
-                $this->mainPage['linkText']
-            ]), $separator
-        );
+            ]), $separator);
+        $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud($mainPageText, $separator);
         $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText'], $separator);
-
         $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks, $separator);
         $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText, $separator);
         $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks, $separator);
+
     }
 
     /**
@@ -295,7 +298,7 @@ class Relevance
             $this->mainPage['linkText'],
             $this->mainPage['hiddenText']
         ]);
-        $strLen = str_word_count($this->competitorsTextAndLinks);
+        $wordCount = str_word_count($this->competitorsTextAndLinks);
 
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
@@ -333,8 +336,8 @@ class Relevance
                     }
                 }
 
-                $tf = round($item / $strLen, 4);
-                $idf = round(log10($strLen / $item), 4);
+                $tf = round($item / $wordCount, 4);
+                $idf = round(log10($wordCount / $item), 4);
 
                 $repeatInTextMainPage = substr_count($mainPage, " $word ");
                 $repeatLinkInMainPage = substr_count($this->mainPage['linkText'], " $word ");
@@ -532,5 +535,79 @@ class Relevance
         }
 
         return $this;
+    }
+
+    /**
+     * @param $separator
+     * @return array
+     */
+    public function prepareTFCloud($separator): array
+    {
+        $cloud = [];
+        $was = [];
+        $tfCloud = [];
+
+        foreach ($this->wordForms as $key => $wordForm) {
+            $tfCloud[$key]['tf'] = 0;
+            foreach ($wordForm as $item) {
+                $tfCloud[$key]['tf'] += $item['tf'];
+                if (count($tfCloud) >= 200) {
+                    break 2;
+                }
+            }
+        }
+
+        foreach ($tfCloud as $key => $item) {
+            if (mb_strlen($key) > $separator) {
+                if (!in_array($key, $was) && $key != "") {
+                    $cloud[] = [
+                        'text' => $key,
+                        'weight' => $item['tf'],
+                        'html' => [
+                            'title' => $item['tf']
+                        ],
+                    ];
+                    $was[] = $key;
+                }
+            }
+        }
+
+        $cloud['count'] = count($cloud) - 1;
+        $collection = collect($cloud);
+
+        return $collection->sortByDesc('weight')->toArray();
+    }
+
+    /**
+     * @param $mainPageText
+     * @param $separator
+     * @return array
+     */
+    public static function prepareMainPageCloud($mainPageText, $separator): array
+    {
+        $wordCount = str_word_count($mainPageText);
+        $array = array_count_values(explode(' ', $mainPageText));
+        $cloud = [];
+        arsort($array);
+
+        foreach ($array as $key => $item) {
+            if (mb_strlen($key) > $separator) {
+                $tf = round($item / $wordCount, 4);
+                $cloud[] = [
+                    'text' => $key,
+                    'weight' => $tf,
+                    'html' => [
+                        'title' => $tf
+                    ]
+                ];
+                if (count($cloud) > 200) {
+                    break;
+                }
+            }
+        }
+        $cloud['count'] = count($cloud) - 1;
+        $collection = collect($cloud);
+
+        return $collection->sortByDesc('weight')->toArray();
     }
 }

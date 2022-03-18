@@ -301,7 +301,7 @@ class TextAnalyzer
      * @param int $separator
      * @return array
      */
-    public static function prepareCloud($string, $separator = 2): array
+    public static function prepareCloud($string, int $separator = 2): array
     {
         $words = [];
         $was = [];
@@ -672,7 +672,13 @@ class TextAnalyzer
         return $collect->sortByDesc('total')->toArray();
     }
 
-    public static function calculateTFIDF($array, $textAr, $type)
+    /**
+     * @param $array
+     * @param $textAr
+     * @param $type
+     * @return array
+     */
+    public static function calculateTFIDF($array, $textAr, $type): array
     {
         for ($i = 0; $i < count($array); $i++) {
             if (isset($array[$i]['wordForms'][$type])) {

@@ -7,6 +7,8 @@ function renderClouds(clouds) {
     let d = arrayToObj(clouds.competitorsTextCloud)
     let e = arrayToObj(clouds.mainPageTextWithLinksCloud)
     let f = arrayToObj(clouds.mainPageTextCloud)
+    let g = arrayToObj(clouds.competitorsTfCloud)
+    let h = arrayToObj(clouds.mainPageTfCloud)
 
     $("#competitorsLinksCloud").jQCloud(a)
     $("#mainPageLinksCloud").jQCloud(b);
@@ -14,6 +16,8 @@ function renderClouds(clouds) {
     $("#competitorsTextCloud").jQCloud(d);
     $("#mainPageTextWithLinksCloud").jQCloud(e);
     $("#mainPageTextCloud").jQCloud(f);
+    $("#competitorsTfCloud").jQCloud(g);
+    $("#mainPageTfCloud").jQCloud(h);
 }
 
 function arrayToObj(array) {
