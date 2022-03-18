@@ -192,9 +192,9 @@ Route::middleware(['verified'])->group(function () {
 
 
 Route::get('/ttt', function () {
-    $stemmer = new LinguaStem();
-    dump($stemmer->getRootWord('отоскопам'));
-    dump($stemmer->getRootWord('отоскопами'));
-    dump($stemmer->getRootWord('отоскоп'));
-    dump($stemmer->getRootWord('отоскопом'));
+    $result = mb_strtolower(TextAnalyzer::removeHeaders(
+        TextAnalyzer::curlInit('https://kawe.su/catalog/otoskopy-lor/')
+    ));
+    $text = TextAnalyzer::getLinkText($result);
+    dd($text);
 });

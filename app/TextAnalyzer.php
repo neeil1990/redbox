@@ -16,6 +16,9 @@ class TextAnalyzer
     public static function curlInit($link)
     {
         $curl = curl_init();
+        curl_setopt($curl, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
+        curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
+        curl_setopt($curl, CURLOPT_COOKIE, 'cookiename=cookievalue');
         curl_setopt($curl, CURLOPT_URL, $link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
@@ -476,7 +479,9 @@ class TextAnalyzer
     public static function getLinkText($html)
     {
         $linkText = '';
-        preg_match_all('(<a *href=["\']?(.*?)([\'"]+[^<>]*>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
+        $html = preg_replace('| +|', ' ', $html);
+        $html = str_replace("\n", " ", $html);
+        preg_match_all('(<a.*?href=["\']?(.*?)([\'"].*?>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $match = strip_tags($match[3]);
             if ($match !== "") {

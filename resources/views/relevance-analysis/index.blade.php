@@ -367,7 +367,7 @@
     </div>
     <div class="pb-3 unigram" style="display: none">
         <h2>{{ __('Unigram') }}</h2>
-        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline" style="width: auto">
+        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline" style="width: 100% !important;">
             <thead>
             <tr>
                 <th></th>

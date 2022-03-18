@@ -112,16 +112,27 @@ class Relevance
     public function analysis($request)
     {
         $this->removeNoIndex($request->noIndex);
-        $this->separateLinksFromText();
         $this->getHiddenData($request->hiddenText);
+        $this->separateLinksFromText();
         $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
         $this->removeListWords($request);
-        $this->getTextFromCompetitors();
+        $this->deleteEverythingExceptCharacters();
         $this->searchWordForms($request->separator);
         $this->processingOfGeneralInformation();
         $this->prepareClouds($request->separator);
         $this->prepareUnigramTable();
         $this->params->save();
+    }
+
+    /**
+     * @return void
+     */
+    public function deleteEverythingExceptCharacters()
+    {
+        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->mainPage['html']);
+        foreach ($this->pages as $key => $page) {
+            $this->pages[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->pages[$key]['html']);
+        }
     }
 
     /**
@@ -145,13 +156,11 @@ class Relevance
      */
     public function separateLinksFromText()
     {
-        $this->mainPage['hiddenText'] = '';
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']);
+        $this->mainPage['html'] = Relevance::clearHTMLFromLinks($this->mainPage['html']);
         foreach ($this->pages as $key => $page) {
-            $this->pages[$key]['hiddenText'] = '';
-            $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($page['html']);
-            $this->pages[$key]['html'] = TextAnalyzer::clearHTMLFromLinks($page['html']);
+            $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($this->pages[$key]['html']);
+            $this->pages[$key]['html'] = Relevance::clearHTMLFromLinks($this->pages[$key]['html']);
         }
     }
 
@@ -164,7 +173,12 @@ class Relevance
         if ($hiddenText == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($page['html']);
+                $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($this->pages[$key]['html']);
+            }
+        } else {
+            $this->mainPage['hiddenText'] = '';
+            foreach ($this->pages as $key => $page) {
+                $this->pages[$key]['hiddenText'] = '';
             }
         }
     }
@@ -178,8 +192,9 @@ class Relevance
         foreach ($this->pages as $key => $page) {
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
             $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
-            $this->competitorsTextAndLinks .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ' . $this->pages[$key]['linkText'] . ' ';
         }
+        $this->competitorsTextAndLinks .= ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
+
     }
 
     /**
@@ -293,13 +308,7 @@ class Relevance
     public function processingOfGeneralInformation()
     {
         $countSites = count($this->sites);
-        $mainPage = Relevance::concatenation([
-            $this->mainPage['html'],
-            $this->mainPage['linkText'],
-            $this->mainPage['hiddenText']
-        ]);
         $wordCount = str_word_count($this->competitorsTextAndLinks);
-
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = 0;
@@ -339,8 +348,8 @@ class Relevance
                 $tf = round($item / $wordCount, 4);
                 $idf = round(log10($wordCount / $item), 4);
 
-                $repeatInTextMainPage = substr_count($mainPage, " $word ");
-                $repeatLinkInMainPage = substr_count($this->mainPage['linkText'], " $word ");
+                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
+                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
                     'idf' => $idf,
@@ -363,6 +372,7 @@ class Relevance
      */
     public function searchWordForms($separator)
     {
+        $this->getTextFromCompetitors();
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
 
@@ -609,5 +619,20 @@ class Relevance
         $collection = collect($cloud);
 
         return $collection->sortByDesc('weight')->toArray();
+    }
+
+    /**
+     * @param $html
+     * @return string
+     */
+    public static function clearHTMLFromLinks($html): string
+    {
+        $html = preg_replace('| +|', ' ', $html);
+        $html = str_replace("\n", " ", $html);
+        preg_match_all('(<a.*?href=["\']?(.*?)([\'"].*?>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
+        foreach ($matches as $items) {
+            $html = str_replace($items[0], "", $html);
+        }
+        return $html;
     }
 }
