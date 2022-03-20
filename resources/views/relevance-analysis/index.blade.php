@@ -323,11 +323,11 @@
         <div class="d-flex flex-column pb-3">
             <div class="d-lg-flex mt-4 justify-content-around">
                 <div class="col-lg-5 col-md-10">
-                    <span>{{ __('Average tf-idf values for competitor sites') }}</span>
+                    <span>{{ __('Average tf-idf values for links and text from competitor sites') }}</span>
                     <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
                 </div>
                 <div class="col-lg-5 col-md-10">
-                    <span>{{ __('Landing page tf-idf values') }}</span>
+                    <span>{{ __('TF-idf values of the landing page by links and text') }}</span>
                     <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
                 </div>
             </div>
