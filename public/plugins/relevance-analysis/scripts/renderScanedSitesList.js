@@ -1,8 +1,7 @@
-function renderScanedSitesList(sites, link) {
-    var site
-    let iterator = 1;
-    let inList = false;
+function renderScanedSitesList(sites) {
     $('.pb-3.sites').show(300)
+    let site
+    let iterator = 1;
     let tbody = $('#scaned-sites-tbody')
     $.each(sites, function (key, value) {
         let warning = value['danger']
@@ -10,7 +9,6 @@ function renderScanedSitesList(sites, link) {
             : "<td> Страница успешно проанализирована </td>"
         if (value['mainPage']) {
             site = "<td class='bg-success'>" + value['site'] + "</td>"
-            inList = true
         } else {
             site = "<td>" + value['site'] + "</td>";
         }
@@ -18,19 +16,20 @@ function renderScanedSitesList(sites, link) {
             "<tr class='render'>" +
             "<td>" + iterator + "</td>" +
             site +
+            "<td>" + value['width'] + "% </td>" +
+            "<td> In progress..</td>" +
             warning +
             "</tr>"
         )
         iterator++
     });
 
-    if (!inList) {
-        tbody.append(
-            "<tr class='render'>" +
-            "<td>" + iterator + "</td>" +
-            "<td>" + link + "</td>" +
-            "<td class='bg-warning'> Ваша страница не попала в топ </td>" +
-            "</tr>"
-        )
-    }
+    $(document).ready(function () {
+        $('#scaned-sites').DataTable({
+            "order": [[0, "asc"]],
+            "pageLength": 25,
+            "searching": true,
+        });
+    });
 }
+

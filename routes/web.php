@@ -12,6 +12,7 @@
 */
 
 use App\LinguaStem;
+use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\TelegramBot;
 use App\TextAnalyzer;
@@ -190,11 +191,3 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 });
 
-
-Route::get('/ttt', function () {
-    $result = mb_strtolower(TextAnalyzer::removeHeaders(
-        TextAnalyzer::curlInit('https://kawe.su/catalog/otoskopy-lor/')
-    ));
-    $text = TextAnalyzer::getLinkText($result);
-    dd($text);
-});

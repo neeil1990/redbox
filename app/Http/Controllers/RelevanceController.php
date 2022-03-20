@@ -5,14 +5,21 @@ namespace App\Http\Controllers;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class RelevanceController extends Controller
 {
+    /**
+     * @return array|false|Application|Factory|View|mixed
+     */
     public function index()
     {
         return view('relevance-analysis.index');
@@ -39,8 +46,8 @@ class RelevanceController extends Controller
             $relevance->parseSites($request->link);
             $relevance->analysis($request);
 
-            return RelevanceController::successResponse($relevance, $request);
-        } catch (\Exception $e) {
+            return RelevanceController::successResponse($relevance);
+        } catch (Exception $e) {
 
             return RelevanceController::errorResponse($request, $e);
         }
@@ -60,8 +67,8 @@ class RelevanceController extends Controller
             $relevance->setPages($params->html_relevance);
             $relevance->analysis($request);
 
-            return RelevanceController::successResponse($relevance, $request);
-        } catch (\Exception $e) {
+            return RelevanceController::successResponse($relevance);
+        } catch (Exception $e) {
 
             return RelevanceController::errorResponse($request, $e);
         }
@@ -81,8 +88,8 @@ class RelevanceController extends Controller
             $relevance->parseSites($request->link);
             $relevance->analysis($request);
 
-            return RelevanceController::successResponse($relevance, $request);
-        } catch (\Exception $e) {
+            return RelevanceController::successResponse($relevance);
+        } catch (Exception $e) {
 
             return RelevanceController::errorResponse($request, $e);
         }
@@ -90,10 +97,9 @@ class RelevanceController extends Controller
 
     /**
      * @param $relevance
-     * @param $request
      * @return JsonResponse
      */
-    public function successResponse($relevance, $request): JsonResponse
+    public function successResponse($relevance): JsonResponse
     {
         $count = count($relevance->sites);
         $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
@@ -124,7 +130,6 @@ class RelevanceController extends Controller
                 'countWords' => TextLengthController::countingWord($mainPageText),
                 'countSymbols' => Str::length($mainPageText),
             ],
-            'link' => $request->link
         ]);
     }
 

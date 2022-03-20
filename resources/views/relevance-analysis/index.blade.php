@@ -184,9 +184,9 @@
         </div>
 
         <div class="form-group required d-flex align-items-center">
-            <span>Обрезать слова короче</span>
-            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator" id="separator" value="4">
-            <span>символов</span>
+            <span>{{ __('Cut the words shorter') }}</span>
+            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator" id="separator" value="3">
+            <span>{{ __('symbols') }}</span>
         </div>
 
         <div class="switch mt-3 mb-3">
@@ -269,7 +269,7 @@
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right">
                         <span class="ui_tooltip_content">
-                            Обновляем содержимое конкурентов, которое было получено в результате прошлого запроса
+                            {{ __('Updating the content of competitors that was received as a result of the last request') }}
                         </span>
                     </span>
                 </span>
@@ -283,9 +283,7 @@
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content">
-                            Повторно опрашиваем посадочную страницу и берём данные с сайтов конкурентов, которые были получены в результате прошлого запроса
-                        </span>
+                        <span class="ui_tooltip_content">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
                     </span>
                 </span>
             </button>
@@ -325,11 +323,11 @@
         <div class="d-flex flex-column pb-3">
             <div class="d-lg-flex mt-4 justify-content-around">
                 <div class="col-lg-5 col-md-10">
-                    <span>tf-idf конкурентов</span>
+                    <span>{{ __('Average tf-idf values for competitor sites') }}</span>
                     <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
                 </div>
                 <div class="col-lg-5 col-md-10">
-                    <span>tf-idf посадочной страницы</span>
+                    <span>{{ __('Landing page tf-idf values') }}</span>
                     <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
                 </div>
             </div>
@@ -371,15 +369,15 @@
             <thead>
             <tr>
                 <th></th>
-                <th class="font-weight-normal text-muted">Диапазоны для фильтрации таблицы</th>
-                <th class="col-1">
-                    <div>
+                <th class="font-weight-normal text-muted">{{ __('Ranges for filtering the table') }}</th>
+                <th>
+                    <div style="width: 90px">
                         <input class="w-100" type="number" name="minTF" id="minTF" placeholder="min">
                         <input class="w-100" type="number" name="maxTF" id="maxTF" placeholder="max">
                     </div>
                 </th>
-                <th class="col-1">
-                    <div>
+                <th>
+                    <div style="width: 90px">
                         <input class="w-100" type="number" name="minIdf" id="minIdf" placeholder="min">
                         <input class="w-100" type="number" name="maxIdf" id="maxIdf" placeholder="max">
                     </div>
@@ -560,6 +558,8 @@
             <tr role="row">
                 <th>№</th>
                 <th>{{ __('Domain') }}</th>
+                <th>Охват</th>
+                <th>Плотность</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
@@ -599,7 +599,6 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
-                        sessionStorage.clear()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -636,7 +635,6 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
-                        sessionStorage.clear()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -673,7 +671,6 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
-                        sessionStorage.clear()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -692,7 +689,7 @@
                 stopProgressBar(interval)
                 removeAllRenderElements()
                 renderUnigramTable(response.unigramTable);
-                renderScanedSitesList(response.sites, response.link);
+                renderScanedSitesList(response.sites);
                 renderTextTable(response.avg, response.mainPage)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);

@@ -776,5 +776,12 @@
     "The number of repetitions in the links on your page.": "Количество повторений в ссылках на вашей странице.",
     "Maximum intersection value": "Максимальное значение пересечения",
     "Minimum intersection value": "Минимальное значение пересечения",
-    "Ranges": "Диапазоны"
+    "Ranges": "Диапазоны",
+    "Average tf-idf values for competitor sites": "Средние значения tf-idf у сайтов конкурентов",
+    "Landing page tf-idf values": "Значения tf-idf посадочной страницы",
+    "Ranges for filtering the table": "Диапазоны для фильтрации таблицы",
+    "We re-poll the landing page and take data from competitors websites that were received as a result of the last request": "Повторно опрашиваем посадочную страницу и берём данные с сайтов конкурентов, которые были получены в результате прошлого запроса",
+    "Updating the content of competitors that was received as a result of the last request": "Обновляем содержимое конкурентов, которое было получено в результате прошлого запроса",
+    "Cut the words shorter": "Обрезать слова короче",
+    "symbols": "символов"
 }

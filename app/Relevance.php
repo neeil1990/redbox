@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class Relevance
 {
@@ -35,10 +36,17 @@ class Relevance
 
     public $separator = "\n\nseparator\n\n";
 
+    public $maxWordLength;
+
     public $competitorsTfCloud;
 
     public $mainPageTfCloud;
 
+    public $mainPageIsRelevance = false;
+
+    /**
+     * @param $request
+     */
     public function __construct($request)
     {
         $this->pages = [];
@@ -59,32 +67,23 @@ class Relevance
 
     /**
      * @param $link
-     * @return $this
      */
-    public function getMainPageHtml($link): Relevance
+    public function getMainPageHtml($link)
     {
-        $response = TextAnalyzer::curlInit($link);
-        $html = TextAnalyzer::removeHeaders($response);
+        $html = TextAnalyzer::removeHeaders(TextAnalyzer::curlInit($link));
         $this->setMainPage($html);
-
-        return $this;
     }
 
     /**
      * @param $link
-     * @return $this
      */
-    public function parseSites($link): Relevance
+    public function parseSites($link)
     {
         foreach ($this->domains as $item) {
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;
-            $result = mb_strtolower(TextAnalyzer::removeHeaders(
-                TextAnalyzer::curlInit($domain)
-            ));
-            $this->pages[$domain]['html'] = $result;
-            $this->params['html_relevance'] .= $result . $this->separator;
+            $result = mb_strtolower(TextAnalyzer::removeHeaders(TextAnalyzer::curlInit($domain)));
             // если ответ от сервера не был получен
             if ($result == '' || $result == null) {
                 $this->sites[] = [
@@ -97,12 +96,16 @@ class Relevance
                     'danger' => false,
                 ];
             }
-            $this->sites[array_key_last($this->sites)]['mainPage'] = $domain == $link;
+            $this->pages[$domain]['html'] = $result;
+            $this->params['html_relevance'] .= $result . $this->separator;
+            //Если проанализированный домен является посадочной страницей
+            if ($domain == $link) {
+                $this->mainPageIsRelevance = true;
+                $this->sites[array_key_last($this->sites)]['mainPage'] = true;
+            } else {
+                $this->sites[array_key_last($this->sites)]['mainPage'] = false;
+            }
         }
-
-        $this->params['sites'] = json_encode($this->sites);
-
-        return $this;
     }
 
     /**
@@ -111,17 +114,47 @@ class Relevance
      */
     public function analysis($request)
     {
+        $this->maxWordLength = $request->separator;
         $this->removeNoIndex($request->noIndex);
         $this->getHiddenData($request->hiddenText);
         $this->separateLinksFromText();
         $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
         $this->removeListWords($request);
         $this->deleteEverythingExceptCharacters();
-        $this->searchWordForms($request->separator);
+        $this->getTextFromCompetitors();
+        $this->calculateWidth($request->link);
+        $this->searchWordForms();
         $this->processingOfGeneralInformation();
-        $this->prepareClouds($request->separator);
+        $this->prepareClouds();
         $this->prepareUnigramTable();
         $this->params->save();
+    }
+
+    /**
+     * @param $link
+     * @param $competitorsText
+     * @return void
+     */
+    public function isMainPageInRelevanceResponse($link, $competitorsText)
+    {
+        if (!$this->mainPageIsRelevance) {
+            $mainPageText = Relevance::searchWords(
+                Relevance::concatenation([
+                    $this->mainPage['html'],
+                    $this->mainPage['linkText'],
+                    $this->mainPage['hiddenText']
+                ])
+            );
+
+            $this->sites[] = [
+                'site' => $link,
+                'danger' => false,
+                'mainPage' => true,
+                'width' => $this->calculateWidthPercent($mainPageText, $competitorsText),
+            ];
+        }
+
+        $this->params['sites'] = json_encode($this->sites);
     }
 
     /**
@@ -193,8 +226,59 @@ class Relevance
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
             $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
         }
-        $this->competitorsTextAndLinks .= ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
+        $this->competitorsLinks = $this->separateText($this->competitorsLinks);
+        $this->competitorsText = $this->separateText($this->competitorsText);
+        $this->mainPage['html'] = $this->separateText($this->mainPage['html']);
+        $this->mainPage['linkText'] = $this->separateText($this->mainPage['linkText']);
+        $this->mainPage['hiddenText'] = $this->separateText($this->mainPage['hiddenText']);
+        $this->competitorsTextAndLinks = ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
+    }
 
+    /**
+     * @return void
+     */
+    public function calculateWidth($link)
+    {
+        $iterator = 0;
+        $competitorsText = Relevance::searchWords($this->competitorsTextAndLinks);
+        foreach ($this->pages as $page) {
+            $competitorText = Relevance::searchWords(
+                Relevance::concatenation([
+                    $page['html'],
+                    $page['linkText'],
+                    $page['hiddenText']
+                ])
+            );
+            $this->sites[$iterator]['width'] = $this->calculateWidthPercent($competitorText, $competitorsText);
+            $iterator++;
+        }
+        $this->isMainPageInRelevanceResponse($link, $competitorsText);
+    }
+
+    /**
+     * @param $text
+     * @param $competitorsText
+     * @return float
+     */
+    public function calculateWidthPercent($text, $competitorsText): float
+    {
+        $percent = count($competitorsText) / 100;
+        return round(100 - count(array_diff($competitorsText, $text)) / $percent, 2);
+    }
+
+    /**
+     * @param $string
+     * @return array
+     */
+    public static function searchWords($string): array
+    {
+        $array = array_count_values(explode(" ", $string));
+        $newArray = [];
+        foreach ($array as $key => $item) {
+            $newArray[] = $key;
+        }
+
+        return $newArray;
     }
 
     /**
@@ -279,25 +363,25 @@ class Relevance
      * Подготовка облаков (http://cavaliercoder.com/jclouds)
      * @return void
      */
-    public function prepareClouds($separator)
+    public function prepareClouds()
     {
         $mainPageText = Relevance::concatenation([
             $this->mainPage['html'],
             $this->mainPage['hiddenText'],
             $this->mainPage['linkText']
         ]);
-        $this->mainPageTfCloud = Relevance::prepareMainPageCloud($mainPageText, $separator);
-        $this->competitorsTfCloud = Relevance::prepareTFCloud($separator);
+        $this->competitorsTfCloud = Relevance::prepareTFCloud();
+        $this->mainPageTfCloud = Relevance::prepareMainPageCloud($mainPageText);
         $this->mainPage['textCloud'] = TextAnalyzer::prepareCloud(
             Relevance::concatenation([
                 $this->mainPage['html'],
                 $this->mainPage['hiddenText']
-            ]), $separator);
-        $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud($mainPageText, $separator);
-        $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText'], $separator);
-        $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks, $separator);
-        $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText, $separator);
-        $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks, $separator);
+            ]));
+        $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud($mainPageText);
+        $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
+        $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
+        $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
+        $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
 
     }
 
@@ -367,25 +451,16 @@ class Relevance
     }
 
     /**
-     * @param $separator
      * @return void
      */
-    public function searchWordForms($separator)
+    public function searchWordForms()
     {
-        $this->getTextFromCompetitors();
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
 
         $array = array_count_values($array);
         asort($array);
         $array = array_reverse($array);
-
-        // удаляем все слова в которых кол-во символов меньше $separator
-        foreach ($array as $key => $item) {
-            if (mb_strlen($key) <= $separator) {
-                unset($array[$key]);
-            }
-        }
 
         foreach ($array as $key1 => $item1) {
             if (!in_array($key1, $this->ignoredWords)) {
@@ -417,16 +492,8 @@ class Relevance
     public function prepareUnigramTable()
     {
         foreach ($this->wordForms as $key => $wordForm) {
-            $tf = 0;
-            $idf = 0;
-            $reSpam = 0;
-            $occurrences = 0;
-            $repeatInText = 0;
-            $repeatInLink = 0;
-            $avgInText = 0;
-            $avgInLink = 0;
-            $avgInTotalCompetitors = 0;
-            $totalRepeatMainPage = 0;
+            $tf = $idf = $reSpam = $occurrences = $repeatInText = $repeatInLink = $avgInText = 0;
+            $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
             foreach ($wordForm as $word) {
                 $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
                 $tf += $word['tf'];
@@ -548,10 +615,9 @@ class Relevance
     }
 
     /**
-     * @param $separator
      * @return array
      */
-    public function prepareTFCloud($separator): array
+    public function prepareTFCloud(): array
     {
         $cloud = [];
         $was = [];
@@ -568,17 +634,15 @@ class Relevance
         }
 
         foreach ($tfCloud as $key => $item) {
-            if (mb_strlen($key) > $separator) {
-                if (!in_array($key, $was) && $key != "") {
-                    $cloud[] = [
-                        'text' => $key,
-                        'weight' => $item['tf'],
-                        'html' => [
-                            'title' => $item['tf']
-                        ],
-                    ];
-                    $was[] = $key;
-                }
+            if (!in_array($key, $was) && $key != "") {
+                $cloud[] = [
+                    'text' => $key,
+                    'weight' => $item['tf'],
+                    'html' => [
+                        'title' => $item['tf']
+                    ],
+                ];
+                $was[] = $key;
             }
         }
 
@@ -590,18 +654,19 @@ class Relevance
 
     /**
      * @param $mainPageText
-     * @param $separator
-     * @return array
+     * @return array|void
      */
-    public static function prepareMainPageCloud($mainPageText, $separator): array
+    public function prepareMainPageCloud($mainPageText)
     {
+        $wordForms = [];
+        $lingua = new LinguaStem();
         $wordCount = str_word_count($mainPageText);
         $array = array_count_values(explode(' ', $mainPageText));
         $cloud = [];
         arsort($array);
 
         foreach ($array as $key => $item) {
-            if (mb_strlen($key) > $separator) {
+            if (mb_strlen($key) > $this->maxWordLength) {
                 $tf = round($item / $wordCount, 4);
                 $cloud[] = [
                     'text' => $key,
@@ -610,13 +675,33 @@ class Relevance
                         'title' => $tf
                     ]
                 ];
-                if (count($cloud) > 200) {
-                    break;
-                }
             }
         }
-        $cloud['count'] = count($cloud) - 1;
-        $collection = collect($cloud);
+
+        foreach ($cloud as $key1 => $item1) {
+            $weight = 0;
+            foreach ($cloud as $item2) {
+                similar_text($item1['text'], $item2['text'], $percent);
+                if (
+                    preg_match("/[А-Яа-я]/", $item1['text']) &&
+                    $lingua->getRootWord($item1['text']) == $lingua->getRootWord($item2['text']) ||
+                    preg_match("/[A-Za-z]/", $item2['text']) &&
+                    $percent >= 82
+                ) {
+                    $weight += $item2['weight'];
+                    unset($cloud[$key1]);
+                }
+            }
+            $wordForms[] = [
+                'text' => $item1['text'],
+                'weight' => $item1['weight'] + $weight,
+                'html' => [
+                    'title' => $item1['weight'] + $weight
+                ]
+            ];
+        }
+        $wordForms['count'] = count($wordForms) - 1;
+        $collection = collect($wordForms);
 
         return $collection->sortByDesc('weight')->toArray();
     }
@@ -634,5 +719,21 @@ class Relevance
             $html = str_replace($items[0], "", $html);
         }
         return $html;
+    }
+
+    /**
+     * Обрезать все слова короче N символов
+     * @param $text
+     * @return string
+     */
+    public function separateText($text): string
+    {
+        $text = explode(" ", $text);
+        foreach ($text as $key => $item) {
+            if (Str::length($item) < $this->maxWordLength) {
+                unset($text[$key]);
+            }
+        }
+        return implode(" ", $text);
     }
 }
