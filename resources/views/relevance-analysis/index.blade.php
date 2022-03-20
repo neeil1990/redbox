@@ -323,7 +323,7 @@
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
             <u id="tf-idf-clouds" style="cursor: pointer">Облака tf-idf</u>
-            <div class="tf-idf-clouds" style="display: none">
+            <div class="tf-idf-clouds">
                 <div class="d-lg-flex mt-4 justify-content-around">
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
@@ -356,7 +356,7 @@
                 </div>
             </div>
             <u id="text-clouds" style="cursor: pointer">Облака текста</u>
-            <div class="text-clouds" style="display:none;">
+            <div class="text-clouds">
                 <div class="d-lg-flex mt-4 justify-content-around">
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Competitors Link Zone') }}</span>
