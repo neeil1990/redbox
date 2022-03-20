@@ -311,10 +311,6 @@ class TextAnalyzer
         $array = explode(" ", $string);
         $countWords = count($array);
         foreach ($array as $item) {
-            // максимальное кол-во слов в облаке - 200
-            if (count($words) == 200) {
-                break;
-            }
             if (mb_strlen($item) > $separator) {
                 $item = addslashes($item);
                 preg_match_all("/.*?\s($item)\s.*?/",
@@ -333,10 +329,15 @@ class TextAnalyzer
                     $was[] = $item;
                 }
             }
+            // максимальное кол-во слов в облаке - 200
+            if (count($words) == 200) {
+                break;
+            }
         }
 
-        $words['count'] = count($words) - 1;
+        $words['count'] = 199;
         $collection = collect($words);
+
         return $collection->sortByDesc('weight')->toArray();
     }
 

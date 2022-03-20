@@ -191,3 +191,9 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 });
 
+Route::get('/ttt', function () {
+    $lingua = new LinguaStem();
+    dump($lingua->getRootWord('ларингоскопа'));
+    dump($lingua->getRootWord('ларингоскоп'));
+});
+

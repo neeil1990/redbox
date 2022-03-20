@@ -107,18 +107,28 @@ class RelevanceController extends Controller
         $mainPageText = Relevance::concatenation([
             $relevance->mainPage['html'],
             $relevance->mainPage['linkText'],
-            $relevance->mainPage['hiddenText']]);
+            $relevance->mainPage['hiddenText']
+        ]);
 
         return response()->json([
             'clouds' => [
-                'competitorsTfCloud' => $relevance->competitorsTfCloud,
-                'mainPageTfCloud' => $relevance->mainPageTfCloud,
-                'competitorsTextAndLinksCloud' => $relevance->competitorsTextAndLinksCloud,
-                'competitorsLinksCloud' => $relevance->competitorsLinksCloud,
-                'competitorsTextCloud' => $relevance->competitorsTextCloud,
-                'mainPageTextWithLinksCloud' => $relevance->mainPage['textWithLinksCloud'],
-                'mainPageLinksCloud' => $relevance->mainPage['linksCloud'],
-                'mainPageTextCloud' => $relevance->mainPage['textCloud'],
+                'competitors' => [
+                    'totalTf' => $relevance->competitorsCloud['totalTf'],
+                    'textTf' => $relevance->competitorsCloud['textTf'],
+                    'linkTf' => $relevance->competitorsCloud['linkTf'],
+
+                    'textAndLinks' => $relevance->competitorsTextAndLinksCloud,
+                    'links' => $relevance->competitorsLinksCloud,
+                    'text' => $relevance->competitorsTextCloud,
+                ],
+                'mainPage' => [
+                    'totalTf' => $relevance->mainPage['totalTf'],
+                    'textTf' => $relevance->mainPage['textTf'],
+                    'linkTf' => $relevance->mainPage['linkTf'],
+                    'textWithLinks' => $relevance->mainPage['textWithLinks'],
+                    'links' => $relevance->mainPage['links'],
+                    'text' => $relevance->mainPage['text'],
+                ]
             ],
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,

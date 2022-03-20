@@ -348,7 +348,6 @@ function crop(number, decimal = false) {
         }
     }
 
-
     return string.substring(0, position)
 }
 

@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -38,11 +37,9 @@ class Relevance
 
     public $maxWordLength;
 
-    public $competitorsTfCloud;
-
-    public $mainPageTfCloud;
-
     public $mainPageIsRelevance = false;
+
+    public $competitorsCloud = [];
 
     /**
      * @param $request
@@ -365,24 +362,30 @@ class Relevance
      */
     public function prepareClouds()
     {
-        $mainPageText = Relevance::concatenation([
+        $mainPage = Relevance::concatenation([
             $this->mainPage['html'],
             $this->mainPage['hiddenText'],
             $this->mainPage['linkText']
         ]);
-        $this->competitorsTfCloud = Relevance::prepareTFCloud();
-        $this->mainPageTfCloud = Relevance::prepareMainPageCloud($mainPageText);
-        $this->mainPage['textCloud'] = TextAnalyzer::prepareCloud(
-            Relevance::concatenation([
-                $this->mainPage['html'],
-                $this->mainPage['hiddenText']
-            ]));
-        $this->mainPage['textWithLinksCloud'] = TextAnalyzer::prepareCloud($mainPageText);
-        $this->mainPage['linksCloud'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
+        $textMainPage = Relevance::concatenation([
+            $this->mainPage['html'],
+            $this->mainPage['hiddenText']
+        ]);
+        $this->mainPage['totalTf'] = Relevance::prepareTfCloud($mainPage);
+        $this->mainPage['textTf'] = Relevance::prepareTfCloud($textMainPage);
+        $this->mainPage['linkTf'] = Relevance::prepareTfCloud($this->mainPage['linkText']);
+
+        $this->mainPage['textWithLinks'] = TextAnalyzer::prepareCloud($mainPage);
+        $this->mainPage['text'] = TextAnalyzer::prepareCloud($textMainPage);
+        $this->mainPage['links'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
+
+        $this->competitorsCloud['totalTf'] = Relevance::prepareTFCloud($this->competitorsTextAndLinks);
+        $this->competitorsCloud['textTf'] = Relevance::prepareTFCloud($this->competitorsText);
+        $this->competitorsCloud['linkTf'] = Relevance::prepareTFCloud($this->competitorsLinks);
+
         $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
         $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
         $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
-
     }
 
     /**
@@ -614,73 +617,69 @@ class Relevance
         return $this;
     }
 
+//    /**
+//     * @return array
+//     */
+//    public function prepareTFCloud(): array
+//    {
+//        $cloud = [];
+//        $was = [];
+//        $tfCloud = [];
+//
+//        foreach ($this->wordForms as $key => $wordForm) {
+//            $tfCloud[$key]['tf'] = 0;
+//            foreach ($wordForm as $item) {
+//                $tfCloud[$key]['tf'] += $item['tf'];
+//                if (count($tfCloud) >= 200) {
+//                    break 2;
+//                }
+//            }
+//        }
+//
+//        foreach ($tfCloud as $key => $item) {
+//            if (!in_array($key, $was) && $key != "") {
+//                $cloud[] = [
+//                    'text' => $key,
+//                    'weight' => $item['tf'],
+//                    'html' => [
+//                        'title' => $item['tf']
+//                    ],
+//                ];
+//                $was[] = $key;
+//            }
+//        }
+//
+//        $cloud['count'] = count($cloud) - 1;
+//        $collection = collect($cloud);
+//
+//        return $collection->sortByDesc('weight')->toArray();
+//    }
+
     /**
+     * @param $text
      * @return array
      */
-    public function prepareTFCloud(): array
-    {
-        $cloud = [];
-        $was = [];
-        $tfCloud = [];
-
-        foreach ($this->wordForms as $key => $wordForm) {
-            $tfCloud[$key]['tf'] = 0;
-            foreach ($wordForm as $item) {
-                $tfCloud[$key]['tf'] += $item['tf'];
-                if (count($tfCloud) >= 200) {
-                    break 2;
-                }
-            }
-        }
-
-        foreach ($tfCloud as $key => $item) {
-            if (!in_array($key, $was) && $key != "") {
-                $cloud[] = [
-                    'text' => $key,
-                    'weight' => $item['tf'],
-                    'html' => [
-                        'title' => $item['tf']
-                    ],
-                ];
-                $was[] = $key;
-            }
-        }
-
-        $cloud['count'] = count($cloud) - 1;
-        $collection = collect($cloud);
-
-        return $collection->sortByDesc('weight')->toArray();
-    }
-
-    /**
-     * @param $mainPageText
-     * @return array|void
-     */
-    public function prepareMainPageCloud($mainPageText)
+    public function prepareTfCloud($text): array
     {
         $wordForms = [];
         $lingua = new LinguaStem();
-        $wordCount = str_word_count($mainPageText);
-        $array = array_count_values(explode(' ', $mainPageText));
+        $wordCount = str_word_count($text);
+        $array = array_count_values(explode(' ', $text));
         $cloud = [];
-        arsort($array);
 
         foreach ($array as $key => $item) {
-            if (mb_strlen($key) > $this->maxWordLength) {
-                $tf = round($item / $wordCount, 4);
-                $cloud[] = [
-                    'text' => $key,
-                    'weight' => $tf,
-                    'html' => [
-                        'title' => $tf
-                    ]
-                ];
-            }
+            $tf = round($item / $wordCount, 4);
+            $cloud[] = [
+                'text' => $key,
+                'weight' => $tf,
+            ];
         }
+        $collection = collect($cloud);
+        $cloud = $collection->sortByDesc('weight')->toArray();
 
         foreach ($cloud as $key1 => $item1) {
             $weight = 0;
-            foreach ($cloud as $item2) {
+            foreach ($cloud as $key2 => $item2) {
                 similar_text($item1['text'], $item2['text'], $percent);
                 if (
                     preg_match("/[А-Яа-я]/", $item1['text']) &&
@@ -690,17 +689,23 @@ class Relevance
                 ) {
                     $weight += $item2['weight'];
                     unset($cloud[$key1]);
+                    unset($cloud[$key2]);
                 }
             }
+            $totalWeight = $item1['weight'] + $weight;
             $wordForms[] = [
                 'text' => $item1['text'],
-                'weight' => $item1['weight'] + $weight,
+                'weight' => $totalWeight,
                 'html' => [
-                    'title' => $item1['weight'] + $weight
+                    'title' => $totalWeight
                 ]
             ];
+
+            if (count($wordForms) == 200) {
+                break;
+            }
         }
-        $wordForms['count'] = count($wordForms) - 1;
+        $wordForms['count'] = 199;
         $collection = collect($wordForms);
 
         return $collection->sortByDesc('weight')->toArray();

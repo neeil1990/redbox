@@ -783,5 +783,11 @@
     "We re-poll the landing page and take data from competitors websites that were received as a result of the last request": "Повторно опрашиваем посадочную страницу и берём данные с сайтов конкурентов, которые были получены в результате прошлого запроса",
     "Updating the content of competitors that was received as a result of the last request": "Обновляем содержимое конкурентов, которое было получено в результате прошлого запроса",
     "Cut the words shorter": "Обрезать слова короче",
-    "symbols": "символов"
+    "symbols": "символов",
+    "Average tf-idf values of links and competitor text": "Средние значения tf-idf ссылок и текста конкурентов",
+    "TF-idf values of links and landing page text": "Значения tf-idf ссылок и текста посадочной страницы",
+    "Average tf-idf values of competitors text": "Средние значения tf-idf текста конкурентов",
+    "TF-idf values of the landing page text": "Значения tf-idf текста посадочной страницы",
+    "Average tf-idf values of competitor links": "Средние значения tf-idf ссылок конкурентов",
+    "TF-idf values of landing page links": "Значения tf-idf ссылок посадочной страницы"
 }

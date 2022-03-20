@@ -283,7 +283,8 @@
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
+                        <span
+                            class="ui_tooltip_content">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
                     </span>
                 </span>
             </button>
@@ -318,54 +319,81 @@
             </tbody>
         </table>
     </div>
-    <div class="pb-3 clouds" style="display:none ">
+    <div class="pb-3 clouds" style="display:none;">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
-            <div class="d-lg-flex mt-4 justify-content-around">
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('Average tf-idf values for links and text from competitor sites') }}</span>
-                    <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
+            <u id="tf-idf-clouds" style="cursor: pointer">Облака tf-idf</u>
+            <div class="tf-idf-clouds" style="display: none">
+                <div class="d-lg-flex mt-4 justify-content-around">
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
+                        <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
+                    </div>
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('TF-idf values of links and landing page text') }}</span>
+                        <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
+                    </div>
                 </div>
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('TF-idf values of the landing page by links and text') }}</span>
-                    <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
+                <div class="d-lg-flex mt-4 justify-content-around">
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('Average tf-idf values of competitors text') }}</span>
+                        <div style="height: 350px" id="competitorsTextTfCloud" class="generated-cloud"></div>
+                    </div>
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('TF-idf values of the landing page text') }}</span>
+                        <div style="height: 350px" id="mainPageTextTfCloud" class="generated-cloud"></div>
+                    </div>
+                </div>
+                <div class="d-lg-flex mt-4 justify-content-around">
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('Average tf-idf values of competitor links') }}</span>
+                        <div style="height: 350px" id="competitorsLinksTfCloud" class="generated-cloud"></div>
+                    </div>
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('TF-idf values of landing page links') }}</span>
+                        <div style="height: 350px" id="mainPageLinksTfCloud" class="generated-cloud"></div>
+                    </div>
                 </div>
             </div>
-            <div class="d-lg-flex mt-4 justify-content-around">
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('Competitors Link Zone') }}</span>
-                    <div style="height: 350px" id="competitorsLinksCloud" class="generated-cloud"></div>
+            <u id="text-clouds" style="cursor: pointer">Облака текста</u>
+            <div class="text-clouds" style="display:none;">
+                <div class="d-lg-flex mt-4 justify-content-around">
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('Competitors Link Zone') }}</span>
+                        <div style="height: 350px" id="competitorsLinksCloud" class="generated-cloud"></div>
+                    </div>
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('The link zone of your page') }}</span>
+                        <div style="height: 350px" id="mainPageLinksCloud" class="generated-cloud"></div>
+                    </div>
                 </div>
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('The link zone of your page') }}</span>
-                    <div style="height: 350px" id="mainPageLinksCloud" class="generated-cloud"></div>
+                <div class="d-lg-flex mt-4 justify-content-around">
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('Competitors text area') }}</span>
+                        <div style="height: 350px" id="competitorsTextCloud" class="generated-cloud"></div>
+                    </div>
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('The text area of your page') }}</span>
+                        <div style="height: 350px" id="mainPageTextCloud" class="generated-cloud"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="d-lg-flex mt-4 justify-content-around">
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('Competitors text area') }}</span>
-                    <div style="height: 350px" id="competitorsTextCloud" class="generated-cloud"></div>
-                </div>
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('The text area of your page') }}</span>
-                    <div style="height: 350px" id="mainPageTextCloud" class="generated-cloud"></div>
-                </div>
-            </div>
-            <div class="d-lg-flex mt-4 justify-content-around">
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('Competitors Link and Text area') }}</span>
-                    <div style="height: 350px" id="competitorsTextAndLinksCloud" class="generated-cloud"></div>
-                </div>
-                <div class="col-lg-5 col-md-10">
-                    <span>{{ __('The zone of links and text of your page') }}</span>
-                    <div style="height: 350px" id="mainPageTextWithLinksCloud" class="generated-cloud"></div>
+                <div class="d-lg-flex mt-4 justify-content-around">
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('Competitors Link and Text area') }}</span>
+                        <div style="height: 350px" id="competitorsTextAndLinksCloud" class="generated-cloud"></div>
+                    </div>
+                    <div class="col-lg-5 col-md-10">
+                        <span>{{ __('The zone of links and text of your page') }}</span>
+                        <div style="height: 350px" id="mainPageTextWithLinksCloud" class="generated-cloud"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="pb-3 unigram" style="display: none">
         <h2>{{ __('Unigram') }}</h2>
-        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline" style="width: 100% !important;">
+        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
+               style="width: 100% !important;">
             <thead>
             <tr>
                 <th></th>
@@ -685,7 +713,6 @@
             })
 
             function successRequest(response, interval) {
-                clearClouds()
                 stopProgressBar(interval)
                 removeAllRenderElements()
                 renderUnigramTable(response.unigramTable);
@@ -694,8 +721,7 @@
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
-                clearClouds()
-                renderClouds(response.clouds);
+                renderClouds(response.clouds.competitors, response.clouds.mainPage);
             }
 
             function errorRequest(interval) {
@@ -710,16 +736,14 @@
             }
 
             function removeAllRenderElements() {
+                $(".generated-cloud").html("")
                 $("#unigram").dataTable().fnDestroy();
+                $("#scaned-sites").dataTable().fnDestroy();
                 $('.render').remove();
                 $('.pb-3.text').hide()
                 $('.pb-3.unigram').hide()
                 $('.pb-3.sites').hide()
                 $('.clouds').hide()
-            }
-
-            function clearClouds() {
-                $(".generated-cloud").html("")
             }
 
             function setProgressBarStyles(percent) {
@@ -774,6 +798,21 @@
                 }
                 return false;
             }
+
+            $('#tf-idf-clouds').click(() => {
+                if ($('.tf-idf-clouds').is(':visible')) {
+                    $('.tf-idf-clouds').hide(300)
+                } else {
+                    $('.tf-idf-clouds').show(300)
+                }
+            })
+            $('#text-clouds').click(() => {
+                if ($('.text-clouds').is(':visible')) {
+                    $('.text-clouds').hide(300)
+                } else {
+                    $('.text-clouds').show(300)
+                }
+            })
         </script>
         <script>
             var $jscomp = $jscomp || {};
