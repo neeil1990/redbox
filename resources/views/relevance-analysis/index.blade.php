@@ -808,9 +808,9 @@
             })
             $('#text-clouds').click(() => {
                 if ($('.text-clouds').is(':visible')) {
-                    $('.text-clouds').hide(300)
+                    $('.text-clouds').hide()
                 } else {
-                    $('.text-clouds').show(300)
+                    $('.text-clouds').show()
                 }
             })
         </script>

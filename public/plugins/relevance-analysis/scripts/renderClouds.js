@@ -1,6 +1,4 @@
 function renderClouds(competitors, mainPage) {
-    console.log(competitors)
-    console.log(mainPage)
     $('.clouds').show()
 
     let a = arrayToObj(competitors.links)
