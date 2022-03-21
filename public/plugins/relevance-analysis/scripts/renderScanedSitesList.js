@@ -9,7 +9,7 @@ function renderScanedSitesList(sites) {
             : "<td> Страница успешно проанализирована </td>"
         if (value['mainPage']) {
             if (!value['inRelevance']) {
-                value['site'] += " <span class='text-muted'>(не попала в топ)</span>"
+                value['site'] += " <span class='text-muted'>(сайт не попал в топ)</span>"
             }
             site = "<td style='background: #4eb767c4'>" + value['site'] + "</td>"
         } else {
