@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -77,6 +78,7 @@ class Relevance
     public function parseSites($link)
     {
         foreach ($this->domains as $item) {
+            Log::debug('site', [$item['doc']['url']]);
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;
@@ -99,6 +101,7 @@ class Relevance
             if ($domain == $link) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[array_key_last($this->sites)]['mainPage'] = true;
+                $this->sites[array_key_last($this->sites)]['inRelevance'] = true;
             } else {
                 $this->sites[array_key_last($this->sites)]['mainPage'] = false;
             }
@@ -147,6 +150,7 @@ class Relevance
                 'site' => $link,
                 'danger' => false,
                 'mainPage' => true,
+                'inRelevance' => false,
                 'width' => $this->calculateWidthPercent($mainPageText, $competitorsText),
             ];
         }

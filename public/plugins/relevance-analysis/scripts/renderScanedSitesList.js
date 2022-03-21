@@ -8,7 +8,10 @@ function renderScanedSitesList(sites) {
             ? "<td class='bg-warning'> Не удалось получить данные со страницы </td>"
             : "<td> Страница успешно проанализирована </td>"
         if (value['mainPage']) {
-            site = "<td class='bg-success'>" + value['site'] + "</td>"
+            if (!value['inRelevance']) {
+                value['site'] += " <span class='text-muted'>(не попала в топ)</span>"
+            }
+            site = "<td style='background: #4eb767c4'>" + value['site'] + "</td>"
         } else {
             site = "<td>" + value['site'] + "</td>";
         }

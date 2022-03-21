@@ -584,10 +584,10 @@
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row">
-                <th>№</th>
+                <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>Охват</th>
-                <th>Плотность</th>
+                <th>{{ __('Coverage') }}</th>
+                <th>{{ __('Density') }}</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
