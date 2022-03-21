@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\Tariff;
+use App\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,13 +42,12 @@ class ProfilesController extends Controller
             return [$str => __($str)];
         });
 
+        /** @var User $user */
         $user = $this->user;
+        $tariff = $user->tariff();
+        $name = ($tariff) ? $tariff->name() : null;
 
-        $tariff = __('You are guest!');
-        if($model = $user->pay()->where('status', true)->first())
-            $tariff = (new $model->class_tariff)->name();
-
-        return view('profile.index', compact('user', 'lang', 'tariff'));
+        return view('profile.index', compact('user', 'lang', 'name'));
     }
 
     /**

@@ -29,13 +29,14 @@
             </div>
         </div>
         <!-- ./col -->
+        @if($name)
         <div class="col-lg-3 col-6">
             <!-- small card -->
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3>{{ __('Tariff') }}</h3>
 
-                    <p>{{ $tariff }}</p>
+                    <p>{{ $name }}</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
@@ -46,6 +47,7 @@
             </div>
         </div>
         <!-- ./col -->
+        @endif
     </div>
 
     <div class="row">

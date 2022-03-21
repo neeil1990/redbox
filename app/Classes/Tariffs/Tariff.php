@@ -69,12 +69,18 @@ abstract class Tariff
     public function assignRole()
     {
         $user = auth()->user();
+
+        $user->removeRole('Free');
+
         $user->assignRole($this->code());
     }
 
     public function removeRole()
     {
         $user = auth()->user();
+
         $user->removeRole($this->code());
+
+        $user->assignRole('Free');
     }
 }
