@@ -146,6 +146,10 @@
                                 "</a></li>"
                         }
 
+                        if(window.location.href === el.link){
+                            item = $(item).addClass('menu-open');
+                        }
+
                         $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
                     })
                 },
