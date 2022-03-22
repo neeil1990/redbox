@@ -24,10 +24,18 @@
             </div>
         </div>
         <!-- /.card-header -->
+
         <div class="card-body">
             {{ $slot }}
         </div>
         <!-- /.card-body -->
+
+        @if(isset($footer))
+        <div class="card-footer">
+            {{ $footer ?? null }}
+        </div>
+        <!-- /.card-footer -->
+        @endif
     </div>
     <!-- /.card -->
     @if(isset($description['bottom']))

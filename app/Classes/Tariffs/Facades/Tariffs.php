@@ -14,6 +14,7 @@ use App\Classes\Tariffs\Period\SixMonthsTariff;
 use App\Classes\Tariffs\Period\ThreeMonthsTariff;
 use App\Classes\Tariffs\Period\TwelveMonthsTariff;
 use App\Classes\Tariffs\Tariff;
+use App\Classes\Tariffs\UltimateTariff;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Prophecy\Exception\Doubler\ClassNotFoundException;
@@ -26,13 +27,11 @@ class Tariffs
     public function __construct()
     {
         // all of tariffs
-        $this->setTariffs(new FreeTariff());
         $this->setTariffs(new OptimalTariff());
+        $this->setTariffs(new UltimateTariff());
         $this->setTariffs(new MaximumTariff());
 
         // all of periods
-        $this->setPeriods(new OneDayTariff());
-        $this->setPeriods(new FiveDaysTariff());
         $this->setPeriods(new ThreeMonthsTariff());
         $this->setPeriods(new SixMonthsTariff());
         $this->setPeriods(new TwelveMonthsTariff());
@@ -80,6 +79,9 @@ class Tariffs
             if($user->hasRole($tariff->code()))
                 return $tariff;
         }
+
+        if($user->hasRole('Free'))
+            return new FreeTariff();
 
         return null;
     }

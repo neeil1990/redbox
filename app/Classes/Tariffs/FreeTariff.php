@@ -10,12 +10,14 @@ use App\Classes\Tariffs\Settings\FreeSettings;
 
 class FreeTariff extends Tariff
 {
-    public $name = 'Free Tariff!';
+    public $name = 'Free';
     protected $code = 'Free';
 
     public function __construct()
     {
         parent::__construct(new ThreeMonthsTariff());
+
+        $this->name = __('Free');
 
         $settings = $this->settings()->get();
         if(array_key_exists('price', $settings)){
