@@ -78,7 +78,6 @@ class Relevance
     public function parseSites($link)
     {
         foreach ($this->domains as $item) {
-            Log::debug('site', [$item['doc']['url']]);
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;

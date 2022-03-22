@@ -801,9 +801,9 @@
 
             $('#tf-idf-clouds').click(() => {
                 if ($('.tf-idf-clouds').is(':visible')) {
-                    $('.tf-idf-clouds').hide(300)
+                    $('.tf-idf-clouds').hide()
                 } else {
-                    $('.tf-idf-clouds').show(300)
+                    $('.tf-idf-clouds').show()
                 }
             })
             $('#text-clouds').click(() => {
