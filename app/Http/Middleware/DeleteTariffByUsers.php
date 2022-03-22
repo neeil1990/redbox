@@ -33,7 +33,10 @@ class DeleteTariffByUsers
             $user = $this->user->find($tariff->user_id);
 
             $tariff->update(['status' => false]);
+
             $user->removeRole($class->code());
+
+            $user->assignRole('Free');
         }
 
         return $next($request);

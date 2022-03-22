@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Classes\Tariffs\Facades\Tariffs;
 use App\Notifications\BrokenDomainNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\DomainInformationNotification;
@@ -138,6 +139,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function session()
     {
         return $this->hasOne('App\Session')->orderBy('last_activity', 'desc');
+    }
+
+    /**
+     * @return Classes\Tariffs\Tariff|mixed|null
+     */
+    public function tariff()
+    {
+        return (new Tariffs())->getTariffByUser($this);
     }
 
     /**

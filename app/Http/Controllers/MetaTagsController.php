@@ -229,14 +229,16 @@ class MetaTagsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function store(Request $request)
     {
-        $model = Auth::user()->metaTags();
+        /** @var User $user */
+        $user = Auth::user();
+        $model = $user->metaTags();
 
-        if(!empty($tariff = (new Tariffs())->getTariffByUser()))
+        if($tariff = $user->tariff())
             $tariff = $tariff->getAsArray();
 
         if(isset($tariff['settings']['MetaTagsProject']) && $tariff['settings']['MetaTagsProject'] > 0){

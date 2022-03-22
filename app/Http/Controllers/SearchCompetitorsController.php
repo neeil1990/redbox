@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\SearchCompetitors;
+use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -51,7 +53,10 @@ class SearchCompetitorsController extends Controller
         $phrases = explode("\n", $request->input('phrases'));
         $count = count($phrases);
 
-        if(!empty($tariff = (new Tariffs())->getTariffByUser()))
+        /** @var User $user */
+        $user = Auth::user();
+        // Проверка тарифа
+        if($tariff = $user->tariff())
             $tariff = $tariff->getAsArray();
 
         if(isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0){

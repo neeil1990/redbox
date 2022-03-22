@@ -14,6 +14,7 @@ use App\Classes\Tariffs\Period\SixMonthsTariff;
 use App\Classes\Tariffs\Period\ThreeMonthsTariff;
 use App\Classes\Tariffs\Period\TwelveMonthsTariff;
 use App\Classes\Tariffs\Tariff;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Prophecy\Exception\Doubler\ClassNotFoundException;
 
@@ -69,9 +70,8 @@ class Tariffs
         $this->periods[] = $periods;
     }
 
-    public function getTariffByUser()
+    public function getTariffByUser(User $user)
     {
-        $user = auth()->user();
         if(!$user)
             throw new ClassNotFoundException("Auth class not found!", Auth::class);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\DomainMonitoring;
+use App\User;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -50,8 +51,10 @@ class DomainMonitoringController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        /** @var User $user */
+        $user = Auth::user();
         // Проверка тарифа
-        if(!empty($tariff = (new Tariffs())->getTariffByUser()))
+        if($tariff = $user->tariff())
             $tariff = $tariff->getAsArray();
 
         $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();

@@ -24,6 +24,7 @@
     <nav class="main-header navbar navbar-expand navbar-white navbar-light" id="header-nav-bar">
         @include('navigation.menu')
         <ul class="navbar-nav ml-auto">
+            @include('navigation.menu-right')
             <li class="nav-item">
                 <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                     <i class="fas fa-expand-arrows-alt"></i>

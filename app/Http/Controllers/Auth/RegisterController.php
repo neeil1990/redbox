@@ -92,7 +92,7 @@ class RegisterController extends Controller
             'telegram_token' => str_shuffle(Str::random(50) . Carbon::now())
         ]);
 
-        $user->assignRole('user');
+        $user->assignRole('Free');
 
         return $user;
     }

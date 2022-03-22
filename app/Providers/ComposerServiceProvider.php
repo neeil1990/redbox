@@ -26,5 +26,6 @@ class ComposerServiceProvider extends ServiceProvider
     {
         view()->composer('component.card', '\App\ViewComposers\DescriptionComposer');
         view()->composer('users.panel', '\App\ViewComposers\UserPanelComposer');
+        view()->composer('navigation.menu-right', '\App\ViewComposers\UserPanelComposer');
     }
 }
