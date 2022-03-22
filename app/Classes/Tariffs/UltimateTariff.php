@@ -6,18 +6,18 @@ namespace App\Classes\Tariffs;
 
 use App\Classes\Tariffs\Interfaces\Settings;
 use App\Classes\Tariffs\Period\ThreeMonthsTariff;
-use App\Classes\Tariffs\Settings\OptimalSettings;
+use App\Classes\Tariffs\Settings\UltimateSettings;
 
-class OptimalTariff extends Tariff
+class UltimateTariff extends Tariff
 {
-    public $name = 'Optimal';
-    protected $code = 'Optimal';
+    public $name = 'Ultimate';
+    protected $code = 'Ultimate';
 
     public function __construct()
     {
         parent::__construct(new ThreeMonthsTariff());
 
-        $this->name = __('Optimal');
+        $this->name = __('Ultimate');
 
         $settings = $this->settings()->get();
         if(array_key_exists('price', $settings)){
@@ -30,24 +30,18 @@ class OptimalTariff extends Tariff
         $this->price = $price;
     }
 
-    /**
-     * @return string
-     */
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return Settings
-     */
-    public function settings(): Settings
-    {
-        return new OptimalSettings($this->code());
-    }
-
     public function code(): string
     {
         return $this->code;
+    }
+
+    public function settings(): Settings
+    {
+        return new UltimateSettings($this->code());
     }
 }

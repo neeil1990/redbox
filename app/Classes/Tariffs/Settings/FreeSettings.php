@@ -3,31 +3,13 @@
 
 namespace App\Classes\Tariffs\Settings;
 
-
 use App\Classes\Tariffs\Interfaces\Settings;
-use App\TariffSetting;
-use App\TariffSettingValue;
 
-class FreeSettings implements Settings
+class FreeSettings extends SettingsAbstract implements Settings
 {
-    protected $tariff;
-    protected $settings;
-
     public function __construct(string $code)
     {
         $this->tariff = $code;
-    }
-
-    public function get(): array
-    {
-        $this->settings = [];
-
-        $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
-        foreach ($settings as $setting){
-            $this->settings[$setting->property->code] = $setting->value;
-        }
-
-        return $this->settings;
     }
 
 }
