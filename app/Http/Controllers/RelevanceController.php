@@ -26,6 +26,14 @@ class RelevanceController extends Controller
     }
 
     /**
+     * @return array|false|Application|Factory|View|mixed
+     */
+    public function testView()
+    {
+        return view('relevance-analysis.test');
+    }
+
+    /**
      * @param Request $request
      * @return JsonResponse
      */
@@ -45,10 +53,8 @@ class RelevanceController extends Controller
             );
             $relevance->parseSites($request->link);
             $relevance->analysis($request);
-
             return RelevanceController::successResponse($relevance);
         } catch (Exception $e) {
-
             return RelevanceController::errorResponse($request, $e);
         }
     }
@@ -85,7 +91,7 @@ class RelevanceController extends Controller
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
             $relevance->setMainPage($params->html_main_page);
             $relevance->setDomains($params->sites);
-            $relevance->parseSites($request->link);
+            $relevance->parseSites($params->main_page_link);
             $relevance->analysis($request);
 
             return RelevanceController::successResponse($relevance);
@@ -158,5 +164,36 @@ class RelevanceController extends Controller
         ]);
 
         return response()->json()->setStatusCode(500);
+    }
+
+    public function testAnalyse(Request $request)
+    {
+        $xml = new SimplifiedXmlFacade(20, 1);
+        $xml->setQuery($request->phrase);
+        $xmlResponse = $xml->getXMLResponse();
+
+        $relevance = new Relevance($request);
+        $relevance->maxWordLength = 5;
+        $relevance->getMainPageHtml($request->link);
+
+        $relevance->removeIgnoredDomains(
+            10,
+            $request->ignoredDomains,
+            $xmlResponse['response']['results']['grouping']['group']
+        );
+
+        $relevance->parseSites($request->link);
+        $relevance->getHiddenData(false);
+        $relevance->separateLinksFromText();
+        $relevance->deleteEverythingExceptCharacters();
+        $result = [];
+
+        foreach ($relevance->pages as $key => $page) {
+            $result[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
+        }
+        return response()->json([
+            'clouds' => $result,
+        ])->setStatusCode(200);
+
     }
 }

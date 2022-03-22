@@ -43,9 +43,9 @@ class Relevance
     public $competitorsCloud = [];
 
     /**
-     * @param $request
+     * @param $link
      */
-    public function __construct($request)
+    public function __construct($link)
     {
         $this->pages = [];
         $this->domains = [];
@@ -57,7 +57,7 @@ class Relevance
         $this->competitorsTextAndLinks = '';
 
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
-        $this->params['main_page_link'] = $request->link;
+        $this->params['main_page_link'] = $link;
         $this->params['sites'] = '';
         $this->params['html_relevance'] = '';
         $this->params['html_main_page'] = '';
@@ -73,15 +73,16 @@ class Relevance
     }
 
     /**
-     * @param $link
+     * @param $mainPageLink
      */
-    public function parseSites($link)
+    public function parseSites($mainPageLink)
     {
         foreach ($this->domains as $item) {
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;
             $result = mb_strtolower(TextAnalyzer::removeHeaders(TextAnalyzer::curlInit($domain)));
+            Log::debug('dmg', [$result]);
             // если ответ от сервера не был получен
             if ($result == '' || $result == null) {
                 $this->sites[] = [
@@ -97,12 +98,13 @@ class Relevance
             $this->pages[$domain]['html'] = $result;
             $this->params['html_relevance'] .= $result . $this->separator;
             //Если проанализированный домен является посадочной страницей
-            if ($domain == $link) {
+            $lastItem = array_key_last($this->sites);
+            if ($domain == $mainPageLink) {
                 $this->mainPageIsRelevance = true;
-                $this->sites[array_key_last($this->sites)]['mainPage'] = true;
-                $this->sites[array_key_last($this->sites)]['inRelevance'] = true;
+                $this->sites[$lastItem]['mainPage'] = true;
+                $this->sites[$lastItem]['inRelevance'] = true;
             } else {
-                $this->sites[array_key_last($this->sites)]['mainPage'] = false;
+                $this->sites[$lastItem]['mainPage'] = false;
             }
         }
     }
@@ -121,12 +123,26 @@ class Relevance
         $this->removeListWords($request);
         $this->deleteEverythingExceptCharacters();
         $this->getTextFromCompetitors();
+        $this->separateAllText();
         $this->calculateWidth($request->link);
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareClouds();
         $this->prepareUnigramTable();
         $this->params->save();
+    }
+
+    /**
+     * @return void
+     */
+    public function separateAllText()
+    {
+        $this->competitorsLinks = $this->separateText($this->competitorsLinks);
+        $this->competitorsText = $this->separateText($this->competitorsText);
+        $this->mainPage['html'] = $this->separateText($this->mainPage['html']);
+        $this->mainPage['linkText'] = $this->separateText($this->mainPage['linkText']);
+        $this->mainPage['hiddenText'] = $this->separateText($this->mainPage['hiddenText']);
+        $this->competitorsTextAndLinks = ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
     }
 
     /**
@@ -226,12 +242,6 @@ class Relevance
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
             $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
         }
-        $this->competitorsLinks = $this->separateText($this->competitorsLinks);
-        $this->competitorsText = $this->separateText($this->competitorsText);
-        $this->mainPage['html'] = $this->separateText($this->mainPage['html']);
-        $this->mainPage['linkText'] = $this->separateText($this->mainPage['linkText']);
-        $this->mainPage['hiddenText'] = $this->separateText($this->mainPage['hiddenText']);
-        $this->competitorsTextAndLinks = ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
     }
 
     /**
@@ -555,18 +565,16 @@ class Relevance
         } else {
             $this->domains = array_slice($xmlResponse, 0, $count - 1);
         }
+
     }
 
     /**
      * @param $html
-     * @return $this
      */
-    public function setMainPage($html): Relevance
+    public function setMainPage($html)
     {
         $this->mainPage['html'] = $html;
         $this->params['html_main_page'] = $html;
-
-        return $this;
     }
 
     /**
@@ -619,44 +627,6 @@ class Relevance
 
         return $this;
     }
-
-//    /**
-//     * @return array
-//     */
-//    public function prepareTFCloud(): array
-//    {
-//        $cloud = [];
-//        $was = [];
-//        $tfCloud = [];
-//
-//        foreach ($this->wordForms as $key => $wordForm) {
-//            $tfCloud[$key]['tf'] = 0;
-//            foreach ($wordForm as $item) {
-//                $tfCloud[$key]['tf'] += $item['tf'];
-//                if (count($tfCloud) >= 200) {
-//                    break 2;
-//                }
-//            }
-//        }
-//
-//        foreach ($tfCloud as $key => $item) {
-//            if (!in_array($key, $was) && $key != "") {
-//                $cloud[] = [
-//                    'text' => $key,
-//                    'weight' => $item['tf'],
-//                    'html' => [
-//                        'title' => $item['tf']
-//                    ],
-//                ];
-//                $was[] = $key;
-//            }
-//        }
-//
-//        $cloud['count'] = count($cloud) - 1;
-//        $collection = collect($cloud);
-//
-//        return $collection->sortByDesc('weight')->toArray();
-//    }
 
     /**
      * @param $text

@@ -11,6 +11,8 @@
 |
 */
 
+use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Http\Controllers\RelevanceController;
 use App\LinguaStem;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
@@ -182,6 +184,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
+    Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
@@ -191,9 +194,5 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 });
 
-Route::get('/ttt', function () {
-    $lingua = new LinguaStem();
-    dump($lingua->getRootWord('ларингоскопа'));
-    dump($lingua->getRootWord('ларингоскоп'));
-});
+Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
 
