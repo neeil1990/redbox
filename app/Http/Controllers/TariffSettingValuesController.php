@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
+use App\Classes\Tariffs\FreeTariff;
 use App\TariffSettingValue;
 use Illuminate\Http\Request;
 
@@ -12,8 +13,9 @@ class TariffSettingValuesController extends Controller
 
     public function __construct()
     {
-        $tariff = new Tariffs();
-        $this->tariffs = $tariff->getTariffs();
+        $tariff = (new Tariffs())->getTariffs();
+        array_unshift($tariff, new FreeTariff());
+        $this->tariffs = $tariff;
     }
 
     /**
