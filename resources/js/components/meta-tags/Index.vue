@@ -245,9 +245,16 @@
         },
         created() {
             this.metas = this.meta;
+
+            var app = this;
+            axios.get('/meta-tags/getTariffMetaTagsPages')
+                .then(function (response) {
+                    app.TariffMetaTagsPages = response.data;
+                });
         },
         data() {
             return {
+                TariffMetaTagsPages: {},
                 loading: 0,
                 metas: [],
                 value: {},
@@ -304,7 +311,10 @@
             }
         },
         methods: {
-
+            BreakException(message) {
+                this.message = message;
+                this.name = "Исключение, определённое пользователем";
+            },
             Analyzer(link) {
                 var form = document.createElement("form");
                 form.action = "/text-analyzer";
@@ -384,18 +394,23 @@
 
                 if(this.url.length){
                     url = this.StringAsObj(this.url);
+
+                    if(url.length > this.TariffMetaTagsPages.value){
+                        toastr.error(this.TariffMetaTagsPages.message);
+                        this.url = _.join(_.slice(url, 0, this.TariffMetaTagsPages.value), '\r\n');
+
+                        return false;
+                    }
+
                     this.result = [];
-
-                    url.forEach((element,i) => {
-
+                    url.forEach((element, i) => {
                         setTimeout(() => {
                             this.HttpRequest(element, i);
                         }, i * this.time);
                     });
-
-                } else
+                } else{
                     this.url = '';
-
+                }
             },
 
             HttpRequest(url, i)
@@ -406,11 +421,9 @@
                     url: url,
                     length: app.length,
                 }).then(function (response) {
-
                     app.result.push(response.data);
                 }).catch(function (error) {
-
-                    console.log(error.response.status);
+                    toastr.error(error.response.data.message);
                 });
             },
 

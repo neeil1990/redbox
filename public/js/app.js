@@ -8395,9 +8395,14 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.metas = this.meta;
+    var app = this;
+    axios.get('/meta-tags/getTariffMetaTagsPages').then(function (response) {
+      app.TariffMetaTagsPages = response.data;
+    });
   },
   data: function data() {
     return {
+      TariffMetaTagsPages: {},
       loading: 0,
       metas: [],
       value: {},
@@ -8471,6 +8476,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    BreakException: function BreakException(message) {
+      this.message = message;
+      this.name = "Исключение, определённое пользователем";
+    },
     Analyzer: function Analyzer(link) {
       var form = document.createElement("form");
       form.action = "/text-analyzer";
@@ -8539,13 +8548,22 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.url.length) {
         url = this.StringAsObj(this.url);
+
+        if (url.length > this.TariffMetaTagsPages.value) {
+          toastr.error(this.TariffMetaTagsPages.message);
+          this.url = _.join(_.slice(url, 0, this.TariffMetaTagsPages.value), '\r\n');
+          return false;
+        }
+
         this.result = [];
         url.forEach(function (element, i) {
           setTimeout(function () {
             _this.HttpRequest(element, i);
           }, i * _this.time);
         });
-      } else this.url = '';
+      } else {
+        this.url = '';
+      }
     },
     HttpRequest: function HttpRequest(url, i) {
       var app = this;
@@ -8555,7 +8573,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         app.result.push(response.data);
       })["catch"](function (error) {
-        console.log(error.response.status);
+        toastr.error(error.response.data.message);
       });
     },
     DeleteMetaTags: function DeleteMetaTags(id) {
@@ -88124,7 +88142,7 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! e:\OpenServer\domains\redbox.loc\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! E:\OpenServer\domains\redbox.loc\resources\js\app.js */"./resources/js/app.js");
 
 
 /***/ }),

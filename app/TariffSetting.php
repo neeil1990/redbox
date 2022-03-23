@@ -9,7 +9,8 @@ class TariffSetting extends Model
     protected $fillable = [
         'code',
         'name',
-        'description'
+        'description',
+        'message',
     ];
 
     public function fields()

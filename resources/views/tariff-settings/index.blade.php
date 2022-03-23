@@ -21,6 +21,10 @@
                 Description
                 <i class="fas fa-question-circle"></i>
             </th>
+            <th data-toggle="tooltip" data-placement="top" title="Необязательное сообщение для пользователя. - {TARIFF} = Название тарифа. - {VALUE} = Значение переменной.">
+                Message
+                <i class="fas fa-question-circle"></i>
+            </th>
             <th style="width: 1%"></th>
         </tr>
         </thead>
@@ -35,6 +39,7 @@
                 </td>
 
                 <td>{{$setting->description}}</td>
+                <td>{{$setting->message}}</td>
 
                 <td>
                     <table width="100%" style="width: 365px">

@@ -134,11 +134,24 @@ class MetaTagsController extends Controller
      * @return array
      */
     public function getMetaTags(Request $request) {
-
         $title = $request->input('url', false);
         $length = $request->input('length', false);
 
         return $this->dataMetaTags($title, $length);
+    }
+
+    public function getTariffMetaTagsPages()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        if($tariff = $user->tariff()){
+            $tariff = $tariff->getAsArray();
+            if (array_key_exists('MetaTagsPages', $tariff['settings'])) {
+                return collect($tariff['settings']['MetaTagsPages']);
+            }
+        }
+
+        return collect([]);
     }
 
     /**
@@ -238,12 +251,14 @@ class MetaTagsController extends Controller
         $user = Auth::user();
         $model = $user->metaTags();
 
-        if($tariff = $user->tariff())
-            $tariff = $tariff->getAsArray();
+        if($tariff = $user->tariff()){
 
-        if(isset($tariff['settings']['MetaTagsProject']) && $tariff['settings']['MetaTagsProject'] > 0){
-            if($model->count() >= $tariff['settings']['MetaTagsProject']){
-                abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['MetaTagsProject'] . ' проект`а');
+            $tariff = $tariff->getAsArray();
+            if (array_key_exists('MetaTagsProject', $tariff['settings'])) {
+
+                if($model->count() >= $tariff['settings']['MetaTagsProject']['value']){
+                    abort(403, $tariff['settings']['MetaTagsProject']['message']);
+                }
             }
         }
 

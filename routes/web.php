@@ -74,6 +74,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/meta-tags/histories/{id}', 'MetaTagsController@showHistories');
     Route::get('/meta-tags/history/{id}/compare/{id_compare}', 'MetaTagsController@showHistoryCompare')->name('meta.history.compare');;
     Route::get('/meta-tags/history/{id}', 'MetaTagsController@showHistory');
+    Route::get('/meta-tags/getTariffMetaTagsPages', 'MetaTagsController@getTariffMetaTagsPages');
     Route::resource('meta-tags', 'MetaTagsController');
 
     Route::get('behavior/{behavior}/edit-project', 'BehaviorController@editProject')->name('behavior.edit_project');
