@@ -19,7 +19,7 @@ class TariffSettingsController extends Controller
      */
     public function index()
     {
-        $settings = (new TariffSetting)->get();
+        $settings = (new TariffSetting)->orderBy('name')->get();
         return view('tariff-settings.index', compact('settings'));
     }
 
