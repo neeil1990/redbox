@@ -21,7 +21,7 @@ class UltimateTariff extends Tariff
 
         $settings = $this->settings()->get();
         if(array_key_exists('price', $settings)){
-            $this->setPrice($settings['price']);
+            $this->setPrice($settings['price']['value']);
         }
     }
 

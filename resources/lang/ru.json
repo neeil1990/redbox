@@ -1,5 +1,6 @@
 {
   "######################## Meta tags ###############################": "",
+  "Your tariff: {TARIFF}. Limith: {VALUE}.": "Ваш тариф: {TARIFF}. Лимит: {VALUE}.",
   "Check URL": "Проверить ссылку",
   "Timeout request": "Запрос тайм-аута",
   "Length": "Длина",

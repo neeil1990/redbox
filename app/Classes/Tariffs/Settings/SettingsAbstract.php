@@ -17,9 +17,26 @@ abstract class SettingsAbstract
 
         $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
         foreach ($settings as $setting){
-            $this->settings[$setting->property->code] = $setting->value;
+            $this->settings[$setting->property->code] = [
+                'name' => $setting->property->name,
+                'message' => $this->replaceMsg($setting->property->message, $setting->value),
+                'value' => $setting->value
+            ];
         }
 
         return $this->settings;
+    }
+
+    protected function replaceMsg(?string $str, $val)
+    {
+        if(!$str)
+            return null;
+
+        $str = __($str);
+
+        $str = str_replace('{TARIFF}', $this->tariff, $str);
+        $str = str_replace('{VALUE}', $val, $str);
+
+        return $str;
     }
 }

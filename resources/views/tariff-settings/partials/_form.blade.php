@@ -16,3 +16,9 @@
     {!! Form::textarea('description', null, ['class' => 'form-control']) !!}
     @error('description') <span class="error invalid-feedback">{{ $message }}</span> @enderror
 </div>
+
+<div class="form-group">
+    {!! Form::label('message', 'Сообщение. {TARIFF} = Название тарифа. {VALUE} = Значение переменной.') !!}
+    {!! Form::textarea('message', null, ['class' => 'form-control']) !!}
+    @error('message') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+</div>
