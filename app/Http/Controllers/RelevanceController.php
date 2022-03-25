@@ -44,7 +44,7 @@ class RelevanceController extends Controller
             $xml->setQuery($request->phrase);
             $xmlResponse = $xml->getXMLResponse();
 
-            $relevance = new Relevance($request);
+            $relevance = new Relevance($request->link);
             $relevance->getMainPageHtml($request->link);
             $relevance->removeIgnoredDomains(
                 $request->count,
@@ -66,16 +66,14 @@ class RelevanceController extends Controller
     public function repeatMainPageAnalysis(Request $request): JsonResponse
     {
         try {
-            $relevance = new Relevance($request);
+            $relevance = new Relevance($request->link);
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
             $relevance->getMainPageHtml($request->link);
             $relevance->setSites($params->sites);
             $relevance->setPages($params->html_relevance);
             $relevance->analysis($request);
-
             return RelevanceController::successResponse($relevance);
         } catch (Exception $e) {
-
             return RelevanceController::errorResponse($request, $e);
         }
     }
@@ -87,16 +85,14 @@ class RelevanceController extends Controller
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
         try {
-            $relevance = new Relevance($request);
+            $relevance = new Relevance($request->link);
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
             $relevance->setMainPage($params->html_main_page);
             $relevance->setDomains($params->sites);
             $relevance->parseSites($params->main_page_link);
             $relevance->analysis($request);
-
             return RelevanceController::successResponse($relevance);
         } catch (Exception $e) {
-
             return RelevanceController::errorResponse($request, $e);
         }
     }
@@ -172,7 +168,7 @@ class RelevanceController extends Controller
         $xml->setQuery($request->phrase);
         $xmlResponse = $xml->getXMLResponse();
 
-        $relevance = new Relevance($request);
+        $relevance = new Relevance($request->link);
         $relevance->maxWordLength = 5;
         $relevance->getMainPageHtml($request->link);
 
