@@ -82,7 +82,6 @@ class Relevance
                 ? strtolower($item['doc']['url'])
                 : $item;
             $result = mb_strtolower(TextAnalyzer::removeHeaders(TextAnalyzer::curlInit($domain)));
-            Log::debug('dmg', [$result]);
             // если ответ от сервера не был получен
             if ($result == '' || $result == null) {
                 $this->sites[] = [
