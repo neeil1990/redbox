@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Behavior;
 use App\BehaviorsPhrase;
+use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +58,23 @@ class BehaviorController extends Controller
      */
     public function create()
     {
+        /** @var User $user */
+        $user = Auth::user();
+        if($tariff = $user->tariff()){
+
+            $count = $user->behaviors()->count();
+            $tariff = $tariff->getAsArray();
+            if (array_key_exists('behavior', $tariff['settings'])) {
+
+                if($count >= $tariff['settings']['behavior']['value']){
+
+                    if($tariff['settings']['behavior']['message'])
+                        flash()->overlay($tariff['settings']['behavior']['message'], __('Error'))->error();
+
+                    return redirect()->route('behavior.index');
+                }
+            }
+        }
 
         return view('behavior.create');
     }
