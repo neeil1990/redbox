@@ -98,6 +98,45 @@ class RelevanceController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function testAnalyse(Request $request): JsonResponse
+    {
+        $xml = new SimplifiedXmlFacade(20, 1);
+        $xml->setQuery($request->phrase);
+        $xmlResponse = $xml->getXMLResponse();
+
+        $relevance = new Relevance($request->link);
+        $relevance->maxWordLength = 5;
+        $relevance->getMainPageHtml($request->link);
+
+        $relevance->removeIgnoredDomains(
+            10,
+            $request->ignoredDomains,
+            $xmlResponse['response']['results']['grouping']['group']
+        );
+        $relevance->parseSites($request->link);
+
+        $relevance->maxWordLength = 5;
+        $relevance->getHiddenData(false);
+        $relevance->separateLinksFromText();
+        $relevance->deleteEverythingExceptCharacters();
+        $relevance->getTextFromCompetitors();
+        $relevance->separateAllText();
+        $relevance->calculateWidth($request->link);
+
+        foreach ($relevance->pages as $key => $page) {
+            $result[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
+        }
+        return response()->json([
+            'clouds' => $result,
+            'sites' => $relevance->sites,
+        ])->setStatusCode(200);
+
+    }
+
+    /**
      * @param $relevance
      * @return JsonResponse
      */
@@ -160,36 +199,5 @@ class RelevanceController extends Controller
         ]);
 
         return response()->json()->setStatusCode(500);
-    }
-
-    public function testAnalyse(Request $request)
-    {
-        $xml = new SimplifiedXmlFacade(20, 1);
-        $xml->setQuery($request->phrase);
-        $xmlResponse = $xml->getXMLResponse();
-
-        $relevance = new Relevance($request->link);
-        $relevance->maxWordLength = 5;
-        $relevance->getMainPageHtml($request->link);
-
-        $relevance->removeIgnoredDomains(
-            10,
-            $request->ignoredDomains,
-            $xmlResponse['response']['results']['grouping']['group']
-        );
-
-        $relevance->parseSites($request->link);
-        $relevance->getHiddenData(false);
-        $relevance->separateLinksFromText();
-        $relevance->deleteEverythingExceptCharacters();
-        $result = [];
-
-        foreach ($relevance->pages as $key => $page) {
-            $result[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
-        }
-        return response()->json([
-            'clouds' => $result,
-        ])->setStatusCode(200);
-
     }
 }

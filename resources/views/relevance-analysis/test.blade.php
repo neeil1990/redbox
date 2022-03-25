@@ -116,7 +116,6 @@
         </div>
     </div>
     <div class="pb-3 clouds">
-        <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
             <div style="display:flex; flex-wrap: wrap" id="clouds">
             </div>
@@ -177,10 +176,10 @@
             })
 
             function successRequest(response) {
+                renderScanedSitesList(response.sites);
                 $("#test-analyse").prop("disabled", false);
                 var iterator = 1
                 $.each(response.clouds, function (key, value) {
-                    console.log(key, value)
                     let item = arrayToObj(value)
                     $('#clouds').append(
                         "<div style='width: 50%;'>" +

@@ -250,14 +250,14 @@ class Relevance
         $iterator = 0;
         $competitorsText = Relevance::searchWords($this->competitorsTextAndLinks);
         foreach ($this->pages as $page) {
-            $competitorText = Relevance::searchWords(
+            $text = Relevance::searchWords(
                 Relevance::concatenation([
                     $page['html'],
                     $page['linkText'],
                     $page['hiddenText']
                 ])
             );
-            $this->sites[$iterator]['width'] = $this->calculateWidthPercent($competitorText, $competitorsText);
+            $this->sites[$iterator]['width'] = $this->calculateWidthPercent($text, $competitorsText);
             $iterator++;
         }
         $this->isMainPageInRelevanceResponse($link, $competitorsText);
@@ -632,12 +632,12 @@ class Relevance
      */
     public function prepareTfCloud($text): array
     {
-        $wordForms = [];
+        $wordForms = $cloud = [];
         $lingua = new LinguaStem();
         $wordCount = str_word_count($text);
         $array = array_count_values(explode(' ', $text));
-        $cloud = [];
-
+        arsort($array);
+        $array = array_slice($array, 0, 199);
         foreach ($array as $key => $item) {
             $tf = round($item / $wordCount, 4);
             $cloud[] = [
@@ -645,8 +645,6 @@ class Relevance
                 'weight' => $tf,
             ];
         }
-        $collection = collect($cloud);
-        $cloud = $collection->sortByDesc('weight')->toArray();
 
         foreach ($cloud as $key1 => $item1) {
             $weight = 0;
