@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\LinkTracking;
 use App\ProjectTracking;
+use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -49,6 +50,22 @@ class BacklinkController extends Controller
      */
     public function createView()
     {
+        /** @var User $user */
+        $user = Auth::user();
+        if($tariff = $user->tariff()){
+            $count = ProjectTracking::where('user_id', '=', $user->id)->count();
+            $tariff = $tariff->getAsArray();
+            if (array_key_exists('BacklinkProject', $tariff['settings'])) {
+
+                if($count >= $tariff['settings']['BacklinkProject']['value']){
+                    if($tariff['settings']['BacklinkProject']['message'])
+                        flash()->overlay($tariff['settings']['BacklinkProject']['message'], __('Error'))->error();
+
+                    return redirect('backlink');
+                }
+            }
+        }
+
         return view('backlink.create');
     }
 
@@ -160,19 +177,49 @@ class BacklinkController extends Controller
     public function store(Request $request): RedirectResponse
     {
         if (isset($request->countRows)) {
+
+            if($this->checkLinks((int)$request->countRows))
+                return redirect()->route('backlink');
+
             $this->simplifiedCreate($request);
         } else {
+
             $phrases = $this->getParams($request->params);
+
             if ($this->isParserError($phrases)) {
                 flash()->overlay(__('Invalid format'), ' ')->error();
                 return Redirect::refresh();
             }
+
+            if($this->checkLinks(count($phrases)))
+                return redirect()->route('backlink');
+
             $this->expressCreate($request, $phrases);
         }
 
         flash()->overlay(__('Tracking was successfully created'), ' ')->success();
         return Redirect::route('backlink');
+    }
 
+    protected function checkLinks(int $count)
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        if($tariff = $user->tariff()){
+            $tariff = $tariff->getAsArray();
+            if (array_key_exists('BacklinkLinks', $tariff['settings'])) {
+
+                if($count > $tariff['settings']['BacklinkLinks']['value']){
+
+                    if($tariff['settings']['BacklinkLinks']['message'])
+                        flash()->overlay($tariff['settings']['BacklinkLinks']['message'], __('Error'))->error();
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

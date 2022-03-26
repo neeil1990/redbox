@@ -93,7 +93,7 @@
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-<script defer src="{{ asset('plugins/jquery-ui/custom-jquery-ui.js') }}"></script>
+
 <script>
     $(function () {
         let visible = true;
@@ -169,62 +169,6 @@
                 },
             });
 
-        }
-
-        $("#tablecontents").sortable({
-            items: 'div.card',
-            cursor: 'move',
-            opacity: 0.6,
-            update: function () {
-                movingProject();
-            }
-        });
-
-        $('.nav.nav-pills.nav-sidebar.flex-column').sortable({
-            items: 'li.nav-item',
-            cursor: 'move',
-            opacity: 0.6,
-            update: function () {
-                movingMenuItem()
-            }
-        });
-
-        function movingMenuItem() {
-            var orders = [];
-
-            $('li.menu-item').each(function () {
-                orders.push({
-                    id: $(this).attr('data-id'),
-                })
-            })
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "{{ url('menu-item-sortable') }}",
-                data: {
-                    orders: orders,
-                    _token: token
-                },
-            });
-        }
-
-        function movingProject() {
-            var orders = [];
-            $('div.card').each(function () {
-                orders.push({
-                    id: $(this).attr('data-id'),
-                });
-            });
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "{{ url('project-sortable') }}",
-                data: {
-                    orders: orders,
-                    _token: token
-                },
-            });
         }
 
         $(".x-drop-down__value").click(function (event) {
