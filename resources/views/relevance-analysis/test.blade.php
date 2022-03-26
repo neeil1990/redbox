@@ -573,7 +573,7 @@
         </div>
     </div>
     <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
-        Облака tf-idf (топ 200) слов конкурентов
+        <h3>Облака tf-idf (топ 200) слов конкурентов</h3>
         <div style="display:flex; flex-wrap: wrap" id="clouds">
         </div>
     </div>
