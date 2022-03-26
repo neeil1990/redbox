@@ -360,10 +360,6 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex flex-column pb-3">
-            <div style="display:flex; flex-wrap: wrap" id="clouds">
-            </div>
-        </div>
     </div>
     <div class="pb-3 unigram" style="display: none">
         <h2>{{ __('Unigram') }}</h2>
@@ -561,8 +557,9 @@
             <tr role="row">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>{{ __('Coverage by text') }}</th>
-                <th>{{ __('Coverage by tf') }}</th>
+                <th>{{ __('Coverage by all words') }}</th>
+                {{--                <th>{{ __('Coverage by text (top 200)') }}</th>--}}
+                <th>{{ __('Coverage by tf (top 200)') }}</th>
                 <th>{{ __('Density') }}</th>
                 <th>{{ __('Result') }}</th>
             </tr>
@@ -572,6 +569,11 @@
         </table>
         <div id="total200tf">
 
+        </div>
+    </div>
+    <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
+        Облака tf-idf (топ 200) слов конкурентов
+        <div style="display:flex; flex-wrap: wrap" id="clouds">
         </div>
     </div>
     @slot('js')
@@ -611,7 +613,6 @@
                         $('#repeat-relevance-analyse').prop("disabled", true);
                     },
                     success: function (response) {
-                        console.log(response)
                         successRequest(response, interval)
                     },
                     error: function () {
@@ -629,19 +630,7 @@
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
-                renderClouds(response.clouds.competitors, response.clouds.mainPage);
-                var iterator = 1
-                $.each(response.tfCompClouds, function (key, value) {
-                    let item = arrayToObj(value)
-                    $('#clouds').append(
-                        "<div style='width: 50%;'>" +
-                        "<span>" + key + "</span>" +
-                        "<div id='cloud" + iterator + "' style='height: 400px; width: 100%; padding-top: 10px; padding-bottom: 10px'></div>" +
-                        "</div>"
-                    )
-                    $("#cloud" + iterator).jQCloud(item)
-                    iterator++
-                });
+                renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds);
             }
 
             function errorRequest(interval) {
@@ -657,6 +646,7 @@
 
             function removeAllRenderElements() {
                 $(".generated-cloud").html("")
+                $("#clouds").html("")
                 $("#unigram").dataTable().fnDestroy();
                 $("#scaned-sites").dataTable().fnDestroy();
                 $('.render').remove();
@@ -664,6 +654,7 @@
                 $('.pb-3.unigram').hide()
                 $('.pb-3.sites').hide()
                 $('.clouds').hide()
+                $('#competitorsTfClouds').hide()
             }
 
             function setProgressBarStyles(percent) {

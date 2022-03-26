@@ -1,4 +1,4 @@
-function renderClouds(competitors, mainPage) {
+function renderClouds(competitors, mainPage, tfCompClouds = null) {
     $('.clouds').show()
 
     let a = arrayToObj(competitors.links)
@@ -28,6 +28,22 @@ function renderClouds(competitors, mainPage) {
     $("#mainPageTfCloud").jQCloud(h);
     $("#mainPageTextTfCloud").jQCloud(l);
     $("#mainPageLinksTfCloud").jQCloud(m);
+
+    if(tfCompClouds !== null){
+        $('#competitorsTfClouds').show()
+        var iterator = 1
+        $.each(tfCompClouds, function (key, value) {
+            let item = arrayToObj(value)
+            $('#clouds').append(
+                "<div style='width: 50%;'>" +
+                "<span>" + key + "</span>" +
+                "<div id='cloud" + iterator + "' style='height: 400px; width: 100%; padding-top: 10px; padding-bottom: 10px'></div>" +
+                "</div>"
+            )
+            $("#cloud" + iterator).jQCloud(item)
+            iterator++
+        });
+    }
 }
 
 function arrayToObj(array) {

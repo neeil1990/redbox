@@ -132,18 +132,15 @@ class RelevanceController extends Controller
         $relevance->prepareUnigramTable();
         $relevance->calculateCoverage($request->link);
 
-//         $relevance->params->save();
-        Log::debug('testTf', $relevance->testTf);
-//
-//        foreach ($relevance->pages as $key => $page) {
-//            $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
-//        }
+        foreach ($relevance->pages as $key => $page) {
+            $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
+        }
         return RelevanceController::successResponse($relevance, $tfCompClouds);
     }
 
     /**
      * @param $relevance
-     * @param $tfCompClouds
+     * @param null $tfCompClouds
      * @return JsonResponse
      */
     public function successResponse($relevance, $tfCompClouds = null): JsonResponse
