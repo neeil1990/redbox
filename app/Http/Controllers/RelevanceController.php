@@ -131,10 +131,10 @@ class RelevanceController extends Controller
         $relevance->prepareClouds();
         $relevance->prepareUnigramTable();
         $relevance->calculateCoverage($request->link);
-
         foreach ($relevance->pages as $key => $page) {
             $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
         }
+
         return RelevanceController::successResponse($relevance, $tfCompClouds);
     }
 
@@ -185,7 +185,10 @@ class RelevanceController extends Controller
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
             'tfCompClouds' => $tfCompClouds ?? null,
-            'tfTotal' => $relevance->testTf['total'],
+            'tfTotal' => [
+                '200' => $relevance->testTf['total200'],
+                '600' => $relevance->testTf['total600'],
+            ],
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -124,11 +125,11 @@ class Relevance
         $this->deleteEverythingExceptCharacters();
         $this->getTextFromCompetitors();
         $this->separateAllText();
-        $this->calculateCoverage($request->link);
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareClouds();
         $this->prepareUnigramTable();
+        $this->calculateCoverage($request->link);
         $this->params->save();
     }
 
@@ -160,14 +161,17 @@ class Relevance
                     $this->mainPage['hiddenText']
                 ])
             );
-
+            $coverage = $this->calculateCoverageTF($mainPageText);
             $this->sites[] = [
                 'site' => $link,
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
                 'width' => $this->calculateCoveragePercent($mainPageText, $competitorsText),
-                'tf' => $this->calculateCoverageTF($mainPageText)
+                'tf200' => $coverage['total200'],
+                'tf600' => $coverage['total600'],
+                // 200 / 100 == percent = 2
+                'percentCoverageWords' => $coverage['count200'] / 2
             ];
         }
 
@@ -255,8 +259,11 @@ class Relevance
         foreach ($this->pages as $page) {
             $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $wordsInText = Relevance::searchWords($allText);
+            $coverage = $this->calculateCoverageTF($wordsInText);
             $this->sites[$iterator]['width'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
-            $this->sites[$iterator]['tf'] = $this->calculateCoverageTF($wordsInText);
+            $this->sites[$iterator]['tf200'] = $coverage['total200'];
+            $this->sites[$iterator]['tf600'] = $coverage['total600'];
+            $this->sites[$iterator]['percentCoverageWords'] = $coverage['count200'] / 2;
             $iterator++;
         }
         $this->isMainPageInRelevanceResponse($link, $competitorsText);
@@ -264,22 +271,27 @@ class Relevance
 
     /**
      * @param $wordsInText
-     * @return float
+     * @return array
      */
-    public function calculateCoverageTF($wordsInText): float
+    public function calculateCoverageTF($wordsInText): array
     {
-        $result = 0;
-//        Log::debug('$wordsInText', $wordsInText);
-//        Log::debug('count', [count($wordsInText)]);
-//        Log::debug('$this->testTf', $this->testTf);
-//        Log::debug('$this->count', [count($this->testTf)]);
-        foreach ($this->testTf as $word => $value) {
+        $result['total200'] = $result['count200'] = $result['total600'] = $result['count600'] = 0;
+        foreach ($this->testTf['200'] as $word => $value) {
             if ($word != 'total') {
                 if (in_array($word, $wordsInText)) {
-                    $result += $value;
+                    $result['total200'] += $value;
+                    $result['count200'] += 1;
                 }
             }
+        }
 
+        foreach ($this->testTf['600'] as $word => $value) {
+            if ($word != 'total') {
+                if (in_array($word, $wordsInText)) {
+                    $result['total600'] += $value;
+                    $result['count600'] += 1;
+                }
+            }
         }
 
         return $result;
@@ -527,7 +539,7 @@ class Relevance
      */
     public function prepareUnigramTable()
     {
-        $this->testTf['total'] = 0;
+        $this->testTf['total200'] = $this->testTf['total600'] = $iterator = 0;
         foreach ($this->wordForms as $key => $wordForm) {
             $tf = $idf = $reSpam = $occurrences = $repeatInText = $repeatInLink = $avgInText = 0;
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
@@ -559,10 +571,15 @@ class Relevance
                 'reSpam' => $reSpam,
                 'danger' => $danger,
             ];
-            if (count($this->testTf) < 200) {
-                $this->testTf[$key] = $tf;
-                $this->testTf['total'] = round($this->testTf['total'] + $tf, 4);
+            if ($iterator < 200) {
+                $this->testTf['total200'] = round($this->testTf['total200'] + $tf, 4);
+                $this->testTf['200'][$key] = $tf;
             }
+            if ($iterator < 600) {
+                $this->testTf['total600'] = round($this->testTf['total600'] + $tf, 4);
+                $this->testTf['600'][$key] = $tf;
+            }
+            $iterator++;
         }
     }
 
