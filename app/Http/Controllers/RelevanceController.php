@@ -103,44 +103,50 @@ class RelevanceController extends Controller
      */
     public function testAnalyse(Request $request): JsonResponse
     {
-        $xml = new SimplifiedXmlFacade(20, 1);
+        $xml = new SimplifiedXmlFacade(20, $request->region);
+        $tfCompClouds = [];
         $xml->setQuery($request->phrase);
         $xmlResponse = $xml->getXMLResponse();
 
         $relevance = new Relevance($request->link);
-        $relevance->maxWordLength = 5;
         $relevance->getMainPageHtml($request->link);
-
         $relevance->removeIgnoredDomains(
-            10,
+            $request->count,
             $request->ignoredDomains,
             $xmlResponse['response']['results']['grouping']['group']
         );
         $relevance->parseSites($request->link);
-
-        $relevance->maxWordLength = 5;
-        $relevance->getHiddenData(false);
+//        $relevance->analysis($request);
+        $relevance->maxWordLength = $request->separator;
+        $relevance->removeNoIndex($request->noIndex);
+        $relevance->getHiddenData($request->hiddenText);
         $relevance->separateLinksFromText();
+        $relevance->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
+        $relevance->removeListWords($request);
         $relevance->deleteEverythingExceptCharacters();
         $relevance->getTextFromCompetitors();
         $relevance->separateAllText();
-        $relevance->calculateWidth($request->link);
+        $relevance->searchWordForms();
+        $relevance->processingOfGeneralInformation();
+        $relevance->prepareClouds();
+        $relevance->prepareUnigramTable();
+        $relevance->calculateCoverage($request->link);
 
-        foreach ($relevance->pages as $key => $page) {
-            $result[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
-        }
-        return response()->json([
-            'clouds' => $result,
-            'sites' => $relevance->sites,
-        ])->setStatusCode(200);
-
+//         $relevance->params->save();
+        Log::debug('testTf', $relevance->testTf);
+//
+//        foreach ($relevance->pages as $key => $page) {
+//            $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
+//        }
+        return RelevanceController::successResponse($relevance, $tfCompClouds);
     }
 
     /**
      * @param $relevance
+     * @param $tfCompClouds
      * @return JsonResponse
      */
-    public function successResponse($relevance): JsonResponse
+    public function successResponse($relevance, $tfCompClouds = null): JsonResponse
     {
         $count = count($relevance->sites);
         $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
@@ -171,8 +177,6 @@ class RelevanceController extends Controller
                     'text' => $relevance->mainPage['text'],
                 ]
             ],
-            'unigramTable' => $relevance->wordForms,
-            'sites' => $relevance->sites,
             'avg' => [
                 'countWords' => $avgCountWords,
                 'countSymbols' => Str::length($text) / $count,
@@ -181,6 +185,10 @@ class RelevanceController extends Controller
                 'countWords' => TextLengthController::countingWord($mainPageText),
                 'countSymbols' => Str::length($mainPageText),
             ],
+            'unigramTable' => $relevance->wordForms,
+            'sites' => $relevance->sites,
+            'tfCompClouds' => $tfCompClouds ?? null,
+            'tfTotal' => $relevance->testTf['total'],
         ]);
     }
 

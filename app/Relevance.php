@@ -7,39 +7,41 @@ use Illuminate\Support\Str;
 
 class Relevance
 {
-    public $mainPage;
+    public $separator = "\n\nseparator\n\n";
 
-    public $pages;
+    public $competitorsTextAndLinksCloud;
 
-    public $competitorsText;
+    public $mainPageIsRelevance = false;
+
+    public $competitorsTextAndLinks;
+
+    public $competitorsLinksCloud;
+
+    public $competitorsCloud = [];
 
     public $competitorsTextCloud;
 
     public $competitorsLinks;
 
-    public $competitorsLinksCloud;
-
-    public $competitorsTextAndLinks;
-
-    public $competitorsTextAndLinksCloud;
-
-    public $wordForms;
-
-    public $domains;
-
-    public $sites;
+    public $competitorsText;
 
     public $ignoredWords;
 
-    public $params;
-
-    public $separator = "\n\nseparator\n\n";
-
     public $maxWordLength;
 
-    public $mainPageIsRelevance = false;
+    public $wordForms;
 
-    public $competitorsCloud = [];
+    public $mainPage;
+
+    public $testTf;
+
+    public $params;
+
+    public $domains;
+
+    public $pages;
+
+    public $sites;
 
     /**
      * @param $link
@@ -122,7 +124,7 @@ class Relevance
         $this->deleteEverythingExceptCharacters();
         $this->getTextFromCompetitors();
         $this->separateAllText();
-        $this->calculateWidth($request->link);
+        $this->calculateCoverage($request->link);
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareClouds();
@@ -164,7 +166,8 @@ class Relevance
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'width' => $this->calculateWidthPercent($mainPageText, $competitorsText),
+                'width' => $this->calculateCoveragePercent($mainPageText, $competitorsText),
+                'tf' => $this->calculateCoverageTF($mainPageText)
             ];
         }
 
@@ -245,22 +248,41 @@ class Relevance
     /**
      * @return void
      */
-    public function calculateWidth($link)
+    public function calculateCoverage($link)
     {
-        $iterator = 0;
         $competitorsText = Relevance::searchWords($this->competitorsTextAndLinks);
+        $iterator = 0;
         foreach ($this->pages as $page) {
-            $text = Relevance::searchWords(
-                Relevance::concatenation([
-                    $page['html'],
-                    $page['linkText'],
-                    $page['hiddenText']
-                ])
-            );
-            $this->sites[$iterator]['width'] = $this->calculateWidthPercent($text, $competitorsText);
+            $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $wordsInText = Relevance::searchWords($allText);
+            $this->sites[$iterator]['width'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
+            $this->sites[$iterator]['tf'] = $this->calculateCoverageTF($wordsInText);
             $iterator++;
         }
         $this->isMainPageInRelevanceResponse($link, $competitorsText);
+    }
+
+    /**
+     * @param $wordsInText
+     * @return float
+     */
+    public function calculateCoverageTF($wordsInText): float
+    {
+        $result = 0;
+//        Log::debug('$wordsInText', $wordsInText);
+//        Log::debug('count', [count($wordsInText)]);
+//        Log::debug('$this->testTf', $this->testTf);
+//        Log::debug('$this->count', [count($this->testTf)]);
+        foreach ($this->testTf as $word => $value) {
+            if ($word != 'total') {
+                if (in_array($word, $wordsInText)) {
+                    $result += $value;
+                }
+            }
+
+        }
+
+        return $result;
     }
 
     /**
@@ -268,7 +290,7 @@ class Relevance
      * @param $competitorsText
      * @return float
      */
-    public function calculateWidthPercent($text, $competitorsText): float
+    public function calculateCoveragePercent($text, $competitorsText): float
     {
         $percent = count($competitorsText) / 100;
         return round(100 - count(array_diff($competitorsText, $text)) / $percent, 2);
@@ -505,6 +527,7 @@ class Relevance
      */
     public function prepareUnigramTable()
     {
+        $this->testTf['total'] = 0;
         foreach ($this->wordForms as $key => $wordForm) {
             $tf = $idf = $reSpam = $occurrences = $repeatInText = $repeatInLink = $avgInText = 0;
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
@@ -536,6 +559,10 @@ class Relevance
                 'reSpam' => $reSpam,
                 'danger' => $danger,
             ];
+            if (count($this->testTf) < 200) {
+                $this->testTf[$key] = $tf;
+                $this->testTf['total'] = round($this->testTf['total'] + $tf, 4);
+            }
         }
     }
 

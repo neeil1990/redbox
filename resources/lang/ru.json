@@ -792,6 +792,6 @@
     "Average tf-idf values of competitor links": "Средние значения tf-idf ссылок конкурентов",
     "TF-idf values of landing page links": "Значения tf-idf ссылок посадочной страницы",
     "Position in the top": "Позиция в топе",
-    "Coverage": "Охват",
-    "Density": "Плотность"
+    "Coverage by text": "Охват по тексту",
+    "Coverage by tf": "Охват по tf"
 }
