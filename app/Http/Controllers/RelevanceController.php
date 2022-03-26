@@ -185,9 +185,9 @@ class RelevanceController extends Controller
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
             'tfCompClouds' => $tfCompClouds ?? null,
-            'tfTotal' => [
-                '200' => $relevance->testTf['total200'],
-                '600' => $relevance->testTf['total600'],
+            'coverageInfo' => [
+                '200' => $relevance->coverageInfo['total200'],
+                '600' => $relevance->coverageInfo['total600'],
             ],
         ]);
     }

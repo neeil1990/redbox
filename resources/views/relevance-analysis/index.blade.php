@@ -716,7 +716,7 @@
                 stopProgressBar(interval)
                 removeAllRenderElements()
                 renderUnigramTable(response.unigramTable);
-                renderScanedSitesList(response.sites);
+                renderScanedSitesList(response.sites, response.coverageInfo);
                 renderTextTable(response.avg, response.mainPage)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);

@@ -34,7 +34,7 @@ class Relevance
 
     public $mainPage;
 
-    public $testTf;
+    public $coverageInfo;
 
     public $params;
 
@@ -276,7 +276,7 @@ class Relevance
     public function calculateCoverageTF($wordsInText): array
     {
         $result['total200'] = $result['count200'] = $result['total600'] = $result['count600'] = 0;
-        foreach ($this->testTf['200'] as $word => $value) {
+        foreach ($this->coverageInfo['200'] as $word => $value) {
             if ($word != 'total') {
                 if (in_array($word, $wordsInText)) {
                     $result['total200'] += $value;
@@ -285,7 +285,7 @@ class Relevance
             }
         }
 
-        foreach ($this->testTf['600'] as $word => $value) {
+        foreach ($this->coverageInfo['600'] as $word => $value) {
             if ($word != 'total') {
                 if (in_array($word, $wordsInText)) {
                     $result['total600'] += $value;
@@ -539,7 +539,7 @@ class Relevance
      */
     public function prepareUnigramTable()
     {
-        $this->testTf['total200'] = $this->testTf['total600'] = $iterator = 0;
+        $this->coverageInfo['total200'] = $this->coverageInfo['total600'] = $iterator = 0;
         foreach ($this->wordForms as $key => $wordForm) {
             $tf = $idf = $reSpam = $occurrences = $repeatInText = $repeatInLink = $avgInText = 0;
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
@@ -572,12 +572,12 @@ class Relevance
                 'danger' => $danger,
             ];
             if ($iterator < 200) {
-                $this->testTf['total200'] = round($this->testTf['total200'] + $tf, 4);
-                $this->testTf['200'][$key] = $tf;
+                $this->coverageInfo['total200'] = round($this->coverageInfo['total200'] + $tf, 4);
+                $this->coverageInfo['200'][$key] = $tf;
             }
             if ($iterator < 600) {
-                $this->testTf['total600'] = round($this->testTf['total600'] + $tf, 4);
-                $this->testTf['600'][$key] = $tf;
+                $this->coverageInfo['total600'] = round($this->coverageInfo['total600'] + $tf, 4);
+                $this->coverageInfo['600'][$key] = $tf;
             }
             $iterator++;
         }

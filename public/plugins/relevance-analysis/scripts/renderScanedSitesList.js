@@ -1,7 +1,9 @@
-function renderScanedSitesList(sites, tfTotal = null) {
+function renderScanedSitesList(sites, coverageInfo = null) {
+    console.log(sites)
+    console.log(coverageInfo)
     $('.pb-3.sites').show(300)
-    let percent200 = tfTotal['200'] / 100
-    let percent600 = tfTotal['600'] / 100
+    let percent200 = coverageInfo['200'] / 100
+    let percent600 = coverageInfo['600'] / 100
     let site
     let iterator = 1;
     let tbody = $('#scaned-sites-tbody')
@@ -44,10 +46,10 @@ function renderScanedSitesList(sites, tfTotal = null) {
         });
     });
 
-    if (tfTotal !== null) {
+    if (coverageInfo !== null) {
         $('#total200tf').html(
-            "<p>" + "<span>Общая сумма tf (топ 200): </span>" + tfTotal['200'] + "</p>" +
-            "<p>" + "<span>Общая сумма tf (топ 600): </span>" + tfTotal['600'] + "</p>"
+            "<p>" + "<span>Общая сумма tf (топ 200): </span>" + coverageInfo['200'] + "</p>" +
+            "<p>" + "<span>Общая сумма tf (топ 600): </span>" + coverageInfo['600'] + "</p>"
         )
     }
 }
