@@ -320,7 +320,7 @@ class BacklinkController extends Controller
     public function checkLink($id)
     {
         $target = LinkTracking::findOrFail($id);
-        $this->containsLink(
+        $this->analyseLink(
             $target->site_donor,
             $target->link,
             $target->anchor,
@@ -344,7 +344,7 @@ class BacklinkController extends Controller
      * @param false $nofollow
      * @param false $noindex
      */
-    public function containsLink($page_url, $link_url, $anchor, $nofollow = false, $noindex = false)
+    public function analyseLink($page_url, $link_url, $anchor, $nofollow = false, $noindex = false)
     {
         $html = $this->curlInit($page_url);
         if ($html == false) {

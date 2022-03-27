@@ -54,7 +54,8 @@ class CroneController extends Controller
             $links = LinkTracking::where('broken', '=', true)->get();
             foreach ($links->chunk(5) as $links) {
                 foreach ($links as $link) {
-                    $this->containsLink($link->site_donor,
+                    $this->analyseLink(
+                        $link->site_donor,
                         $link->link,
                         $link->anchor,
                         (boolean)$link->nofollow,
@@ -87,7 +88,7 @@ class CroneController extends Controller
             $links = LinkTracking::all();
             foreach ($links->chunk(5) as $links) {
                 foreach ($links as $link) {
-                    $this->containsLink(
+                    $this->analyseLink(
                         $link->site_donor,
                         $link->link,
                         $link->anchor,
@@ -114,7 +115,7 @@ class CroneController extends Controller
      * @param bool $noindex
      * @return void
      */
-    public function containsLink($page_url, $link_url, $anchor, bool $nofollow = false, bool $noindex = false)
+    public function analyseLink($page_url, $link_url, $anchor, bool $nofollow = false, bool $noindex = false)
     {
         $html = $this->curlInit($page_url);
         if ($html == false) {
