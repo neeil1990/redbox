@@ -116,21 +116,21 @@ class RelevanceController extends Controller
             $xmlResponse['response']['results']['grouping']['group']
         );
         $relevance->parseSites($request->link);
-//        $relevance->analysis($request);
-        $relevance->maxWordLength = $request->separator;
-        $relevance->removeNoIndex($request->noIndex);
-        $relevance->getHiddenData($request->hiddenText);
-        $relevance->separateLinksFromText();
-        $relevance->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
-        $relevance->removeListWords($request);
-        $relevance->deleteEverythingExceptCharacters();
-        $relevance->getTextFromCompetitors();
-        $relevance->separateAllText();
-        $relevance->searchWordForms();
-        $relevance->processingOfGeneralInformation();
-        $relevance->prepareClouds();
-        $relevance->prepareUnigramTable();
-        $relevance->calculateCoverage($request->link);
+        $relevance->analysis($request);
+//        $relevance->maxWordLength = $request->separator;
+//        $relevance->removeNoIndex($request->noIndex);
+//        $relevance->getHiddenData($request->hiddenText);
+//        $relevance->separateLinksFromText();
+//        $relevance->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
+//        $relevance->removeListWords($request);
+//        $relevance->deleteEverythingExceptCharacters();
+//        $relevance->getTextFromCompetitors();
+//        $relevance->separateAllText();
+//        $relevance->searchWordForms();
+//        $relevance->processingOfGeneralInformation();
+//        $relevance->prepareClouds();
+//        $relevance->prepareUnigramTable();
+//        $relevance->calculateCoverage($request->link);
         foreach ($relevance->pages as $key => $page) {
             $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
         }
