@@ -30,18 +30,18 @@ class DomainInformation extends Model
             if (isset($info)) {
                 $project->broken = false;
                 $project->dns = "DNS:\n" . implode("\n", $info->nameServers);
-                $registrationDate = __('Registration date') . ' ' . date("Y-m-d", $info->creationDate);
-                $freeDate = date("Y-m-d", $info->expirationDate);
+                $registrationDate = __('Registration date') . ' ' . date('Y-m-d', $info->creationDate);
+                $freeDate = date('Y-m-d', $info->expirationDate);
                 $project->domain_information = DomainInformation::prepareStatus($project->dns, $registrationDate, $freeDate);
                 DomainInformation::sendNotifications($project, $oldState, $oldDNS, $freeDate);
             } else {
                 $project->broken = true;
-                $project->domain_information = __("No records were found for the selected source");
+                $project->domain_information = __('No records were found for the selected source');
                 DomainInformation::sendNotifications($project, $oldState);
             }
         } catch (\Exception $exception) {
             $project->broken = true;
-            $project->domain_information = __("No records were found for the selected source");
+            $project->domain_information = __('No records were found for the selected source');
             DomainInformation::sendNotifications($project, $oldState);
         }
         $project->save();
