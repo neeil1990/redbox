@@ -18,7 +18,7 @@ class DomainInformation extends Model
     /**
      * @param $project
      */
-    public static function checkDomainSock($project)
+    public static function checkDomain($project)
     {
         $oldState = $project->broken;
         $oldDNS = $project->dns;

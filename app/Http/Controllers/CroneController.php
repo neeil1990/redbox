@@ -41,7 +41,7 @@ class CroneController extends Controller
     {
         $projects = DomainInformation::all();
         foreach ($projects as $project) {
-            DomainInformation::checkDomainSock($project);
+            DomainInformation::checkDomain($project);
         }
     }
 
@@ -70,8 +70,6 @@ class CroneController extends Controller
                     } else {
                         $this->saveResult($link, false, false);
                     }
-                    unset($this->result);
-                    sleep(1);
                 }
             }
         } catch (\Exception $exception) {
@@ -101,7 +99,6 @@ class CroneController extends Controller
                     } else {
                         $this->saveResult($link, false, false);
                     }
-                    unset($this->result);
                 }
             }
         } catch (\Exception $exception) {

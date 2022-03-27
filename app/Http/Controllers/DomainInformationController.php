@@ -120,7 +120,7 @@ class DomainInformationController extends Controller
     public function checkDomain($id): RedirectResponse
     {
         $project = DomainInformation::findOrFail($id);
-        DomainInformation::checkDomainSock($project);
+        DomainInformation::checkDomain($project);
 
         return Redirect::back();
     }

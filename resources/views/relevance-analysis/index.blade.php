@@ -586,7 +586,10 @@
             <tr role="row">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>{{ __('Coverage by text') }}</th>
+                <th>{{ __('Coverage by all words') }}</th>
+                <th>{{ __('Coverage by tf (top 200)') }}</th>
+                <th>{{ __('Coverage by tf (top 600)') }}</th>
+                <th>{{ __('Coverage by text (top 200)') }}</th>
                 <th>{{ __('Density') }}</th>
                 <th>{{ __('Result') }}</th>
             </tr>
