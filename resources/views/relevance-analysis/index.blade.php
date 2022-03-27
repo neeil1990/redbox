@@ -740,6 +740,7 @@
 
             function removeAllRenderElements() {
                 $(".generated-cloud").html("")
+                $("#clouds").html("")
                 $("#unigram").dataTable().fnDestroy();
                 $("#scaned-sites").dataTable().fnDestroy();
                 $('.render').remove();
@@ -747,6 +748,7 @@
                 $('.pb-3.unigram').hide()
                 $('.pb-3.sites').hide()
                 $('.clouds').hide()
+                $('#competitorsTfClouds').hide()
             }
 
             function setProgressBarStyles(percent) {
