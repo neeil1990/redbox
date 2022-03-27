@@ -161,7 +161,7 @@ class BacklinkController extends Controller
         $link = LinkTracking::findOrFail($id);
         $project = ProjectTracking::findOrFail($link->project_tracking_id);
         $project->decrement('total_link');
-        if ((boolean)$link->broken) {
+        if ($link->broken) {
             $project->decrement('total_broken_link');
         }
         LinkTracking::destroy($id);
@@ -248,10 +248,10 @@ class BacklinkController extends Controller
                 'site_donor' => $params[0],
                 'link' => $params[1],
                 'anchor' => $params[2],
-                'nofollow' => (boolean)$params[3],
-                'noindex' => (boolean)$params[4],
-                'yandex' => (boolean)$params[5],
-                'google' => (boolean)$params[6],
+                'nofollow' => $params[3],
+                'noindex' => $params[4],
+                'yandex' => $params[5],
+                'google' => $params[6],
             ]);
             $tracking->save();
         }
@@ -281,10 +281,10 @@ class BacklinkController extends Controller
                 'site_donor' => $request['site_donor_' . $i],
                 'link' => $request['link_' . $i],
                 'anchor' => $request['anchor_' . $i],
-                'nofollow' => (boolean)$request['nofollow_' . $i],
-                'noindex' => (boolean)$request['noindex_' . $i],
-                'yandex' => (boolean)$request['yandex_' . $i],
-                'google' => (boolean)$request['google_' . $i],
+                'nofollow' => $request['nofollow_' . $i],
+                'noindex' => $request['noindex_' . $i],
+                'yandex' => $request['yandex_' . $i],
+                'google' => $request['google_' . $i],
             ]);
             $tracking->save();
         }
@@ -351,12 +351,12 @@ class BacklinkController extends Controller
         if ($html == false) {
             $this->result['error'] = __('the donor site does not exist');
         } else {
-            if ((boolean)$noindex) {
+            if ($noindex) {
                 $this->searchNoindex($html, $link_url, $anchor);
             }
             if (!isset($this->result['error'])) {
                 $link = $this->searchLinksOnPage($html, $link_url, $anchor);
-                if ((boolean)$nofollow && isset($link)) {
+                if ($nofollow && isset($link)) {
                     $this->searchNofollow($link[0]);
                 }
             }
@@ -382,9 +382,7 @@ class BacklinkController extends Controller
         if (!$html) {
             return false;
         }
-        $html = preg_replace('//i', '', $html);
-
-        return $html;
+        return preg_replace('//i', '', $html);
     }
 
     /**
@@ -464,7 +462,7 @@ class BacklinkController extends Controller
             } else {
                 $this->decrement($target->project_tracking_id);
             }
-        } elseif ((boolean)$target->broken != $broken) {
+        } elseif ($target->broken != $broken) {
             if ($broken) {
                 $this->increment($target->project_tracking_id);
             } else {
@@ -478,12 +476,20 @@ class BacklinkController extends Controller
         $target->save();
     }
 
+    /**
+     * @param $project_tracking_id
+     * @return void
+     */
     public function increment($project_tracking_id)
     {
         $article = ProjectTracking::find($project_tracking_id);
         $article->increment('total_broken_link');
     }
 
+    /**
+     * @param $project_tracking_id
+     * @return void
+     */
     public function decrement($project_tracking_id)
     {
         $article = ProjectTracking::find($project_tracking_id);
