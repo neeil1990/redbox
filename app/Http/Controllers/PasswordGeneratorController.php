@@ -39,7 +39,7 @@ class PasswordGeneratorController extends Controller
         if (isset($request->savePassword)) {
             $userPassword = new PasswordsGenerator();
             $userPassword->password = $this->generatePassword($request);
-            $userPassword->user_id = Auth::user()->id;
+            $userPassword->user_id = Auth::id();
             $userPassword->save();
         } else {
             $passwords = array();
@@ -48,7 +48,7 @@ class PasswordGeneratorController extends Controller
             }
             return view('pages.password', ['user' => Auth::user(), 'passwords' => $passwords]);
         }
-        return Redirect::back();
+        return Redirect::route('pages.password');
     }
 
     /**

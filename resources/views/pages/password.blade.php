@@ -12,7 +12,7 @@
     </div>
     <div class="password-generator">
         <div class="d-flex justify-content-between">
-            <form class="col-6" action="{{  route('generate.password') }}" method="post">
+            <form class="col-6" action="{{ route('generate.password') }}" method="post">
                 @csrf
                 <div class="d-flex flex-column">
                     <h3>{{__('Generator settings')}}:</h3>
