@@ -54,17 +54,21 @@ class DomainMonitoringController extends Controller
         /** @var User $user */
         $user = Auth::user();
         // Проверка тарифа
-        if($tariff = $user->tariff())
+        if($tariff = $user->tariff()){
+
             $tariff = $tariff->getAsArray();
+            $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
 
-        $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
-        if(isset($tariff['settings']['domainMonitoringProject']) && $tariff['settings']['domainMonitoringProject'] > 0){
-            if($count >= $tariff['settings']['domainMonitoringProject']){
+            if (array_key_exists('domainMonitoringProject', $tariff['settings'])) {
 
-                //abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['domainMonitoringProject'] . ' проект.');
+                if($count >= $tariff['settings']['domainMonitoringProject']['value']){
 
-                flash()->overlay('Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['domainMonitoringProject'] . ' проект.', ' ')->error();
-                return Redirect::route('domain.monitoring');
+                    //abort(403, $tariff['settings']['domainMonitoringProject']['message']);
+                    if($tariff['settings']['domainMonitoringProject']['message'])
+                        flash()->overlay($tariff['settings']['domainMonitoringProject']['message'], __('Error'))->error();
+
+                    return redirect()->route('domain.monitoring');
+                }
             }
         }
 
