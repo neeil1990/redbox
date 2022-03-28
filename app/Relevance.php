@@ -26,15 +26,15 @@ class Relevance
 
     public $competitorsText;
 
+    public $maxWordLength;
+
     public $ignoredWords;
 
-    public $maxWordLength;
+    public $coverageInfo;
 
     public $wordForms;
 
     public $mainPage;
-
-    public $coverageInfo;
 
     public $params;
 
@@ -68,22 +68,22 @@ class Relevance
     /**
      * @param $link
      */
-    public function getMainPageHtml($link)
+    public function getMainPageHtml()
     {
-        $html = TextAnalyzer::removeHeaders(TextAnalyzer::curlInit($link));
+        $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
         $this->setMainPage($html);
     }
 
     /**
-     * @param $mainPageLink
+     * @return void
      */
-    public function parseSites($mainPageLink)
+    public function parseSites()
     {
         foreach ($this->domains as $item) {
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;
-            $result = mb_strtolower(TextAnalyzer::removeHeaders(TextAnalyzer::curlInit($domain)));
+            $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
             // если ответ от сервера не был получен
             if ($result == '' || $result == null) {
                 $this->sites[] = [
@@ -100,7 +100,7 @@ class Relevance
             $this->params['html_relevance'] .= $result . $this->separator;
             //Если проанализированный домен является посадочной страницей
             $lastItem = array_key_last($this->sites);
-            if ($domain == $mainPageLink) {
+            if ($domain == $this->params['main_page_link']) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$lastItem]['mainPage'] = true;
                 $this->sites[$lastItem]['inRelevance'] = true;
@@ -129,7 +129,7 @@ class Relevance
         $this->processingOfGeneralInformation();
         $this->prepareClouds();
         $this->prepareUnigramTable();
-        $this->calculateCoverage($request->link);
+        $this->calculateCoverage();
         $this->params->save();
     }
 
@@ -147,11 +147,10 @@ class Relevance
     }
 
     /**
-     * @param $link
      * @param $competitorsText
      * @return void
      */
-    public function isMainPageInRelevanceResponse($link, $competitorsText)
+    public function isMainPageInRelevanceResponse($competitorsText)
     {
         if (!$this->mainPageIsRelevance) {
             $mainPageText = Relevance::searchWords(
@@ -163,7 +162,7 @@ class Relevance
             );
             $coverage = $this->calculateCoverageTF($mainPageText);
             $this->sites[] = [
-                'site' => $link,
+                'site' => $this->params['main_page_link'],
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
@@ -252,7 +251,7 @@ class Relevance
     /**
      * @return void
      */
-    public function calculateCoverage($link)
+    public function calculateCoverage()
     {
         $competitorsText = Relevance::searchWords($this->competitorsTextAndLinks);
         $iterator = 0;
@@ -266,7 +265,7 @@ class Relevance
             $this->sites[$iterator]['percentCoverageWords'] = $coverage['count200'] / 2;
             $iterator++;
         }
-        $this->isMainPageInRelevanceResponse($link, $competitorsText);
+        $this->isMainPageInRelevanceResponse($competitorsText);
     }
 
     /**
@@ -678,10 +677,13 @@ class Relevance
     {
         $wordForms = $cloud = [];
         $lingua = new LinguaStem();
-        $wordCount = str_word_count($text);
+        $wordCount = count(explode(" ", $text));
         $array = array_count_values(explode(' ', $text));
         arsort($array);
         $array = array_slice($array, 0, 199);
+        Log::debug('text', [$text]);
+        Log::debug('wordCount', [$wordCount]);
+        Log::debug('array', $array);
         foreach ($array as $key => $item) {
             $tf = round($item / $wordCount, 4);
             $cloud[] = [
@@ -718,7 +720,7 @@ class Relevance
                 break;
             }
         }
-        $wordForms['count'] = 199;
+        $wordForms['count'] = count($wordForms) - 1;
         $collection = collect($wordForms);
 
         return $collection->sortByDesc('weight')->toArray();

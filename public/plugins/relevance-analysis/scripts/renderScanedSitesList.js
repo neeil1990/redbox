@@ -1,6 +1,4 @@
 function renderScanedSitesList(sites, coverageInfo = null) {
-    console.log(sites)
-    console.log(coverageInfo)
     $('.pb-3.sites').show(300)
     let percent200 = coverageInfo['200'] / 100
     let percent600 = coverageInfo['600'] / 100
@@ -28,8 +26,8 @@ function renderScanedSitesList(sites, coverageInfo = null) {
             "<td>" + iterator + "</td>" +
             site +
             "<td>" + value['width'] + "% </td>" +
-            "<td>" + objectPercent200.toFixed(1) + "% <span class='text-muted'>(" + tf200.toFixed(4) + ")</span> </td>" +
-            "<td>" + objectPercent600.toFixed(1) + "% <span class='text-muted'>(" + tf600.toFixed(4) + ")</span> </td>" +
+            "<td data-order='" + objectPercent200 + "'>" + objectPercent200.toFixed(1) + "% <span class='text-muted'>(" + tf200.toFixed(4) + ")</span> </td>" +
+            "<td data-order='" + objectPercent600 + "'>" + objectPercent600.toFixed(1) + "% <span class='text-muted'>(" + tf600.toFixed(4) + ")</span> </td>" +
             "<td>" + value['percentCoverageWords'] + "% </td>" +
             "<td> In progress..</td>" +
             warning +

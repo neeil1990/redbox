@@ -38,7 +38,7 @@ class TextAnalyzerController extends Controller
                 flash()->overlay(__('connection attempt failed'), ' ')->error();
                 return Redirect::back();
             } else {
-                $html = TextAnalyzer::removeHeaders($html);
+                $html = TextAnalyzer::removeStylesAndScripts($html);
                 $response = TextAnalyzer::analyze($html, $request);
             }
         } else {

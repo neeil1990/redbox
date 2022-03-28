@@ -22,7 +22,6 @@ class TextAnalyzer
         curl_setopt($curl, CURLOPT_URL, $link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -164,11 +163,13 @@ class TextAnalyzer
      * @param $html
      * @return string
      */
-    public static function removeHeaders($html): string
+    public static function removeStylesAndScripts($html): string
     {
-        $withoutSubject = explode("\n\r", $html);
-        unset($withoutSubject[0]);
-        return mb_strtolower(implode("\n", $withoutSubject));
+        $html = explode("\n\r", $html);
+        $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
+        $html = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $html);
+
+        return mb_strtolower(implode("\n", $html));
     }
 
     /**

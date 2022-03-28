@@ -12,8 +12,8 @@ function renderClouds(competitors, mainPage, tfCompClouds = null) {
     let f = arrayToObj(mainPage.text)
     let e = arrayToObj(mainPage.textWithLinks)
     let h = arrayToObj(mainPage.totalTf)
-    let l =  arrayToObj(mainPage.textTf)
-    let m =  arrayToObj(mainPage.linkTf)
+    let l = arrayToObj(mainPage.textTf)
+    let m = arrayToObj(mainPage.linkTf)
 
     $("#competitorsLinksCloud").jQCloud(a)
     $("#competitorsTextCloud").jQCloud(d);
@@ -29,7 +29,7 @@ function renderClouds(competitors, mainPage, tfCompClouds = null) {
     $("#mainPageTextTfCloud").jQCloud(l);
     $("#mainPageLinksTfCloud").jQCloud(m);
 
-    if(tfCompClouds !== null){
+    if (tfCompClouds !== null) {
         $('#competitorsTfClouds').show()
         var iterator = 1
         $.each(tfCompClouds, function (key, value) {

@@ -45,13 +45,13 @@ class RelevanceController extends Controller
             $xmlResponse = $xml->getXMLResponse();
 
             $relevance = new Relevance($request->link);
-            $relevance->getMainPageHtml($request->link);
+            $relevance->getMainPageHtml();
             $relevance->removeIgnoredDomains(
                 $request->count,
                 $request->ignoredDomains,
                 $xmlResponse['response']['results']['grouping']['group']
             );
-            $relevance->parseSites($request->link);
+            $relevance->parseSites();
             $relevance->analysis($request);
             return RelevanceController::successResponse($relevance);
         } catch (Exception $e) {
@@ -68,7 +68,7 @@ class RelevanceController extends Controller
         try {
             $relevance = new Relevance($request->link);
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-            $relevance->getMainPageHtml($request->link);
+            $relevance->getMainPageHtml();
             $relevance->setSites($params->sites);
             $relevance->setPages($params->html_relevance);
             $relevance->analysis($request);
@@ -89,7 +89,7 @@ class RelevanceController extends Controller
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
             $relevance->setMainPage($params->html_main_page);
             $relevance->setDomains($params->sites);
-            $relevance->parseSites($params->main_page_link);
+            $relevance->parseSites();
             $relevance->analysis($request);
             return RelevanceController::successResponse($relevance);
         } catch (Exception $e) {
@@ -104,18 +104,17 @@ class RelevanceController extends Controller
     public function testAnalyse(Request $request): JsonResponse
     {
         $xml = new SimplifiedXmlFacade(20, $request->region);
-        $tfCompClouds = [];
         $xml->setQuery($request->phrase);
         $xmlResponse = $xml->getXMLResponse();
 
         $relevance = new Relevance($request->link);
-        $relevance->getMainPageHtml($request->link);
+        $relevance->getMainPageHtml();
         $relevance->removeIgnoredDomains(
             $request->count,
             $request->ignoredDomains,
             $xmlResponse['response']['results']['grouping']['group']
         );
-        $relevance->parseSites($request->link);
+        $relevance->parseSites();
         $relevance->analysis($request);
 //        $relevance->maxWordLength = $request->separator;
 //        $relevance->removeNoIndex($request->noIndex);
@@ -131,6 +130,7 @@ class RelevanceController extends Controller
 //        $relevance->prepareClouds();
 //        $relevance->prepareUnigramTable();
 //        $relevance->calculateCoverage($request->link);
+        $tfCompClouds = [];
         foreach ($relevance->pages as $key => $page) {
             $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
         }
