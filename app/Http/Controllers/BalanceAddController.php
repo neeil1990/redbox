@@ -39,7 +39,7 @@ class BalanceAddController extends Controller
         $params = request()->all();
         $inv_id = $params['InvId'];
         $out_summ = $params['OutSum'];
-        $password = $this->robokassa->getPassword2();
+        $password = $this->robokassa->getPassword();
 
         $crc = strtoupper($params['SignatureValue']);
         $my_crc = strtoupper(md5("$out_summ:$inv_id:$password"));

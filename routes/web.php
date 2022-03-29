@@ -188,7 +188,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
-    Route::get('/balance-add/pays', 'BalanceAddController@pays')->name('balance.add.pays');
+    Route::post('/balance-add/pays', 'BalanceAddController@pays')->name('balance.add.pays');
     Route::resource('balance-add', 'BalanceAddController');
 
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');
