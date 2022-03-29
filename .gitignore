@@ -12,4 +12,5 @@ npm-debug.log
 yarn-error.log
 /.idea
 /public/html
+/public/demo_php/
 /public/*.txt
