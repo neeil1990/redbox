@@ -38,6 +38,7 @@ Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
 Route::get('public/behavior/{id}/check', 'PublicController@checkBehavior')->name('behavior.check');
 Route::post('public/behavior/verify', 'PublicController@verifyBehavior')->name('behavior.verify');
 Route::get('public/behavior/{site}/code', 'PublicController@codeBehavior')->name('behavior.code');
+Route::post('/balance-add/pays', 'BalanceAddController@pays')->name('balance.add.pays');
 
 Route::middleware(['verified'])->group(function () {
 
@@ -188,7 +189,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
-    Route::post('/balance-add/pays', 'BalanceAddController@pays')->name('balance.add.pays');
     Route::resource('balance-add', 'BalanceAddController');
 
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');

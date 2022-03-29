@@ -32,11 +32,12 @@ class BalanceAddController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function pays()
+    public function pays(Request $request)
     {
-        $params = request()->all();
+        $params = $request->all();
         $inv_id = $params['InvId'];
         $out_summ = $params['OutSum'];
         $password = $this->robokassa->getPassword();
