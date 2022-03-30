@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -127,9 +126,10 @@ class Relevance
         $this->separateAllText();
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
-        $this->prepareClouds();
         $this->prepareUnigramTable();
+        $this->prepareClouds();
         $this->calculateCoverage();
+        $this->calculatePoints();
         $this->params->save();
     }
 
@@ -144,37 +144,6 @@ class Relevance
         $this->mainPage['linkText'] = $this->separateText($this->mainPage['linkText']);
         $this->mainPage['hiddenText'] = $this->separateText($this->mainPage['hiddenText']);
         $this->competitorsTextAndLinks = ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
-    }
-
-    /**
-     * @param $competitorsText
-     * @return void
-     */
-    public function isMainPageInRelevanceResponse($competitorsText)
-    {
-        if (!$this->mainPageIsRelevance) {
-            $mainPageText = Relevance::searchWords(
-                Relevance::concatenation([
-                    $this->mainPage['html'],
-                    $this->mainPage['linkText'],
-                    $this->mainPage['hiddenText']
-                ])
-            );
-            $coverage = $this->calculateCoverageTF($mainPageText);
-            $this->sites[] = [
-                'site' => $this->params['main_page_link'],
-                'danger' => false,
-                'mainPage' => true,
-                'inRelevance' => false,
-                'width' => $this->calculateCoveragePercent($mainPageText, $competitorsText),
-                'tf200' => $coverage['total200'],
-                'tf600' => $coverage['total600'],
-                // 200 / 100 == percent = 2
-                'percentCoverageWords' => $coverage['count200'] / 2
-            ];
-        }
-
-        $this->params['sites'] = json_encode($this->sites);
     }
 
     /**
@@ -258,37 +227,68 @@ class Relevance
         foreach ($this->pages as $page) {
             $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $wordsInText = Relevance::searchWords($allText);
-            $coverage = $this->calculateCoverageTF($wordsInText);
-            $this->sites[$iterator]['width'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
-            $this->sites[$iterator]['tf200'] = $coverage['total200'];
-            $this->sites[$iterator]['tf600'] = $coverage['total600'];
-            $this->sites[$iterator]['percentCoverageWords'] = $coverage['count200'] / 2;
+            $this->sites[$iterator]['coverage'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
+            $this->sites[$iterator]['tf'] = $this->calculateCoverageTF($wordsInText);
             $iterator++;
         }
         $this->isMainPageInRelevanceResponse($competitorsText);
     }
 
     /**
-     * @param $wordsInText
-     * @return array
+     * @param $competitorsText
+     * @return void
      */
-    public function calculateCoverageTF($wordsInText): array
+    public function isMainPageInRelevanceResponse($competitorsText)
     {
-        $result['total200'] = $result['count200'] = $result['total600'] = $result['count600'] = 0;
-        foreach ($this->coverageInfo['200'] as $word => $value) {
-            if ($word != 'total') {
-                if (in_array($word, $wordsInText)) {
-                    $result['total200'] += $value;
-                    $result['count200'] += 1;
-                }
-            }
+        if (!$this->mainPageIsRelevance) {
+            $mainPageText = Relevance::searchWords(
+                Relevance::concatenation([
+                    $this->mainPage['html'],
+                    $this->mainPage['linkText'],
+                    $this->mainPage['hiddenText']
+                ])
+            );
+            $this->sites[] = [
+                'site' => $this->params['main_page_link'],
+                'danger' => false,
+                'mainPage' => true,
+                'inRelevance' => false,
+                'coverage' => $this->calculateCoveragePercent($mainPageText, $competitorsText),
+                'tf' => $this->calculateCoverageTF($mainPageText),
+            ];
         }
 
+        $this->params['sites'] = json_encode($this->sites);
+    }
+
+    /**
+     * Расчёт баллов для таблицы "Проанализированные сайты"
+     * @return void
+     */
+    public function calculatePoints()
+    {
+        $avgCoveragePercent = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $avgCoveragePercent += $this->sites[$i]['coverage'] / 10;
+        }
+        foreach ($this->sites as $key => $site) {
+            $points = $this->sites[$key]['coverage'] / ($avgCoveragePercent / 100);
+            $points = min($points, 100);
+            $this->sites[$key]['points'] = round($points, 2);
+        }
+    }
+
+    /**
+     * @param $wordsInText
+     * @return float
+     */
+    public function calculateCoverageTF($wordsInText): float
+    {
+        $result = 0;
         foreach ($this->coverageInfo['600'] as $word => $value) {
             if ($word != 'total') {
                 if (in_array($word, $wordsInText)) {
-                    $result['total600'] += $value;
-                    $result['count600'] += 1;
+                    $result += $value;
                 }
             }
         }
@@ -308,6 +308,7 @@ class Relevance
     }
 
     /**
+     * ищем все уникальные слова в предоставленой строке/тексте
      * @param $string
      * @return array
      */
@@ -401,103 +402,6 @@ class Relevance
     }
 
     /**
-     * Подготовка облаков (http://cavaliercoder.com/jclouds)
-     * @return void
-     */
-    public function prepareClouds()
-    {
-        $mainPage = Relevance::concatenation([
-            $this->mainPage['html'],
-            $this->mainPage['hiddenText'],
-            $this->mainPage['linkText']
-        ]);
-        $textMainPage = Relevance::concatenation([
-            $this->mainPage['html'],
-            $this->mainPage['hiddenText']
-        ]);
-        $this->mainPage['totalTf'] = Relevance::prepareTfCloud($mainPage);
-        $this->mainPage['textTf'] = Relevance::prepareTfCloud($textMainPage);
-        $this->mainPage['linkTf'] = Relevance::prepareTfCloud($this->mainPage['linkText']);
-
-        $this->mainPage['textWithLinks'] = TextAnalyzer::prepareCloud($mainPage);
-        $this->mainPage['text'] = TextAnalyzer::prepareCloud($textMainPage);
-        $this->mainPage['links'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
-
-        $this->competitorsCloud['totalTf'] = Relevance::prepareTFCloud($this->competitorsTextAndLinks);
-        $this->competitorsCloud['textTf'] = Relevance::prepareTFCloud($this->competitorsText);
-        $this->competitorsCloud['linkTf'] = Relevance::prepareTFCloud($this->competitorsLinks);
-
-        $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
-        $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
-        $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
-    }
-
-    /**
-     * Обработка информации для таблицы unigram
-     * @return void
-     */
-    public function processingOfGeneralInformation()
-    {
-        $countSites = count($this->sites);
-        $wordCount = str_word_count($this->competitorsTextAndLinks);
-        foreach ($this->wordForms as $root => $wordForm) {
-            foreach ($wordForm as $word => $item) {
-                $reSpam = 0;
-                $numberTextOccurrences = 0;
-                $numberLinkOccurrences = 0;
-                $numberOccurrences = 0;
-                foreach ($this->pages as $key => $page) {
-                    if (preg_match("/($word)/", $page['html'])) {
-                        $count = substr_count($this->pages[$key]['html'], " $word ");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-                    if (preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
-                        $count = substr_count($this->pages[$key]['hiddenText'], " $word ");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-                    if (preg_match("/($word)/", $this->pages[$key]['linkText'])) {
-                        $count = substr_count($this->pages[$key]['linkText'], " $word ");
-                        $numberLinkOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-
-                    if (preg_match("/($word)/", $this->pages[$key]['html']) ||
-                        preg_match("/($word)/", $this->pages[$key]['linkText']) ||
-                        preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
-                        $numberOccurrences++;
-                    }
-                }
-
-                $tf = round($item / $wordCount, 4);
-                $idf = round(log10($wordCount / $item), 4);
-
-                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
-                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
-                $this->wordForms[$root][$word] = [
-                    'tf' => $tf,
-                    'idf' => $idf,
-                    'numberOccurrences' => $numberOccurrences,
-                    'reSpam' => $reSpam,
-                    'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
-                    'avgInLink' => $numberLinkOccurrences / $countSites,
-                    'avgInText' => $numberTextOccurrences / $countSites,
-                    'repeatInLinkMainPage' => $repeatLinkInMainPage,
-                    'repeatInTextMainPage' => $repeatInTextMainPage,
-                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage
-                ];
-            }
-        }
-    }
-
-    /**
      * @return void
      */
     public function searchWordForms()
@@ -534,13 +438,80 @@ class Relevance
     }
 
     /**
+     * Обработка информации для таблицы unigram
+     * @return void
+     */
+    public function processingOfGeneralInformation()
+    {
+        //TODO САМЫЙ РЕСУРСОЗАТРАТНЫЙ МОМЕНТ - НУЖНО ОПТИМИЗИРОВАТЬ
+        $countSites = count($this->sites);
+        $wordCount = str_word_count($this->competitorsTextAndLinks);
+        foreach ($this->wordForms as $root => $wordForm) {
+            foreach ($wordForm as $word => $item) {
+                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
+                $occurrences = [];
+                foreach ($this->pages as $key => $page) {
+                    if (preg_match("/($word)/", $page['html'])) {
+                        $count = substr_count($this->pages[$key]['html'], " $word ");
+                        $numberTextOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+                    if (preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
+                        $count = substr_count($this->pages[$key]['hiddenText'], " $word ");
+                        $numberTextOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+                    if (preg_match("/($word)/", $this->pages[$key]['linkText'])) {
+                        $count = substr_count($this->pages[$key]['linkText'], " $word ");
+                        $numberLinkOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+
+                    if (preg_match("/($word)/", $this->pages[$key]['html']) ||
+                        preg_match("/($word)/", $this->pages[$key]['linkText']) ||
+                        preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
+                        $numberOccurrences++;
+                        $occurrences[] = $key;
+                    }
+                }
+
+                $tf = round($item / $wordCount, 4);
+                $idf = round(log10($wordCount / $item), 4);
+
+                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
+                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
+                $this->wordForms[$root][$word] = [
+                    'tf' => $tf,
+                    'idf' => $idf,
+                    'numberOccurrences' => $numberOccurrences,
+                    'reSpam' => $reSpam,
+                    'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
+                    'avgInLink' => $numberLinkOccurrences / $countSites,
+                    'avgInText' => $numberTextOccurrences / $countSites,
+                    'repeatInLinkMainPage' => $repeatLinkInMainPage,
+                    'repeatInTextMainPage' => $repeatInTextMainPage,
+                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
+                    'occurrences' => $occurrences
+                ];
+            }
+        }
+    }
+
+    /**
      * @return void
      */
     public function prepareUnigramTable()
     {
-        $this->coverageInfo['total200'] = $this->coverageInfo['total600'] = $iterator = 0;
+        $this->coverageInfo['total'] = $iterator = 0;
         foreach ($this->wordForms as $key => $wordForm) {
-            $tf = $idf = $reSpam = $occurrences = $repeatInText = $repeatInLink = $avgInText = 0;
+            $tf = $idf = $reSpam = $numberOccurrences = $repeatInText = $repeatInLink = $avgInText = 0;
+            $occurrences = [];
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
             foreach ($wordForm as $word) {
                 $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
@@ -553,9 +524,10 @@ class Relevance
                 $repeatInText += $word['repeatInTextMainPage'];
                 $repeatInLink += $word['repeatInLinkMainPage'];
                 $reSpam += $word['reSpam'];
-                if ($word['numberOccurrences'] > $occurrences) {
-                    $occurrences = $word['numberOccurrences'];
+                if ($word['numberOccurrences'] > $numberOccurrences) {
+                    $numberOccurrences = $word['numberOccurrences'];
                 }
+                $occurrences = array_merge($occurrences, $word['occurrences']);
             }
             $this->wordForms[$key]['total'] = [
                 'tf' => $tf,
@@ -566,20 +538,49 @@ class Relevance
                 'repeatInTextMainPage' => $repeatInText,
                 'repeatInLinkMainPage' => $repeatInLink,
                 'totalRepeatMainPage' => $totalRepeatMainPage,
-                'numberOccurrences' => $occurrences,
+                'numberOccurrences' => $numberOccurrences,
                 'reSpam' => $reSpam,
                 'danger' => $danger,
+                'occurrences' => array_values(array_unique($occurrences)),
             ];
-            if ($iterator < 200) {
-                $this->coverageInfo['total200'] = round($this->coverageInfo['total200'] + $tf, 4);
-                $this->coverageInfo['200'][$key] = $tf;
-            }
             if ($iterator < 600) {
-                $this->coverageInfo['total600'] = round($this->coverageInfo['total600'] + $tf, 4);
+                $this->coverageInfo['total'] = round($this->coverageInfo['total'] + $tf, 4);
                 $this->coverageInfo['600'][$key] = $tf;
             }
             $iterator++;
         }
+    }
+
+    /**
+     * Подготовка облаков (http://cavaliercoder.com/jclouds)
+     * @return void
+     */
+    public function prepareClouds()
+    {
+        $mainPage = Relevance::concatenation([
+            $this->mainPage['html'],
+            $this->mainPage['hiddenText'],
+            $this->mainPage['linkText']
+        ]);
+        $textMainPage = Relevance::concatenation([
+            $this->mainPage['html'],
+            $this->mainPage['hiddenText']
+        ]);
+        $this->mainPage['totalTf'] = Relevance::prepareTfCloud($mainPage);
+        $this->mainPage['textTf'] = Relevance::prepareTfCloud($textMainPage);
+        $this->mainPage['linkTf'] = Relevance::prepareTfCloud($this->mainPage['linkText']);
+
+        $this->mainPage['textWithLinks'] = TextAnalyzer::prepareCloud($mainPage);
+        $this->mainPage['text'] = TextAnalyzer::prepareCloud($textMainPage);
+        $this->mainPage['links'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
+
+        $this->competitorsCloud['totalTf'] = Relevance::prepareTFCloud($this->competitorsTextAndLinks);
+        $this->competitorsCloud['textTf'] = Relevance::prepareTFCloud($this->competitorsText);
+        $this->competitorsCloud['linkTf'] = Relevance::prepareTFCloud($this->competitorsLinks);
+
+        $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
+        $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
+        $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
     }
 
     /**
@@ -681,9 +682,6 @@ class Relevance
         $array = array_count_values(explode(' ', $text));
         arsort($array);
         $array = array_slice($array, 0, 199);
-        Log::debug('text', [$text]);
-        Log::debug('wordCount', [$wordCount]);
-        Log::debug('array', $array);
         foreach ($array as $key => $item) {
             $tf = round($item / $wordCount, 4);
             $cloud[] = [

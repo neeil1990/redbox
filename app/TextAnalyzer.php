@@ -150,7 +150,7 @@ class TextAnalyzer
         $text = trim(strip_tags($text));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
         $text = str_replace([
-            "\n", "\t", "\r", "nbsp",
+            "\n", "\t", "\r", "nbsp", "quot",
             "»", "«", ".", ",", "!", "?",
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"

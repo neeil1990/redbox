@@ -588,7 +588,7 @@
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Coverage by all words') }}</th>
                 <th>{{ __('Coverage by tf (top 200)') }}</th>
-                <th>{{ __('Coverage by tf (top 600)') }}</th>
+                <th>{{ __('Coverage by tf') }}</th>
                 <th>{{ __('Coverage by text (top 200)') }}</th>
                 <th>{{ __('Density') }}</th>
                 <th>{{ __('Result') }}</th>
@@ -719,7 +719,7 @@
                 stopProgressBar(interval)
                 removeAllRenderElements()
                 renderUnigramTable(response.unigramTable);
-                renderScanedSitesList(response.sites, response.coverageInfo);
+                renderScannedSitesList(response.sites, response.coverageInfo);
                 renderTextTable(response.avg, response.mainPage)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);

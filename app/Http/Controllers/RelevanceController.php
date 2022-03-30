@@ -116,20 +116,6 @@ class RelevanceController extends Controller
         );
         $relevance->parseSites();
         $relevance->analysis($request);
-//        $relevance->maxWordLength = $request->separator;
-//        $relevance->removeNoIndex($request->noIndex);
-//        $relevance->getHiddenData($request->hiddenText);
-//        $relevance->separateLinksFromText();
-//        $relevance->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
-//        $relevance->removeListWords($request);
-//        $relevance->deleteEverythingExceptCharacters();
-//        $relevance->getTextFromCompetitors();
-//        $relevance->separateAllText();
-//        $relevance->searchWordForms();
-//        $relevance->processingOfGeneralInformation();
-//        $relevance->prepareClouds();
-//        $relevance->prepareUnigramTable();
-//        $relevance->calculateCoverage($request->link);
         $tfCompClouds = [];
         foreach ($relevance->pages as $key => $page) {
             $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
@@ -185,10 +171,7 @@ class RelevanceController extends Controller
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
             'tfCompClouds' => $tfCompClouds ?? null,
-            'coverageInfo' => [
-                '200' => $relevance->coverageInfo['total200'],
-                '600' => $relevance->coverageInfo['total600'],
-            ],
+            'coverageInfo' => $relevance->coverageInfo['total'],
         ]);
     }
 

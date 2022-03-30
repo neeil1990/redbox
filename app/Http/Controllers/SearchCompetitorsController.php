@@ -27,7 +27,7 @@ class SearchCompetitorsController extends Controller
      */
     public function index()
     {
-        return view('search-competitors.index');
+        return view('competitor-analysis.index');
     }
 
     /**

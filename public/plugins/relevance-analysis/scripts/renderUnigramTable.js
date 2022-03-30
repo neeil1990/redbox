@@ -219,6 +219,7 @@ function renderUnigramTable(unigramTable) {
 }
 
 function renderMainTr(tBody, key, wordWorm) {
+    let occurrences = wordWorm['total']['occurrences']
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
     let tf = crop(wordWorm['total']['tf'])
     let idf = crop(wordWorm['total']['idf'])
@@ -241,7 +242,15 @@ function renderMainTr(tBody, key, wordWorm) {
         "<td>" + key + "</td>" +
         "<td>" + tf + "</td>" +
         "<td>" + idf + "</td>" +
-        "<td>" + numberOccurrences + "</td>" +
+        "<td>" + numberOccurrences + "" +
+        "<span class='__helper-link ui_tooltip_w'>" +
+        "    <i class='fa fa-question-circle'></i>" +
+        "    <span class='ui_tooltip __left'>" +
+        "        <span class='ui_tooltip_content'>" + occurrences.join("<br>") + "</span>" +
+        "    </span>" +
+        "</span>" +
+
+        "</td>" +
         "<td>" + reSpam + "</td>" +
 
         "<td>" + avgInTotalCompetitors + "</td>" +
@@ -257,6 +266,7 @@ function renderMainTr(tBody, key, wordWorm) {
 }
 
 function renderChildTr(elem, key, word, stats) {
+    let occurrences = stats['occurrences']
     if (word === 'total') {
         return;
     }
@@ -289,7 +299,15 @@ function renderChildTr(elem, key, word, stats) {
         "<td>" + word + "</td>" +
         "<td>" + tf + "</td>" +
         "<td>" + idf + "</td>" +
-        "<td>" + numberOccurrences + "</td>" +
+        "<td>" + numberOccurrences + "" +
+        "<span class='__helper-link ui_tooltip_w'>" +
+        "    <i class='fa fa-question-circle'></i>" +
+        "    <span class='ui_tooltip __left'>" +
+        "        <span class='ui_tooltip_content'>" + occurrences.join("<br>") + "</span>" +
+        "    </span>" +
+        "</span>" +
+
+        "</td>" +
         "<td>" + reSpam + "</td>" +
         "<td>" + avgInTotalCompetitors + "</td>" +
         "<td " + bgTotalWarn + ">" + totalRepeatMainPage + "</td>" +

@@ -1,15 +1,12 @@
-function renderScanedSitesList(sites, coverageInfo = null) {
+function renderScannedSitesList(sites, coverageInfo = null) {
     $('.pb-3.sites').show(300)
-    let percent200 = coverageInfo['200'] / 100
-    let percent600 = coverageInfo['600'] / 100
+    let percent = coverageInfo / 100
     let site
     let iterator = 1;
     let tbody = $('#scaned-sites-tbody')
     $.each(sites, function (key, value) {
-        let tf200 = value['tf200']
-        let objectPercent200 = tf200 / percent200
-        let tf600 = value['tf600']
-        let objectPercent600 = tf600 / percent600
+        let tf = value['tf']
+        let objectPercent = tf / percent
         let warning = value['danger']
             ? "<td class='bg-warning'> Не удалось получить данные со страницы </td>"
             : "<td> Страница успешно проанализирована </td>"
@@ -25,11 +22,10 @@ function renderScanedSitesList(sites, coverageInfo = null) {
             "<tr class='render'>" +
             "<td>" + iterator + "</td>" +
             site +
-            "<td>" + value['width'] + "% </td>" +
-            "<td data-order='" + objectPercent200 + "'>" + objectPercent200.toFixed(1) + "% <span class='text-muted'>(" + tf200.toFixed(4) + ")</span> </td>" +
-            "<td data-order='" + objectPercent600 + "'>" + objectPercent600.toFixed(1) + "% <span class='text-muted'>(" + tf600.toFixed(4) + ")</span> </td>" +
-            "<td>" + value['percentCoverageWords'] + "% </td>" +
+            "<td>" + value['coverage'] + "% </td>" +
+            "<td data-order='" + objectPercent + "'>" + objectPercent.toFixed(1) + "% <span class='text-muted'>(" + tf.toFixed(4) + ")</span> </td>" +
             "<td> In progress..</td>" +
+            "<td>" + value['points'] + "</td>" +
             warning +
             "</tr>"
         )
@@ -43,12 +39,5 @@ function renderScanedSitesList(sites, coverageInfo = null) {
             "searching": true,
         });
     });
-
-    if (coverageInfo !== null) {
-        $('#total200tf').html(
-            "<p>" + "<span>Общая сумма tf (топ 200): </span>" + coverageInfo['200'] + "</p>" +
-            "<p>" + "<span>Общая сумма tf (топ 600): </span>" + coverageInfo['600'] + "</p>"
-        )
-    }
 }
 

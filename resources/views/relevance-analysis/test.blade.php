@@ -293,8 +293,10 @@
     <div class="pb-3 clouds" style="display:none;">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
-            <u id="tf-idf-clouds" style="cursor: pointer">Облака tf-idf</u>
-            <div class="tf-idf-clouds">
+            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3" style="cursor: pointer">Облака
+                tf-idf
+            </button>
+            <div class="tf-idf-clouds" style="display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
@@ -326,8 +328,10 @@
                     </div>
                 </div>
             </div>
-            <u id="text-clouds" style="cursor: pointer">Облака текста</u>
-            <div class="text-clouds">
+            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5" style="cursor: pointer;">Облака
+                текста
+            </button>
+            <div class="text-clouds" style=" display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Competitors Link Zone') }}</span>
@@ -430,7 +434,7 @@
                     </div>
                 </th>
             </tr>
-            <tr>
+            <tr style="position: relative; z-index: 100">
                 <th></th>
                 <th>
                     {{ __('Words') }}
@@ -558,23 +562,21 @@
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Coverage by all words') }}</th>
-                <th>{{ __('Coverage by tf (top 200)') }}</th>
-                <th>{{ __('Coverage by tf (top 600)') }}</th>
-                <th>{{ __('Coverage by text (top 200)') }}</th>
+                <th>{{ __('Coverage by tf') }}</th>
                 <th>{{ __('Density') }}</th>
+                <th>{{ __('Points') }}</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
             <tbody id="scaned-sites-tbody">
             </tbody>
         </table>
-        <div id="total200tf">
-
-        </div>
     </div>
     <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
-        <h3>Облака tf-idf (топ 200) слов конкурентов</h3>
-        <div style="display:flex; flex-wrap: wrap" id="clouds">
+        <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">Облака tf-idf (топ 200) слов
+            конкурентов
+        </button>
+        <div style="display: none" id="coverage-clouds" class="pt-2">
         </div>
     </div>
     @slot('js')
@@ -626,7 +628,7 @@
                 stopProgressBar(interval)
                 removeAllRenderElements()
                 renderUnigramTable(response.unigramTable);
-                renderScanedSitesList(response.sites, response.coverageInfo);
+                renderScannedSitesList(response.sites, response.coverageInfo);
                 renderTextTable(response.avg, response.mainPage)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);

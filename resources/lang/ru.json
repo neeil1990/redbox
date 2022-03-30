@@ -727,7 +727,6 @@
     "TF-idf values of landing page links": "Значения tf-idf ссылок посадочной страницы",
     "Position in the top": "Позиция в топе",
     "Coverage by all words": "Охват по всем словам",
-    "Coverage by text (top 200)": "Охват по тексту (топ 200)",
-    "Coverage by tf (top 200)": "Охват по tf (топ 200)",
-    "Coverage by tf (top 600)": "Охват по tf (топ 600)"
+    "Coverage by tf": "Охват по tf",
+    "Points": "Баллы"
 }
