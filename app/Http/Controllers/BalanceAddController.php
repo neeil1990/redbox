@@ -41,6 +41,7 @@ class BalanceAddController extends Controller
         $params = $request->all();
         Log::debug($params);
 
+        echo "OK$params[InvId]\n";
         exit();
 
         $inv_id = $params['InvId'];
