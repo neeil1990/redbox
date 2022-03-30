@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Balance;
 use App\Classes\Pay\Robokassa\RobokassaPay;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -45,16 +46,17 @@ class BalanceAddController extends Controller
         }
 
         $invId = $params["InvId"];
-        $pay = Auth::user()->balances()->where('id', $invId);
-        if($pay->count()){
 
-            $result = $pay->update([
+        $balance = Balance::where('id', $invId);
+        if($balance->count()){
+
+            $result = $balance->update([
                 'source' => $params["PaymentMethod"],
                 'status' => 1
             ]);
 
             if($result){
-                $this->addBalanceUser($pay->first());
+                $this->addBalanceToUser($balance->first());
                 echo "OK$invId\n";
             }
         }
@@ -87,9 +89,9 @@ class BalanceAddController extends Controller
         return redirect($this->robokassa->action());
     }
 
-    protected function addBalanceUser(Balance $balance)
+    protected function addBalanceToUser(Balance $balance)
     {
-        $user = Auth::user();
+        $user = User::find($balance->user_id);
         $user->increment('balance', $balance->sum);
     }
 
