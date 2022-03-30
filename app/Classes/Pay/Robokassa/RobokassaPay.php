@@ -6,6 +6,7 @@ namespace App\Classes\Pay\Robokassa;
 
 use App\Classes\Pay\Pay;
 use \Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Request;
 
 class RobokassaPay extends Pay
 {
@@ -39,10 +40,15 @@ class RobokassaPay extends Pay
         $this->setParams('MrchLogin',$this->login);
     }
 
-    public function pays(){
+    public function action(){
         $this->setParams('SignatureValue', $this->signature());
 
         return implode('?', [$this->url, $this->httpBuild()]);
+    }
+
+    public function result(Request $request)
+    {
+
     }
 
     protected function httpBuild()

@@ -6,6 +6,7 @@ use App\Balance;
 use App\Classes\Pay\Robokassa\RobokassaPay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BalanceAddController extends Controller
 {
@@ -38,6 +39,10 @@ class BalanceAddController extends Controller
     public function pays(Request $request)
     {
         $params = $request->all();
+        Log::debug($params);
+
+        exit();
+
         $inv_id = $params['InvId'];
         $out_summ = $params['OutSum'];
         $password = $this->robokassa->getPassword();
@@ -87,7 +92,7 @@ class BalanceAddController extends Controller
         $this->robokassa->setParams('InvId', $balance->id);
         $this->robokassa->setParams('OutSum', $sum);
 
-        return redirect($this->robokassa->pays());
+        return redirect($this->robokassa->action());
     }
 
     protected function addBalanceUser(Balance $balance)
