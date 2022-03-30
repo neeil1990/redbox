@@ -38,8 +38,6 @@ class BalanceAddController extends Controller
     {
         $params = $request->all();
 
-        Log::debug($params);
-
         if(!$this->robokassa->checkOut($params)){
             echo "bad sign\n";
             exit();
