@@ -31,40 +31,31 @@ class BalanceAddController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
-    public function pays(Request $request)
+    public function result(Request $request)
     {
         $params = $request->all();
+
         Log::debug($params);
 
-        echo "OK$params[InvId]\n";
-        exit();
+        if(!$this->robokassa->checkOut($params)){
+            echo "bad sign\n";
+            exit();
+        }
 
-        $inv_id = $params['InvId'];
-        $out_summ = $params['OutSum'];
-        $password = $this->robokassa->getPassword();
-
-        $crc = strtoupper($params['SignatureValue']);
-        $my_crc = strtoupper(md5("$out_summ:$inv_id:$password"));
-
-        if ($my_crc != $crc)
-            return redirect()->route('balance-add.index');
-
-        $pay = Auth::user()->balances()->where('id', $inv_id);
+        $invId = $params["InvId"];
+        $pay = Auth::user()->balances()->where('id', $invId);
         if($pay->count()){
 
             $result = $pay->update([
-                'source' => __('ROBOKASSA'),
+                'source' => $params["PaymentMethod"],
                 'status' => 1
             ]);
 
             if($result){
                 $this->addBalanceUser($pay->first());
-                return redirect()->route('balance.index');
+                echo "OK$invId\n";
             }
         }
     }

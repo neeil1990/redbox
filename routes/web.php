@@ -38,7 +38,7 @@ Route::get('public/http-headers/{id}', 'PublicController@httpHeaders');
 Route::get('public/behavior/{id}/check', 'PublicController@checkBehavior')->name('behavior.check');
 Route::post('public/behavior/verify', 'PublicController@verifyBehavior')->name('behavior.verify');
 Route::get('public/behavior/{site}/code', 'PublicController@codeBehavior')->name('behavior.code');
-Route::post('/balance-add/pays', 'BalanceAddController@pays')->name('balance.add.pays');
+Route::post('/balance-add/result', 'BalanceAddController@result')->name('balance.add.result');
 
 Route::middleware(['verified'])->group(function () {
 

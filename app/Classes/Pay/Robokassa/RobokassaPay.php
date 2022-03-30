@@ -6,7 +6,6 @@ namespace App\Classes\Pay\Robokassa;
 
 use App\Classes\Pay\Pay;
 use \Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Request;
 
 class RobokassaPay extends Pay
 {
@@ -46,9 +45,20 @@ class RobokassaPay extends Pay
         return implode('?', [$this->url, $this->httpBuild()]);
     }
 
-    public function result(Request $request)
+    public function checkOut(array $params)
     {
+        $out_summ = $params['OutSum'];
+        $inv_id = $params['InvId'];
 
+        $password = $this->getPassword2();
+
+        $crc = $params['SignatureValue'];
+        $my_crc = strtoupper(md5("$out_summ:$inv_id:$password"));
+
+        if ($my_crc != $crc)
+            return false;
+
+        return true;
     }
 
     protected function httpBuild()
