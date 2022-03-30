@@ -8,4 +8,10 @@
             <span class="badge badge-warning navbar-badge news" style="right: 0 !important;">0</span>
         </a>
     </li>
+    <li>
+        <a class="nav-link" href="mailto:sv@prime-ltd.su">
+            <span>{{ __('Support') }}</span>
+            <i class="fas fa-headset"></i>
+        </a>
+    </li>
 </ul>
