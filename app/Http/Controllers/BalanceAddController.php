@@ -22,16 +22,6 @@ class BalanceAddController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('balance-add.index');
-    }
-
-    /**
      * @param Request $request
      */
     public function result(Request $request)
