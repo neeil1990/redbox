@@ -47,7 +47,7 @@
     </div>
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message">{{ __("The 'keyword' and 'landing page' fields should not be empty") }}</div>
+            <div class="toast-message">{{ __("The keyword and landing page fields should not be empty") }}</div>
         </div>
     </div>
     <div class="col-5 pb-3">

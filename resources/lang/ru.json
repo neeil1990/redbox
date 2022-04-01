@@ -665,7 +665,7 @@
     "When you create a project, you need to manually add the localization text to the item": "Когда вы создаёте сервис, нужно вручную добавить текст в локализации в пункте",
     "######################## Пользователи https://lk.redbox.su/analyze-relevance ###############################": "",
     "An error has occurred, repeat the request.": "Произошла ошибка, повторите запрос.",
-    "The 'keyword' and 'landing page' fields should not be empty": "Поле 'ключевая фраза' и 'посадочная страница' не должны быть пустыми",
+    "The keyword and landing page fields should not be empty": "Ключевая фраза и посадочная страница не должны быть пустыми",
     "Your landing page": "Ваша посадочная страница",
     "Ignored domains": "Игнорируемые домены",
     "Full analysis": "Полный анализ",

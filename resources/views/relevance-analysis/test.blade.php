@@ -47,7 +47,7 @@
     </div>
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message">{{ __("The 'keyword' and 'landing page' fields should not be empty") }}</div>
+            <div class="toast-message">{{ __("The keyword and landing page fields should not be empty") }}</div>
         </div>
     </div>
     <div class="col-5 pb-3">
@@ -298,38 +298,47 @@
             </button>
             <div class="tf-idf-clouds" style="display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
                         <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
                     </div>
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('TF-idf values of links and landing page text') }}</span>
                         <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
                     </div>
+
                 </div>
                 <div class="d-lg-flex mt-4 justify-content-around">
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of competitors text') }}</span>
                         <div style="height: 350px" id="competitorsTextTfCloud" class="generated-cloud"></div>
                     </div>
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('TF-idf values of the landing page text') }}</span>
                         <div style="height: 350px" id="mainPageTextTfCloud" class="generated-cloud"></div>
                     </div>
+
                 </div>
                 <div class="d-lg-flex mt-4 justify-content-around">
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of competitor links') }}</span>
                         <div style="height: 350px" id="competitorsLinksTfCloud" class="generated-cloud"></div>
                     </div>
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('TF-idf values of landing page links') }}</span>
                         <div style="height: 350px" id="mainPageLinksTfCloud" class="generated-cloud"></div>
                     </div>
+
                 </div>
             </div>
-            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5" style="cursor: pointer;">Облака
-                текста
+            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5" style="cursor: pointer;">
+                Облака текста
             </button>
             <div class="text-clouds" style=" display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -580,12 +589,12 @@
         </div>
     </div>
     @slot('js')
-        <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
-        <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
+        <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
+        <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
         <script>
             $('#full-analyse').click(() => {
                 if (validate()) {
@@ -728,7 +737,7 @@
                 }
             })
         </script>
-        <script>
+        <script defer>
             var $jscomp = $jscomp || {};
             $jscomp.scope = {}, $jscomp.findInternal = function (t, e, n) {
                 t instanceof String && (t = String(t));
