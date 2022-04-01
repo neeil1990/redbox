@@ -3,30 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Balance;
+use App\Classes\Pay\Robokassa\RobokassaPay;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BalanceAddController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
+    private $robokassa;
 
-        return view('balance-add.index');
+    public function __construct()
+    {
+        $this->robokassa = new RobokassaPay();
+
+        $this->robokassa->setParams('IsTest', 1);
+        $this->robokassa->setParams('Desc', 'Redbox.su');
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
      */
-    public function create()
+    public function result(Request $request)
     {
-        //
+        $params = $request->all();
+
+        if(!$this->robokassa->checkOut($params)){
+            echo "bad sign\n";
+            exit();
+        }
+
+        $invId = $params["InvId"];
+
+        $balance = Balance::where('id', $invId);
+        if($balance->count()){
+
+            $result = $balance->update([
+                'source' => $params["PaymentMethod"],
+                'status' => 1
+            ]);
+
+            if($result){
+                $this->addBalanceToUser($balance->first());
+                echo "OK$invId\n";
+            }
+        }
     }
 
     /**
@@ -46,19 +67,19 @@ class BalanceAddController extends Controller
 
         $balance = Auth::user()->balances()->create([
             'sum' => $sum,
-            'source' => 'Sber',
-            'status' => true
+            'source' => __('Unknown source'),
+            'status' => 0
         ]);
 
-        if($balance)
-            $this->addBalanceUser($balance);
+        $this->robokassa->setParams('InvId', $balance->id);
+        $this->robokassa->setParams('OutSum', $sum);
 
-        return redirect()->route('profile.index');
+        return redirect($this->robokassa->action());
     }
 
-    protected function addBalanceUser(Balance $balance)
+    protected function addBalanceToUser(Balance $balance)
     {
-        $user = Auth::user();
+        $user = User::find($balance->user_id);
         $user->increment('balance', $balance->sum);
     }
 
