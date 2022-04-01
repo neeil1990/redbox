@@ -197,11 +197,3 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
-
-
-Route::get('/bla-bla', function () {
-    $test = [1, 2, 3, 4];
-    $test2 = [1, 2, 3, 5];
-    $test3 = [1, 2, 3, 5, 6];
-    dd(array_values(array_unique(array_merge($test, $test2, $test3))));
-});

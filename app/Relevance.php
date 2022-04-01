@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -35,9 +36,11 @@ class Relevance
 
     public $mainPage;
 
-    public $params;
-
     public $domains;
+
+    public $density = [];
+
+    public $params;
 
     public $pages;
 
@@ -130,7 +133,32 @@ class Relevance
         $this->prepareClouds();
         $this->calculateCoverage();
         $this->calculatePoints();
+        $this->calculateDensity();
         $this->params->save();
+    }
+
+    public function calculateDensity()
+    {
+        $iterator = 0;
+        foreach ($this->pages as $page) {
+            $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $this->sites[$iterator]['density'] = 0;
+            foreach ($this->density as $word => $value) {
+                if (preg_match("/($word)/", $allText)) {
+                    $count = substr_count($allText, " $word ");
+                    $points = min($count / ($value / 100), 100);
+                    $this->sites[$iterator]['density'] += $points;
+                }
+            }
+
+            $iterator++;
+        }
+
+        for ($i = 0; $i < count($this->sites); $i++) {
+            $this->sites[$i]['density'] = round($this->sites[$i]['density'] / 600);
+        }
+
+        Log::debug('sites', $this->sites);
     }
 
     /**
@@ -511,8 +539,8 @@ class Relevance
         $this->coverageInfo['total'] = $iterator = 0;
         foreach ($this->wordForms as $key => $wordForm) {
             $tf = $idf = $reSpam = $numberOccurrences = $repeatInText = $repeatInLink = $avgInText = 0;
-            $occurrences = [];
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
+            $occurrences = [];
             foreach ($wordForm as $word) {
                 $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
                 $tf += $word['tf'];
@@ -543,6 +571,7 @@ class Relevance
                 'danger' => $danger,
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
+            $this->density[$key] = $avgInTotalCompetitors;
             if ($iterator < 600) {
                 $this->coverageInfo['total'] = round($this->coverageInfo['total'] + $tf, 4);
                 $this->coverageInfo['600'][$key] = $tf;

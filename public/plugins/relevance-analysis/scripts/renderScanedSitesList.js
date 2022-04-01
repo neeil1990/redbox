@@ -34,17 +34,17 @@ function renderScannedSitesList(sites, coverageInfo = null) {
         } else {
             background = ''
         }
-            tbody.append(
-                "<tr class='render'>" +
-                "<td>" + iterator + "</td>" +
-                "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
-                "<td>" + value['coverage'] + "% </td>" +
-                "<td data-order='" + objectPercent + "'>" + objectPercent.toFixed(1) + "% </td>" +
-                "<td> In progress..</td>" +
-                "<td>" + value['points'] + "</td>" +
-                warning +
-                "</tr>"
-            )
+        tbody.append(
+            "<tr class='render'>" +
+            "<td>" + iterator + "</td>" +
+            "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
+            "<td>" + value['coverage'] + "% </td>" +
+            "<td data-order='" + objectPercent + "'>" + objectPercent.toFixed(1) + "% </td>" +
+            "<td>" + value['density'] + "</td>" +
+            "<td>" + value['points'] + "</td>" +
+            warning +
+            "</tr>"
+        )
         iterator++
     });
 
@@ -60,7 +60,7 @@ function renderScannedSitesList(sites, coverageInfo = null) {
         let url = new URL($(this).attr('data-target'))
         let textarea = $('.form-control.ignoredDomains')
         let string = textarea.val()
-        if(!string.includes(url.hostname)){
+        if (!string.includes(url.hostname)) {
             textarea.val(textarea.val() + url.hostname + "\n")
         }
     });
