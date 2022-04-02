@@ -322,41 +322,54 @@
     <div class="pb-3 clouds" style="display:none;">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
-            <u id="tf-idf-clouds" style="cursor: pointer">Облака tf-idf</u>
-            <div class="tf-idf-clouds">
+            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3" style="cursor: pointer">Облака
+                tf-idf
+            </button>
+            <div class="tf-idf-clouds" style="display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
                         <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
                     </div>
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('TF-idf values of links and landing page text') }}</span>
                         <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
                     </div>
+
                 </div>
                 <div class="d-lg-flex mt-4 justify-content-around">
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of competitors text') }}</span>
                         <div style="height: 350px" id="competitorsTextTfCloud" class="generated-cloud"></div>
                     </div>
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('TF-idf values of the landing page text') }}</span>
                         <div style="height: 350px" id="mainPageTextTfCloud" class="generated-cloud"></div>
                     </div>
+
                 </div>
                 <div class="d-lg-flex mt-4 justify-content-around">
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Average tf-idf values of competitor links') }}</span>
                         <div style="height: 350px" id="competitorsLinksTfCloud" class="generated-cloud"></div>
                     </div>
+
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('TF-idf values of landing page links') }}</span>
                         <div style="height: 350px" id="mainPageLinksTfCloud" class="generated-cloud"></div>
                     </div>
+
                 </div>
             </div>
-            <u id="text-clouds" style="cursor: pointer">Облака текста</u>
-            <div class="text-clouds">
+            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5" style="cursor: pointer;">
+                Облака текста
+            </button>
+            <div class="text-clouds" style=" display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
                     <div class="col-lg-5 col-md-10">
                         <span>{{ __('Competitors Link Zone') }}</span>
@@ -459,7 +472,7 @@
                     </div>
                 </th>
             </tr>
-            <tr>
+            <tr style="position: relative; z-index: 100">
                 <th></th>
                 <th>
                     {{ __('Words') }}
@@ -587,9 +600,8 @@
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Coverage by all words') }}</th>
-                <th>{{ __('Coverage by tf (top 200)') }}</th>
                 <th>{{ __('Coverage by tf') }}</th>
-                <th>{{ __('Coverage by text (top 200)') }}</th>
+                <th>{{ __('Width') }}</th>
                 <th>{{ __('Density') }}</th>
                 <th>{{ __('Result') }}</th>
             </tr>
@@ -597,6 +609,13 @@
             <tbody id="scaned-sites-tbody">
             </tbody>
         </table>
+    </div>
+    <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
+        <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">Облака tf-idf (топ 200) слов
+            конкурентов
+        </button>
+        <div style="display: none" id="coverage-clouds" class="pt-2">
+        </div>
     </div>
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
@@ -724,7 +743,7 @@
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
-                renderClouds(response.clouds.competitors, response.clouds.mainPage);
+                renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds);
             }
 
             function errorRequest(interval) {

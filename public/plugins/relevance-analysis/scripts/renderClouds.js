@@ -1,4 +1,4 @@
-function renderClouds(competitors, mainPage, tfCompClouds = null) {
+function renderClouds(competitors, mainPage, tfCompClouds) {
     sessionStorage.setItem('competitors', JSON.stringify(competitors))
     sessionStorage.setItem('mainPage', JSON.stringify(mainPage))
     sessionStorage.setItem('tfCompClouds', JSON.stringify(tfCompClouds))
