@@ -4,9 +4,6 @@ function renderTextTable(avg, mainPage) {
     $('#avgCountWords').html(Math.round(avg.countWords))
     $('#mainPageCountWords').html(Math.round(mainPage.countWords))
 
-    // $('#avgCountSpaces').html(Math.round(avg.countSpaces))
-    // $('#mainPageCountSpaces').html(Math.round(mainPage.countSpaces))
-
     $('#avgCountSymbols').html(Math.round(avg.countSymbols))
     $('#mainPageCountSymbols').html(Math.round(mainPage.countSymbols))
 

@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Classes\Xml\SimplifiedXmlFacade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -22,6 +21,8 @@ class Relevance
     public $competitorsCloud = [];
 
     public $competitorsTextCloud;
+
+    public $tfCompClouds = [];
 
     public $competitorsLinks;
 
@@ -69,7 +70,7 @@ class Relevance
     }
 
     /**
-     * @param $link
+     * @return void
      */
     public function getMainPageHtml()
     {
@@ -620,6 +621,10 @@ class Relevance
         $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
         $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
         $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
+
+        foreach ($this->pages as $key => $page) {
+            $this->tfCompClouds[$key] = $this->prepareTfCloud($this->separateText($page['html'] . ' ' . $page['linkText']));
+        }
     }
 
     /**

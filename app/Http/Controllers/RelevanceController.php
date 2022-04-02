@@ -116,20 +116,15 @@ class RelevanceController extends Controller
         );
         $relevance->parseSites();
         $relevance->analysis($request);
-        $tfCompClouds = [];
-        foreach ($relevance->pages as $key => $page) {
-            $tfCompClouds[$key] = $relevance->prepareTfCloud($relevance->separateText($page['html'] . ' ' . $page['linkText']));
-        }
 
-        return RelevanceController::successResponse($relevance, $tfCompClouds);
+        return RelevanceController::successResponse($relevance);
     }
 
     /**
      * @param $relevance
-     * @param null $tfCompClouds
      * @return JsonResponse
      */
-    public function successResponse($relevance, $tfCompClouds = null): JsonResponse
+    public function successResponse($relevance): JsonResponse
     {
         $count = count($relevance->sites);
         $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
@@ -170,7 +165,7 @@ class RelevanceController extends Controller
             ],
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
-            'tfCompClouds' => $tfCompClouds ?? null,
+            'tfCompClouds' => $relevance->tfCompClouds,
             'coverageInfo' => $relevance->coverageInfo['total'],
         ]);
     }

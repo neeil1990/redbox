@@ -589,12 +589,12 @@
         </div>
     </div>
     @slot('js')
-        <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
-        <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
+        <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
         <script>
             $('#full-analyse').click(() => {
                 if (validate()) {
