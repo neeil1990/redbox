@@ -40,8 +40,8 @@ function renderScannedSitesList(sites, coverageInfo = null) {
             "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + objectPercent + "'>" + objectPercent.toFixed(1) + "% </td>" +
+            "<td>" + value['width'] + "</td>" +
             "<td>" + value['density'] + "</td>" +
-            "<td>" + value['points'] + "</td>" +
             warning +
             "</tr>"
         )

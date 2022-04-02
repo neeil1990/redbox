@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Classes\Xml\SimplifiedXmlFacade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -134,31 +135,50 @@ class Relevance
         $this->calculateCoverage();
         $this->calculatePoints();
         $this->calculateDensity();
+        $this->params['sites'] = json_encode($this->sites);
         $this->params->save();
     }
 
+    /**
+     * @return void
+     */
     public function calculateDensity()
     {
         $iterator = 0;
+        Log::debug('pages', [count($this->pages)]);
+        Log::debug('sites', [count($this->sites)]);
         foreach ($this->pages as $page) {
             $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $this->sites[$iterator]['density'] = 0;
-            foreach ($this->density as $word => $value) {
-                if (preg_match("/($word)/", $allText)) {
-                    $count = substr_count($allText, " $word ");
-                    $points = min($count / ($value / 100), 100);
-                    $this->sites[$iterator]['density'] += $points;
-                }
-            }
-
+            $this->sites[$iterator]['density'] = $this->calculateDensityPoinst($allText);
             $iterator++;
         }
 
-        for ($i = 0; $i < count($this->sites); $i++) {
-            $this->sites[$i]['density'] = round($this->sites[$i]['density'] / 600);
+        if (!$this->mainPageIsRelevance) {
+            $mainPageText = Relevance::concatenation([
+                $this->mainPage['html'],
+                $this->mainPage['linkText'],
+                $this->mainPage['hiddenText']
+            ]);
+            $this->sites[$this->params['main_page_link']]['density'] = $this->calculateDensityPoinst($mainPageText);
+        }
+    }
+
+    /**
+     * @param $text
+     * @return float
+     */
+    public function calculateDensityPoinst($text): float
+    {
+        $allPoints = 0;
+        foreach ($this->density as $word => $value) {
+            if (preg_match("/($word)/", $text)) {
+                $count = substr_count($text, " $word ");
+                $points = min($count / ($value / 100), 100);
+                $allPoints += $points;
+            }
         }
 
-        Log::debug('sites', $this->sites);
+        return round($allPoints / 600);
     }
 
     /**
@@ -259,15 +279,7 @@ class Relevance
             $this->sites[$iterator]['tf'] = $this->calculateCoverageTF($wordsInText);
             $iterator++;
         }
-        $this->isMainPageInRelevanceResponse($competitorsText);
-    }
 
-    /**
-     * @param $competitorsText
-     * @return void
-     */
-    public function isMainPageInRelevanceResponse($competitorsText)
-    {
         if (!$this->mainPageIsRelevance) {
             $mainPageText = Relevance::searchWords(
                 Relevance::concatenation([
@@ -276,7 +288,7 @@ class Relevance
                     $this->mainPage['hiddenText']
                 ])
             );
-            $this->sites[] = [
+            $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
                 'mainPage' => true,
@@ -285,8 +297,6 @@ class Relevance
                 'tf' => $this->calculateCoverageTF($mainPageText),
             ];
         }
-
-        $this->params['sites'] = json_encode($this->sites);
     }
 
     /**
@@ -302,7 +312,7 @@ class Relevance
         foreach ($this->sites as $key => $site) {
             $points = $this->sites[$key]['coverage'] / ($avgCoveragePercent / 100);
             $points = min($points, 100);
-            $this->sites[$key]['points'] = round($points, 2);
+            $this->sites[$key]['width'] = round($points, 2);
         }
     }
 

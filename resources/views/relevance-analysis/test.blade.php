@@ -572,8 +572,8 @@
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Coverage by all words') }}</th>
                 <th>{{ __('Coverage by tf') }}</th>
+                <th>{{ __('Width') }}</th>
                 <th>{{ __('Density') }}</th>
-                <th>{{ __('Points') }}</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
