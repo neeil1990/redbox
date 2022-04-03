@@ -310,7 +310,7 @@
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
             <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3" style="cursor: pointer">
-                Средние значения tf-idf у конкурентов и посадочной страницы
+                Облака tf-idf сайтов из топа и посадочной страницы
             </button>
             <div class="tf-idf-clouds" style="display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -354,7 +354,7 @@
                 </div>
             </div>
             <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5" style="cursor: pointer;">
-                Среднее количество употребляемых слов в ссылках у конкурентов и у посадочной страницы
+                Облака текста сайтов из топа и посадочной страницы
             </button>
             <div class="text-clouds" style=" display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
