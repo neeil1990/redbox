@@ -38,6 +38,22 @@
             .ui_tooltip.__left, .ui_tooltip.__right {
                 width: auto;
             }
+
+            .pb-3.unigram {
+                overflow: auto;
+                height: 100vh;
+            }
+
+            .pb-3.unigramd thead th {
+                position: sticky;
+                top: 0;
+                z-index: 1;
+            }
+
+            .pb-3.unigramd tbody th {
+                position: sticky;
+                left: 0;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">
@@ -374,10 +390,9 @@
             </div>
         </div>
     </div>
-    <div class="pb-3 unigram" style="display: none">
+    <div class="pb-3 unigram" style="display: none; overflow-x: scroll">
         <h2>{{ __('Unigram') }}</h2>
-        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
-               style="width: 100% !important;">
+        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr>
                 <th></th>
@@ -487,7 +502,8 @@
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Average number of repetitions in the text and links') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('Average number of repetitions in the text and links') }}<span
+                        class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
@@ -495,7 +511,8 @@
                         </span>
                     </span>
                 </th>
-                <th>{{ __('The total number of repetitions in the text and links') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('The total number of repetitions in the text and links') }}<span
+                        class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
@@ -541,7 +558,7 @@
             </tbody>
         </table>
     </div>
-    <div class="pb-3 sites" style="display: none">
+    <div class="pb-3 pt-3 sites" style="display: none">
         <h3>{{ __('Analyzed sites') }}</h3>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
