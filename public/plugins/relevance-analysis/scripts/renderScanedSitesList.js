@@ -61,7 +61,11 @@ function renderScannedSitesList(sites, coverageInfo = null) {
         let textarea = $('.form-control.ignoredDomains')
         let string = textarea.val()
         if (!string.includes(url.hostname)) {
-            textarea.val(textarea.val() + url.hostname + "\n")
+            if (textarea.val().slice(-1) === "\n") {
+                textarea.val(textarea.val() + url.hostname + "\n")
+            } else {
+                textarea.val(textarea.val() + "\n" + url.hostname + "\n")
+            }
         }
     });
 }

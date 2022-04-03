@@ -220,6 +220,10 @@ function renderUnigramTable(unigramTable) {
 
 function renderMainTr(tBody, key, wordWorm) {
     let occurrences = wordWorm['total']['occurrences']
+    let links = '';
+    $.each(occurrences, function (elem, value) {
+        links += "<a href='" + value + "' target='_blank'>" + value + "</a><br>"
+    });
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
     let tf = crop(wordWorm['total']['tf'])
     let idf = crop(wordWorm['total']['idf'])
@@ -244,9 +248,9 @@ function renderMainTr(tBody, key, wordWorm) {
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "" +
         "<span class='__helper-link ui_tooltip_w'>" +
-        "    <i class='fa fa-question-circle'></i>" +
-        "    <span class='ui_tooltip __left'>" +
-        "        <span class='ui_tooltip_content'>" + occurrences.join("<br>") + "</span>" +
+        "    <i class='fa fa-paperclip'></i>" +
+        "    <span class='ui_tooltip __right'>" +
+        "        <span class='ui_tooltip_content'>" + links + "</span>" +
         "    </span>" +
         "</span>" +
 
@@ -266,10 +270,14 @@ function renderMainTr(tBody, key, wordWorm) {
 }
 
 function renderChildTr(elem, key, word, stats) {
-    let occurrences = stats['occurrences']
     if (word === 'total') {
         return;
     }
+    let occurrences = stats['occurrences']
+    let links = '';
+    $.each(occurrences, function (elem, value) {
+        links += "<a href='" + value + "' target='_blank'>" + value + "</a><br>"
+    });
     let tf = crop(stats['tf'])
     let idf = crop(stats['idf'])
     let numberOccurrences = crop(stats['numberOccurrences'])
@@ -301,9 +309,9 @@ function renderChildTr(elem, key, word, stats) {
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "" +
         "<span class='__helper-link ui_tooltip_w'>" +
-        "    <i class='fa fa-question-circle'></i>" +
-        "    <span class='ui_tooltip __left'>" +
-        "        <span class='ui_tooltip_content'>" + occurrences.join("<br>") + "</span>" +
+        "    <i class='fa fa-paperclip'></i>" +
+        "    <span class='ui_tooltip __right'>" +
+        "        <span class='ui_tooltip_content'>" + links + "</span>" +
         "    </span>" +
         "</span>" +
 
