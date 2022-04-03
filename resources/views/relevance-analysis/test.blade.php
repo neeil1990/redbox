@@ -40,7 +40,6 @@
             }
 
             .pb-3.unigram {
-                overflow: auto;
                 height: 100vh;
             }
 

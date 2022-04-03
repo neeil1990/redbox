@@ -322,8 +322,8 @@
     <div class="pb-3 clouds" style="display:none;">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
-            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3" style="cursor: pointer">Облака
-                tf-idf
+            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3" style="cursor: pointer">
+                Облака tf-idf
             </button>
             <div class="tf-idf-clouds" style="display: none">
                 <div class="d-lg-flex mt-4 justify-content-around">
