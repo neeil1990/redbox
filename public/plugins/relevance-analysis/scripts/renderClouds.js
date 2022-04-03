@@ -6,10 +6,6 @@ function renderClouds(competitors, mainPage, tfCompClouds) {
     $('#competitorsTfClouds').show()
 }
 
-let generatedTfIdf = false
-let generatedText = false
-let generatedCompetitorCoverage = false
-
 $("#tf-idf-clouds").click(function () {
     if ($('.tf-idf-clouds').is(':visible')) {
         $('.tf-idf-clouds').show()

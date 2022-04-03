@@ -60,11 +60,13 @@
             <div class="toast-message">{{ __('An error has occurred, repeat the request.') }}</div>
         </div>
     </div>
+
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
             <div class="toast-message">{{ __("The keyword and landing page fields should not be empty") }}</div>
         </div>
     </div>
+
     <div class="col-5 pb-3">
         <div class="form-group required">
             <label>{{ __('Keyword') }}</label>
@@ -258,6 +260,7 @@
             </div>
         </div>
     </div>
+
     <div class="d-flex flex-column">
         <div class="btn-group col-lg-3 col-md-5 mb-2">
             <button class="btn btn-secondary" id="full-analyse">
@@ -276,9 +279,11 @@
             </button>
         </div>
     </div>
+
     <div id="progress-bar">
         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
     </div>
+
     <div class="pb-3 pt-3 text" style="display:none">
         <h3>{{ __('Comparing the amount of text') }}</h3>
         <table class="table table-bordered table-striped dataTable dtr-inline">
@@ -305,6 +310,7 @@
             </tbody>
         </table>
     </div>
+
     <div class="pb-3 clouds" style="display:none;">
         <h3>{{ __('The clouds') }}</h3>
         <div class="d-flex flex-column pb-3">
@@ -389,6 +395,7 @@
             </div>
         </div>
     </div>
+
     <div class="pb-3 unigram" style="display: none; overflow-x: scroll">
         <h2>{{ __('Unigram') }}</h2>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
@@ -557,6 +564,7 @@
             </tbody>
         </table>
     </div>
+
     <div class="pb-3 pt-3 sites" style="display: none">
         <h3>{{ __('Analyzed sites') }}</h3>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
@@ -588,6 +596,7 @@
             </tbody>
         </table>
     </div>
+
     <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
         <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
             Облака первых 200 важных (по tf-idf) слов у конкурентов
@@ -603,6 +612,9 @@
         <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
         <script>
+            var generatedTfIdf = false
+            var generatedText = false
+            var generatedCompetitorCoverage = false
             $('#full-analyse').click(() => {
                 if (validate()) {
                     return;
@@ -641,6 +653,9 @@
             })
 
             function successRequest(response, interval) {
+                generatedTfIdf = false
+                generatedText = false
+                generatedCompetitorCoverage = false
                 stopProgressBar(interval)
                 removeAllRenderElements()
                 renderUnigramTable(response.unigramTable);
