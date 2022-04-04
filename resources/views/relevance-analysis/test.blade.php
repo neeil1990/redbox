@@ -615,10 +615,19 @@
             var generatedTfIdf = false
             var generatedText = false
             var generatedCompetitorCoverage = false
+            function refreshToken() {
+                var csrfToken = $('[name="csrf-token"]').attr('content');
+                $.get('refresh-csrf').done(function (data) {
+                    csrfToken = data; // the new token
+                });
+            }
+
+            setInterval(refreshToken, 3600000); // 1 hour
             $('#full-analyse').click(() => {
                 if (validate()) {
                     return;
                 }
+                refreshToken();
                 var interval = startProgressBar()
                 $.ajax({
                     type: "POST",

@@ -194,6 +194,10 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');
     Route::post('/tariff/total', 'TariffPayController@total')->name('tariff.total');
     Route::resource('tariff', 'TariffPayController');
+
+    Route::get('refresh-csrf', function () {
+        return csrf_token();
+    });
 });
 
 Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
