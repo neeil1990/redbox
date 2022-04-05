@@ -436,8 +436,13 @@ function removeWordFromIgnored(elem) {
     let word = elem.attr('data-target')
     let textarea = $('.form-control.listWords')
     let text = textarea.val()
-    text = text.replaceAll(word, "")
-    textarea.val(text.trim())
+    let result = '';
+    $.each(text.split("\n"), function (key, value) {
+        if (value !== word) {
+            result += value + "\n"
+        }
+    });
+    textarea.val(result.trim())
     let toastr = $('.toast-top-right.success-message.lock-word');
     toastr.show(300)
     $('#lock-word').html('Слово "' + word + '" удалено из игнорируемых')
