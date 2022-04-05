@@ -238,12 +238,17 @@ function renderMainTr(tBody, key, wordWorm) {
     let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
     let repeatInLinkMainPageWarning = repeatInLinkMainPage === '0' ? " class='bg-warning-elem'" : ""
     let totalInMainPage = repeatInLinkMainPage === '0' && repeatInTextMainPage === '0' ? " class='bg-warning-elem'" : ""
+    let lockBlock =
+        "    <span class='lock-block'>" +
+        "        <i class='fa fa-plus-circle lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
+        "        <i class='fa fa-minus-circle unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "    </span>";
     tBody.append(
         "<tr class='render'>" +
         "<td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
         "<i class='fa fa-plus'></i>" +
         "</td>" +
-        "<td>" + key + "</td>" +
+        "<td>" + key + lockBlock + "</td>" +
         "<td>" + tf + "</td>" +
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "" +
@@ -299,12 +304,17 @@ function renderChildTr(elem, key, word, stats) {
     if (repeatInLinkMainPage === '0' && repeatInTextMainPage === '0') {
         var bgTotalWarn = "class='bg-warning-elem'"
     }
+    let lockBlock =
+        "    <span class='lock-block'>" +
+        "        <i class='fa fa-plus-circle lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
+        "        <i class='fa fa-minus-circle unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "    </span>";
     elem.after(
         "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
         "<td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +
         "<i class='fa fa-minus'></i>" +
         "</td>" +
-        "<td>" + word + "</td>" +
+        "<td>" + word + lockBlock + "</td>" +
         "<td>" + tf + "</td>" +
         "<td>" + idf + "</td>" +
         "<td>" + numberOccurrences + "" +
@@ -398,4 +408,42 @@ function reverseObj(obj) {
         newObj[i] = obj[i];
     })
     return newObj;
+}
+
+function addWordInIgnore(elem) {
+    if ($('#switchMyListWords').is(':checked') === false) {
+        $('#switchMyListWords').prop('checked', true);
+        $('.form-group.required.list-words.mt-1').show(300);
+    }
+    let word = elem.attr('data-target')
+    let textarea = $('.form-control.listWords')
+    let toastr = $('.toast-top-right.success-message.lock-word');
+    if (textarea.val().slice(-1) === "\n" || textarea.val().slice(-1) === '') {
+        textarea.val(textarea.val() + word + "\n")
+    } else {
+        textarea.val(textarea.val() + "\n" + word + "\n")
+    }
+    toastr.show(300)
+    $('#lock-word').html('Слово "' + word + '" добавлено в игнорируемые')
+    setTimeout(() => {
+        toastr.hide(300)
+    }, 3000)
+    elem.hide()
+    elem.parent().children().eq(1).show()
+}
+
+function removeWordFromIgnored(elem) {
+    let word = elem.attr('data-target')
+    let textarea = $('.form-control.listWords')
+    let text = textarea.val()
+    text = text.replaceAll(word, "")
+    textarea.val(text.trim())
+    let toastr = $('.toast-top-right.success-message.lock-word');
+    toastr.show(300)
+    $('#lock-word').html('Слово "' + word + '" удалено из игнорируемых')
+    setTimeout(() => {
+        toastr.hide(300)
+    }, 3000)
+    elem.hide()
+    elem.parent().children().eq(0).show()
 }

@@ -67,6 +67,12 @@
         </div>
     </div>
 
+    <div id="toast-container" class="toast-top-right success-message lock-word" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message" id="lock-word"></div>
+        </div>
+    </div>
+
     <div class="col-5 pb-3">
         <div class="form-group required">
             <label>{{ __('Keyword') }}</label>
@@ -579,9 +585,9 @@
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content" style="width: 300px">
-                                Для вычесления ширины, беруться первые 10 сайтов (позиция в топе) <br>
+                                Для вычисления  ширины, беруться первые 10 сайтов (позиция в топе) <br>
                                 Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
-                                В соответсвии с этими 100% для каждого сайта ширина просчитываеться отдельно
+                                В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно
                             </span>
                         </span>
                     </span>
@@ -618,10 +624,10 @@
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderScanedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderClouds.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderUnigramTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScanedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
         <script>
             var generatedTfIdf = false
             var generatedText = false
