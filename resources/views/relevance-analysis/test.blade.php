@@ -574,7 +574,18 @@
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Coverage by all words') }}</th>
                 <th>{{ __('Coverage by tf') }}</th>
-                <th>{{ __('Width') }}</th>
+                <th>{{ __('Width') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __left">
+                            <span class="ui_tooltip_content" style="width: 300px">
+                                Берутся первые 10 сайтов с максимальным охватом, высчитывается средний процент. <br>
+                                Потом процент с нашего сайта сравнивается со средним и на основе высчитывается процент из средней. <br>
+                                Он же и является баллами в столбце.
+                            </span>
+                        </span>
+                    </span>
+                </th>
                 <th>{{ __('Density') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
@@ -615,8 +626,6 @@
             var generatedTfIdf = false
             var generatedText = false
             var generatedCompetitorCoverage = false
-
-            setInterval(refreshToken, 3600000); // 1 hour
             $('#full-analyse').click(() => {
                 if (validate()) {
                     return;
