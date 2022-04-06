@@ -1,5 +1,5 @@
 function renderScannedSitesList(sites, coverageInfo = null) {
-    $('.pb-3.sites').show(300)
+    $('.sites').show(300)
     let percent = coverageInfo / 100
     let iterator = 1;
     let tbody = $('#scaned-sites-tbody')
@@ -55,6 +55,9 @@ function renderScannedSitesList(sites, coverageInfo = null) {
             "searching": true,
         });
     });
+    setTimeout(() => {
+        $('#scaned-sites').wrap("<div style='width: 100%; overflow-x: scroll; height:90vh;'></div>")
+    }, 2000)
 
     $('.add-in-ignored-domains').click(function () {
         let url = new URL($(this).attr('data-target'))

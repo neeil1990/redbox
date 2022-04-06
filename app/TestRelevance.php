@@ -3,10 +3,12 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class Relevance
+class TestRelevance
 {
+
     public $separator = "\n\nseparator\n\n";
 
     public $competitorsTextAndLinksCloud;
@@ -38,6 +40,8 @@ class Relevance
     public $mainPage;
 
     public $domains;
+
+    public $phrases;
 
     public $density = [];
 
@@ -128,6 +132,7 @@ class Relevance
         $this->deleteEverythingExceptCharacters();
         $this->getTextFromCompetitors();
         $this->separateAllText();
+        $this->preparePhrasesTable();
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
@@ -142,17 +147,120 @@ class Relevance
     /**
      * @return void
      */
+    public function preparePhrasesTable()
+    {
+        $phrases = $this->searchPhrases();
+        $totalCount = count($phrases);
+
+        foreach ($phrases as $phrase) {
+            if($phrase != ""){
+                foreach ($this->pages as $key => $page) {
+                    $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
+                    $occurrences = [];
+
+                    if (preg_match("/($phrase)/", $this->pages[$key]['html']) ||
+                        preg_match("/($phrase)/", $this->pages[$key]['linkText']) ||
+                        preg_match("/($phrase)/", $this->pages[$key]['hiddenText'])) {
+                        $numberOccurrences++;
+                        $occurrences[] = $key;
+                    }
+
+                    if (preg_match("/($phrase)/", $page['html'])) {
+                        $count = mb_substr_count($this->pages[$key]['html'], "$phrase");
+                        $numberTextOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+
+                    if (preg_match("/($phrase)/", $page['hiddenText'])) {
+                        $count = mb_substr_count($this->pages[$key]['hiddenText'], "$phrase");
+                        $numberTextOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+
+                    if (preg_match("/($phrase)/", $page['linkText'])) {
+                        $count = mb_substr_count($this->pages[$key]['linkText'], "$phrase");
+                        $numberLinkOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+                }
+                if ($numberOccurrences > 0) {
+                    $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
+                    $tf = round($countOccurrences / $totalCount, 6);
+                    $idf = round(log10($totalCount / $countOccurrences), 6);
+                    $repeatInTextMainPage = mb_substr_count(
+                        TestRelevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]),
+                        "$phrase");
+                    $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
+                    $countSites = count($this->sites);
+                    $result[$phrase] = [
+                        'tf' => $tf,
+                        'idf' => $idf,
+                        'numberOccurrences' => $numberOccurrences,
+                        'reSpam' => $reSpam,
+                        'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
+                        'avgInLink' => $numberLinkOccurrences / $countSites,
+                        'avgInText' => $numberTextOccurrences / $countSites,
+                        'repeatInLinkMainPage' => $repeatLinkInMainPage,
+                        'repeatInTextMainPage' => $repeatInTextMainPage,
+                        'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
+                        'occurrences' => $occurrences
+                    ];
+                }
+            }
+        }
+
+        $collection = collect($result);
+        $collection = $collection->unique();
+        $collection = $collection->sortByDesc('tf');
+        $this->phrases = $collection->slice(0, 600)->toArray();
+    }
+
+    /**
+     * из строки "купить много хлеба" получает фразы (купить много, много хлеба)
+     *
+     * @return array
+     */
+    public function searchPhrases(): array
+    {
+        $phrases = [];
+        $array = explode(' ', $this->competitorsTextAndLinks);
+
+        $grouped = array_chunk($array, 2);
+        foreach ($grouped as $two_words) {
+            $phrases[] = implode(' ', $two_words);
+        }
+        unset($array[0]);
+        $grouped = array_chunk($array, 2);
+        foreach ($grouped as $two_words) {
+            $phrases[] = implode(' ', $two_words);
+        }
+
+        $phrases = collect($phrases);
+        $phrases = $phrases->unique()->toArray();
+
+        return $phrases;
+    }
+
+    /**
+     * @return void
+     */
     public function calculateDensity()
     {
         $iterator = 0;
         foreach ($this->pages as $page) {
-            $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $this->sites[$iterator]['density'] = $this->calculateDensityPoints($allText);
             $iterator++;
         }
 
         if (!$this->mainPageIsRelevance) {
-            $mainPageText = Relevance::concatenation([
+            $mainPageText = TestRelevance::concatenation([
                 $this->mainPage['html'],
                 $this->mainPage['linkText'],
                 $this->mainPage['hiddenText']
@@ -225,10 +333,10 @@ class Relevance
     public function separateLinksFromText()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = Relevance::clearHTMLFromLinks($this->mainPage['html']);
+        $this->mainPage['html'] = TestRelevance::clearHTMLFromLinks($this->mainPage['html']);
         foreach ($this->pages as $key => $page) {
             $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($this->pages[$key]['html']);
-            $this->pages[$key]['html'] = Relevance::clearHTMLFromLinks($this->pages[$key]['html']);
+            $this->pages[$key]['html'] = TestRelevance::clearHTMLFromLinks($this->pages[$key]['html']);
         }
     }
 
@@ -239,9 +347,9 @@ class Relevance
     public function getHiddenData($hiddenText)
     {
         if ($hiddenText == 'true') {
-            $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
+            $this->mainPage['hiddenText'] = TestRelevance::getHiddenText($this->mainPage['html']);
             foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['hiddenText'] = Relevance::getHiddenText($this->pages[$key]['html']);
+                $this->pages[$key]['hiddenText'] = TestRelevance::getHiddenText($this->pages[$key]['html']);
             }
         } else {
             $this->mainPage['hiddenText'] = '';
@@ -268,19 +376,19 @@ class Relevance
      */
     public function calculateCoverage()
     {
-        $competitorsText = Relevance::searchWords($this->competitorsTextAndLinks);
+        $competitorsText = TestRelevance::searchWords($this->competitorsTextAndLinks);
         $iterator = 0;
         foreach ($this->pages as $page) {
-            $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $wordsInText = Relevance::searchWords($allText);
+            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $wordsInText = TestRelevance::searchWords($allText);
             $this->sites[$iterator]['coverage'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
             $this->sites[$iterator]['tf'] = $this->calculateCoverageTF($wordsInText);
             $iterator++;
         }
 
         if (!$this->mainPageIsRelevance) {
-            $mainPageText = Relevance::searchWords(
-                Relevance::concatenation([
+            $mainPageText = TestRelevance::searchWords(
+                TestRelevance::concatenation([
                     $this->mainPage['html'],
                     $this->mainPage['linkText'],
                     $this->mainPage['hiddenText']
@@ -409,13 +517,13 @@ class Relevance
         if ($request->switchMyListWords == 'true') {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
             $this->ignoredWords = explode("\n", $listWords);
-            $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
-            $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
-            $this->mainPage['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
+            $this->mainPage['html'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
+            $this->mainPage['linkText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
+            $this->mainPage['hiddenText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
             foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['html']);
-                $this->pages[$key]['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['linkText']);
-                $this->pages[$key]['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['hiddenText']);
+                $this->pages[$key]['html'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['html']);
+                $this->pages[$key]['linkText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['linkText']);
+                $this->pages[$key]['hiddenText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['hiddenText']);
             }
         }
     }
@@ -519,9 +627,9 @@ class Relevance
 
                 $tf = round($item / $wordCount, 4);
                 $idf = round(log10($wordCount / $item), 4);
+
                 $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
                 $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
-
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
                     'idf' => $idf,
@@ -594,26 +702,26 @@ class Relevance
      */
     public function prepareClouds()
     {
-        $mainPage = Relevance::concatenation([
+        $mainPage = TestRelevance::concatenation([
             $this->mainPage['html'],
             $this->mainPage['hiddenText'],
             $this->mainPage['linkText']
         ]);
-        $textMainPage = Relevance::concatenation([
+        $textMainPage = TestRelevance::concatenation([
             $this->mainPage['html'],
             $this->mainPage['hiddenText']
         ]);
-        $this->mainPage['totalTf'] = Relevance::prepareTfCloud($mainPage);
-        $this->mainPage['textTf'] = Relevance::prepareTfCloud($textMainPage);
-        $this->mainPage['linkTf'] = Relevance::prepareTfCloud($this->mainPage['linkText']);
+        $this->mainPage['totalTf'] = TestRelevance::prepareTfCloud($mainPage);
+        $this->mainPage['textTf'] = TestRelevance::prepareTfCloud($textMainPage);
+        $this->mainPage['linkTf'] = TestRelevance::prepareTfCloud($this->mainPage['linkText']);
 
         $this->mainPage['textWithLinks'] = TextAnalyzer::prepareCloud($mainPage);
         $this->mainPage['text'] = TextAnalyzer::prepareCloud($textMainPage);
         $this->mainPage['links'] = TextAnalyzer::prepareCloud($this->mainPage['linkText']);
 
-        $this->competitorsCloud['totalTf'] = Relevance::prepareTFCloud($this->competitorsTextAndLinks);
-        $this->competitorsCloud['textTf'] = Relevance::prepareTFCloud($this->competitorsText);
-        $this->competitorsCloud['linkTf'] = Relevance::prepareTFCloud($this->competitorsLinks);
+        $this->competitorsCloud['totalTf'] = TestRelevance::prepareTFCloud($this->competitorsTextAndLinks);
+        $this->competitorsCloud['textTf'] = TestRelevance::prepareTFCloud($this->competitorsText);
+        $this->competitorsCloud['linkTf'] = TestRelevance::prepareTFCloud($this->competitorsLinks);
 
         $this->competitorsTextAndLinksCloud = TextAnalyzer::prepareCloud($this->competitorsTextAndLinks);
         $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
@@ -664,7 +772,7 @@ class Relevance
      * @param $sites
      * @return $this
      */
-    public function setSites($sites): Relevance
+    public function setSites($sites): TestRelevance
     {
         $this->params['sites'] = $sites;
         $this->sites = json_decode($sites, true);
@@ -676,7 +784,7 @@ class Relevance
      * @param $html_relevance
      * @return $this
      */
-    public function setPages($html_relevance): Relevance
+    public function setPages($html_relevance): TestRelevance
     {
         $this->params['html_relevance'] = $html_relevance;
         $html = explode($this->separator, $this->params['html_relevance']);
@@ -701,7 +809,7 @@ class Relevance
      * @param $sites
      * @return $this
      */
-    public function setDomains($sites): Relevance
+    public function setDomains($sites): TestRelevance
     {
         $array = json_decode($sites, true);
         foreach ($array as $item) {
@@ -795,4 +903,5 @@ class Relevance
         }
         return implode(" ", $text);
     }
+
 }

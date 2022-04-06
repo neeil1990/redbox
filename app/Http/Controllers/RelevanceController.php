@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
+use App\TestRelevance;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -107,7 +108,7 @@ class RelevanceController extends Controller
         $xml->setQuery($request->phrase);
         $xmlResponse = $xml->getXMLResponse();
 
-        $relevance = new Relevance($request->link);
+        $relevance = new TestRelevance($request->link);
         $relevance->getMainPageHtml();
         $relevance->removeIgnoredDomains(
             $request->count,
@@ -167,6 +168,8 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
             'tfCompClouds' => $relevance->tfCompClouds,
             'coverageInfo' => $relevance->coverageInfo['total'],
+            //new functions
+            'phrases' => $relevance->phrases ?? null
         ]);
     }
 

@@ -31,7 +31,10 @@
 
             #unigramTBody > tr > td:nth-child(8),
             #unigramTBody > tr > td:nth-child(10),
-            #unigramTBody > tr > td:nth-child(12) {
+            #unigramTBody > tr > td:nth-child(12),
+            #phrasesTBody > tr > td:nth-child(7),
+            #phrasesTBody > tr > td:nth-child(9),
+            #phrasesTBody > tr > td:nth-child(11) {
                 background: #ebf0f5;
             }
 
@@ -52,6 +55,10 @@
             .pb-3.unigramd tbody th {
                 position: sticky;
                 left: 0;
+            }
+
+            .dataTables_paginate.paging_simple_numbers {
+                padding-bottom: 50px;
             }
         </style>
     @endslot
@@ -402,9 +409,10 @@
         </div>
     </div>
 
-    <div class="pb-3 unigram" style="display: none; overflow-x: scroll">
+    <div class="pb-3 unigram" style="display: none;">
         <h2>{{ __('Unigram') }}</h2>
-        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline">
+        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
+               style="width: 100% !important;">
             <thead>
             <tr>
                 <th></th>
@@ -571,7 +579,7 @@
         </table>
     </div>
 
-    <div class="pb-3 pt-3 sites" style="display: none">
+    <div class="sites" style="display: none; margin-top:50px;">
         <h3>{{ __('Analyzed sites') }}</h3>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
@@ -621,13 +629,38 @@
         <div style="display: none" id="coverage-clouds" class="pt-2">
         </div>
     </div>
+
+    <div class="phrases" style="display:none;margin-top: 50px">
+        <h3>Фразы</h3>
+        <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline">
+            <thead>
+            <tr style="position: relative; z-index: 100;">
+                <th>Фраза</th>
+                <th>tf</th>
+                <th>idf</th>
+                <th>Пересечение</th>
+                <th>Переспам</th>
+                <th>Среднее количество повторений в тексте и ссылках</th>
+                <th>Общее колиество повторений в тексте и ссылках</th>
+                <th>Среднее количество повторений в тексте</th>
+                <th>Количество повторений в тексте</th>
+                <th>Среднее количество поторений в ссылках</th>
+                <th>Количество поторений в ссылках</th>
+            </tr>
+            </thead>
+            <tbody id="phrasesTBody">
+            </tbody>
+        </table>
+    </div>
+
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderClouds.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScanedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
         <script>
             var generatedTfIdf = false
             var generatedText = false
@@ -670,14 +703,12 @@
             })
 
             function successRequest(response, interval) {
-                generatedTfIdf = false
-                generatedText = false
-                generatedCompetitorCoverage = false
                 stopProgressBar(interval)
-                removeAllRenderElements()
+                refreshAllRenderElements()
                 renderUnigramTable(response.unigramTable);
                 renderScannedSitesList(response.sites, response.coverageInfo);
                 renderTextTable(response.avg, response.mainPage)
+                renderPhrasesTable(response.phrases)
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
@@ -695,16 +726,21 @@
                 }, 5000)
             }
 
-            function removeAllRenderElements() {
+            function refreshAllRenderElements() {
+                generatedTfIdf = false
+                generatedText = false
+                generatedCompetitorCoverage = false
                 $(".generated-cloud").html("")
                 $("#clouds").html("")
                 $("#unigram").dataTable().fnDestroy();
                 $("#scaned-sites").dataTable().fnDestroy();
+                $("#phrases").dataTable().fnDestroy();
                 $('.render').remove();
-                $('.pb-3.text').hide()
-                $('.pb-3.unigram').hide()
-                $('.pb-3.sites').hide()
+                $('.text').hide()
+                $('.unigram').hide()
+                $('.sites').hide()
                 $('.clouds').hide()
+                $('.phrases').hide()
                 $('#competitorsTfClouds').hide()
             }
 
@@ -734,7 +770,7 @@
                         width: 0 + '%'
                     });
                     $("#progress-bar").hide(300)
-                }, 1000)
+                }, 3000)
 
             }
 

@@ -365,7 +365,7 @@ class TextAnalyzer
      * @param $string
      * @return Collection
      */
-    public static function searchPhrases($string)
+    public static function searchPhrases($string): Collection
     {
         $phrases = [];
         $array = explode(' ', $string);

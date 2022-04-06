@@ -12,6 +12,7 @@ function renderUnigramTable(unigramTable) {
             "pageLength": 50,
             "searching": true,
         });
+        $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; height:90vh;'></div>")
 
         $('#minTF, #maxTF').keyup(function () {
             $.fn.dataTable.ext.search.push(
