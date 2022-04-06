@@ -11,6 +11,10 @@ function renderUnigramTable(unigramTable) {
             "order": [[2, "desc"]],
             "pageLength": 50,
             "searching": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
         });
         $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; height:90vh;'></div>")
 

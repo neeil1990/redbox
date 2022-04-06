@@ -41,7 +41,7 @@ function renderScannedSitesList(sites, coverageInfo = null) {
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + objectPercent + "'>" + objectPercent.toFixed(1) + "% </td>" +
             "<td>" + value['width'] + "</td>" +
-            "<td>" + value['density'] + "</td>" +
+            "<td>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
             "<td>" + value['density100'] + "</td>" +
             "<td>" + value['density200'] + "</td>" +
             warning +

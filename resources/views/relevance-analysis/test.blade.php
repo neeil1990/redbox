@@ -662,6 +662,7 @@
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
+{{--        <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>--}}
         <script>
             var generatedTfIdf = false
             var generatedText = false

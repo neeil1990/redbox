@@ -256,7 +256,8 @@ class TestRelevance
         foreach ($this->pages as $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $density = $this->calculateDensityPoints($allText);
-            $this->sites[$iterator]['density'] = $density[600];
+            $this->sites[$iterator]['density'] = $density[600]['percentPoints'];
+            $this->sites[$iterator]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$iterator]['density100'] = $density[100];
             $this->sites[$iterator]['density200'] = $density[200];
             $iterator++;
@@ -269,7 +270,8 @@ class TestRelevance
                 $this->mainPage['hiddenText']
             ]);
             $density = $this->calculateDensityPoints($mainPageText);
-            $this->sites[$this->params['main_page_link']]['density'] = $density[600];
+            $this->sites[$this->params['main_page_link']]['density'] = $density[600]['percentPoints'];
+            $this->sites[$this->params['main_page_link']]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$this->params['main_page_link']]['density100'] = $density[100];
             $this->sites[$this->params['main_page_link']]['density200'] = $density[200];
         }
@@ -284,6 +286,7 @@ class TestRelevance
         $result = [];
         $allPoints = 0;
         $iterator = 0;
+        Log::debug('$this->density', $this->density);
         foreach ($this->density as $word => $value) {
             if (preg_match("/($word)/", $text)) {
                 $count = substr_count($text, " $word ");
@@ -291,23 +294,16 @@ class TestRelevance
                 $allPoints += $points;
             }
             $iterator++;
-            // Слова изначально отсортированы по убыванию (т.е первыми идут те слова, которые чаще всего повторяются)
-            // считаем сколько попало первых 100 важных слов и баллы делим на 700
             if ($iterator == 100) {
-                $result[100] = [
-                    round($allPoints * 2 / 600)
-                ];
+                $result[100] = round($allPoints * 2 / 600);
             }
-            // считаем сколько попало первых 100 важных слов и баллы делим на 800
             if ($iterator == 200) {
-                $result[200] = [
-                    round($allPoints * 2 / 600)
-                ];
+                $result[200] = round($allPoints * 2 / 600);
             }
-            // Общая сумма баллов / 600
             if ($iterator == 600) {
                 $result[600] = [
-                    round($allPoints / 600)
+                    'percentPoints' => round($allPoints / 600),
+                    'totalPoints' => $allPoints,
                 ];
                 break;
             }
@@ -476,6 +472,7 @@ class TestRelevance
      */
     public function calculateCoveragePercent($text, $competitorsText): float
     {
+        //TODO REVIEW
         $percent = count($competitorsText) / 100;
         return round(100 - count(array_diff($competitorsText, $text)) / $percent, 2);
     }
