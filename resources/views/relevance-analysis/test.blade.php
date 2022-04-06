@@ -579,6 +579,29 @@
         </table>
     </div>
 
+    <div class="phrases" style="display:none;margin-top: 80px;">
+        <h3>Фразы</h3>
+        <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline">
+            <thead>
+            <tr style="position: relative; z-index: 100;">
+                <th>Фраза</th>
+                <th>tf</th>
+                <th>idf</th>
+                <th>Пересечение</th>
+                <th>Переспам</th>
+                <th>Среднее количество повторений в тексте и ссылках</th>
+                <th>Общее колиество повторений в тексте и ссылках</th>
+                <th>Среднее количество повторений в тексте</th>
+                <th>Количество повторений в тексте</th>
+                <th>Среднее количество поторений в ссылках</th>
+                <th>Количество поторений в ссылках</th>
+            </tr>
+            </thead>
+            <tbody id="phrasesTBody">
+            </tbody>
+        </table>
+    </div>
+
     <div class="sites" style="display: none; margin-top:50px;">
         <h3>{{ __('Analyzed sites') }}</h3>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
@@ -614,6 +637,8 @@
                         </span>
                     </span>
                 </th>
+                <th>Плотность(100)</th>
+                <th>Плотность(200)</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
@@ -629,30 +654,6 @@
         <div style="display: none" id="coverage-clouds" class="pt-2">
         </div>
     </div>
-
-    <div class="phrases" style="display:none;margin-top: 50px">
-        <h3>Фразы</h3>
-        <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline">
-            <thead>
-            <tr style="position: relative; z-index: 100;">
-                <th>Фраза</th>
-                <th>tf</th>
-                <th>idf</th>
-                <th>Пересечение</th>
-                <th>Переспам</th>
-                <th>Среднее количество повторений в тексте и ссылках</th>
-                <th>Общее колиество повторений в тексте и ссылках</th>
-                <th>Среднее количество повторений в тексте</th>
-                <th>Количество повторений в тексте</th>
-                <th>Среднее количество поторений в ссылках</th>
-                <th>Количество поторений в ссылках</th>
-            </tr>
-            </thead>
-            <tbody id="phrasesTBody">
-            </tbody>
-        </table>
-    </div>
-
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>

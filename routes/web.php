@@ -11,13 +11,7 @@
 |
 */
 
-use App\Classes\Xml\SimplifiedXmlFacade;
-use App\Http\Controllers\RelevanceController;
-use App\LinguaStem;
-use App\Relevance;
-use App\RelevanceAnalyseResults;
 use App\TelegramBot;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -25,7 +19,6 @@ Route::get('info', function () {
 });
 
 Route::get('telegram', function () {
-
     $user = \Illuminate\Support\Facades\Auth::user();
     TelegramBot::sendMessage("test", $user->chat_id);
 });

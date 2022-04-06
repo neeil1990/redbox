@@ -153,7 +153,7 @@ class TestRelevance
         $totalCount = count($phrases);
 
         foreach ($phrases as $phrase) {
-            if($phrase != ""){
+            if ($phrase != "") {
                 foreach ($this->pages as $key => $page) {
                     $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
                     $occurrences = [];
@@ -255,7 +255,10 @@ class TestRelevance
         $iterator = 0;
         foreach ($this->pages as $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $this->sites[$iterator]['density'] = $this->calculateDensityPoints($allText);
+            $density = $this->calculateDensityPoints($allText);
+            $this->sites[$iterator]['density'] = $density[600];
+            $this->sites[$iterator]['density100'] = $density[100];
+            $this->sites[$iterator]['density200'] = $density[200];
             $iterator++;
         }
 
@@ -265,26 +268,51 @@ class TestRelevance
                 $this->mainPage['linkText'],
                 $this->mainPage['hiddenText']
             ]);
-            $this->sites[$this->params['main_page_link']]['density'] = $this->calculateDensityPoints($mainPageText);
+            $density = $this->calculateDensityPoints($mainPageText);
+            $this->sites[$this->params['main_page_link']]['density'] = $density[600];
+            $this->sites[$this->params['main_page_link']]['density100'] = $density[100];
+            $this->sites[$this->params['main_page_link']]['density200'] = $density[200];
         }
     }
 
     /**
      * @param $text
-     * @return float
+     * @return array
      */
-    public function calculateDensityPoints($text): float
+    public function calculateDensityPoints($text): array
     {
+        $result = [];
         $allPoints = 0;
+        $iterator = 0;
         foreach ($this->density as $word => $value) {
             if (preg_match("/($word)/", $text)) {
                 $count = substr_count($text, " $word ");
                 $points = min($count / ($value / 100), 100);
                 $allPoints += $points;
             }
+            $iterator++;
+            // считаем сколько попало первых 100 важных слов и баллы делим на 700
+            if ($iterator == 100) {
+                $result[100] = [
+                    round($allPoints / 700)
+                ];
+            }
+            // считаем сколько попало первых 100 важных слов и баллы делим на 800
+            if ($iterator == 200) {
+                $result[200] = [
+                    round($allPoints / 800)
+                ];
+            }
+            // Общая сумма баллов / 600
+            if ($iterator == 600) {
+                $result[600] = [
+                    round($allPoints / 600)
+                ];
+                break;
+            }
         }
 
-        return round($allPoints / 600);
+        return $result;
     }
 
     /**
@@ -694,6 +722,7 @@ class TestRelevance
             }
             $iterator++;
         }
+        arsort($this->density);
     }
 
     /**
