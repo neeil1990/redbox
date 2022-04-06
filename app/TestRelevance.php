@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -286,7 +287,7 @@ class TestRelevance
         foreach ($this->density as $word => $value) {
             if (preg_match("/($word)/", $text)) {
                 $count = substr_count($text, " $word ");
-                $points = min($count / ($value / 100), 100);
+                $points = min($count / ($value['count'] / 100), 100);
                 $allPoints += $points;
             }
             $iterator++;
@@ -715,14 +716,18 @@ class TestRelevance
                 'danger' => $danger,
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
-            $this->density[$key] = $avgInTotalCompetitors;
+            $this->density[$key] = [
+                'count' => $avgInTotalCompetitors,
+                'tf' => $tf
+            ];
             if ($iterator < 600) {
                 $this->coverageInfo['total'] = round($this->coverageInfo['total'] + $tf, 4);
                 $this->coverageInfo['600'][$key] = $tf;
             }
             $iterator++;
         }
-        arsort($this->density);
+        $collection = collect($this->density);
+        $this->density = $collection->sortByDesc('tf')->toArray();
     }
 
     /**
