@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -291,16 +290,17 @@ class TestRelevance
                 $allPoints += $points;
             }
             $iterator++;
+            // Слова изначально отсортированы по убыванию (т.е первыми идут те слова, которые чаще всего повторяются)
             // считаем сколько попало первых 100 важных слов и баллы делим на 700
             if ($iterator == 100) {
                 $result[100] = [
-                    round($allPoints / 700)
+                    round($allPoints * 2 / 600)
                 ];
             }
             // считаем сколько попало первых 100 важных слов и баллы делим на 800
             if ($iterator == 200) {
                 $result[200] = [
-                    round($allPoints / 800)
+                    round($allPoints * 2 / 600)
                 ];
             }
             // Общая сумма баллов / 600
