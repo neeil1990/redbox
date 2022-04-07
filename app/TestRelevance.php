@@ -473,17 +473,24 @@ class TestRelevance
     }
 
     /**
-     * @param $text
+     * @param $array
      * @return float
      */
-    public function calculateCoveragePercent($text): float
+    public function calculateCoveragePercent($array): float
     {
         $sum = 0;
-        foreach ($this->coverageInfo['600'] as $word => $value) {
-            if (in_array($word, $text)) {
+        foreach ($array as $value) {
+            if (in_array($this->coverageInfo['600'], $value)) {
                 $sum++;
             }
         }
+
+//        foreach ($this->coverageInfo['600'] as $word => $value) {
+//            if (in_array($word, $array)) {
+//                Log::debug('word', [$word]);
+//                $sum++;
+//            }
+//        }
 
         return round($sum / 6, 2);
     }

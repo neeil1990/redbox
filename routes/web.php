@@ -192,20 +192,3 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
-
-Route::get('/test', function () {
-    $lorem = 'РАЗ ДВА ТРИ ЧЕТЫРЕ ШЕСТЬ ВОСЕМЬ РАЗ ДВА ПЯТЬ ПЯТЬ';
-    $text = 'РАЗ ДВА ТРИ ЧЕТЫРЕ РАЗ';
-
-    $lorem = explode(' ', $lorem);
-    $lorem = array_count_values($lorem);
-    dump($lorem);
-    $percent = count($lorem) / 100;
-
-    $text = explode(' ', $text);
-    $text = array_count_values($text);
-    dd($text);
-    dump(count($text) / $percent);
-    dd();
-    return round(100 - count(array_diff($competitorsText, $text)) / $percent, 2);
-});
