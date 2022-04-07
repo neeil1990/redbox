@@ -240,9 +240,7 @@ class TestRelevance
         }
 
         $phrases = collect($phrases);
-        $phrases = $phrases->unique()->toArray();
-
-        return $phrases;
+        return $phrases->unique()->toArray();
     }
 
     /**
@@ -256,8 +254,10 @@ class TestRelevance
             $density = $this->calculateDensityPoints($allText);
             $this->sites[$iterator]['density'] = $density[600]['percentPoints'];
             $this->sites[$iterator]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$iterator]['density100'] = $density[100];
-            $this->sites[$iterator]['density200'] = $density[200];
+            $this->sites[$iterator]['density100'] = $density[100]['percentPoints'];
+            $this->sites[$iterator]['density100Points'] = $density[100]['totalPoints'];
+            $this->sites[$iterator]['density200'] = $density[200]['percentPoints'];
+            $this->sites[$iterator]['density200Points'] = $density[200]['totalPoints'];
             $iterator++;
         }
 
@@ -270,8 +270,10 @@ class TestRelevance
             $density = $this->calculateDensityPoints($mainPageText);
             $this->sites[$this->params['main_page_link']]['density'] = $density[600]['percentPoints'];
             $this->sites[$this->params['main_page_link']]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$this->params['main_page_link']]['density100'] = $density[100];
-            $this->sites[$this->params['main_page_link']]['density200'] = $density[200];
+            $this->sites[$this->params['main_page_link']]['density100'] = $density[100]['percentPoints'];
+            $this->sites[$this->params['main_page_link']]['density100Points'] = $density[100]['totalPoints'];
+            $this->sites[$this->params['main_page_link']]['density200'] = $density[200]['percentPoints'];
+            $this->sites[$this->params['main_page_link']]['density200Points'] = $density[200]['totalPoints'];
         }
     }
 
@@ -292,15 +294,21 @@ class TestRelevance
             }
             $iterator++;
             if ($iterator == 100) {
-                $result[100] = round($allPoints * 2 / 600);
+                $result[100] = [
+                    'percentPoints' => round($allPoints * 2 / 600),
+                    'totalPoints' => round($allPoints),
+                ];
             }
             if ($iterator == 200) {
-                $result[200] = round($allPoints * 2 / 600);
+                $result[200] = [
+                    'percentPoints' => round($allPoints * 2 / 600),
+                    'totalPoints' => round($allPoints),
+                ];
             }
             if ($iterator == 600) {
                 $result[600] = [
                     'percentPoints' => round($allPoints / 600),
-                    'totalPoints' => $allPoints,
+                    'totalPoints' => round($allPoints),
                 ];
                 break;
             }
@@ -455,16 +463,14 @@ class TestRelevance
      */
     public function calculateCoverageTF($wordsInText): float
     {
-        $result = 0;
+        $sum = 0;
         foreach ($this->coverageInfo['600'] as $word => $value) {
-            if ($word != 'total') {
-                if (in_array($word, $wordsInText)) {
-                    $result += $value;
-                }
+            if (array_key_exists($word, $wordsInText)) {
+                $sum += $value;
             }
         }
 
-        return $result;
+        return $sum;
     }
 
     /**
@@ -474,25 +480,19 @@ class TestRelevance
      */
     public function calculateCoveragePercent($text, $competitorsText): float
     {
-        //TODO REVIEW
         $percent = count($competitorsText) / 100;
-        return round(100 - count(array_diff($competitorsText, $text)) / $percent, 2);
+
+        return round(count($text) / $percent, 2);
     }
 
     /**
-     * ищем все уникальные слова в предоставленой строке/тексте
+     * Поиск всех уникальных слов в предоставленой строке
      * @param $string
      * @return array
      */
     public static function searchWords($string): array
     {
-        $array = array_count_values(explode(" ", $string));
-        $newArray = [];
-        foreach ($array as $key => $item) {
-            $newArray[] = $key;
-        }
-
-        return $newArray;
+        return array_count_values(explode(" ", $string));
     }
 
     /**
