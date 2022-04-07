@@ -60,6 +60,10 @@
             .dataTables_paginate.paging_simple_numbers {
                 padding-bottom: 50px;
             }
+
+            .dt-buttons {
+                float: left;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message analyse" style="display:none;">
@@ -70,7 +74,7 @@
 
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message">{{ __("The keyword and landing page fields should not be empty") }}</div>
+            <div class="toast-message" id="toast-message"></div>
         </div>
     </div>
 
@@ -81,10 +85,6 @@
     </div>
 
     <div class="col-5 pb-3">
-        <div class="form-group required">
-            <label>{{ __('Keyword') }}</label>
-            {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
-        </div>
 
         <div class="form-group required">
             <label>{{ __('Your landing page') }}</label>
@@ -92,125 +92,147 @@
         </div>
 
         <div class="form-group required">
-            <label>{{ __('Top 10/20') }}</label>
-            {!! Form::select('count', [
-                    '10' => 10,
-                    '20' => 20,
-                    ], null, ['class' => 'custom-select rounded-0 count']) !!}
+            <label>{{ __('Тип проверки') }}</label>
+            {!! Form::select('type', [
+                'phrase' => 'Ключевая фраза',
+                'list' => 'Список сканируемых сайтов',
+                ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
         </div>
 
-        <div class="form-group required">
-            <label>{{ __('Region') }}</label>
-            {!! Form::select('region', [
-                    '1' => __('Moscow'),
-                    '20' => __('Arkhangelsk'),
-                    '37' => __('Astrakhan'),
-                    '197' => __('Barnaul'),
-                    '4' => __('Belgorod'),
-                    '77' => __('Blagoveshchensk'),
-                    '191' => __('Bryansk'),
-                    '24' => __('Veliky Novgorod'),
-                    '75' => __('Vladivostok'),
-                    '33' => __('Vladikavkaz'),
-                    '192' => __('Vladimir'),
-                    '38' => __('Volgograd'),
-                    '21' => __('Vologda'),
-                    '193' => __('Voronezh'),
-                    '1106' => __('Grozny'),
-                    '54' => __('Ekaterinburg'),
-                    '5' => __('Ivanovo'),
-                    '63' => __('Irkutsk'),
-                    '41' => __('Yoshkar-ola'),
-                    '43' => __('Kazan'),
-                    '22' => __('Kaliningrad'),
-                    '64' => __('Kemerovo'),
-                    '7' => __('Kostroma'),
-                    '35' => __('Krasnodar'),
-                    '62' => __('Krasnoyarsk'),
-                    '53' => __('Kurgan'),
-                    '8' => __('Kursk'),
-                    '9' => __('Lipetsk'),
-                    '28' => __('Makhachkala'),
-                    '213' => __('Moscow'),
-                    '23' => __('Murmansk'),
-                    '1092' => __('Nazran'),
-                    '30' => __('Nalchik'),
-                    '47' => __('Nizhniy Novgorod'),
-                    '65' => __('Novosibirsk'),
-                    '66' => __('Omsk'),
-                    '10' => __('Eagle'),
-                    '48' => __('Orenburg'),
-                    '49' => __('Penza'),
-                    '50' => __('Perm'),
-                    '25' => __('Pskov'),
-                    '39' => __('Rostov-on-Don'),
-                    '11' => __('Ryazan'),
-                    '51' => __('Samara'),
-                    '42' => __('Saransk'),
-                    '2' => __('Saint-Petersburg'),
-                    '12' => __('Smolensk'),
-                    '239' => __('Sochi'),
-                    '36' => __('Stavropol'),
-                    '973' => __('Surgut'),
-                    '13' => __('Tambov'),
-                    '14' => __('Tver'),
-                    '67' => __('Tomsk'),
-                    '15' => __('Tula'),
-                    '195' => __('Ulyanovsk'),
-                    '172' => __('Ufa'),
-                    '76' => __('Khabarovsk'),
-                    '45' => __('Cheboksary'),
-                    '56' => __('Chelyabinsk'),
-                    '1104' => __('Cherkessk'),
-                    '16' => __('Yaroslavl'),
-                    ], null, ['class' => 'custom-select rounded-0 region']) !!}
+        <div id="site-list" style="display: none">
+            <div class="form-group required">
+                <label>{{ __('Список сайтов') }}</label>
+                {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
+            </div>
         </div>
 
-        <div class="form-group required">
-            <label>{{ __('Ignored domains') }}</label>
-            {!! Form::textarea("ignoredDomains",
-                "2gis.ru\n".
-                "aliexpress.com\n".
-                "AliExpress.ru\n".
-                "auto.ru\n".
-                "avito.ru\n".
-                "banki.ru\n".
-                "beru.ru\n".
-                "blizko.ru\n".
-                "cataloxy.ru\n".
-                "deal.by\n".
-                "domclick.ru\n".
-                "ebay.com\n".
-                "edadeal.ru\n".
-                "e-katalog.ru\n".
-                "hh.ru\n".
-                "instagram.com\n".
-                "irecommend.ru\n".
-                "irr.ru\n".
-                "leroymerlin.ru\n".
-                "market.yandex.ru\n".
-                "mvideo.ru\n".
-                "onliner.by\n".
-                "otzovik.com\n".
-                "ozon.ru\n".
-                "pandao.ru\n".
-                "price.ru\n".
-                "prodoctorov.ru\n".
-                "profi.ru\n".
-                "pulscen.ru\n".
-                "quto.ru\n".
-                "rambler.ru\n".
-                "regmarkets.ru\n".
-                "satom.ru\n".
-                "shop.by\n".
-                "sravni.ru\n".
-                "tiu.ru\n".
-                "toshop.ru\n".
-                "wikipedia.org\n".
-                "wildberries.ru\n".
-                "yandex.ru\n".
-                "yell.ru\n".
-                "zoon.ru\n" ,["class" => "form-control ignoredDomains"] ) !!}
+        <div id="key-phrase">
+            <div class="form-group required">
+                <label>{{ __('Keyword') }}</label>
+                {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
+            </div>
+
+            <div class="form-group required">
+                <label>{{ __('Top 10/20') }}</label>
+                {!! Form::select('count', [
+                        '10' => 10,
+                        '20' => 20,
+                        ], null, ['class' => 'custom-select rounded-0 count']) !!}
+            </div>
+
+            <div class="form-group required">
+                <label>{{ __('Region') }}</label>
+                {!! Form::select('region', [
+                        '1' => __('Moscow'),
+                        '20' => __('Arkhangelsk'),
+                        '37' => __('Astrakhan'),
+                        '197' => __('Barnaul'),
+                        '4' => __('Belgorod'),
+                        '77' => __('Blagoveshchensk'),
+                        '191' => __('Bryansk'),
+                        '24' => __('Veliky Novgorod'),
+                        '75' => __('Vladivostok'),
+                        '33' => __('Vladikavkaz'),
+                        '192' => __('Vladimir'),
+                        '38' => __('Volgograd'),
+                        '21' => __('Vologda'),
+                        '193' => __('Voronezh'),
+                        '1106' => __('Grozny'),
+                        '54' => __('Ekaterinburg'),
+                        '5' => __('Ivanovo'),
+                        '63' => __('Irkutsk'),
+                        '41' => __('Yoshkar-ola'),
+                        '43' => __('Kazan'),
+                        '22' => __('Kaliningrad'),
+                        '64' => __('Kemerovo'),
+                        '7' => __('Kostroma'),
+                        '35' => __('Krasnodar'),
+                        '62' => __('Krasnoyarsk'),
+                        '53' => __('Kurgan'),
+                        '8' => __('Kursk'),
+                        '9' => __('Lipetsk'),
+                        '28' => __('Makhachkala'),
+                        '213' => __('Moscow'),
+                        '23' => __('Murmansk'),
+                        '1092' => __('Nazran'),
+                        '30' => __('Nalchik'),
+                        '47' => __('Nizhniy Novgorod'),
+                        '65' => __('Novosibirsk'),
+                        '66' => __('Omsk'),
+                        '10' => __('Eagle'),
+                        '48' => __('Orenburg'),
+                        '49' => __('Penza'),
+                        '50' => __('Perm'),
+                        '25' => __('Pskov'),
+                        '39' => __('Rostov-on-Don'),
+                        '11' => __('Ryazan'),
+                        '51' => __('Samara'),
+                        '42' => __('Saransk'),
+                        '2' => __('Saint-Petersburg'),
+                        '12' => __('Smolensk'),
+                        '239' => __('Sochi'),
+                        '36' => __('Stavropol'),
+                        '973' => __('Surgut'),
+                        '13' => __('Tambov'),
+                        '14' => __('Tver'),
+                        '67' => __('Tomsk'),
+                        '15' => __('Tula'),
+                        '195' => __('Ulyanovsk'),
+                        '172' => __('Ufa'),
+                        '76' => __('Khabarovsk'),
+                        '45' => __('Cheboksary'),
+                        '56' => __('Chelyabinsk'),
+                        '1104' => __('Cherkessk'),
+                        '16' => __('Yaroslavl'),
+                        ], null, ['class' => 'custom-select rounded-0 region']) !!}
+            </div>
+
+            <div class="form-group required">
+                <label>{{ __('Ignored domains') }}</label>
+                {!! Form::textarea("ignoredDomains",
+                    "2gis.ru\n".
+                    "aliexpress.com\n".
+                    "AliExpress.ru\n".
+                    "auto.ru\n".
+                    "avito.ru\n".
+                    "banki.ru\n".
+                    "beru.ru\n".
+                    "blizko.ru\n".
+                    "cataloxy.ru\n".
+                    "deal.by\n".
+                    "domclick.ru\n".
+                    "ebay.com\n".
+                    "edadeal.ru\n".
+                    "e-katalog.ru\n".
+                    "hh.ru\n".
+                    "instagram.com\n".
+                    "irecommend.ru\n".
+                    "irr.ru\n".
+                    "leroymerlin.ru\n".
+                    "market.yandex.ru\n".
+                    "mvideo.ru\n".
+                    "onliner.by\n".
+                    "otzovik.com\n".
+                    "ozon.ru\n".
+                    "pandao.ru\n".
+                    "price.ru\n".
+                    "prodoctorov.ru\n".
+                    "profi.ru\n".
+                    "pulscen.ru\n".
+                    "quto.ru\n".
+                    "rambler.ru\n".
+                    "regmarkets.ru\n".
+                    "satom.ru\n".
+                    "shop.by\n".
+                    "sravni.ru\n".
+                    "tiu.ru\n".
+                    "toshop.ru\n".
+                    "wikipedia.org\n".
+                    "wildberries.ru\n".
+                    "yandex.ru\n".
+                    "yell.ru\n".
+                    "zoon.ru\n" ,["class" => "form-control ignoredDomains"] ) !!}
+            </div>
         </div>
 
         <div class="form-group required d-flex align-items-center">
@@ -662,8 +684,20 @@
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
-{{--        <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>--}}
+        <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            $('#check-type').on('change', function () {
+                if ($(this).val() === 'list') {
+                    $('#key-phrase').hide()
+                    $('#site-list').show(300)
+                } else {
+                    $('#site-list').hide()
+                    $('#key-phrase').show(300)
+                }
+            });
             var generatedTfIdf = false
             var generatedText = false
             var generatedCompetitorCoverage = false
@@ -677,8 +711,10 @@
                     dataType: "json",
                     url: "{{ route('test.relevance') }}",
                     data: {
-                        link: $('.form-control.link').val(),
+                        type: $('#check-type').val(),
+                        siteList: $('#siteList').val(),
                         separator: $('#separator').val(),
+                        link: $('.form-control.link').val(),
                         phrase: $('.form-control.phrase').val(),
                         noIndex: $('#switchNoindex').is(':checked'),
                         listWords: $('.form-control.listWords').val(),
@@ -789,14 +825,31 @@
             }
 
             function validate() {
+                let error = false
                 if ($('.form-control.phrase').val() === '' || $('.form-control.link').val() === '') {
+                    if ($('#siteList').val() === '') {
+                        $('#toast-message').html("Ключева фраза или список сайтов и ссылка на посадочную страницу обязательны для заполнения")
+                        error = true;
+                    }
+                }
+
+                if ($('#siteList').val() !== '') {
+                    let sites = $('#siteList').val()
+                    let sitesArray = sites.split("\n");
+                    if (sitesArray.length < 10) {
+                        $('#toast-message').html("Минимальное количество сайтов - 10")
+                        error = true;
+                    }
+                }
+
+                if (error) {
                     $('.toast-top-right.error-message.empty').show(300)
                     setTimeout(() => {
                         $('.toast-top-right.error-message.empty').hide(300)
                     }, 5000)
-                    return true;
                 }
-                return false;
+
+                return error;
             }
 
             $('#tf-idf-clouds').click(() => {

@@ -104,17 +104,29 @@ class RelevanceController extends Controller
      */
     public function testAnalyse(Request $request): JsonResponse
     {
-        $xml = new SimplifiedXmlFacade(20, $request->region);
-        $xml->setQuery($request->phrase);
-        $xmlResponse = $xml->getXMLResponse();
-
-        $relevance = new TestRelevance($request->link);
+        $relevance = new TestRelevance($request->input('link'));
         $relevance->getMainPageHtml();
-        $relevance->removeIgnoredDomains(
-            $request->count,
-            $request->ignoredDomains,
-            $xmlResponse['response']['results']['grouping']['group']
-        );
+
+        if ($request->input('type') === 'list') {
+
+            $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
+            $sitesList = explode("\n", $sitesList);
+            foreach ($sitesList as $item) {
+                $relevance->domains[] = str_replace('www.', "", mb_strtolower($item));;
+            }
+        } else {
+
+            $xml = new SimplifiedXmlFacade(20, $request->input('region'));
+            $xml->setQuery($request->input('phrase'));
+            $xmlResponse = $xml->getXMLResponse();
+
+            $relevance->removeIgnoredDomains(
+                $request->input('count'),
+                $request->input('ignoredDomains'),
+                $xmlResponse['response']['results']['grouping']['group']
+            );
+
+        }
         $relevance->parseSites();
         $relevance->analysis($request);
 

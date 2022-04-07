@@ -60,13 +60,6 @@ class TextLengthController extends Controller
      */
     public static function countingWord($str): int
     {
-        return
-            count(
-                str_word_count(
-                    $str,
-                    1,
-                    "аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъыЫьэЭюЮяЯ"
-                )
-            );
+        return count(explode(' ', $str));
     }
 }

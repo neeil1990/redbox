@@ -117,9 +117,7 @@ class TextAnalyzer
             'textLength' => $length,
             'countSpaces' => $countSpaces,
             'lengthWithOutSpaces' => $length - $countSpaces,
-            'countWords' => count(
-                str_word_count($text, 1, "аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъыЫьэЭюЮяЯ")
-            ),
+            'countWords' => count(explode(' ', $text)),
         ];
 
         $textWithoutLinks = TextAnalyzer::prepareCloud($total);

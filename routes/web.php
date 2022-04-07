@@ -192,3 +192,19 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
+
+Route::get('/test', function () {
+    $lorem = 'Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных изменений пять веков, но и перешагнул в электронный дизайн. Его популяризации в новое время послужили публикация листов Letraset с образцами Lorem Ipsum в 60-х годах и, в более недавнее время, программы электронной вёрстки типа Aldus PageMaker, в шаблонах которых используется Lorem Ipsum.';
+    $text = 'Lorem Ipsum это текст рыба часто используемый в печати и вэб дизайне raz dva три';
+    dd(count(explode(' ', $text)));
+    $percent = strlen($lorem) / 100;
+    dump(strlen($text) / $percent);
+
+    $lorem = explode(' ', $lorem);
+    $percent = count($lorem) / 100;
+
+    $text = explode(' ', $text);
+    dump(count($text) / $percent);
+    dd();
+    return round(100 - count(array_diff($competitorsText, $text)) / $percent, 2);
+});

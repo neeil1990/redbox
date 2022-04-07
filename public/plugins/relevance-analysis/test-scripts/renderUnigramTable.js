@@ -11,12 +11,13 @@ function renderUnigramTable(unigramTable) {
             "order": [[2, "desc"]],
             "pageLength": 50,
             "searching": true,
-            "dom": 'Bfrtip',
-            "buttons": [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel'
             ]
         });
-        $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; height:90vh;'></div>")
+        $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+        $('.buttons-html5').addClass('btn btn-secondary')
 
         $('#minTF, #maxTF').keyup(function () {
             $.fn.dataTable.ext.search.push(
@@ -383,9 +384,9 @@ function crop(number, decimal = false) {
         return number.toFixed(1)
     } else {
         if (number[5] === '.') {
-            position = 4
-        } else {
             position = 5
+        } else {
+            position = 6
         }
     }
 

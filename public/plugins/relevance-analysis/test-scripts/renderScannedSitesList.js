@@ -58,7 +58,7 @@ function renderScannedSitesList(sites, coverageInfo = null) {
         });
     });
     setTimeout(() => {
-        $('#scaned-sites').wrap("<div style='width: 100%; overflow-x: scroll; height:90vh;'></div>")
+        $('#scaned-sites').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
     }, 2000)
 
     $('.add-in-ignored-domains').click(function () {

@@ -481,7 +481,7 @@ class Relevance
     {
         //TODO САМЫЙ РЕСУРСОЗАТРАТНЫЙ МОМЕНТ - НУЖНО ОПТИМИЗИРОВАТЬ
         $countSites = count($this->sites);
-        $wordCount = str_word_count($this->competitorsTextAndLinks);
+        $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;

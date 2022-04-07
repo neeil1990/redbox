@@ -108,8 +108,8 @@ class TestRelevance
             //Если проанализированный домен является посадочной страницей
             $lastItem = array_key_last($this->sites);
             if ($domain == $this->params['main_page_link']) {
-                $this->mainPageIsRelevance = true;
-                $this->sites[$lastItem]['mainPage'] = true;
+                $this->mainPageIsRelevance =
+                $this->sites[$lastItem]['mainPage'] =
                 $this->sites[$lastItem]['inRelevance'] = true;
             } else {
                 $this->sites[$lastItem]['mainPage'] = false;
@@ -130,6 +130,9 @@ class TestRelevance
         $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
         $this->removeListWords($request);
         $this->deleteEverythingExceptCharacters();
+//        Log::debug('sites', $this->sites);
+//        Log::debug('pages', $this->pages);
+//        die();
         $this->getTextFromCompetitors();
         $this->separateAllText();
         $this->preparePhrasesTable();
@@ -151,16 +154,14 @@ class TestRelevance
     {
         $phrases = $this->searchPhrases();
         $totalCount = count($phrases);
-
         foreach ($phrases as $phrase) {
             if ($phrase != "") {
+                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
+                $occurrences = [];
                 foreach ($this->pages as $key => $page) {
-                    $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
-                    $occurrences = [];
-
-                    if (preg_match("/($phrase)/", $this->pages[$key]['html']) ||
-                        preg_match("/($phrase)/", $this->pages[$key]['linkText']) ||
-                        preg_match("/($phrase)/", $this->pages[$key]['hiddenText'])) {
+                    if (preg_match("/($phrase)/", $page['html']) ||
+                        preg_match("/($phrase)/", $page['linkText']) ||
+                        preg_match("/($phrase)/", $page['hiddenText'])) {
                         $numberOccurrences++;
                         $occurrences[] = $key;
                     }
@@ -286,7 +287,6 @@ class TestRelevance
         $result = [];
         $allPoints = 0;
         $iterator = 0;
-        Log::debug('$this->density', $this->density);
         foreach ($this->density as $word => $value) {
             if (preg_match("/($word)/", $text)) {
                 $count = substr_count($text, " $word ");
@@ -436,9 +436,13 @@ class TestRelevance
      */
     public function calculatePoints()
     {
-        $avgCoveragePercent = 0;
-        for ($i = 0; $i < 10; $i++) {
-            $avgCoveragePercent += $this->sites[$i]['coverage'] / 10;
+        $avgCoveragePercent = $iterator = 0;
+        foreach ($this->sites as $site) {
+            if ($iterator == 10) {
+                break;
+            }
+            $avgCoveragePercent += $site['coverage'];
+            $iterator++;
         }
         foreach ($this->sites as $key => $site) {
             $points = $this->sites[$key]['coverage'] / ($avgCoveragePercent / 100);
@@ -615,7 +619,7 @@ class TestRelevance
     {
         //TODO САМЫЙ РЕСУРСОЗАТРАТНЫЙ МОМЕНТ - НУЖНО ОПТИМИЗИРОВАТЬ
         $countSites = count($this->sites);
-        $wordCount = str_word_count($this->competitorsTextAndLinks);
+        $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
@@ -651,8 +655,8 @@ class TestRelevance
                     }
                 }
 
-                $tf = round($item / $wordCount, 4);
-                $idf = round(log10($wordCount / $item), 4);
+                $tf = round($item / $wordCount, 5);
+                $idf = round(log10($wordCount / $item), 5);
 
                 $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
                 $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
@@ -766,16 +770,16 @@ class TestRelevance
     /**
      * @param $count
      * @param $ignoredDomains
-     * @param $xmlResponse
+     * @param $sites
      * @return void
      */
-    public function removeIgnoredDomains($count, $ignoredDomains, $xmlResponse)
+    public function removeIgnoredDomains($count, $ignoredDomains, $sites)
     {
         if (isset($ignoredDomains)) {
             $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
             $ignoredDomains = explode("\n", $ignoredDomains);
             $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
-            foreach ($xmlResponse as $item) {
+            foreach ($sites as $item) {
                 $domain = str_replace('www.', "", mb_strtolower($item['doc']['domain']));
                 if (!in_array($domain, $ignoredDomains)) {
                     $this->domains[] = $item;
@@ -785,9 +789,8 @@ class TestRelevance
                 }
             }
         } else {
-            $this->domains = array_slice($xmlResponse, 0, $count - 1);
+            $this->domains = array_slice($sites, 0, $count - 1);
         }
-
     }
 
     /**
@@ -838,16 +841,14 @@ class TestRelevance
 
     /**
      * @param $sites
-     * @return $this
+     * @return void
      */
-    public function setDomains($sites): TestRelevance
+    public function setDomains($sites)
     {
         $array = json_decode($sites, true);
         foreach ($array as $item) {
             $this->domains[] = $item['site'];
         }
-
-        return $this;
     }
 
     /**

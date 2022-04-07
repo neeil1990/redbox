@@ -13,7 +13,7 @@ function renderPhrasesTable(phrases) {
         });
     });
     setTimeout(() => {
-        $('#phrases').wrap("<div style='width: 100%; overflow-x: scroll; height:90vh;'></div>")
+        $('#phrases').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
     }, 2000)
 }
 
