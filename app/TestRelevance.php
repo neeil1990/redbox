@@ -480,7 +480,7 @@ class TestRelevance
     {
         $sum = 0;
         foreach ($array as $value) {
-            if (in_array($this->coverageInfo['600'], $value)) {
+            if (in_array($value, $this->coverageInfo['600'])) {
                 $sum++;
             }
         }
