@@ -614,7 +614,7 @@
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
-            <tbody id="scaned-sites-tbody">
+            <tbody id="scanned-sites-tbody">
             </tbody>
         </table>
     </div>

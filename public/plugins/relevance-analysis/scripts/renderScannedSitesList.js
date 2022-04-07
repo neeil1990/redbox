@@ -2,7 +2,7 @@ function renderScannedSitesList(sites, coverageInfo = null) {
     $('.sites').show(300)
     let percent = coverageInfo / 100
     let iterator = 1;
-    let tbody = $('#scaned-sites-tbody')
+    let tbody = $('#scanned-sites-tbody')
     $.each(sites, function (key, value) {
         let btnGroup =
             "<div class='btn-group'>" +

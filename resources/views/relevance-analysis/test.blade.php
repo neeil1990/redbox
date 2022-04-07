@@ -636,7 +636,7 @@
                 <th>{{ __('Width') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
+                        <span class="ui_tooltip __bottom">
                             <span class="ui_tooltip_content" style="width: 300px">
                                 Для вычисления  ширины, беруться первые 10 сайтов (позиция в топе) <br>
                                 Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
@@ -648,7 +648,7 @@
                 <th>{{ __('Density') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
+                        <span class="ui_tooltip __bottom">
                             <span class="ui_tooltip_content" style="width: 300px">
                                 Плотность высчитывается от значения средней по ТОПу для каждой фразы. <br>
                                 Если в средней 20, а у нас 5, то это 25 баллов. <br>
@@ -664,7 +664,7 @@
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
-            <tbody id="scaned-sites-tbody">
+            <tbody id="scanned-sites-tbody">
             </tbody>
         </table>
     </div>

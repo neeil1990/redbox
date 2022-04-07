@@ -130,9 +130,6 @@ class TestRelevance
         $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
         $this->removeListWords($request);
         $this->deleteEverythingExceptCharacters();
-//        Log::debug('sites', $this->sites);
-//        Log::debug('pages', $this->pages);
-//        die();
         $this->getTextFromCompetitors();
         $this->separateAllText();
         $this->preparePhrasesTable();
@@ -444,6 +441,7 @@ class TestRelevance
             $avgCoveragePercent += $site['coverage'];
             $iterator++;
         }
+        $avgCoveragePercent /= 10;
         foreach ($this->sites as $key => $site) {
             $points = $this->sites[$key]['coverage'] / ($avgCoveragePercent / 100);
             $points = min($points, 100);
@@ -721,7 +719,7 @@ class TestRelevance
                 'count' => $avgInTotalCompetitors,
                 'tf' => $tf
             ];
-            if ($iterator < 600) {
+            if ($iterator <= 600) {
                 $this->coverageInfo['total'] = round($this->coverageInfo['total'] + $tf, 4);
                 $this->coverageInfo['600'][$key] = $tf;
             }
