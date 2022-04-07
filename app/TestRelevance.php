@@ -406,18 +406,16 @@ class TestRelevance
      */
     public function calculateCoverage()
     {
-        $competitorsText = TestRelevance::searchWords($this->competitorsTextAndLinks);
         $iterator = 0;
         foreach ($this->pages as $page) {
-            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $wordsInText = TestRelevance::searchWords($allText);
-            $this->sites[$iterator]['coverage'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
-            $this->sites[$iterator]['coverageTf'] = $this->calculateCoverageTF($wordsInText);
+            $allText = explode(' ', TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]));
+            $this->sites[$iterator]['coverage'] = $this->calculateCoveragePercent($allText);
+            $this->sites[$iterator]['coverageTf'] = $this->calculateCoverageTF($allText);
             $iterator++;
         }
 
         if (!$this->mainPageIsRelevance) {
-            $mainPageText = TestRelevance::searchWords(
+            $mainPageText = explode(' ',
                 TestRelevance::concatenation([
                     $this->mainPage['html'],
                     $this->mainPage['linkText'],
@@ -429,10 +427,11 @@ class TestRelevance
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'coverage' => $this->calculateCoveragePercent($mainPageText, $competitorsText),
+                'coverage' => $this->calculateCoveragePercent($mainPageText),
                 'coverageTf' => $this->calculateCoverageTF($mainPageText),
             ];
         }
+        Log::debug('sites', $this->sites);
     }
 
     /**
@@ -465,7 +464,7 @@ class TestRelevance
     {
         $sum = 0;
         foreach ($this->coverageInfo['600'] as $word => $value) {
-            if (array_key_exists($word, $wordsInText)) {
+            if (in_array($word, $wordsInText)) {
                 $sum += $value;
             }
         }
@@ -475,14 +474,18 @@ class TestRelevance
 
     /**
      * @param $text
-     * @param $competitorsText
      * @return float
      */
-    public function calculateCoveragePercent($text, $competitorsText): float
+    public function calculateCoveragePercent($text): float
     {
-        $percent = count($competitorsText) / 100;
+        $sum = 0;
+        foreach ($this->coverageInfo['600'] as $word => $value) {
+            if (in_array($word, $text)) {
+                $sum++;
+            }
+        }
 
-        return round(count($text) / $percent, 2);
+        return round($sum / 6, 2);
     }
 
     /**
