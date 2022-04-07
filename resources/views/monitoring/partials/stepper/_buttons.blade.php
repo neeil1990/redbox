@@ -1,5 +1,5 @@
 @if(in_array('previous', $buttons))
-    <button class="btn btn-warning" onclick="stepper.previous()">Назад</button>
+    <button class="btn btn-secondary" onclick="stepper.previous()">Назад</button>
 @endif
 
 @if(in_array('next', $buttons))

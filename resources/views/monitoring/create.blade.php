@@ -7,6 +7,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/bs-stepper/css/bs-stepper.min.css') }}">
         <!-- Bootstrap4 Duallistbox -->
         <link rel="stylesheet" href="{{ asset('plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css') }}">
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
     @endslot
 
     <div class="bs-stepper">
@@ -32,16 +35,18 @@
 
         </div>
         <div class="bs-stepper-content">
-            <!-- your steps content here -->
-            @include('monitoring.partials.stepper._content', ['target' => 'project', 'buttons' => ['next']])
+            <form class="needs-validation" onSubmit="return false" novalidate>
+                <!-- your steps content here -->
+                @include('monitoring.partials.stepper._content', ['target' => 'project', 'buttons' => ['next']])
 
-            @include('monitoring.partials.stepper._content', ['target' => 'keywords', 'buttons' => ['previous', 'next']])
+                @include('monitoring.partials.stepper._content', ['target' => 'keywords', 'buttons' => ['previous', 'next']])
 
-            @include('monitoring.partials.stepper._content', ['target' => 'competitors', 'buttons' => ['previous', 'next']])
+                @include('monitoring.partials.stepper._content', ['target' => 'competitors', 'buttons' => ['previous', 'next']])
 
-            @include('monitoring.partials.stepper._content', ['target' => 'regions', 'buttons' => ['previous', 'next']])
+                @include('monitoring.partials.stepper._content', ['target' => 'regions', 'buttons' => ['previous', 'next']])
 
-            @include('monitoring.partials.stepper._content', ['target' => 'save', 'buttons' => ['previous', 'action']])
+                @include('monitoring.partials.stepper._content', ['target' => 'save', 'buttons' => ['previous', 'action']])
+            </form>
         </div>
     </div>
 
@@ -52,6 +57,8 @@
         <script src="{{ asset('plugins/bs-stepper/js/bs-stepper.min.js') }}"></script>
         <!-- Bootstrap4 Duallistbox -->
         <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}"></script>
+        <!-- Select2 -->
+        <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
         <script>
             toastr.options = {
@@ -60,15 +67,35 @@
             };
 
             document.addEventListener('DOMContentLoaded', function () {
-                window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+                let stepper = document.querySelector('.bs-stepper');
+                window.stepper = new Stepper(stepper);
+
+                let form = $('.bs-stepper-content form');
+                stepper.addEventListener('show.bs-stepper', function (event) {
+
+                    let nextStep = event.detail.indexStep;
+                    let currentStep = nextStep;
+
+                    if (currentStep > 0) {
+                        currentStep--
+                    }
+
+                    let panels = $('.bs-stepper-content .content');
+
+                    let panelOut = panels.eq(currentStep);
+                    if(panelOut.attr('id') === 'project-part' && !form.find('#name').val()){
+                        event.preventDefault();
+                        form.addClass('was-validated');
+                    }
+                });
             });
 
-            var duallistBoxes = [];
+            let dualListBoxes = [];
 
-            duallistBoxes.push($('.duallistbox-keywords'));
-            duallistBoxes.push($('.duallistbox-competitors'));
+            dualListBoxes.push($('.duallistbox-keywords'));
+            dualListBoxes.push($('.duallistbox-competitors'));
 
-            $.each(duallistBoxes, function (index, box) {
+            $.each(dualListBoxes, function (index, box) {
 
                 var target = box.data('model');
 
@@ -113,6 +140,13 @@
                     modal.find('.btn.add').off("click");
                 });
             });
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4',
+                placeholder: 'Select a regions',
+            });
+
         </script>
     @endslot
 
