@@ -632,7 +632,20 @@
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Coverage by all words') }}</th>
-                <th>{{ __('Coverage by tf') }}</th>
+                <th>{{ __('Coverage by tf') }}
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __bottom">
+                            <span class="ui_tooltip_content" style="width: 300px">
+                                Из таблицы униграм берутся первые 600 словоформ и их значения tf <br>
+                                Для каждого сайта проходит проверка присутсвующих слов из таблицы униграм, за каждое присутсвующее слово <br>
+                                Дальше все баллы для всех фраз складываются и делятся на общее количество 600. <br>
+                                - <br>
+                                Если мы переспамили, то пока в этом варианте мы никак не учитываем этот момент, фраза просто получает 100 баллов по плотности. <br>
+                            </span>
+                        </span>
+                    </span>
+                </th>
                 <th>{{ __('Width') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>

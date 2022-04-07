@@ -112,8 +112,9 @@ class RelevanceController extends Controller
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
             $sitesList = explode("\n", $sitesList);
             foreach ($sitesList as $item) {
-                $relevance->domains[] = str_replace('www.', "", mb_strtolower($item));;
+                $relevance->domains[] = str_replace('www.', "", mb_strtolower(trim($item)));
             }
+
         } else {
 
             $xml = new SimplifiedXmlFacade(20, $request->input('region'));

@@ -21,8 +21,8 @@ function renderScannedSitesList(sites, coverageInfo = null) {
             "</div>";
         let noTop = ''
         let background
-        let tf = value['tf']
-        let objectPercent = tf / percent
+        let coverageTf = value['coverageTf']
+        let objectPercent = coverageTf / percent
         let warning = value['danger']
             ? "<td class='bg-warning'> Не удалось получить данные со страницы </td>"
             : "<td> Страница успешно проанализирована </td>"

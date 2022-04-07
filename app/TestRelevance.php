@@ -412,7 +412,7 @@ class TestRelevance
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $wordsInText = TestRelevance::searchWords($allText);
             $this->sites[$iterator]['coverage'] = $this->calculateCoveragePercent($wordsInText, $competitorsText);
-            $this->sites[$iterator]['tf'] = $this->calculateCoverageTF($wordsInText);
+            $this->sites[$iterator]['coverageTf'] = $this->calculateCoverageTF($wordsInText);
             $iterator++;
         }
 
@@ -430,7 +430,7 @@ class TestRelevance
                 'mainPage' => true,
                 'inRelevance' => false,
                 'coverage' => $this->calculateCoveragePercent($mainPageText, $competitorsText),
-                'tf' => $this->calculateCoverageTF($mainPageText),
+                'coverageTf' => $this->calculateCoverageTF($mainPageText),
             ];
         }
     }
