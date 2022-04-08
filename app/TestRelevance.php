@@ -316,12 +316,7 @@ class TestRelevance
         $sum = 0;
         $count = 0;
 
-        foreach ($this->wordForms as $key => $wordForm) {
-            if (array_key_exists($key, $pageText)) {
-                $count++;
-                $sum += $wordForm['total']['tf'];
-                continue;
-            }
+        foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $keyword => $word) {
                 if (array_key_exists($keyword, $pageText)) {
                     $count++;

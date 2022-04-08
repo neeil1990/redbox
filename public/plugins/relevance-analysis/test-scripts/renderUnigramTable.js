@@ -384,9 +384,9 @@ function crop(number, decimal = false) {
         return number.toFixed(1)
     } else {
         if (number[5] === '.') {
-            position = 5
-        } else {
             position = 6
+        } else {
+            position = 7
         }
     }
 
