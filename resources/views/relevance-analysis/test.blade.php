@@ -62,6 +62,7 @@
             }
 
             .dt-buttons {
+                margin-left: 20px;
                 float: left;
             }
         </style>
