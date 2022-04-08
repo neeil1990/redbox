@@ -11,7 +11,7 @@ function renderUnigramTable(unigramTable) {
             "order": [[2, "desc"]],
             "pageLength": 50,
             "searching": true,
-            dom: 'Bfrtip',
+            dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'
             ]

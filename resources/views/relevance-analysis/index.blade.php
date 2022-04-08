@@ -607,7 +607,7 @@
             <tr role="row" style="position: relative; z-index: 100">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>{{ __('Coverage by all words') }}</th>
+                <th>{{ __('coverage for all important words') }}</th>
                 <th>{{ __('Coverage by tf') }}</th>
                 <th>{{ __('Width') }}</th>
                 <th>{{ __('Density') }}</th>

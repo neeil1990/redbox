@@ -147,179 +147,6 @@ class TestRelevance
     /**
      * @return void
      */
-    public function preparePhrasesTable()
-    {
-        $phrases = $this->searchPhrases();
-        $totalCount = count($phrases);
-        foreach ($phrases as $phrase) {
-            if ($phrase != "") {
-                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
-                $occurrences = [];
-                foreach ($this->pages as $key => $page) {
-                    if (preg_match("/($phrase)/", $page['html']) ||
-                        preg_match("/($phrase)/", $page['linkText']) ||
-                        preg_match("/($phrase)/", $page['hiddenText'])) {
-                        $numberOccurrences++;
-                        $occurrences[] = $key;
-                    }
-
-                    if (preg_match("/($phrase)/", $page['html'])) {
-                        $count = mb_substr_count($this->pages[$key]['html'], "$phrase");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-
-                    if (preg_match("/($phrase)/", $page['hiddenText'])) {
-                        $count = mb_substr_count($this->pages[$key]['hiddenText'], "$phrase");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-
-                    if (preg_match("/($phrase)/", $page['linkText'])) {
-                        $count = mb_substr_count($this->pages[$key]['linkText'], "$phrase");
-                        $numberLinkOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-                }
-                if ($numberOccurrences > 0) {
-                    $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
-                    $tf = round($countOccurrences / $totalCount, 6);
-                    $idf = round(log10($totalCount / $countOccurrences), 6);
-                    $repeatInTextMainPage = mb_substr_count(
-                        TestRelevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]),
-                        "$phrase");
-                    $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
-                    $countSites = count($this->sites);
-                    $result[$phrase] = [
-                        'tf' => $tf,
-                        'idf' => $idf,
-                        'numberOccurrences' => $numberOccurrences,
-                        'reSpam' => $reSpam,
-                        'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
-                        'avgInLink' => $numberLinkOccurrences / $countSites,
-                        'avgInText' => $numberTextOccurrences / $countSites,
-                        'repeatInLinkMainPage' => $repeatLinkInMainPage,
-                        'repeatInTextMainPage' => $repeatInTextMainPage,
-                        'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
-                        'occurrences' => $occurrences
-                    ];
-                }
-            }
-        }
-
-        $collection = collect($result);
-        $collection = $collection->unique();
-        $collection = $collection->sortByDesc('tf');
-        $this->phrases = $collection->slice(0, 600)->toArray();
-    }
-
-    /**
-     * из строки "купить много хлеба" получает фразы (купить много, много хлеба)
-     *
-     * @return array
-     */
-    public function searchPhrases(): array
-    {
-        $phrases = [];
-        $array = explode(' ', $this->competitorsTextAndLinks);
-
-        $grouped = array_chunk($array, 2);
-        foreach ($grouped as $two_words) {
-            $phrases[] = implode(' ', $two_words);
-        }
-        unset($array[0]);
-        $grouped = array_chunk($array, 2);
-        foreach ($grouped as $two_words) {
-            $phrases[] = implode(' ', $two_words);
-        }
-
-        $phrases = collect($phrases);
-        return $phrases->unique()->toArray();
-    }
-
-    /**
-     * @return void
-     */
-    public function calculateDensity()
-    {
-        $iterator = 0;
-        foreach ($this->pages as $page) {
-            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $density = $this->calculateDensityPoints($allText);
-            $this->sites[$iterator]['density'] = $density[600]['percentPoints'];
-            $this->sites[$iterator]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$iterator]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$iterator]['density100Points'] = $density[100]['totalPoints'];
-            $this->sites[$iterator]['density200'] = $density[200]['percentPoints'];
-            $this->sites[$iterator]['density200Points'] = $density[200]['totalPoints'];
-            $iterator++;
-        }
-
-        if (!$this->mainPageIsRelevance) {
-            $mainPageText = TestRelevance::concatenation([
-                $this->mainPage['html'],
-                $this->mainPage['linkText'],
-                $this->mainPage['hiddenText']
-            ]);
-            $density = $this->calculateDensityPoints($mainPageText);
-            $this->sites[$this->params['main_page_link']]['density'] = $density[600]['percentPoints'];
-            $this->sites[$this->params['main_page_link']]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$this->params['main_page_link']]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$this->params['main_page_link']]['density100Points'] = $density[100]['totalPoints'];
-            $this->sites[$this->params['main_page_link']]['density200'] = $density[200]['percentPoints'];
-            $this->sites[$this->params['main_page_link']]['density200Points'] = $density[200]['totalPoints'];
-        }
-    }
-
-    /**
-     * @param $text
-     * @return array
-     */
-    public function calculateDensityPoints($text): array
-    {
-        $result = [];
-        $allPoints = 0;
-        $iterator = 0;
-        foreach ($this->density as $word => $value) {
-            if (preg_match("/($word)/", $text)) {
-                $count = substr_count($text, " $word ");
-                $points = min($count / ($value['count'] / 100), 100);
-                $allPoints += $points;
-            }
-            $iterator++;
-            if ($iterator == 100) {
-                $result[100] = [
-                    'percentPoints' => round($allPoints * 2 / 600),
-                    'totalPoints' => round($allPoints),
-                ];
-            }
-            if ($iterator == 200) {
-                $result[200] = [
-                    'percentPoints' => round($allPoints * 2 / 600),
-                    'totalPoints' => round($allPoints),
-                ];
-            }
-            if ($iterator == 600) {
-                $result[600] = [
-                    'percentPoints' => round($allPoints / 600),
-                    'totalPoints' => round($allPoints),
-                ];
-                break;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return void
-     */
     public function separateAllText()
     {
         $this->competitorsLinks = $this->separateText($this->competitorsLinks);
@@ -406,32 +233,38 @@ class TestRelevance
      */
     public function calculateCoverage()
     {
-        $iterator = 0;
+        $iterator = $sum = 0;
+        foreach ($this->wordForms as $value) {
+            $sum += $value['total']['tf'];
+        }
+        $this->coverageInfo['sum'] = round($sum, 6);
+
         foreach ($this->pages as $page) {
-            $allText = explode(' ', TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]));
-            $this->sites[$iterator]['coverage'] = $this->calculateCoveragePercent($allText);
-            $this->sites[$iterator]['coverageTf'] = $this->calculateCoverageTF($allText);
+            $pageWords = TestRelevance::searchWords(TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]));
+            $coverage = $this->calculateCoveragePercent($pageWords);
+            $this->sites[$iterator]['coverage'] = $coverage['count'];
+            $this->sites[$iterator]['coverageTf'] = $coverage['sum'];
             $iterator++;
         }
 
         if (!$this->mainPageIsRelevance) {
-            $mainPageText = explode(' ',
+            $mainPageText = TestRelevance::searchWords(
                 TestRelevance::concatenation([
                     $this->mainPage['html'],
                     $this->mainPage['linkText'],
                     $this->mainPage['hiddenText']
                 ])
             );
+            $coverage = $this->calculateCoveragePercent($mainPageText);
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'coverage' => $this->calculateCoveragePercent($mainPageText),
-                'coverageTf' => $this->calculateCoverageTF($mainPageText),
+                'coverage' => $coverage['count'],
+                'coverageTf' => $coverage['sum'],
             ];
         }
-        Log::debug('sites', $this->sites);
     }
 
     /**
@@ -463,36 +296,48 @@ class TestRelevance
     public function calculateCoverageTF($wordsInText): float
     {
         $sum = 0;
-        foreach ($this->coverageInfo['600'] as $word => $value) {
-            if (in_array($word, $wordsInText)) {
-                $sum += $value;
+        foreach ($wordsInText as $key => $value) {
+            if (array_key_exists($key, $this->coverageInfo['words'])) {
+                $sum += $this->coverageInfo['words'][$key];
             }
         }
 
-        return $sum;
+        $percent = $this->coverageInfo['sum'] / 100;
+
+        return $sum / $percent;
     }
 
     /**
-     * @param $array
-     * @return float
+     * @param $pageText
+     * @return array
      */
-    public function calculateCoveragePercent($array): float
+    public function calculateCoveragePercent($pageText): array
     {
         $sum = 0;
-        foreach ($array as $value) {
-            if (in_array($value, $this->coverageInfo['600'])) {
-                $sum++;
+        $count = 0;
+
+        foreach ($this->wordForms as $key => $wordForm) {
+            if (array_key_exists($key, $pageText)) {
+                $count++;
+                $sum += $wordForm['total']['tf'];
+                continue;
+            }
+            foreach ($wordForm as $keyword => $word) {
+                if (array_key_exists($keyword, $pageText)) {
+                    $count++;
+                    $sum += $word['tf'];
+                    break;
+                }
             }
         }
 
-//        foreach ($this->coverageInfo['600'] as $word => $value) {
-//            if (in_array($word, $array)) {
-//                Log::debug('word', [$word]);
-//                $sum++;
-//            }
-//        }
-
-        return round($sum / 6, 2);
+        $count = round($count / 6, 2);
+        $percent = $this->coverageInfo['sum'] / 100;
+        $sum = $sum / $percent;
+        return [
+            'count' => $count,
+            'sum' => $sum,
+        ];
     }
 
     /**
@@ -502,7 +347,10 @@ class TestRelevance
      */
     public static function searchWords($string): array
     {
-        return array_count_values(explode(" ", $string));
+        $array = array_count_values(explode(" ", $string));
+        arsort($array);
+
+        return array_slice($array, 0, 600);
     }
 
     /**
@@ -690,11 +538,13 @@ class TestRelevance
      */
     public function prepareUnigramTable()
     {
-        $this->coverageInfo['total'] = $iterator = 0;
+        $this->coverageInfo['sum'] = 0;
+
         foreach ($this->wordForms as $key => $wordForm) {
             $tf = $idf = $reSpam = $numberOccurrences = $repeatInText = $repeatInLink = $avgInText = 0;
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
             $occurrences = [];
+
             foreach ($wordForm as $word) {
                 $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
                 $tf += $word['tf'];
@@ -706,11 +556,15 @@ class TestRelevance
                 $repeatInText += $word['repeatInTextMainPage'];
                 $repeatInLink += $word['repeatInLinkMainPage'];
                 $reSpam += $word['reSpam'];
+
                 if ($word['numberOccurrences'] > $numberOccurrences) {
                     $numberOccurrences = $word['numberOccurrences'];
                 }
+
                 $occurrences = array_merge($occurrences, $word['occurrences']);
             }
+
+            /** @var $danger */
             $this->wordForms[$key]['total'] = [
                 'tf' => $tf,
                 'idf' => $idf,
@@ -725,16 +579,13 @@ class TestRelevance
                 'danger' => $danger,
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
+
             $this->density[$key] = [
                 'count' => $avgInTotalCompetitors,
                 'tf' => $tf
             ];
-            if ($iterator <= 600) {
-                $this->coverageInfo['total'] = round($this->coverageInfo['total'] + $tf, 4);
-                $this->coverageInfo['600'][$key] = $tf;
-            }
-            $iterator++;
         }
+
         $collection = collect($this->density);
         $this->density = $collection->sortByDesc('tf')->toArray();
     }
@@ -942,6 +793,179 @@ class TestRelevance
             }
         }
         return implode(" ", $text);
+    }
+
+    /**
+     * @return void
+     */
+    public function preparePhrasesTable()
+    {
+        $phrases = $this->searchPhrases();
+        $totalCount = count($phrases);
+        foreach ($phrases as $phrase) {
+            if ($phrase != "") {
+                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
+                $occurrences = [];
+                foreach ($this->pages as $key => $page) {
+                    if (preg_match("/($phrase)/", $page['html']) ||
+                        preg_match("/($phrase)/", $page['linkText']) ||
+                        preg_match("/($phrase)/", $page['hiddenText'])) {
+                        $numberOccurrences++;
+                        $occurrences[] = $key;
+                    }
+
+                    if (preg_match("/($phrase)/", $page['html'])) {
+                        $count = mb_substr_count($this->pages[$key]['html'], "$phrase");
+                        $numberTextOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+
+                    if (preg_match("/($phrase)/", $page['hiddenText'])) {
+                        $count = mb_substr_count($this->pages[$key]['hiddenText'], "$phrase");
+                        $numberTextOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+
+                    if (preg_match("/($phrase)/", $page['linkText'])) {
+                        $count = mb_substr_count($this->pages[$key]['linkText'], "$phrase");
+                        $numberLinkOccurrences += $count;
+                        if ($reSpam < $count) {
+                            $reSpam = $count;
+                        }
+                    }
+                }
+                if ($numberOccurrences > 0) {
+                    $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
+                    $tf = round($countOccurrences / $totalCount, 6);
+                    $idf = round(log10($totalCount / $countOccurrences), 6);
+                    $repeatInTextMainPage = mb_substr_count(
+                        TestRelevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]),
+                        "$phrase");
+                    $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
+                    $countSites = count($this->sites);
+                    $result[$phrase] = [
+                        'tf' => $tf,
+                        'idf' => $idf,
+                        'numberOccurrences' => $numberOccurrences,
+                        'reSpam' => $reSpam,
+                        'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
+                        'avgInLink' => $numberLinkOccurrences / $countSites,
+                        'avgInText' => $numberTextOccurrences / $countSites,
+                        'repeatInLinkMainPage' => $repeatLinkInMainPage,
+                        'repeatInTextMainPage' => $repeatInTextMainPage,
+                        'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
+                        'occurrences' => $occurrences
+                    ];
+                }
+            }
+        }
+
+        $collection = collect($result);
+        $collection = $collection->unique();
+        $collection = $collection->sortByDesc('tf');
+        $this->phrases = $collection->slice(0, 600)->toArray();
+    }
+
+    /**
+     * из строки "купить много хлеба" получает фразы (купить много, много хлеба)
+     *
+     * @return array
+     */
+    public function searchPhrases(): array
+    {
+        $phrases = [];
+        $array = explode(' ', $this->competitorsTextAndLinks);
+
+        $grouped = array_chunk($array, 2);
+        foreach ($grouped as $two_words) {
+            $phrases[] = implode(' ', $two_words);
+        }
+        unset($array[0]);
+        $grouped = array_chunk($array, 2);
+        foreach ($grouped as $two_words) {
+            $phrases[] = implode(' ', $two_words);
+        }
+
+        $phrases = collect($phrases);
+        return $phrases->unique()->toArray();
+    }
+
+    /**
+     * @return void
+     */
+    public function calculateDensity()
+    {
+        $iterator = 0;
+        foreach ($this->pages as $page) {
+            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $density = $this->calculateDensityPoints($allText);
+            $this->sites[$iterator]['density'] = $density[600]['percentPoints'];
+            $this->sites[$iterator]['densityPoints'] = $density[600]['totalPoints'];
+            $this->sites[$iterator]['density100'] = $density[100]['percentPoints'];
+            $this->sites[$iterator]['density100Points'] = $density[100]['totalPoints'];
+            $this->sites[$iterator]['density200'] = $density[200]['percentPoints'];
+            $this->sites[$iterator]['density200Points'] = $density[200]['totalPoints'];
+            $iterator++;
+        }
+
+        if (!$this->mainPageIsRelevance) {
+            $mainPageText = TestRelevance::concatenation([
+                $this->mainPage['html'],
+                $this->mainPage['linkText'],
+                $this->mainPage['hiddenText']
+            ]);
+            $density = $this->calculateDensityPoints($mainPageText);
+            $this->sites[$this->params['main_page_link']]['density'] = $density[600]['percentPoints'];
+            $this->sites[$this->params['main_page_link']]['densityPoints'] = $density[600]['totalPoints'];
+            $this->sites[$this->params['main_page_link']]['density100'] = $density[100]['percentPoints'];
+            $this->sites[$this->params['main_page_link']]['density100Points'] = $density[100]['totalPoints'];
+            $this->sites[$this->params['main_page_link']]['density200'] = $density[200]['percentPoints'];
+            $this->sites[$this->params['main_page_link']]['density200Points'] = $density[200]['totalPoints'];
+        }
+    }
+
+    /**
+     * @param $text
+     * @return array
+     */
+    public function calculateDensityPoints($text): array
+    {
+        $result = [];
+        $allPoints = 0;
+        $iterator = 0;
+        foreach ($this->density as $word => $value) {
+            if (preg_match("/($word)/", $text)) {
+                $count = substr_count($text, " $word ");
+                $points = min($count / ($value['count'] / 100), 100);
+                $allPoints += $points;
+            }
+            $iterator++;
+            if ($iterator == 100) {
+                $result[100] = [
+                    'percentPoints' => round($allPoints * 2 / 600),
+                    'totalPoints' => round($allPoints),
+                ];
+            }
+            if ($iterator == 200) {
+                $result[200] = [
+                    'percentPoints' => round($allPoints * 2 / 600),
+                    'totalPoints' => round($allPoints),
+                ];
+            }
+            if ($iterator == 600) {
+                $result[600] = [
+                    'percentPoints' => round($allPoints / 600),
+                    'totalPoints' => round($allPoints),
+                ];
+                break;
+            }
+        }
+
+        return $result;
     }
 
 }

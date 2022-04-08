@@ -1,6 +1,5 @@
-function renderScannedSitesList(sites, coverageInfo = null) {
+function renderScannedSitesList(sites) {
     $('.sites').show(300)
-    let percent = coverageInfo / 100
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
     $.each(sites, function (key, value) {
@@ -21,8 +20,6 @@ function renderScannedSitesList(sites, coverageInfo = null) {
             "</div>";
         let noTop = ''
         let background
-        let coverageTf = value['coverageTf']
-        let objectPercent = coverageTf / percent
         let warning = value['danger']
             ? "<td class='bg-warning'> Не удалось получить данные со страницы </td>"
             : "<td> Страница успешно проанализирована </td>"
@@ -39,7 +36,7 @@ function renderScannedSitesList(sites, coverageInfo = null) {
             "<td>" + iterator + "</td>" +
             "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
-            "<td data-order='" + objectPercent + "'>" + objectPercent.toFixed(1) + "% </td>" +
+            "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'].toFixed(1) + "% </td>" +
             "<td>" + value['width'] + "</td>" +
             "<td>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
             "<td>" + value['density100'] + "<span class='text-muted'>(" + value['density100Points'] + ")</span></td>" +
