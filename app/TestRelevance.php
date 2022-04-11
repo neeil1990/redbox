@@ -233,12 +233,6 @@ class TestRelevance
      */
     public function calculateCoverage()
     {
-        $iterator = $sum = 0;
-        foreach ($this->wordForms as $value) {
-            $sum += $value['total']['tf'];
-        }
-        $this->coverageInfo['sum'] = round($sum, 6);
-
         foreach ($this->pages as $page) {
             $pageWords = TestRelevance::searchWords(TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]));
             $coverage = $this->calculateCoveragePercent($pageWords);
@@ -255,8 +249,7 @@ class TestRelevance
                     $this->mainPage['hiddenText']
                 ])
             );
-            Log::debug('$mainPageText', $mainPageText);
-            $coverage = $this->calculateCoveragePercent($mainPageText, true);
+            $coverage = $this->calculateCoveragePercent($mainPageText);
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
@@ -312,10 +305,12 @@ class TestRelevance
      * @param $pageText
      * @return array
      */
-    public function calculateCoveragePercent($pageText, $boolean = false): array
+    public function calculateCoveragePercent($pageText): array
     {
         $sum = 0;
         $count = 0;
+        $totalCount = 0;
+        $totalSumTf = 0;
 
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $keyword => $item) {
@@ -323,18 +318,18 @@ class TestRelevance
                     if (array_key_exists($keyword, $pageText)) {
                         $count++;
                         $sum += $item['tf'];
-                    } else {
-                        if ($boolean) {
-                            Log::debug('item', [$keyword]);
-                        }
                     }
+                    $totalCount++;
+                    $totalSumTf += $item['tf'];
                 }
             }
         }
 
-        $count = round($count / 6, 2);
-        $percent = $this->coverageInfo['sum'] / 100;
-        $sum = $sum / $percent;
+        $textCoveragePercent = $totalCount / 100;
+        $count = round($count / $textCoveragePercent, 2);
+
+        $tfCoveragePercent = $totalSumTf / 100;
+        $sum = $sum / $tfCoveragePercent;
 
         return [
             'count' => $count,
