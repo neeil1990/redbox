@@ -180,6 +180,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
     Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
+    Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
+    Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');

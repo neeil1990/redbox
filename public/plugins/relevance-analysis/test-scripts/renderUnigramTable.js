@@ -18,6 +18,26 @@ function renderUnigramTable(unigramTable) {
         });
         $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
         $('.buttons-html5').addClass('btn btn-secondary')
+        $(".dt-buttons").append("<button class='btn btn-secondary' id='showChildrenRows'>Child</button>");
+
+        $('#showChildrenRows').click(function () {
+            let object = sessionStorage.getItem('childTableRows')
+            console.log(object)
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/configure-children-rows",
+                data: {
+                    sessionStorage: object,
+                },
+                success: function (response) {
+                    window.open('/show-children-rows/' + response.filename, '_blank');
+                },
+                error: function (response) {
+                    console.log(response.message)
+                }
+            });
+        });
 
         $('#minTF, #maxTF').keyup(function () {
             $.fn.dataTable.ext.search.push(

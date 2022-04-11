@@ -29,12 +29,9 @@
                 top: 0;
             }
 
-            #unigramTBody > tr > td:nth-child(8),
-            #unigramTBody > tr > td:nth-child(10),
-            #unigramTBody > tr > td:nth-child(12),
-            #phrasesTBody > tr > td:nth-child(7),
-            #phrasesTBody > tr > td:nth-child(9),
-            #phrasesTBody > tr > td:nth-child(11) {
+            #unigramTBody > tr > td:nth-child(7),
+            #unigramTBody > tr > td:nth-child(9),
+            #unigramTBody > tr > td:nth-child(11) {
                 background: #ebf0f5;
             }
 
@@ -42,397 +39,18 @@
                 width: auto;
             }
 
-            .pb-3.unigram {
-                height: 100vh;
-            }
-
-            .pb-3.unigramd thead th {
-                position: sticky;
-                top: 0;
-                z-index: 1;
-            }
-
-            .pb-3.unigramd tbody th {
-                position: sticky;
-                left: 0;
-            }
-
-            .dataTables_paginate.paging_simple_numbers {
-                padding-bottom: 50px;
-            }
-
             .dt-buttons {
-                margin-left: 20px;
                 float: left;
+                margin-left: 20px;
             }
         </style>
     @endslot
-    <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
-        <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message" id="toast-message"></div>
-        </div>
-    </div>
-
-    <div id="toast-container" class="toast-top-right success-message lock-word" style="display:none;">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="lock-word"></div>
-        </div>
-    </div>
-
-    <div class="col-5 pb-3">
-
-        <div class="form-group required">
-            <label>{{ __('Your landing page') }}</label>
-            {!! Form::text("link", null ,["class" => "form-control link", "required"]) !!}
-        </div>
-
-        <div class="form-group required">
-            <label>{{ __('Тип проверки') }}</label>
-            {!! Form::select('type', [
-                'phrase' => 'Ключевая фраза',
-                'list' => 'Список сканируемых сайтов',
-                ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
-        </div>
-
-        <div id="site-list" style="display: none">
-            <div class="form-group required">
-                <label>{{ __('Список сайтов') }}</label>
-                {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
-            </div>
-        </div>
-
-        <div id="key-phrase">
-            <div class="form-group required">
-                <label>{{ __('Keyword') }}</label>
-                {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Top 10/20') }}</label>
-                {!! Form::select('count', [
-                        '10' => 10,
-                        '20' => 20,
-                        ], null, ['class' => 'custom-select rounded-0 count']) !!}
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Region') }}</label>
-                {!! Form::select('region', [
-                        '1' => __('Moscow'),
-                        '20' => __('Arkhangelsk'),
-                        '37' => __('Astrakhan'),
-                        '197' => __('Barnaul'),
-                        '4' => __('Belgorod'),
-                        '77' => __('Blagoveshchensk'),
-                        '191' => __('Bryansk'),
-                        '24' => __('Veliky Novgorod'),
-                        '75' => __('Vladivostok'),
-                        '33' => __('Vladikavkaz'),
-                        '192' => __('Vladimir'),
-                        '38' => __('Volgograd'),
-                        '21' => __('Vologda'),
-                        '193' => __('Voronezh'),
-                        '1106' => __('Grozny'),
-                        '54' => __('Ekaterinburg'),
-                        '5' => __('Ivanovo'),
-                        '63' => __('Irkutsk'),
-                        '41' => __('Yoshkar-ola'),
-                        '43' => __('Kazan'),
-                        '22' => __('Kaliningrad'),
-                        '64' => __('Kemerovo'),
-                        '7' => __('Kostroma'),
-                        '35' => __('Krasnodar'),
-                        '62' => __('Krasnoyarsk'),
-                        '53' => __('Kurgan'),
-                        '8' => __('Kursk'),
-                        '9' => __('Lipetsk'),
-                        '28' => __('Makhachkala'),
-                        '213' => __('Moscow'),
-                        '23' => __('Murmansk'),
-                        '1092' => __('Nazran'),
-                        '30' => __('Nalchik'),
-                        '47' => __('Nizhniy Novgorod'),
-                        '65' => __('Novosibirsk'),
-                        '66' => __('Omsk'),
-                        '10' => __('Eagle'),
-                        '48' => __('Orenburg'),
-                        '49' => __('Penza'),
-                        '50' => __('Perm'),
-                        '25' => __('Pskov'),
-                        '39' => __('Rostov-on-Don'),
-                        '11' => __('Ryazan'),
-                        '51' => __('Samara'),
-                        '42' => __('Saransk'),
-                        '2' => __('Saint-Petersburg'),
-                        '12' => __('Smolensk'),
-                        '239' => __('Sochi'),
-                        '36' => __('Stavropol'),
-                        '973' => __('Surgut'),
-                        '13' => __('Tambov'),
-                        '14' => __('Tver'),
-                        '67' => __('Tomsk'),
-                        '15' => __('Tula'),
-                        '195' => __('Ulyanovsk'),
-                        '172' => __('Ufa'),
-                        '76' => __('Khabarovsk'),
-                        '45' => __('Cheboksary'),
-                        '56' => __('Chelyabinsk'),
-                        '1104' => __('Cherkessk'),
-                        '16' => __('Yaroslavl'),
-                        ], null, ['class' => 'custom-select rounded-0 region']) !!}
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Ignored domains') }}</label>
-                {!! Form::textarea("ignoredDomains",
-                    "2gis.ru\n".
-                    "aliexpress.com\n".
-                    "AliExpress.ru\n".
-                    "auto.ru\n".
-                    "avito.ru\n".
-                    "banki.ru\n".
-                    "beru.ru\n".
-                    "blizko.ru\n".
-                    "cataloxy.ru\n".
-                    "deal.by\n".
-                    "domclick.ru\n".
-                    "ebay.com\n".
-                    "edadeal.ru\n".
-                    "e-katalog.ru\n".
-                    "hh.ru\n".
-                    "instagram.com\n".
-                    "irecommend.ru\n".
-                    "irr.ru\n".
-                    "leroymerlin.ru\n".
-                    "market.yandex.ru\n".
-                    "mvideo.ru\n".
-                    "onliner.by\n".
-                    "otzovik.com\n".
-                    "ozon.ru\n".
-                    "pandao.ru\n".
-                    "price.ru\n".
-                    "prodoctorov.ru\n".
-                    "profi.ru\n".
-                    "pulscen.ru\n".
-                    "quto.ru\n".
-                    "rambler.ru\n".
-                    "regmarkets.ru\n".
-                    "satom.ru\n".
-                    "shop.by\n".
-                    "sravni.ru\n".
-                    "tiu.ru\n".
-                    "toshop.ru\n".
-                    "wikipedia.org\n".
-                    "wildberries.ru\n".
-                    "yandex.ru\n".
-                    "yell.ru\n".
-                    "zoon.ru\n" ,["class" => "form-control ignoredDomains"] ) !!}
-            </div>
-        </div>
-
-        <div class="form-group required d-flex align-items-center">
-            <span>{{ __('Cut the words shorter') }}</span>
-            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator" id="separator" value="3">
-            <span>{{ __('symbols') }}</span>
-        </div>
-
-        <div class="switch mt-3 mb-3">
-            <div class="d-flex">
-                <div class="__helper-link ui_tooltip_w">
-                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               id="switchNoindex"
-                               name="noIndex">
-                        <label class="custom-control-label" for="switchNoindex"></label>
-                    </div>
-                </div>
-                <p>{{ __('Track the text in the noindex tag') }}</p>
-            </div>
-            <div class="d-flex">
-                <div class="__helper-link ui_tooltip_w">
-                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               id="switchAltAndTitle"
-                               name="hiddenText">
-                        <label class="custom-control-label" for="switchAltAndTitle"></label>
-                    </div>
-                </div>
-                <p>{{ __('Track words in the alt, title, and data-text attributes') }}</p>
-            </div>
-            <div class="d-flex">
-                <div class="__helper-link ui_tooltip_w">
-                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               id="switchConjunctionsPrepositionsPronouns"
-                               name="conjunctionsPrepositionsPronouns">
-                        <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
-                    </div>
-                </div>
-                <p>{{ __('Track conjunctions, prepositions, pronouns') }}</p>
-            </div>
-            <div class="d-flex">
-                <div class="__helper-link ui_tooltip_w">
-                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               id="switchMyListWords"
-                               name="switchMyListWords">
-                        <label class="custom-control-label" for="switchMyListWords"></label>
-                    </div>
-                </div>
-                <span>{{ __('Exclude') }}<span class="text-muted">{{ __('(your own list of words)') }}</span></span>
-            </div>
-            <div class="form-group required list-words mt-1" style="display:none;">
-                {!! Form::textarea('listWords',null,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex flex-column">
-        <div class="btn-group col-lg-3 col-md-5 mb-2">
-            <button class="btn btn-secondary" id="full-analyse">
-                {{ __('Full analysis') }}
-            </button>
-            <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __top">
-                        <span class="ui_tooltip_content">
-                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
-                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
-                        </span>
-                    </span>
-                </span>
-            </button>
-        </div>
-    </div>
-
-    <div id="progress-bar">
-        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
-    </div>
-
-    <div class="pb-3 pt-3 text" style="display:none">
-        <h3>{{ __('Comparing the amount of text') }}</h3>
-        <table class="table table-bordered table-striped dataTable dtr-inline">
-            <thead>
-            <tr>
-                <th class="col-3"></th>
-                <th>{{ __('Average values of competitors') }}</th>
-                <th>{{ __('Landing Page Values') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    <b>{{ __('Number of words') }}</b>
-                </td>
-                <td id="avgCountWords"></td>
-                <td id="mainPageCountWords"></td>
-            </tr>
-            <tr>
-                <td><b>{{ __('Number of characters') }}</b></td>
-                <td id="avgCountSymbols"></td>
-                <td id="mainPageCountSymbols"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="pb-3 clouds" style="display:none;">
-        <h3>{{ __('The clouds') }}</h3>
-        <div class="d-flex flex-column pb-3">
-            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3" style="cursor: pointer">
-                Облака tf-idf сайтов из топа и посадочной страницы
-            </button>
-            <div class="tf-idf-clouds" style="display: none">
-                <div class="d-lg-flex mt-4 justify-content-around">
-
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
-                        <div style="height: 350px" id="competitorsTfCloud" class="generated-cloud"></div>
-                    </div>
-
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('TF-idf values of links and landing page text') }}</span>
-                        <div style="height: 350px" id="mainPageTfCloud" class="generated-cloud"></div>
-                    </div>
-
-                </div>
-                <div class="d-lg-flex mt-4 justify-content-around">
-
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('Average tf-idf values of competitors text') }}</span>
-                        <div style="height: 350px" id="competitorsTextTfCloud" class="generated-cloud"></div>
-                    </div>
-
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('TF-idf values of the landing page text') }}</span>
-                        <div style="height: 350px" id="mainPageTextTfCloud" class="generated-cloud"></div>
-                    </div>
-
-                </div>
-                <div class="d-lg-flex mt-4 justify-content-around">
-
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('Average tf-idf values of competitor links') }}</span>
-                        <div style="height: 350px" id="competitorsLinksTfCloud" class="generated-cloud"></div>
-                    </div>
-
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('TF-idf values of landing page links') }}</span>
-                        <div style="height: 350px" id="mainPageLinksTfCloud" class="generated-cloud"></div>
-                    </div>
-
-                </div>
-            </div>
-            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5" style="cursor: pointer;">
-                Облака текста сайтов из топа и посадочной страницы
-            </button>
-            <div class="text-clouds" style=" display: none">
-                <div class="d-lg-flex mt-4 justify-content-around">
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('Competitors Link Zone') }}</span>
-                        <div style="height: 350px" id="competitorsLinksCloud" class="generated-cloud"></div>
-                    </div>
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('The link zone of your page') }}</span>
-                        <div style="height: 350px" id="mainPageLinksCloud" class="generated-cloud"></div>
-                    </div>
-                </div>
-                <div class="d-lg-flex mt-4 justify-content-around">
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('Competitors text area') }}</span>
-                        <div style="height: 350px" id="competitorsTextCloud" class="generated-cloud"></div>
-                    </div>
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('The text area of your page') }}</span>
-                        <div style="height: 350px" id="mainPageTextCloud" class="generated-cloud"></div>
-                    </div>
-                </div>
-                <div class="d-lg-flex mt-4 justify-content-around">
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('Competitors Link and Text area') }}</span>
-                        <div style="height: 350px" id="competitorsTextAndLinksCloud" class="generated-cloud"></div>
-                    </div>
-                    <div class="col-lg-5 col-md-10">
-                        <span>{{ __('The zone of links and text of your page') }}</span>
-                        <div style="height: 350px" id="mainPageTextWithLinksCloud" class="generated-cloud"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="pb-3 unigram" style="display: none;">
-        <h2>{{ __('Unigram') }}</h2>
-        <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
+    <div class="pb-3 unigram">
+        <h2>Наиболее используемые слова</h2>
+        <table id="unigram-children" class="table table-bordered table-hover dataTable dtr-inline"
                style="width: 100% !important;">
             <thead>
             <tr>
-                <th></th>
                 <th class="font-weight-normal text-muted">{{ __('Ranges for filtering the table') }}</th>
                 <th>
                     <div style="width: 90px">
@@ -496,95 +114,114 @@
                 </th>
             </tr>
             <tr style="position: relative; z-index: 100">
-                <th></th>
                 <th>
-                    {{ __('Words') }}<span class="__helper-link ui_tooltip_w">
+                    {{ __('Words') }}
+                    <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle"></i>
                     <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content" style="text-align: right">{{ __('Words and their word forms that are present on competitors websites.') }}
+                        <span class="ui_tooltip_content" style="text-align: right">
+                            {{ __('Words and their word forms that are present on competitors websites.') }}
                         </span>
                     </span>
                 </span>
                 </th>
-                <th>tf<span class="__helper-link ui_tooltip_w">
+                <th>tf
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The weight of the phrase relative to others.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>idf<span class="__helper-link ui_tooltip_w">
+                <th>idf
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The weight of the phrase relative to others.') }}
                             </span>
                         </span>
                     </span>
                 </th>
                 <th>
-                    {{ __('Intersection') }}<span class="__helper-link ui_tooltip_w">
+                    {{ __('Intersection') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The number of sites in which the word is present.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The number of sites in which the word is present.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Re - spam') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('Re - spam') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The maximum number of repetitions found on the competitors website.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The maximum number of repetitions found on the competitors website.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Average number of repetitions in the text and links') }}<span
-                        class="__helper-link ui_tooltip_w">
+                <th>{{ __('Average number of repetitions in the text and links') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('The total number of repetitions in the text and links') }}<span
-                        class="__helper-link ui_tooltip_w">
+                <th>{{ __('The total number of repetitions in the text and links') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The total number of repetitions on your page in links and text.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Average number of repetitions in the text') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('Average number of repetitions in the text') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text of your competitors.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The average value of the number of repetitions in the text of your competitors.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Number of repetitions in text') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('Number of repetitions in text') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The number of repetitions in the text on your page.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Average number of repetitions in links') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('Average number of repetitions in links') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the links of your competitors.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The average value of the number of repetitions in the links of your competitors.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Number of repetitions in links') }}<span class="__helper-link ui_tooltip_w">
+                <th>{{ __('Number of repetitions in links') }}
+                    <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                            <span class="ui_tooltip_content">
+                                {{ __('The number of repetitions in the links on your page.') }}
                             </span>
                         </span>
                     </span>
@@ -592,287 +229,254 @@
             </tr>
             </thead>
             <tbody id="unigramTBody">
+            @foreach($array as $key => $item)
+                <tr>
+                    <td style="text-align: left">{{ $key }}</td>
+                    <td>{{ $item['tf'] }}</td>
+                    <td>{{ $item['idf'] }}</td>
+                    <td>
+                        {{ $item['numberOccurrences'] }}
+                    </td>
+                    <td>{{ $item['reSpam'] }}</td>
+                    <td>{{ $item['avgInTotalCompetitors'] }}</td>
+                    <td @if($item['totalRepeatMainPage'] == 0)class="bg-warning-elem" @endif>{{ $item['totalRepeatMainPage'] }}</td>
+                    <td>{{ $item['avgInText'] }}</td>
+                    <td @if($item['repeatInTextMainPage'] == 0)class="bg-warning-elem" @endif>{{ $item['repeatInTextMainPage'] }}</td>
+                    <td>{{ $item['avgInLink'] }}</td>
+                    <td @if($item['repeatInLinkMainPage'] == 0)class="bg-warning-elem" @endif>{{ $item['repeatInLinkMainPage'] }}</td>
+                </tr>
+            @endforeach
             </tbody>
         </table>
-    </div>
-
-    <div class="phrases" style="display:none;margin-top: 80px;">
-        <h3>Фразы</h3>
-        <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline">
-            <thead>
-            <tr style="position: relative; z-index: 100;">
-                <th>Фраза</th>
-                <th>tf</th>
-                <th>idf</th>
-                <th>Пересечение</th>
-                <th>Переспам</th>
-                <th>Среднее количество повторений в тексте и ссылках</th>
-                <th>Общее колиество повторений в тексте и ссылках</th>
-                <th>Среднее количество повторений в тексте</th>
-                <th>Количество повторений в тексте</th>
-                <th>Среднее количество поторений в ссылках</th>
-                <th>Количество поторений в ссылках</th>
-            </tr>
-            </thead>
-            <tbody id="phrasesTBody">
-            </tbody>
-        </table>
-    </div>
-
-    <div class="sites" style="display: none; margin-top:50px;">
-        <h3>{{ __('Analyzed sites') }}</h3>
-        <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
-            <thead>
-            <tr role="row" style="position: relative; z-index: 100">
-                <th>{{ __('Position in the top') }}</th>
-                <th>{{ __('Domain') }}</th>
-                <th>{{ __('coverage for all important words') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Из таблицы униграм берутся все слова (далее эти слова именуются "важные слова") <br>
-                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
-                                Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
-                                Полученый процент равен сумме полученых баллов делённой на 600
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>{{ __('Coverage by tf') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
-                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
-                                Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
-                                Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>{{ __('Width') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Для вычисления  ширины, беруться первые 10 сайтов (позиция в топе) <br>
-                                Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
-                                В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>{{ __('Density') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Плотность высчитывается от значения средней по ТОПу для каждой фразы. <br>
-                                Если в средней 20, а у нас 5, то это 25 баллов. <br>
-                                Дальше все баллы для всех фраз складываются и делятся на общее количество 600. <br>
-                                - <br>
-                                Если мы переспамили, то пока в этом варианте мы никак не учитываем этот момент, фраза просто получает 100 баллов по плотности. <br>
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>Плотность(100)</th>
-                <th>Плотность(200)</th>
-                <th>{{ __('Result') }}</th>
-            </tr>
-            </thead>
-            <tbody id="scanned-sites-tbody">
-            </tbody>
-        </table>
-    </div>
-
-    <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
-        <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
-            Облака первых 200 важных (по tf-idf) слов у конкурентов
-        </button>
-        <div style="display: none" id="coverage-clouds" class="pt-2">
-        </div>
     </div>
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            $('#check-type').on('change', function () {
-                if ($(this).val() === 'list') {
-                    $('#key-phrase').hide()
-                    $('#site-list').show(300)
-                } else {
-                    $('#site-list').hide()
-                    $('#key-phrase').show(300)
-                }
-            });
-            var generatedTfIdf = false
-            var generatedText = false
-            var generatedCompetitorCoverage = false
-            $('#full-analyse').click(() => {
-                var interval = startProgressBar()
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('test.relevance') }}",
-                    data: {
-                        type: $('#check-type').val(),
-                        siteList: $('#siteList').val(),
-                        separator: $('#separator').val(),
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
-                    beforeSend: function () {
-                        $('#full-analyse').prop("disabled", true);
-                        $('#repeat-main-page-analyse').prop("disabled", true);
-                        $('#repeat-relevance-analyse').prop("disabled", true);
-                    },
-                    success: function (response) {
-                        successRequest(response, interval)
-                    },
-                    error: function (response) {
-                        let message = ''
-                        if (response.responseText) {
-                            $.each(JSON.parse(response.responseText), function (key, value) {
-                                if (value.link) {
-                                    message += value.link + "<br>"
-                                }
-                                if (value.phrase) {
-                                    message += value.phrase + "<br>"
-                                }
-                            });
+            $(document).ready(function () {
+                var table = $('#unigram-children').DataTable({
+                    "bSort":false,
+                    "pageLength": 50,
+                    "searching": true,
+                    dom: 'lBfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ]
+                });
+                $('#unigram-children').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+                $('.buttons-html5').addClass('btn btn-secondary')
 
-                            $('.toast-message.error-message').html(message)
-                        } else {
-                            $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
+
+                $('#minTF, #maxTF').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxTF = parseFloat($('#maxTF').val());
+                            var minTF = parseFloat($('#minTF').val());
+                            var TF = parseFloat(data[1]);
+                            if ((isNaN(minTF) && isNaN(maxTF)) ||
+                                (isNaN(minTF) && TF <= maxTF) ||
+                                (minTF <= TF && isNaN(maxTF)) ||
+                                (minTF <= TF && TF <= maxTF)) {
+                                return true;
+                            }
+                            return false;
                         }
-
-                        $('.toast-top-right.error-message.empty').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message.empty').hide(300)
-                        }, 5000)
-
-                        errorRequest(interval)
-                    }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
                 });
-            })
-
-            function successRequest(response, interval) {
-                stopProgressBar(interval)
-                refreshAllRenderElements()
-                renderUnigramTable(response.unigramTable);
-                renderScannedSitesList(response.sites, response.coverageInfo);
-                renderTextTable(response.avg, response.mainPage)
-                renderPhrasesTable(response.phrases)
-                $("#full-analyse").prop("disabled", false);
-                $("#repeat-main-page-analyse").prop("disabled", false);
-                $("#repeat-relevance-analyse").prop("disabled", false);
-                renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds);
-            }
-
-            function errorRequest(interval) {
-                stopProgressBar(interval)
-                $("#full-analyse").prop("disabled", false);
-                $("#repeat-main-page-analyse").prop("disabled", true);
-                $("#repeat-relevance-analyse").prop("disabled", true);
-            }
-
-            function refreshAllRenderElements() {
-                generatedTfIdf = false
-                generatedText = false
-                generatedCompetitorCoverage = false
-                $(".generated-cloud").html("")
-                $("#clouds").html("")
-                $("#unigram").dataTable().fnDestroy();
-                $("#scaned-sites").dataTable().fnDestroy();
-                $("#phrases").dataTable().fnDestroy();
-                $('.render').remove();
-                $('.text').hide()
-                $('.unigram').hide()
-                $('.sites').hide()
-                $('.clouds').hide()
-                $('.phrases').hide()
-                $('#competitorsTfClouds').hide()
-            }
-
-            function setProgressBarStyles(percent) {
-                $('.progress-bar').css({
-                    width: percent + '%'
-                })
-                document.querySelector('.progress-bar').innerText = percent + '%'
-            }
-
-            $('input#switchMyListWords').click(function () {
-                if ($(this).is(':checked')) {
-                    $('.form-group.required.list-words.mt-1').show(300)
-                    $('.form-control.listWords').prop('required', true)
-                } else {
-                    $('.form-group.required.list-words.mt-1').hide(300)
-                    $('.form-control.listWords').removeAttr('required')
-                }
-            })
-
-            function stopProgressBar(interval) {
-                window.clearInterval(interval)
-                setProgressBarStyles(100)
-                setTimeout(() => {
-                    $('.progress-bar').css({
-                        opacity: 0,
-                        width: 0 + '%'
-                    });
-                    $("#progress-bar").hide(300)
-                }, 3000)
-
-            }
-
-            function startProgressBar() {
-                let percent = 0;
-                $('.progress-bar').css({
-                    opacity: 1
+                $('#minIdf, #maxIdf').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxIdf = parseFloat($('#maxIdf').val());
+                            var minIdf = parseFloat($('#minIdf').val());
+                            var IDF = parseFloat(data[2]);
+                            if (
+                                (isNaN(minIdf) && isNaN(maxIdf)) ||
+                                (isNaN(minIdf) && IDF <= maxIdf) ||
+                                (minIdf <= IDF && isNaN(maxIdf)) ||
+                                (minIdf <= IDF && IDF <= maxIdf)
+                            ) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
                 });
-                $("#progress-bar").show(300)
-                return setInterval(() => {
-                    percent += Math.random();
-                    setProgressBarStyles(percent.toFixed(2))
-                }, 500)
-            }
-
-            $('#tf-idf-clouds').click(() => {
-                if ($('.tf-idf-clouds').is(':visible')) {
-                    $('.tf-idf-clouds').hide()
-                } else {
-                    $('.tf-idf-clouds').show()
-                }
-            })
-            $('#text-clouds').click(() => {
-                if ($('.text-clouds').is(':visible')) {
-                    $('.text-clouds').hide()
-                } else {
-                    $('.text-clouds').show()
-                }
-            })
+                $('#minInter, #maxInter').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxInter = parseFloat($('#maxInter').val());
+                            var minInter = parseFloat($('#minInter').val());
+                            var inter = parseFloat(data[3])
+                            if ((isNaN(minInter) && isNaN(maxInter)) ||
+                                (isNaN(minInter) && inter <= maxInter) ||
+                                (minInter <= inter && isNaN(maxInter)) ||
+                                (minInter <= inter && inter <= maxInter)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minReSpam, #maxReSpam').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxReSpam = parseFloat($('#maxReSpam').val());
+                            var minReSpam = parseFloat($('#minReSpam').val());
+                            var reSpam = parseFloat(data[4])
+                            if ((isNaN(minReSpam) && isNaN(maxReSpam)) ||
+                                (isNaN(minReSpam) && reSpam <= maxReSpam) ||
+                                (minReSpam <= reSpam && isNaN(maxReSpam)) ||
+                                (minReSpam <= reSpam && reSpam <= maxReSpam)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minAVG, #maxAVG').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxAVG = parseFloat($('#maxAVG').val());
+                            var minAVG = parseFloat($('#minAVG').val());
+                            var AVG = parseFloat(data[5])
+                            if ((isNaN(minAVG) && isNaN(maxAVG)) ||
+                                (isNaN(minAVG) && AVG <= maxAVG) ||
+                                (minAVG <= AVG && isNaN(maxAVG)) ||
+                                (minAVG <= AVG && AVG <= maxAVG)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minAVGText, #maxAVGText').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxAVGText = parseFloat($('#maxAVGText').val());
+                            var minAVGText = parseFloat($('#minAVGText').val());
+                            var count = parseFloat(data[6])
+                            if ((isNaN(minAVGText) && isNaN(maxAVGText)) ||
+                                (isNaN(minAVGText) && count <= maxAVGText) ||
+                                (minAVGText <= count && isNaN(maxAVGText)) ||
+                                (minAVGText <= count && count <= maxAVGText)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minInYourPage, #maxInYourPage').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxInYourPage = parseFloat($('#maxInYourPage').val());
+                            var minInYourPage = parseFloat($('#minInYourPage').val());
+                            var count = parseFloat(data[7])
+                            if ((isNaN(minInYourPage) && isNaN(maxInYourPage)) ||
+                                (isNaN(minInYourPage) && count <= maxInYourPage) ||
+                                (minInYourPage <= count && isNaN(maxInYourPage)) ||
+                                (minInYourPage <= count && count <= maxInYourPage)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minTextIYP, #maxTextIYP').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxTextIYP = parseFloat($('#maxTextIYP').val());
+                            var minTextIYP = parseFloat($('#minTextIYP').val());
+                            var count = parseFloat(data[8])
+                            if ((isNaN(minTextIYP) && isNaN(maxTextIYP)) ||
+                                (isNaN(minTextIYP) && count <= maxTextIYP) ||
+                                (minTextIYP <= count && isNaN(maxTextIYP)) ||
+                                (minTextIYP <= count && count <= maxTextIYP)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minAVGLink, #maxAVGLink').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxAVGLink = parseFloat($('#maxAVGLink').val());
+                            var minAVGLink = parseFloat($('#minAVGLink').val());
+                            var count = parseFloat(data[9])
+                            if ((isNaN(minAVGLink) && isNaN(maxAVGLink)) ||
+                                (isNaN(minAVGLink) && count <= maxAVGLink) ||
+                                (minAVGLink <= count && isNaN(maxAVGLink)) ||
+                                (minAVGLink <= count && count <= maxAVGLink)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+                $('#minLinkIYP, #maxLinkIYP').keyup(function () {
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data) {
+                            var maxLinkIYP = parseFloat($('#maxLinkIYP').val());
+                            var minLinkIYP = parseFloat($('#minLinkIYP').val());
+                            var count = parseFloat(data[10])
+                            if ((isNaN(minLinkIYP) && isNaN(maxLinkIYP)) ||
+                                (isNaN(minLinkIYP) && count <= maxLinkIYP) ||
+                                (minLinkIYP <= count && isNaN(maxLinkIYP)) ||
+                                (minLinkIYP <= count && count <= maxLinkIYP)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    );
+                    $.each($('[generated-child=true]'), function () {
+                        $(this).attr('generated-child', false)
+                    })
+                    table.draw();
+                });
+            });
         </script>
-        <script defer>
+        <script>
             var $jscomp = $jscomp || {};
             $jscomp.scope = {}, $jscomp.findInternal = function (t, e, n) {
                 t instanceof String && (t = String(t));

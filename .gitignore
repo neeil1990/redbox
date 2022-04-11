@@ -14,3 +14,4 @@ yarn-error.log
 /public/html
 /public/demo_php/
 /public/*.txt
+/public/children/*

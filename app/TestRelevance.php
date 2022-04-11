@@ -255,7 +255,8 @@ class TestRelevance
                     $this->mainPage['hiddenText']
                 ])
             );
-            $coverage = $this->calculateCoveragePercent($mainPageText);
+            Log::debug('$mainPageText', $mainPageText);
+            $coverage = $this->calculateCoveragePercent($mainPageText, true);
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
@@ -311,17 +312,22 @@ class TestRelevance
      * @param $pageText
      * @return array
      */
-    public function calculateCoveragePercent($pageText): array
+    public function calculateCoveragePercent($pageText, $boolean = false): array
     {
         $sum = 0;
         $count = 0;
 
         foreach ($this->wordForms as $wordForm) {
-            foreach ($wordForm as $keyword => $word) {
-                if (array_key_exists($keyword, $pageText)) {
-                    $count++;
-                    $sum += $word['tf'];
-                    break;
+            foreach ($wordForm as $keyword => $item) {
+                if ($keyword != 'total') {
+                    if (array_key_exists($keyword, $pageText)) {
+                        $count++;
+                        $sum += $item['tf'];
+                    } else {
+                        if ($boolean) {
+                            Log::debug('item', [$keyword]);
+                        }
+                    }
                 }
             }
         }
@@ -329,6 +335,7 @@ class TestRelevance
         $count = round($count / 6, 2);
         $percent = $this->coverageInfo['sum'] / 100;
         $sum = $sum / $percent;
+
         return [
             'count' => $count,
             'sum' => $sum,
@@ -345,7 +352,7 @@ class TestRelevance
         $array = array_count_values(explode(" ", $string));
         arsort($array);
 
-        return array_slice($array, 0, 600);
+        return $array;
     }
 
     /**

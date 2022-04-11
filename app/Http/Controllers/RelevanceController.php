@@ -12,7 +12,9 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -104,6 +106,22 @@ class RelevanceController extends Controller
      */
     public function testAnalyse(Request $request): JsonResponse
     {
+        $messages = [
+            'link.required' => __('A link to the landing page is required.'),
+            'phrase.required' => __('The keyword is required.')
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'link' => 'required|website',
+            'phrase' => 'required|not_website',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->getMessageBag()
+            ], 500);
+        }
+
         $relevance = new TestRelevance($request->input('link'));
         $relevance->getMainPageHtml();
 
@@ -132,6 +150,49 @@ class RelevanceController extends Controller
         $relevance->analysis($request);
 
         return RelevanceController::successResponse($relevance);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function configureChildrenRows(Request $request): JsonResponse
+    {
+        $filename = md5(microtime(true));
+        $filePath = public_path('children/' . $filename . '.json');
+        $wordForms = json_decode($request->sessionStorage, true);
+
+        $result = [];
+        foreach ($wordForms as $wordForm) {
+            foreach ($wordForm as $keyword => $word) {
+                if ($keyword != 'total') {
+                    $result[$keyword] = $word;
+                }
+            }
+        }
+        if (File::put($filePath, json_encode($result, JSON_UNESCAPED_UNICODE))) {
+            return response()->json([
+                'filename' => $filename
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'Файл не создан'
+            ], 500);
+        }
+    }
+
+    /**
+     * @param $fileName
+     * @return array|false|Application|Factory|View|mixed
+     */
+    public function showChildrenRows($fileName)
+    {
+        $filePath = public_path('children/' . $fileName . '.json');
+
+        $file = File::get($filePath);
+        $array = json_decode($file, true);
+
+        return view('relevance-analysis.children', ['array' => $array]);
     }
 
     /**
