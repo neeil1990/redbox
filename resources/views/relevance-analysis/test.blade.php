@@ -753,18 +753,20 @@
                     error: function (response) {
                         let message = ''
                         if (response.responseText) {
-                            $.each(JSON.parse(response.responseText), function (key, value) {
-                                console.log(key, value)
-                                if (value.link) {
-                                    message += value.link + "<br>"
+                            let messages = JSON.parse(response.responseText);
+                            try {
+                                if (messages['errors']['link']) {
+                                    message += messages['errors']['link'] + "<br>"
                                 }
-                                if (value.phrase) {
-                                    message += value.phrase + "<br>"
+                                if (messages['errors']['phrase']) {
+                                    message += messages['errors']['phrase'] + "<br>"
                                 }
-                                if (value.error) {
-                                    message += value.error + "<br>"
+                                if (messages['errors']['siteList']) {
+                                    message += messages['errors']['siteList'] + "<br>"
                                 }
-                            });
+                            } catch (e) {
+                                message += messages.countError + "<br>"
+                            }
 
                             $('.toast-message.error-message').html(message)
                         } else {

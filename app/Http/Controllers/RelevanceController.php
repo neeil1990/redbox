@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -106,56 +105,40 @@ class RelevanceController extends Controller
      */
     public function testAnalyse(Request $request): JsonResponse
     {
-        //почему не работает siteList.required ??????????
-        if ($request->input('type') === 'list') {
-            $bol = false;
-            if ($request->link == null) {
-                $bol = true;
-            }
-            if ($request->siteList == null) {
-                $bol = true;
-            }
-            if ($bol) {
-                return response()->json([
-                    ['error' => 'Список сайтов пуст или посадочная страница не является ссылкой']
-                ], 500);
-            }
-        } else {
-            $messages = [
-                'link.required' => __('A link to the landing page is required.'),
-                'phrase.required' => __('The keyword is required.'),
-            ];
 
-            $validator = Validator::make($request->all(), [
-                'link' => 'required|website',
-                'phrase' => 'required|not_website',
-            ], $messages);
+        $messages = [
+            'link.required' => __('A link to the landing page is required.'),
+            'phrase.required_without' => __('The keyword is required to fill in.'),
+            'siteList.required_without' => __('The list of sites is required to fill in.'),
+        ];
 
-            if ($validator->fails()) {
-                return response()->json([
-                    $validator->getMessageBag()
-                ], 500);
-            }
-        }
+        $request->validate([
+            'link' => 'required|website',
+            'phrase' => 'required_without:siteList|not_website',
+            'siteList' => 'required_without:link',
+        ], $messages);
+
 
         $relevance = new TestRelevance($request->input('link'));
+        $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'list') {
 
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
             $sitesList = explode("\n", $sitesList);
+            Log::debug('21312', [count($sitesList)]);
+
+            if (count($sitesList) <= 7) {
+                return response()->json([
+                    'countError' => 'Список сайов должен содержать минимум 7 сайтов'
+                ], 500);
+            }
+
             foreach ($sitesList as $item) {
                 $relevance->domains[] = str_replace('www.', "", mb_strtolower(trim($item)));
             }
 
-            if (count($relevance->domains) < 7) {
-                return response()->json([
-                    ['phrase' => 'Список сайов должен содержать минимум 7 сайтов']
-                ], 500);
-            }
-
         } else {
-
             $xml = new SimplifiedXmlFacade(20, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
@@ -165,9 +148,7 @@ class RelevanceController extends Controller
                 $request->input('ignoredDomains'),
                 $xmlResponse['response']['results']['grouping']['group']
             );
-
         }
-        $relevance->getMainPageHtml();
         $relevance->parseSites();
         $relevance->analysis($request);
 

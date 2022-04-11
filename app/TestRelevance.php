@@ -233,6 +233,7 @@ class TestRelevance
      */
     public function calculateCoverage()
     {
+        $iterator = 0;
         foreach ($this->pages as $page) {
             $pageWords = TestRelevance::searchWords(TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]));
             $coverage = $this->calculateCoveragePercent($pageWords);
