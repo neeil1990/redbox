@@ -22,7 +22,6 @@ function renderUnigramTable(unigramTable) {
 
         $('#showChildrenRows').click(function () {
             let object = sessionStorage.getItem('childTableRows')
-            console.log(object)
             $.ajax({
                 type: "POST",
                 dataType: "json",
