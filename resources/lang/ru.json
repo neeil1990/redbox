@@ -732,5 +732,6 @@
     "Invalid landing page link.": "Не валидная ссылка посадочной страницы.",
     "The phrase cannot be a link.": "Фраза не может быть ссылкой.",
     "A link to the landing page is required.": "Ссылка на посадочную страницу обязательна.",
-    "The keyword is required.": "Ключевая фраза обязательна."
+    "The keyword is required.": "Ключевая фраза обязательна.",
+    "the list of sites is required to fill in.": "список сайтов обязателен для заполнения."
 }

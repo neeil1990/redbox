@@ -754,11 +754,15 @@
                         let message = ''
                         if (response.responseText) {
                             $.each(JSON.parse(response.responseText), function (key, value) {
+                                console.log(key, value)
                                 if (value.link) {
                                     message += value.link + "<br>"
                                 }
                                 if (value.phrase) {
                                     message += value.phrase + "<br>"
+                                }
+                                if (value.error) {
+                                    message += value.error + "<br>"
                                 }
                             });
 

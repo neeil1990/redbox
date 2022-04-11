@@ -106,24 +106,39 @@ class RelevanceController extends Controller
      */
     public function testAnalyse(Request $request): JsonResponse
     {
-        $messages = [
-            'link.required' => __('A link to the landing page is required.'),
-            'phrase.required' => __('The keyword is required.')
-        ];
+        //почему не работает siteList.required ??????????
+        if ($request->input('type') === 'list') {
+            $bol = false;
+            if ($request->link == null) {
+                $bol = true;
+            }
+            if ($request->siteList == null) {
+                $bol = true;
+            }
+            if ($bol) {
+                return response()->json([
+                    ['error' => 'Список сайтов пуст или посадочная страница не является ссылкой']
+                ], 500);
+            }
+        } else {
+            $messages = [
+                'link.required' => __('A link to the landing page is required.'),
+                'phrase.required' => __('The keyword is required.'),
+            ];
 
-        $validator = Validator::make($request->all(), [
-            'link' => 'required|website',
-            'phrase' => 'required|not_website',
-        ], $messages);
+            $validator = Validator::make($request->all(), [
+                'link' => 'required|website',
+                'phrase' => 'required|not_website',
+            ], $messages);
 
-        if ($validator->fails()) {
-            return response()->json([
-                $validator->getMessageBag()
-            ], 500);
+            if ($validator->fails()) {
+                return response()->json([
+                    $validator->getMessageBag()
+                ], 500);
+            }
         }
 
         $relevance = new TestRelevance($request->input('link'));
-        $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'list') {
 
@@ -131,6 +146,12 @@ class RelevanceController extends Controller
             $sitesList = explode("\n", $sitesList);
             foreach ($sitesList as $item) {
                 $relevance->domains[] = str_replace('www.', "", mb_strtolower(trim($item)));
+            }
+
+            if (count($relevance->domains) < 7) {
+                return response()->json([
+                    ['phrase' => 'Список сайов должен содержать минимум 7 сайтов']
+                ], 500);
             }
 
         } else {
@@ -146,6 +167,7 @@ class RelevanceController extends Controller
             );
 
         }
+        $relevance->getMainPageHtml();
         $relevance->parseSites();
         $relevance->analysis($request);
 
