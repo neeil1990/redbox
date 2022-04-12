@@ -237,8 +237,8 @@ class TestRelevance
         foreach ($this->pages as $page) {
             $pageWords = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $coverage = $this->calculateCoveragePercent($pageWords);
-            $this->sites[$iterator]['coverage'] = $coverage['count'];
-            $this->sites[$iterator]['coverageTf'] = $coverage['sum'];
+            $this->sites[$iterator]['coverage'] = $coverage['coverage'];
+            $this->sites[$iterator]['coverageTf'] = $coverage['tf'];
             $iterator++;
         }
 
@@ -254,8 +254,8 @@ class TestRelevance
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'coverage' => $coverage['count'],
-                'coverageTf' => $coverage['sum'],
+                'coverage' => $coverage['coverage'],
+                'coverageTf' => $coverage['tf'],
             ];
         }
     }
@@ -306,49 +306,28 @@ class TestRelevance
      */
     public function calculateCoveragePercent($pageText): array
     {
-        $sum = 0;
-        $count = 0;
-        $totalCount = 0;
+        $tf = 0;
+        $coverage = 0;
         $totalSumTf = 0;
-        foreach ($this->wordForms as $wordForm) {
-            foreach ($wordForm as $keyword => $item) {
-                if ($keyword != 'total') {
-                    if (mb_substr_count($pageText, "$keyword ") > 0) {
-                        $count++;
-                        $sum += $item['tf'];
-                    }
-                    $totalCount++;
-                    $totalSumTf += $item['tf'];
-                }
+        foreach ($this->wordForms as $key => $wordForm) {
+            if (mb_substr_count($pageText, "$key ") > 0) {
+//                Log::debug('rd', [$this->wordForms[$key]]);
+//                die();
+                $coverage++;
+//                $tf += $this->wordForms[$key]['tf'];
             }
+//            $totalSumTf += $this->wordForms[$key]['tf'];
         }
-//1262
-//        337
-        $textCoveragePercent = $totalCount / 100;
-        $count = round($count / $textCoveragePercent, 2);
 
-        $tfCoveragePercent = $totalSumTf / 100;
-        $sum = $sum / $tfCoveragePercent;
+        $coverage = round($coverage / 6, 2);
+
+//        $tfCoveragePercent = $totalSumTf / 100;
+//        $tf = $tf / $tfCoveragePercent;
 
         return [
-            'count' => $count,
-            'sum' => $sum,
+            'coverage' => $coverage,
+            'tf' => 100,
         ];
-    }
-
-    /**
-     * Поиск всех уникальных слов в предоставленой строке
-     * @param $string
-     * @return array
-     */
-    public static function searchWords($string): array
-    {
-//        $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
-//        $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
-        $array = array_count_values(explode(" ", $string));
-        arsort($array);
-
-        return $array;
     }
 
     /**
