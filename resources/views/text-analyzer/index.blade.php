@@ -311,15 +311,13 @@
 
                 function arrayToObj(array) {
                     let length;
-                    if (array.count >= 250) {
-                        length = 250
-                    } else {
-                        length = array.count
-                    }
+                    length = array.count
                     let a = [], b = {};
                     for (let i = 0; i < length; i++) {
-                        b = array[i]
-                        a.push(b);
+                        if(typeof array[i] != 'undefined'){
+                            b = array[i]
+                            a.push(b);
+                        }
                     }
                     return a;
                 }
