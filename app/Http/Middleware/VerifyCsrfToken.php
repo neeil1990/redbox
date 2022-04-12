@@ -25,5 +25,6 @@ class VerifyCsrfToken extends Middleware
         '/analyze-relevance',
         '/repeat-analyze-main-page',
         '/repeat-analyze-relevance',
+        '/configure-children-rows',
     ];
 }
