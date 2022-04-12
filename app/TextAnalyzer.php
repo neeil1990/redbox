@@ -363,7 +363,7 @@ class TextAnalyzer
      * @param $string
      * @return Collection
      */
-    public static function searchPhrases($string): Collection
+    public static function searchPhrases($string)
     {
         $phrases = [];
         $array = explode(' ', $string);
@@ -533,12 +533,13 @@ class TextAnalyzer
      * @param $text
      * @return array
      */
-    public static function countWordsInText($text): array
+    public static function countWordsInText($text)
     {
         $wordForms = TextAnalyzer::searchWordForms($text);
         $textAr = array_count_values($text);
         asort($textAr);
         $textAr = array_reverse($textAr);
+        $result = [];
 
         foreach ($wordForms as $key => $wordForm) {
             $extra = $textAr[$key];
@@ -607,6 +608,7 @@ class TextAnalyzer
         $linkAr = array_count_values($link);
         asort($linkAr);
         $linkAr = array_reverse($linkAr);
+        $links = [];
 
         foreach ($wordForms as $key => $wordForm) {
             $extra = $linkAr[$key];
