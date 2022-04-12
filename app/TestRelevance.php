@@ -235,7 +235,7 @@ class TestRelevance
     {
         $iterator = 0;
         foreach ($this->pages as $page) {
-            $pageWords = TestRelevance::searchWords(TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]));
+            $pageWords = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $coverage = $this->calculateCoveragePercent($pageWords);
             $this->sites[$iterator]['coverage'] = $coverage['count'];
             $this->sites[$iterator]['coverageTf'] = $coverage['sum'];
@@ -243,13 +243,11 @@ class TestRelevance
         }
 
         if (!$this->mainPageIsRelevance) {
-            $mainPageText = TestRelevance::searchWords(
-                TestRelevance::concatenation([
-                    $this->mainPage['html'],
-                    $this->mainPage['linkText'],
-                    $this->mainPage['hiddenText']
-                ])
-            );
+            $mainPageText = TestRelevance::concatenation([
+                $this->mainPage['html'],
+                $this->mainPage['linkText'],
+                $this->mainPage['hiddenText']
+            ]);
             $coverage = $this->calculateCoveragePercent($mainPageText);
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
@@ -312,11 +310,10 @@ class TestRelevance
         $count = 0;
         $totalCount = 0;
         $totalSumTf = 0;
-
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $keyword => $item) {
                 if ($keyword != 'total') {
-                    if (array_key_exists($keyword, $pageText)) {
+                    if (mb_substr_count($pageText, "$keyword ") > 0) {
                         $count++;
                         $sum += $item['tf'];
                     }
@@ -325,7 +322,8 @@ class TestRelevance
                 }
             }
         }
-
+//1262
+//        337
         $textCoveragePercent = $totalCount / 100;
         $count = round($count / $textCoveragePercent, 2);
 
@@ -345,6 +343,8 @@ class TestRelevance
      */
     public static function searchWords($string): array
     {
+//        $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
+//        $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
         $array = array_count_values(explode(" ", $string));
         arsort($array);
 
