@@ -226,6 +226,7 @@ class TestRelevance
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
             $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
             $this->pages[$key]['coverage'] = 0;
+            $this->pages[$key]['coverageTf'] = 0;
         }
     }
 
@@ -235,18 +236,42 @@ class TestRelevance
     public function calculateCoverage()
     {
         foreach ($this->pages as $pageKey => $page) {
+            $object = $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'];
+            foreach ($this->wordForms as $wordForm) {
+                foreach ($wordForm as $word => $form) {
+                    $count = mb_substr_count($object, "$word ");
+                    if ($count > 0) {
+                        $this->pages[$pageKey]['coverage']++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        foreach ($this->pages as $pageKey => $page) {
             $this->sites[$pageKey]['coverage'] = round($this->pages[$pageKey]['coverage'] / 6, 2);
             $this->sites[$pageKey]['coverageTf'] = 100;
         }
 
         if (!$this->mainPageIsRelevance) {
+            $totalCount = 0;
             $mainPageText = $this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'];
+            foreach ($this->wordForms as $wordForm) {
+                foreach ($wordForm as $word => $form) {
+                    $count = mb_substr_count($mainPageText, "$word ");
+                    if ($count > 0) {
+                        $totalCount++;
+                        break;
+                    }
+                }
+            }
+
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'coverage' => $this->calculateCoveragePercent($mainPageText),
+                'coverage' => round($totalCount / 6, 2),
                 'coverageTf' => 100,
             ];
         }
@@ -294,19 +319,31 @@ class TestRelevance
 
     /**
      * @param $pageText
-     * @return float
+     * @return void
      */
-    public function calculateCoveragePercent($pageText): float
+    public function calculateCoveragePercent($pageText)
     {
-        $totalCount = 0;
-        foreach ($this->wordForms as $key => $wordForm) {
-            $count = mb_substr_count($pageText, "$key ");
-            if ($count > 0) {
-                $totalCount++;
+//        $totalCount = 0;
+//        foreach ($this->wordForms as $key => $wordForm) {
+//            $count = mb_substr_count($pageText, "$key ");
+//            if ($count > 0) {
+//                $totalCount++;
+//            }
+//        }
+//
+//        return round($totalCount / 6, 2);
+        foreach ($this->wordForms as $keyWord => $wordForm) {
+//            Log::debug('$wordForm', [$wordForm]);
+//            Log::debug('$keyWord', [$keyWord]);
+            foreach ($wordForm as $word => $form) {
+//                Log::debug('$word', [$word]);
+//                Log::debug('$form', [$form]);
+                $count = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'], "$word ");
+                if ($count > 0) {
+                    $this->sites[$this]['coverage']++;
+                }
             }
         }
-
-        return round($totalCount / 6, 2);
     }
 
     /**
@@ -520,6 +557,7 @@ class TestRelevance
                 }
 
                 $occurrences = array_merge($occurrences, $word['occurrences']);
+
             }
 
             /** @var $danger */
@@ -542,15 +580,6 @@ class TestRelevance
                 'count' => $avgInTotalCompetitors,
                 'tf' => $tf
             ];
-
-            Log::debug("$key", [$this->wordForms[$key]['total']]);
-            foreach ($this->pages as $pageKey => $page) {
-                $count = mb_substr_count($page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'], "$key ");
-                if ($count > 0) {
-                    Log::debug("$pageKey", [$count]);
-                    $this->pages[$pageKey]['coverage']++;
-                }
-            }
         }
 
         $collection = collect($this->density);
