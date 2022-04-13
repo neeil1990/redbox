@@ -232,7 +232,7 @@
             @foreach($array as $key => $item)
                 <tr>
                     <td style="text-align: left">{{ $key }}</td>
-                    <td>{{ $item['tf'] }}</td>
+                    <td>{{ number_format($item['tf'], 5) }}</td>
                     <td>{{ $item['idf'] }}</td>
                     <td>
                         {{ $item['numberOccurrences'] }}
