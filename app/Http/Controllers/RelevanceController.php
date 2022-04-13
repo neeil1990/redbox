@@ -152,6 +152,7 @@ class RelevanceController extends Controller
         $relevance->parseSites();
         $relevance->analysis($request);
 
+
         return RelevanceController::successResponse($relevance);
     }
 

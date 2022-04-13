@@ -36,7 +36,7 @@ function renderScannedSitesList(sites) {
             "<td>" + iterator + "</td>" +
             "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
-            "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'].toFixed(1) + "% </td>" +
+            "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td>" + value['width'] + "</td>" +
             "<td>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
             "<td>" + value['density100'] + "<span class='text-muted'>(" + value['density100Points'] + ")</span></td>" +

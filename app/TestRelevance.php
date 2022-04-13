@@ -87,24 +87,24 @@ class TestRelevance
     public function parseSites()
     {
         foreach ($this->domains as $item) {
+
             $domain = isset($item['doc']['url'])
                 ? strtolower($item['doc']['url'])
                 : $item;
+
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+
             // если ответ от сервера не был получен
+            $this->sites[$domain]['site'] = $domain;
             if ($result == '' || $result == null) {
-                $this->sites[] = [
-                    'site' => $domain,
-                    'danger' => true,
-                ];
+                $this->sites[$domain]['danger'] = true;
             } else {
-                $this->sites[] = [
-                    'site' => $domain,
-                    'danger' => false,
-                ];
+                $this->sites[$domain]['danger'] = false;
             }
+
             $this->pages[$domain]['html'] = $result;
             $this->params['html_relevance'] .= $result . $this->separator;
+
             //Если проанализированный домен является посадочной страницей
             $lastItem = array_key_last($this->sites);
             if ($domain == $this->params['main_page_link']) {
@@ -225,6 +225,7 @@ class TestRelevance
         foreach ($this->pages as $key => $page) {
             $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
             $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
+            $this->pages[$key]['coverage'] = 0;
         }
     }
 
@@ -233,29 +234,20 @@ class TestRelevance
      */
     public function calculateCoverage()
     {
-        $iterator = 0;
-        foreach ($this->pages as $page) {
-            $pageWords = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $coverage = $this->calculateCoveragePercent($pageWords);
-            $this->sites[$iterator]['coverage'] = $coverage['coverage'];
-            $this->sites[$iterator]['coverageTf'] = $coverage['tf'];
-            $iterator++;
+        foreach ($this->pages as $pageKey => $page) {
+            $this->sites[$pageKey]['coverage'] = round($this->pages[$pageKey]['coverage'] / 6, 2);
+            $this->sites[$pageKey]['coverageTf'] = 100;
         }
 
         if (!$this->mainPageIsRelevance) {
-            $mainPageText = TestRelevance::concatenation([
-                $this->mainPage['html'],
-                $this->mainPage['linkText'],
-                $this->mainPage['hiddenText']
-            ]);
-            $coverage = $this->calculateCoveragePercent($mainPageText);
+            $mainPageText = $this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'];
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'coverage' => $coverage['coverage'],
-                'coverageTf' => $coverage['tf'],
+                'coverage' => $this->calculateCoveragePercent($mainPageText),
+                'coverageTf' => 100,
             ];
         }
     }
@@ -302,32 +294,19 @@ class TestRelevance
 
     /**
      * @param $pageText
-     * @return array
+     * @return float
      */
-    public function calculateCoveragePercent($pageText): array
+    public function calculateCoveragePercent($pageText): float
     {
-        $tf = 0;
-        $coverage = 0;
-        $totalSumTf = 0;
+        $totalCount = 0;
         foreach ($this->wordForms as $key => $wordForm) {
-            if (mb_substr_count($pageText, "$key ") > 0) {
-//                Log::debug('rd', [$this->wordForms[$key]]);
-//                die();
-                $coverage++;
-//                $tf += $this->wordForms[$key]['tf'];
+            $count = mb_substr_count($pageText, "$key ");
+            if ($count > 0) {
+                $totalCount++;
             }
-//            $totalSumTf += $this->wordForms[$key]['tf'];
         }
 
-        $coverage = round($coverage / 6, 2);
-
-//        $tfCoveragePercent = $totalSumTf / 100;
-//        $tf = $tf / $tfCoveragePercent;
-
-        return [
-            'coverage' => $coverage,
-            'tf' => 100,
-        ];
+        return round($totalCount / 6, 2);
     }
 
     /**
@@ -458,31 +437,32 @@ class TestRelevance
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
                 $occurrences = [];
                 foreach ($this->pages as $key => $page) {
-                    if (preg_match("/($word)/", $page['html'])) {
-                        $count = substr_count($this->pages[$key]['html'], " $word ");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-                    if (preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
-                        $count = substr_count($this->pages[$key]['hiddenText'], " $word ");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
-                        }
-                    }
-                    if (preg_match("/($word)/", $this->pages[$key]['linkText'])) {
-                        $count = substr_count($this->pages[$key]['linkText'], " $word ");
-                        $numberLinkOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
+
+                    $htmlCount = mb_substr_count($this->pages[$key]['html'], "$word ");
+                    if ($htmlCount > 0) {
+                        $numberTextOccurrences += $htmlCount;
+                        if ($reSpam < $htmlCount) {
+                            $reSpam = $htmlCount;
                         }
                     }
 
-                    if (preg_match("/($word)/", $this->pages[$key]['html']) ||
-                        preg_match("/($word)/", $this->pages[$key]['linkText']) ||
-                        preg_match("/($word)/", $this->pages[$key]['hiddenText'])) {
+                    $hiddenTextCount = mb_substr_count($this->pages[$key]['hiddenText'], "$word ");
+                    if ($hiddenTextCount > 0) {
+                        $numberTextOccurrences += $hiddenTextCount;
+                        if ($reSpam < $hiddenTextCount) {
+                            $reSpam = $hiddenTextCount;
+                        }
+                    }
+
+                    $linkTextCount = mb_substr_count($this->pages[$key]['linkText'], "$word ");
+                    if ($linkTextCount > 0) {
+                        $numberLinkOccurrences += $linkTextCount;
+                        if ($reSpam < $linkTextCount) {
+                            $reSpam = $linkTextCount;
+                        }
+                    }
+
+                    if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
                         $numberOccurrences++;
                         $occurrences[] = $key;
                     }
@@ -493,6 +473,7 @@ class TestRelevance
 
                 $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
                 $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
+
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
                     'idf' => $idf,
@@ -561,6 +542,15 @@ class TestRelevance
                 'count' => $avgInTotalCompetitors,
                 'tf' => $tf
             ];
+
+            Log::debug("$key", [$this->wordForms[$key]['total']]);
+            foreach ($this->pages as $pageKey => $page) {
+                $count = mb_substr_count($page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'], "$key ");
+                if ($count > 0) {
+                    Log::debug("$pageKey", [$count]);
+                    $this->pages[$pageKey]['coverage']++;
+                }
+            }
         }
 
         $collection = collect($this->density);
@@ -876,17 +866,15 @@ class TestRelevance
      */
     public function calculateDensity()
     {
-        $iterator = 0;
-        foreach ($this->pages as $page) {
+        foreach ($this->pages as $keyPage => $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $density = $this->calculateDensityPoints($allText);
-            $this->sites[$iterator]['density'] = $density[600]['percentPoints'];
-            $this->sites[$iterator]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$iterator]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$iterator]['density100Points'] = $density[100]['totalPoints'];
-            $this->sites[$iterator]['density200'] = $density[200]['percentPoints'];
-            $this->sites[$iterator]['density200Points'] = $density[200]['totalPoints'];
-            $iterator++;
+            $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
+            $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
+            $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
+            $this->sites[$keyPage]['density100Points'] = $density[100]['totalPoints'];
+            $this->sites[$keyPage]['density200'] = $density[200]['percentPoints'];
+            $this->sites[$keyPage]['density200Points'] = $density[200]['totalPoints'];
         }
 
         if (!$this->mainPageIsRelevance) {
