@@ -235,6 +235,12 @@ class TestRelevance
      */
     public function calculateCoverage()
     {
+        //расчёт общей суммы tf
+        $totalTf = 0;
+        foreach ($this->wordForms as $wordForm) {
+            $totalTf += $wordForm['total']['tf'];
+        }
+
         foreach ($this->pages as $pageKey => $page) {
             $object = $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'];
             foreach ($this->wordForms as $wordForm) {
@@ -242,6 +248,7 @@ class TestRelevance
                     $count = mb_substr_count($object, "$word ");
                     if ($count > 0) {
                         $this->pages[$pageKey]['coverage']++;
+                        $this->pages[$pageKey]['coverageTf'] += $wordForm['total']['tf'];
                         break;
                     }
                 }
@@ -250,17 +257,19 @@ class TestRelevance
 
         foreach ($this->pages as $pageKey => $page) {
             $this->sites[$pageKey]['coverage'] = round($this->pages[$pageKey]['coverage'] / 6, 2);
-            $this->sites[$pageKey]['coverageTf'] = 100;
+            $this->sites[$pageKey]['coverageTf'] = round($this->pages[$pageKey]['coverageTf'] / ($totalTf / 100), 2);
         }
 
         if (!$this->mainPageIsRelevance) {
             $totalCount = 0;
+            $mainPageTf = 0;
             $mainPageText = $this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'];
             foreach ($this->wordForms as $wordForm) {
                 foreach ($wordForm as $word => $form) {
                     $count = mb_substr_count($mainPageText, "$word ");
                     if ($count > 0) {
                         $totalCount++;
+                        $mainPageTf += $wordForm['total']['tf'];
                         break;
                     }
                 }
@@ -272,7 +281,7 @@ class TestRelevance
                 'mainPage' => true,
                 'inRelevance' => false,
                 'coverage' => round($totalCount / 6, 2),
-                'coverageTf' => 100,
+                'coverageTf' => round($mainPageTf / ($totalTf / 100), 2),
             ];
         }
     }
