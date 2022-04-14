@@ -5,11 +5,10 @@
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
         <!-- BS Stepper -->
         <link rel="stylesheet" href="{{ asset('plugins/bs-stepper/css/bs-stepper.min.css') }}">
-        <!-- Bootstrap4 Duallistbox -->
-        <link rel="stylesheet" href="{{ asset('plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css') }}">
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+
     @endslot
 
     <div class="bs-stepper">
@@ -55,10 +54,10 @@
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- BS-Stepper -->
         <script src="{{ asset('plugins/bs-stepper/js/bs-stepper.min.js') }}"></script>
-        <!-- Bootstrap4 Duallistbox -->
-        <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}"></script>
         <!-- Select2 -->
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+        <!-- Papa parse -->
+        <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
 
         <script>
             toastr.options = {
@@ -66,11 +65,48 @@
                 "timeOut": "1500"
             };
 
+            let Parts = {
+                part: null,
+
+                project: function (event) {
+                    //event.preventDefault();
+
+                    console.log(this.part);
+                },
+                keywords: function (event) {
+                    if(this.part.find('input[name^="keywords"]').length < 4){
+                        event.preventDefault();
+
+                        toastr.error('Добавте не менее 4 запросов чтобы продолжить.');
+                    }
+                },
+                competitors: function (event) {
+                    let textarea = this.part.find('#textarea-competitors');
+                    let list = _.compact(textarea.val().split(/[\r\n]+/));
+
+                    if(!list.length){
+                        event.preventDefault();
+
+                        toastr.error('Заполните список.');
+                    }
+
+                    $.each(list, function (index, value) {
+                        let domain = value.replace(/\s/g, '');
+                        let pattern = /^[a-z-а-я-0-9-\.]+\.[a-z-а-я]{2,4}$/;
+                        if(pattern.test(domain)){
+                            console.log('check: ' + domain);
+                        }else{
+                            event.preventDefault();
+                            toastr.error('Не верный формат: ' + domain);
+                        }
+                    });
+                },
+            };
+
             document.addEventListener('DOMContentLoaded', function () {
                 let stepper = document.querySelector('.bs-stepper');
                 window.stepper = new Stepper(stepper);
 
-                let form = $('.bs-stepper-content form');
                 stepper.addEventListener('show.bs-stepper', function (event) {
 
                     let nextStep = event.detail.indexStep;
@@ -81,63 +117,23 @@
                     }
 
                     let panels = $('.bs-stepper-content .content');
+                    let panel = panels.eq(currentStep);
 
-                    let panelOut = panels.eq(currentStep);
-                    if(panelOut.attr('id') === 'project-part' && !form.find('#name').val()){
-                        event.preventDefault();
-                        form.addClass('was-validated');
+                    Parts.part = panel;
+
+                    switch (panel.attr('id')) {
+                        case 'project-part':
+                            Parts.project(event);
+                            break;
+                        case 'keywords-part':
+                            Parts.keywords(event);
+                            break;
+                        case 'competitors-part':
+                            Parts.competitors(event);
+                            break;
+                        default:
+                            console.log('next...');
                     }
-                });
-            });
-
-            let dualListBoxes = [];
-
-            dualListBoxes.push($('.duallistbox-keywords'));
-            dualListBoxes.push($('.duallistbox-competitors'));
-
-            $.each(dualListBoxes, function (index, box) {
-
-                var target = box.data('model');
-
-                //Bootstrap Duallistbox
-                var duallistbox = box.bootstrapDualListbox({
-                    nonSelectedListLabel: 'Рекомендованные',
-                    selectedListLabel: 'Выбранные [<a href="#" data-toggle="modal" data-target="'+ target +'">Добавить свой список.</a>]',
-                    moveOnSelect: false,
-                    filterOnValues: true,
-                    preserveSelectionOnMove: 'moved',
-                    moveSelectedLabel: 'Добавить выбранные',
-                    moveAllLabel: 'Добавить все',
-                    removeSelectedLabel: 'Удалить выбранные',
-                    removeAllLabel: 'Удалить все',
-                });
-
-                $(target).on('show.bs.modal', function (event) {
-                    var modal = $(this);
-
-                    modal.find('.btn.add').click(function () {
-                        var textarea = modal.find('textarea').val();
-                        var list = _.compact(textarea.split(/[\r\n]+/));
-
-                        if(list.length){
-
-                            $.each(list, function (index, value) {
-                                let option = $('<option />').val(value).attr('selected', '').text(value);
-                                duallistbox.append(option);
-                            });
-
-                            duallistbox.bootstrapDualListbox('refresh');
-
-                            modal.modal('hide');
-                        }else{
-                            toastr.error('Что-то не так...');
-                        }
-                    });
-                });
-
-                $(target).on('hide.bs.modal', function (event) {
-                    var modal = $(this);
-                    modal.find('.btn.add').off("click");
                 });
             });
 
@@ -147,6 +143,175 @@
                 placeholder: 'Select a regions',
             });
 
+            let Table = {
+                id: '#keywords',
+                data: [],
+
+                page: 1,
+                count: 5,
+
+                pagination: function(){
+                    let self = this;
+
+                    let ul = $(this.id).find('.card-footer ul');
+
+                    let pages = Math.ceil(this.data.length / this.count);
+
+                    ul.find('li').remove();
+                    for (let i = 1; i <= pages; i++) {
+
+                        let li = $('<li />', {
+                            class: 'page-item'
+                        }).html($('<a />', {
+                            href: '',
+                            class: 'page-link'
+                        }).text(i).click(function () {
+                            self.page = i;
+                            self.display();
+
+                            return false;
+                        }));
+
+                        ul.append(li);
+                    }
+                },
+                render: function () {
+                    let self = this;
+
+                    self.data = _.filter(self.data, function (item) {
+                        return item[0];
+                    });
+
+                    $(self.id).find('table tbody tr').remove();
+
+                    $.each(self.data, function (index, value) {
+
+                        let tr = $('<tr />').attr('data-eq', index);
+
+                        tr.append($('<td />').text(index + 1));
+
+                        tr.append($('<td />').html(self.templateText(value[0], {placeholder: 'Запрос', name: 'keywords[]'})));
+                        tr.append($('<td />').html(self.templateText(value[1], {placeholder: 'Страница', name: 'pages[]'})));
+
+                        tr.append($('<td />').html(self.templateBtn()));
+
+                        tr.hide();
+
+                        $(self.id).find('table tbody').append(tr);
+                    });
+
+                    this.pagination();
+
+                    toastr.success('Добавлено');
+                },
+                display: function() {
+
+                    let start = (this.page - 1) * this.count;
+                    let end = start + this.count;
+
+                    let tr = $(this.id).find('table tbody tr');
+
+                    tr.hide();
+
+                    for (let i = start; i < end; i++) {
+                        tr.eq(i).show();
+                    }
+                },
+                templateText: function (val, obj) {
+                    if(!val)
+                        val =  null;
+
+                    if(!obj)
+                        obj = {
+                            placeholder: '',
+                            name: ''
+                        };
+
+                    return $('<input />', obj).addClass('form-control form-control-border p-0').css({
+                        background: 'none',
+                        height: 'auto'
+                    }).val(val);
+                },
+                templateBtn: function () {
+                    let self = this;
+
+                    let a = $('<a />', {
+                        href: '#'
+                    });
+                    let span = $('<span />', {
+                        class: 'badge bg-danger'
+                    });
+                    let i = $('<i />', {
+                        class: 'fas fa-trash'
+                    });
+
+                    return a.html(span.html(i)).click(function () {
+                        let item = $(this).closest('tr');
+
+                        item.remove();
+
+                        self.data.splice(item.data('eq'), 1);
+
+                        toastr.success('Удалено');
+
+                        self.pagination();
+
+                        return false;
+                    });
+                }
+
+            };
+
+            $('#add-keywords').click(function () {
+
+                let csv = $('#csv-keywords');
+                let textarea = $('#textarea-keywords');
+
+                if(csv[0].files.length){
+
+                    if(csv[0].files[0].type !== 'text/csv'){
+                        toastr.error('Загрузите файл формата .csv');
+                        return false;
+                    }
+
+                    csv.parse({
+                        config: {
+                            skipEmptyLines: 'greedy',
+                            complete: function (result) {
+                                Table.data = result.data;
+                                Table.render();
+                                Table.display();
+
+                                textarea.val('');
+                            },
+                            download: 0
+                        }
+                    });
+
+                    return false;
+                }
+
+                if(textarea.val()){
+                    let list = _.compact(textarea.val().split(/[\r\n]+/));
+                    let data = [];
+
+                    $.each(list, function (index, value) {
+                        data.push([value, '']);
+                    });
+
+                    if(data.length > 0){
+                        Table.data = data;
+                        Table.render();
+                        Table.display();
+
+                        return false;
+                    }
+                }
+
+                toastr.error('Заполните или загрузите список запросов.');
+
+                return false;
+            });
         </script>
     @endslot
 
