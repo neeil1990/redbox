@@ -194,12 +194,12 @@ function renderMainTr(tBody, key, wordWorm) {
     let idf = crop(wordWorm['total']['idf'])
     let numberOccurrences = crop(wordWorm['total']['numberOccurrences'])
     let reSpam = crop(wordWorm['total']['reSpam'])
-    let avgInTotalCompetitors = crop(wordWorm['total']['avgInTotalCompetitors'], true)
-    let totalRepeatMainPage = crop(wordWorm['total']['totalRepeatMainPage'])
-    let avgInText = crop(wordWorm['total']['avgInText'], true)
-    let repeatInTextMainPage = crop(wordWorm['total']['repeatInTextMainPage'])
-    let avgInLink = crop(wordWorm['total']['avgInLink'], true)
-    let repeatInLinkMainPage = crop(wordWorm['total']['repeatInLinkMainPage'])
+    let avgInTotalCompetitors = wordWorm['total']['avgInTotalCompetitors']
+    let totalRepeatMainPage = wordWorm['total']['totalRepeatMainPage']
+    let avgInText = wordWorm['total']['avgInText']
+    let repeatInTextMainPage = wordWorm['total']['repeatInTextMainPage']
+    let avgInLink = wordWorm['total']['avgInLink']
+    let repeatInLinkMainPage = wordWorm['total']['repeatInLinkMainPage']
     let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
     let repeatInLinkMainPageWarning = repeatInLinkMainPage === '0' ? " class='bg-warning-elem'" : ""
     let totalInMainPage = repeatInLinkMainPage === '0' && repeatInTextMainPage === '0' ? " class='bg-warning-elem'" : ""
@@ -251,13 +251,13 @@ function renderChildTr(elem, key, word, stats) {
     let tf = crop(stats['tf'])
     let idf = crop(stats['idf'])
     let numberOccurrences = crop(stats['numberOccurrences'])
-    let reSpam = crop(stats['reSpam'])
-    let avgInText = crop(stats['avgInText'], true)
-    let avgInTotalCompetitors = crop(stats['avgInTotalCompetitors'], true)
-    let totalRepeatMainPage = crop(stats['totalRepeatMainPage'])
-    let repeatInTextMainPage = crop(stats['repeatInTextMainPage'])
-    let avgInLink = crop(stats['avgInLink'], true)
-    let repeatInLinkMainPage = crop(stats['repeatInLinkMainPage'])
+    let reSpam = stats['reSpam']
+    let avgInText = stats['avgInText']
+    let avgInTotalCompetitors = stats['avgInTotalCompetitors']
+    let totalRepeatMainPage = stats['totalRepeatMainPage']
+    let repeatInTextMainPage = stats['repeatInTextMainPage']
+    let avgInLink = stats['avgInLink']
+    let repeatInLinkMainPage = stats['repeatInLinkMainPage']
     if (repeatInTextMainPage === '0') {
         var textWarn = "class='bg-warning-elem'"
         var bgWarn = "class='bg-warning-elem'"

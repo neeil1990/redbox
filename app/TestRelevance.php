@@ -273,15 +273,14 @@ class TestRelevance
                 }
             }
 
-            $this->sites[$this->params['main_page_link']] =
-                [
-                    'site' => $this->params['main_page_link'],
-                    'danger' => false,
-                    'mainPage' => true,
-                    'inRelevance' => false,
-                    'coverage' => round($totalCount / 6, 2),
-                    'coverageTf' => round($mainPageTf / ($totalTf / 100), 2),
-                ];
+            $this->sites[$this->params['main_page_link']] = [
+                'site' => $this->params['main_page_link'],
+                'danger' => false,
+                'mainPage' => true,
+                'inRelevance' => false,
+                'coverage' => round($totalCount / 6, 2),
+                'coverageTf' => round($mainPageTf / ($totalTf / 100), 2),
+            ];
         }
     }
 
@@ -545,9 +544,9 @@ class TestRelevance
                     'idf' => $idf,
                     'numberOccurrences' => $numberOccurrences,
                     'reSpam' => $reSpam,
-                    'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
-                    'avgInLink' => $numberLinkOccurrences / $countSites,
-                    'avgInText' => $numberTextOccurrences / $countSites,
+                    'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
+                    'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
+                    'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
                     'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
                     'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
@@ -593,9 +592,9 @@ class TestRelevance
             $this->wordForms[$key]['total'] = [
                 'tf' => $tf,
                 'idf' => $idf,
-                'avgInTotalCompetitors' => $avgInTotalCompetitors,
-                'avgInText' => $avgInText,
-                'avgInLink' => $avgInLink,
+                'avgInTotalCompetitors' => (int)ceil($avgInTotalCompetitors),
+                'avgInText' => (int)ceil($avgInText),
+                'avgInLink' => (int)ceil($avgInLink),
                 'repeatInTextMainPage' => $repeatInText,
                 'repeatInLinkMainPage' => $repeatInLink,
                 'totalRepeatMainPage' => $totalRepeatMainPage,
@@ -825,6 +824,7 @@ class TestRelevance
      */
     public function preparePhrasesTable()
     {
+        $result = [];
         $phrases = $this->searchPhrases();
         $totalCount = count($phrases);
         foreach ($phrases as $phrase) {
@@ -877,9 +877,9 @@ class TestRelevance
                         'idf' => $idf,
                         'numberOccurrences' => $numberOccurrences,
                         'reSpam' => $reSpam,
-                        'avgInTotalCompetitors' => ($numberLinkOccurrences + $numberTextOccurrences) / $countSites,
-                        'avgInLink' => $numberLinkOccurrences / $countSites,
-                        'avgInText' => $numberTextOccurrences / $countSites,
+                        'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
+                        'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
+                        'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
                         'repeatInLinkMainPage' => $repeatLinkInMainPage,
                         'repeatInTextMainPage' => $repeatInTextMainPage,
                         'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
