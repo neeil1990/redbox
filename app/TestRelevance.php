@@ -243,66 +243,58 @@ class TestRelevance
 
         foreach ($this->pages as $pageKey => $page) {
             $object = $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'];
-            $this->calculateCoverage($object, $pageKey);
-        }
+            $coverage = $this->calculateCoverage($object);
 
-        foreach ($this->pages as $pageKey => $page) {
-            $this->sites[$pageKey]['coverage'] = round($this->pages[$pageKey]['coverage'] / 6, 2);
-            $this->sites[$pageKey]['coverageTf'] = round($this->pages[$pageKey]['coverageTf'] / ($totalTf / 100), 2);
+            $this->sites[$pageKey]['coverage'] = round($coverage['text'] / 6, 2);
+            $this->sites[$pageKey]['coverageTf'] = round($coverage['tf'] / ($totalTf / 100), 2);
         }
 
         if (!$this->mainPageIsRelevance) {
-            $totalCount = 0;
-            $mainPageTf = 0;
             $mainPageText = $this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'];
-            foreach ($this->wordForms as $wordForm) {
-                foreach ($wordForm as $word => $form) {
-                    $count = mb_substr_count($mainPageText, "$word ");
-                    if ($count > 0) {
-                        $totalCount++;
-                        break;
-                    }
-                }
-                foreach ($wordForm as $word => $form) {
-                    if ($word != 'total') {
-                        $count = mb_substr_count($mainPageText, "$word ");
-                        if ($count > 0) {
-                            $mainPageTf += $wordForm['total']['tf'];
-                        }
-                    }
-                }
-            }
+            $coverage = $this->calculateCoverage($mainPageText);
 
             $this->sites[$this->params['main_page_link']] = [
                 'site' => $this->params['main_page_link'],
                 'danger' => false,
                 'mainPage' => true,
                 'inRelevance' => false,
-                'coverage' => round($totalCount / 6, 2),
-                'coverageTf' => round($mainPageTf / ($totalTf / 100), 2),
+                'coverage' => round($coverage['text'] / 6, 2),
+                'coverageTf' => round($coverage['tf'] / ($totalTf / 100), 2),
             ];
+
         }
     }
 
-    public function calculateCoverage($object, $pageKey)
+    /**
+     * @param $object
+     * @return array
+     */
+    public function calculateCoverage($object): array
     {
+        $text = 0;
+        $tf = 0;
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
-                $count = mb_substr_count($object, "$word ");
-                if ($count > 0) {
-                    $this->pages[$pageKey]['coverage']++;
+                if (strpos($object, "$word ") !== false) {
+                    $text++;
                     break;
                 }
             }
+        }
+        foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word != 'total') {
-                    $count = mb_substr_count($object, "$word ");
-                    if ($count > 0) {
-                        $this->pages[$pageKey]['coverageTf'] += $form['tf'];
+                    if (strpos($object, "$word ") !== false) {
+                        $tf += $form['tf'];
                     }
                 }
             }
         }
+
+        return [
+            'text' => $text,
+            'tf' => $tf,
+        ];
     }
 
     /**
