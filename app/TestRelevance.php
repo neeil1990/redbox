@@ -137,7 +137,7 @@ class TestRelevance
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
         $this->prepareClouds();
-        $this->calculateCoverage();
+        $this->calculateCoveragePoints();
         $this->calculatePoints();
         $this->calculateDensity();
         $this->params['sites'] = json_encode($this->sites);
@@ -233,7 +233,7 @@ class TestRelevance
     /**
      * @return void
      */
-    public function calculateCoverage()
+    public function calculateCoveragePoints()
     {
         //расчёт общей суммы tf
         $totalTf = 0;
@@ -243,16 +243,7 @@ class TestRelevance
 
         foreach ($this->pages as $pageKey => $page) {
             $object = $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'];
-            foreach ($this->wordForms as $wordForm) {
-                foreach ($wordForm as $word => $form) {
-                    $count = mb_substr_count($object, "$word ");
-                    if ($count > 0) {
-                        $this->pages[$pageKey]['coverage']++;
-                        $this->pages[$pageKey]['coverageTf'] += $wordForm['total']['tf'];
-                        break;
-                    }
-                }
-            }
+            $this->calculateCoverage($object, $pageKey);
         }
 
         foreach ($this->pages as $pageKey => $page) {
@@ -269,20 +260,49 @@ class TestRelevance
                     $count = mb_substr_count($mainPageText, "$word ");
                     if ($count > 0) {
                         $totalCount++;
-                        $mainPageTf += $wordForm['total']['tf'];
                         break;
+                    }
+                }
+                foreach ($wordForm as $word => $form) {
+                    if ($word != 'total') {
+                        $count = mb_substr_count($mainPageText, "$word ");
+                        if ($count > 0) {
+                            $mainPageTf += $wordForm['total']['tf'];
+                        }
                     }
                 }
             }
 
-            $this->sites[$this->params['main_page_link']] = [
-                'site' => $this->params['main_page_link'],
-                'danger' => false,
-                'mainPage' => true,
-                'inRelevance' => false,
-                'coverage' => round($totalCount / 6, 2),
-                'coverageTf' => round($mainPageTf / ($totalTf / 100), 2),
-            ];
+            $this->sites[$this->params['main_page_link']] =
+                [
+                    'site' => $this->params['main_page_link'],
+                    'danger' => false,
+                    'mainPage' => true,
+                    'inRelevance' => false,
+                    'coverage' => round($totalCount / 6, 2),
+                    'coverageTf' => round($mainPageTf / ($totalTf / 100), 2),
+                ];
+        }
+    }
+
+    public function calculateCoverage($object, $pageKey)
+    {
+        foreach ($this->wordForms as $wordForm) {
+            foreach ($wordForm as $word => $form) {
+                $count = mb_substr_count($object, "$word ");
+                if ($count > 0) {
+                    $this->pages[$pageKey]['coverage']++;
+                    break;
+                }
+            }
+            foreach ($wordForm as $word => $form) {
+                if ($word != 'total') {
+                    $count = mb_substr_count($object, "$word ");
+                    if ($count > 0) {
+                        $this->pages[$pageKey]['coverageTf'] += $form['tf'];
+                    }
+                }
+            }
         }
     }
 

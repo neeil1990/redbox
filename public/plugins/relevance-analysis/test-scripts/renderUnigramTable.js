@@ -38,207 +38,147 @@ function renderUnigramTable(unigramTable) {
             });
         });
 
+        function isValid(min, max, target, settings) {
+            if (settings.nTable.id !== 'unigram') {
+                return true;
+            }
+            if ((isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && target <= max) ||
+                (min <= target && isNaN(max)) ||
+                (min <= target && target <= max)) {
+                return true;
+            }
+            return false;
+        }
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var maxTF = parseFloat($('#maxTF').val());
+            var minTF = parseFloat($('#minTF').val());
+            var TF = parseFloat(data[2]);
+            return isValid(minTF, maxTF, TF, settings)
+        });
         $('#minTF, #maxTF').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxTF = parseFloat($('#maxTF').val());
-                    var minTF = parseFloat($('#minTF').val());
-                    var TF = parseFloat(data[2]);
-                    if ((isNaN(minTF) && isNaN(maxTF)) ||
-                        (isNaN(minTF) && TF <= maxTF) ||
-                        (minTF <= TF && isNaN(maxTF)) ||
-                        (minTF <= TF && TF <= maxTF)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minIdf = parseFloat($('#minIdf').val());
+            var maxIdf = parseFloat($('maxIdf').val());
+            var IDF = parseFloat(data[3]);
+            return isValid(minIdf, maxIdf, IDF, settings)
         });
         $('#minIdf, #maxIdf').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxIdf = parseFloat($('#maxIdf').val());
-                    var minIdf = parseFloat($('#minIdf').val());
-                    var IDF = parseFloat(data[3]);
-                    if (
-                        (isNaN(minIdf) && isNaN(maxIdf)) ||
-                        (isNaN(minIdf) && IDF <= maxIdf) ||
-                        (minIdf <= IDF && isNaN(maxIdf)) ||
-                        (minIdf <= IDF && IDF <= maxIdf)
-                    ) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minInter = parseFloat($('#minInter').val());
+            var maxInter = parseFloat($('#maxInter').val());
+            var inter = parseFloat(data[4])
+            return isValid(minInter, maxInter, inter, settings)
         });
         $('#minInter, #maxInter').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxInter = parseFloat($('#maxInter').val());
-                    var minInter = parseFloat($('#minInter').val());
-                    var inter = parseFloat(data[4])
-                    if ((isNaN(minInter) && isNaN(maxInter)) ||
-                        (isNaN(minInter) && inter <= maxInter) ||
-                        (minInter <= inter && isNaN(maxInter)) ||
-                        (minInter <= inter && inter <= maxInter)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minReSpam = parseFloat($('#minReSpam').val());
+            var maxReSpam = parseFloat($('#maxReSpam').val());
+            var reSpam = parseFloat(data[5])
+            return isValid(minReSpam, maxReSpam, reSpam, settings)
         });
         $('#minReSpam, #maxReSpam').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxReSpam = parseFloat($('#maxReSpam').val());
-                    var minReSpam = parseFloat($('#minReSpam').val());
-                    var reSpam = parseFloat(data[5])
-                    if ((isNaN(minReSpam) && isNaN(maxReSpam)) ||
-                        (isNaN(minReSpam) && reSpam <= maxReSpam) ||
-                        (minReSpam <= reSpam && isNaN(maxReSpam)) ||
-                        (minReSpam <= reSpam && reSpam <= maxReSpam)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minAVG = parseFloat($('#minAVG').val());
+            var maxAVG = parseFloat($('#maxAVG').val());
+            var AVG = parseFloat(data[6])
+            return isValid(minAVG, maxAVG, AVG, settings)
         });
         $('#minAVG, #maxAVG').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxAVG = parseFloat($('#maxAVG').val());
-                    var minAVG = parseFloat($('#minAVG').val());
-                    var AVG = parseFloat(data[6])
-                    if ((isNaN(minAVG) && isNaN(maxAVG)) ||
-                        (isNaN(minAVG) && AVG <= maxAVG) ||
-                        (minAVG <= AVG && isNaN(maxAVG)) ||
-                        (minAVG <= AVG && AVG <= maxAVG)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minAVGText = parseFloat($('#minAVGText').val());
+            var maxAVGText = parseFloat($('#maxAVGText').val());
+            var count = parseFloat(data[7])
+            return isValid(minAVGText, maxAVGText, count, settings)
         });
         $('#minAVGText, #maxAVGText').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxAVGText = parseFloat($('#maxAVGText').val());
-                    var minAVGText = parseFloat($('#minAVGText').val());
-                    var count = parseFloat(data[7])
-                    if ((isNaN(minAVGText) && isNaN(maxAVGText)) ||
-                        (isNaN(minAVGText) && count <= maxAVGText) ||
-                        (minAVGText <= count && isNaN(maxAVGText)) ||
-                        (minAVGText <= count && count <= maxAVGText)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minInYourPage = parseFloat($('#minInYourPage').val());
+            var maxInYourPage = parseFloat($('#maxInYourPage').val());
+            var count = parseFloat(data[8])
+            return isValid(minInYourPage, maxInYourPage, count, settings)
         });
         $('#minInYourPage, #maxInYourPage').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxInYourPage = parseFloat($('#maxInYourPage').val());
-                    var minInYourPage = parseFloat($('#minInYourPage').val());
-                    var count = parseFloat(data[8])
-                    if ((isNaN(minInYourPage) && isNaN(maxInYourPage)) ||
-                        (isNaN(minInYourPage) && count <= maxInYourPage) ||
-                        (minInYourPage <= count && isNaN(maxInYourPage)) ||
-                        (minInYourPage <= count && count <= maxInYourPage)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minTextIYP = parseFloat($('#minTextIYP').val());
+            var maxTextIYP = parseFloat($('#maxTextIYP').val());
+            var count = parseFloat(data[9])
+            return isValid(minTextIYP, maxTextIYP, count, settings)
         });
         $('#minTextIYP, #maxTextIYP').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxTextIYP = parseFloat($('#maxTextIYP').val());
-                    var minTextIYP = parseFloat($('#minTextIYP').val());
-                    var count = parseFloat(data[9])
-                    if ((isNaN(minTextIYP) && isNaN(maxTextIYP)) ||
-                        (isNaN(minTextIYP) && count <= maxTextIYP) ||
-                        (minTextIYP <= count && isNaN(maxTextIYP)) ||
-                        (minTextIYP <= count && count <= maxTextIYP)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minAVGLink = parseFloat($('#minAVGLink').val());
+            var maxAVGLink = parseFloat($('#maxAVGLink').val());
+            var count = parseFloat(data[10])
+            return isValid(minAVGLink, maxAVGLink, count, settings)
         });
         $('#minAVGLink, #maxAVGLink').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxAVGLink = parseFloat($('#maxAVGLink').val());
-                    var minAVGLink = parseFloat($('#minAVGLink').val());
-                    var count = parseFloat(data[10])
-                    if ((isNaN(minAVGLink) && isNaN(maxAVGLink)) ||
-                        (isNaN(minAVGLink) && count <= maxAVGLink) ||
-                        (minAVGLink <= count && isNaN(maxAVGLink)) ||
-                        (minAVGLink <= count && count <= maxAVGLink)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minLinkIYP = parseFloat($('#minLinkIYP').val());
+            var maxLinkIYP = parseFloat($('#maxLinkIYP').val());
+            var count = parseFloat(data[11])
+            return isValid(minLinkIYP, maxLinkIYP, count, settings)
         });
         $('#minLinkIYP, #maxLinkIYP').keyup(function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data) {
-                    var maxLinkIYP = parseFloat($('#maxLinkIYP').val());
-                    var minLinkIYP = parseFloat($('#minLinkIYP').val());
-                    var count = parseFloat(data[11])
-                    if ((isNaN(minLinkIYP) && isNaN(maxLinkIYP)) ||
-                        (isNaN(minLinkIYP) && count <= maxLinkIYP) ||
-                        (minLinkIYP <= count && isNaN(maxLinkIYP)) ||
-                        (minLinkIYP <= count && count <= maxLinkIYP)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            table.draw();
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-            table.draw();
         });
     });
 }
