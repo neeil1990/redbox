@@ -655,7 +655,7 @@ class TestRelevance
             $ignoredDomains = explode("\n", $ignoredDomains);
             $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
             foreach ($sites as $item) {
-                $domain = str_replace('www.', "", mb_strtolower($item['doc']['domain']));
+                $domain = mb_strtolower($item['doc']['domain']);
                 if (!in_array($domain, $ignoredDomains)) {
                     $this->domains[] = $item;
                 }
@@ -663,6 +663,7 @@ class TestRelevance
                     break;
                 }
             }
+
         } else {
             $this->domains = array_slice($sites, 0, $count - 1);
         }

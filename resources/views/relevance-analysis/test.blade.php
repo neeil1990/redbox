@@ -822,10 +822,11 @@
             }
 
             function setProgressBarStyles(percent) {
-                $('.progress-bar').css({
+                let bar = $('.progress-bar')
+                bar.css({
                     width: percent + '%'
                 })
-                document.querySelector('.progress-bar').innerText = percent + '%'
+                bar.html(percent + '%');
             }
 
             $('input#switchMyListWords').click(function () {
@@ -860,7 +861,7 @@
                 return setInterval(() => {
                     percent += Math.random();
                     setProgressBarStyles(percent.toFixed(2))
-                }, 500)
+                }, 743)
             }
 
             $('#tf-idf-clouds').click(() => {

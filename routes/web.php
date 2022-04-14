@@ -175,6 +175,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
 
+    Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
@@ -192,5 +193,3 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('monitoring', 'MonitoringController');
 });
-
-Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');

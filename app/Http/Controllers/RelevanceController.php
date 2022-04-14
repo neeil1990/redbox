@@ -126,7 +126,6 @@ class RelevanceController extends Controller
 
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
             $sitesList = explode("\n", $sitesList);
-            Log::debug('21312', [count($sitesList)]);
 
             if (count($sitesList) <= 7) {
                 return response()->json([
@@ -139,7 +138,7 @@ class RelevanceController extends Controller
             }
 
         } else {
-            $xml = new SimplifiedXmlFacade(20, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
