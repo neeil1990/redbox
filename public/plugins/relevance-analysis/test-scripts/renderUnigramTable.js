@@ -205,8 +205,8 @@ function renderMainTr(tBody, key, wordWorm) {
     let totalInMainPage = repeatInLinkMainPage === '0' && repeatInTextMainPage === '0' ? " class='bg-warning-elem'" : ""
     let lockBlock =
         "    <span class='lock-block'>" +
-        "        <i class='fa fa-plus-circle lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
-        "        <i class='fa fa-minus-circle unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "        <i class='fa fa-solid fa-plus lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
+        "        <i class='fa fa-solid fa-plus unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
     tBody.append(
         "<tr class='render'>" +
@@ -271,8 +271,8 @@ function renderChildTr(elem, key, word, stats) {
     }
     let lockBlock =
         "    <span class='lock-block'>" +
-        "        <i class='fa fa-plus-circle lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
-        "        <i class='fa fa-minus-circle unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "        <i class='fa fa-solid fa-plus lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
+        "        <i class='fa fa-solid fa-minus unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
     elem.after(
         "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
