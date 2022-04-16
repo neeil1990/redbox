@@ -19,6 +19,7 @@ function renderScannedSitesList(sites) {
             "        </div>" +
             "</div>";
         let noTop = ''
+        let span = ''
         let background
         let warning = value['danger']
             ? "<td class='bg-warning'> Не удалось получить данные со страницы </td>"
@@ -31,9 +32,12 @@ function renderScannedSitesList(sites) {
         } else {
             background = ''
         }
+        if (value['ignored']) {
+            span = "<span class='text-muted'>(игнорируемый домен)</span>"
+        }
         tbody.append(
             "<tr class='render'>" +
-            "<td>" + iterator + "</td>" +
+            "<td data-order='" + iterator + "'>" + iterator + span + "</td>" +
             "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +

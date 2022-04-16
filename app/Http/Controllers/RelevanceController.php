@@ -118,12 +118,10 @@ class RelevanceController extends Controller
             'siteList' => 'required_without:link',
         ], $messages);
 
-
-        $relevance = new TestRelevance($request->input('link'));
+        $relevance = new TestRelevance($request->input('link'), $request->input('separator'));
         $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'list') {
-
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
             $sitesList = explode("\n", $sitesList);
 
@@ -134,9 +132,11 @@ class RelevanceController extends Controller
             }
 
             foreach ($sitesList as $item) {
-                $relevance->domains[] = str_replace('www.', "", mb_strtolower(trim($item)));
+                $relevance->domains[] = [
+                    'item' => str_replace('www.', "", mb_strtolower(trim($item))),
+                    'ignored' => false,
+                ];
             }
-
         } else {
             $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
@@ -150,7 +150,6 @@ class RelevanceController extends Controller
         }
         $relevance->parseSites();
         $relevance->analysis($request);
-
 
         return RelevanceController::successResponse($relevance);
     }

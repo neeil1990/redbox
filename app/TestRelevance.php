@@ -53,8 +53,9 @@ class TestRelevance
 
     /**
      * @param $link
+     * @param $separator
      */
-    public function __construct($link)
+    public function __construct($link, $separator)
     {
         $this->pages = [];
         $this->domains = [];
@@ -64,6 +65,7 @@ class TestRelevance
         $this->competitorsText = '';
         $this->competitorsLinks = '';
         $this->competitorsTextAndLinks = '';
+        $this->maxWordLength = $separator;
 
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
         $this->params['main_page_link'] = $link;
@@ -87,9 +89,8 @@ class TestRelevance
     public function parseSites()
     {
         foreach ($this->domains as $item) {
-
-            $domain = isset($item['doc']['url'])
-                ? strtolower($item['doc']['url'])
+            $domain = isset($item['item'])
+                ? strtolower($item['item'])
                 : $item;
 
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
@@ -101,8 +102,11 @@ class TestRelevance
             } else {
                 $this->sites[$domain]['danger'] = false;
             }
+            $this->sites[$domain]['ignored'] = $item['ignored'];
 
             $this->pages[$domain]['html'] = $result;
+            $this->pages[$domain]['ignored'] = $item['ignored'];
+
             $this->params['html_relevance'] .= $result . $this->separator;
 
             //Если проанализированный домен является посадочной страницей
@@ -123,7 +127,6 @@ class TestRelevance
      */
     public function analysis($request)
     {
-        $this->maxWordLength = $request->separator;
         $this->removeNoIndex($request->noIndex);
         $this->getHiddenData($request->hiddenText);
         $this->separateLinksFromText();
@@ -223,8 +226,11 @@ class TestRelevance
     public function getTextFromCompetitors()
     {
         foreach ($this->pages as $key => $page) {
-            $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
-            $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
+            if (!$this->pages[$key]['ignored']) {
+                $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
+                $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
+            }
+
             $this->pages[$key]['coverage'] = 0;
             $this->pages[$key]['coverageTf'] = 0;
         }
@@ -303,14 +309,18 @@ class TestRelevance
      */
     public function calculatePoints()
     {
+        // высчитываем 100%, игнорируя игнорируемые домены
         $avgCoveragePercent = $iterator = 0;
         foreach ($this->sites as $site) {
-            if ($iterator == 10) {
-                break;
+            if (!$site['ignored']) {
+                if ($iterator == 10) {
+                    break;
+                }
+                $avgCoveragePercent += $site['coverage'];
+                $iterator++;
             }
-            $avgCoveragePercent += $site['coverage'];
-            $iterator++;
         }
+
         $avgCoveragePercent /= 10;
         foreach ($this->sites as $key => $site) {
             $points = $this->sites[$key]['coverage'] / ($avgCoveragePercent / 100);
@@ -335,35 +345,6 @@ class TestRelevance
         $percent = $this->coverageInfo['sum'] / 100;
 
         return $sum / $percent;
-    }
-
-    /**
-     * @param $pageText
-     * @return void
-     */
-    public function calculateCoveragePercent($pageText)
-    {
-//        $totalCount = 0;
-//        foreach ($this->wordForms as $key => $wordForm) {
-//            $count = mb_substr_count($pageText, "$key ");
-//            if ($count > 0) {
-//                $totalCount++;
-//            }
-//        }
-//
-//        return round($totalCount / 6, 2);
-        foreach ($this->wordForms as $keyWord => $wordForm) {
-//            Log::debug('$wordForm', [$wordForm]);
-//            Log::debug('$keyWord', [$keyWord]);
-            foreach ($wordForm as $word => $form) {
-//                Log::debug('$word', [$word]);
-//                Log::debug('$form', [$form]);
-                $count = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'], "$word ");
-                if ($count > 0) {
-                    $this->sites[$this]['coverage']++;
-                }
-            }
-        }
     }
 
     /**
@@ -486,8 +467,14 @@ class TestRelevance
      */
     public function processingOfGeneralInformation()
     {
-        //TODO САМЫЙ РЕСУРСОЗАТРАТНЫЙ МОМЕНТ - НУЖНО ОПТИМИЗИРОВАТЬ
-        $countSites = count($this->sites);
+        $countSites = 0;
+        // считаем количество сайтов, которые не в списке игнорируемых
+        foreach ($this->sites as $site) {
+            if (!$site['ignored']) {
+                $countSites++;
+            }
+        }
+
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
@@ -654,16 +641,28 @@ class TestRelevance
             $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
             $ignoredDomains = explode("\n", $ignoredDomains);
             $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
+
+            $iterator = 0;
+
             foreach ($sites as $item) {
-                $domain = mb_strtolower($item['doc']['domain']);
-                if (!in_array($domain, $ignoredDomains)) {
-                    $this->domains[] = $item;
+                $domain = str_replace('www.', "", mb_strtolower($item['doc']['domain']));
+                if (in_array($domain, $ignoredDomains)) {
+                    $this->domains[] = [
+                        'item' => $item['doc']['url'],
+                        'ignored' => true,
+                    ];
+                } else {
+                    $this->domains[] = [
+                        'item' => $item['doc']['url'],
+                        'ignored' => false,
+                    ];
+                    $iterator++;
                 }
-                if (count($this->domains) == $count) {
+
+                if ($iterator == $count) {
                     break;
                 }
             }
-
         } else {
             $this->domains = array_slice($sites, 0, $count - 1);
         }
@@ -919,7 +918,9 @@ class TestRelevance
     {
         foreach ($this->pages as $keyPage => $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            Log::debug($keyPage, [$allText]);
             $density = $this->calculateDensityPoints($allText);
+            Log::debug($keyPage, [$density]);
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
             $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
@@ -972,11 +973,12 @@ class TestRelevance
                     'totalPoints' => round($allPoints),
                 ];
             }
+            $result[600] = [
+                'percentPoints' => round($allPoints / 600),
+                'totalPoints' => round($allPoints),
+            ];
+
             if ($iterator == 600) {
-                $result[600] = [
-                    'percentPoints' => round($allPoints / 600),
-                    'totalPoints' => round($allPoints),
-                ];
                 break;
             }
         }
