@@ -206,7 +206,7 @@ function renderMainTr(tBody, key, wordWorm) {
     let lockBlock =
         "    <span class='lock-block'>" +
         "        <i class='fa fa-solid fa-plus lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
-        "        <i class='fa fa-solid fa-plus unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "        <i class='fa fa-solid fa-minus unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
     tBody.append(
         "<tr class='render'>" +

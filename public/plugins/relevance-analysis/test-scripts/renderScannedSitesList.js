@@ -28,7 +28,7 @@ function renderScannedSitesList(sites) {
             if (!value['inRelevance']) {
                 noTop = "<span class='text-muted'>(сайт не попал в топ)</span>"
             }
-            background = 'background: #4eb767c4'
+            background = 'background: #4eb767c4;'
         } else {
             background = ''
         }
@@ -37,14 +37,14 @@ function renderScannedSitesList(sites) {
         }
         tbody.append(
             "<tr class='render'>" +
-            "<td data-order='" + iterator + "'>" + iterator + span + "</td>" +
-            "<td style='" + background + "'>" + value['site'] + noTop + btnGroup + "</td>" +
+            "<td data-order='" + iterator + "'>" + iterator + "</td>" +
+            "<td style='" + background + "max-width: 350px;'>" + value['site'] + noTop + span + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
-            "<td>" + value['width'] + "</td>" +
-            "<td>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
-            "<td>" + value['density100'] + "<span class='text-muted'>(" + value['density100Points'] + ")</span></td>" +
-            "<td>" + value['density200'] + "<span class='text-muted'>(" + value['density200Points'] + ")</span></td>" +
+            "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
+            "<td data-order='" + value['density'] + "'>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
+            "<td data-order='" + value['density100'] + "'>" + value['density100'] + "<span class='text-muted'>(" + value['density100Points'] + ")</span></td>" +
+            "<td data-order='" + value['density200'] + "'>" + value['density200'] + "<span class='text-muted'>(" + value['density200Points'] + ")</span></td>" +
             warning +
             "</tr>"
         )
@@ -54,7 +54,7 @@ function renderScannedSitesList(sites) {
     $(document).ready(function () {
         $('#scaned-sites').DataTable({
             "order": [[0, "asc"]],
-            "pageLength": 25,
+            "pageLength": 50,
             "searching": true,
         });
     });
