@@ -38,7 +38,7 @@ function renderScannedSitesList(sites) {
         tbody.append(
             "<tr class='render'>" +
             "<td data-order='" + iterator + "'>" + iterator + "</td>" +
-            "<td style='" + background + "max-width: 350px;'>" + value['site'] + noTop + span + btnGroup + "</td>" +
+            "<td style='" + background + "max-width: 450px;'>" + value['site'] + noTop + span + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
