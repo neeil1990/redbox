@@ -4,7 +4,7 @@ function renderScannedSitesList(sites) {
     let tbody = $('#scanned-sites-tbody')
     $.each(sites, function (key, value) {
         let btnGroup =
-            "<div class='btn-group'>" +
+            "<div class='btn-group d-block'>" +
             "        <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" +
             "            <i class='fas fa-external-link-alt'></i>" +
             "        </button> " +
@@ -33,7 +33,7 @@ function renderScannedSitesList(sites) {
             background = ''
         }
         if (value['ignored']) {
-            span = "<span class='text-muted'>(игнорируемый домен)</span>"
+            span = "<div class='text-muted d-block'>(игнорируемый домен)</div>"
         }
         tbody.append(
             "<tr class='render'>" +
