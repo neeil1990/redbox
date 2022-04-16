@@ -482,32 +482,31 @@ class TestRelevance
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
                 $occurrences = [];
                 foreach ($this->pages as $key => $page) {
-
-                    $htmlCount = mb_substr_count($this->pages[$key]['html'], "$word ");
-                    if ($htmlCount > 0) {
-                        $numberTextOccurrences += $htmlCount;
-                        if ($reSpam < $htmlCount) {
-                            $reSpam = $htmlCount;
-                        }
-                    }
-
-                    $hiddenTextCount = mb_substr_count($this->pages[$key]['hiddenText'], "$word ");
-                    if ($hiddenTextCount > 0) {
-                        $numberTextOccurrences += $hiddenTextCount;
-                        if ($reSpam < $hiddenTextCount) {
-                            $reSpam = $hiddenTextCount;
-                        }
-                    }
-
-                    $linkTextCount = mb_substr_count($this->pages[$key]['linkText'], "$word ");
-                    if ($linkTextCount > 0) {
-                        $numberLinkOccurrences += $linkTextCount;
-                        if ($reSpam < $linkTextCount) {
-                            $reSpam = $linkTextCount;
-                        }
-                    }
-
                     if (!$page['ignored']) {
+                        $htmlCount = mb_substr_count($this->pages[$key]['html'], "$word ");
+                        if ($htmlCount > 0) {
+                            $numberTextOccurrences += $htmlCount;
+                            if ($reSpam < $htmlCount) {
+                                $reSpam = $htmlCount;
+                            }
+                        }
+
+                        $hiddenTextCount = mb_substr_count($this->pages[$key]['hiddenText'], "$word ");
+                        if ($hiddenTextCount > 0) {
+                            $numberTextOccurrences += $hiddenTextCount;
+                            if ($reSpam < $hiddenTextCount) {
+                                $reSpam = $hiddenTextCount;
+                            }
+                        }
+
+                        $linkTextCount = mb_substr_count($this->pages[$key]['linkText'], "$word ");
+                        if ($linkTextCount > 0) {
+                            $numberLinkOccurrences += $linkTextCount;
+                            if ($reSpam < $linkTextCount) {
+                                $reSpam = $linkTextCount;
+                            }
+                        }
+
                         if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
                             $numberOccurrences++;
                             $occurrences[] = $key;
@@ -846,29 +845,29 @@ class TestRelevance
                             $numberOccurrences++;
                             $occurrences[] = $key;
                         }
-                    }
 
-                    if (preg_match("/($phrase)/", $page['html'])) {
-                        $count = mb_substr_count($this->pages[$key]['html'], "$phrase");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
+                        if (preg_match("/($phrase)/", $page['html'])) {
+                            $count = mb_substr_count($this->pages[$key]['html'], "$phrase");
+                            $numberTextOccurrences += $count;
+                            if ($reSpam < $count) {
+                                $reSpam = $count;
+                            }
                         }
-                    }
 
-                    if (preg_match("/($phrase)/", $page['hiddenText'])) {
-                        $count = mb_substr_count($this->pages[$key]['hiddenText'], "$phrase");
-                        $numberTextOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
+                        if (preg_match("/($phrase)/", $page['hiddenText'])) {
+                            $count = mb_substr_count($this->pages[$key]['hiddenText'], "$phrase");
+                            $numberTextOccurrences += $count;
+                            if ($reSpam < $count) {
+                                $reSpam = $count;
+                            }
                         }
-                    }
 
-                    if (preg_match("/($phrase)/", $page['linkText'])) {
-                        $count = mb_substr_count($this->pages[$key]['linkText'], "$phrase");
-                        $numberLinkOccurrences += $count;
-                        if ($reSpam < $count) {
-                            $reSpam = $count;
+                        if (preg_match("/($phrase)/", $page['linkText'])) {
+                            $count = mb_substr_count($this->pages[$key]['linkText'], "$phrase");
+                            $numberLinkOccurrences += $count;
+                            if ($reSpam < $count) {
+                                $reSpam = $count;
+                            }
                         }
                     }
                 }
