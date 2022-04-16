@@ -597,7 +597,7 @@
     </div>
 
     <div class="phrases" style="display:none;margin-top: 80px;">
-        <h3>Фразы</h3>
+        <h3>Топ лист словосочетаний (TLPs)</h3>
         <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr style="position: relative; z-index: 100;">
