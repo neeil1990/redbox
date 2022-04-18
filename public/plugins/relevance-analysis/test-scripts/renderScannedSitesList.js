@@ -16,6 +16,11 @@ function renderScannedSitesList(sites) {
             "                <i class='fas fa-external-link-alt'></i>" +
             "                Добавить в игнорируемые домены" +
             "            </span>" +
+            "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
+            "                 data-target='" + value['site'] + "'>" +
+            "               <i class='fas fa-external-link-alt'></i>" +
+            "               Исключить из игнорируемых доменов" +
+            "           </span>" +
             "        </div>" +
             "</div>";
         let noTop = ''
@@ -67,11 +72,38 @@ function renderScannedSitesList(sites) {
         let textarea = $('.form-control.ignoredDomains')
         let string = textarea.val()
         if (!string.includes(url.hostname)) {
+            let domain = (url.hostname).replace('www.', '')
+
             if (textarea.val().slice(-1) === "\n") {
-                textarea.val(textarea.val() + url.hostname + "\n")
+                textarea.val(textarea.val() + domain + "\n")
             } else {
-                textarea.val(textarea.val() + "\n" + url.hostname + "\n")
+                textarea.val(textarea.val() + "\n" + domain + "\n")
             }
+
+            let toastr = $('.toast-top-right.success-message.lock-word');
+            toastr.show(300)
+            $('#lock-word').html('Домен "' + domain + '" добавлен в игнорируемые')
+            setTimeout(() => {
+                toastr.hide(300)
+            }, 3000)
+        }
+    });
+
+
+    $('.remove-from-ignored-domains').click(function () {
+        let url = new URL($(this).attr('data-target'))
+        let textarea = $('.form-control.ignoredDomains')
+        let string = textarea.val()
+        if (string.includes(url.hostname)) {
+            let domain = (url.hostname).replace('www.', '')
+            textarea.val(textarea.val().replace(domain, ""))
+
+            let toastr = $('.toast-top-right.success-message.lock-word');
+            toastr.show(300)
+            $('#lock-word').html('Домен "' + domain + '" удалён из игнорируемых')
+            setTimeout(() => {
+                toastr.hide(300)
+            }, 3000)
         }
     });
 }

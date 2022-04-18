@@ -101,11 +101,19 @@ $('#coverage-clouds-button').click(function () {
                 let textarea = $('.form-control.ignoredDomains')
                 let string = textarea.val()
                 if (!string.includes(url.hostname)) {
+                    let domain = (url.hostname).replace('www.', '')
                     if (textarea.val().slice(-1) === "\n") {
-                        textarea.val(textarea.val() + url.hostname + "\n")
+                        textarea.val(textarea.val() + domain + "\n")
                     } else {
-                        textarea.val(textarea.val() + "\n" + url.hostname + "\n")
+                        textarea.val(textarea.val() + "\n" + domain + "\n")
                     }
+
+                    let toastr = $('.toast-top-right.success-message.lock-word');
+                    toastr.show(300)
+                    $('#lock-word').html('Домен "' + domain + '" добавлен в игнорируемые')
+                    setTimeout(() => {
+                        toastr.hide(300)
+                    }, 3000)
                 }
             });
         }
