@@ -23,12 +23,18 @@ function renderScannedSitesList(sites) {
             "           </span>" +
             "        </div>" +
             "</div>";
+
         let noTop = ''
         let ignorBlock = ''
         let background
         let warning = value['danger']
-            ? "<td class='bg-warning'> Не удалось получить данные со страницы </td>"
-            : "<td> Страница успешно проанализирована </td>"
+            ? "<td class='bg-warning'>" +
+            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u> " +
+            "</td>"
+            : "<td>" +
+            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>" +
+            "</td>"
+
         if (value['mainPage']) {
             if (!value['inRelevance']) {
                 noTop = "<span class='text-muted'>(сайт не попал в топ)</span>"
@@ -37,9 +43,11 @@ function renderScannedSitesList(sites) {
         } else {
             background = ''
         }
+
         if (value['ignored']) {
             ignorBlock = "<div class='text-muted'>(игнор)</div>"
         }
+
         tbody.append(
             "<tr class='render'>" +
             "<td data-order='" + iterator + "'>" + iterator + ignorBlock + "</td>" +
@@ -105,6 +113,17 @@ function renderScannedSitesList(sites) {
                 toastr.hide(300)
             }, 3000)
         }
+    });
+
+
+    $('.scroll-to-ignored-list').on('click', function () {
+        var el = $(this);
+        var dest = el.attr('data-scroll');
+        $('html').animate({
+                scrollTop: $(dest).offset().top
+            }, 500
+        );
+        return false;
     });
 }
 

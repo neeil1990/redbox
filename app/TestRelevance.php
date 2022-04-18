@@ -89,37 +89,39 @@ class TestRelevance
     public function parseSites()
     {
         foreach ($this->domains as $item) {
-            $domain = isset($item['item'])
-                ? strtolower($item['item'])
-                : $item;
-
+            $domain = isset($item['item']) ? strtolower($item['item']) : $item;
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
-            // если ответ от сервера не был получен
+            $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['site'] = $domain;
-            if ($result == '' || $result == null) {
-                $this->sites[$domain]['danger'] = true;
-            } else {
-                $this->sites[$domain]['danger'] = false;
-            }
-            $this->sites[$domain]['ignored'] = $item['ignored'];
 
-            $this->pages[$domain]['html'] = $result;
             $this->pages[$domain]['ignored'] = $item['ignored'];
-
-            $this->params['html_relevance'] .= $result . $this->separator;
+            $this->pages[$domain]['html'] = $result;
 
             //Если проанализированный домен является посадочной страницей
-            $lastItem = array_key_last($this->sites);
             if ($domain == $this->params['main_page_link']) {
-                $this->mainPageIsRelevance =
-                $this->sites[$lastItem]['mainPage'] =
-                $this->sites[$lastItem]['inRelevance'] = true;
+                $this->mainPageIsRelevance = true;
+                $this->sites[$domain]['mainPage'] = true;
+                $this->sites[$domain]['inRelevance'] = true;
+                $this->sites[$domain]['ignored'] = false;
             } else {
-                $this->sites[$lastItem]['mainPage'] = false;
+                $this->sites[$domain]['mainPage'] = false;
+                $this->sites[$domain]['ignored'] = $item['ignored'];
             }
+
+            $this->params['html_relevance'] .= $result . $this->separator;
         }
 
+        if (!$this->mainPageIsRelevance) {
+            $this->sites[$this->params['main_page_link']]['danger'] = false;
+            $this->sites[$this->params['main_page_link']]['site'] = $this->params['main_page_link'];
+            $this->sites[$this->params['main_page_link']]['mainPage'] = true;
+            $this->sites[$this->params['main_page_link']]['ignored'] = false;
+            $this->sites[$this->params['main_page_link']]['inRelevance'] = false;
+
+            $this->pages[$this->params['main_page_link']]['ignored'] = false;
+            $this->pages[$this->params['main_page_link']]['html'] = $this->mainPage['html'];;
+        }
     }
 
     /**
@@ -254,21 +256,6 @@ class TestRelevance
 
             $this->sites[$pageKey]['coverage'] = round($coverage['text'] / 6, 2);
             $this->sites[$pageKey]['coverageTf'] = round($coverage['tf'] / ($totalTf / 100), 2);
-        }
-
-        if (!$this->mainPageIsRelevance) {
-            $mainPageText = $this->mainPage['html'] . ' ' . $this->mainPage['linkText'] . ' ' . $this->mainPage['hiddenText'];
-            $coverage = $this->calculateCoverage($mainPageText);
-
-            $this->sites[$this->params['main_page_link']] = [
-                'site' => $this->params['main_page_link'],
-                'danger' => false,
-                'mainPage' => true,
-                'inRelevance' => false,
-                'coverage' => round($coverage['text'] / 6, 2),
-                'coverageTf' => round($coverage['tf'] / ($totalTf / 100), 2),
-            ];
-
         }
     }
 
@@ -540,8 +527,7 @@ class TestRelevance
     /**
      * @return void
      */
-    public
-    function prepareUnigramTable()
+    public function prepareUnigramTable()
     {
         $this->coverageInfo['sum'] = 0;
 
@@ -600,8 +586,7 @@ class TestRelevance
      * Подготовка облаков (http://cavaliercoder.com/jclouds)
      * @return void
      */
-    public
-    function prepareClouds()
+    public function prepareClouds()
     {
         $mainPage = TestRelevance::concatenation([
             $this->mainPage['html'],
@@ -639,8 +624,7 @@ class TestRelevance
      * @param $sites
      * @return void
      */
-    public
-    function removeIgnoredDomains($count, $ignoredDomains, $sites)
+    public function removeIgnoredDomains($count, $ignoredDomains, $sites)
     {
         if (isset($ignoredDomains)) {
             $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
@@ -676,8 +660,7 @@ class TestRelevance
     /**
      * @param $html
      */
-    public
-    function setMainPage($html)
+    public function setMainPage($html)
     {
         $this->mainPage['html'] = $html;
         $this->params['html_main_page'] = $html;
@@ -687,8 +670,7 @@ class TestRelevance
      * @param $sites
      * @return $this
      */
-    public
-    function setSites($sites): TestRelevance
+    public function setSites($sites): TestRelevance
     {
         $this->params['sites'] = $sites;
         $this->sites = json_decode($sites, true);
@@ -700,8 +682,7 @@ class TestRelevance
      * @param $html_relevance
      * @return $this
      */
-    public
-    function setPages($html_relevance): TestRelevance
+    public function setPages($html_relevance): TestRelevance
     {
         $this->params['html_relevance'] = $html_relevance;
         $html = explode($this->separator, $this->params['html_relevance']);
@@ -727,8 +708,7 @@ class TestRelevance
      * @param $sites
      * @return void
      */
-    public
-    function setDomains($sites)
+    public function setDomains($sites)
     {
         $array = json_decode($sites, true);
         foreach ($array as $item) {
@@ -740,8 +720,7 @@ class TestRelevance
      * @param $text
      * @return array
      */
-    public
-    function prepareTfCloud($text): array
+    public function prepareTfCloud($text): array
     {
         $wordForms = $cloud = [];
         $lingua = new LinguaStem();
@@ -812,8 +791,7 @@ class TestRelevance
      * @param $text
      * @return string
      */
-    public
-    function separateText($text): string
+    public function separateText($text): string
     {
         $text = explode(" ", $text);
         foreach ($text as $key => $item) {
@@ -827,8 +805,7 @@ class TestRelevance
     /**
      * @return void
      */
-    public
-    function preparePhrasesTable()
+    public function preparePhrasesTable()
     {
         $result = [];
         $phrases = $this->searchPhrases();
@@ -908,8 +885,7 @@ class TestRelevance
      *
      * @return array
      */
-    public
-    function searchPhrases(): array
+    public function searchPhrases(): array
     {
         $phrases = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
@@ -931,8 +907,7 @@ class TestRelevance
     /**
      * @return void
      */
-    public
-    function calculateDensity()
+    public function calculateDensity()
     {
         foreach ($this->pages as $keyPage => $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
@@ -944,29 +919,13 @@ class TestRelevance
             $this->sites[$keyPage]['density200'] = $density[200]['percentPoints'];
             $this->sites[$keyPage]['density200Points'] = $density[200]['totalPoints'];
         }
-
-        if (!$this->mainPageIsRelevance) {
-            $mainPageText = TestRelevance::concatenation([
-                $this->mainPage['html'],
-                $this->mainPage['linkText'],
-                $this->mainPage['hiddenText']
-            ]);
-            $density = $this->calculateDensityPoints($mainPageText);
-            $this->sites[$this->params['main_page_link']]['density'] = $density[600]['percentPoints'];
-            $this->sites[$this->params['main_page_link']]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$this->params['main_page_link']]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$this->params['main_page_link']]['density100Points'] = $density[100]['totalPoints'];
-            $this->sites[$this->params['main_page_link']]['density200'] = $density[200]['percentPoints'];
-            $this->sites[$this->params['main_page_link']]['density200Points'] = $density[200]['totalPoints'];
-        }
     }
 
     /**
      * @param $text
      * @return array
      */
-    public
-    function calculateDensityPoints($text): array
+    public function calculateDensityPoints($text): array
     {
         $result = [];
         $allPoints = 0;

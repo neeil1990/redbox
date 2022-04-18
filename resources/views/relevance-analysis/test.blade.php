@@ -183,7 +183,7 @@
             </div>
 
             <div class="form-group required">
-                <label>{{ __('Ignored domains') }}</label>
+                <label id="ignoredDomains">{{ __('Ignored domains') }}</label>
                 {!! Form::textarea("ignoredDomains",
                     "2gis.ru\n".
                     "aliexpress.com\n".

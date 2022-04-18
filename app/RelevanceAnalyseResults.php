@@ -11,13 +11,4 @@ class RelevanceAnalyseResults extends Model
     protected $guarded = [];
 
     public $timestamps = false;
-
-    /**
-     * @param $array
-     * @return string
-     */
-    public static function calculateHash($array): string
-    {
-        return md5(implode("", $array));
-    }
 }
