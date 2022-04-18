@@ -200,13 +200,13 @@ function renderMainTr(tBody, key, wordWorm) {
     let repeatInTextMainPage = wordWorm['total']['repeatInTextMainPage']
     let avgInLink = wordWorm['total']['avgInLink']
     let repeatInLinkMainPage = wordWorm['total']['repeatInLinkMainPage']
-    let repeatInTextMainPageWarning = repeatInTextMainPage === '0' ? "class='bg-warning-elem'" : ""
-    let repeatInLinkMainPageWarning = repeatInLinkMainPage === '0' ? " class='bg-warning-elem'" : ""
-    let totalInMainPage = repeatInLinkMainPage === '0' && repeatInTextMainPage === '0' ? " class='bg-warning-elem'" : ""
+    let repeatInTextMainPageWarning = repeatInTextMainPage == 0 ? "class='bg-warning-elem'" : ""
+    let repeatInLinkMainPageWarning = repeatInLinkMainPage == 0 ? " class='bg-warning-elem'" : ""
+    let totalInMainPage = repeatInLinkMainPage == 0 && repeatInTextMainPage == 0 ? " class='bg-warning-elem'" : ""
     let lockBlock =
         "    <span class='lock-block'>" +
-        "        <i class='fa fa-solid fa-plus lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
-        "        <i class='fa fa-solid fa-minus unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
+        "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
     tBody.append(
         "<tr class='render'>" +
@@ -258,21 +258,21 @@ function renderChildTr(elem, key, word, stats) {
     let repeatInTextMainPage = stats['repeatInTextMainPage']
     let avgInLink = stats['avgInLink']
     let repeatInLinkMainPage = stats['repeatInLinkMainPage']
-    if (repeatInTextMainPage === '0') {
+    if (repeatInTextMainPage == 0) {
         var textWarn = "class='bg-warning-elem'"
         var bgWarn = "class='bg-warning-elem'"
     }
-    if (repeatInLinkMainPage === '0') {
+    if (repeatInLinkMainPage == 0) {
         var linkWarn = "class='bg-warning-elem'"
         var bgWarn = "class='bg-warning-elem'"
     }
-    if (repeatInLinkMainPage === '0' && repeatInTextMainPage === '0') {
+    if (repeatInLinkMainPage == 0 || repeatInTextMainPage == 0) {
         var bgTotalWarn = "class='bg-warning-elem'"
     }
     let lockBlock =
         "    <span class='lock-block'>" +
-        "        <i class='fa fa-solid fa-plus lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
-        "        <i class='fa fa-solid fa-minus unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
+        "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
     elem.after(
         "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
