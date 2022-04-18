@@ -182,7 +182,7 @@
                         ], null, ['class' => 'custom-select rounded-0 region']) !!}
             </div>
 
-            <div class="form-group required">
+            <div class="form-group required" id="ignoredDomainsBlock">
                 <label id="ignoredDomains">{{ __('Ignored domains') }}</label>
                 {!! Form::textarea("ignoredDomains",
                     "2gis.ru\n".
@@ -290,7 +290,6 @@
             </div>
         </div>
     </div>
-
     <div class="d-flex flex-column">
         <div class="btn-group col-lg-3 col-md-5 mb-2">
             <button class="btn btn-secondary" id="full-analyse">
@@ -708,6 +707,10 @@
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            var generatedTfIdf = false
+            var generatedText = false
+            var generatedCompetitorCoverage = false
+
             $('#check-type').on('change', function () {
                 if ($(this).val() === 'list') {
                     $('#key-phrase').hide()
@@ -717,9 +720,6 @@
                     $('#key-phrase').show(300)
                 }
             });
-            var generatedTfIdf = false
-            var generatedText = false
-            var generatedCompetitorCoverage = false
             $('#full-analyse').click(() => {
                 var interval = startProgressBar()
                 $.ajax({

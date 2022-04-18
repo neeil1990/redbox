@@ -71,8 +71,23 @@ function renderScannedSitesList(sites) {
             "searching": true,
         });
     });
+
     setTimeout(() => {
         $('#scaned-sites').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+        $('#scaned-sites_length').before(
+            "    <div class='d-flex' onclick='showOrHideIgnoreList()'>" +
+            "        <div class='__helper-link ui_tooltip_w'>" +
+            "            <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+            "                <input type='checkbox'" +
+            "                       class='custom-control-input'" +
+            "                       id='showOrHideIgnoredList'" +
+            "                       name='noIndex'>" +
+            "                <label class='custom-control-label' for='showOrHideIgnoredList'></label>" +
+            "            </div>" +
+            "        </div>" +
+            "        <p>скрыть игнорируемые домены</p>" +
+            "    </div>"
+        )
     }, 2000)
 
     $('.add-in-ignored-domains').click(function () {
@@ -127,3 +142,12 @@ function renderScannedSitesList(sites) {
     });
 }
 
+function showOrHideIgnoreList() {
+    $('#showOrHideIgnoredList').click(function () {
+        if ($('#ignoredDomainsBlock').is(':visible')) {
+            $('#ignoredDomainsBlock').hide(300)
+        } else {
+            $('#ignoredDomainsBlock').show(300)
+        }
+    });
+}
