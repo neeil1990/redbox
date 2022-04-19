@@ -38,24 +38,22 @@ function renderUnigramTable(unigramTable) {
             });
         });
 
-        function isValid(min, max, target, settings) {
+        function isUnigram(min, max, target, settings) {
             if (settings.nTable.id !== 'unigram') {
                 return true;
             }
-            if ((isNaN(min) && isNaN(max)) ||
+            return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && target <= max) ||
                 (min <= target && isNaN(max)) ||
-                (min <= target && target <= max)) {
-                return true;
-            }
-            return false;
+                (min <= target && target <= max);
+
         }
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
             var maxTF = parseFloat($('#maxTF').val());
             var minTF = parseFloat($('#minTF').val());
             var TF = parseFloat(data[2]);
-            return isValid(minTF, maxTF, TF, settings)
+            return isUnigram(minTF, maxTF, TF, settings)
         });
         $('#minTF, #maxTF').keyup(function () {
             table.draw();
@@ -68,7 +66,7 @@ function renderUnigramTable(unigramTable) {
             var minIdf = parseFloat($('#minIdf').val());
             var maxIdf = parseFloat($('maxIdf').val());
             var IDF = parseFloat(data[3]);
-            return isValid(minIdf, maxIdf, IDF, settings)
+            return isUnigram(minIdf, maxIdf, IDF, settings)
         });
         $('#minIdf, #maxIdf').keyup(function () {
             table.draw();
@@ -81,7 +79,7 @@ function renderUnigramTable(unigramTable) {
             var minInter = parseFloat($('#minInter').val());
             var maxInter = parseFloat($('#maxInter').val());
             var inter = parseFloat(data[4])
-            return isValid(minInter, maxInter, inter, settings)
+            return isUnigram(minInter, maxInter, inter, settings)
         });
         $('#minInter, #maxInter').keyup(function () {
             table.draw();
@@ -94,7 +92,7 @@ function renderUnigramTable(unigramTable) {
             var minReSpam = parseFloat($('#minReSpam').val());
             var maxReSpam = parseFloat($('#maxReSpam').val());
             var reSpam = parseFloat(data[5])
-            return isValid(minReSpam, maxReSpam, reSpam, settings)
+            return isUnigram(minReSpam, maxReSpam, reSpam, settings)
         });
         $('#minReSpam, #maxReSpam').keyup(function () {
             table.draw();
@@ -107,7 +105,7 @@ function renderUnigramTable(unigramTable) {
             var minAVG = parseFloat($('#minAVG').val());
             var maxAVG = parseFloat($('#maxAVG').val());
             var AVG = parseFloat(data[6])
-            return isValid(minAVG, maxAVG, AVG, settings)
+            return isUnigram(minAVG, maxAVG, AVG, settings)
         });
         $('#minAVG, #maxAVG').keyup(function () {
             table.draw();
@@ -120,7 +118,7 @@ function renderUnigramTable(unigramTable) {
             var minAVGText = parseFloat($('#minAVGText').val());
             var maxAVGText = parseFloat($('#maxAVGText').val());
             var count = parseFloat(data[7])
-            return isValid(minAVGText, maxAVGText, count, settings)
+            return isUnigram(minAVGText, maxAVGText, count, settings)
         });
         $('#minAVGText, #maxAVGText').keyup(function () {
             table.draw();
@@ -133,7 +131,7 @@ function renderUnigramTable(unigramTable) {
             var minInYourPage = parseFloat($('#minInYourPage').val());
             var maxInYourPage = parseFloat($('#maxInYourPage').val());
             var count = parseFloat(data[8])
-            return isValid(minInYourPage, maxInYourPage, count, settings)
+            return isUnigram(minInYourPage, maxInYourPage, count, settings)
         });
         $('#minInYourPage, #maxInYourPage').keyup(function () {
             table.draw();
@@ -146,7 +144,7 @@ function renderUnigramTable(unigramTable) {
             var minTextIYP = parseFloat($('#minTextIYP').val());
             var maxTextIYP = parseFloat($('#maxTextIYP').val());
             var count = parseFloat(data[9])
-            return isValid(minTextIYP, maxTextIYP, count, settings)
+            return isUnigram(minTextIYP, maxTextIYP, count, settings)
         });
         $('#minTextIYP, #maxTextIYP').keyup(function () {
             table.draw();
@@ -159,7 +157,7 @@ function renderUnigramTable(unigramTable) {
             var minAVGLink = parseFloat($('#minAVGLink').val());
             var maxAVGLink = parseFloat($('#maxAVGLink').val());
             var count = parseFloat(data[10])
-            return isValid(minAVGLink, maxAVGLink, count, settings)
+            return isUnigram(minAVGLink, maxAVGLink, count, settings)
         });
         $('#minAVGLink, #maxAVGLink').keyup(function () {
             table.draw();
@@ -172,7 +170,7 @@ function renderUnigramTable(unigramTable) {
             var minLinkIYP = parseFloat($('#minLinkIYP').val());
             var maxLinkIYP = parseFloat($('#maxLinkIYP').val());
             var count = parseFloat(data[11])
-            return isValid(minLinkIYP, maxLinkIYP, count, settings)
+            return isUnigram(minLinkIYP, maxLinkIYP, count, settings)
         });
         $('#minLinkIYP, #maxLinkIYP').keyup(function () {
             table.draw();

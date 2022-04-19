@@ -26,13 +26,22 @@ function renderScannedSitesList(sites) {
 
         let noTop = ''
         let ignorBlock = ''
-        let background
+        let ignorClass = ''
+        let background = ''
+
+        if (value['ignored']) {
+            ignorBlock = "<div class='text-muted'>(игнорируемый домен)</div>"
+            ignorClass = " ignored-site"
+        }
+
         let warning = value['danger']
             ? "<td class='bg-warning'>" +
-            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u> " +
+                "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
+                + ignorBlock +
             "</td>"
             : "<td>" +
-            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>" +
+                "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
+                + ignorBlock +
             "</td>"
 
         if (value['mainPage']) {
@@ -44,13 +53,9 @@ function renderScannedSitesList(sites) {
             background = ''
         }
 
-        if (value['ignored']) {
-            ignorBlock = "<div class='text-muted'>(игнор)</div>"
-        }
-
         tbody.append(
-            "<tr class='render'>" +
-            "<td data-order='" + iterator + "'>" + iterator + ignorBlock + "</td>" +
+            "<tr class='render" + ignorClass + "'>" +
+            "<td data-order='" + iterator + "'>" + iterator + "</td>" +
             "<td style='" + background + "max-width: 450px;'>" + value['site'] + noTop + btnGroup + "</td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
@@ -74,20 +79,29 @@ function renderScannedSitesList(sites) {
 
     setTimeout(() => {
         $('#scaned-sites').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+
         $('#scaned-sites_length').before(
-            "    <div class='d-flex' onclick='showOrHideIgnoreList()'>" +
+            "    <div class='d-flex'>" +
             "        <div class='__helper-link ui_tooltip_w'>" +
             "            <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
             "                <input type='checkbox'" +
             "                       class='custom-control-input'" +
-            "                       id='showOrHideIgnoredList'" +
+            "                       id='showOrHideIgnoredSites'" +
             "                       name='noIndex'>" +
-            "                <label class='custom-control-label' for='showOrHideIgnoredList'></label>" +
+            "                <label class='custom-control-label' for='showOrHideIgnoredSites'></label>" +
             "            </div>" +
             "        </div>" +
             "        <p>скрыть игнорируемые домены</p>" +
             "    </div>"
         )
+
+        $('#showOrHideIgnoredSites').click(function () {
+            if ($('.ignored-site').is(':visible')) {
+                $('.ignored-site').hide()
+            } else {
+                $('.ignored-site').show()
+            }
+        });
     }, 2000)
 
     $('.add-in-ignored-domains').click(function () {
@@ -112,7 +126,6 @@ function renderScannedSitesList(sites) {
         }
     });
 
-
     $('.remove-from-ignored-domains').click(function () {
         let url = new URL($(this).attr('data-target'))
         let textarea = $('.form-control.ignoredDomains')
@@ -130,7 +143,6 @@ function renderScannedSitesList(sites) {
         }
     });
 
-
     $('.scroll-to-ignored-list').on('click', function () {
         var el = $(this);
         var dest = el.attr('data-scroll');
@@ -142,12 +154,3 @@ function renderScannedSitesList(sites) {
     });
 }
 
-function showOrHideIgnoreList() {
-    $('#showOrHideIgnoredList').click(function () {
-        if ($('#ignoredDomainsBlock').is(':visible')) {
-            $('#ignoredDomainsBlock').hide(300)
-        } else {
-            $('#ignoredDomainsBlock').show(300)
-        }
-    });
-}

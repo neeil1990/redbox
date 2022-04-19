@@ -597,8 +597,73 @@
 
     <div class="phrases" style="display:none;margin-top: 80px;">
         <h3>Топ лист словосочетаний (TLPs)</h3>
-        <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline">
+        <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline w-100">
             <thead>
+            <tr>
+                <th class="font-weight-normal text-muted">{{ __('Ranges for filtering the table') }}</th>
+                <th>
+                    <div style="width: 90px">
+                        <input class="w-100" type="number" id="phrasesMinTF" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxTF" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div style="width: 90px">
+                        <input class="w-100" type="number" id="phrasesMinIdf" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxIdf" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" id="phrasesMinInter" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxInter" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" id="phrasesMinReSpam" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxReSpam" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" id="phrasesMinAVG" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxAVG" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number"  id="phrasesMinAVGText" placeholder="min">
+                        <input class="w-100" type="number"  id="phrasesMaxAVGText" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" id="phrasesMinInYourPage"
+                               placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxInYourPage"
+                               placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" id="phrasesMinTextIYP" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxTextIYP" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number" id="phrasesMinAVGLink" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxAVGLink" placeholder="max">
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <input class="w-100" type="number"id="phrasesMinLinkIYP" placeholder="min">
+                        <input class="w-100" type="number"id="phrasesMaxLinkIYP" placeholder="max">
+                    </div>
+                </th>
+            </tr>
             <tr style="position: relative; z-index: 100;">
                 <th>Фраза</th>
                 <th>tf</th>
@@ -688,9 +753,23 @@
     </div>
 
     <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
-        <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
-            Облака первых 200 важных (по tf-idf) слов у конкурентов
-        </button>
+        <div class="d-flex align-items-end">
+            <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
+                Облака первых 200 важных (по tf-idf) слов у конкурентов
+            </button>
+            <div class='d-flex ml-3'>
+                <div class='__helper-link ui_tooltip_w'>
+                    <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>
+                        <input type='checkbox'
+                               class='custom-control-input'
+                               id='showOrHideIgnoredClouds'
+                               name='noIndex'>
+                        <label class='custom-control-label' for='showOrHideIgnoredClouds'></label>
+                    </div>
+                </div>
+                <p>скрыть игнорируемые домены</p>
+            </div>
+        </div>
         <div style="display: none" id="coverage-clouds" class="pt-2">
         </div>
     </div>
@@ -707,10 +786,6 @@
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            var generatedTfIdf = false
-            var generatedText = false
-            var generatedCompetitorCoverage = false
-
             $('#check-type').on('change', function () {
                 if ($(this).val() === 'list') {
                     $('#key-phrase').hide()
@@ -720,6 +795,38 @@
                     $('#key-phrase').show(300)
                 }
             });
+
+            $('input#switchMyListWords').click(function () {
+                if ($(this).is(':checked')) {
+                    $('.form-group.required.list-words.mt-1').show(300)
+                    $('.form-control.listWords').prop('required', true)
+                } else {
+                    $('.form-group.required.list-words.mt-1').hide(300)
+                    $('.form-control.listWords').removeAttr('required')
+                }
+            })
+
+            $('#tf-idf-clouds').click(() => {
+                if ($('.tf-idf-clouds').is(':visible')) {
+                    $('.tf-idf-clouds').hide()
+                } else {
+                    $('.tf-idf-clouds').show()
+                }
+            })
+
+            $('#text-clouds').click(() => {
+                if ($('.text-clouds').is(':visible')) {
+                    $('.text-clouds').hide()
+                } else {
+                    $('.text-clouds').show()
+                }
+            })
+        </script>
+        <script>
+            var generatedTfIdf = false
+            var generatedText = false
+            var generatedCompetitorCoverage = false
+
             $('#full-analyse').click(() => {
                 var interval = startProgressBar()
                 $.ajax({
@@ -829,16 +936,6 @@
                 bar.html(percent + '%');
             }
 
-            $('input#switchMyListWords').click(function () {
-                if ($(this).is(':checked')) {
-                    $('.form-group.required.list-words.mt-1').show(300)
-                    $('.form-control.listWords').prop('required', true)
-                } else {
-                    $('.form-group.required.list-words.mt-1').hide(300)
-                    $('.form-control.listWords').removeAttr('required')
-                }
-            })
-
             function stopProgressBar(interval) {
                 window.clearInterval(interval)
                 setProgressBarStyles(100)
@@ -863,21 +960,6 @@
                     setProgressBarStyles(percent.toFixed(2))
                 }, 743)
             }
-
-            $('#tf-idf-clouds').click(() => {
-                if ($('.tf-idf-clouds').is(':visible')) {
-                    $('.tf-idf-clouds').hide()
-                } else {
-                    $('.tf-idf-clouds').show()
-                }
-            })
-            $('#text-clouds').click(() => {
-                if ($('.text-clouds').is(':visible')) {
-                    $('.text-clouds').hide()
-                } else {
-                    $('.text-clouds').show()
-                }
-            })
         </script>
         <script defer>
             var $jscomp = $jscomp || {};
