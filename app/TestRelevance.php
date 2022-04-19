@@ -140,7 +140,6 @@ class TestRelevance
         $this->calculateCoveragePoints();
         $this->calculatePoints();
         $this->calculateDensity();
-        $this->saveResults();
     }
 
     /**

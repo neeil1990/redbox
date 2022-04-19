@@ -720,58 +720,10 @@
             <tr role="row" style="position: relative; z-index: 100">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>{{ __('coverage for all important words') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Из таблицы униграм берутся все слова (далее эти слова именуются "важные слова") <br>
-                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
-                                Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
-                                Полученый процент равен сумме полученых баллов делённой на 600
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>{{ __('Coverage by tf') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
-                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
-                                Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
-                                Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>{{ __('Width') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Для вычисления  ширины, беруться первые 10 сайтов (позиция в топе) <br>
-                                Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
-                                В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно
-                            </span>
-                        </span>
-                    </span>
-                </th>
-                <th>{{ __('Density') }}
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Плотность высчитывается от значения средней по ТОПу для каждой фразы. <br>
-                                Если в средней 20, а у нас 5, то это 25 баллов. <br>
-                                Дальше все баллы для всех фраз складываются и делятся на общее количество 600. <br>
-                                - <br>
-                                Если мы переспамили, то пока в этом варианте мы никак не учитываем этот момент, фраза просто получает 100 баллов по плотности. <br>
-                            </span>
-                        </span>
-                    </span>
-                </th>
+                <th>{{ __('coverage for all important words') }}</th>
+                <th>{{ __('Coverage by tf') }}</th>
+                <th>{{ __('Width') }}</th>
+                <th>{{ __('Density') }}</th>
                 <th>Плотность(100)</th>
                 <th>Плотность(200)</th>
                 <th>{{ __('Result') }}</th>
