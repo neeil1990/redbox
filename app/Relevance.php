@@ -223,8 +223,6 @@ class Relevance
     public function getTextFromCompetitors()
     {
         foreach ($this->sites as $key => $page) {
-            Log::debug('key', [$key]);
-            Log::debug('page', [$page]);
             if (!$this->sites[$key]['ignored']) {
                 $this->competitorsLinks .= ' ' . $this->sites[$key]['linkText'] . ' ';
                 $this->competitorsText .= ' ' . $this->sites[$key]['hiddenText'] . ' ' . $this->sites[$key]['html'] . ' ';
