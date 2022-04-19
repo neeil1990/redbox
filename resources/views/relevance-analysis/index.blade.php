@@ -663,8 +663,8 @@
                 </th>
                 <th>
                     <div>
-                        <input class="w-100" type="number"  id="phrasesMinAVGText" placeholder="min">
-                        <input class="w-100" type="number"  id="phrasesMaxAVGText" placeholder="max">
+                        <input class="w-100" type="number" id="phrasesMinAVGText" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxAVGText" placeholder="max">
                     </div>
                 </th>
                 <th>
@@ -689,8 +689,8 @@
                 </th>
                 <th>
                     <div>
-                        <input class="w-100" type="number"id="phrasesMinLinkIYP" placeholder="min">
-                        <input class="w-100" type="number"id="phrasesMaxLinkIYP" placeholder="max">
+                        <input class="w-100" type="number" id="phrasesMinLinkIYP" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxLinkIYP" placeholder="max">
                     </div>
                 </th>
             </tr>
@@ -888,24 +888,9 @@
                         successRequest(response, interval)
                     },
                     error: function (response) {
-                        let message = ''
                         if (response.responseText) {
-                            let messages = JSON.parse(response.responseText);
-                            try {
-                                if (messages['errors']['link']) {
-                                    message += messages['errors']['link'] + "<br>"
-                                }
-                                if (messages['errors']['phrase']) {
-                                    message += messages['errors']['phrase'] + "<br>"
-                                }
-                                if (messages['errors']['siteList']) {
-                                    message += messages['errors']['siteList'] + "<br>"
-                                }
-                            } catch (e) {
-                                message += messages.countError + "<br>"
-                            }
-
-                            $('.toast-message.error-message').html(message)
+                            var block = false;
+                            prepareMessage(response)
                         } else {
                             $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
                         }
@@ -915,7 +900,7 @@
                             $('.toast-top-right.error-message.empty').hide(300)
                         }, 5000)
 
-                        errorRequest(interval)
+                        errorRequest(interval, block)
                     }
                 });
             })
@@ -951,24 +936,9 @@
                         successRequest(response, interval)
                     },
                     error: function (response) {
-                        let message = ''
                         if (response.responseText) {
-                            let messages = JSON.parse(response.responseText);
-                            try {
-                                if (messages['errors']['link']) {
-                                    message += messages['errors']['link'] + "<br>"
-                                }
-                                if (messages['errors']['phrase']) {
-                                    message += messages['errors']['phrase'] + "<br>"
-                                }
-                                if (messages['errors']['siteList']) {
-                                    message += messages['errors']['siteList'] + "<br>"
-                                }
-                            } catch (e) {
-                                message += messages.countError + "<br>"
-                            }
-
-                            $('.toast-message.error-message').html(message)
+                            var block = false;
+                            prepareMessage(response)
                         } else {
                             $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
                         }
@@ -978,7 +948,7 @@
                             $('.toast-top-right.error-message.empty').hide(300)
                         }, 5000)
 
-                        errorRequest(interval)
+                        errorRequest(interval, block)
                     }
                 });
             })
@@ -1014,24 +984,9 @@
                         successRequest(response, interval)
                     },
                     error: function (response) {
-                        let message = ''
                         if (response.responseText) {
-                            let messages = JSON.parse(response.responseText);
-                            try {
-                                if (messages['errors']['link']) {
-                                    message += messages['errors']['link'] + "<br>"
-                                }
-                                if (messages['errors']['phrase']) {
-                                    message += messages['errors']['phrase'] + "<br>"
-                                }
-                                if (messages['errors']['siteList']) {
-                                    message += messages['errors']['siteList'] + "<br>"
-                                }
-                            } catch (e) {
-                                message += messages.countError + "<br>"
-                            }
-
-                            $('.toast-message.error-message').html(message)
+                            var block = false
+                            prepareMessage(response)
                         } else {
                             $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
                         }
@@ -1041,7 +996,7 @@
                             $('.toast-top-right.error-message.empty').hide(300)
                         }, 5000)
 
-                        errorRequest(interval)
+                        errorRequest(interval, block)
                     }
                 });
             })
@@ -1059,9 +1014,16 @@
                 renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds);
             }
 
-            function errorRequest(interval) {
+            function errorRequest(interval, block = true) {
                 stopProgressBar(interval)
                 $("#full-analyse").prop("disabled", false);
+                if (block) {
+                    $("#repeat-main-page-analyse").prop("disabled", true);
+                    $("#repeat-relevance-analyse").prop("disabled", true);
+                } else {
+                    $("#repeat-main-page-analyse").prop("disabled", false);
+                    $("#repeat-relevance-analyse").prop("disabled", false);
+                }
             }
 
             function refreshAllRenderElements() {
@@ -1114,6 +1076,26 @@
                     percent += Math.random();
                     setProgressBarStyles(percent.toFixed(2))
                 }, 743)
+            }
+
+            function prepareMessage(response) {
+                let message = ''
+                let messages = JSON.parse(response.responseText);
+                try {
+                    if (messages['errors']['link']) {
+                        message += messages['errors']['link'] + "<br>"
+                    }
+                    if (messages['errors']['phrase']) {
+                        message += messages['errors']['phrase'] + "<br>"
+                    }
+                    if (messages['errors']['siteList']) {
+                        message += messages['errors']['siteList'] + "<br>"
+                    }
+                } catch (e) {
+                    message += messages.countError + "<br>"
+                }
+
+                $('.toast-message.error-message').html(message)
             }
         </script>
         <script defer>
