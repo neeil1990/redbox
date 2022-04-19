@@ -470,7 +470,7 @@ class TestRelevance
                 $occurrences = [];
                 foreach ($this->pages as $key => $page) {
                     if (!$page['ignored']) {
-                        $htmlCount = mb_substr_count($this->pages[$key]['html'], "$word ");
+                        $htmlCount = mb_substr_count($this->pages[$key]['html'], " $word ");
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
                             if ($reSpam < $htmlCount) {
@@ -478,7 +478,7 @@ class TestRelevance
                             }
                         }
 
-                        $hiddenTextCount = mb_substr_count($this->pages[$key]['hiddenText'], "$word ");
+                        $hiddenTextCount = mb_substr_count($this->pages[$key]['hiddenText'], " $word ");
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
                             if ($reSpam < $hiddenTextCount) {
@@ -486,7 +486,7 @@ class TestRelevance
                             }
                         }
 
-                        $linkTextCount = mb_substr_count($this->pages[$key]['linkText'], "$word ");
+                        $linkTextCount = mb_substr_count($this->pages[$key]['linkText'], " $word ");
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
                             if ($reSpam < $linkTextCount) {
@@ -504,8 +504,8 @@ class TestRelevance
                 $tf = round($item / $wordCount, 5);
                 $idf = round(log10($wordCount / $item), 5);
 
-                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], "$word ");
-                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$word ");
+                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], " $word ");
+                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], " $word ");
 
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
@@ -724,10 +724,12 @@ class TestRelevance
     {
         $wordForms = $cloud = [];
         $lingua = new LinguaStem();
-        $wordCount = count(explode(" ", $text));
+
         $array = array_count_values(explode(' ', $text));
         arsort($array);
         $array = array_slice($array, 0, 199);
+
+        $wordCount = count(explode(" ", $text));
         foreach ($array as $key => $item) {
             $tf = round($item / $wordCount, 4);
             $cloud[] = [
@@ -932,7 +934,7 @@ class TestRelevance
         $iterator = 0;
         foreach ($this->density as $word => $value) {
             if (preg_match("/($word)/", $text)) {
-                $count = substr_count($text, " $word ");
+                $count = mb_substr_count($text, " $word ");
                 $points = min($count / ($value['count'] / 100), 100);
                 $allPoints += $points;
             }
