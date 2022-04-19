@@ -1062,8 +1062,6 @@
             function errorRequest(interval) {
                 stopProgressBar(interval)
                 $("#full-analyse").prop("disabled", false);
-                $("#repeat-main-page-analyse").prop("disabled", true);
-                $("#repeat-relevance-analyse").prop("disabled", true);
             }
 
             function refreshAllRenderElements() {
