@@ -89,7 +89,7 @@ $('#coverage-clouds-button').click(function () {
                 let item = arrayToObj(value)
                 $('#coverage-clouds').append(
                     "<div style='width: 50%;'>" +
-                    "<div>" + key + btnGroup + "</div>" +
+                    "<div><span class='competitor-cloud'>" + key + "</span>" + btnGroup + "</div>" +
                     "<div id='cloud" + iterator + "' style='height: 400px; width: 100%; padding-top: 10px; padding-bottom: 10px'></div>" +
                     "</div>"
                 )
@@ -101,12 +101,43 @@ $('#coverage-clouds-button').click(function () {
                 let textarea = $('.form-control.ignoredDomains')
                 let string = textarea.val()
                 if (!string.includes(url.hostname)) {
+                    let domain = (url.hostname).replace('www.', '')
                     if (textarea.val().slice(-1) === "\n") {
-                        textarea.val(textarea.val() + url.hostname + "\n")
+                        textarea.val(textarea.val() + domain + "\n")
                     } else {
-                        textarea.val(textarea.val() + "\n" + url.hostname + "\n")
+                        textarea.val(textarea.val() + "\n" + domain + "\n")
                     }
+
+                    let toastr = $('.toast-top-right.success-message.lock-word');
+                    toastr.show(300)
+                    $('#lock-word').html('Домен "' + domain + '" добавлен в игнорируемые')
+                    setTimeout(() => {
+                        toastr.hide(300)
+                    }, 3000)
                 }
+            });
+
+            $('#showOrHideIgnoredClouds').click(function () {
+                let links = []
+                $.each($('.ignored-site'), function (key, value) {
+                    let text = $(value).children('td').eq(1).children('div').eq(0).children('div').eq(0).children('a').eq(0).attr('href')
+                    links.push(text)
+
+                });
+
+                let compClouds = $('.competitor-cloud')
+                $.each(compClouds, function (key, value) {
+                    for (let i = 0; i < links.length; i++) {
+                        if (links[i] == $(value).html()) {
+                            let object = $(value).parent().parent()
+                            if (object.is(':visible')) {
+                                object.hide()
+                            } else {
+                                object.show()
+                            }
+                        }
+                    }
+                });
             });
         }
     } else {

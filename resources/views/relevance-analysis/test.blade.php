@@ -290,6 +290,7 @@
             </div>
         </div>
     </div>
+
     <div class="d-flex flex-column">
         <div class="btn-group col-lg-3 col-md-5 mb-2">
             <button class="btn btn-secondary" id="full-analyse">

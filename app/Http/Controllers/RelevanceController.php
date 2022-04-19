@@ -41,57 +41,102 @@ class RelevanceController extends Controller
      */
     public function analysis(Request $request): JsonResponse
     {
-        try {
-            $xml = new SimplifiedXmlFacade(20, $request->region);
-            $xml->setQuery($request->phrase);
+        $relevance = new Relevance($request->input('link'), $request->input('separator'));
+
+        $messages = [
+            'link.required' => __('A link to the landing page is required.'),
+            'phrase.required_without' => __('The keyword is required to fill in.'),
+            'siteList.required_without' => __('The list of sites is required to fill in.'),
+        ];
+
+        if ($request->input('type') === 'phrase') {
+            $request->validate([
+                'link' => 'required|website',
+                'siteList' => 'required_without:link',
+            ], $messages);
+        } else {
+            $request->validate([
+                'link' => 'required|website',
+                'phrase' => 'required_without:siteList|not_website',
+            ], $messages);
+
+            $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
+            $sitesList = explode("\n", $sitesList);
+
+            if (count($sitesList) <= 7) {
+                return response()->json([
+                    'countError' => 'Список сайов должен содержать минимум 7 сайтов'
+                ], 500);
+            }
+
+            foreach ($sitesList as $item) {
+                $relevance->domains[] = [
+                    'item' => str_replace('www.', "", mb_strtolower(trim($item))),
+                    'ignored' => false,
+                ];
+            }
+        }
+
+        $relevance->getMainPageHtml();
+
+        if ($request->input('type') === 'phrase') {
+            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
+            $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
-            $relevance = new Relevance($request->link);
-            $relevance->getMainPageHtml();
             $relevance->removeIgnoredDomains(
-                $request->count,
-                $request->ignoredDomains,
+                $request->input('count'),
+                $request->input('ignoredDomains'),
                 $xmlResponse['response']['results']['grouping']['group']
             );
-            $relevance->parseSites();
-            $relevance->analysis($request);
-            return RelevanceController::successResponse($relevance);
-        } catch (Exception $e) {
-            return RelevanceController::errorResponse($request, $e);
+
         }
+        $relevance->parseSites();
+        $relevance->analysis($request);
+
+        return RelevanceController::successResponse($relevance);
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function repeatMainPageAnalysis(Request $request): JsonResponse
-    {
-        try {
-            $relevance = new Relevance($request->link);
-            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-            $relevance->getMainPageHtml();
-            $relevance->setSites($params->sites);
-            $relevance->setPages($params->html_relevance);
-            $relevance->analysis($request);
-            return RelevanceController::successResponse($relevance);
-        } catch (Exception $e) {
-            return RelevanceController::errorResponse($request, $e);
-        }
-    }
-
-    /**
+     * Повторный анализ конкурентов с использованием html посадочной страницы, которая была получена во время прошлого запроса
      * @param Request $request
      * @return JsonResponse
      */
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
         try {
-            $relevance = new Relevance($request->link);
             $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+            $relevance = new Relevance($params->main_page_link, $request->input('separator'));
             $relevance->setMainPage($params->html_main_page);
             $relevance->setDomains($params->sites);
             $relevance->parseSites();
+            $relevance->analysis($request);
+            return RelevanceController::successResponse($relevance);
+        } catch (Exception $e) {
+            return RelevanceController::errorResponse($request, $e);
+        }
+    }
+
+    /**
+     * Парсинг посадочной страницы и забираем данные конкурентов полученые во время прошлого сканирования
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function repeatMainPageAnalysis(Request $request): JsonResponse
+    {
+        $messages = [
+            'link.required' => __('A link to the landing page is required.'),
+        ];
+
+        $request->validate([
+            'link' => 'required|website',
+        ], $messages);
+
+        try {
+            $relevance = new Relevance($request->input('link'), $request->input('separator'));
+            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+            $relevance->getMainPageHtml();
+            $relevance->setSites($params->sites);
             $relevance->analysis($request);
             return RelevanceController::successResponse($relevance);
         } catch (Exception $e) {
@@ -105,7 +150,6 @@ class RelevanceController extends Controller
      */
     public function testAnalyse(Request $request): JsonResponse
     {
-
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required_without' => __('The keyword is required to fill in.'),

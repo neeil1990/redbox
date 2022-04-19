@@ -3,12 +3,10 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
 {
-
     public $separator = "\n\nseparator\n\n";
 
     public $competitorsTextAndLinksCloud;
@@ -93,10 +91,8 @@ class TestRelevance
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
+            $this->sites[$domain]['html'] = $result;
             $this->sites[$domain]['site'] = $domain;
-
-            $this->pages[$domain]['ignored'] = $item['ignored'];
-            $this->pages[$domain]['html'] = $result;
 
             //Если проанализированный домен является посадочной страницей
             if ($domain == $this->params['main_page_link']) {
@@ -113,14 +109,12 @@ class TestRelevance
         }
 
         if (!$this->mainPageIsRelevance) {
+            $this->sites[$this->params['main_page_link']]['inRelevance'] = false;
             $this->sites[$this->params['main_page_link']]['danger'] = false;
+            $this->sites[$this->params['main_page_link']]['ignored'] = false;
             $this->sites[$this->params['main_page_link']]['site'] = $this->params['main_page_link'];
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
-            $this->sites[$this->params['main_page_link']]['ignored'] = false;
-            $this->sites[$this->params['main_page_link']]['inRelevance'] = false;
-
-            $this->pages[$this->params['main_page_link']]['ignored'] = false;
-            $this->pages[$this->params['main_page_link']]['html'] = $this->mainPage['html'];;
+            $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];;
         }
     }
 
@@ -146,8 +140,7 @@ class TestRelevance
         $this->calculateCoveragePoints();
         $this->calculatePoints();
         $this->calculateDensity();
-        $this->params['sites'] = json_encode($this->sites);
-        $this->params->save();
+        $this->saveResults();
     }
 
     /**
@@ -169,8 +162,8 @@ class TestRelevance
     public function deleteEverythingExceptCharacters()
     {
         $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->mainPage['html']);
-        foreach ($this->pages as $key => $page) {
-            $this->pages[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->pages[$key]['html']);
+        foreach ($this->sites as $key => $page) {
+            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->sites[$key]['html']);
         }
     }
 
@@ -183,8 +176,8 @@ class TestRelevance
     {
         if ($noIndex == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
+            foreach ($this->sites as $key => $page) {
+                $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
             }
         }
     }
@@ -197,9 +190,9 @@ class TestRelevance
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
         $this->mainPage['html'] = TestRelevance::clearHTMLFromLinks($this->mainPage['html']);
-        foreach ($this->pages as $key => $page) {
-            $this->pages[$key]['linkText'] = TextAnalyzer::getLinkText($this->pages[$key]['html']);
-            $this->pages[$key]['html'] = TestRelevance::clearHTMLFromLinks($this->pages[$key]['html']);
+        foreach ($this->sites as $key => $page) {
+            $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
+            $this->sites[$key]['html'] = TestRelevance::clearHTMLFromLinks($this->sites[$key]['html']);
         }
     }
 
@@ -211,13 +204,13 @@ class TestRelevance
     {
         if ($hiddenText == 'true') {
             $this->mainPage['hiddenText'] = TestRelevance::getHiddenText($this->mainPage['html']);
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['hiddenText'] = TestRelevance::getHiddenText($this->pages[$key]['html']);
+            foreach ($this->sites as $key => $page) {
+                $this->sites[$key]['hiddenText'] = TestRelevance::getHiddenText($this->sites[$key]['html']);
             }
         } else {
             $this->mainPage['hiddenText'] = '';
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['hiddenText'] = '';
+            foreach ($this->sites as $key => $page) {
+                $this->sites[$key]['hiddenText'] = '';
             }
         }
     }
@@ -228,14 +221,14 @@ class TestRelevance
      */
     public function getTextFromCompetitors()
     {
-        foreach ($this->pages as $key => $page) {
-            if (!$this->pages[$key]['ignored']) {
-                $this->competitorsLinks .= ' ' . $this->pages[$key]['linkText'] . ' ';
-                $this->competitorsText .= ' ' . $this->pages[$key]['hiddenText'] . ' ' . $this->pages[$key]['html'] . ' ';
+        foreach ($this->sites as $key => $page) {
+            if (!$this->sites[$key]['ignored']) {
+                $this->competitorsLinks .= ' ' . $this->sites[$key]['linkText'] . ' ';
+                $this->competitorsText .= ' ' . $this->sites[$key]['hiddenText'] . ' ' . $this->sites[$key]['html'] . ' ';
             }
 
-            $this->pages[$key]['coverage'] = 0;
-            $this->pages[$key]['coverageTf'] = 0;
+            $this->sites[$key]['coverage'] = 0;
+            $this->sites[$key]['coverageTf'] = 0;
         }
     }
 
@@ -250,7 +243,7 @@ class TestRelevance
             $totalTf += $wordForm['total']['tf'];
         }
 
-        foreach ($this->pages as $pageKey => $page) {
+        foreach ($this->sites as $pageKey => $page) {
             $object = $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'];
             $coverage = $this->calculateCoverage($object);
 
@@ -367,10 +360,10 @@ class TestRelevance
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['hiddenText']);
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->pages[$key]['html']);
-                $this->pages[$key]['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->pages[$key]['linkText']);
-                $this->pages[$key]['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->pages[$key]['hiddenText']);
+            foreach ($this->sites as $key => $page) {
+                $this->sites[$key]['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->sites[$key]['html']);
+                $this->sites[$key]['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->sites[$key]['linkText']);
+                $this->sites[$key]['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->sites[$key]['hiddenText']);
             }
         }
     }
@@ -388,10 +381,10 @@ class TestRelevance
             $this->mainPage['html'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
-            foreach ($this->pages as $key => $page) {
-                $this->pages[$key]['html'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['html']);
-                $this->pages[$key]['linkText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['linkText']);
-                $this->pages[$key]['hiddenText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->pages[$key]['hiddenText']);
+            foreach ($this->sites as $key => $page) {
+                $this->sites[$key]['html'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->sites[$key]['html']);
+                $this->sites[$key]['linkText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->sites[$key]['linkText']);
+                $this->sites[$key]['hiddenText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->sites[$key]['hiddenText']);
             }
         }
     }
@@ -468,9 +461,9 @@ class TestRelevance
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
                 $occurrences = [];
-                foreach ($this->pages as $key => $page) {
+                foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
-                        $htmlCount = mb_substr_count($this->pages[$key]['html'], " $word ");
+                        $htmlCount = mb_substr_count($this->sites[$key]['html'], " $word ");
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
                             if ($reSpam < $htmlCount) {
@@ -478,7 +471,7 @@ class TestRelevance
                             }
                         }
 
-                        $hiddenTextCount = mb_substr_count($this->pages[$key]['hiddenText'], " $word ");
+                        $hiddenTextCount = mb_substr_count($this->sites[$key]['hiddenText'], " $word ");
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
                             if ($reSpam < $hiddenTextCount) {
@@ -486,7 +479,7 @@ class TestRelevance
                             }
                         }
 
-                        $linkTextCount = mb_substr_count($this->pages[$key]['linkText'], " $word ");
+                        $linkTextCount = mb_substr_count($this->sites[$key]['linkText'], " $word ");
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
                             if ($reSpam < $linkTextCount) {
@@ -613,7 +606,7 @@ class TestRelevance
         $this->competitorsTextCloud = TextAnalyzer::prepareCloud($this->competitorsText);
         $this->competitorsLinksCloud = TextAnalyzer::prepareCloud($this->competitorsLinks);
 
-        foreach ($this->pages as $key => $page) {
+        foreach ($this->sites as $key => $page) {
             $this->tfCompClouds[$key] = $this->prepareTfCloud($this->separateText($page['html'] . ' ' . $page['linkText']));
         }
     }
@@ -688,7 +681,7 @@ class TestRelevance
         $html = explode($this->separator, $this->params['html_relevance']);
         unset($html[count($html) - 1]);
         for ($i = 0; $i < 10; $i++) {
-            $this->pages[$this->sites[$i]['site']]['html'] = $html[$i];
+            $this->sites[$this->sites[$i]['site']]['html'] = $html[$i];
         }
 
         return $this;
@@ -698,8 +691,7 @@ class TestRelevance
      * @param array $array
      * @return string
      */
-    public
-    static function concatenation(array $array): string
+    public static function concatenation(array $array): string
     {
         return implode(' ', $array);
     }
@@ -776,8 +768,7 @@ class TestRelevance
      * @param $html
      * @return string
      */
-    public
-    static function clearHTMLFromLinks($html): string
+    public static function clearHTMLFromLinks($html): string
     {
         $html = preg_replace('| +|', ' ', $html);
         $html = str_replace("\n", " ", $html);
@@ -816,7 +807,7 @@ class TestRelevance
             if ($phrase != "") {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
                 $occurrences = [];
-                foreach ($this->pages as $key => $page) {
+                foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
                         if (preg_match("/($phrase)/", $page['html']) ||
                             preg_match("/($phrase)/", $page['linkText']) ||
@@ -826,7 +817,7 @@ class TestRelevance
                         }
 
                         if (preg_match("/($phrase)/", $page['html'])) {
-                            $count = mb_substr_count($this->pages[$key]['html'], "$phrase");
+                            $count = mb_substr_count($this->sites[$key]['html'], "$phrase");
                             $numberTextOccurrences += $count;
                             if ($reSpam < $count) {
                                 $reSpam = $count;
@@ -834,7 +825,7 @@ class TestRelevance
                         }
 
                         if (preg_match("/($phrase)/", $page['hiddenText'])) {
-                            $count = mb_substr_count($this->pages[$key]['hiddenText'], "$phrase");
+                            $count = mb_substr_count($this->sites[$key]['hiddenText'], "$phrase");
                             $numberTextOccurrences += $count;
                             if ($reSpam < $count) {
                                 $reSpam = $count;
@@ -842,7 +833,7 @@ class TestRelevance
                         }
 
                         if (preg_match("/($phrase)/", $page['linkText'])) {
-                            $count = mb_substr_count($this->pages[$key]['linkText'], "$phrase");
+                            $count = mb_substr_count($this->sites[$key]['linkText'], "$phrase");
                             $numberLinkOccurrences += $count;
                             if ($reSpam < $count) {
                                 $reSpam = $count;
@@ -854,10 +845,10 @@ class TestRelevance
                     $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
                     $tf = round($countOccurrences / $totalCount, 6);
                     $idf = round(log10($totalCount / $countOccurrences), 6);
-                    $repeatInTextMainPage = mb_substr_count(
-                        TestRelevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]),
-                        "$phrase");
+
+                    $repeatInTextMainPage = mb_substr_count(TestRelevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]), "$phrase");
                     $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
+
                     $countSites = count($this->sites);
                     $result[$phrase] = [
                         'tf' => $tf,
@@ -911,7 +902,7 @@ class TestRelevance
      */
     public function calculateDensity()
     {
-        foreach ($this->pages as $keyPage => $page) {
+        foreach ($this->sites as $keyPage => $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $density = $this->calculateDensityPoints($allText);
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
@@ -963,5 +954,18 @@ class TestRelevance
 
         return $result;
     }
+
+//    /**
+//     * @return void
+//     */
+//    public function saveResults()
+//    {
+//        $site = [];
+//        foreach ($this->sites as $key => $elem) {
+//            $site[]['site'] = $elem['domain'];
+//        }
+//        $this->params['sites'] = json_encode($site);
+//        $this->params->save();
+//    }
 
 }
