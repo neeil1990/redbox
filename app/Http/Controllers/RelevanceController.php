@@ -45,19 +45,19 @@ class RelevanceController extends Controller
 
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
-            'phrase.required_without' => __('The keyword is required to fill in.'),
-            'siteList.required_without' => __('The list of sites is required to fill in.'),
+            'phrase.required' => __('The keyword is required to fill in.'),
+            'siteList.required' => __('The list of sites is required to fill in.'),
         ];
 
         if ($request->input('type') === 'phrase') {
             $request->validate([
                 'link' => 'required|website',
-                'siteList' => 'required_without:link',
+                'phrase' => 'required',
             ], $messages);
         } else {
             $request->validate([
                 'link' => 'required|website',
-                'phrase' => 'required_without:siteList|not_website',
+                'siteList' => 'required',
             ], $messages);
 
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
