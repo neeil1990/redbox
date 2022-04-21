@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -136,10 +137,11 @@ class TestRelevance
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
+        $this->calculateDensity(); // destroy
         $this->prepareClouds();
         $this->calculateCoveragePoints();
         $this->calculatePoints();
-        $this->calculateDensity();
+//        $this->calculateDensity();
     }
 
     /**
@@ -439,6 +441,7 @@ class TestRelevance
                 break;
             }
         }
+
     }
 
     /**
@@ -566,12 +569,11 @@ class TestRelevance
 
             $this->density[$key] = [
                 'count' => $avgInTotalCompetitors,
-                'tf' => $tf
             ];
         }
 
         $collection = collect($this->density);
-        $this->density = $collection->sortByDesc('tf')->toArray();
+        $this->density = $collection->sortByDesc('count')->toArray();
     }
 
     /**
@@ -903,7 +905,7 @@ class TestRelevance
     {
         foreach ($this->sites as $keyPage => $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $density = $this->calculateDensityPoints($allText);
+            $density = $this->calculateDensityPoints($allText, $this->sites[$keyPage]['mainPage']);
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
             $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
@@ -917,18 +919,32 @@ class TestRelevance
      * @param $text
      * @return array
      */
-    public function calculateDensityPoints($text): array
+    public function calculateDensityPoints($text, bool $boolean): array
     {
         $result = [];
         $allPoints = 0;
-        $iterator = 0;
+        $iterator = 1;
+        $kek = 0;
         foreach ($this->density as $word => $value) {
-            if (preg_match("/($word)/", $text)) {
-                $count = mb_substr_count($text, " $word ");
-                $points = min($count / ($value['count'] / 100), 100);
-                $allPoints += $points;
+            $count = 0;
+            foreach ($this->wordForms[$word] as $key => $wordForm) {
+                if ($key != 'total') {
+                    $count += mb_substr_count($text, " $key ");
+                }
             }
-            $iterator++;
+
+            if ($count > 0) {
+                $kek++;
+                $percent = $value['count'] / 100;
+                $points = min($count / $percent, 100);
+                $allPoints += $points;
+                if ($boolean) {
+                    Log::debug('слово', [$word]);
+                    Log::debug('кол-во вхождений', [$value]);
+                    Log::debug('Получилось найти', [$count]);
+                }
+            }
+
             if ($iterator == 100) {
                 $result[100] = [
                     'percentPoints' => round($allPoints * 2 / 600),
@@ -949,22 +965,15 @@ class TestRelevance
             if ($iterator == 600) {
                 break;
             }
+            $iterator++;
+
         }
 
+        if ($boolean) {
+            Log::debug('кол-во найденых слов', [$kek]);
+            Log::debug('allPoints', [$allPoints]);
+        }
         return $result;
     }
-
-//    /**
-//     * @return void
-//     */
-//    public function saveResults()
-//    {
-//        $site = [];
-//        foreach ($this->sites as $key => $elem) {
-//            $site[]['site'] = $elem['domain'];
-//        }
-//        $this->params['sites'] = json_encode($site);
-//        $this->params->save();
-//    }
 
 }

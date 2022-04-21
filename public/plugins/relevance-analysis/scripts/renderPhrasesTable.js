@@ -10,10 +10,15 @@ function renderPhrasesTable(phrases) {
             "order": [[1, "desc"]],
             "pageLength": 25,
             "searching": true,
+            dom: 'lBfrtip',
+            buttons: [
+                'copy', 'csv', 'excel'
+            ]
         });
 
         setTimeout(() => {
             $('#phrases').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+            $('.buttons-html5').addClass('btn btn-secondary')
 
             function isPhrases(min, max, target, settings) {
                 if (settings.nTable.id !== 'phrases') {

@@ -17,7 +17,6 @@ function renderUnigramTable(unigramTable) {
             ]
         });
         $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
-        $('.buttons-html5').addClass('btn btn-secondary')
         $(".dt-buttons").append("<button class='btn btn-secondary' id='showChildrenRows'>Child</button>");
 
         $('#showChildrenRows').click(function () {
@@ -264,7 +263,7 @@ function renderChildTr(elem, key, word, stats) {
         var linkWarn = "class='bg-warning-elem'"
         var bgWarn = "class='bg-warning-elem'"
     }
-    if (repeatInLinkMainPage == 0 || repeatInTextMainPage == 0) {
+    if (repeatInLinkMainPage == 0 && repeatInTextMainPage == 0) {
         var bgTotalWarn = "class='bg-warning-elem'"
     }
     let lockBlock =
