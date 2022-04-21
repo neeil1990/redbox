@@ -69,7 +69,6 @@ class Relevance
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
         $this->params['main_page_link'] = $link;
         $this->params['sites'] = '';
-        $this->params['html_relevance'] = '';
         $this->params['html_main_page'] = '';
     }
 
@@ -79,7 +78,7 @@ class Relevance
     public function getMainPageHtml()
     {
         $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
-        $this->setMainPage($html);
+        $this->setMainPage($html, true);
     }
 
     /**
@@ -105,8 +104,6 @@ class Relevance
                 $this->sites[$domain]['mainPage'] = false;
                 $this->sites[$domain]['ignored'] = $item['ignored'];
             }
-
-            $this->params['html_relevance'] .= $result . $this->separator;
         }
 
         if (!$this->mainPageIsRelevance) {
@@ -653,11 +650,19 @@ class Relevance
 
     /**
      * @param $html
+     * @param bool $decode
+     * @return void
      */
-    public function setMainPage($html)
+    public function setMainPage($html, bool $decode = false)
     {
-        $this->mainPage['html'] = $html;
-        $this->params['html_main_page'] = $html;
+        if ($decode) {
+            $this->mainPage['html'] = $html;
+            //закодировать
+            $this->params['html_main_page'] = base64_encode(gzcompress($html, 9));
+        } else {
+            $this->mainPage['html'] = gzuncompress(base64_decode($html));
+            $this->params['html_main_page'] = $html;
+        }
     }
 
     /**
@@ -666,14 +671,12 @@ class Relevance
      */
     public function setSites($sites)
     {
-        $this->params['sites'] = $sites;
-
         $sites = json_decode($sites, true);
 
         foreach ($sites as $key => $site) {
             if (isset($site['defaultHtml'])) {
                 $this->sites[$key] = [
-                    'html' => $site['defaultHtml'],
+                    'html' => gzuncompress(base64_decode($site['html'])),
                     'linkText' => '',
                     'hiddenText' => '',
                     'danger' => $site['danger'],
@@ -961,6 +964,17 @@ class Relevance
      */
     public function saveResults()
     {
+        //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
+        foreach ($this->sites as $key => $site) {
+            if (isset($this->sites[$key]['defaultHtml'])) {
+                $encode = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
+                $this->sites[$key]['html'] = $encode;
+                unset($this->sites[$key]['defaultHtml']);
+                unset($this->sites[$key]['linkText']);
+                unset($this->sites[$key]['hiddenText']);
+            }
+
+        }
         $this->params['sites'] = json_encode($this->sites);
         $this->params->save();
     }

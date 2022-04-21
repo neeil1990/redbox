@@ -12,6 +12,7 @@
 */
 
 use App\TelegramBot;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -192,4 +193,10 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 
     Route::resource('monitoring', 'MonitoringController');
+});
+
+Route::get('bla', function () {
+    $pars = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://xn--80ajpfhbgomfh1b.xn--p1ai/voronezh/profession/mashinist-ekskavatora/'));
+//    $pars = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://shra.ru/2016/12/domdocument-kodirovka-pri-sokhranenii-v-html/'));
+    dd($pars);
 });

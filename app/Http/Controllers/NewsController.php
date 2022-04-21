@@ -162,7 +162,6 @@ class NewsController extends Controller
 
     public function editComment(Request $request)
     {
-        Log::debug('msg', $request->all());
         NewsComments::where('id', '=', $request->id)->update([
             'comment' => $request->comment
         ]);

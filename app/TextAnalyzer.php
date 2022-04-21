@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DOMDocument;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -163,12 +164,19 @@ class TextAnalyzer
      */
     public static function removeStylesAndScripts($html): string
     {
-        $html = explode("\n\r", $html);
-        $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
-        $html = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $html);
+        preg_match_all('#<style(.*?)>(.*?)</style>#is', $html, $matches, PREG_SET_ORDER);
+        foreach ($matches as $item) {
+            $html = str_replace($item[0], "", $html);
+        }
 
-        return mb_strtolower(implode("\n", $html));
+        preg_match_all('#<script(.*?)>(.*?)</script>#is', $html, $matches, PREG_SET_ORDER);
+        foreach ($matches as $item) {
+            $html = str_replace($item[0], "", $html);
+        }
+
+        return mb_strtolower($html);
     }
+
 
     /**
      * @param $html
