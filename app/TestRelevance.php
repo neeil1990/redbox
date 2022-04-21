@@ -905,7 +905,7 @@ class TestRelevance
     {
         foreach ($this->sites as $keyPage => $page) {
             $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $density = $this->calculateDensityPoints($allText, $this->sites[$keyPage]['mainPage']);
+            $density = $this->calculateDensityPoints($allText);
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
             $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
@@ -919,7 +919,7 @@ class TestRelevance
      * @param $text
      * @return array
      */
-    public function calculateDensityPoints($text, bool $boolean): array
+    public function calculateDensityPoints($text): array
     {
         $result = [];
         $allPoints = 0;
@@ -938,11 +938,6 @@ class TestRelevance
                 $percent = $value['count'] / 100;
                 $points = min($count / $percent, 100);
                 $allPoints += $points;
-                if ($boolean) {
-                    Log::debug('слово', [$word]);
-                    Log::debug('кол-во вхождений', [$value]);
-                    Log::debug('Получилось найти', [$count]);
-                }
             }
 
             if ($iterator == 100) {
@@ -967,11 +962,6 @@ class TestRelevance
             }
             $iterator++;
 
-        }
-
-        if ($boolean) {
-            Log::debug('кол-во найденых слов', [$kek]);
-            Log::debug('allPoints', [$allPoints]);
         }
         return $result;
     }
