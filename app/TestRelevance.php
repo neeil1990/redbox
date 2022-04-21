@@ -923,8 +923,7 @@ class TestRelevance
     {
         $result = [];
         $allPoints = 0;
-        $iterator = 1;
-        $kek = 0;
+        $iterator = 0;
         foreach ($this->density as $word => $value) {
             $count = 0;
             foreach ($this->wordForms[$word] as $key => $wordForm) {
@@ -934,7 +933,6 @@ class TestRelevance
             }
 
             if ($count > 0) {
-                $kek++;
                 $percent = $value['count'] / 100;
                 $points = min($count / $percent, 100);
                 $allPoints += $points;
@@ -946,12 +944,14 @@ class TestRelevance
                     'totalPoints' => round($allPoints),
                 ];
             }
+
             if ($iterator == 200) {
                 $result[200] = [
                     'percentPoints' => round($allPoints * 2 / 600),
                     'totalPoints' => round($allPoints),
                 ];
             }
+
             $result[600] = [
                 'percentPoints' => round($allPoints / 600),
                 'totalPoints' => round($allPoints),
