@@ -288,7 +288,8 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
             'tfCompClouds' => $relevance->tfCompClouds,
             //new functions
-            'phrases' => $relevance->phrases ?? null
+            'phrases' => $relevance->phrases ?? null,
+            'avgCoveragePercent' => $relevance->avgCoveragePercent
         ]);
     }
 

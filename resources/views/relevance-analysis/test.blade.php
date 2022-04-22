@@ -634,8 +634,8 @@
                 </th>
                 <th>
                     <div>
-                        <input class="w-100" type="number"  id="phrasesMinAVGText" placeholder="min">
-                        <input class="w-100" type="number"  id="phrasesMaxAVGText" placeholder="max">
+                        <input class="w-100" type="number" id="phrasesMinAVGText" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxAVGText" placeholder="max">
                     </div>
                 </th>
                 <th>
@@ -660,8 +660,8 @@
                 </th>
                 <th>
                     <div>
-                        <input class="w-100" type="number"id="phrasesMinLinkIYP" placeholder="min">
-                        <input class="w-100" type="number"id="phrasesMaxLinkIYP" placeholder="max">
+                        <input class="w-100" type="number" id="phrasesMinLinkIYP" placeholder="min">
+                        <input class="w-100" type="number" id="phrasesMaxLinkIYP" placeholder="max">
                     </div>
                 </th>
             </tr>
@@ -686,6 +686,10 @@
 
     <div class="sites" style="display: none; margin-top:50px;">
         <h3>{{ __('Analyzed sites') }}</h3>
+        <input id="avgCoveragePercentInput" type="number" placeholder="добавить % к охвату">
+        <div>
+            100%: <span id="avgCoveragePercent">34.2</span> <span id="changedAvgPercent"></span>
+        </div>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row" style="position: relative; z-index: 100">
@@ -895,7 +899,7 @@
                 stopProgressBar(interval)
                 refreshAllRenderElements()
                 renderUnigramTable(response.unigramTable);
-                renderScannedSitesList(response.sites, response.coverageInfo);
+                renderScannedSitesList(response.sites, response.avgCoveragePercent);
                 renderTextTable(response.avg, response.mainPage)
                 renderPhrasesTable(response.phrases)
                 $("#full-analyse").prop("disabled", false);

@@ -1,4 +1,4 @@
-function renderScannedSitesList(sites) {
+function renderScannedSitesList(sites, avgCoveragePercent) {
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
@@ -36,12 +36,12 @@ function renderScannedSitesList(sites) {
 
         let warning = value['danger']
             ? "<td class='bg-warning'>" +
-                "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
-                + ignorBlock +
+            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
+            + ignorBlock +
             "</td>"
             : "<td>" +
-                "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
-                + ignorBlock +
+            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
+            + ignorBlock +
             "</td>"
 
         if (value['mainPage']) {
@@ -152,5 +152,33 @@ function renderScannedSitesList(sites) {
         );
         return false;
     });
+
+    $('#avgCoveragePercent').html(avgCoveragePercent.toFixed(3))
+    $("#avgCoveragePercentInput").change(function () {
+        let number = $('#avgCoveragePercent').html()
+        if ($("#avgCoveragePercentInput").val() !== '') {
+            number = Number(number)
+            number = number + ((number / 100) * $('#avgCoveragePercentInput').val())
+            let freshNumber = number.toFixed(3)
+            $('#changedAvgPercent').html('(' + freshNumber + ')')
+
+            var freshPercent
+            $('#scanned-sites-tbody tr').each(function () {
+                $(this).find('td').each(function (cell) {
+                    if (cell == 2) {
+                        let thisValue = Number($(this).html().replace('%', ''))
+                        freshPercent = Math.min(thisValue / (freshNumber / 100), 100)
+                        freshPercent = freshPercent.toFixed(3)
+                    }
+                    if (cell == 4) {
+                        console.log($(this).html())
+                        console.log(freshPercent)
+                        $(this).html(freshPercent)
+                    }
+                });
+            });
+        }
+    });
+
 }
 

@@ -30,6 +30,8 @@ class TestRelevance
 
     public $maxWordLength;
 
+    public $avgCoveragePercent;
+
     public $ignoredWords;
 
     public $coverageInfo;
@@ -137,11 +139,11 @@ class TestRelevance
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
-        $this->calculateDensity(); // destroy
-        $this->prepareClouds();
+        $this->calculateDensity();
         $this->calculateCoveragePoints();
         $this->calculatePoints();
-//        $this->calculateDensity();
+        $this->prepareClouds();
+
     }
 
     /**
@@ -292,20 +294,20 @@ class TestRelevance
     public function calculatePoints()
     {
         // высчитываем 100%, игнорируя игнорируемые домены
-        $avgCoveragePercent = $iterator = 0;
+        $this->avgCoveragePercent = $iterator = 0;
         foreach ($this->sites as $site) {
             if (!$site['ignored']) {
                 if ($iterator == 10) {
                     break;
                 }
-                $avgCoveragePercent += $site['coverage'];
+                $this->avgCoveragePercent += $site['coverage'];
                 $iterator++;
             }
         }
 
-        $avgCoveragePercent /= 10;
+        $this->avgCoveragePercent /= 10;
         foreach ($this->sites as $key => $site) {
-            $points = $this->sites[$key]['coverage'] / ($avgCoveragePercent / 100);
+            $points = $this->sites[$key]['coverage'] / ($this->avgCoveragePercent / 100);
             $points = min($points, 100);
             $this->sites[$key]['width'] = round($points, 2);
         }
@@ -445,7 +447,7 @@ class TestRelevance
     }
 
     /**
-     * Обработка информации для таблицы unigram
+     * Обработка информации для таблицы LTP
      * @return void
      */
     public function processingOfGeneralInformation()
