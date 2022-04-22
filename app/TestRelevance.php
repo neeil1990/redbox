@@ -916,7 +916,7 @@ class TestRelevance
         foreach ($this->sites as $keyPage => $page) {
             $allText = explode(" ", $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText']);
             $array = array_count_values($allText);
-            $density = $this->calculateDensityPoints($array, $this->sites[$keyPage]['mainPage']);
+            $density = $this->calculateDensityPoints($array);
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
             $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
@@ -930,20 +930,16 @@ class TestRelevance
      * @param $array
      * @return array
      */
-    public function calculateDensityPoints($array, bool $boolean = false): array
+    public function calculateDensityPoints($array): array
     {
         $result = [];
         $allPoints = 0;
         $iterator = 1;
-        $kek = 0;
         foreach ($this->density as $word => $value) {
             $count = 0;
             foreach ($this->wordForms[$word] as $key => $wordForm) {
                 if ($key != 'total') {
                     $counter = $array[$key] ?? 0;
-                    if ($boolean && $counter != 0) {
-                        $kek++;
-                    }
                     $count += $counter;
                 }
             }
@@ -979,10 +975,7 @@ class TestRelevance
             $iterator++;
 
         }
-        if ($boolean) {
-            Log::debug('iterator', [$iterator]);
-            Log::debug('kek', [$kek]);
-        }
+
         return $result;
     }
 
