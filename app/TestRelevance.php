@@ -460,6 +460,14 @@ class TestRelevance
             }
         }
 
+        $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
+        $myText = explode(" ", $myText);
+        $myText = array_count_values($myText);
+
+        $myLink = $this->mainPage['linkText'];
+        $myLink = explode(" ", $myLink);
+        $myLink = array_count_values($myLink);
+
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
@@ -467,7 +475,7 @@ class TestRelevance
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
-                        $htmlCount = mb_substr_count($this->sites[$key]['html'], " $word ");
+                        $htmlCount = preg_match_all("( $word )", $this->sites[$key]['html']);
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
                             if ($reSpam < $htmlCount) {
@@ -475,7 +483,7 @@ class TestRelevance
                             }
                         }
 
-                        $hiddenTextCount = mb_substr_count($this->sites[$key]['hiddenText'], " $word ");
+                        $hiddenTextCount = preg_match_all("( $word )", $this->sites[$key]['hiddenText']);
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
                             if ($reSpam < $hiddenTextCount) {
@@ -483,7 +491,7 @@ class TestRelevance
                             }
                         }
 
-                        $linkTextCount = mb_substr_count($this->sites[$key]['linkText'], " $word ");
+                        $linkTextCount = preg_match_all("( $word )", $this->sites[$key]['linkText']);
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
                             if ($reSpam < $linkTextCount) {
@@ -501,8 +509,8 @@ class TestRelevance
                 $tf = round($item / $wordCount, 5);
                 $idf = round(log10($wordCount / $item), 5);
 
-                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], " $word ");
-                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], " $word ");
+                $repeatInTextMainPage = $myText[$word] ?? 0;
+                $repeatLinkInMainPage = $myLink[$word] ?? 0;
 
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
@@ -906,8 +914,9 @@ class TestRelevance
     public function calculateDensity()
     {
         foreach ($this->sites as $keyPage => $page) {
-            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $density = $this->calculateDensityPoints($allText);
+            $allText = explode(" ", $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText']);
+            $array = array_count_values($allText);
+            $density = $this->calculateDensityPoints($array, $this->sites[$keyPage]['mainPage']);
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
             $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
@@ -918,19 +927,24 @@ class TestRelevance
     }
 
     /**
-     * @param $text
+     * @param $array
      * @return array
      */
-    public function calculateDensityPoints($text): array
+    public function calculateDensityPoints($array, bool $boolean = false): array
     {
         $result = [];
         $allPoints = 0;
-        $iterator = 0;
+        $iterator = 1;
+        $kek = 0;
         foreach ($this->density as $word => $value) {
             $count = 0;
             foreach ($this->wordForms[$word] as $key => $wordForm) {
                 if ($key != 'total') {
-                    $count += mb_substr_count($text, " $key ");
+                    $counter = $array[$key] ?? 0;
+                    if ($boolean && $counter != 0) {
+                        $kek++;
+                    }
+                    $count += $counter;
                 }
             }
 
@@ -964,6 +978,10 @@ class TestRelevance
             }
             $iterator++;
 
+        }
+        if ($boolean) {
+            Log::debug('iterator', [$iterator]);
+            Log::debug('kek', [$kek]);
         }
         return $result;
     }
