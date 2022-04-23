@@ -920,9 +920,7 @@ class TestRelevance
             $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
             $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
             $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$keyPage]['density100Points'] = $density[100]['totalPoints'];
             $this->sites[$keyPage]['density200'] = $density[200]['percentPoints'];
-            $this->sites[$keyPage]['density200Points'] = $density[200]['totalPoints'];
         }
     }
 
@@ -935,8 +933,10 @@ class TestRelevance
         $result = [];
         $allPoints = 0;
         $iterator = 1;
+        $result[100]['percentPoints'] = $result[200]['percentPoints'] = $result[600]['percentPoints'] = 0;
         foreach ($this->density as $word => $value) {
             $count = 0;
+            $points = 0;
             foreach ($this->wordForms[$word] as $key => $wordForm) {
                 if ($key != 'total') {
                     $counter = $array[$key] ?? 0;
@@ -950,32 +950,31 @@ class TestRelevance
                 $allPoints += $points;
             }
 
-            if ($iterator == 100) {
-                $result[100] = [
-                    'percentPoints' => round($allPoints * 2 / 600),
-                    'totalPoints' => round($allPoints),
-                ];
+            if ($iterator < 100) {
+                $result[100]['percentPoints'] += $points * 2;
+            } else {
+                $result[100]['percentPoints'] += $points;
             }
 
-            if ($iterator == 200) {
-                $result[200] = [
-                    'percentPoints' => round($allPoints * 2 / 600),
-                    'totalPoints' => round($allPoints),
-                ];
+            if ($iterator < 200) {
+                $result[200]['percentPoints'] += $points * 2;
+            } else {
+                $result[200]['percentPoints'] += $points;
             }
-
-            $result[600] = [
-                'percentPoints' => round($allPoints / 600),
-                'totalPoints' => round($allPoints),
-            ];
 
             if ($iterator == 600) {
+                $result[600]['percentPoints'] = $allPoints;
                 break;
             }
-            $iterator++;
 
+            $iterator++;
         }
 
+        $result[100]['percentPoints'] = round($result[100]['percentPoints'] / 600);
+        $result[200]['percentPoints'] = round($result[200]['percentPoints'] / 600);
+        $result[600]['percentPoints'] = round($result[600]['percentPoints'] / 600);
+
+        $result[600]['totalPoints'] = round($allPoints);
         return $result;
     }
 
