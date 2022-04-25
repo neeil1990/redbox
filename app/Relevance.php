@@ -919,7 +919,7 @@ class Relevance
                     $count = mb_substr_count($text, " $word ");
                     if ($count > 0) {
                         if ($form['avgInTotalCompetitors'] == 0) {
-                            $points = 100;
+                            $points = 0;
                         } else {
                             $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
 
