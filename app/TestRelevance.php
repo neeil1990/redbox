@@ -469,73 +469,62 @@ class TestRelevance
         $myLink = array_count_values($myLink);
 
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
-        foreach ($this->sites as $key => $page) {
-            if (!$page['ignored']) {
+        foreach ($this->wordForms as $root => $wordForm) {
+            foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
                 $occurrences = [];
-
-                $pageText = $this->sites[$key]['html'];
-                $pageText = explode(" ", $pageText);
-                $pageText = array_count_values($pageText);
-
-                $hiddenText = $this->sites[$key]['hiddenText'];
-                $hiddenText = explode(" ", $hiddenText);
-                $hiddenText = array_count_values($hiddenText);
-
-                $pageLink = $this->sites[$key]['linkText'];
-                $pageLink = explode(" ", $pageLink);
-                $pageLink = array_count_values($pageLink);
-
-                foreach ($this->wordForms as $root => $wordForm) {
-                    foreach ($wordForm as $word => $item) {
-
-                        if (isset($pageText[$word]) && $pageText[$word] > 0) {
-                            $numberTextOccurrences += $pageText[$word];
-                            if ($reSpam < $pageText[$word]) {
-                                $reSpam = $pageText[$word];
+                foreach ($this->sites as $key => $page) {
+                    if (!$page['ignored']) {
+                        $htmlCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['html'] . ' ');
+                        if ($htmlCount > 0) {
+                            $numberTextOccurrences += $htmlCount;
+                            if ($reSpam < $htmlCount) {
+                                $reSpam = $htmlCount;
                             }
                         }
 
-                        if (isset($hiddenText[$word]) && $hiddenText[$word] > 0) {
-                            $numberTextOccurrences += $hiddenText[$word];
-                            if ($reSpam < $hiddenText[$word]) {
-                                $reSpam = $hiddenText[$word];
+                        $hiddenTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['hiddenText'] . ' ');
+                        if ($hiddenTextCount > 0) {
+                            $numberTextOccurrences += $hiddenTextCount;
+                            if ($reSpam < $hiddenTextCount) {
+                                $reSpam = $hiddenTextCount;
                             }
                         }
 
-                        if (isset($hiddenText[$word]) && $pageLink[$word] > 0) {
-                            $numberLinkOccurrences += $pageLink[$word];
-                            if ($reSpam < $pageLink[$word]) {
-                                $reSpam = $pageLink[$word];
+                        $linkTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['linkText'] . ' ');
+                        if ($linkTextCount > 0) {
+                            $numberLinkOccurrences += $linkTextCount;
+                            if ($reSpam < $linkTextCount) {
+                                $reSpam = $linkTextCount;
                             }
                         }
 
-                        if ($pageText[$word] > 0 || $hiddenText[$word] > 0 || $pageLink[$word] > 0) {
+                        if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
                             $numberOccurrences++;
                             $occurrences[] = $key;
                         }
-
-                        $tf = round($item / $wordCount, 5);
-                        $idf = round(log10($wordCount / $item), 5);
-
-                        $repeatInTextMainPage = $myText[$word] ?? 0;
-                        $repeatLinkInMainPage = $myLink[$word] ?? 0;
-
-                        $this->wordForms[$root][$word] = [
-                            'tf' => $tf,
-                            'idf' => $idf,
-                            'numberOccurrences' => $numberOccurrences,
-                            'reSpam' => $reSpam,
-                            'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
-                            'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
-                            'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
-                            'repeatInLinkMainPage' => $repeatLinkInMainPage,
-                            'repeatInTextMainPage' => $repeatInTextMainPage,
-                            'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
-                            'occurrences' => $occurrences
-                        ];
                     }
                 }
+
+                $repeatInTextMainPage = $myText[$word] ?? 0;
+                $repeatLinkInMainPage = $myLink[$word] ?? 0;
+
+                $tf = round($item / $wordCount, 5);
+                $idf = round(log10($wordCount / $item), 5);
+
+                $this->wordForms[$root][$word] = [
+                    'tf' => $tf,
+                    'idf' => $idf,
+                    'numberOccurrences' => $numberOccurrences,
+                    'reSpam' => $reSpam,
+                    'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
+                    'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
+                    'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
+                    'repeatInLinkMainPage' => $repeatLinkInMainPage,
+                    'repeatInTextMainPage' => $repeatInTextMainPage,
+                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
+                    'occurrences' => $occurrences
+                ];
             }
         }
     }
@@ -955,17 +944,9 @@ class TestRelevance
                 }
                 $points = 0;
                 $count = mb_substr_count($text, " $word ");
-                if ($word != 'total') {
-                    $count = mb_substr_count($text, " $word ");
-                    if ($count > 0) {
-                        if ($form['avgInTotalCompetitors'] == 0) {
-                            $points = 0;
-                        } else {
-                            $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
-
-                        }
-                        $allPoints += $points;
-                    }
+                if ($count > 0) {
+                    $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
+                    $allPoints += $points;
                 }
 
                 if ($gain['d50'] != null && $iterator <= 50) {
