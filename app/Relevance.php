@@ -657,7 +657,6 @@ class Relevance
     {
         if ($decode) {
             $this->mainPage['html'] = $html;
-            //закодировать
             $this->params['html_main_page'] = base64_encode(gzcompress($html, 9));
         } else {
             $this->mainPage['html'] = gzuncompress(base64_decode($html));
@@ -674,17 +673,16 @@ class Relevance
         $sites = json_decode($sites, true);
 
         foreach ($sites as $key => $site) {
-            if (isset($site['defaultHtml'])) {
-                $this->sites[$key] = [
-                    'html' => gzuncompress(base64_decode($site['html'])),
-                    'linkText' => '',
-                    'hiddenText' => '',
-                    'danger' => $site['danger'],
-                    'site' => $key,
-                    'mainPage' => $site['mainPage'],
-                    'ignored' => $site['ignored']
-                ];
-            }
+            $this->sites[$key] = [
+                'html' => gzuncompress(base64_decode($site['html'])),
+                'linkText' => '',
+                'hiddenText' => '',
+                'danger' => $site['danger'],
+                'site' => $key,
+                'mainPage' => $site['mainPage'],
+                'ignored' => $site['ignored'],
+                'inRelevance' => $site['inRelevance'] ?? false,
+            ];
         }
     }
 
@@ -968,11 +966,14 @@ class Relevance
         foreach ($this->sites as $key => $site) {
             if (isset($this->sites[$key]['defaultHtml'])) {
                 $encode = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
-                $this->sites[$key]['html'] = $encode;
-                unset($this->sites[$key]['defaultHtml']);
-                unset($this->sites[$key]['linkText']);
-                unset($this->sites[$key]['hiddenText']);
+            } else {
+                $encode = base64_encode(gzcompress($this->sites[$key]['html'], 9));
             }
+
+            $this->sites[$key]['html'] = $encode;
+            unset($this->sites[$key]['defaultHtml']);
+            unset($this->sites[$key]['linkText']);
+            unset($this->sites[$key]['hiddenText']);
 
         }
         $this->params['sites'] = json_encode($this->sites);
