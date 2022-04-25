@@ -562,6 +562,7 @@ class Relevance
                 'danger' => $danger,
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
+
         }
     }
 
