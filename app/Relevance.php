@@ -42,8 +42,6 @@ class Relevance
 
     public $phrases;
 
-    public $density = [];
-
     public $params;
 
     public $pages;
@@ -564,15 +562,7 @@ class Relevance
                 'danger' => $danger,
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
-
-            $this->density[$key] = [
-                'count' => $avgInTotalCompetitors,
-                'tf' => $tf
-            ];
         }
-
-        $collection = collect($this->density);
-        $this->density = $collection->sortByDesc('tf')->toArray();
     }
 
     /**
@@ -925,21 +915,25 @@ class Relevance
         $iterator = 0;
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
-                if ($word == 'total') {
-                    continue;
-                }
-                $count = mb_substr_count($text, " $word ");
-                if ($count > 0) {
-                    $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
-                    $allPoints += $points;
-                }
-            }
+                if ($word != 'total') {
+                    $count = mb_substr_count($text, " $word ");
+                    if ($count > 0) {
+                        if ($form['avgInTotalCompetitors'] == 0) {
+                            $points = 100;
+                        } else {
+                            $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
 
-            if ($iterator == 600) {
-                break;
-            }
+                        }
+                        $allPoints += $points;
+                    }
+                }
 
-            $iterator++;
+                if ($iterator == 600) {
+                    break;
+                }
+
+                $iterator++;
+            }
         }
 
         $result['percent'] = round($allPoints / 600);
