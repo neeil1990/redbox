@@ -97,7 +97,7 @@
 
             <label for="d200">плотность 200</label>
             <input name="d200" id="d200" type="number" class="form form-control">
-            <span class="text-muted">с 151 по 120</span><br>
+            <span class="text-muted">с 151 по 200</span><br>
         </div>
 
         <div class="form-group required">

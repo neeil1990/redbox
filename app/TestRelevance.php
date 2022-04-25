@@ -264,7 +264,7 @@ class TestRelevance
         $tf = 0;
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
-                if (strpos($object, "$word ") !== false) {
+                if (strpos($object, " $word ") !== false) {
                     $text++;
                     break;
                 }
@@ -273,7 +273,7 @@ class TestRelevance
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word != 'total') {
-                    if (strpos($object, "$word ") !== false) {
+                    if (strpos($object, " $word ") !== false) {
                         $tf += $form['tf'];
                     }
                 }
