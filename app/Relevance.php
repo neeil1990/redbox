@@ -260,16 +260,18 @@ class Relevance
         $tf = 0;
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
-                if (strpos($object, "$word ") !== false) {
-                    $text++;
-                    break;
+                if ($word != 'total') {
+                    if (strpos($object, " $word ") !== false) {
+                        $text++;
+                        break;
+                    }
                 }
             }
         }
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word != 'total') {
-                    if (strpos($object, "$word ") !== false) {
+                    if (strpos($object, " $word ") !== false) {
                         $tf += $form['tf'];
                     }
                 }
@@ -907,12 +909,8 @@ class Relevance
         foreach ($this->sites as $keyPage => $page) {
             $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
             $density = $this->calculateDensityPoints($allText);
-            $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
-            $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$keyPage]['density100Points'] = $density[100]['totalPoints'];
-            $this->sites[$keyPage]['density200'] = $density[200]['percentPoints'];
-            $this->sites[$keyPage]['density200Points'] = $density[200]['totalPoints'];
+            $this->sites[$keyPage]['density'] = $density['percent'];
+            $this->sites[$keyPage]['densityPoints'] = $density['points'];
         }
     }
 
@@ -925,34 +923,27 @@ class Relevance
         $result = [];
         $allPoints = 0;
         $iterator = 0;
-        foreach ($this->density as $word => $value) {
-            if (preg_match("/($word)/", $text)) {
+        foreach ($this->wordForms as $wordForm) {
+            foreach ($wordForm as $word => $form) {
+                if ($word == 'total') {
+                    continue;
+                }
                 $count = mb_substr_count($text, " $word ");
-                $points = min($count / ($value['count'] / 100), 100);
-                $allPoints += $points;
+                if ($count > 0) {
+                    $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
+                    $allPoints += $points;
+                }
             }
-            $iterator++;
-            if ($iterator == 100) {
-                $result[100] = [
-                    'percentPoints' => round($allPoints * 2 / 600),
-                    'totalPoints' => round($allPoints),
-                ];
-            }
-            if ($iterator == 200) {
-                $result[200] = [
-                    'percentPoints' => round($allPoints * 2 / 600),
-                    'totalPoints' => round($allPoints),
-                ];
-            }
-            $result[600] = [
-                'percentPoints' => round($allPoints / 600),
-                'totalPoints' => round($allPoints),
-            ];
 
             if ($iterator == 600) {
                 break;
             }
+
+            $iterator++;
         }
+
+        $result['percent'] = round($allPoints / 600);
+        $result['points'] = round($allPoints);
 
         return $result;
     }

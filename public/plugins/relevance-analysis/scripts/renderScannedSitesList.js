@@ -61,8 +61,6 @@ function renderScannedSitesList(sites) {
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
             "<td data-order='" + value['density'] + "'>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
-            "<td data-order='" + value['density100'] + "'>" + value['density100'] + "<span class='text-muted'>(" + value['density100Points'] + ")</span></td>" +
-            "<td data-order='" + value['density200'] + "'>" + value['density200'] + "<span class='text-muted'>(" + value['density200Points'] + ")</span></td>" +
             warning +
             "</tr>"
         )

@@ -920,9 +920,8 @@ class TestRelevance
         ];
 
         foreach ($this->sites as $keyPage => $page) {
-            $allText = explode(" ", $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText']);
-            $array = array_count_values($allText);
-            $density = $this->calculateDensityPoints($array, $gain);
+            $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $density = $this->calculateDensityPoints($allText, $gain);
             $this->sites[$keyPage]['percent'] = $density['percent'];
             $this->sites[$keyPage]['points'] = $density['points'];
             $this->sites[$keyPage]['densityExpPoints'] = $density['densityExpPoints'];
@@ -931,52 +930,49 @@ class TestRelevance
     }
 
     /**
-     * @param $array
+     * @param $text
      * @param $gain
      * @return array
      */
-    public function calculateDensityPoints($array, $gain): array
+    public function calculateDensityPoints($text, $gain): array
     {
         $result = [];
         $allPoints = 0;
-        $iterator = 1;
-        $experiment = 0;
-        foreach ($this->density as $word => $value) {
-            $count = 0;
-            $points = 0;
-            foreach ($this->wordForms[$word] as $key => $wordForm) {
-                if ($key != 'total') {
-                    $count = $array[$key] ?? 0;
+        $iterator = 0;
+        $experiment = 1;
+        foreach ($this->wordForms as $wordForm) {
+            foreach ($wordForm as $word => $form) {
+                if ($word == 'total') {
+                    continue;
+                }
+                $points = 0;
+                $count = mb_substr_count($text, " $word ");
+                if ($count > 0) {
+                    $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
+                    $allPoints += $points;
+                }
+
+                if ($gain['d50'] != null && $iterator <= 50) {
+                    $experiment += $points * $gain['d50'];
+                } else if ($gain['d100'] != null && $iterator > 50 && $iterator <= 100) {
+                    $experiment += $points * $gain['d100'];
+                } else if ($gain['d150'] != null && $iterator > 100 && $iterator <= 150) {
+                    $experiment += $points * $gain['d150'];
+                } else if ($gain['d200'] != null && $iterator > 150 && $iterator <= 200) {
+                    $experiment += $points * $gain['d200'];
+                } else {
+                    $experiment += $points;
                 }
             }
 
-            if ($count > 0) {
-                $percent = $value['count'] / 100;
-                $points = min($count / $percent, 100);
-                $allPoints += $points;
-            }
-
-            if ($gain['d50'] != null && $iterator <= 50) {
-                $experiment += $points * $gain['d50'];
-            } else if ($gain['d100'] != null && $iterator > 50 && $iterator <= 100) {
-                $experiment += $points * $gain['d100'];
-            } else if ($gain['d150'] != null && $iterator > 100 && $iterator <= 150) {
-                $experiment += $points * $gain['d150'];
-            } else if ($gain['d200'] != null && $iterator > 150 && $iterator <= 200) {
-                $experiment += $points * $gain['d200'];
-            } else {
-                $experiment += $points;
-            }
-
             if ($iterator == 600) {
-                $result['percentPoints'] = $allPoints;
                 break;
             }
 
             $iterator++;
         }
 
-        $result['percent'] = round($result['percentPoints'] / 600);
+        $result['percent'] = round($allPoints / 600);
         $result['points'] = round($allPoints);
 
         $result['densityExpPoints'] = round($experiment);

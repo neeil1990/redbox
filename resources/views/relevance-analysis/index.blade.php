@@ -724,8 +724,6 @@
                 <th>{{ __('Coverage by tf') }}</th>
                 <th>{{ __('Width') }}</th>
                 <th>{{ __('Density') }}</th>
-                <th>Плотность(100)</th>
-                <th>Плотность(200)</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
