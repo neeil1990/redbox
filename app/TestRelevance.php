@@ -489,21 +489,21 @@ class TestRelevance
                 foreach ($this->wordForms as $root => $wordForm) {
                     foreach ($wordForm as $word => $item) {
 
-                        if ($pageText[$word] > 0) {
+                        if (isset($pageText[$word]) && $pageText[$word] > 0) {
                             $numberTextOccurrences += $pageText[$word];
                             if ($reSpam < $pageText[$word]) {
                                 $reSpam = $pageText[$word];
                             }
                         }
 
-                        if ($hiddenText[$word] > 0) {
+                        if (isset($hiddenText[$word]) && $hiddenText[$word] > 0) {
                             $numberTextOccurrences += $hiddenText[$word];
                             if ($reSpam < $hiddenText[$word]) {
                                 $reSpam = $hiddenText[$word];
                             }
                         }
 
-                        if ($pageLink[$word] > 0) {
+                        if (isset($hiddenText[$word]) && $pageLink[$word] > 0) {
                             $numberLinkOccurrences += $pageLink[$word];
                             if ($reSpam < $pageLink[$word]) {
                                 $reSpam = $pageLink[$word];
