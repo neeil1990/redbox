@@ -1,5 +1,16 @@
-<div class="form-group">
-    {!! Form::label('competitors', 'Мои конкуренты') !!}
-    {!! Form::text('competitors[]', null, ['class' => 'form-control' . ($errors->has('competitors') ? ' is-invalid' : ''), 'placeholder' => 'Введите URL домена']) !!}
-    @error('competitors') <span class="error invalid-feedback d-block">{{ $message }}</span> @enderror
+<div class="row">
+    <div class="col-md-6">
+        <div class="callout callout-success">
+            <h5 class="text-success">
+                Поздравляем! Вы настроили свой проект.
+            </h5>
+
+            <p>Сохраните его, чтобы начать работать с ним.</p>
+
+            <blockquote class="quote-secondary">
+                <p>Вы можете вернуться и что-то изменить.</p>
+                <small>После сохранения в настройках вы также можете добавить или изменить данные.</small>
+            </blockquote>
+        </div>
+    </div>
 </div>

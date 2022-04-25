@@ -9,7 +9,7 @@
                 <div class="callout callout-warning">
                     <ul class="mb-0">
                         <li class="text-success">Заполните список конкурентов.</li>
-                        <li class="text-danger">Каждый URL с новой строки в формате domian.com.</li>
+                        <li class="text-danger">Каждый URL с новой строки в формате domain.com.</li>
                     </ul>
                 </div>
 

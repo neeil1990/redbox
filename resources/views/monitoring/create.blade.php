@@ -34,7 +34,8 @@
 
         </div>
         <div class="bs-stepper-content">
-            <form class="needs-validation" onSubmit="return false" novalidate>
+            <form class="needs-validation" method="post" action="{{ route('monitoring.store') }}" novalidate>
+                @csrf
                 <!-- your steps content here -->
                 @include('monitoring.partials.stepper._content', ['target' => 'project', 'buttons' => ['next']])
 
@@ -65,13 +66,43 @@
                 "timeOut": "1500"
             };
 
+            window.onbeforeunload = function ()
+            {
+                return "";
+            };
+
+            $('button[type="submit"]').click(function () {
+                window.onbeforeunload = null;
+            });
+
             let Parts = {
                 part: null,
 
                 project: function (event) {
-                    //event.preventDefault();
+                    let pattern = /^[a-z-а-я-0-9-\.]+\.[a-z-а-я]{2,4}$/;
+                    let name = this.part.find('input[name="name"]');
+                    let url = this.part.find('input[name="url"]');
 
-                    console.log(this.part);
+                    if(!name.val()){
+                        event.preventDefault();
+                        toastr.error('Заполните название проекта');
+
+                        return false;
+                    }
+
+                    if(!url.val()){
+                        event.preventDefault();
+                        toastr.error('Заполните URL проекта');
+
+                        return false;
+                    }
+
+                    if(!pattern.test(url.val())){
+                        event.preventDefault();
+                        toastr.error('Неправильный формат URL');
+
+                        return false;
+                    }
                 },
                 keywords: function (event) {
                     if(this.part.find('input[name^="keywords"]').length < 4){
@@ -123,13 +154,13 @@
 
                     switch (panel.attr('id')) {
                         case 'project-part':
-                            //Parts.project(event);
+                            Parts.project(event);
                             break;
                         case 'keywords-part':
-                            //Parts.keywords(event);
+                            Parts.keywords(event);
                             break;
                         case 'competitors-part':
-                            //Parts.competitors(event);
+                            Parts.competitors(event);
                             break;
                         default:
                             console.log('next...');
@@ -213,8 +244,8 @@
 
                         tr.append($('<td />').text(index + 1));
 
-                        tr.append($('<td />').html(self.templateText(value[0], {placeholder: 'Запрос', name: 'keywords[]'})));
-                        tr.append($('<td />').html(self.templateText(value[1], {placeholder: 'Страница', name: 'pages[]'})));
+                        tr.append($('<td />').html(self.templateText(value[0], {placeholder: 'Запрос', name: 'keywords[query][]'})));
+                        tr.append($('<td />').html(self.templateText(value[1], {placeholder: 'Страница', name: 'keywords[page][]'})));
 
                         tr.append($('<td />').html(self.templateBtn()));
 
