@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MonitoringProgect extends Model
+class MonitoringProject extends Model
 {
     protected $fillable = ['name', 'url', 'status'];
 

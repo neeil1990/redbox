@@ -15,14 +15,14 @@ class CreateMonitoringKeywordsTable extends Migration
     {
         Schema::create('monitoring_keywords', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('monitoring_progect_id')->unsigned();
+            $table->bigInteger('monitoring_project_id')->unsigned();
             $table->string('query');
             $table->string('page')->nullable();
             $table->timestamps();
 
-            $table->foreign('monitoring_progect_id')
+            $table->foreign('monitoring_project_id')
                 ->references('id')
-                ->on('monitoring_progects')
+                ->on('monitoring_projects')
                 ->onDelete('cascade');
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMonitoringProgectsTable extends Migration
+class CreateMonitoringProjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateMonitoringProgectsTable extends Migration
      */
     public function up()
     {
-        Schema::create('monitoring_progects', function (Blueprint $table) {
+        Schema::create('monitoring_projects', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
             $table->tinyInteger('status')->default(0);
@@ -35,6 +35,6 @@ class CreateMonitoringProgectsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('monitoring_progects');
+        Schema::dropIfExists('monitoring_projects');
     }
 }

@@ -15,15 +15,15 @@ class CreateMonitoringSearchenginesTable extends Migration
     {
         Schema::create('monitoring_searchengines', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('monitoring_progect_id')->unsigned();
+            $table->bigInteger('monitoring_project_id')->unsigned();
             $table->string('engine');
             $table->string('lr');
             $table->string('lang');
             $table->timestamps();
 
-            $table->foreign('monitoring_progect_id')
+            $table->foreign('monitoring_project_id')
                 ->references('id')
-                ->on('monitoring_progects')
+                ->on('monitoring_projects')
                 ->onDelete('cascade');
         });
     }

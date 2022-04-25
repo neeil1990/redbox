@@ -15,13 +15,13 @@ class CreateMonitoringCompetitorsTable extends Migration
     {
         Schema::create('monitoring_competitors', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('monitoring_progect_id')->unsigned();
+            $table->bigInteger('monitoring_project_id')->unsigned();
             $table->string('url')->nullable();
             $table->timestamps();
 
-            $table->foreign('monitoring_progect_id')
+            $table->foreign('monitoring_project_id')
                 ->references('id')
-                ->on('monitoring_progects')
+                ->on('monitoring_projects')
                 ->onDelete('cascade');
         });
     }
