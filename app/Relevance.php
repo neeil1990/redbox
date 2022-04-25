@@ -441,7 +441,7 @@ class Relevance
     }
 
     /**
-     * Обработка информации для таблицы unigram
+     * Обработка информации для таблицы LTP
      * @return void
      */
     public function processingOfGeneralInformation()
@@ -454,6 +454,14 @@ class Relevance
             }
         }
 
+        $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
+        $myText = explode(" ", $myText);
+        $myText = array_count_values($myText);
+
+        $myLink = $this->mainPage['linkText'];
+        $myLink = explode(" ", $myLink);
+        $myLink = array_count_values($myLink);
+
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
@@ -461,7 +469,7 @@ class Relevance
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
-                        $htmlCount = mb_substr_count($this->sites[$key]['html'], " $word ");
+                        $htmlCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['html'] . ' ');
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
                             if ($reSpam < $htmlCount) {
@@ -469,7 +477,7 @@ class Relevance
                             }
                         }
 
-                        $hiddenTextCount = mb_substr_count($this->sites[$key]['hiddenText'], " $word ");
+                        $hiddenTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['hiddenText'] . ' ');
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
                             if ($reSpam < $hiddenTextCount) {
@@ -477,7 +485,7 @@ class Relevance
                             }
                         }
 
-                        $linkTextCount = mb_substr_count($this->sites[$key]['linkText'], " $word ");
+                        $linkTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['linkText'] . ' ');
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
                             if ($reSpam < $linkTextCount) {
@@ -492,11 +500,11 @@ class Relevance
                     }
                 }
 
+                $repeatInTextMainPage = $myText[$word] ?? 0;
+                $repeatLinkInMainPage = $myLink[$word] ?? 0;
+
                 $tf = round($item / $wordCount, 5);
                 $idf = round(log10($wordCount / $item), 5);
-
-                $repeatInTextMainPage = mb_substr_count($this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'], " $word ");
-                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], " $word ");
 
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
