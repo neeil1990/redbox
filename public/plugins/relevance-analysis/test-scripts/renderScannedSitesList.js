@@ -171,8 +171,7 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
                         freshPercent = freshPercent.toFixed(3)
                     }
                     if (cell == 4) {
-                        console.log($(this).html())
-                        console.log(freshPercent)
+                        $(this).attr('data-order', freshPercent)
                         $(this).html(freshPercent)
                     }
                 });
