@@ -162,7 +162,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function monitoringProjects()
     {
-        return $this->hasMany(MonitoringProgect::class);
+        return $this->hasMany(MonitoringProject::class);
     }
 
     public function behaviors()
