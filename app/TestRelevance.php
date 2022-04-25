@@ -939,7 +939,7 @@ class TestRelevance
         $result = [];
         $allPoints = 0;
         $iterator = 0;
-        $experiment = 1;
+        $experiment = 0;
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word == 'total') {
@@ -972,8 +972,8 @@ class TestRelevance
             $iterator++;
         }
 
-        $result['percent'] = round($allPoints / 600);
         $result['points'] = round($allPoints);
+        $result['percent'] = round($allPoints / 600);
 
         $result['densityExpPoints'] = round($experiment);
         $result['densityExpPercent'] = round($experiment / 600);
