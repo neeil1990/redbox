@@ -80,6 +80,22 @@
     </div>
 
     <div class="col-5 pb-3">
+        <div class="card p-3">
+            <h3>Усиление плотности</h3>
+
+            <label for="d50">плотность 50</label>
+            <input name="d50" id="d50" type="number" class="form form-control">
+
+            <label for="d100">плотность 100</label>
+            <input name="d100" id="d100" type="number" class="form form-control">
+
+            <label for="d150">плотность 150</label>
+            <input name="d150" id="d150" type="number" class="form form-control">
+
+            <label for="d200">плотность 200</label>
+            <input name="d200" id="d200" type="number" class="form form-control">
+
+        </div>
 
         <div class="form-group required">
             <label>{{ __('Your landing page') }}</label>
@@ -540,7 +556,7 @@
                     </span>
                 </th>
                 <th>{{ __('Average number of repetitions in the text and links') }}<span
-                        class="__helper-link ui_tooltip_w">
+                            class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
@@ -549,7 +565,7 @@
                     </span>
                 </th>
                 <th>{{ __('The total number of repetitions in the text and links') }}<span
-                        class="__helper-link ui_tooltip_w">
+                            class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
@@ -747,8 +763,7 @@
                         </span>
                     </span>
                 </th>
-                <th>Плотность(100)</th>
-                <th>Плотность(200)</th>
+                <th>Плотность(эксперимент)</th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
@@ -839,6 +854,10 @@
                     dataType: "json",
                     url: "{{ route('test.relevance') }}",
                     data: {
+                        d50: $('#d50').val(),
+                        d100: $('#d100').val(),
+                        d150: $('#d150').val(),
+                        d200: $('#d200').val(),
                         type: $('#check-type').val(),
                         siteList: $('#siteList').val(),
                         separator: $('#separator').val(),

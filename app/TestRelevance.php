@@ -139,11 +139,10 @@ class TestRelevance
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
-        $this->calculateDensity();
+        $this->calculateDensity($request);
         $this->calculateCoveragePoints();
         $this->calculatePoints();
         $this->prepareClouds();
-
     }
 
     /**
@@ -911,36 +910,43 @@ class TestRelevance
     /**
      * @return void
      */
-    public function calculateDensity()
+    public function calculateDensity($request)
     {
+        $gain = [
+            'd50' => $request->d50,
+            'd100' => $request->d100,
+            'd150' => $request->d150,
+            'd200' => $request->d200,
+        ];
+
         foreach ($this->sites as $keyPage => $page) {
             $allText = explode(" ", $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText']);
             $array = array_count_values($allText);
-            $density = $this->calculateDensityPoints($array);
-            $this->sites[$keyPage]['density'] = $density[600]['percentPoints'];
-            $this->sites[$keyPage]['densityPoints'] = $density[600]['totalPoints'];
-            $this->sites[$keyPage]['density100'] = $density[100]['percentPoints'];
-            $this->sites[$keyPage]['density200'] = $density[200]['percentPoints'];
+            $density = $this->calculateDensityPoints($array, $gain);
+            $this->sites[$keyPage]['percent'] = $density['percent'];
+            $this->sites[$keyPage]['points'] = $density['points'];
+            $this->sites[$keyPage]['densityExpPoints'] = $density['densityExpPoints'];
+            $this->sites[$keyPage]['densityExpPercent'] = $density['densityExpPercent'];
         }
     }
 
     /**
      * @param $array
+     * @param $gain
      * @return array
      */
-    public function calculateDensityPoints($array): array
+    public function calculateDensityPoints($array, $gain): array
     {
         $result = [];
         $allPoints = 0;
         $iterator = 1;
-        $result[100]['percentPoints'] = $result[200]['percentPoints'] = $result[600]['percentPoints'] = 0;
+        $experiment = 0;
         foreach ($this->density as $word => $value) {
             $count = 0;
             $points = 0;
             foreach ($this->wordForms[$word] as $key => $wordForm) {
                 if ($key != 'total') {
-                    $counter = $array[$key] ?? 0;
-                    $count += $counter;
+                    $count = $array[$key] ?? 0;
                 }
             }
 
@@ -950,31 +956,32 @@ class TestRelevance
                 $allPoints += $points;
             }
 
-            if ($iterator < 100) {
-                $result[100]['percentPoints'] += $points * 2;
+            if ($gain['d50'] != null && $iterator <= 50) {
+                $experiment += $points * $gain['d50'];
+            } else if ($gain['d100'] != null && $iterator > 50 && $iterator <= 100) {
+                $experiment += $points * $gain['d100'];
+            } else if ($gain['d150'] != null && $iterator > 100 && $iterator <= 150) {
+                $experiment += $points * $gain['d150'];
+            } else if ($gain['d200'] != null && $iterator > 150 && $iterator <= 200) {
+                $experiment += $points * $gain['d200'];
             } else {
-                $result[100]['percentPoints'] += $points;
-            }
-
-            if ($iterator < 200) {
-                $result[200]['percentPoints'] += $points * 2;
-            } else {
-                $result[200]['percentPoints'] += $points;
+                $experiment += $points;
             }
 
             if ($iterator == 600) {
-                $result[600]['percentPoints'] = $allPoints;
+                $result['percentPoints'] = $allPoints;
                 break;
             }
 
             $iterator++;
         }
 
-        $result[100]['percentPoints'] = round($result[100]['percentPoints'] / 600);
-        $result[200]['percentPoints'] = round($result[200]['percentPoints'] / 600);
-        $result[600]['percentPoints'] = round($result[600]['percentPoints'] / 600);
+        $result['percent'] = round($result['percentPoints'] / 600);
+        $result['points'] = round($allPoints);
 
-        $result[600]['totalPoints'] = round($allPoints);
+        $result['densityExpPoints'] = round($experiment);
+        $result['densityExpPercent'] = round($experiment / 600);
+
         return $result;
     }
 

@@ -60,9 +60,8 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
-            "<td data-order='" + value['density'] + "'>" + value['density'] + "<span class='text-muted'>(" + value['densityPoints'] + ")</span></td>" +
-            "<td data-order='" + value['density100'] + "'>" + value['density100'] + "</td>" +
-            "<td data-order='" + value['density200'] + "'>" + value['density200'] + "</td>" +
+            "<td data-order='" + value['percent'] + "'>" + value['percent'] + "<span class='text-muted'>(" + value['points'] + ")</span></td>" +
+            "<td data-order='" + value['densityExpPercent'] + "'>" + value['densityExpPercent'] + "<span class='text-muted'>(" + value['densityExpPoints'] + ")</span></td>" +
             warning +
             "</tr>"
         )
