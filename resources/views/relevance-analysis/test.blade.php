@@ -559,7 +559,7 @@
                     </span>
                 </th>
                 <th>{{ __('Average number of repetitions in the text and links') }}<span
-                            class="__helper-link ui_tooltip_w">
+                        class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
@@ -568,7 +568,7 @@
                     </span>
                 </th>
                 <th>{{ __('The total number of repetitions in the text and links') }}<span
-                            class="__helper-link ui_tooltip_w">
+                        class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
@@ -703,11 +703,16 @@
         </table>
     </div>
 
-    <div class="sites" style="display: none; margin-top:50px;">
+    <div class="sites" style="display:none; margin-top:50px;">
         <h3>{{ __('Analyzed sites') }}</h3>
-        <input id="avgCoveragePercentInput" type="number" placeholder="добавить % к охвату">
-        <div>
-            100%: <span id="avgCoveragePercent">34.2</span> <span id="changedAvgPercent"></span>
+        <div class="d-flex">
+            <div>
+                <input id="avgCoveragePercentInput" type="number" placeholder="добавить % к охвату">
+                100%: <span id="avgCoveragePercent">0</span> <span id="changedAvgPercent"></span>
+            </div>
+            <div class="ml-5" id="copySites" style="cursor: pointer">
+                <u>Скопировать ссылки сайтов в буфер</u>
+            </div>
         </div>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
@@ -809,6 +814,29 @@
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            $('#copySites').click(function () {
+                let sites = ''
+                $.each($('.analyzed-site'), function () {
+                    sites += $(this).html() + "\n"
+                })
+                const el = document.createElement('textarea');
+                el.value = sites;
+                el.setAttribute('readonly', '');
+                el.style.position = 'absolute';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+
+                let toastr = $('.toast-top-right.success-message.lock-word');
+                toastr.show(300)
+                $('#lock-word').html('Успешно скопировано')
+                setTimeout(() => {
+                    toastr.hide(300)
+                }, 3000)
+            })
+
             $('#check-type').on('change', function () {
                 if ($(this).val() === 'list') {
                     $('#key-phrase').hide()

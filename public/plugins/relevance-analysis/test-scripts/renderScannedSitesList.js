@@ -178,4 +178,3 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
         }
     });
 }
-
