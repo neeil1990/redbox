@@ -2,10 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MonitoringController extends Controller
 {
+    protected $user;
+
+    /**
+     * ProfilesController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,7 +51,46 @@ class MonitoringController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->create([
+            'status' => 1,
+            'name' => $request->input('name'),
+            'url' => $request->input('url'),
+        ]);
+
+        $keywords = $request->input('keywords');
+        foreach ($keywords['query'] as $ind => $query){
+
+            $project->keywords()->create([
+                'query' => $query,
+                'page' => $keywords['page'][$ind]
+            ]);
+        }
+
+        $competitors = preg_split("/\r\n|\n|\r/", $request->input('competitors'));
+        foreach ($competitors as $competitor){
+
+            $project->competitors()->create([
+                'url' => $competitor,
+            ]);
+        }
+
+        $lang = $request->input('lang');
+        $searches = $request->input('lr');
+        foreach($searches as $engine => $dates){
+
+            foreach ($dates as $data){
+
+                $project->searchengines()->create([
+                    'engine' => $engine,
+                    'lr' => $data,
+                    'lang' => isset($searchLangs[$engine]) ? $lang[$engine] : "ru"
+                ]);
+            }
+        }
+
+        return redirect()->route('monitoring.index');
     }
 
     /**

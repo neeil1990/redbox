@@ -160,6 +160,11 @@ class User extends Authenticatable implements MustVerifyEmail
             ->limit(30);
     }
 
+    public function monitoringProjects()
+    {
+        return $this->hasMany(MonitoringProgect::class);
+    }
+
     public function behaviors()
     {
         return $this->hasMany(Behavior::class);

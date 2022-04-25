@@ -1,9 +1,9 @@
 @if(in_array('previous', $buttons))
-    <button class="btn btn-secondary" onclick="stepper.previous()">Назад</button>
+    <a class="btn btn-secondary" onclick="stepper.previous()">Назад</a>
 @endif
 
 @if(in_array('next', $buttons))
-    <button class="btn btn-success" onclick="stepper.next()">Вперед</button>
+    <a class="btn btn-success" onclick="stepper.next()">Вперед</a>
 @endif
 
 @if(in_array('action', $buttons))
