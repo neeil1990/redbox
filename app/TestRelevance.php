@@ -264,9 +264,11 @@ class TestRelevance
         $tf = 0;
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
-                if (strpos($object, " $word ") !== false) {
-                    $text++;
-                    break;
+                if ($word != 'total') {
+                    if (strpos($object, " $word ") !== false) {
+                        $text++;
+                        break;
+                    }
                 }
             }
         }
@@ -290,7 +292,8 @@ class TestRelevance
      * Расчёт баллов для таблицы "Проанализированные сайты"
      * @return void
      */
-    public function calculatePoints()
+    public
+    function calculatePoints()
     {
         // высчитываем 100%, игнорируя игнорируемые домены
         $this->avgCoveragePercent = $iterator = 0;
@@ -316,7 +319,8 @@ class TestRelevance
      * @param $wordsInText
      * @return float
      */
-    public function calculateCoverageTF($wordsInText): float
+    public
+    function calculateCoverageTF($wordsInText): float
     {
         $sum = 0;
         foreach ($wordsInText as $key => $value) {
@@ -335,7 +339,8 @@ class TestRelevance
      * @param $html
      * @return array|string|string[]|null
      */
-    public static function getHiddenText($html)
+    public
+    static function getHiddenText($html)
     {
         $hiddenText = '';
         $regex = ["<.*?title=\"(.*?)\".*>", "<.*?alt=\"(.*?)\".*>", "<.*?data-text=\"(.*?)\".*>"];
@@ -356,7 +361,8 @@ class TestRelevance
      * @param $conjunctionsPrepositionsPronouns
      * @return void
      */
-    public function removePartsOfSpeech($conjunctionsPrepositionsPronouns)
+    public
+    function removePartsOfSpeech($conjunctionsPrepositionsPronouns)
     {
         if ($conjunctionsPrepositionsPronouns == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
@@ -375,7 +381,8 @@ class TestRelevance
      * @param $request
      * @return void
      */
-    public function removeListWords($request)
+    public
+    function removeListWords($request)
     {
         if ($request->switchMyListWords == 'true') {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
@@ -399,7 +406,8 @@ class TestRelevance
      * @param $string
      * @return array|false|string|string[]
      */
-    public static function mbStrReplace($search, $replace, $string)
+    public
+    static function mbStrReplace($search, $replace, $string)
     {
         $charset = mb_detect_encoding($string);
 
@@ -411,7 +419,8 @@ class TestRelevance
     /**
      * @return void
      */
-    public function searchWordForms()
+    public
+    function searchWordForms()
     {
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
@@ -449,7 +458,8 @@ class TestRelevance
      * Обработка информации для таблицы LTP
      * @return void
      */
-    public function processingOfGeneralInformation()
+    public
+    function processingOfGeneralInformation()
     {
         $countSites = 0;
         // считаем количество сайтов, которые не в списке игнорируемых
@@ -531,7 +541,8 @@ class TestRelevance
     /**
      * @return void
      */
-    public function prepareUnigramTable()
+    public
+    function prepareUnigramTable()
     {
         $this->coverageInfo['sum'] = 0;
 
@@ -589,7 +600,8 @@ class TestRelevance
      * Подготовка облаков (http://cavaliercoder.com/jclouds)
      * @return void
      */
-    public function prepareClouds()
+    public
+    function prepareClouds()
     {
         $mainPage = TestRelevance::concatenation([
             $this->mainPage['html'],
@@ -627,7 +639,8 @@ class TestRelevance
      * @param $sites
      * @return void
      */
-    public function removeIgnoredDomains($count, $ignoredDomains, $sites)
+    public
+    function removeIgnoredDomains($count, $ignoredDomains, $sites)
     {
         if (isset($ignoredDomains)) {
             $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
@@ -663,7 +676,8 @@ class TestRelevance
     /**
      * @param $html
      */
-    public function setMainPage($html)
+    public
+    function setMainPage($html)
     {
         $this->mainPage['html'] = $html;
         $this->params['html_main_page'] = $html;
@@ -673,7 +687,8 @@ class TestRelevance
      * @param $sites
      * @return $this
      */
-    public function setSites($sites): TestRelevance
+    public
+    function setSites($sites): TestRelevance
     {
         $this->params['sites'] = $sites;
         $this->sites = json_decode($sites, true);
@@ -685,7 +700,8 @@ class TestRelevance
      * @param $html_relevance
      * @return $this
      */
-    public function setPages($html_relevance): TestRelevance
+    public
+    function setPages($html_relevance): TestRelevance
     {
         $this->params['html_relevance'] = $html_relevance;
         $html = explode($this->separator, $this->params['html_relevance']);
@@ -701,7 +717,8 @@ class TestRelevance
      * @param array $array
      * @return string
      */
-    public static function concatenation(array $array): string
+    public
+    static function concatenation(array $array): string
     {
         return implode(' ', $array);
     }
@@ -710,7 +727,8 @@ class TestRelevance
      * @param $sites
      * @return void
      */
-    public function setDomains($sites)
+    public
+    function setDomains($sites)
     {
         $array = json_decode($sites, true);
         foreach ($array as $item) {
@@ -722,7 +740,8 @@ class TestRelevance
      * @param $text
      * @return array
      */
-    public function prepareTfCloud($text): array
+    public
+    function prepareTfCloud($text): array
     {
         $wordForms = $cloud = [];
         $lingua = new LinguaStem();
@@ -778,7 +797,8 @@ class TestRelevance
      * @param $html
      * @return string
      */
-    public static function clearHTMLFromLinks($html): string
+    public
+    static function clearHTMLFromLinks($html): string
     {
         $html = preg_replace('| +|', ' ', $html);
         $html = str_replace("\n", " ", $html);
@@ -794,7 +814,8 @@ class TestRelevance
      * @param $text
      * @return string
      */
-    public function separateText($text): string
+    public
+    function separateText($text): string
     {
         $text = explode(" ", $text);
         foreach ($text as $key => $item) {
@@ -808,7 +829,8 @@ class TestRelevance
     /**
      * @return void
      */
-    public function preparePhrasesTable()
+    public
+    function preparePhrasesTable()
     {
         $result = [];
         $phrases = $this->searchPhrases();
@@ -888,7 +910,8 @@ class TestRelevance
      *
      * @return array
      */
-    public function searchPhrases(): array
+    public
+    function searchPhrases(): array
     {
         $phrases = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
@@ -910,7 +933,8 @@ class TestRelevance
     /**
      * @return void
      */
-    public function calculateDensity($request)
+    public
+    function calculateDensity($request)
     {
         $gain = [
             'd50' => $request->d50,
@@ -934,7 +958,8 @@ class TestRelevance
      * @param $gain
      * @return array
      */
-    public function calculateDensityPoints($text, $gain): array
+    public
+    function calculateDensityPoints($text, $gain): array
     {
         $result = [];
         $allPoints = 0;
