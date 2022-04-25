@@ -937,14 +937,18 @@ class TestRelevance
         $allPoints = 0;
         $iterator = 0;
         $experiment = 0;
+
+        $array = explode(' ', $text);
+        $array = array_count_values($array);
+
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word == 'total') {
                     continue;
                 }
                 $points = 0;
-                $count = mb_substr_count($text, " $word ");
-                if ($count > 0) {
+                if (array_key_exists($word, $array)) {
+                    $count = $array[$word];
                     $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
                     $allPoints += $points;
                 }
