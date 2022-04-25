@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use \App\Classes\Locations\Yandex;
 
 
 /*
@@ -21,3 +22,25 @@ Route::get('/backlink/scan-links', 'CroneController@scanLinks');
 Route::get('/backlink/scan-broken-links', 'CroneController@scanBrokenLinks');
 Route::get('/domain-monitoring/check-link-crone/{timing}', 'CroneController@checkLinkCrone');
 Route::get('/domain-information/check-domain-crone/', 'CroneController@checkDomains');
+
+Route::get('location', function(Request $request){
+
+    $name = $request->get('name', '');
+    $site = $request->get('site', 'yandex');
+
+    if(!$name)
+        return '';
+
+    $location = null;
+
+    switch ($site) {
+        case "yandex":
+            $location = new Yandex();
+            break;
+
+        default:
+            throw new ErrorException('Location site is not exist.');
+    }
+
+    return $location->get($name) ?: '';
+});

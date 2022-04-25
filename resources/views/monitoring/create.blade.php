@@ -123,13 +123,13 @@
 
                     switch (panel.attr('id')) {
                         case 'project-part':
-                            Parts.project(event);
+                            //Parts.project(event);
                             break;
                         case 'keywords-part':
-                            Parts.keywords(event);
+                            //Parts.keywords(event);
                             break;
                         case 'competitors-part':
-                            Parts.competitors(event);
+                            //Parts.competitors(event);
                             break;
                         default:
                             console.log('next...');
@@ -137,10 +137,33 @@
                 });
             });
 
-            //Initialize Select2 Elements
-            $('.select2bs4').select2({
+            $('#yandexSelect2').select2({
                 theme: 'bootstrap4',
                 placeholder: 'Select a regions',
+                ajax: {
+                    delay: 500,
+                    url: '/api/location',
+                    dataType: 'json',
+                    data: function (params) {
+                        var query = {
+                            name: params.term,
+                            site: 'yandex'
+                        };
+
+                        return query;
+                    },
+                    processResults: function(data)
+                    {
+                        return {
+                            results: $.map(data, function(obj) {
+                                return {
+                                    id: obj.lr,
+                                    text: obj.name + ' [' + obj.lr + ']'
+                                };
+                            })
+                        };
+                    },
+                }
             });
 
             let Table = {
