@@ -85,15 +85,19 @@
 
             <label for="d50">плотность 50</label>
             <input name="d50" id="d50" type="number" class="form form-control">
+            <span class="text-muted">с 1 по 50</span><br>
 
             <label for="d100">плотность 100</label>
             <input name="d100" id="d100" type="number" class="form form-control">
+            <span class="text-muted">с 51 по 100</span><br>
 
             <label for="d150">плотность 150</label>
             <input name="d150" id="d150" type="number" class="form form-control">
+            <span class="text-muted">с 101 по 150</span><br>
 
             <label for="d200">плотность 200</label>
             <input name="d200" id="d200" type="number" class="form form-control">
+            <span class="text-muted">с 151 по 120</span><br>
 
         </div>
 
