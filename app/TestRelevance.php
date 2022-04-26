@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -576,7 +577,6 @@ class TestRelevance
                 'danger' => $danger,
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
-
         }
     }
 
@@ -918,11 +918,20 @@ class TestRelevance
 
         foreach ($this->sites as $keyPage => $page) {
             $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
-            $density = $this->calculateDensityPoints($allText, $gain);
-            $this->sites[$keyPage]['percent'] = $density['percent'];
-            $this->sites[$keyPage]['points'] = $density['points'];
-            $this->sites[$keyPage]['densityExpPoints'] = $density['densityExpPoints'];
-            $this->sites[$keyPage]['densityExpPercent'] = $density['densityExpPercent'];
+
+            $density = $this->calculateDensityPoints($allText, $gain, $page['mainPage']);
+
+            $this->sites[$keyPage]['defaultDensity'] = $density['defaultDensity'];
+            $this->sites[$keyPage]['defaultDensityPercent'] = $density['defaultDensityPercent'];
+
+            $this->sites[$keyPage]['densityWithGain'] = $density['densityWithGain'];
+            $this->sites[$keyPage]['densityWithGainPercent'] = $density['densityWithGainPercent'];
+
+            $this->sites[$keyPage]['densityMain'] = $density['densityMain'];
+            $this->sites[$keyPage]['densityMainPercent'] = $density['densityMainPercent'];
+
+            $this->sites[$keyPage]['densityMainWithGain'] = $density['densityMainWithGain'];
+            $this->sites[$keyPage]['densityMainWithGainPercent'] = $density['densityMainWithGainPercent'];
         }
     }
 
@@ -931,12 +940,13 @@ class TestRelevance
      * @param $gain
      * @return array
      */
-    public function calculateDensityPoints($text, $gain): array
+    public function calculateDensityPoints($text, $gain, $boolean): array
     {
         $result = [];
-        $allPoints = 0;
+        $defaultDensity = 0;
+        $densityWithGain = 0;
         $iterator = 0;
-        $experiment = 0;
+        $childWords = 0;
 
         $array = explode(' ', $text);
         $array = array_count_values($array);
@@ -946,24 +956,25 @@ class TestRelevance
                 if ($word == 'total') {
                     continue;
                 }
-                $points = 0;
-                if (array_key_exists($word, $array)) {
-                    $count = $array[$word];
-                    $points = min($count / ($form['avgInTotalCompetitors'] / 100), 100);
-                    $allPoints += $points;
-                }
 
-                if ($gain['d50'] != null && $iterator <= 50) {
-                    $experiment += $points * $gain['d50'];
-                } else if ($gain['d100'] != null && $iterator > 50 && $iterator <= 100) {
-                    $experiment += $points * $gain['d100'];
-                } else if ($gain['d150'] != null && $iterator > 100 && $iterator <= 150) {
-                    $experiment += $points * $gain['d150'];
-                } else if ($gain['d200'] != null && $iterator > 150 && $iterator <= 200) {
-                    $experiment += $points * $gain['d200'];
-                } else {
-                    $experiment += $points;
+                if (array_key_exists($word, $array)) {
+                    $points = min($array[$word] / ($form['avgInTotalCompetitors'] / 100), 100);
+                    $defaultDensity += $points;
+
+                    if ($gain['d50'] != null && $childWords < 50) {
+                        $densityWithGain += $points * $gain['d50'];
+                    } else if ($gain['d100'] != null && $childWords >= 50 && $childWords < 100) {
+                        $densityWithGain += $points * $gain['d100'];
+                    } else if ($gain['d150'] != null && $childWords >= 100 && $childWords < 150) {
+                        $densityWithGain += $points * $gain['d150'];
+                    } else if ($gain['d200'] != null && $childWords >= 150 && $childWords < 200) {
+                        $densityWithGain += $points * $gain['d200'];
+                    } else {
+                        $densityWithGain += $points;
+                    }
                 }
+                $childWords++;
+
             }
 
             if ($iterator == 600) {
@@ -973,11 +984,65 @@ class TestRelevance
             $iterator++;
         }
 
-        $result['points'] = round($allPoints);
-        $result['percent'] = round($allPoints / 600);
+        $collection = collect($this->wordForms);
 
-        $result['densityExpPoints'] = round($experiment);
-        $result['densityExpPercent'] = round($experiment / 600);
+        $sorted = $collection->sortBy(function ($value, $key) {
+            return $value['total']['tf'];
+        }, SORT_REGULAR, true)->toArray();
+
+        $densityMain = 0;
+        $testMainIterator = 0;
+        $densityMainWithGain = 0;
+        foreach ($sorted as $wordForm) {
+            $countRepeatInPage = 0;
+            foreach ($wordForm as $word => $form) {
+                if ($word == 'total') {
+                    continue;
+                }
+                if (array_key_exists($word, $array)) {
+                    foreach ($wordForm as $w => $info) {
+                        if ($w == 'total') {
+                            continue;
+                        }
+                        $countRepeatInPage += $array[$w] ?? 0;
+                    }
+                    $points = min($countRepeatInPage / ($wordForm['total']['avgInTotalCompetitors'] / 100), 100);
+                    $densityMain += $points;
+
+                    if ($gain['d50'] != null && $testMainIterator < 50) {
+                        $densityMainWithGain += $points * $gain['d50'];
+                        if ($boolean) {
+                            Log::debug('word', [$word]);
+                            Log::debug('countRepeatInPage', [$countRepeatInPage]);
+                            Log::debug('avgInTotalCompetitors', [$wordForm['total']['avgInTotalCompetitors']]);
+                            Log::debug('points', [$points]);
+                        }
+                    } else if ($gain['d100'] != null && $testMainIterator >= 50 && $testMainIterator < 100) {
+                        $densityMainWithGain += $points * $gain['d100'];
+                    } else if ($gain['d150'] != null && $testMainIterator >= 100 && $testMainIterator < 150) {
+                        $densityMainWithGain += $points * $gain['d150'];
+                    } else if ($gain['d200'] != null && $testMainIterator >= 150 && $testMainIterator < 200) {
+                        $densityMainWithGain += $points * $gain['d200'];
+                    } else {
+                        $densityMainWithGain += $points;
+                    }
+                    break;
+                }
+            }
+            $testMainIterator++;
+        }
+
+        $result['defaultDensity'] = round($defaultDensity);
+        $result['defaultDensityPercent'] = round($defaultDensity / $childWords);
+
+        $result['densityWithGain'] = round($densityWithGain);
+        $result['densityWithGainPercent'] = round($densityWithGain / $childWords);
+
+        $result['densityMain'] = round($densityMain);
+        $result['densityMainPercent'] = round($densityMain / 600);
+
+        $result['densityMainWithGain'] = round($densityMainWithGain);
+        $result['densityMainWithGainPercent'] = round($densityMainWithGain / 600);
 
         return $result;
     }

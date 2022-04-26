@@ -60,8 +60,10 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
-            "<td data-order='" + value['percent'] + "'>" + value['percent'] + "<span class='text-muted'>(" + value['points'] + ")</span></td>" +
-            "<td data-order='" + value['densityExpPercent'] + "'>" + value['densityExpPercent'] + "<span class='text-muted'>(" + value['densityExpPoints'] + ")</span></td>" +
+            "<td data-order='" + value['defaultDensityPercent'] + "'>" + value['defaultDensityPercent'] + "<span class='text-muted'>(" + value['defaultDensity'] + ")</span></td>" +
+            "<td data-order='" + value['densityWithGainPercent'] + "'>" + value['densityWithGainPercent'] + "<span class='text-muted'>(" + value['densityWithGain'] + ")</span></td>" +
+            "<td data-order='" + value['densityMainPercent'] + "'>" + value['densityMainPercent'] + "<span class='text-muted'>(" + value['densityMain'] + ")</span></td>" +
+            "<td data-order='" + value['densityMainWithGainPercent'] + "'>" + value['densityMainWithGainPercent'] + "<span class='text-muted'>(" + value['densityMainWithGain'] + ")</span></td>" +
             warning +
             "</tr>"
         )
