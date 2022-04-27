@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use \App\Classes\Locations\Yandex;
+use App\Classes\Position\Engine\Yandex as Engine;
 
 
 /*
@@ -43,4 +44,14 @@ Route::get('location', function(Request $request){
     }
 
     return $location->get($name) ?: '';
+});
+
+Route::get('search/{query?}', function($query){
+
+    dump('site: lorshop.ru');
+    dump('lr: 193');
+    dump('query: ' . $query);
+
+    $position = new Engine('lorshop.ru', $query, '193');
+    $position->handle();
 });

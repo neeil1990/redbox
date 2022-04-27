@@ -11,7 +11,7 @@
             <i class="fas fa-plus"></i>
         </a>
 
-        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="{{ __('Delete') }}">
+        <button type="button" class="btn btn-default btn-sm checkbox-delete" data-toggle="tooltip" title="{{ __('Delete') }}">
             <i class="far fa-trash-alt"></i>
         </button>
     </div>

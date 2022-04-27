@@ -50,6 +50,13 @@ class XmlFacade
     protected $sortby = 'rlv';
 
     /**
+     * метод группировки
+     *
+     * @var string
+     */
+    protected $groupby = 'deep';
+
+    /**
      * номер страницы
      *
      * @var string
@@ -123,6 +130,17 @@ class XmlFacade
     }
 
     /**
+     * @param string $groupby
+     * @return XmlFacade
+     */
+    public function setGroupBy(string $groupby)
+    {
+        $this->groupby = $groupby;
+
+        return $this;
+    }
+
+    /**
      * @param string $page
      * @return XmlFacade
      */
@@ -178,6 +196,19 @@ class XmlFacade
     }
 
     /**
+     * Return URL request.
+     *
+     * @return string|null
+     */
+    public function getQueryURL()
+    {
+        if($this->path && $this->buildQuery())
+            return $this->path . '?' . http_build_query($this->buildQuery());
+        else
+            return null;
+    }
+
+    /**
      * @param $xml
      * @return \SimpleXMLElement
      */
@@ -197,7 +228,8 @@ class XmlFacade
             'query' => $this->query,
             'lr' => $this->lr,
             'sortby' => $this->sortby,
-            'page' => $this->page
+            'page' => $this->page,
+            'groupby' => $this->groupby
         ];
     }
 

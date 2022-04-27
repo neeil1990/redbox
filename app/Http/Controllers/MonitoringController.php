@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Position\Engine\Yandex;
+use App\Classes\Xml\XmlFacade;
+use App\Jobs\StorePosition;
+use App\MonitoringKeyword;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +33,37 @@ class MonitoringController extends Controller
      */
     public function index()
     {
-        return view('monitoring.index');
+        /** @var User $user */
+        $user = $this->user;
+        $projects = $user->monitoringProjects()->get();
+
+
+        $google = 'https://xmlstock.com/google/xml/';
+
+        $position = new Yandex('lorshop.ru', 'ERO-SCAN DPOAE Screener MAICO', '193');
+        $position->handle();
+
+        dd(1);
+
+        $model = new MonitoringKeyword();
+        $query = $model->where('id', 9)->first();
+
+        $engines = $query->project->searchengines;
+
+        foreach ($engines as $engine){
+
+            // get position
+            dd($query->query, $engine);
+
+            $query->positions()->create([
+                'monitoring_searchengine_id' => $engine->id,
+                'position' => 1
+            ]);
+        }
+
+        //dispatch((new StorePosition())->onQueue('position'));
+
+        return view('monitoring.index', compact('projects'));
     }
 
     /**
@@ -76,7 +110,6 @@ class MonitoringController extends Controller
             ]);
         }
 
-        $lang = $request->input('lang');
         $searches = $request->input('lr');
         foreach($searches as $engine => $dates){
 
@@ -84,8 +117,7 @@ class MonitoringController extends Controller
 
                 $project->searchengines()->create([
                     'engine' => $engine,
-                    'lr' => $data,
-                    'lang' => isset($searchLangs[$engine]) ? $lang[$engine] : "ru"
+                    'lr' => $data
                 ]);
             }
         }
@@ -101,7 +133,11 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
-        //
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->where('id', $id)->first();
+
+        return view('monitoring.show', compact('project'));
     }
 
     /**
@@ -135,6 +171,8 @@ class MonitoringController extends Controller
      */
     public function destroy($id)
     {
-        //
+        /** @var User $user */
+        $user = $this->user;
+        $user->monitoringProjects()->where('id', $id)->delete();
     }
 }

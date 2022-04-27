@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class MonitoringSearchengine extends Model
 {
-    protected $fillable = ['engine', 'lr', 'lang'];
+    protected $fillable = ['engine', 'lr'];
 }
