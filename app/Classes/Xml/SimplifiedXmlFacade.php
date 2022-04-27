@@ -75,7 +75,7 @@ class SimplifiedXmlFacade extends XmlFacade
         $responseArray = json_decode($json, TRUE);
 
         if (!$old) {
-            $responseArray = [];
+            $sites = [];
             foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
                 if (count($item['doc']) < 12) {
                     $sites[] = $item['doc'][0]['url'];
@@ -85,7 +85,7 @@ class SimplifiedXmlFacade extends XmlFacade
             }
         }
 
-        return $responseArray;
+        return $old ? $responseArray : $sites;
     }
 
 }
