@@ -28,37 +28,57 @@ class SimplifiedXmlFacade extends XmlFacade
     /**
      * @return array
      */
-    public function getXMLResponse(): array
+    public function getXMLResponse($boolean): array
     {
-        $response = $this->sendRequest();
+        $response = $this->sendRequest($boolean);
         if (isset($response['response']['error'])) {
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser('sv@prime-ltd.su');
             $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            $response = $this->sendRequest();
+            $response = $this->sendRequest($boolean);
         }
 
         return $response;
     }
 
     /**
-     * @return mixed
+     * @param bool $old
+     * @return array
      */
-    protected function sendRequest()
+    protected function sendRequest(bool $old = true): array
     {
-        $url = "$this->path/?user=$this->user&key=$this->key&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
-            . $this->count . ".docs-in-group%3D3";
+        $query = str_replace(' ', '%20', $this->query);
+        $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
+            . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
+        
+        if ($old) {
+            $response = Curl::to($url)
+                ->withData($this->buildQuery())
+                ->withResponseHeaders()
+                ->returnResponseObject()
+                ->get();
 
-        $response = Curl::to($url)
-            ->withData($this->buildQuery())
-            ->withResponseHeaders()
-            ->returnResponseObject()
-            ->get();
+            $xml = $this->load($response->content);
+        } else {
+            $response = file_get_contents($url);
+            $xml = $this->load($response);
+        }
 
-        $xml = $this->load($response->content);
         $json = json_encode($xml);
+        $responseArray = json_decode($json, TRUE);
 
-        return json_decode($json, TRUE);
+        if (!$old) {
+            $responseArray = [];
+            foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
+                if (count($item['doc']) < 12) {
+                    $sites[] = $item['doc'][0]['url'];
+                } else {
+                    $sites[] = $item['doc']['url'];
+                }
+            }
+        }
+
+        return $responseArray;
     }
 
 }

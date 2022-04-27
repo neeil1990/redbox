@@ -225,11 +225,7 @@
                             renderTopSites(response)
                             nestedRequest(response)
                         },
-                        error: function (error) {
-                            if(error.responseJSON.message){
-                                alert(error.responseJSON.message);
-                            }
-
+                        error: function () {
                             getBrokenScriptMessage()
                         }
                     });
@@ -310,6 +306,11 @@
             });
 
             function getBrokenScriptMessage() {
+                setProgressBarStyles(100)
+                setTimeout(() => {
+                    $("#progress-bar").hide(300)
+                    $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                }, 2000)
                 $('.toast-top-right.broken-script-message').show(300)
                 setTimeout(() => {
                     $('.toast-top-right.broken-script-message').hide(300)

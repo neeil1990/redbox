@@ -197,13 +197,3 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring', 'MonitoringController');
 });
 
-Route::get('/bla', function () {
-    $xml = new SimplifiedXmlFacade(50, 1);
-    $xml->setQuery('дефибриллятор купить');
-    $xmlResponse = $xml->getXMLResponse();
-    foreach ($xmlResponse['response']['results']['grouping']['group'] as $item) {
-        print_r($item['doc']['url']);
-        print_r("<br>");
-    }
-    dd(1);
-});

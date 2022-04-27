@@ -632,15 +632,15 @@ class TestRelevance
             $iterator = 0;
 
             foreach ($sites as $item) {
-                $domain = str_replace('www.', "", mb_strtolower($item['doc']['domain']));
+                $domain = str_replace('www.', "", mb_strtolower($item));
                 if (in_array($domain, $ignoredDomains)) {
                     $this->domains[] = [
-                        'item' => $item['doc']['url'],
+                        'item' => $item,
                         'ignored' => true,
                     ];
                 } else {
                     $this->domains[] = [
-                        'item' => $item['doc']['url'],
+                        'item' => $item,
                         'ignored' => false,
                     ];
                     $iterator++;

@@ -188,7 +188,7 @@ class RelevanceController extends Controller
             $relevance->removeIgnoredDomains(
                 $request->input('count'),
                 $request->input('ignoredDomains'),
-                $xmlResponse['response']['results']['grouping']['group']
+                $xmlResponse
             );
         }
         $relevance->parseSites();
