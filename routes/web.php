@@ -11,8 +11,11 @@
 |
 */
 
+use App\Classes\Xml\SimplifiedXmlFacade;
 use App\TelegramBot;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -192,4 +195,15 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 
     Route::resource('monitoring', 'MonitoringController');
+});
+
+Route::get('/bla', function () {
+    $xml = new SimplifiedXmlFacade(50, 1);
+    $xml->setQuery('дефибриллятор купить');
+    $xmlResponse = $xml->getXMLResponse();
+    foreach ($xmlResponse['response']['results']['grouping']['group'] as $item) {
+        print_r($item['doc']['url']);
+        print_r("<br>");
+    }
+    dd(1);
 });
