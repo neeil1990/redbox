@@ -12,7 +12,6 @@
 */
 
 use App\TelegramBot;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
