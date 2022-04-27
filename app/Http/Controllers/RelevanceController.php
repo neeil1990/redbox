@@ -185,11 +185,6 @@ class RelevanceController extends Controller
             $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
-            foreach ($xmlResponse['response']['results']['grouping']['group'] as $item) {
-                Log::debug('url', [$item['doc']['url']]);
-            }
-            die();
-
             $relevance->removeIgnoredDomains(
                 $request->input('count'),
                 $request->input('ignoredDomains'),
