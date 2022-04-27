@@ -628,11 +628,12 @@ class TestRelevance
             $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
             $ignoredDomains = explode("\n", $ignoredDomains);
             $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
-
             $iterator = 0;
 
             foreach ($sites as $item) {
-                $domain = str_replace('www.', "", mb_strtolower($item));
+                $domain = parse_url($item);
+                $domain = str_replace('www.', "", mb_strtolower($domain['host']));
+
                 if (in_array($domain, $ignoredDomains)) {
                     $this->domains[] = [
                         'item' => $item,

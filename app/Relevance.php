@@ -626,7 +626,9 @@ class Relevance
             $iterator = 0;
 
             foreach ($sites as $item) {
-                $domain = str_replace('www.', "", mb_strtolower($item));
+                $domain = parse_url($item);
+                $domain = str_replace('www.', "", mb_strtolower($domain['host']));
+
                 if (in_array($domain, $ignoredDomains)) {
                     $this->domains[] = [
                         'item' => $item,
