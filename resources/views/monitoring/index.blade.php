@@ -38,6 +38,15 @@
                 $(this).data('clicks', !clicks)
             });
 
+            $('.checkbox-delete').click(function(){
+                let checkbox = $('.checkbox-projects:checked');
+                $.each(checkbox, function(index, val){
+                    axios.delete(`monitoring/${val.value}`);
+                });
+
+                window.location.reload();
+            });
+
             $('[data-toggle="tooltip"]').tooltip();
         </script>
     @endslot

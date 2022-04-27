@@ -15,18 +15,20 @@
             </tr>
         </thead>
         <tbody>
-
+            @foreach($projects as $project)
             <tr>
-                <td><input type="checkbox" class="projects" value="1"></td>
-                <td>Clean database</td>
-                <td>Clean database</td>
+                <td><input type="checkbox" class="checkbox-projects" value="{{ $project->id }}"></td>
+                <td>
+                    <a href="{{ route('monitoring.show', $project->id) }}">{{ $project->name }}</a>
+                </td>
+                <td>{{ $project->url }}</td>
                 <td>Clean database</td>
                 <td>Clean database</td>
                 <td>Clean database</td>
                 <td>Clean database</td>
                 <td>Clean database</td>
             </tr>
-
+            @endforeach
         </tbody>
     </table>
 </div>
