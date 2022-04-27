@@ -61,7 +61,13 @@ class SimplifiedXmlFacade extends XmlFacade
 
             $xml = $this->load($response->content);
         } else {
-            $response = file_get_contents($url);
+            $arrContextOptions = [
+                "ssl" => [
+                    "verify_peer" => false,
+                    "verify_peer_name" => false,
+                ],
+            ];
+            $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $xml = $this->load($response);
         }
 
