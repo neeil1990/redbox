@@ -26,9 +26,10 @@ class SimplifiedXmlFacade extends XmlFacade
     }
 
     /**
+     * @param bool $boolean
      * @return array
      */
-    public function getXMLResponse($boolean): array
+    public function getXMLResponse(bool $boolean = false): array
     {
         $response = $this->sendRequest($boolean);
         if (isset($response['response']['error'])) {
@@ -50,7 +51,7 @@ class SimplifiedXmlFacade extends XmlFacade
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
-        
+
         if ($old) {
             $response = Curl::to($url)
                 ->withData($this->buildQuery())
