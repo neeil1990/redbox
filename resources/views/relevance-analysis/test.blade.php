@@ -719,9 +719,9 @@
             <tr role="row" style="position: relative; z-index: 100">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>{{ __('без усилений') }}</th>
-                <th>{{ __('с усилениями и ограничениями') }}</th>
-                <th>{{ __('с усилениями') }}</th>
+                <th>Общий балл(основные без усилений)</th>
+                <th>Общий балл(с усилениями и ограничениями)</th>
+                <th>Общий балл(с усилениями, без ограничений)</th>
                 <th>{{ __('coverage for all important words') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
