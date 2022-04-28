@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Position\Engine\Yandex;
-use App\Classes\Xml\XmlFacade;
-use App\Jobs\StorePosition;
+
+use App\Classes\Position\PositionStore;
+use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\User;
 use Illuminate\Http\Request;
@@ -37,31 +37,12 @@ class MonitoringController extends Controller
         $user = $this->user;
         $projects = $user->monitoringProjects()->get();
 
-
-        $google = 'https://xmlstock.com/google/xml/';
-
-        $position = new Yandex('lorshop.ru', 'ERO-SCAN DPOAE Screener MAICO', '193');
-        $position->handle();
-
-        dd(1);
-
         $model = new MonitoringKeyword();
         $query = $model->where('id', 9)->first();
 
-        $engines = $query->project->searchengines;
+        //$store = (new PositionStore($query, false))->save();
+        //dispatch((new PositionQueue($query))->onQueue('position'));
 
-        foreach ($engines as $engine){
-
-            // get position
-            dd($query->query, $engine);
-
-            $query->positions()->create([
-                'monitoring_searchengine_id' => $engine->id,
-                'position' => 1
-            ]);
-        }
-
-        //dispatch((new StorePosition())->onQueue('position'));
 
         return view('monitoring.index', compact('projects'));
     }

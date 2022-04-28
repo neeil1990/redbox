@@ -2,24 +2,28 @@
 
 namespace App\Jobs;
 
+use App\Classes\Position\PositionStore;
+use App\MonitoringKeyword;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class StorePosition implements ShouldQueue
+class PositionQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    protected $model;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(MonitoringKeyword $keyword)
     {
-        //
+        $this->model = $keyword;
     }
 
     /**
@@ -29,6 +33,7 @@ class StorePosition implements ShouldQueue
      */
     public function handle()
     {
-        //
+        $store = new PositionStore($this->model, false);
+        $store->save();
     }
 }
