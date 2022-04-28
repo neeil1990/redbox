@@ -2,6 +2,7 @@
 
 namespace App\Classes\Xml;
 
+use Illuminate\Support\Facades\Log;
 use Ixudra\Curl\Facades\Curl;
 
 class SimplifiedXmlFacade extends XmlFacade
@@ -43,49 +44,73 @@ class SimplifiedXmlFacade extends XmlFacade
     }
 
     /**
-     * @param bool $old
+     * @param bool $bool
      * @return array
      */
-    protected function sendRequest(bool $old = true): array
+    protected function sendRequest(bool $bool = false): array
+    {
+        if ($bool) {
+            $result = $this->sendRequestV1();
+        } else {
+            $result = $this->sendRequestV2();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    protected function sendRequestV1(): array
     {
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
 
-        if ($old) {
-            $response = Curl::to($url)
-                ->withData($this->buildQuery())
-                ->withResponseHeaders()
-                ->returnResponseObject()
-                ->get();
+        $response = Curl::to($url)
+            ->withData($this->buildQuery())
+            ->withResponseHeaders()
+            ->returnResponseObject()
+            ->get();
 
-            $xml = $this->load($response->content);
-        } else {
-            $arrContextOptions = [
-                "ssl" => [
-                    "verify_peer" => false,
-                    "verify_peer_name" => false,
-                ],
-            ];
-            $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
-            $xml = $this->load($response);
-        }
+        $xml = $this->load($response->content);
+
+        $json = json_encode($xml);
+
+        return json_decode($json, TRUE);;
+    }
+
+    /**
+     * @return array
+     */
+    protected function sendRequestV2(): array
+    {
+        $query = str_replace(' ', '%20', $this->query);
+        $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
+            . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
+
+        $arrContextOptions = [
+            "ssl" => [
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ],
+        ];
+        $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        $xml = $this->load($response);
 
         $json = json_encode($xml);
         $responseArray = json_decode($json, TRUE);
 
-        if (!$old) {
-            $sites = [];
-            foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
-                if (count($item['doc']) < 12) {
-                    $sites[] = $item['doc'][0]['url'];
-                } else {
-                    $sites[] = $item['doc']['url'];
-                }
+        $sites = [];
+        foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
+            if (count($item['doc']) < 12) {
+                $sites[] = $item['doc'][0]['url'];
+            } else {
+                $sites[] = $item['doc']['url'];
             }
         }
 
-        return $old ? $responseArray : $sites;
+        return $sites;
     }
 
 }
