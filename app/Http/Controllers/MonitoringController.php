@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Position\Engine\Google;
-use App\Classes\Position\Engine\Yandex;
-use App\Classes\Xml\XmlFacade;
-use App\Jobs\StorePosition;
+
+use App\Classes\Position\PositionStore;
+use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\User;
 use Illuminate\Http\Request;
@@ -38,31 +37,11 @@ class MonitoringController extends Controller
         $user = $this->user;
         $projects = $user->monitoringProjects()->get();
 
-        //$position = new Yandex('lorshop.ru', 'лор оборудование', '193', false);
-        $position = new Google('lorshop.ru', 'лор оборудование', '193', false);
-
-        $p = $position->handle();
-
-
-        dd($p);
-
         $model = new MonitoringKeyword();
         $query = $model->where('id', 9)->first();
 
-        $engines = $query->project->searchengines;
-
-        foreach ($engines as $engine){
-
-            // get position
-            dd($query->query, $engine);
-
-            $query->positions()->create([
-                'monitoring_searchengine_id' => $engine->id,
-                'position' => 1
-            ]);
-        }
-
-        //dispatch((new StorePosition())->onQueue('position'));
+        //$store = (new PositionStore($query, false))->save();
+        //dispatch((new PositionQueue($query))->onQueue('position'));
 
         return view('monitoring.index', compact('projects'));
     }
