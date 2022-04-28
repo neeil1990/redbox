@@ -5,17 +5,18 @@ namespace App\Classes\Position;
 
 
 use App\Classes\Xml\XmlFacade;
+use App\SearchIndex;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 abstract class Positions
 {
     protected $engine;
     protected $xml;
+    protected $save = true;
 
     public $domain;
     public $query;
-    public $current_page = 0;
-    public $max_page = 50;
     public $lr;
 
     public function __construct()
@@ -26,53 +27,90 @@ abstract class Positions
     public function handle()
     {
         $this->setParams();
-        $position = $this->getSitePosition(0, $this->max_page);
 
-        dd($position, $this->xml->getQueryURL());
+        return $this->getSitePosition();
     }
 
     protected function setParams()
     {
         $this->xml->setPath($this->engine);
-        $this->xml->setGroupBy('flat');
+        $this->xml->setGroupBy('flat.groups-on-page=100');
         $this->xml->setLr($this->lr);
         $this->xml->setQuery($this->query);
     }
 
-    protected function getSitePosition($page = 0, $max = 10)
+    /**
+     * @return array|int|string|null
+     */
+    protected function getSitePosition()
     {
-        if($this->current_page > $max)
-            return null;
-
         $site = $this->domain;
-        $this->xml->setPage($page);
         $results = $this->xml->getByArray();
 
         if(!isset($results['response']['error'])){
-            $this->current_page = $results['response']['results']['grouping']['page'];
+
             $positions = $results['response']['results']['grouping']['group'];
+
+            if($this->save)
+                $this->store($positions);
 
             $position = array_filter($positions, function($var) use ($site) {
                 $domain = parse_url($var['doc']['url']);
-                return str_replace(['www.'], '', strtolower($domain['host'])) === $site;
+                return $this->domainFilter($domain['host']) === $site;
             });
 
             if(count($position) > 0){
-                $p = $page;
-                $n = count($positions);
-                $count = $n * $p;
-
                 $position = key($position) + 1;
+                return $position;
+            }else
+                return null;
 
-                $sum = $count + $position;
-
-                return $sum;
-            }else{
-                $page = $page + 1;
-                return $this->getSitePosition($page);
-            }
         }else{
             Log::error($results);
         }
+    }
+
+    private function store($positions)
+    {
+        if(!count($positions))
+            return null;
+
+        $create = [];
+
+        $lr = $this->lr;
+        $query = $this->query;
+        $source = get_class($this);
+
+        foreach ($positions as $index => $position){
+
+            $url = isset($position['doc']['url']) ? $position['doc']['url'] : null;
+            $title = isset($position['doc']['title']) ? $position['doc']['title'] : null;
+            $passages = isset($position['doc']['passages']) ? $position['doc']['passages'] : null;
+            if(isset($passages['passage']))
+                $snippet = (is_array($passages['passage'])) ? implode(', ', $passages['passage']) : $passages['passage'];
+            else
+                $snippet = null;
+
+            $index = $index + 1;
+
+            $create[$index] = [
+                'source' => $source,
+                'lr' => $lr,
+                'url' => $url,
+                'position' => $index,
+                'title' => $title,
+                'snippet' => $snippet,
+                'query' => $query,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ];
+        }
+
+        SearchIndex::insert($create);
+    }
+
+    private function domainFilter($domain)
+    {
+        return str_replace(['www.'], '', strtolower($domain));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Position\Engine\Google;
 use App\Classes\Position\Engine\Yandex;
 use App\Classes\Xml\XmlFacade;
 use App\Jobs\StorePosition;
@@ -37,13 +38,12 @@ class MonitoringController extends Controller
         $user = $this->user;
         $projects = $user->monitoringProjects()->get();
 
+        //$position = new Yandex('lorshop.ru', 'лор оборудование', '193', false);
+        $position = new Google('lorshop.ru', 'лор оборудование', '193', false);
 
-        $google = 'https://xmlstock.com/google/xml/';
+        $p = $position->handle();
 
-        $position = new Yandex('lorshop.ru', 'ERO-SCAN DPOAE Screener MAICO', '193');
-        $position->handle();
-
-        dd(1);
+        dd($p);
 
         $model = new MonitoringKeyword();
         $query = $model->where('id', 9)->first();

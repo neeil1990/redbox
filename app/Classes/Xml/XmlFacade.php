@@ -151,6 +151,11 @@ class XmlFacade
         return $this;
     }
 
+    private function filter($xml)
+    {
+        return str_replace(['<hlword>', '</hlword>'], '', $xml);
+    }
+
     /**
      * Get as array
      */
@@ -162,7 +167,7 @@ class XmlFacade
             ->returnResponseObject()
             ->get();
 
-        $content = $response->content;
+        $content = $this->filter($response->content);
 
         if($response->status == 404)
             throw new \InvalidArgumentException('Wrong path or request, Check field path!');
