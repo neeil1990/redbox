@@ -139,7 +139,8 @@ class TestRelevance
         $this->prepareUnigramTable();
         $this->calculateDensity($request);
         $this->calculateCoveragePoints();
-        $this->calculatePoints();
+        $this->calculateWidthPoints();
+        $this->calculateTotalPoints();
         $this->prepareClouds();
     }
 
@@ -290,7 +291,7 @@ class TestRelevance
      * Расчёт баллов для таблицы "Проанализированные сайты"
      * @return void
      */
-    public function calculatePoints()
+    public function calculateWidthPoints()
     {
         // высчитываем 100%, игнорируя игнорируемые домены
         $this->avgCoveragePercent = $iterator = 0;
@@ -309,6 +310,18 @@ class TestRelevance
             $points = $this->sites[$key]['coverage'] / ($this->avgCoveragePercent / 100);
             $points = min($points, 100);
             $this->sites[$key]['width'] = round($points, 2);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function calculateTotalPoints()
+    {
+        foreach ($this->sites as $key => $site) {
+            $this->sites[$key]['mainPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainPercent']) / 3, 2);
+            $this->sites[$key]['mainWithGainFixPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainFixPercent']) / 3, 2);
+            $this->sites[$key]['mainWithGainPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainPercent']) / 3, 2);
         }
     }
 
@@ -920,22 +933,7 @@ class TestRelevance
         foreach ($this->sites as $keyPage => $page) {
             $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
 
-            $this->sites[$keyPage]['density'] = $this->calculateDensityPoints($allText, $gain, $page['mainPage']);
-
-//            $this->sites[$keyPage]['defaultDensity'] = $density['defaultDensity'];
-//            $this->sites[$keyPage]['defaultDensityPercent'] = $density['defaultDensityPercent'];
-//
-//            $this->sites[$keyPage]['densityWithGain'] = $density['densityWithGain'];
-//            $this->sites[$keyPage]['densityWithGainPercent'] = $density['densityWithGainPercent'];
-//
-//            $this->sites[$keyPage]['densityWithGainFix'] = $density['densityWithGainFix'];
-//            $this->sites[$keyPage]['densityWithGainFixPercent'] = $density['densityWithGainFixPercent'];
-//
-//            $this->sites[$keyPage]['densityMain'] = $density['densityMain'];
-//            $this->sites[$keyPage]['densityMainPercent'] = $density['densityMainPercent'];
-//
-//            $this->sites[$keyPage]['densityMainWithGain'] = $density['densityMainWithGain'];
-//            $this->sites[$keyPage]['densityMainWithGainPercent'] = $density['densityMainWithGainPercent'];
+            $this->sites[$keyPage]['density'] = $this->calculateDensityPoints($allText, $gain);
         }
     }
 

@@ -57,6 +57,9 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             "<tr class='render" + ignorClass + "'>" +
             "<td data-order='" + iterator + "'>" + iterator + "</td>" +
             "<td style='" + background + "max-width: 450px;'><span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup + "</td>" +
+            "<td>" + value['mainPoints'] + " </td>" +
+            "<td>" + value['mainWithGainFixPoints'] + " </td>" +
+            "<td>" + value['mainWithGainPoints'] + " </td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
