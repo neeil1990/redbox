@@ -43,6 +43,7 @@ class MonitoringController extends Controller
 
         $p = $position->handle();
 
+
         dd($p);
 
         $model = new MonitoringKeyword();
