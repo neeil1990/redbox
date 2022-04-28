@@ -43,6 +43,7 @@ class MonitoringController extends Controller
         //$store = (new PositionStore($query, false))->save();
         //dispatch((new PositionQueue($query))->onQueue('position'));
 
+
         return view('monitoring.index', compact('projects'));
     }
 
