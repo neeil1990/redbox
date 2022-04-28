@@ -19,7 +19,7 @@ class SearchCompetitors
 
         foreach ($phrases as $phrase) {
             $xml->setQuery($phrase);
-            $result = $xml->getXMLResponse();
+            $result = $xml->getXMLResponse(true);
             $resultArray[$phrase] = $result['response']['results']['grouping']['group'];
         }
 

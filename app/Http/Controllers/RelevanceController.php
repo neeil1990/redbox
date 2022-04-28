@@ -87,7 +87,7 @@ class RelevanceController extends Controller
             $relevance->removeIgnoredDomains(
                 $request->input('count'),
                 $request->input('ignoredDomains'),
-                $xmlResponse['response']['results']['grouping']['group']
+                $xmlResponse
             );
 
         }
@@ -185,11 +185,10 @@ class RelevanceController extends Controller
             $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
-
             $relevance->removeIgnoredDomains(
                 $request->input('count'),
                 $request->input('ignoredDomains'),
-                $xmlResponse['response']['results']['grouping']['group']
+                $xmlResponse
             );
         }
         $relevance->parseSites();

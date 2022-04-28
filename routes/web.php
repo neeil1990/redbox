@@ -11,9 +11,11 @@
 |
 */
 
+use App\Classes\Xml\SimplifiedXmlFacade;
 use App\TelegramBot;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -194,3 +196,4 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('monitoring', 'MonitoringController');
 });
+
