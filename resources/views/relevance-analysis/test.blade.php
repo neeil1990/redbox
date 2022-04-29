@@ -1009,6 +1009,7 @@
                 generatedCompetitorCoverage = false
                 $(".generated-cloud").html("")
                 $("#clouds").html("")
+                $("#recommendations").dataTable().fnDestroy();
                 $("#unigram").dataTable().fnDestroy();
                 $("#scaned-sites").dataTable().fnDestroy();
                 $("#phrases").dataTable().fnDestroy();
