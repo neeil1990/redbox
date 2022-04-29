@@ -35,7 +35,7 @@ function renderRecommendationsTable(recommendations) {
     })
 
     var table = $('#recommendations').DataTable({
-        "order": [[1, "desc"]],
+        "order": [[2, "desc"]],
         "pageLength": 10,
         "searching": true,
         dom: 'lBfrtip',
