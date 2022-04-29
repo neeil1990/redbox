@@ -34,7 +34,8 @@
             #unigramTBody > tr > td:nth-child(12),
             #phrasesTBody > tr > td:nth-child(7),
             #phrasesTBody > tr > td:nth-child(9),
-            #phrasesTBody > tr > td:nth-child(11) {
+            #phrasesTBody > tr > td:nth-child(11),
+            #recommendationsTBody > tr > td:nth-child(4) {
                 background: #ebf0f5;
             }
 
@@ -445,6 +446,32 @@
         </div>
     </div>
 
+    <div class="pb-3 recommendations" style="display:none;">
+        <h2>Рекомендации</h2>
+        <table id="recommendations" class="table table-bordered table-hover dataTable dtr-inline"
+               style="width: 100% !important;">
+            <thead>
+            <tr style="position: relative; z-index: 100">
+                <th class="сol-1">
+                    <span class="text-muted" style="font-weight: 400">
+                        вы можете удалить слово из таблицы, если оно было проработано
+                    </span>
+                </th>
+                <th>Слово</th>
+                <th>tf</th>
+                <th>количество у вас на странице</th>
+                <th>Среднее кол-во повторений у конкурентов</th>
+                <th>Рекомендуемый диапозон</th>
+                <th>Уровень спама</th>
+                <th>Добавить</th>
+                <th>Удалить</th>
+            </tr>
+            </thead>
+            <tbody id="recommendationsTBody">
+            </tbody>
+        </table>
+    </div>
+
     <div class="pb-3 unigram" style="display: none;">
         <h2>Топ лист фраз (TLP)</h2>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
@@ -817,6 +844,8 @@
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
         <script defer src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
+        <script defer
+                src="{{ asset('plugins/relevance-analysis/test-scripts/renderRecommendationsTable.js') }}"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -956,6 +985,7 @@
             function successRequest(response, interval) {
                 stopProgressBar(interval)
                 refreshAllRenderElements()
+                renderRecommendationsTable(response.recommendations)
                 renderUnigramTable(response.unigramTable);
                 renderScannedSitesList(response.sites, response.avgCoveragePercent);
                 renderTextTable(response.avg, response.mainPage)

@@ -50,6 +50,8 @@ class TestRelevance
 
     public $sites;
 
+    public $recommendations = [];
+
     /**
      * @param $link
      * @param $separator
@@ -137,6 +139,7 @@ class TestRelevance
         $this->searchWordForms();
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
+        $this->analyzeRecommendations();
         $this->calculateDensity($request);
         $this->calculateCoveragePoints();
         $this->calculateWidthPoints();
@@ -322,6 +325,54 @@ class TestRelevance
             $this->sites[$key]['mainPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainPercent']) / 3, 2);
             $this->sites[$key]['mainWithGainFixPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainFixPercent']) / 3, 2);
             $this->sites[$key]['mainWithGainPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainPercent']) / 3, 2);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function analyzeRecommendations()
+    {
+        foreach ($this->wordForms as $wordForm) {
+            foreach ($wordForm as $word => $form) {
+                if ($wordForm['total']['avgInTotalCompetitors'] >= 10) {
+                    $recommendationMin = ceil($wordForm['total']['avgInTotalCompetitors'] * 0.9);
+                    $recommendationMax = ceil($wordForm['total']['avgInTotalCompetitors'] * 1.1);
+                } else if ($wordForm['total']['avgInTotalCompetitors'] >= 2) {
+                    $recommendationMin = $wordForm['total']['avgInTotalCompetitors'] - 1;
+                    $recommendationMax = $wordForm['total']['avgInTotalCompetitors'] + 1;
+                } else {
+                    $recommendationMin = 1;
+                    $recommendationMax = 2;
+                }
+
+                if ($wordForm['total']['totalRepeatMainPage'] < $recommendationMin) {
+                    $this->recommendations[$word] = [
+                        'onPage' => $wordForm['total']['totalRepeatMainPage'],
+                        'tf' => round($wordForm['total']['tf'], 5),
+                        'avg' => $wordForm['total']['avgInTotalCompetitors'],
+                        'diapason' => $recommendationMin . ' - ' . $recommendationMax,
+                        'spam' => 0,
+                        'add' => ($recommendationMin - $wordForm['total']['totalRepeatMainPage']) . ' - ' . ($recommendationMax - $wordForm['total']['totalRepeatMainPage']),
+                        'remove' => 0,
+                    ];
+                    break;
+                } else if ($wordForm['total']['totalRepeatMainPage'] > $recommendationMax) {
+                    $this->recommendations[$word] = [
+                        'onPage' => $wordForm['total']['totalRepeatMainPage'],
+                        'tf' => round($wordForm['total']['tf'], 5),
+                        'avg' => $wordForm['total']['avgInTotalCompetitors'],
+                        'diapason' => $recommendationMin . ' - ' . $recommendationMax,
+                        'spam' => round(($wordForm['total']['totalRepeatMainPage'] - $wordForm['total']['avgInTotalCompetitors']) / ($recommendationMax / 100)) . '%',
+                        'add' => 0,
+                        'remove' => ($wordForm['total']['totalRepeatMainPage'] - $recommendationMax) . ' - ' . ($wordForm['total']['totalRepeatMainPage'] - $recommendationMin),
+                    ];
+                    break;
+                }
+            }
+            if (count($this->recommendations) >= 200) {
+                break;
+            }
         }
     }
 
@@ -591,6 +642,12 @@ class TestRelevance
                 'occurrences' => array_values(array_unique($occurrences)),
             ];
         }
+
+        $collection = collect($this->wordForms);
+
+        $this->wordForms = $collection->sortBy(function ($value, $key) {
+            return $value['total']['tf'];
+        }, SORT_REGULAR, true)->toArray();
     }
 
     /**
@@ -944,12 +1001,6 @@ class TestRelevance
      */
     public function calculateDensityPoints($text, $gain): array
     {
-        $collection = collect($this->wordForms);
-
-        $sorted = $collection->sortBy(function ($value, $key) {
-            return $value['total']['tf'];
-        }, SORT_REGULAR, true)->toArray();
-
         $result = [];
         $defaultDensity = 0;
         $densityWithGain = 0;
@@ -960,7 +1011,7 @@ class TestRelevance
         $array = explode(' ', $text);
         $array = array_count_values($array);
 
-        foreach ($sorted as $wordForm) {
+        foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word == 'total') {
                     continue;
@@ -1006,7 +1057,7 @@ class TestRelevance
         $testMainIterator = 0;
         $densityMainWithGain = 0;
         $densityMainWithGainFix = 0;
-        foreach ($sorted as $wordForm) {
+        foreach ($this->wordForms as $wordForm) {
             $countRepeatInPage = 0;
             foreach ($wordForm as $word => $form) {
                 if ($word == 'total') {

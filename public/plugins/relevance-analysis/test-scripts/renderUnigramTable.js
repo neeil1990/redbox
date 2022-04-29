@@ -17,7 +17,12 @@ function renderUnigramTable(unigramTable) {
             ]
         });
         $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
-        $(".dt-buttons").append("<button class='btn btn-secondary' id='showChildrenRows'>Child</button>");
+        //Добавляем только в ниграм
+        $.each($(".dt-buttons"), function (key, value) {
+            if (key === 1) {
+                $(this).append("<button class='btn btn-secondary' id='showChildrenRows'>Child</button>");
+            }
+        });
 
         $('#showChildrenRows').click(function () {
             let object = sessionStorage.getItem('childTableRows')

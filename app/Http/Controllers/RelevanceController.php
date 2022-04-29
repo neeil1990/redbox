@@ -287,9 +287,10 @@ class RelevanceController extends Controller
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
             'tfCompClouds' => $relevance->tfCompClouds,
-            //new functions
             'phrases' => $relevance->phrases,
-            'avgCoveragePercent' => $relevance->avgCoveragePercent ?? null
+            //new functions
+            'avgCoveragePercent' => $relevance->avgCoveragePercent ?? null,
+            'recommendations' => $relevance->recommendations ?? null
         ]);
     }
 
