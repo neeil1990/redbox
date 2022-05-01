@@ -170,13 +170,13 @@
 
                     switch (panel.attr('id')) {
                         case 'project-part':
-                            //Parts.project(event);
+                            Parts.project(event);
                             break;
                         case 'keywords-part':
-                            //Parts.keywords(event);
+                            Parts.keywords(event);
                             break;
                         case 'competitors-part':
-                            //Parts.competitors(event);
+                            Parts.competitors(event);
                             break;
                         case 'regions-part':
                             Parts.regions(event);
