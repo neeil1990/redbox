@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Http\Request;
-use \App\Classes\Locations\Yandex;
-
+use \App\Classes\Locations\Searches\Yandex;
+use \App\Classes\Locations\Searches\Google;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\LocationGoogleImport;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,21 +29,41 @@ Route::get('/domain-information/check-domain-crone/', 'CroneController@checkDoma
 Route::get('location', function(Request $request){
 
     $name = $request->get('name', '');
-    $site = $request->get('site', 'yandex');
+    $search = $request->get('searchEngine', '');
 
     if(!$name)
         return '';
 
     $location = null;
 
-    switch ($site) {
+    switch ($search) {
         case "yandex":
             $location = new Yandex();
+            break;
+
+        case "google":
+            $location = new Google();
             break;
 
         default:
             throw new ErrorException('Location site is not exist.');
     }
 
-    return $location->get($name) ?: '';
+    if($location)
+        return $location->get($name) ?: '';
+    else
+        return '';
+});
+
+Route::get('update-location-google', function (){
+    ini_set('max_execution_time', 0);
+
+    $file = 'google.csv';
+
+    if(!Storage::disk('location')->exists($file))
+        return 'Файл: ' . $file . ' не найден. Скачайте файл по ссылке: https://xmlstock.com/geotargets-google.csv И загрузите в папку для импорта: ' . storage_path('location');
+
+    Excel::import(new LocationGoogleImport, $file, 'location');
+
+    dump('done!');
 });

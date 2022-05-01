@@ -132,6 +132,22 @@
                         }
                     });
                 },
+                regions: function(event){
+                    let selects = this.part.find('.Select2');
+                    let isEmpty = true;
+
+                    selects.each(function(i, v){
+                        let option = $(v);
+
+                        if(option.val().length)
+                            isEmpty = false;
+                    });
+
+                    if(isEmpty){
+                        event.preventDefault();
+                        toastr.error('Выберите регины поиска.');
+                    }
+                },
             };
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -154,13 +170,16 @@
 
                     switch (panel.attr('id')) {
                         case 'project-part':
-                            Parts.project(event);
+                            //Parts.project(event);
                             break;
                         case 'keywords-part':
-                            Parts.keywords(event);
+                            //Parts.keywords(event);
                             break;
                         case 'competitors-part':
-                            Parts.competitors(event);
+                            //Parts.competitors(event);
+                            break;
+                        case 'regions-part':
+                            Parts.regions(event);
                             break;
                         default:
                             console.log('next...');
@@ -168,7 +187,7 @@
                 });
             });
 
-            $('#yandexSelect2').select2({
+            $('.Select2').select2({
                 theme: 'bootstrap4',
                 placeholder: 'Select a regions',
                 ajax: {
@@ -176,9 +195,10 @@
                     url: '/api/location',
                     dataType: 'json',
                     data: function (params) {
+
                         var query = {
                             name: params.term,
-                            site: 'yandex'
+                            searchEngine: this.data('search')
                         };
 
                         return query;

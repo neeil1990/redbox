@@ -66,7 +66,14 @@ abstract class Positions
                 return null;
 
         }else{
-            Log::error($results);
+            $errors = [
+                'search' => $this->engine,
+                'region' => $this->lr,
+                'error' => $results['response']['error'],
+                'result' => $results,
+            ];
+
+            Log::error($errors);
         }
     }
 
