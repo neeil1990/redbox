@@ -37,8 +37,8 @@ class MonitoringController extends Controller
         $user = $this->user;
         $projects = $user->monitoringProjects()->get();
 
-        $model = new MonitoringKeyword();
-        $query = $model->where('id', 9)->first();
+        //$model = new MonitoringKeyword();
+        //$query = $model->where('id', 9)->first();
 
         //$store = (new PositionStore($query, false))->save();
         //dispatch((new PositionQueue($query))->onQueue('position'));

@@ -195,4 +195,6 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 
     Route::resource('monitoring', 'MonitoringController');
+    Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
+    Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 });
