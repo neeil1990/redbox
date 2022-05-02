@@ -89,14 +89,21 @@ class TestRelevance
      */
     public function parseSites()
     {
+        $mainUrl = parse_url($this->params['main_page_link']);
+
         foreach ($this->domains as $item) {
             $domain = isset($item['item']) ? strtolower($item['item']) : $item;
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+
+            $compUrl = parse_url($item['item']);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
             $this->sites[$domain]['site'] = $domain;
 
+            if (Str::lower($mainUrl['host']) == Str::lower($compUrl['host'])) {
+                $this->sites[$domain]['equallyHost'] = true;
+            }
             //Если проанализированный домен является посадочной страницей
             if ($domain == $this->params['main_page_link']) {
                 $this->mainPageIsRelevance = true;
@@ -363,15 +370,12 @@ class TestRelevance
                         'tf' => round($wordForm['total']['tf'], 5),
                         'avg' => $wordForm['total']['avgInTotalCompetitors'],
                         'diapason' => $recommendationMin . ' - ' . $recommendationMax,
-                        'spam' => round(($wordForm['total']['totalRepeatMainPage'] - $wordForm['total']['avgInTotalCompetitors']) / ($recommendationMax / 100)) . '%',
+                        'spam' => round(($wordForm['total']['totalRepeatMainPage'] - $recommendationMax) / ($recommendationMax / 100)) . '%',
                         'add' => 0,
                         'remove' => ($wordForm['total']['totalRepeatMainPage'] - $recommendationMax) . ' - ' . ($wordForm['total']['totalRepeatMainPage'] - $recommendationMin),
                     ];
                     break;
                 }
-            }
-            if (count($this->recommendations) >= 200) {
-                break;
             }
         }
     }
@@ -543,34 +547,30 @@ class TestRelevance
                         $htmlCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['html'] . ' ');
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
-                            if ($reSpam < $htmlCount) {
-                                $reSpam = $htmlCount;
-                            }
                         }
 
                         $hiddenTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['hiddenText'] . ' ');
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
-                            if ($reSpam < $hiddenTextCount) {
-                                $reSpam = $hiddenTextCount;
-                            }
                         }
 
                         $linkTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['linkText'] . ' ');
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
-                            if ($reSpam < $linkTextCount) {
-                                $reSpam = $linkTextCount;
-                            }
                         }
 
                         if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
+                            $countRepeat = $htmlCount + $hiddenTextCount + $linkTextCount;
                             $numberOccurrences++;
-                            $occurrences[] = $key;
+                            $occurrences[$key] = $countRepeat;
+                            if ($reSpam < $countRepeat) {
+                                $reSpam = $countRepeat;
+                            }
                         }
                     }
                 }
 
+                arsort($occurrences);
                 $repeatInTextMainPage = $myText[$word] ?? 0;
                 $repeatLinkInMainPage = $myLink[$word] ?? 0;
 
@@ -616,17 +616,24 @@ class TestRelevance
                 $avgInLink += $word['avgInLink'];
                 $repeatInText += $word['repeatInTextMainPage'];
                 $repeatInLink += $word['repeatInLinkMainPage'];
-                $reSpam += $word['reSpam'];
+                if ($reSpam < $word['reSpam']) {
+                    $reSpam = $word['reSpam'];
+                }
 
                 if ($word['numberOccurrences'] > $numberOccurrences) {
                     $numberOccurrences = $word['numberOccurrences'];
                 }
 
-                $occurrences = array_merge($occurrences, $word['occurrences']);
-
+                foreach ($word['occurrences'] as $key2 => $value) {
+                    if (key_exists($key2, $occurrences)) {
+                        $occurrences[$key2] += $value;
+                    } else {
+                        $occurrences[$key2] = $value;
+                    }
+                }
             }
+            arsort($occurrences);
 
-            /** @var $danger */
             $this->wordForms[$key]['total'] = [
                 'tf' => $tf,
                 'idf' => $idf,
@@ -639,14 +646,13 @@ class TestRelevance
                 'numberOccurrences' => $numberOccurrences,
                 'reSpam' => $reSpam,
                 'danger' => $danger,
-                'occurrences' => array_values(array_unique($occurrences)),
+                'occurrences' => $occurrences,
             ];
         }
 
         $collection = collect($this->wordForms);
 
-        $this->wordForms = $collection->sortBy(function ($value, $key) {
-            return $value['total']['tf'];
+        $this->wordForms = $collection->sortBy(function ($key, $value) {
         }, SORT_REGULAR, true)->toArray();
     }
 
@@ -887,34 +893,27 @@ class TestRelevance
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
-                        if (preg_match("/($phrase)/", $page['html']) ||
-                            preg_match("/($phrase)/", $page['linkText']) ||
-                            preg_match("/($phrase)/", $page['hiddenText'])) {
+                        $htmlCount = preg_match_all("/($phrase)/", ' ' . $page['html'] . ' ');
+                        if ($htmlCount > 0) {
+                            $numberTextOccurrences += $htmlCount;
+                        }
+
+                        $hiddenTextCount = preg_match_all("/($phrase)/", ' ' . $page['hiddenText'] . ' ');
+                        if ($hiddenTextCount > 0) {
+                            $numberTextOccurrences += $hiddenTextCount;
+                        }
+
+                        $linkTextCount = preg_match_all("/($phrase)/", ' ' . $page['linkText'] . ' ');
+                        if ($linkTextCount > 0) {
+                            $numberLinkOccurrences += $linkTextCount;
+                        }
+
+                        if ($linkTextCount > 0 || $hiddenTextCount > 0 || $htmlCount > 0) {
+                            $countRepeat = $linkTextCount + $hiddenTextCount + $htmlCount;
                             $numberOccurrences++;
-                            $occurrences[] = $key;
-                        }
-
-                        if (preg_match("/($phrase)/", $page['html'])) {
-                            $count = mb_substr_count($this->sites[$key]['html'], "$phrase");
-                            $numberTextOccurrences += $count;
-                            if ($reSpam < $count) {
-                                $reSpam = $count;
-                            }
-                        }
-
-                        if (preg_match("/($phrase)/", $page['hiddenText'])) {
-                            $count = mb_substr_count($this->sites[$key]['hiddenText'], "$phrase");
-                            $numberTextOccurrences += $count;
-                            if ($reSpam < $count) {
-                                $reSpam = $count;
-                            }
-                        }
-
-                        if (preg_match("/($phrase)/", $page['linkText'])) {
-                            $count = mb_substr_count($this->sites[$key]['linkText'], "$phrase");
-                            $numberLinkOccurrences += $count;
-                            if ($reSpam < $count) {
-                                $reSpam = $count;
+                            $occurrences[$key] = $countRepeat;
+                            if ($reSpam < $countRepeat) {
+                                $reSpam = $countRepeat;
                             }
                         }
                     }
@@ -926,8 +925,9 @@ class TestRelevance
 
                     $repeatInTextMainPage = mb_substr_count(TestRelevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]), "$phrase");
                     $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
-
                     $countSites = count($this->sites);
+                    arsort($occurrences);
+
                     $result[$phrase] = [
                         'tf' => $tf,
                         'idf' => $idf,

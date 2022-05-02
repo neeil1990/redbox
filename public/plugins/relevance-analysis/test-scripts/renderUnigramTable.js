@@ -186,10 +186,10 @@ function renderUnigramTable(unigramTable) {
 }
 
 function renderMainTr(tBody, key, wordWorm) {
-    let occurrences = wordWorm['total']['occurrences']
     let links = '';
-    $.each(occurrences, function (elem, value) {
-        links += "<a href='" + value + "' target='_blank'>" + value + "</a><br>"
+    console.log(wordWorm['total']['occurrences'])
+    $.each(wordWorm['total']['occurrences'], function (elem, value) {
+        links += "<a href='" + elem + "' target='_blank'>" + elem + "</a>(" + value + ")<br>"
     });
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
     let tf = crop(wordWorm['total']['tf'])
@@ -212,19 +212,19 @@ function renderMainTr(tBody, key, wordWorm) {
         "    </span>";
     tBody.append(
         "<tr class='render'>" +
-        "<td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
-        "<i class='fa fa-plus'></i>" +
-        "</td>" +
-        "<td>" + key + lockBlock + "</td>" +
-        "<td>" + tf + "</td>" +
-        "<td>" + idf + "</td>" +
-        "<td>" + numberOccurrences + "" +
-        "<span class='__helper-link ui_tooltip_w'>" +
-        "    <i class='fa fa-paperclip'></i>" +
-        "    <span class='ui_tooltip __right'>" +
-        "        <span class='ui_tooltip_content'>" + links + "</span>" +
-        "    </span>" +
-        "</span>" +
+        "   <td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
+        "      <i class='fa fa-plus'></i>" +
+        "   </td>" +
+        "   <td>" + key + lockBlock + "</td>" +
+        "   <td>" + tf + "</td>" +
+        "   <td>" + idf + "</td>" +
+        "   <td>" + numberOccurrences + "" +
+        "   <span class='__helper-link ui_tooltip_w'>" +
+        "       <i class='fa fa-paperclip'></i>" +
+        "       <span class='ui_tooltip __right'>" +
+        "           <span class='ui_tooltip_content'>" + links + "</span>" +
+        "       </span>" +
+        "   </span>" +
 
         "</td>" +
         "<td>" + reSpam + "</td>" +
@@ -245,10 +245,9 @@ function renderChildTr(elem, key, word, stats) {
     if (word === 'total') {
         return;
     }
-    let occurrences = stats['occurrences']
     let links = '';
-    $.each(occurrences, function (elem, value) {
-        links += "<a href='" + value + "' target='_blank'>" + value + "</a><br>"
+    $.each(stats['occurrences'], function (elem, value) {
+        links += "<a href='" + elem + "' target='_blank'>" + elem + "</a> (" + value + ") <br>"
     });
     let tf = crop(stats['tf'])
     let idf = crop(stats['idf'])

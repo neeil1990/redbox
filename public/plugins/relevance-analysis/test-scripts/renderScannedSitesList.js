@@ -27,7 +27,7 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
         let noTop = ''
         let ignorBlock = ''
         let ignorClass = ''
-        let background = ''
+        let className = ''
 
         if (value['ignored']) {
             ignorBlock = "<div class='text-muted'>(игнорируемый домен)</div>"
@@ -48,15 +48,15 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             if (!value['inRelevance']) {
                 noTop = "<span class='text-muted'>(сайт не попал в топ)</span>"
             }
-            background = 'background: #4eb767c4;'
-        } else {
-            background = ''
+            className = 'bg-my-site'
+        } else if (value['equallyHost']) {
+            className = 'bg-warning-elem'
         }
 
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
             "<td data-order='" + iterator + "'>" + iterator + "</td>" +
-            "<td style='" + background + "max-width: 450px;'><span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup + "</td>" +
+            "<td style='max-width: 450px;' class='" + className + "'><span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup + "</td>" +
             "<td>" + value['mainPoints'] + " </td>" +
             "<td>" + value['mainWithGainFixPoints'] + " </td>" +
             "<td>" + value['mainWithGainPoints'] + " </td>" +
@@ -87,6 +87,10 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             "order": [[0, "asc"]],
             "pageLength": 50,
             "searching": true,
+            dom: 'lBfrtip',
+            buttons: [
+                'copy', 'csv', 'excel'
+            ]
         });
     });
 
@@ -115,6 +119,35 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
                 $('.ignored-site').show()
             }
         });
+
+        $('#scaned-sites_wrapper > .dt-buttons').after(
+            "    <button class='btn btn-secondary ml-1' id='copySites' style='cursor: pointer'>" +
+            "        Скопировать ссылки сайтов" +
+            "    </button>"
+        )
+
+        $('#copySites').click(function () {
+            let sites = ''
+            $.each($('.analyzed-site'), function () {
+                sites += $(this).html() + "\n"
+            })
+            const el = document.createElement('textarea');
+            el.value = sites;
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            let toastr = $('.toast-top-right.success-message.lock-word');
+            toastr.show(300)
+            $('#lock-word').html('Успешно скопировано')
+            setTimeout(() => {
+                toastr.hide(300)
+            }, 3000)
+        })
     }, 2000)
 
     $('.add-in-ignored-domains').click(function () {

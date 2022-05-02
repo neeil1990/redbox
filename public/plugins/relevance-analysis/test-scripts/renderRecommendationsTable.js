@@ -1,5 +1,5 @@
 function renderRecommendationsTable(recommendations) {
-    $('.pb-3.recommendations').show()
+    $('#rec').show()
     let tBody = $('#recommendationsTBody')
 
     $.each(recommendations, function (key, value) {
@@ -24,8 +24,8 @@ function renderRecommendationsTable(recommendations) {
             "<td class='text-center'> <i class='fa fa-trash remove-recommendation'></i> </td>" +
             "<td class='col-1'>" + key + "</td>" +
             "<td class='col-1'>" + value['tf'] + "</td>" +
-            "<td class='col-2'>" + value['onPage'] + "</td>" +
             "<td class='col-2'>" + value['avg'] + "</td>" +
+            "<td class='col-2'>" + value['onPage'] + "</td>" +
             "<td class='col-2' data-order='" + diapasonOrder + "'>" + value['diapason'] + "</td>" +
             "<td class='col-1'>" + value['spam'] + "</td>" +
             "<td class='col-1 " + add + "' data-order='" + addOrder + "'>" + value['add'] + "</td>" +

@@ -196,4 +196,3 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('monitoring', 'MonitoringController');
 });
-

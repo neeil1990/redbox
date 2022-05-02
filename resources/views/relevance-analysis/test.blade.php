@@ -66,6 +66,10 @@
                 margin-left: 20px;
                 float: left;
             }
+
+            .bg-my-site {
+                background: #4eb767c4;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
@@ -446,21 +450,25 @@
         </div>
     </div>
 
+    <div id="rec" style="display: none" class="mb-3">
+        <h2>Рекомендации TLP</h2>
+        <button class="btn btn-secondary">Рекомендации</button>
+    </div>
+
     <div class="pb-3 recommendations" style="display:none;">
-        <h2>Рекомендации</h2>
         <table id="recommendations" class="table table-bordered table-hover dataTable dtr-inline"
                style="width: 100% !important;">
             <thead>
             <tr style="position: relative; z-index: 100">
                 <th class="сol-1">
                     <span class="text-muted" style="font-weight: 400">
-                        вы можете удалить слово из таблицы, если оно было проработано
+                        Вы можете удалить слово из таблицы, если оно было проработано
                     </span>
                 </th>
                 <th>Слово</th>
-                <th>tf</th>
-                <th>количество у вас на странице</th>
+                <th>Tf</th>
                 <th>Среднее кол-во повторений у конкурентов</th>
+                <th>Количество у вас на странице</th>
                 <th>Рекомендуемый диапозон</th>
                 <th>Уровень спама</th>
                 <th>Добавить</th>
@@ -552,7 +560,7 @@
                     </span>
                 </span>
                 </th>
-                <th>tf<span class="__helper-link ui_tooltip_w">
+                <th>Tf<span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
@@ -560,7 +568,7 @@
                         </span>
                     </span>
                 </th>
-                <th>idf<span class="__helper-link ui_tooltip_w">
+                <th>Idf<span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __left">
                             <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
@@ -737,9 +745,6 @@
                 <input id="avgCoveragePercentInput" type="number" placeholder="добавить % к охвату">
                 100%: <span id="avgCoveragePercent">0</span> <span id="changedAvgPercent"></span>
             </div>
-            <div class="ml-5" id="copySites" style="cursor: pointer">
-                <u>Скопировать ссылки сайтов в буфер</u>
-            </div>
         </div>
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
@@ -851,28 +856,13 @@
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            $('#copySites').click(function () {
-                let sites = ''
-                $.each($('.analyzed-site'), function () {
-                    sites += $(this).html() + "\n"
-                })
-                const el = document.createElement('textarea');
-                el.value = sites;
-                el.setAttribute('readonly', '');
-                el.style.position = 'absolute';
-                el.style.left = '-9999px';
-                document.body.appendChild(el);
-                el.select();
-                document.execCommand('copy');
-                document.body.removeChild(el);
-
-                let toastr = $('.toast-top-right.success-message.lock-word');
-                toastr.show(300)
-                $('#lock-word').html('Успешно скопировано')
-                setTimeout(() => {
-                    toastr.hide(300)
-                }, 3000)
-            })
+            $('#rec').click(function () {
+                if ($('.pb-3.recommendations').is(':visible')) {
+                    $('.pb-3.recommendations').hide()
+                } else {
+                    $('.pb-3.recommendations').show()
+                }
+            });
 
             $('#check-type').on('change', function () {
                 if ($(this).val() === 'list') {
@@ -1019,6 +1009,7 @@
                 $('.sites').hide()
                 $('.clouds').hide()
                 $('.phrases').hide()
+                $('.pb-3.recommendations').hide()
                 $('#competitorsTfClouds').hide()
             }
 
