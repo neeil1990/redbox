@@ -58,24 +58,24 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             "<td data-order='" + iterator + "'>" + iterator + "</td>" +
             "<td style='max-width: 450px;' class='" + className + "'><span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup + "</td>" +
             "<td>" + value['mainPoints'] + " </td>" +
-            "<td>" + value['mainWithGainFixPoints'] + " </td>" +
-            "<td>" + value['mainWithGainPoints'] + " </td>" +
+            // "<td>" + value['mainWithGainFixPoints'] + " </td>" +
+            // "<td>" + value['mainWithGainPoints'] + " </td>" +
             "<td>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
             // обычная
-            "<td data-order='" + value['density']['defaultDensityPercent'] + "'>" + value['density']['defaultDensityPercent'] + "<span class='text-muted'>(" + value['density']['defaultDensity'] + ")</span></td>" +
+            // "<td data-order='" + value['density']['defaultDensityPercent'] + "'>" + value['density']['defaultDensityPercent'] + "<span class='text-muted'>(" + value['density']['defaultDensity'] + ")</span></td>" +
             // усиление с ограничениями
-            "<td data-order='" + value['density']['densityWithGainFixPercent'] + "'>" + value['density']['densityWithGainFixPercent'] + "<span class='text-muted'>(" + value['density']['densityWithGainFix'] + ")</span></td>" +
+            // "<td data-order='" + value['density']['densityWithGainFixPercent'] + "'>" + value['density']['densityWithGainFixPercent'] + "<span class='text-muted'>(" + value['density']['densityWithGainFix'] + ")</span></td>" +
             // усиление без ограничений
-            "<td data-order='" + value['density']['densityWithGainPercent'] + "'>" + value['density']['densityWithGainPercent'] + "<span class='text-muted'>(" + value['density']['densityWithGain'] + ")</span></td>" +
+            // "<td data-order='" + value['density']['densityWithGainPercent'] + "'>" + value['density']['densityWithGainPercent'] + "<span class='text-muted'>(" + value['density']['densityWithGain'] + ")</span></td>" +
 
             // обычная плотность основых
             "<td data-order='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "<span class='text-muted'>(" + value['density']['densityMain'] + ")</span></td>" +
             // усиление с ограничениями
-            "<td data-order='" + value['density']['densityMainWithGainFixPercent'] + "'>" + value['density']['densityMainWithGainFixPercent'] + "<span class='text-muted'>(" + value['density']['densityMainWithGainFix'] + ")</span></td>" +
+            // "<td data-order='" + value['density']['densityMainWithGainFixPercent'] + "'>" + value['density']['densityMainWithGainFixPercent'] + "<span class='text-muted'>(" + value['density']['densityMainWithGainFix'] + ")</span></td>" +
             // обычная плотность с усилениями и без ограничений
-            "<td data-order='" + value['density']['densityMainWithGainPercent'] + "'>" + value['density']['densityMainWithGainPercent'] + "<span class='text-muted'>(" + value['density']['densityMainWithGain'] + ")</span></td>" +
+            // "<td data-order='" + value['density']['densityMainWithGainPercent'] + "'>" + value['density']['densityMainWithGainPercent'] + "<span class='text-muted'>(" + value['density']['densityMainWithGain'] + ")</span></td>" +
             warning +
             "</tr>"
         )

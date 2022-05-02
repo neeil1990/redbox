@@ -85,25 +85,25 @@
     </div>
 
     <div class="col-5 pb-3">
-        <div class="card p-3">
-            <h3>Усиление плотности</h3>
+{{--        <div class="card p-3">--}}
+{{--            <h3>Усиление плотности</h3>--}}
 
-            <label for="d50">плотность 50</label>
-            <input name="d50" id="d50" type="number" class="form form-control">
-            <span class="text-muted">с 1 по 50</span><br>
+{{--            <label for="d50">плотность 50</label>--}}
+{{--            <input name="d50" id="d50" type="number" class="form form-control">--}}
+{{--            <span class="text-muted">с 1 по 50</span><br>--}}
 
-            <label for="d100">плотность 100</label>
-            <input name="d100" id="d100" type="number" class="form form-control">
-            <span class="text-muted">с 51 по 100</span><br>
+{{--            <label for="d100">плотность 100</label>--}}
+{{--            <input name="d100" id="d100" type="number" class="form form-control">--}}
+{{--            <span class="text-muted">с 51 по 100</span><br>--}}
 
-            <label for="d150">плотность 150</label>
-            <input name="d150" id="d150" type="number" class="form form-control">
-            <span class="text-muted">с 101 по 150</span><br>
+{{--            <label for="d150">плотность 150</label>--}}
+{{--            <input name="d150" id="d150" type="number" class="form form-control">--}}
+{{--            <span class="text-muted">с 101 по 150</span><br>--}}
 
-            <label for="d200">плотность 200</label>
-            <input name="d200" id="d200" type="number" class="form form-control">
-            <span class="text-muted">с 151 по 200</span><br>
-        </div>
+{{--            <label for="d200">плотность 200</label>--}}
+{{--            <input name="d200" id="d200" type="number" class="form form-control">--}}
+{{--            <span class="text-muted">с 151 по 200</span><br>--}}
+{{--        </div>--}}
 
         <div class="form-group required">
             <label>{{ __('Your landing page') }}</label>
@@ -751,9 +751,9 @@
             <tr role="row" style="position: relative; z-index: 100">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>Общий балл(основные без усилений)</th>
-                <th>Общий балл(с усилениями и ограничениями)</th>
-                <th>Общий балл(с усилениями, без ограничений)</th>
+                <th>Общий балл</th>
+{{--                <th>Общий балл(с усилениями и ограничениями)</th>--}}
+{{--                <th>Общий балл(с усилениями, без ограничений)</th>--}}
                 <th>{{ __('coverage for all important words') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
@@ -797,7 +797,7 @@
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __bottom">
                             <span class="ui_tooltip_content" style="width: 300px">
-                                Плотность высчитывается от значения средней по ТОПу для каждой фразы. <br>
+                                Плотность высчитывается от значения средней по ТОПу для КАЖДОЙ ОСНОВНОЙ ФРАЗЫ. <br>
                                 Если в средней 20, а у нас 5, то это 25 баллов. <br>
                                 Дальше все баллы для всех фраз складываются и делятся на общее количество слов. <br>
                                 - <br>
@@ -806,12 +806,11 @@
                         </span>
                     </span>
                 </th>
-                <th>Плотность(с усилением и ограничениями)</th>
-                <th>Плотность(с усилением без ограничений)</th>
-
-                <th>Плотность(основные без усилений)</th>
-                <th>Плотность(основные с усиленем c ограничениями)</th>
-                <th>Плотность(основные с усиленем без ограничений)</th>
+{{--                <th>Плотность(с усилением и ограничениями)</th>--}}
+{{--                <th>Плотность(с усилением без ограничений)</th>--}}
+{{--                <th>Плотность(основные без усилений)</th>--}}
+{{--                <th>Плотность(основные с усиленем c ограничениями)</th>--}}
+{{--                <th>Плотность(основные с усиленем без ограничений)</th>--}}
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
