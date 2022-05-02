@@ -187,9 +187,9 @@ function renderUnigramTable(unigramTable) {
 
 function renderMainTr(tBody, key, wordWorm) {
     let links = '';
-    console.log(wordWorm['total']['occurrences'])
     $.each(wordWorm['total']['occurrences'], function (elem, value) {
-        links += "<a href='" + elem + "' target='_blank'>" + elem + "</a>(" + value + ")<br>"
+        let url = new URL(elem);
+        links += "<a href='" + elem + "' target='_blank'>" + url.host + "</a>(" + value + ")<br>"
     });
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
     let tf = crop(wordWorm['total']['tf'])
@@ -247,7 +247,8 @@ function renderChildTr(elem, key, word, stats) {
     }
     let links = '';
     $.each(stats['occurrences'], function (elem, value) {
-        links += "<a href='" + elem + "' target='_blank'>" + elem + "</a> (" + value + ") <br>"
+        let url = new URL(elem)
+        links += "<a href='" + elem + "' target='_blank'>" + url.host + "</a>(" + value + ") <br>"
     });
     let tf = crop(stats['tf'])
     let idf = crop(stats['idf'])

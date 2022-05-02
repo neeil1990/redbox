@@ -139,7 +139,8 @@ function renderTr(tBody, key, item) {
     let occurrences = item['occurrences']
     let links = '';
     $.each(occurrences, function (elem, value) {
-        links += "<a href='" + elem + "' target='_blank'>" + elem + "</a>(" + value + ")<br>"
+        let url = new URL(elem)
+        links += "<a href='" + elem + "' target='_blank'>" + url.host + "</a>(" + value + ")<br>"
     });
     let tf = item['tf']
     let idf = item['idf']
