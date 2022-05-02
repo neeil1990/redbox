@@ -751,7 +751,20 @@
             <tr role="row" style="position: relative; z-index: 100">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>Общий балл</th>
+                <th>
+                    Общий балл
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __bottom">
+                            <span class="ui_tooltip_content" style="width: 300px">
+                                Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность<br>
+                                Полученная сумма сначала делится на 3, затем умножается на 2<br>
+                                - <br>
+                                Если полученное кол-во баллов больше 100, то мы приравниваем его к 100.<br>
+                            </span>
+                        </span>
+                    </span>
+                </th>
 {{--                <th>Общий балл(с усилениями и ограничениями)</th>--}}
 {{--                <th>Общий балл(с усилениями, без ограничений)</th>--}}
                 <th>{{ __('coverage for all important words') }}
@@ -792,7 +805,8 @@
                         </span>
                     </span>
                 </th>
-                <th>{{ __('Density') }}
+                <th>
+                    {{ __('Density') }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __bottom">
