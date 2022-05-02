@@ -35,7 +35,7 @@
             #phrasesTBody > tr > td:nth-child(7),
             #phrasesTBody > tr > td:nth-child(9),
             #phrasesTBody > tr > td:nth-child(11),
-            #recommendationsTBody > tr > td:nth-child(4) {
+            #recommendationsTBody > tr > td:nth-child(5) {
                 background: #ebf0f5;
             }
 
@@ -451,8 +451,8 @@
     </div>
 
     <div id="rec" style="display: none" class="mb-3">
-        <h2>Рекомендации TLP</h2>
-        <button class="btn btn-secondary">Рекомендации</button>
+        <h2>Рекомендации TLP и проверка на спам</h2>
+        <button class="btn btn-secondary" id="recButton">Показать</button>
     </div>
 
     <div class="pb-3 recommendations" style="display:none;">
@@ -856,11 +856,13 @@
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            $('#rec').click(function () {
+            $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
+                    $(this).html('Показать')
                 } else {
                     $('.pb-3.recommendations').show()
+                    $(this).html('Скрыть')
                 }
             });
 
@@ -1046,7 +1048,7 @@
                 }, 743)
             }
         </script>
-        <script defer>
+        <script>
             var $jscomp = $jscomp || {};
             $jscomp.scope = {}, $jscomp.findInternal = function (t, e, n) {
                 t instanceof String && (t = String(t));
