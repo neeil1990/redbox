@@ -1,7 +1,8 @@
-function renderClouds(competitors, mainPage, tfCompClouds) {
+function renderClouds(competitors, mainPage, tfCompClouds, hide) {
     sessionStorage.setItem('competitors', JSON.stringify(competitors))
     sessionStorage.setItem('mainPage', JSON.stringify(mainPage))
     sessionStorage.setItem('tfCompClouds', JSON.stringify(tfCompClouds))
+    sessionStorage.setItem('hideBool', hide)
     $('.clouds').show()
     $('#competitorsTfClouds').show()
 }
@@ -116,16 +117,15 @@ $('#coverage-clouds-button').click(function () {
                     }, 3000)
                 }
             });
+            // ------------------------------------------------------------
+            var links = []
+            $.each($('.ignored-site'), function (key, value) {
+                let text = $(value).children('td').eq(1).children('div').eq(0).children('div').eq(0).children('a').eq(0).attr('href')
+                links.push(text)
+            });
+            var compClouds = $('.competitor-cloud')
 
             $('#showOrHideIgnoredClouds').click(function () {
-                let links = []
-                $.each($('.ignored-site'), function (key, value) {
-                    let text = $(value).children('td').eq(1).children('div').eq(0).children('div').eq(0).children('a').eq(0).attr('href')
-                    links.push(text)
-
-                });
-
-                let compClouds = $('.competitor-cloud')
                 $.each(compClouds, function (key, value) {
                     for (let i = 0; i < links.length; i++) {
                         if (links[i] == $(value).html()) {
@@ -139,11 +139,19 @@ $('#coverage-clouds-button').click(function () {
                     }
                 });
             });
+            // --------------------------------------------------------------
+
+            let hide = sessionStorage.getItem('hideBool')
+            if (hide === 'yes') {
+                $('#showOrHideIgnoredClouds').trigger('click');
+            }
         }
     } else {
         $('#coverage-clouds').hide()
     }
     generatedCompetitorCoverage = true
+
+
 });
 
 function arrayToObj(array) {
@@ -154,4 +162,11 @@ function arrayToObj(array) {
         a.push(b);
     }
     return a;
+}
+
+function showOrHideIgnoredDomains() {
+    let hide = Boolean(sessionStorage.getItem('hideBool'))
+    if (hide) {
+        $('#showOrHideIgnoredClouds').trigger('click');
+    }
 }

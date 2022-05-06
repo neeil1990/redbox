@@ -1,4 +1,4 @@
-function renderRecommendationsTable(recommendations) {
+function renderRecommendationsTable(recommendations, count) {
     $('#rec').show()
     let tBody = $('#recommendationsTBody')
 
@@ -36,7 +36,7 @@ function renderRecommendationsTable(recommendations) {
 
     var table = $('#recommendations').DataTable({
         "order": [[2, "desc"]],
-        "pageLength": 10,
+        "pageLength": count,
         "searching": true,
         dom: 'lBfrtip',
         buttons: [

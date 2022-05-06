@@ -1,4 +1,4 @@
-function renderUnigramTable(unigramTable) {
+function renderUnigramTable(unigramTable, count) {
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
@@ -9,7 +9,7 @@ function renderUnigramTable(unigramTable) {
     $(document).ready(function () {
         var table = $('#unigram').DataTable({
             "order": [[2, "desc"]],
-            "pageLength": 50,
+            "pageLength": count,
             "searching": true,
             dom: 'lBfrtip',
             buttons: [

@@ -248,7 +248,6 @@ class TestRelevance
      */
     public function calculateCoveragePoints()
     {
-        //расчёт общей суммы tf
         $totalTf = 0;
         foreach ($this->wordForms as $wordForm) {
             $totalTf += $wordForm['total']['tf'];
@@ -708,8 +707,10 @@ class TestRelevance
             $iterator = 0;
 
             foreach ($sites as $item) {
+
                 $domain = parse_url($item);
                 $domain = str_replace('www.', "", mb_strtolower($domain['host']));
+
 
                 if (in_array($domain, $ignoredDomains)) {
                     $this->domains[] = [
