@@ -1,5 +1,4 @@
 function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent) {
-    console.log(boostPercent)
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
