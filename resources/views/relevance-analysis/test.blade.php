@@ -245,7 +245,7 @@
 
                             <div class="mt-3 mb-3">
                                 <div class="mt-3 mb-3">
-                                    <p>Колчисество записей в таблице ltp по умолчанию</p>
+                                    <p>Количество записей в таблице ltp по умолчанию</p>
                                     {!! Form::select('ltp_count', array_unique([
                                             $config->ltp_count => $config->ltp_count,
                                             '10' => 10,
@@ -256,7 +256,7 @@
                                 </div>
 
                                 <div class="mt-3 mb-3">
-                                    <p>Колчисество записей в таблице ltps по умолчанию</p>
+                                    <p>Количество записей в таблице ltps по умолчанию</p>
                                     {!! Form::select('ltps_count', array_unique([
                                             $config->ltps_count => $config->ltps_count,
                                             '10' => 10,
@@ -267,7 +267,7 @@
                                 </div>
 
                                 <div class="mt-3 mb-3">
-                                    <p>Колчисество записей в таблице ltps по умолчанию</p>
+                                    <p>Количество записей в таблице ltps по умолчанию</p>
                                     {!! Form::select('scanned_sites_count', array_unique([
                                             $config->scanned_sites_count => $config->scanned_sites_count,
                                             '10' => 10,
@@ -278,7 +278,7 @@
                                 </div>
 
                                 <div class="mt-3 mb-3">
-                                    <p>Колчисество записей в таблице ltps по умолчанию</p>
+                                    <p>Количество записей в таблице ltps по умолчанию</p>
                                     {!! Form::select('recommendations_count', array_unique([
                                             $config->recommendations_count => $config->recommendations_count,
                                             '10' => 10,
