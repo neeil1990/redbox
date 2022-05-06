@@ -1,4 +1,4 @@
-function renderScannedSitesList(sites, avgCoveragePercent) {
+function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent) {
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
@@ -28,21 +28,24 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
         let ignorBlock = ''
         let ignorClass = ''
         let className = ''
+        let warning
 
         if (value['ignored']) {
             ignorBlock = "<div class='text-muted'>(игнорируемый домен)</div>"
             ignorClass = " ignored-site"
         }
 
-        let warning = value['danger']
-            ? "<td class='bg-warning'>" +
-            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
-            + ignorBlock +
-            "</td>"
-            : "<td>" +
-            "<u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
-            + ignorBlock +
-            "</td>"
+        if (value['danger']) {
+            warning = "<td class='bg-warning'>" +
+                "   <u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
+                + ignorBlock +
+                "</td>";
+        } else {
+            warning = "<td>" +
+                "   <u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
+                + ignorBlock +
+                "</td>"
+        }
 
         if (value['mainPage']) {
             if (!value['inRelevance']) {
@@ -56,26 +59,14 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
             "<td data-order='" + iterator + "'>" + iterator + "</td>" +
-            "<td style='max-width: 450px;' class='" + className + "'><span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup + "</td>" +
-            "<td>" + value['mainPoints'] + " </td>" +
-            // "<td>" + value['mainWithGainFixPoints'] + " </td>" +
-            // "<td>" + value['mainWithGainPoints'] + " </td>" +
-            "<td>" + value['coverage'] + "% </td>" +
+            "<td data-order='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
+            "   <span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup
+            + "</td>" +
+            "<td data-order='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +
+            "<td data-order='" + value['coverage'] + "'>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
-            // обычная
-            // "<td data-order='" + value['density']['defaultDensityPercent'] + "'>" + value['density']['defaultDensityPercent'] + "<span class='text-muted'>(" + value['density']['defaultDensity'] + ")</span></td>" +
-            // усиление с ограничениями
-            // "<td data-order='" + value['density']['densityWithGainFixPercent'] + "'>" + value['density']['densityWithGainFixPercent'] + "<span class='text-muted'>(" + value['density']['densityWithGainFix'] + ")</span></td>" +
-            // усиление без ограничений
-            // "<td data-order='" + value['density']['densityWithGainPercent'] + "'>" + value['density']['densityWithGainPercent'] + "<span class='text-muted'>(" + value['density']['densityWithGain'] + ")</span></td>" +
-
-            // обычная плотность основых
             "<td data-order='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "<span class='text-muted'>(" + value['density']['densityMain'] + ")</span></td>" +
-            // усиление с ограничениями
-            // "<td data-order='" + value['density']['densityMainWithGainFixPercent'] + "'>" + value['density']['densityMainWithGainFixPercent'] + "<span class='text-muted'>(" + value['density']['densityMainWithGainFix'] + ")</span></td>" +
-            // обычная плотность с усилениями и без ограничений
-            // "<td data-order='" + value['density']['densityMainWithGainPercent'] + "'>" + value['density']['densityMainWithGainPercent'] + "<span class='text-muted'>(" + value['density']['densityMainWithGain'] + ")</span></td>" +
             warning +
             "</tr>"
         )
@@ -85,7 +76,7 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
     $(document).ready(function () {
         $('#scaned-sites').DataTable({
             "order": [[0, "asc"]],
-            "pageLength": 50,
+            "pageLength": count,
             "searching": true,
             dom: 'lBfrtip',
             buttons: [
@@ -119,6 +110,10 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
                 $('.ignored-site').show()
             }
         });
+
+        if (hide) {
+            $('#showOrHideIgnoredSites').trigger('click');
+        }
 
         $('#scaned-sites_wrapper > .dt-buttons').after(
             "    <button class='btn btn-secondary ml-1' id='copySites' style='cursor: pointer'>" +
@@ -211,12 +206,12 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             var freshPercent
             $('#scanned-sites-tbody tr').each(function () {
                 $(this).find('td').each(function (cell) {
-                    if (cell == 2) {
+                    if (cell == 3) {
                         let thisValue = Number($(this).html().replace('%', ''))
                         freshPercent = Math.min(thisValue / (freshNumber / 100), 100)
                         freshPercent = freshPercent.toFixed(3)
                     }
-                    if (cell == 4) {
+                    if (cell == 5) {
                         $(this).attr('data-order', freshPercent)
                         $(this).html(freshPercent)
                     }
@@ -224,4 +219,29 @@ function renderScannedSitesList(sites, avgCoveragePercent) {
             });
         }
     });
+
+    if (boostPercent) {
+        $('#avgCoveragePercentInput').val(boostPercent)
+        let number = $('#avgCoveragePercent').html()
+        number = Number(number)
+        number = number + ((number / 100) * boostPercent)
+        let freshNumber = number.toFixed(3)
+        $('#changedAvgPercent').html('(' + freshNumber + ')')
+
+        var freshPercent
+        $('#scanned-sites-tbody tr').each(function () {
+            $(this).find('td').each(function (cell) {
+                if (cell == 3) {
+                    let thisValue = Number($(this).html().replace('%', ''))
+                    freshPercent = Math.min(thisValue / (freshNumber / 100), 100)
+                    freshPercent = freshPercent.toFixed(3)
+                }
+                if (cell == 5) {
+                    $(this).attr('data-order', freshPercent)
+                    $(this).html(freshPercent)
+                }
+            });
+        });
+    }
+
 }

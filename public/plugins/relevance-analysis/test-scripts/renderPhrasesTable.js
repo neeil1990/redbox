@@ -1,4 +1,4 @@
-function renderPhrasesTable(phrases) {
+function renderPhrasesTable(phrases, count) {
     $('.phrases').show()
     let tBody = $('#phrasesTBody')
     $.each(phrases, function (key, item) {
@@ -8,7 +8,7 @@ function renderPhrasesTable(phrases) {
     $(document).ready(function () {
         var table = $('#phrases').DataTable({
             "order": [[1, "desc"]],
-            "pageLength": 25,
+            "pageLength": count,
             "searching": true,
             dom: 'lBfrtip',
             buttons: [

@@ -186,6 +186,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
     Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
+    Route::post('/change-config', 'RelevanceController@changeConfig')->name('changeConfig');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');

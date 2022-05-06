@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
+use App\RelevanceAnalysisConfig;
 use App\TestRelevance;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -32,7 +35,16 @@ class RelevanceController extends Controller
      */
     public function testView()
     {
-        return view('relevance-analysis.test');
+        $admin = false;
+        foreach (Auth::user()->role as $role) {
+            if ($role == '1' || $role == '3') {
+                $admin = true;
+                break;
+            }
+        }
+        $config = RelevanceAnalysisConfig::first();
+
+        return view('relevance-analysis.test', ['admin' => $admin, 'config' => $config]);
     }
 
     /**
@@ -247,6 +259,8 @@ class RelevanceController extends Controller
      */
     public function successResponse($relevance): JsonResponse
     {
+        $config = RelevanceAnalysisConfig::first();
+
         $count = count($relevance->sites);
         $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
         $avgCountWords = TextLengthController::countingWord($text) / $count;
@@ -290,7 +304,13 @@ class RelevanceController extends Controller
             'phrases' => $relevance->phrases,
             //new functions
             'avgCoveragePercent' => $relevance->avgCoveragePercent ?? null,
-            'recommendations' => $relevance->recommendations ?? null
+            'recommendations' => $relevance->recommendations ?? null,
+            'ltp_count' => $config->ltp_count,
+            'ltps_count' => $config->ltps_count,
+            'recommendations_count' => $config->recommendations_count,
+            'scanned_sites_count' => $config->scanned_sites_count,
+            'hide_ignored_domains' => $config->hide_ignored_domains,
+            'boostPercent' => $config->boostPercent,
         ]);
     }
 
@@ -309,5 +329,37 @@ class RelevanceController extends Controller
         ]);
 
         return response()->json()->setStatusCode(500);
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function changeConfig(Request $request): RedirectResponse
+    {
+        $config = RelevanceAnalysisConfig::first();
+        if (!$config) {
+            $config = new RelevanceAnalysisConfig();
+        }
+
+        $config->count_sites = $request->count;
+        $config->region = $request->region;
+        $config->ignored_domains = $request->ignored_domains;
+        $config->separator = $request->separator;
+
+        $config->noindex = $request->noindex;
+        $config->meta_tags = $request->meta_tags;
+        $config->parts_of_speech = $request->parts_of_speech;
+        $config->remove_my_list_words = $request->remove_my_list_words;
+        $config->my_list_words = $request->my_list_words;
+
+        $config->ltp_count = $request->ltp_count;
+        $config->ltps_count = $request->ltps_count;
+        $config->scanned_sites_count = $request->scanned_sites_count;
+        $config->recommendations_count = $request->recommendations_count;
+
+        $config->save();
+
+        return Redirect::back();
     }
 }
