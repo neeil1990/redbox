@@ -78,6 +78,7 @@ class MonitoringController extends Controller
         foreach ($keywords['query'] as $ind => $query){
 
             $project->keywords()->create([
+                'target' => $request->input('target', null),
                 'query' => $query,
                 'page' => $keywords['page'][$ind]
             ]);

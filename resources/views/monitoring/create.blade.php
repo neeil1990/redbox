@@ -8,6 +8,10 @@
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 
     @endslot
 
@@ -59,8 +63,18 @@
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
         <!-- Papa parse -->
         <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
+        <!-- Bootstrap 4 -->
+        <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 
         <script>
+
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "1500"
@@ -105,10 +119,30 @@
                     }
                 },
                 keywords: function (event) {
-                    if(this.part.find('input[name^="keywords"]').length < 4){
+
+                    let inputs = this.part.find('.input-keywords');
+                    let html = "";
+                    let data = table.rows().data();
+
+                    $.each(data, function(index, value){
+                        let query = $('<input />', {
+                            type: "hidden",
+                            name: "keywords[query][]",
+                        }).val(value.query);
+                        let page = $('<input />', {
+                            type: "hidden",
+                            name: "keywords[page][]",
+                        }).val(value.page);
+
+                        html += query[0].outerHTML + page[0].outerHTML;
+                    });
+
+                    inputs.html(html);
+
+                    if(inputs.find('input').length === 0){
                         event.preventDefault();
 
-                        toastr.error('Добавте не менее 4 запросов чтобы продолжить.');
+                        toastr.error('Добавте запросы чтобы продолжить');
                     }
                 },
                 competitors: function (event) {
@@ -196,7 +230,7 @@
                     dataType: 'json',
                     data: function (params) {
 
-                        var query = {
+                        let query = {
                             name: params.term,
                             searchEngine: this.data('search')
                         };
@@ -217,129 +251,145 @@
                 }
             });
 
-            let Table = {
-                id: '#keywords',
+            let table = $('#myTable').DataTable({
+                rowId: 'id',
+                autoWidth: false,
+                ordering: false,
+                lengthMenu: [10, 30, 50, 100, 500],
+                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                pagingType: "simple_numbers",
+                language: {
+                    lengthMenu: "_MENU_",
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search...",
+                    paginate: {
+                        "first":      "«",
+                        "last":       "»",
+                        "next":       "»",
+                        "previous":   "«"
+                    },
+                },
+                columns:[
+                    {
+                        width: "10px",
+                        data: "id",
+                        title: "#"
+                    },
+                    {
+                        data: "query",
+                        title: "Запрос",
+                        render: function(data){
+
+                            let span_for_search = $('<span />', {
+                                class: "d-none"
+                            }).text(data);
+
+                            let input = $('<input />', {
+                                class: "form-control form-control-border p-0 my-query",
+                                placeholder: "Запрос",
+                                value: data,
+                            }).css({
+                                background: "none",
+                                height: "auto"
+                            });
+
+                            return input[0].outerHTML + span_for_search[0].outerHTML;
+                        }
+                    },
+                    {
+                        data: "page",
+                        title: "Релевантная страница",
+                        render: function(data){
+
+                            let span_for_search = $('<span />', {
+                                class: "d-none"
+                            }).text(data);
+
+                            let input = $('<input />', {
+                                class: "form-control form-control-border p-0 my-page",
+                                placeholder: "Релевантная страница",
+                                value: data,
+                            }).css({
+                                background: "none",
+                                height: "auto"
+                            });
+
+                            return input[0].outerHTML + span_for_search[0].outerHTML;
+                        }
+                    },
+                    {
+                        title: "",
+                        width: "40px",
+                        render: function(){
+
+                            let a = $('<a />', {
+                                href: '#',
+                                class: "icon-delete"
+                            });
+                            let span = $('<span />', {
+                                class: 'badge bg-danger'
+                            });
+                            let i = $('<i />', {
+                                class: 'fas fa-trash'
+                            });
+
+                            return a.html(span.html(i))[0].outerHTML;
+                        }
+                    }
+                ],
                 data: [],
+                initComplete: function(){
+                    var api = this.api();
 
-                page: 1,
-                count: 5,
+                    $("div.card-title").text('Ваш список запросов');
 
-                pagination: function(){
-                    let self = this;
-
-                    let ul = $(this.id).find('.card-footer ul');
-
-                    let pages = Math.ceil(this.data.length / this.count);
-
-                    ul.find('li').remove();
-                    for (let i = 1; i <= pages; i++) {
-
-                        let li = $('<li />', {
-                            class: 'page-item'
-                        }).html($('<a />', {
-                            href: '',
-                            class: 'page-link'
-                        }).text(i).click(function () {
-                            self.page = i;
-                            self.display();
-
-                            return false;
-                        }));
-
-                        ul.append(li);
-                    }
-                },
-                render: function () {
-                    let self = this;
-
-                    self.data = _.filter(self.data, function (item) {
-                        return item[0];
-                    });
-
-                    $(self.id).find('table tbody tr').remove();
-
-                    $.each(self.data, function (index, value) {
-
-                        let tr = $('<tr />').attr('data-eq', index);
-
-                        tr.append($('<td />').text(index + 1));
-
-                        tr.append($('<td />').html(self.templateText(value[0], {placeholder: 'Запрос', name: 'keywords[query][]'})));
-                        tr.append($('<td />').html(self.templateText(value[1], {placeholder: 'Страница', name: 'keywords[page][]'})));
-
-                        tr.append($('<td />').html(self.templateBtn()));
-
-                        tr.hide();
-
-                        $(self.id).find('table tbody').append(tr);
-                    });
-
-                    this.pagination();
-
-                    toastr.success('Добавлено');
-                },
-                display: function() {
-
-                    let start = (this.page - 1) * this.count;
-                    let end = start + this.count;
-
-                    let tr = $(this.id).find('table tbody tr');
-
-                    tr.hide();
-
-                    for (let i = start; i < end; i++) {
-                        tr.eq(i).show();
-                    }
-                },
-                templateText: function (val, obj) {
-                    if(!val)
-                        val =  null;
-
-                    if(!obj)
-                        obj = {
-                            placeholder: '',
-                            name: ''
-                        };
-
-                    return $('<input />', obj).addClass('form-control form-control-border p-0').css({
-                        background: 'none',
-                        height: 'auto'
-                    }).val(val);
-                },
-                templateBtn: function () {
-                    let self = this;
-
-                    let a = $('<a />', {
-                        href: '#'
-                    });
-                    let span = $('<span />', {
-                        class: 'badge bg-danger'
-                    });
-                    let i = $('<i />', {
-                        class: 'fas fa-trash'
-                    });
-
-                    return a.html(span.html(i)).click(function () {
-                        let item = $(this).closest('tr');
-
-                        item.remove();
-
-                        self.data.splice(item.data('eq'), 1);
-
-                        toastr.success('Удалено');
-
-                        self.pagination();
+                    this.on( 'click', 'a.icon-delete', function () {
+                        table.row( $(this).parents('tr') ).remove().draw(true);
 
                         return false;
                     });
-                }
 
-            };
+                    this.on( 'keyup', 'input.my-query', function () {
+                        let self = $(this);
+                        let val = self.val();
+
+                        self.closest('td').find('span').text(val);
+
+                        let data = table.row('#' + self.closest('tr').attr('id')).data();
+                        data.query = val;
+                    });
+
+                    this.on( 'keyup', 'input.my-page', function () {
+                        let self = $(this);
+                        let val = self.val();
+
+                        self.closest('td').find('span').text(val);
+
+                        let data = table.row('#' + self.closest('tr').attr('id')).data();
+                        data.page = val;
+                    });
+
+                    $( 'input[type="search"]', this.closest('.card')).focus(function() {
+                        let data = api.data();
+
+                        api.rows().remove();
+
+                        api.rows.add(data).draw();
+                    });
+
+                    $("#myTable_length label, #myTable_filter label").css('margin-bottom', 0);
+                },
+                drawCallback: function(settings){
+
+                    $('.dataTables_paginate  > .pagination').addClass('pagination-sm');
+                }
+            });
 
             $('#add-keywords').click(function () {
 
                 let csv = $('#csv-keywords');
                 let textarea = $('#textarea-keywords');
+                let duplicates = $('#remove-duplicates');
 
                 if(csv[0].files.length){
 
@@ -352,11 +402,30 @@
                         config: {
                             skipEmptyLines: 'greedy',
                             complete: function (result) {
-                                Table.data = result.data;
-                                Table.render();
-                                Table.display();
 
-                                textarea.val('');
+                                let data = [];
+
+                                $.each(result.data, function (index, value) {
+                                    index = index + 1;
+
+                                    if(duplicates.prop('checked')){
+                                        let existed = $.grep(data, function(v) {
+                                            return v.query === value[0];
+                                        });
+
+                                        if(existed.length === 0)
+                                            data.push({id: index, query: value[0], page: value[1]});
+                                    }else{
+                                        data.push({id: index, query: value[0], page: value[1]});
+                                    }
+                                });
+
+                                if(data.length > 0){
+                                    table.rows().remove();
+                                    table.rows.add(data).draw();
+
+                                    textarea.val('');
+                                }
                             },
                             download: 0
                         }
@@ -366,17 +435,28 @@
                 }
 
                 if(textarea.val()){
+                    let relevant = $('#relevant-url');
                     let list = _.compact(textarea.val().split(/[\r\n]+/));
                     let data = [];
 
                     $.each(list, function (index, value) {
-                        data.push([value, '']);
+                        index = index + 1;
+
+                        if(duplicates.prop('checked')){
+                            let existed = $.grep(data, function(v) {
+                                return v.query === value;
+                            });
+
+                            if(existed.length === 0)
+                                data.push({id: index, query: value, page: relevant.val()});
+                        }else{
+                            data.push({id: index, query: value, page: relevant.val()});
+                        }
                     });
 
                     if(data.length > 0){
-                        Table.data = data;
-                        Table.render();
-                        Table.display();
+                        table.rows().remove();
+                        table.rows.add(data).draw();
 
                         return false;
                     }
@@ -386,6 +466,7 @@
 
                 return false;
             });
+
         </script>
     @endslot
 

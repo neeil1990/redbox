@@ -25,45 +25,51 @@
                     <input type="file" id="csv-keywords">
                     <p class="text-sm text-muted">Вы можете загрузить csv файл, где в первой колонке будут запросы, а во второй релевантаная страница.</p>
                 </div>
+
+                <div class="form-group">
+                    <label>Релевантный URL</label>
+                    <input type="text" class="form-control" id="relevant-url" placeholder="URL">
+                </div>
+
+                <div class="form-group">
+                    <label>Цель</label>
+                    <select class="custom-select" name="target">
+                        <option value="1">1</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" id="remove-duplicates" value="1" checked="">
+                        <label for="remove-duplicates" class="custom-control-label">Проверка на дубли</label>
+                    </div>
+                </div>
+
             </div>
             <!-- /.card-body -->
 
             <div class="card-footer">
-                <button type="submit" id="add-keywords" class="btn btn-default float-right">Добавить запросы</button>
+                <button type="submit" id="add-keywords" class="btn btn-success float-right">Добавить запросы</button>
             </div>
         </div>
         <!-- /.card -->
     </div>
 
     <div class="col-md-6">
-        <div class="card" id="keywords">
-            <div class="card-header">
-                <h3 class="card-title">Ваш список запросов</h3>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body p-0" >
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th style="width: 10px">#</th>
-                        <th>Запрос</th>
-                        <th>Страница</th>
-                        <th style="width: 40px"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr align="center">
-                            <td colspan="4">Not found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer clearfix">
-                <ul class="pagination pagination-sm m-0 float-right"></ul>
-            </div>
+        <div class="card">
+            <table id="myTable" class="table table-striped" style="width:100%"></table>
         </div>
         <!-- /.card -->
     </div>
+
+    <div class="input-keywords"></div>
+
 </div>
 
 
