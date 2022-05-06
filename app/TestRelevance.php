@@ -102,7 +102,7 @@ class TestRelevance
             if (Str::lower($mainUrl['host']) == Str::lower($compUrl['host'])) {
                 $this->sites[$domain]['equallyHost'] = true;
             }
-            //Если проанализированный домен является посадочной страницей
+
             if ($domain == $this->params['main_page_link']) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
@@ -120,7 +120,7 @@ class TestRelevance
             $this->sites[$this->params['main_page_link']]['ignored'] = false;
             $this->sites[$this->params['main_page_link']]['site'] = $this->params['main_page_link'];
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
-            $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];;
+            $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
         }
     }
 
