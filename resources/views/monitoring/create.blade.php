@@ -467,6 +467,41 @@
                 return false;
             });
 
+            let keywordSelect2 = $('#keyword-groups');
+            keywordSelect2.select2({
+                theme: 'bootstrap4'
+            });
+
+            axios.get('/monitoring/groups/keyword').then(function (response) {
+                $.each(response.data, function (i, data) {
+                    let newOption = new Option(data.name, data.id, false, false);
+                    keywordSelect2.append(newOption).trigger('change');
+                });
+            });
+
+            $('#create-group').click(function(){
+                let el = $(this);
+                let input = el.closest('.input-group').find('input');
+
+                if(input.val()){
+                    axios.post('/monitoring/groups', {
+                        name: input.val(),
+                        type: "keyword",
+                    }).then(function (response) {
+                        if(response.status === 201){
+
+                            let newOption = new Option(response.data.name, response.data.id, false, false);
+                            keywordSelect2.append(newOption).trigger('change');
+
+                            toastr.success('Добавленно');
+                        }
+                        input.val("");
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            });
+
         </script>
     @endslot
 
