@@ -1,4 +1,5 @@
 function renderClouds(competitors, mainPage, tfCompClouds, hide) {
+    $('.clouds-div').show()
     sessionStorage.setItem('competitors', JSON.stringify(competitors))
     sessionStorage.setItem('mainPage', JSON.stringify(mainPage))
     sessionStorage.setItem('tfCompClouds', JSON.stringify(tfCompClouds))
@@ -89,7 +90,7 @@ $('#coverage-clouds-button').click(function () {
                     "</div>";
                 let item = arrayToObj(value)
                 $('#coverage-clouds').append(
-                    "<div style='width: 50%;'>" +
+                    "<div style='width: 50%;' class='render'>" +
                     "<div><span class='competitor-cloud'>" + key + "</span>" + btnGroup + "</div>" +
                     "<div id='cloud" + iterator + "' style='height: 400px; width: 100%; padding-top: 10px; padding-bottom: 10px'></div>" +
                     "</div>"

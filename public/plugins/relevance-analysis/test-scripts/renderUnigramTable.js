@@ -221,7 +221,7 @@ function renderMainTr(tBody, key, wordWorm) {
         "   <td>" + numberOccurrences + "" +
         "   <span class='__helper-link ui_tooltip_w'>" +
         "       <i class='fa fa-paperclip'></i>" +
-        "       <span class='ui_tooltip __right'>" +
+        "       <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
         "           <span class='ui_tooltip_content'>" + links + "</span>" +
         "       </span>" +
         "   </span>" +
@@ -287,7 +287,7 @@ function renderChildTr(elem, key, word, stats) {
         "<td>" + numberOccurrences + "" +
         "<span class='__helper-link ui_tooltip_w'>" +
         "    <i class='fa fa-paperclip'></i>" +
-        "    <span class='ui_tooltip __right'>" +
+        "    <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
         "        <span class='ui_tooltip_content'>" + links + "</span>" +
         "    </span>" +
         "</span>" +

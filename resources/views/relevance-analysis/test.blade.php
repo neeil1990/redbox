@@ -474,7 +474,7 @@
             </div>
             <div class="form-group required list-words mt-1"
                  @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
-                {!! Form::textarea('listWords',null,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
+                {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
             </div>
         </div>
     </div>
@@ -904,14 +904,6 @@
 
     <div class="sites" style="display:none; margin-top:50px;">
         <h3>{{ __('Analyzed sites') }}</h3>
-        @if($admin)
-            <div class="d-flex">
-                <div>
-                    <input id="avgCoveragePercentInput" type="number" placeholder="добавить % к охвату">
-                    100%: <span id="avgCoveragePercent">0</span> <span id="changedAvgPercent"></span>
-                </div>
-            </div>
-        @endif
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row" style="position: relative; z-index: 100">
@@ -1003,7 +995,7 @@
     </div>
 
     <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
-        <div class="d-flex align-items-end">
+        <div class="align-items-end clouds-div">
             <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
                 Облака первых 200 важных (по tf-idf) слов у конкурентов
             </button>
@@ -1110,6 +1102,7 @@
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
                     beforeSend: function () {
+                        refreshAllRenderElements()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
@@ -1152,7 +1145,6 @@
 
             function successRequest(response, interval) {
                 stopProgressBar(interval)
-                refreshAllRenderElements()
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
                 renderUnigramTable(response.unigramTable, response.ltp_count);
@@ -1189,6 +1181,8 @@
                 $('.phrases').hide()
                 $('.pb-3.recommendations').hide()
                 $('#competitorsTfClouds').hide()
+                $('#rec').hide()
+                $('.clouds-div').hide()
             }
 
             function setProgressBarStyles(percent) {
