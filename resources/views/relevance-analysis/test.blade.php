@@ -43,10 +43,6 @@
                 width: auto;
             }
 
-            .pb-3.unigram {
-                height: 100vh;
-            }
-
             .pb-3.unigramd thead th {
                 position: sticky;
                 top: 0;
@@ -191,7 +187,7 @@
                             <div class="mt-3 mb-3">
                                 <div class="mt-3 mb-3">
                                     <p>Скрыть игнорируемые домены</p>
-                                    {!! Form::select('recommendations_count', array_unique([
+                                    {!! Form::select('hide_ignored_domains', array_unique([
                                             $config->hide_ignored_domains => $config->hide_ignored_domains,
                                             'yes' => __('yes'),
                                             'no' => __('no'),
@@ -647,7 +643,7 @@
         </table>
     </div>
 
-    <div class="pb-3 unigram" style="display: none;">
+    <div class="pb-3 unigram" style="display: none; margin-top: 50px">
         <h2>Топ лист фраз (TLP)</h2>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
                style="width: 100% !important;">

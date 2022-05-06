@@ -111,7 +111,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             }
         });
 
-        if (hide) {
+        if (hide === 'yes') {
             $('#showOrHideIgnoredSites').trigger('click');
         }
 
@@ -220,7 +220,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
         }
     });
 
-    if (boostPercent) {
+    if (boostPercent === 'yes') {
         $('#avgCoveragePercentInput').val(boostPercent)
         let number = $('#avgCoveragePercent').html()
         number = Number(number)

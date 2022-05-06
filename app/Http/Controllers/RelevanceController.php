@@ -352,6 +352,7 @@ class RelevanceController extends Controller
         $config->parts_of_speech = $request->parts_of_speech;
         $config->remove_my_list_words = $request->remove_my_list_words;
         $config->my_list_words = $request->my_list_words;
+        $config->hide_ignored_domains = $request->hide_ignored_domains;
 
         $config->ltp_count = $request->ltp_count;
         $config->ltps_count = $request->ltps_count;
