@@ -1,11 +1,10 @@
 function renderClouds(competitors, mainPage, tfCompClouds, hide) {
-    $('.clouds-div').show()
+    $('.clouds').show()
+    $('#competitorsTfClouds').show()
     sessionStorage.setItem('competitors', JSON.stringify(competitors))
     sessionStorage.setItem('mainPage', JSON.stringify(mainPage))
     sessionStorage.setItem('tfCompClouds', JSON.stringify(tfCompClouds))
     sessionStorage.setItem('hideBool', hide)
-    $('.clouds').show()
-    $('#competitorsTfClouds').show()
 }
 
 $("#tf-idf-clouds").click(function () {

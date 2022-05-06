@@ -994,7 +994,7 @@
         </table>
     </div>
 
-    <div class="d-flex flex-column pb-3" id="competitorsTfClouds" style="display: none !important;">
+    <div class="pb-3" id="competitorsTfClouds" style="display: none !important;">
         <div class="align-items-end clouds-div">
             <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
                 Облака первых 200 важных (по tf-idf) слов у конкурентов
@@ -1006,8 +1006,7 @@
                     <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>
                         <input type='checkbox'
                                class='custom-control-input'
-                               id='showOrHideIgnoredClouds'
-                               name='noIndex'>
+                               id='showOrHideIgnoredClouds'>
                         <label class='custom-control-label' for='showOrHideIgnoredClouds'></label>
                     </div>
                 </div>
@@ -1144,6 +1143,7 @@
             })
 
             function successRequest(response, interval) {
+                sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar(interval)
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
@@ -1164,6 +1164,12 @@
             }
 
             function refreshAllRenderElements() {
+                if (generatedCompetitorCoverage) {
+                    $('#coverage-clouds-button').trigger('click')
+                    if (sessionStorage.getItem('hideDomains') === 'yes') {
+                        $("#showOrHideIgnoredClouds").prop("checked", true);
+                    }
+                }
                 generatedTfIdf = false
                 generatedText = false
                 generatedCompetitorCoverage = false
@@ -1180,9 +1186,8 @@
                 $('.clouds').hide()
                 $('.phrases').hide()
                 $('.pb-3.recommendations').hide()
-                $('#competitorsTfClouds').hide()
                 $('#rec').hide()
-                $('.clouds-div').hide()
+                $('#competitorsTfClouds').hide()
             }
 
             function setProgressBarStyles(percent) {

@@ -203,7 +203,7 @@ class RelevanceController extends Controller
                 ];
             }
         } else {
-            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(2, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
             $relevance->removeIgnoredDomains(
