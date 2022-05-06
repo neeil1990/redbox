@@ -197,5 +197,6 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('monitoring', 'MonitoringController');
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
+    Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 });
