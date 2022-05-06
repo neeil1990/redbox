@@ -34,16 +34,13 @@
             #unigramTBody > tr > td:nth-child(12),
             #phrasesTBody > tr > td:nth-child(7),
             #phrasesTBody > tr > td:nth-child(9),
-            #phrasesTBody > tr > td:nth-child(11) {
+            #phrasesTBody > tr > td:nth-child(11),
+            #recommendationsTBody > tr > td:nth-child(5) {
                 background: #ebf0f5;
             }
 
             .ui_tooltip.__left, .ui_tooltip.__right {
                 width: auto;
-            }
-
-            .pb-3.unigram {
-                height: 100vh;
             }
 
             .pb-3.unigramd thead th {
@@ -65,6 +62,10 @@
                 margin-left: 20px;
                 float: left;
             }
+
+            .bg-my-site {
+                background: #4eb767c4;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
@@ -79,8 +80,229 @@
         </div>
     </div>
 
-    <div class="col-5 pb-3">
+    @if($admin)
+        <form action="{{ route('changeConfig') }}" method="POST" class="card col-lg-5 col-md-12 p-0">
+            @csrf
+            <table class="table table-hover border-0 mb-0 pb-0">
+                <tbody>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                    <td class="d-flex justify-content-between border-0">
+                        <div class="w-75">
+                            <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                            <span class="short_project_description">Администрирование модуля</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="expandable-body d-none">
+                    <td>
+                        <div style="display: none;">
 
+                            <div class="form-group required">
+                                <label>Выбрать значение по умолчанию Top 10/20</label>
+                                {!! Form::select('count', array_unique([
+                                        $config->count_sites => $config->count_sites,
+                                        '10' => 10,
+                                        '20' => 20,
+                                        ]), null, ['class' => 'custom-select rounded-0 count']) !!}
+                            </div>
+
+                            <div class="form-group required">
+                                <label>Выбрать регион по умолчанию</label>
+                                {!! Form::select('region', array_unique([
+                                        $config->region => $config->region,
+                                        '1' => __('Moscow'),
+                                        '20' => __('Arkhangelsk'),
+                                        '37' => __('Astrakhan'),
+                                        '197' => __('Barnaul'),
+                                        '4' => __('Belgorod'),
+                                        '77' => __('Blagoveshchensk'),
+                                        '191' => __('Bryansk'),
+                                        '24' => __('Veliky Novgorod'),
+                                        '75' => __('Vladivostok'),
+                                        '33' => __('Vladikavkaz'),
+                                        '192' => __('Vladimir'),
+                                        '38' => __('Volgograd'),
+                                        '21' => __('Vologda'),
+                                        '193' => __('Voronezh'),
+                                        '1106' => __('Grozny'),
+                                        '54' => __('Ekaterinburg'),
+                                        '5' => __('Ivanovo'),
+                                        '63' => __('Irkutsk'),
+                                        '41' => __('Yoshkar-ola'),
+                                        '43' => __('Kazan'),
+                                        '22' => __('Kaliningrad'),
+                                        '64' => __('Kemerovo'),
+                                        '7' => __('Kostroma'),
+                                        '35' => __('Krasnodar'),
+                                        '62' => __('Krasnoyarsk'),
+                                        '53' => __('Kurgan'),
+                                        '8' => __('Kursk'),
+                                        '9' => __('Lipetsk'),
+                                        '28' => __('Makhachkala'),
+                                        '213' => __('Moscow'),
+                                        '23' => __('Murmansk'),
+                                        '1092' => __('Nazran'),
+                                        '30' => __('Nalchik'),
+                                        '47' => __('Nizhniy Novgorod'),
+                                        '65' => __('Novosibirsk'),
+                                        '66' => __('Omsk'),
+                                        '10' => __('Eagle'),
+                                        '48' => __('Orenburg'),
+                                        '49' => __('Penza'),
+                                        '50' => __('Perm'),
+                                        '25' => __('Pskov'),
+                                        '39' => __('Rostov-on-Don'),
+                                        '11' => __('Ryazan'),
+                                        '51' => __('Samara'),
+                                        '42' => __('Saransk'),
+                                        '2' => __('Saint-Petersburg'),
+                                        '12' => __('Smolensk'),
+                                        '239' => __('Sochi'),
+                                        '36' => __('Stavropol'),
+                                        '973' => __('Surgut'),
+                                        '13' => __('Tambov'),
+                                        '14' => __('Tver'),
+                                        '67' => __('Tomsk'),
+                                        '15' => __('Tula'),
+                                        '195' => __('Ulyanovsk'),
+                                        '172' => __('Ufa'),
+                                        '76' => __('Khabarovsk'),
+                                        '45' => __('Cheboksary'),
+                                        '56' => __('Chelyabinsk'),
+                                        '1104' => __('Cherkessk'),
+                                        '16' => __('Yaroslavl'),
+                                        ]), null, ['class' => 'custom-select rounded-0 region']) !!}
+                            </div>
+
+                            <div class="form-group required">
+                                <label>Список игнорируемых доменов по умолчанию</label>
+                                {!! Form::textarea("ignored_domains", $config->ignored_domains ,["class" => "form-control"] ) !!}
+                            </div>
+
+                            <div class="form-group required d-flex align-items-center">
+                                <span>Количество обрезаемых символов по умолчанию</span>
+                                <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator"
+                                       id="separator" value="{{ $config->separator }}">
+                            </div>
+
+                            <div class="mt-3 mb-3">
+                                <div class="mt-3 mb-3">
+                                    <p>Скрыть игнорируемые домены</p>
+                                    {!! Form::select('hide_ignored_domains', array_unique([
+                                            $config->hide_ignored_domains => $config->hide_ignored_domains,
+                                            'yes' => __('yes'),
+                                            'no' => __('no'),
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <p>Отслеживать текст в теге noindex по умолчанию</p>
+                                    {!! Form::select('noindex', array_unique([
+                                            $config->noindex => $config->noindex,
+                                            'yes' => __('yes'),
+                                            'no' => __('no'),
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <p>Отслеживать слова в атрибутах alt, tittle и data-text по умолчанию</p>
+                                    {!! Form::select('meta_tags', array_unique([
+                                            $config->meta_tags => $config->meta_tags,
+                                            'yes' => __('yes'),
+                                            'no' => __('no'),
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <p>Отслеживать союзы, предлоги, местоимение по умолчанию</p>
+                                    {!! Form::select('parts_of_speech', array_unique([
+                                            $config->parts_of_speech => $config->parts_of_speech,
+                                            'yes' => __('yes'),
+                                            'no' => __('no'),
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <div>
+                                        Исключать слова по умолчанию
+                                    </div>
+
+                                    {!! Form::select('remove_my_list_words', array_unique([
+                                            $config->remove_my_list_words => $config->remove_my_list_words,
+                                            'yes' => __('yes'),
+                                            'no' => __('no'),
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="form-group required list-words mt-1">
+                                    <label for="my_list_words">Список исключаемых слов</label>
+                                    {!! Form::textarea('my_list_words', $config->my_list_words ,['class' => 'form-control', 'cols' => 8, 'rows' => 5]) !!}
+                                </div>
+                            </div>
+
+                            <div class="mt-3 mb-3">
+                                <div class="mt-3 mb-3">
+                                    <p>Количество записей в таблице tlp по умолчанию</p>
+                                    {!! Form::select('ltp_count', array_unique([
+                                            $config->ltp_count => $config->ltp_count,
+                                            '10' => 10,
+                                            '25' => 25,
+                                            '50' => 50,
+                                            '100' => 100,
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <p>Количество записей в таблице tlps по умолчанию</p>
+                                    {!! Form::select('ltps_count', array_unique([
+                                            $config->ltps_count => $config->ltps_count,
+                                            '10' => 10,
+                                            '25' => 25,
+                                            '50' => 50,
+                                            '100' => 100,
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <p>Количество записей в таблице проанализированных сайтов по умолчанию</p>
+                                    {!! Form::select('scanned_sites_count', array_unique([
+                                            $config->scanned_sites_count => $config->scanned_sites_count,
+                                            '10' => 10,
+                                            '25' => 25,
+                                            '50' => 50,
+                                            '100' => 100,
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+
+                                <div class="mt-3 mb-3">
+                                    <p>Количество записей в таблице рекомендаций по умолчанию</p>
+                                    {!! Form::select('recommendations_count', array_unique([
+                                            $config->recommendations_count => $config->recommendations_count,
+                                            '10' => 10,
+                                            '25' => 25,
+                                            '50' => 50,
+                                            '100' => 100,
+                                    ]), null, ['class' => 'custom-select rounded-0 count w-25']) !!}
+                                </div>
+                            </div>
+
+                            <div class="d-flex mt-3 mb-3">
+                                <div>
+                                    <label for="boostPercent">добавить % к охвату</label>
+                                    <input name="boostPercent" type="number" class="form form-control"
+                                           value="{{ $config->boostPercent }}">
+                                </div>
+                            </div>
+                            <input type="submit" value="Изменить стартовую конфигурацию" class="btn btn-secondary">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    @endif
+
+    <div class="col-5 pb-3">
         <div class="form-group required">
             <label>{{ __('Your landing page') }}</label>
             {!! Form::text("link", null ,["class" => "form-control link", "required"]) !!}
@@ -109,130 +331,91 @@
 
             <div class="form-group required">
                 <label>{{ __('Top 10/20') }}</label>
-                {!! Form::select('count', [
+                {!! Form::select('count', array_unique([
+                        $config->count_sites => $config->count_sites,
                         '10' => 10,
                         '20' => 20,
-                        ], null, ['class' => 'custom-select rounded-0 count']) !!}
+                        ]), null, ['class' => 'custom-select rounded-0 count']) !!}
             </div>
 
             <div class="form-group required">
                 <label>{{ __('Region') }}</label>
-                {!! Form::select('region', [
-                        '1' => __('Moscow'),
-                        '20' => __('Arkhangelsk'),
-                        '37' => __('Astrakhan'),
-                        '197' => __('Barnaul'),
-                        '4' => __('Belgorod'),
-                        '77' => __('Blagoveshchensk'),
-                        '191' => __('Bryansk'),
-                        '24' => __('Veliky Novgorod'),
-                        '75' => __('Vladivostok'),
-                        '33' => __('Vladikavkaz'),
-                        '192' => __('Vladimir'),
-                        '38' => __('Volgograd'),
-                        '21' => __('Vologda'),
-                        '193' => __('Voronezh'),
-                        '1106' => __('Grozny'),
-                        '54' => __('Ekaterinburg'),
-                        '5' => __('Ivanovo'),
-                        '63' => __('Irkutsk'),
-                        '41' => __('Yoshkar-ola'),
-                        '43' => __('Kazan'),
-                        '22' => __('Kaliningrad'),
-                        '64' => __('Kemerovo'),
-                        '7' => __('Kostroma'),
-                        '35' => __('Krasnodar'),
-                        '62' => __('Krasnoyarsk'),
-                        '53' => __('Kurgan'),
-                        '8' => __('Kursk'),
-                        '9' => __('Lipetsk'),
-                        '28' => __('Makhachkala'),
-                        '213' => __('Moscow'),
-                        '23' => __('Murmansk'),
-                        '1092' => __('Nazran'),
-                        '30' => __('Nalchik'),
-                        '47' => __('Nizhniy Novgorod'),
-                        '65' => __('Novosibirsk'),
-                        '66' => __('Omsk'),
-                        '10' => __('Eagle'),
-                        '48' => __('Orenburg'),
-                        '49' => __('Penza'),
-                        '50' => __('Perm'),
-                        '25' => __('Pskov'),
-                        '39' => __('Rostov-on-Don'),
-                        '11' => __('Ryazan'),
-                        '51' => __('Samara'),
-                        '42' => __('Saransk'),
-                        '2' => __('Saint-Petersburg'),
-                        '12' => __('Smolensk'),
-                        '239' => __('Sochi'),
-                        '36' => __('Stavropol'),
-                        '973' => __('Surgut'),
-                        '13' => __('Tambov'),
-                        '14' => __('Tver'),
-                        '67' => __('Tomsk'),
-                        '15' => __('Tula'),
-                        '195' => __('Ulyanovsk'),
-                        '172' => __('Ufa'),
-                        '76' => __('Khabarovsk'),
-                        '45' => __('Cheboksary'),
-                        '56' => __('Chelyabinsk'),
-                        '1104' => __('Cherkessk'),
-                        '16' => __('Yaroslavl'),
-                        ], null, ['class' => 'custom-select rounded-0 region']) !!}
+                {!! Form::select('region', array_unique([
+                       $config->region => $config->region,
+                       '1' => __('Moscow'),
+                       '20' => __('Arkhangelsk'),
+                       '37' => __('Astrakhan'),
+                       '197' => __('Barnaul'),
+                       '4' => __('Belgorod'),
+                       '77' => __('Blagoveshchensk'),
+                       '191' => __('Bryansk'),
+                       '24' => __('Veliky Novgorod'),
+                       '75' => __('Vladivostok'),
+                       '33' => __('Vladikavkaz'),
+                       '192' => __('Vladimir'),
+                       '38' => __('Volgograd'),
+                       '21' => __('Vologda'),
+                       '193' => __('Voronezh'),
+                       '1106' => __('Grozny'),
+                       '54' => __('Ekaterinburg'),
+                       '5' => __('Ivanovo'),
+                       '63' => __('Irkutsk'),
+                       '41' => __('Yoshkar-ola'),
+                       '43' => __('Kazan'),
+                       '22' => __('Kaliningrad'),
+                       '64' => __('Kemerovo'),
+                       '7' => __('Kostroma'),
+                       '35' => __('Krasnodar'),
+                       '62' => __('Krasnoyarsk'),
+                       '53' => __('Kurgan'),
+                       '8' => __('Kursk'),
+                       '9' => __('Lipetsk'),
+                       '28' => __('Makhachkala'),
+                       '213' => __('Moscow'),
+                       '23' => __('Murmansk'),
+                       '1092' => __('Nazran'),
+                       '30' => __('Nalchik'),
+                       '47' => __('Nizhniy Novgorod'),
+                       '65' => __('Novosibirsk'),
+                       '66' => __('Omsk'),
+                       '10' => __('Eagle'),
+                       '48' => __('Orenburg'),
+                       '49' => __('Penza'),
+                       '50' => __('Perm'),
+                       '25' => __('Pskov'),
+                       '39' => __('Rostov-on-Don'),
+                       '11' => __('Ryazan'),
+                       '51' => __('Samara'),
+                       '42' => __('Saransk'),
+                       '2' => __('Saint-Petersburg'),
+                       '12' => __('Smolensk'),
+                       '239' => __('Sochi'),
+                       '36' => __('Stavropol'),
+                       '973' => __('Surgut'),
+                       '13' => __('Tambov'),
+                       '14' => __('Tver'),
+                       '67' => __('Tomsk'),
+                       '15' => __('Tula'),
+                       '195' => __('Ulyanovsk'),
+                       '172' => __('Ufa'),
+                       '76' => __('Khabarovsk'),
+                       '45' => __('Cheboksary'),
+                       '56' => __('Chelyabinsk'),
+                       '1104' => __('Cherkessk'),
+                       '16' => __('Yaroslavl'),
+                       ]), null, ['class' => 'custom-select rounded-0 region']) !!}
             </div>
 
             <div class="form-group required" id="ignoredDomainsBlock">
                 <label id="ignoredDomains">{{ __('Ignored domains') }}</label>
-                {!! Form::textarea("ignoredDomains",
-                    "2gis.ru\n".
-                    "aliexpress.com\n".
-                    "AliExpress.ru\n".
-                    "auto.ru\n".
-                    "avito.ru\n".
-                    "banki.ru\n".
-                    "beru.ru\n".
-                    "blizko.ru\n".
-                    "cataloxy.ru\n".
-                    "deal.by\n".
-                    "domclick.ru\n".
-                    "ebay.com\n".
-                    "edadeal.ru\n".
-                    "e-katalog.ru\n".
-                    "hh.ru\n".
-                    "instagram.com\n".
-                    "irecommend.ru\n".
-                    "irr.ru\n".
-                    "leroymerlin.ru\n".
-                    "market.yandex.ru\n".
-                    "mvideo.ru\n".
-                    "onliner.by\n".
-                    "otzovik.com\n".
-                    "ozon.ru\n".
-                    "pandao.ru\n".
-                    "price.ru\n".
-                    "prodoctorov.ru\n".
-                    "profi.ru\n".
-                    "pulscen.ru\n".
-                    "quto.ru\n".
-                    "rambler.ru\n".
-                    "regmarkets.ru\n".
-                    "satom.ru\n".
-                    "shop.by\n".
-                    "sravni.ru\n".
-                    "tiu.ru\n".
-                    "toshop.ru\n".
-                    "wikipedia.org\n".
-                    "wildberries.ru\n".
-                    "yandex.ru\n".
-                    "yell.ru\n".
-                    "zoon.ru\n" ,["class" => "form-control ignoredDomains"] ) !!}
+                {!! Form::textarea("ignoredDomains", $config->ignored_domains,["class" => "form-control ignoredDomains"] ) !!}
             </div>
         </div>
 
         <div class="form-group required d-flex align-items-center">
             <span>{{ __('Cut the words shorter') }}</span>
-            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator" id="separator" value="3">
+            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator" id="separator"
+                   value="{{ $config->separator }}">
             <span>{{ __('symbols') }}</span>
         </div>
 
@@ -243,7 +426,8 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchNoindex"
-                               name="noIndex">
+                               name="noIndex"
+                               @if($config->noindex == 'yes') checked @endif>
                         <label class="custom-control-label" for="switchNoindex"></label>
                     </div>
                 </div>
@@ -255,7 +439,8 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchAltAndTitle"
-                               name="hiddenText">
+                               name="hiddenText"
+                               @if($config->meta_tags == 'yes') checked @endif>
                         <label class="custom-control-label" for="switchAltAndTitle"></label>
                     </div>
                 </div>
@@ -267,7 +452,8 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchConjunctionsPrepositionsPronouns"
-                               name="conjunctionsPrepositionsPronouns">
+                               name="conjunctionsPrepositionsPronouns"
+                               @if($config->parts_of_speech == 'yes') checked @endif>
                         <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
                     </div>
                 </div>
@@ -279,13 +465,15 @@
                         <input type="checkbox"
                                class="custom-control-input"
                                id="switchMyListWords"
-                               name="switchMyListWords">
+                               name="switchMyListWords"
+                               @if($config->remove_my_list_words == 'yes') checked @endif>
                         <label class="custom-control-label" for="switchMyListWords"></label>
                     </div>
                 </div>
                 <span>{{ __('Exclude') }}<span class="text-muted">{{ __('(your own list of words)') }}</span></span>
             </div>
-            <div class="form-group required list-words mt-1" style="display:none;">
+            <div class="form-group required list-words mt-1"
+                 @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
                 {!! Form::textarea('listWords',null,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
             </div>
         </div>
@@ -309,7 +497,7 @@
             </button>
         </div>
         <div class="btn-group col-lg-3 col-md-5 mb-2">
-            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse" disabled>
+            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse">
                 {{ __('Repeated analysis of competitor sites') }}
             </button>
             <button type="button" class="btn btn-secondary col-2">
@@ -324,7 +512,7 @@
             </button>
         </div>
         <div class="btn-group col-lg-3 col-md-5 mb-2">
-            <button class="btn btn-secondary" id="repeat-main-page-analyse" disabled>
+            <button class="btn btn-secondary" id="repeat-main-page-analyse">
                 {{ __('Repeated analysis of the landing page') }}
             </button>
             <button type="button" class="btn btn-secondary col-2">
@@ -455,7 +643,37 @@
         </div>
     </div>
 
-    <div class="pb-3 unigram" style="display: none;">
+    <div id="rec" style="display: none" class="mb-3">
+        <h2>Рекомендации TLP и проверка на спам</h2>
+        <button class="btn btn-secondary" id="recButton">Показать</button>
+    </div>
+
+    <div class="pb-3 recommendations" style="display:none;">
+        <table id="recommendations" class="table table-bordered table-hover dataTable dtr-inline"
+               style="width: 100% !important;">
+            <thead>
+            <tr style="position: relative; z-index: 100">
+                <th class="сol-1">
+                        <span class="text-muted" style="font-weight: 400">
+                            Вы можете удалить слово из таблицы, если оно было проработано
+                        </span>
+                </th>
+                <th>Слово</th>
+                <th>Tf</th>
+                <th>Среднее кол-во повторений у конкурентов</th>
+                <th>Количество у вас на странице</th>
+                <th>Рекомендуемый диапозон</th>
+                <th>Уровень спама</th>
+                <th>Добавить</th>
+                <th>Удалить</th>
+            </tr>
+            </thead>
+            <tbody id="recommendationsTBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pb-3 unigram" style="display: none; margin-top: 50px">
         <h2>Топ лист фраз (TLP)</h2>
         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
                style="width: 100% !important;">
@@ -528,95 +746,95 @@
                 <th></th>
                 <th>
                     {{ __('Words') }}<span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content" style="text-align: right">{{ __('Words and their word forms that are present on competitors websites.') }}
-                        </span>
-                    </span>
-                </span>
-                </th>
-                <th>tf<span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                        <span class="ui_tooltip __right">
+                            <span class="ui_tooltip_content" style="text-align: right">{{ __('Words and their word forms that are present on competitors websites.') }}
                             </span>
                         </span>
                     </span>
                 </th>
-                <th>idf<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                <th>Tf<span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
+                </th>
+                <th>Idf<span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                                </span>
+                            </span>
+                        </span>
                 </th>
                 <th>
                     {{ __('Intersection') }}<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The number of sites in which the word is present.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The number of sites in which the word is present.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('Re - spam') }}<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The maximum number of repetitions found on the competitors website.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The maximum number of repetitions found on the competitors website.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('Average number of repetitions in the text and links') }}<span
                         class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('The total number of repetitions in the text and links') }}<span
                         class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('Average number of repetitions in the text') }}<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text of your competitors.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text of your competitors.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('Number of repetitions in text') }}<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('Average number of repetitions in links') }}<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the links of your competitors.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the links of your competitors.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
                 <th>{{ __('Number of repetitions in links') }}<span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __left">
-                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __left">
+                                <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                 </th>
             </tr>
             </thead>
@@ -625,7 +843,7 @@
         </table>
     </div>
 
-    <div class="phrases" style="display:none;margin-top: 80px;">
+    <div class="phrases" style="display:none;">
         <h3>Топ лист словосочетаний (TLPs)</h3>
         <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline w-100">
             <thead>
@@ -713,17 +931,98 @@
         </table>
     </div>
 
-    <div class="sites" style="display: none; margin-top:50px;">
+    <div class="sites" style="display:none; margin-top:50px;">
         <h3>{{ __('Analyzed sites') }}</h3>
+        @if($admin)
+            <div class="d-flex">
+                <div>
+                    <input id="avgCoveragePercentInput" type="number" placeholder="добавить % к охвату">
+                    100%: <span id="avgCoveragePercent">0</span> <span id="changedAvgPercent"></span>
+                </div>
+            </div>
+        @endif
         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
             <thead>
             <tr role="row" style="position: relative; z-index: 100">
                 <th>{{ __('Position in the top') }}</th>
                 <th>{{ __('Domain') }}</th>
-                <th>{{ __('coverage for all important words') }}</th>
-                <th>{{ __('Coverage by tf') }}</th>
-                <th>{{ __('Width') }}</th>
-                <th>{{ __('Density') }}</th>
+                <th>
+                    Общий балл
+                    @if($admin)
+                        <span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __bottom">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность<br>
+                                    Полученная сумма сначала делится на 3, затем умножается на 2<br>
+                                    - <br>
+                                    Если полученное кол-во баллов больше 100, то мы приравниваем его к 100.<br>
+                                </span>
+                            </span>
+                        </span>
+                    @endif
+                </th>
+                <th>{{ __('coverage for all important words') }}
+                    @if($admin)
+                        <span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __bottom">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    Из таблицы униграм берутся все слова (далее эти слова именуются "важные слова") <br>
+                                    Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
+                                    Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
+                                    Полученый процент равен сумме полученых баллов делённой на 600
+                                </span>
+                            </span>
+                        </span>
+                    @endif
+                </th>
+                <th>{{ __('Coverage by tf') }}
+                    @if($admin)
+                        <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __bottom">
+                            <span class="ui_tooltip_content" style="width: 300px">
+                                Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
+                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
+                                Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
+                                Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
+                            </span>
+                        </span>
+                    </span>
+                    @endif
+                </th>
+                <th>{{ __('Width') }}
+                    @if($admin)
+                        <span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __bottom">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    Для вычисления  ширины, беруться первые 10 не игнорируемых сайтов (позиция в топе) <br>
+                                    Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
+                                    В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно
+                                </span>
+                            </span>
+                        </span>
+                    @endif
+                </th>
+                <th>
+                    {{ __('Density') }}
+                    @if($admin)
+                        <span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __bottom">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    Плотность высчитывается от значения средней по ТОПу для КАЖДОЙ ОСНОВНОЙ ФРАЗЫ. <br>
+                                    Если в средней 20, а у нас 5, то это 25 баллов. <br>
+                                    Дальше все баллы для всех фраз складываются и делятся на общее количество слов. <br>
+                                    - <br>
+                                    Если мы переспамили, то пока в этом варианте мы никак не учитываем этот момент, фраза просто получает 100 баллов по плотности. <br>
+                                </span>
+                            </span>
+                        </span>
+                    @endif
+                </th>
                 <th>{{ __('Result') }}</th>
             </tr>
             </thead>
@@ -737,7 +1036,9 @@
             <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
                 Облака первых 200 важных (по tf-idf) слов у конкурентов
             </button>
-            <div class='d-flex ml-3'>
+        </div>
+        <div style="display: none" id="coverage-clouds" class="pt-2">
+            <div class='d-flex w-100'>
                 <div class='__helper-link ui_tooltip_w'>
                     <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>
                         <input type='checkbox'
@@ -750,22 +1051,31 @@
                 <p>скрыть игнорируемые домены</p>
             </div>
         </div>
-        <div style="display: none" id="coverage-clouds" class="pt-2">
-        </div>
     </div>
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderScannedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderTextTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scripts/renderPhrasesTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderClouds.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderUnigramTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderScannedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderTextTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderPhrasesTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderRecommendationsTable.js') }}"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            $('#recButton').click(function () {
+                if ($('.pb-3.recommendations').is(':visible')) {
+                    $('.pb-3.recommendations').hide()
+                    $(this).html('Показать')
+                } else {
+                    $('.pb-3.recommendations').show()
+                    $(this).html('Скрыть')
+                }
+            });
+
             $('#check-type').on('change', function () {
                 if ($(this).val() === 'list') {
                     $('#key-phrase').hide()
@@ -779,10 +1089,8 @@
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
                     $('.form-group.required.list-words.mt-1').show(300)
-                    $('.form-control.listWords').prop('required', true)
                 } else {
                     $('.form-group.required.list-words.mt-1').hide(300)
-                    $('.form-control.listWords').removeAttr('required')
                 }
             })
 
@@ -954,26 +1262,22 @@
             function successRequest(response, interval) {
                 stopProgressBar(interval)
                 refreshAllRenderElements()
-                renderUnigramTable(response.unigramTable);
-                renderScannedSitesList(response.sites, response.coverageInfo);
                 renderTextTable(response.avg, response.mainPage)
-                renderPhrasesTable(response.phrases)
+                renderRecommendationsTable(response.recommendations, response.recommendations_count)
+                renderUnigramTable(response.unigramTable, response.ltp_count);
+                renderPhrasesTable(response.phrases, response.ltps_count)
+                renderScannedSitesList(response.sites, response.avgCoveragePercent, response.scanned_sites_count, response.hide_ignored_domains, response.boostPercent);
+                renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds, response.hide_ignored_domains);
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
-                renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds);
             }
 
-            function errorRequest(interval, block = true) {
+            function errorRequest(interval) {
                 stopProgressBar(interval)
                 $("#full-analyse").prop("disabled", false);
-                if (block) {
-                    $("#repeat-main-page-analyse").prop("disabled", true);
-                    $("#repeat-relevance-analyse").prop("disabled", true);
-                } else {
-                    $("#repeat-main-page-analyse").prop("disabled", false);
-                    $("#repeat-relevance-analyse").prop("disabled", false);
-                }
+                $("#repeat-main-page-analyse").prop("disabled", false);
+                $("#repeat-relevance-analyse").prop("disabled", false);
             }
 
             function refreshAllRenderElements() {
@@ -982,6 +1286,7 @@
                 generatedCompetitorCoverage = false
                 $(".generated-cloud").html("")
                 $("#clouds").html("")
+                $("#recommendations").dataTable().fnDestroy();
                 $("#unigram").dataTable().fnDestroy();
                 $("#scaned-sites").dataTable().fnDestroy();
                 $("#phrases").dataTable().fnDestroy();
@@ -991,6 +1296,7 @@
                 $('.sites').hide()
                 $('.clouds').hide()
                 $('.phrases').hide()
+                $('.pb-3.recommendations').hide()
                 $('#competitorsTfClouds').hide()
             }
 
@@ -1025,7 +1331,7 @@
                 return setInterval(() => {
                     percent += Math.random();
                     setProgressBarStyles(percent.toFixed(2))
-                }, 743)
+                }, 1321)
             }
 
             function prepareMessage(response) {
@@ -1048,7 +1354,7 @@
                 $('.toast-message.error-message').html(message)
             }
         </script>
-        <script defer>
+        <script>
             var $jscomp = $jscomp || {};
             $jscomp.scope = {}, $jscomp.findInternal = function (t, e, n) {
                 t instanceof String && (t = String(t));

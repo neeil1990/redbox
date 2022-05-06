@@ -27,7 +27,16 @@ class RelevanceController extends Controller
      */
     public function index()
     {
-        return view('relevance-analysis.index');
+        $admin = false;
+        foreach (Auth::user()->role as $role) {
+            if ($role == '1' || $role == '3') {
+                $admin = true;
+                break;
+            }
+        }
+        $config = RelevanceAnalysisConfig::first();
+
+        return view('relevance-analysis.index', ['admin' => $admin, 'config' => $config]);
     }
 
     /**
@@ -358,6 +367,8 @@ class RelevanceController extends Controller
         $config->ltps_count = $request->ltps_count;
         $config->scanned_sites_count = $request->scanned_sites_count;
         $config->recommendations_count = $request->recommendations_count;
+
+        $config->boostPercent = $request->boostPercent;
 
         $config->save();
 

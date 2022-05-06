@@ -81,13 +81,14 @@
     </div>
 
     @if($admin)
-        <form action="{{ route('changeConfig') }}" method="POST" class="card col-lg-5 col-md-12">
+        <form action="{{ route('changeConfig') }}" method="POST" class="card col-lg-5 col-md-12 p-0">
             @csrf
-            <table class="table table-hover mb-3 border-0">
+            <table class="table table-hover border-0 mb-0 pb-0">
                 <tbody>
                 <tr data-widget="expandable-table" aria-expanded="false">
                     <td class="d-flex justify-content-between border-0">
-                        <div class="w-75"><i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                        <div class="w-75">
+                            <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
                             <span class="short_project_description">Администрирование модуля</span>
                         </div>
                     </td>
@@ -241,7 +242,7 @@
 
                             <div class="mt-3 mb-3">
                                 <div class="mt-3 mb-3">
-                                    <p>Количество записей в таблице ltp по умолчанию</p>
+                                    <p>Количество записей в таблице tlp по умолчанию</p>
                                     {!! Form::select('ltp_count', array_unique([
                                             $config->ltp_count => $config->ltp_count,
                                             '10' => 10,
@@ -252,7 +253,7 @@
                                 </div>
 
                                 <div class="mt-3 mb-3">
-                                    <p>Количество записей в таблице ltps по умолчанию</p>
+                                    <p>Количество записей в таблице tlps по умолчанию</p>
                                     {!! Form::select('ltps_count', array_unique([
                                             $config->ltps_count => $config->ltps_count,
                                             '10' => 10,
@@ -263,7 +264,7 @@
                                 </div>
 
                                 <div class="mt-3 mb-3">
-                                    <p>Количество записей в таблице ltps по умолчанию</p>
+                                    <p>Количество записей в таблице проанализированных сайтов по умолчанию</p>
                                     {!! Form::select('scanned_sites_count', array_unique([
                                             $config->scanned_sites_count => $config->scanned_sites_count,
                                             '10' => 10,
@@ -274,7 +275,7 @@
                                 </div>
 
                                 <div class="mt-3 mb-3">
-                                    <p>Количество записей в таблице ltps по умолчанию</p>
+                                    <p>Количество записей в таблице рекомендаций по умолчанию</p>
                                     {!! Form::select('recommendations_count', array_unique([
                                             $config->recommendations_count => $config->recommendations_count,
                                             '10' => 10,
@@ -287,8 +288,8 @@
 
                             <div class="d-flex mt-3 mb-3">
                                 <div>
-                                    <label for="addCoveragePercent">добавить % к охвату</label>
-                                    <input name="addCoveragePercent" type="number" class="form form-control"
+                                    <label for="boostPercent">добавить % к охвату</label>
+                                    <input name="boostPercent" type="number" class="form form-control"
                                            value="{{ $config->boostPercent }}">
                                 </div>
                             </div>
@@ -1006,7 +1007,9 @@
             <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
                 Облака первых 200 важных (по tf-idf) слов у конкурентов
             </button>
-            <div class='d-flex ml-3'>
+        </div>
+        <div style="display: none" id="coverage-clouds" class="pt-2">
+            <div class='d-flex w-100'>
                 <div class='__helper-link ui_tooltip_w'>
                     <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>
                         <input type='checkbox'
@@ -1018,8 +1021,6 @@
                 </div>
                 <p>скрыть игнорируемые домены</p>
             </div>
-        </div>
-        <div style="display: none" id="coverage-clouds" class="pt-2">
         </div>
     </div>
     @slot('js')

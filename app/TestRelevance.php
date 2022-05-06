@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -71,7 +70,6 @@ class TestRelevance
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
         $this->params['main_page_link'] = $link;
         $this->params['sites'] = '';
-        $this->params['html_relevance'] = '';
         $this->params['html_main_page'] = '';
     }
 
@@ -92,10 +90,10 @@ class TestRelevance
         $mainUrl = parse_url($this->params['main_page_link']);
 
         foreach ($this->domains as $item) {
-            $domain = isset($item['item']) ? strtolower($item['item']) : $item;
+            $domain = strtolower($item['item']);
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
-            $compUrl = parse_url($item['item']);
+            $compUrl = parse_url($domain);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -114,8 +112,6 @@ class TestRelevance
                 $this->sites[$domain]['mainPage'] = false;
                 $this->sites[$domain]['ignored'] = $item['ignored'];
             }
-
-            $this->params['html_relevance'] .= $result . $this->separator;
         }
 
         if (!$this->mainPageIsRelevance) {
@@ -147,11 +143,12 @@ class TestRelevance
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
         $this->analyzeRecommendations();
-        $this->calculateDensity($request);
+        $this->calculateDensity();
         $this->calculateCoveragePoints();
         $this->calculateWidthPoints();
         $this->calculateTotalPoints();
         $this->prepareClouds();
+//        $this->saveResults();
     }
 
     /**
@@ -403,8 +400,7 @@ class TestRelevance
      * @param $html
      * @return array|string|string[]|null
      */
-    public
-    static function getHiddenText($html)
+    public static function getHiddenText($html)
     {
         $hiddenText = '';
         $regex = ["<.*?title=\"(.*?)\".*>", "<.*?alt=\"(.*?)\".*>", "<.*?data-text=\"(.*?)\".*>"];
@@ -468,8 +464,7 @@ class TestRelevance
      * @param $string
      * @return array|false|string|string[]
      */
-    public
-    static function mbStrReplace($search, $replace, $string)
+    public static function mbStrReplace($search, $replace, $string)
     {
         $charset = mb_detect_encoding($string);
 
@@ -747,7 +742,7 @@ class TestRelevance
      * @param $sites
      * @return $this
      */
-    public function setSites($sites): TestRelevance
+    public function setSites($sites): Relevance
     {
         $this->params['sites'] = $sites;
         $this->sites = json_decode($sites, true);
@@ -756,27 +751,10 @@ class TestRelevance
     }
 
     /**
-     * @param $html_relevance
-     * @return $this
-     */
-    public function setPages($html_relevance): TestRelevance
-    {
-        $this->params['html_relevance'] = $html_relevance;
-        $html = explode($this->separator, $this->params['html_relevance']);
-        unset($html[count($html) - 1]);
-        for ($i = 0; $i < 10; $i++) {
-            $this->sites[$this->sites[$i]['site']]['html'] = $html[$i];
-        }
-
-        return $this;
-    }
-
-    /**
      * @param array $array
      * @return string
      */
-    public
-    static function concatenation(array $array): string
+    public static function concatenation(array $array): string
     {
         return implode(' ', $array);
     }
@@ -789,7 +767,10 @@ class TestRelevance
     {
         $array = json_decode($sites, true);
         foreach ($array as $item) {
-            $this->domains[] = $item['site'];
+            $this->domains[] = [
+                'item' => $item['site'],
+                'ignored' => $item['ignored'],
+            ];
         }
     }
 
@@ -853,8 +834,7 @@ class TestRelevance
      * @param $html
      * @return string
      */
-    public
-    static function clearHTMLFromLinks($html): string
+    public static function clearHTMLFromLinks($html): string
     {
         $html = preg_replace('| +|', ' ', $html);
         $html = str_replace("\n", " ", $html);
@@ -980,17 +960,10 @@ class TestRelevance
     /**
      * @return void
      */
-    public function calculateDensity($request)
+    public function calculateDensity()
     {
-//        $gain = [
-//            'd50' => $request->d50,
-//            'd100' => $request->d100,
-//            'd150' => $request->d150,
-//            'd200' => $request->d200,
-//        ];
-
         foreach ($this->sites as $keyPage => $page) {
-            $allText = Relevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
+            $allText = TestRelevance::concatenation([$page['html'], $page['linkText'], $page['hiddenText']]);
 
             $this->sites[$keyPage]['density'] = $this->calculateDensityPoints($allText);
         }
@@ -998,65 +971,15 @@ class TestRelevance
 
     /**
      * @param $text
-     * @param $gain
      * @return array
      */
     public function calculateDensityPoints($text): array
     {
         $result = [];
-//        $defaultDensity = 0;
-//        $densityWithGain = 0;
-//        $densityWithGainFix = 0;
-//        $childWords = 0;
-
         $array = explode(' ', $text);
         $array = array_count_values($array);
-
-//        foreach ($this->wordForms as $wordForm) {
-//            foreach ($wordForm as $word => $form) {
-//                if ($word == 'total') {
-//                    continue;
-//                }
-//
-//                if (array_key_exists($word, $array)) {
-//                    $points = min($array[$word] / ($form['avgInTotalCompetitors'] / 100), 100);
-//                    $defaultDensity += $points;
-//
-//                    if ($gain['d50'] != null && $childWords < 50) {
-//                        $densityWithGain += $points * $gain['d50'];
-//                        $densityWithGainFix += min($points * $gain['d50'], 100);
-//
-//                    } else if ($gain['d100'] != null && $childWords >= 50 && $childWords < 100) {
-//                        $densityWithGain += $points * $gain['d100'];
-//                        $densityWithGainFix += min($points * $gain['d100'], 100);
-//
-//                    } else if ($gain['d150'] != null && $childWords >= 100 && $childWords < 150) {
-//                        $densityWithGain += $points * $gain['d150'];
-//                        $densityWithGainFix += min($points * $gain['d150'], 100);
-//
-//                    } else if ($gain['d200'] != null && $childWords >= 150 && $childWords < 200) {
-//                        $densityWithGain += $points * $gain['d200'];
-//                        $densityWithGainFix += min($points * $gain['d200'], 100);
-//
-//                    } else {
-//                        $densityWithGain += $points;
-//                        $densityWithGainFix += $points;
-//                    }
-//                }
-//                $childWords++;
-//
-//            }
-//
-//            if ($iterator == 600) {
-//                break;
-//            }
-//
-//            $iterator++;
-//        }
         $densityMain = 0;
         $testMainIterator = 0;
-//        $densityMainWithGain = 0;
-//        $densityMainWithGainFix = 0;
         foreach ($this->wordForms as $wordForm) {
             $countRepeatInPage = 0;
             foreach ($wordForm as $word => $form) {
@@ -1072,54 +995,39 @@ class TestRelevance
                     }
                     $points = min($countRepeatInPage / ($wordForm['total']['avgInTotalCompetitors'] / 100), 100);
                     $densityMain += $points;
-//                    if ($gain['d50'] != null && $testMainIterator < 50) {
-//                        $densityMainWithGain += $points * $gain['d50'];
-//                        $densityMainWithGainFix += min($points * $gain['d50'], 100);
-//
-//                    } else if ($gain['d100'] != null && $testMainIterator >= 50 && $testMainIterator < 100) {
-//                        $densityMainWithGain += $points * $gain['d100'];
-//                        $densityMainWithGainFix += min($points * $gain['d100'], 100);
-//
-//                    } else if ($gain['d150'] != null && $testMainIterator >= 100 && $testMainIterator < 150) {
-//                        $densityMainWithGain += $points * $gain['d150'];
-//                        $densityMainWithGainFix += min($points * $gain['d150'], 100);
-//
-//                    } else if ($gain['d200'] != null && $testMainIterator >= 150 && $testMainIterator < 200) {
-//                        $densityMainWithGain += $points * $gain['d200'];
-//                        $densityMainWithGainFix += min($points * $gain['d200'], 100);
-//
-//                    } else {
-//                        $densityMainWithGain += $points;
-//                        $densityMainWithGainFix += $points;
-//                    }
+
                     break;
                 }
             }
             $testMainIterator++;
         }
 
-//        // обычная
-//        $result['defaultDensity'] = round($defaultDensity);
-//        $result['defaultDensityPercent'] = round($defaultDensity / $childWords);
-//
-//        // усиление с ограничениями
-//        $result['densityWithGainFix'] = round($densityWithGainFix);
-//        $result['densityWithGainFixPercent'] = round($densityWithGainFix / $childWords);
-//
-//        // усиление без ограничений
-//        $result['densityWithGain'] = round($densityWithGain);
-//        $result['densityWithGainPercent'] = round($densityWithGain / $childWords);
-        // обычная плотность основых
         $result['densityMain'] = round($densityMain);
         $result['densityMainPercent'] = round($densityMain / 600);
-//        // усиление с ограничениями
-//        $result['densityMainWithGainFix'] = round($densityMainWithGainFix);
-//        $result['densityMainWithGainFixPercent'] = round($densityMainWithGainFix / 600);
-//
-//        // обычная плотность с усилениями и без ограничений
-//        $result['densityMainWithGain'] = round($densityMainWithGain);
-//        $result['densityMainWithGainPercent'] = round($densityMainWithGain / 600);
         return $result;
+    }
+
+    /**
+     * @return void
+     */
+    public function saveResults()
+    {
+        //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
+        foreach ($this->sites as $key => $site) {
+            if (isset($this->sites[$key]['defaultHtml'])) {
+                $encode = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
+            } else {
+                $encode = base64_encode(gzcompress($this->sites[$key]['html'], 9));
+            }
+
+            $this->sites[$key]['html'] = $encode;
+            unset($this->sites[$key]['defaultHtml']);
+            unset($this->sites[$key]['linkText']);
+            unset($this->sites[$key]['hiddenText']);
+
+        }
+        $this->params['sites'] = json_encode($this->sites);
+        $this->params->save();
     }
 
 }
