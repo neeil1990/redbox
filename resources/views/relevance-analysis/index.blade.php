@@ -1047,12 +1047,12 @@
     @slot('js')
         <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderScannedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderTextTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderPhrasesTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV2/renderRecommendationsTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderClouds.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderUnigramTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderScannedSitesList.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderTextTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderPhrasesTable.js') }}"></script>
+        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderRecommendationsTable.js') }}"></script>
         <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
