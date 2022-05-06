@@ -16,7 +16,7 @@ class CreateRelevanceAnalysisConfigTable extends Migration
         Schema::create('relevance_analysis_config', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('count_sites')->nullable();
-            $table->json('region')->nullable();
+            $table->longText('region')->nullable();
             $table->text('ignored_domains')->nullable();
             $table->integer('separator')->nullable();
             $table->string('noindex')->nullable();
