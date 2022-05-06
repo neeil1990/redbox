@@ -814,7 +814,7 @@
         </table>
     </div>
 
-    <div class="phrases" style="display:none; margin-top: 50px;">
+    <div class="phrases" style="display:none;">
         <h3>Топ лист словосочетаний (TLPs)</h3>
         <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline w-100">
             <thead>
