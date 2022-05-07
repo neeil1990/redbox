@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\MonitoringGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MonitoringGroupsController extends Controller
 {
@@ -36,7 +37,12 @@ class MonitoringGroupsController extends Controller
     public function store(Request $request)
     {
         $model = new MonitoringGroup();
-        return $model->create($request->all());
+
+        return $model->create([
+            'user_id' => Auth::id(),
+            'type' => $request->input('type'),
+            'name' => $request->input('name'),
+        ]);
     }
 
     /**
@@ -48,7 +54,7 @@ class MonitoringGroupsController extends Controller
     public function show($id)
     {
         $model = new MonitoringGroup();
-        return $model->where('type', $id)->get();
+        return $model->where('user_id', Auth::id())->where('type', $id)->get();
     }
 
     /**
