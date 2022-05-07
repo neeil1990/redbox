@@ -20,7 +20,7 @@ function renderRecommendationsTable(recommendations, count) {
         removeOrder = removeOrder.substr(removeOrder.length - 2)
 
         tBody.append(
-            "<tr>" +
+            "<tr class='render'>" +
             "<td class='text-center'> <i class='fa fa-trash remove-recommendation'></i> </td>" +
             "<td class='col-1'>" + key + "</td>" +
             "<td class='col-1'>" + value['tf'] + "</td>" +

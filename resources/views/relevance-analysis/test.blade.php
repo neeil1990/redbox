@@ -1164,6 +1164,7 @@
             }
 
             function refreshAllRenderElements() {
+                $('#recButton').html('Показать')
                 if (generatedCompetitorCoverage) {
                     $('#coverage-clouds-button').trigger('click')
                     if (sessionStorage.getItem('hideDomains') === 'yes') {
@@ -1185,8 +1186,8 @@
                 $('.sites').hide()
                 $('.clouds').hide()
                 $('.phrases').hide()
-                $('.pb-3.recommendations').hide()
                 $('#rec').hide()
+                $('.pb-3.recommendations').hide()
                 $('#competitorsTfClouds').hide()
             }
 
