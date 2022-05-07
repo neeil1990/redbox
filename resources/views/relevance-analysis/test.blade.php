@@ -1167,7 +1167,7 @@
                 if (generatedCompetitorCoverage) {
                     $('#coverage-clouds-button').trigger('click')
                     if (sessionStorage.getItem('hideDomains') === 'yes') {
-                        $("#showOrHideIgnoredClouds").prop("checked", true);
+                        $("#showOrHideIgnoredClouds").prop("checked", false);
                     }
                 }
                 generatedTfIdf = false

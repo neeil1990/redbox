@@ -1279,7 +1279,7 @@
                 if (generatedCompetitorCoverage) {
                     $('#coverage-clouds-button').trigger('click')
                     if (sessionStorage.getItem('hideDomains') === 'yes') {
-                        $("#showOrHideIgnoredClouds").prop("checked", true);
+                        $("#showOrHideIgnoredClouds").prop("checked", false);
                     }
                 }
                 generatedTfIdf = false
@@ -1297,9 +1297,9 @@
                 $('.sites').hide()
                 $('.clouds').hide()
                 $('.phrases').hide()
-                $('.pb-3.recommendations').hide()
+                $('#recommendations').hide()
+                $('#rec').hide()
                 $('#competitorsTfClouds').hide()
-
             }
 
             function setProgressBarStyles(percent) {
