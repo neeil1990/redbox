@@ -1,5 +1,6 @@
 function renderRecommendationsTable(recommendations, count) {
     $('#rec').show()
+    $('#recommendations').show()
     let tBody = $('#recommendationsTBody')
 
     $.each(recommendations, function (key, value) {

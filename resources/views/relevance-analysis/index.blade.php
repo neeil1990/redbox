@@ -1060,10 +1060,10 @@
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
-                    $(this).html('Показать')
+                    $('#recButton').html('Показать')
                 } else {
                     $('.pb-3.recommendations').show()
-                    $(this).html('Скрыть')
+                    $('#recButton').html('Скрыть')
                 }
             });
 
@@ -1256,7 +1256,6 @@
             function successRequest(response, interval) {
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar(interval)
-                refreshAllRenderElements()
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
                 renderUnigramTable(response.unigramTable, response.ltp_count);
@@ -1276,6 +1275,7 @@
             }
 
             function refreshAllRenderElements() {
+                $('#recButton').html('Показать')
                 if (generatedCompetitorCoverage) {
                     $('#coverage-clouds-button').trigger('click')
                     if (sessionStorage.getItem('hideDomains') === 'yes') {
