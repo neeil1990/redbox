@@ -1186,8 +1186,8 @@
                 $('.sites').hide()
                 $('.clouds').hide()
                 $('.phrases').hide()
-                $('#recommendations').hide()
                 $('#rec').hide()
+                $('.pb-3.recommendations').hide()
                 $('#competitorsTfClouds').hide()
             }
 
