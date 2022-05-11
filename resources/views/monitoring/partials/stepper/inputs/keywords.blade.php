@@ -20,11 +20,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Релевантный URL</label>
-                            <input type="text" class="form-control" id="relevant-url" placeholder="URL">
-                        </div>
-
-                        <div class="form-group">
                             <label>Добавьте ваш список запросов</label>
                             <textarea id="textarea-keywords" class="form-control" rows="10" placeholder="Введите ваш список запросов, каждый с новой строки"></textarea>
                         </div>
@@ -32,6 +27,11 @@
                         <div class="form-group">
                             <input type="file" id="csv-keywords">
                             <p class="text-sm text-muted">Вы можете загрузить csv файл, где в первой колонке будут запросы, а во второй релевантаная страница.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Релевантный URL</label>
+                            <input type="text" class="form-control" id="relevant-url" placeholder="URL">
                         </div>
 
                     </div>
@@ -64,7 +64,7 @@
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" placeholder="Название группы">
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-danger" id="create-group">Добавить новую группу</button>
+                                <button type="button" class="btn btn-success" id="create-group">Добавить новую группу</button>
                             </div>
                         </div>
                     </div>
