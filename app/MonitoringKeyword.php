@@ -13,6 +13,11 @@ class MonitoringKeyword extends Model
         return $this->belongsTo(MonitoringProject::class, 'monitoring_project_id');
     }
 
+    public function group()
+    {
+        return $this->belongsTo(MonitoringGroup::class, 'monitoring_group_id');
+    }
+
     public function positions()
     {
         return $this->hasMany(MonitoringPosition::class);

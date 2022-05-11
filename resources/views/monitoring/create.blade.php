@@ -125,16 +125,25 @@
                     let data = table.rows().data();
 
                     $.each(data, function(index, value){
+
+                        let group = keywordSelect2.find(`option:contains("${value.group}")`).val();
+
                         let query = $('<input />', {
                             type: "hidden",
-                            name: "keywords[query][]",
+                            name: `keywords[${group}][query][]`,
                         }).val(value.query);
+
                         let page = $('<input />', {
                             type: "hidden",
-                            name: "keywords[page][]",
+                            name: `keywords[${group}][page][]`,
                         }).val(value.page);
 
-                        html += query[0].outerHTML + page[0].outerHTML;
+                        let target = $('<input />', {
+                            type: "hidden",
+                            name: `keywords[${group}][target][]`,
+                        }).val(value.target);
+
+                        html += query[0].outerHTML + page[0].outerHTML + target[0].outerHTML;
                     });
 
                     inputs.html(html);
@@ -273,7 +282,8 @@
                     {
                         width: "10px",
                         data: "id",
-                        title: "#"
+                        title: "#",
+                        visible: false
                     },
                     {
                         data: "query",
@@ -318,6 +328,14 @@
                         }
                     },
                     {
+                        data: "group",
+                        title: "Группа",
+                    },
+                    {
+                        data: "target",
+                        title: "Цель",
+                    },
+                    {
                         title: "",
                         width: "40px",
                         render: function(){
@@ -341,7 +359,21 @@
                 initComplete: function(){
                     var api = this.api();
 
-                    $("div.card-title").text('Ваш список запросов');
+                    let title = $("div.card-title");
+                    title.text('Ваш список запросов');
+
+                    title.after($('<div />', {
+                        class: "card-tools",
+                    }).html($('<a />', {
+                        class: "btn btn-tool btn-sm",
+                        href: "#",
+                        title: "Удалить все"
+                    }).html($('<i />', {
+                        class: "fas fa-trash",
+                    })).click(function () {
+                        table.rows().remove().draw(true);
+                        return false;
+                    })));
 
                     this.on( 'click', 'a.icon-delete', function () {
                         table.row( $(this).parents('tr') ).remove().draw(true);
@@ -390,6 +422,11 @@
                 let csv = $('#csv-keywords');
                 let textarea = $('#textarea-keywords');
                 let duplicates = $('#remove-duplicates');
+                let group = $('#keyword-groups');
+                let target = $('select[name="target"]');
+
+                let indexes = Math.max.apply(Math, table.rows().data().map(function(o) { return o.id ?? 0; }));
+                let index = (indexes === -Infinity) ? 0 : indexes;
 
                 if(csv[0].files.length){
 
@@ -405,7 +442,7 @@
 
                                 let data = [];
 
-                                $.each(result.data, function (index, value) {
+                                $.each(result.data, function (i, value) {
                                     index = index + 1;
 
                                     if(duplicates.prop('checked')){
@@ -414,16 +451,16 @@
                                         });
 
                                         if(existed.length === 0)
-                                            data.push({id: index, query: value[0], page: value[1]});
+                                            data.push({id: index, query: value[0], page: value[1], group: group.find('option:selected').text(), target: target.val()});
                                     }else{
-                                        data.push({id: index, query: value[0], page: value[1]});
+                                        data.push({id: index, query: value[0], page: value[1], group: group.find('option:selected').text(), target: target.val()});
                                     }
                                 });
 
                                 if(data.length > 0){
-                                    table.rows().remove();
                                     table.rows.add(data).draw();
 
+                                    csv.val('');
                                     textarea.val('');
                                 }
                             },
@@ -439,7 +476,7 @@
                     let list = _.compact(textarea.val().split(/[\r\n]+/));
                     let data = [];
 
-                    $.each(list, function (index, value) {
+                    $.each(list, function (i, value) {
                         index = index + 1;
 
                         if(duplicates.prop('checked')){
@@ -448,15 +485,16 @@
                             });
 
                             if(existed.length === 0)
-                                data.push({id: index, query: value, page: relevant.val()});
+                                data.push({id: index, query: value, page: relevant.val(), group: group.find('option:selected').text(), target: target.val()});
                         }else{
-                            data.push({id: index, query: value, page: relevant.val()});
+                            data.push({id: index, query: value, page: relevant.val(), group: group.find('option:selected').text(), target: target.val()});
                         }
                     });
 
                     if(data.length > 0){
-                        table.rows().remove();
                         table.rows.add(data).draw();
+
+                        textarea.val('');
 
                         return false;
                     }

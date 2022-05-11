@@ -74,15 +74,17 @@ class MonitoringController extends Controller
             'url' => $request->input('url'),
         ]);
 
-        $keywords = $request->input('keywords');
-        foreach ($keywords['query'] as $ind => $query){
+        $groups = $request->input('keywords');
 
-            $project->keywords()->create([
-                'monitoring_group_id' => $request->input('group', null),
-                'target' => $request->input('target', null),
-                'query' => $query,
-                'page' => $keywords['page'][$ind]
-            ]);
+        foreach ($groups as $group => $keywords){
+            foreach ($keywords['query'] as $ind => $query){
+                $project->keywords()->create([
+                    'monitoring_group_id' => $group,
+                    'query' => $query,
+                    'page' => $keywords['page'][$ind],
+                    'target' => $keywords['target'][$ind],
+                ]);
+            }
         }
 
         $competitors = preg_split("/\r\n|\n|\r/", $request->input('competitors'));
