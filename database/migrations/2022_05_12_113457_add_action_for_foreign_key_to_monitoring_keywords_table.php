@@ -14,7 +14,7 @@ class AddActionForForeignKeyToMonitoringKeywordsTable extends Migration
     public function up()
     {
         Schema::table('monitoring_keywords', function (Blueprint $table) {
-            $table->dropIndex('monitoring_keywords_monitoring_group_id_foreign');
+            $table->dropForeign(['monitoring_group_id']);
 
             $table->foreign('monitoring_group_id')
                 ->references('id')
