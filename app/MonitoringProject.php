@@ -22,4 +22,9 @@ class MonitoringProject extends Model
 
         return $this->hasMany(MonitoringSearchengine::class);
     }
+
+    public function groups(){
+
+        return $this->hasMany(MonitoringGroup::class);
+    }
 }

@@ -126,21 +126,19 @@
 
                     $.each(data, function(index, value){
 
-                        let group = keywordSelect2.find(`option:contains("${value.group}")`).val();
-
                         let query = $('<input />', {
                             type: "hidden",
-                            name: `keywords[${group}][query][]`,
+                            name: `keywords[${value.group}][query][]`,
                         }).val(value.query);
 
                         let page = $('<input />', {
                             type: "hidden",
-                            name: `keywords[${group}][page][]`,
+                            name: `keywords[${value.group}][page][]`,
                         }).val(value.page);
 
                         let target = $('<input />', {
                             type: "hidden",
-                            name: `keywords[${group}][target][]`,
+                            name: `keywords[${value.group}][target][]`,
                         }).val(value.target);
 
                         html += query[0].outerHTML + page[0].outerHTML + target[0].outerHTML;
@@ -510,33 +508,20 @@
                 theme: 'bootstrap4'
             });
 
-            axios.get('/monitoring/groups/keyword').then(function (response) {
-                $.each(response.data, function (i, data) {
-                    let newOption = new Option(data.name, data.id, false, false);
-                    keywordSelect2.append(newOption).trigger('change');
-                });
-            });
+            let newOption = new Option("Основная", "Основная", false, false);
+            keywordSelect2.append(newOption).trigger('change');
 
             $('#create-group').click(function(){
                 let el = $(this);
                 let input = el.closest('.input-group').find('input');
 
                 if(input.val()){
-                    axios.post('/monitoring/groups', {
-                        name: input.val(),
-                        type: "keyword",
-                    }).then(function (response) {
-                        if(response.status === 201){
+                    let newOption = new Option(input.val(), input.val(), false, false);
+                    keywordSelect2.append(newOption).trigger('change');
 
-                            let newOption = new Option(response.data.name, response.data.id, false, false);
-                            keywordSelect2.append(newOption).trigger('change');
+                    toastr.success('Добавленно');
 
-                            toastr.success('Добавленно');
-                        }
-                        input.val("");
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
+                    input.val(null);
                 }
             });
 
