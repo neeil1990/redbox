@@ -231,6 +231,12 @@
             $('.Select2').select2({
                 theme: 'bootstrap4',
                 placeholder: 'Select a regions',
+                minimumInputLength: 2,
+                language: {
+                    inputTooShort: function () {
+                        return "Пожалуйста, введите название региона.";
+                    }
+                },
                 ajax: {
                     delay: 500,
                     url: '/api/location',
