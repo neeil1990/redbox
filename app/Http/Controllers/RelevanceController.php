@@ -153,16 +153,12 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        try {
-            $relevance = new Relevance($request->input('link'), $request->input('separator'));
-            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-            $relevance->getMainPageHtml();
-            $relevance->setSites($params->sites);
-            $relevance->analysis($request);
-            return RelevanceController::successResponse($relevance);
-        } catch (Exception $e) {
-            return RelevanceController::errorResponse($request, $e);
-        }
+        $relevance = new Relevance($request->input('link'), $request->input('separator'));
+        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+        $relevance->getMainPageHtml();
+        $relevance->setSites($params->sites);
+        $relevance->analysis($request);
+        return RelevanceController::successResponse($relevance);
     }
 
     /**

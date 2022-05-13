@@ -103,11 +103,12 @@ class SimplifiedXmlFacade extends XmlFacade
 
         $sites = [];
         foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
-            if (count($item['doc']) < 12) {
+            if (array_key_exists(0, $item['doc'])) {
                 $sites[] = $item['doc'][0]['url'];
             } else {
                 $sites[] = $item['doc']['url'];
             }
+
         }
 
         return $sites;
