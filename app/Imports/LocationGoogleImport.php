@@ -3,22 +3,23 @@
 namespace App\Imports;
 
 use App\Location;
-use Maatwebsite\Excel\Row;
-use Maatwebsite\Excel\Concerns\OnEachRow;
 
-class LocationGoogleImport implements OnEachRow
+use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithProgressBar;
+
+class LocationGoogleImport implements ToModel, WithProgressBar
 {
-    public function onRow(Row $row)
-    {
-        $row = $row->toArray();
+    use Importable;
 
+    public function model(array $row)
+    {
         if(!is_numeric($row[0]))
             return null;
 
-        Location::updateOrCreate([
-            'source' => 'google',
-            'lr' => $row[0],
-            'name' => $row[2],
-        ]);
+        return Location::updateOrCreate(
+            ['source' => 'google', 'lr' => $row[0]],
+            ['name' => $row[2]]
+        );
     }
 }

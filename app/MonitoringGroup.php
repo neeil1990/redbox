@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class MonitoringGroup extends Model
 {
-    protected $fillable = ['user_id', 'type', 'name'];
+    protected $fillable = ['monitoring_project_id', 'type', 'name'];
 }

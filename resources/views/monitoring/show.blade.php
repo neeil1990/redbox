@@ -40,6 +40,8 @@
                                 <th>ID</th>
                                 <th>Запрос</th>
                                 <th>Страница</th>
+                                <th>Группа</th>
+                                <th>Цель</th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -50,6 +52,8 @@
                                 <td><b>{{$keyword->id}}</b></td>
                                 <td><a href="{{ route('keywords.show', $keyword->id) }}">{{ $keyword->query }}</a></td>
                                 <td>{{ $keyword->page }}</td>
+                                <td>{{ $keyword->group->name }}</td>
+                                <td>{{ $keyword->target }}</td>
                                 <td>
                                     {!! Form::open(['route' => ['keywords.update', $keyword->id], 'method' => 'PATCH']) !!}
                                         {!! Form::submit('Обновить', ['class' => 'btn btn-block btn-success btn-xs']) !!}
