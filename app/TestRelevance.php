@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -148,7 +149,6 @@ class TestRelevance
         $this->calculateWidthPoints();
         $this->calculateTotalPoints();
         $this->prepareClouds();
-//        $this->saveResults();
     }
 
     /**
@@ -688,25 +688,24 @@ class TestRelevance
     }
 
     /**
-     * @param $count
+     * @param $maxLength
      * @param $ignoredDomains
      * @param $sites
+     * @param $exp
      * @return void
      */
-    public function removeIgnoredDomains($count, $ignoredDomains, $sites)
+    public function removeIgnoredDomains($maxLength, $ignoredDomains, $sites, $exp)
     {
-        if (isset($ignoredDomains)) {
-            $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
-            $ignoredDomains = explode("\n", $ignoredDomains);
-            $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
-            $iterator = 0;
+        $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
+        $ignoredDomains = explode("\n", $ignoredDomains);
+        $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
+        $iterator = 0;
 
-            foreach ($sites as $item) {
+        foreach ($sites as $item) {
+            $domain = parse_url($item);
+            $domain = str_replace('www.', "", mb_strtolower($domain['host']));
 
-                $domain = parse_url($item);
-                $domain = str_replace('www.', "", mb_strtolower($domain['host']));
-
-
+            if ($iterator < $maxLength) {
                 if (in_array($domain, $ignoredDomains)) {
                     $this->domains[] = [
                         'item' => $item,
@@ -719,13 +718,17 @@ class TestRelevance
                     ];
                     $iterator++;
                 }
-
-                if ($iterator == $count) {
+            } else {
+                if ($exp) {
+                    $this->domains[] = [
+                        'exp' => true,
+                        'ignored' => true,
+                        'item' => $item,
+                    ];
+                } else {
                     break;
                 }
             }
-        } else {
-            $this->domains = array_slice($sites, 0, $count - 1);
         }
     }
 
@@ -740,14 +743,22 @@ class TestRelevance
 
     /**
      * @param $sites
-     * @return $this
+     * @return void
      */
-    public function setSites($sites): Relevance
+    public function setSites($sites)
     {
         $this->params['sites'] = $sites;
-        $this->sites = json_decode($sites, true);
 
-        return $this;
+        foreach (json_decode($sites, true) as $key => $site) {
+            $this->sites[$key] = [
+                'danger' => $site['danger'],
+                'html' => gzuncompress(base64_decode($site['html'])),
+                'ignored' => $site['ignored'],
+                'mainPage' => $site['mainPage'],
+                'equallyHost' => isset($site['equallyHost']),
+                'site' => $key,
+            ];
+        }
     }
 
     /**
@@ -766,10 +777,13 @@ class TestRelevance
     public function setDomains($sites)
     {
         $array = json_decode($sites, true);
+
         foreach ($array as $item) {
             $this->domains[] = [
                 'item' => $item['site'],
                 'ignored' => $item['ignored'],
+                'mainPage' => $item['mainPage'],
+                'equallyHost' => isset($item['equallyHost']),
             ];
         }
     }

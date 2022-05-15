@@ -86,13 +86,13 @@ class RelevanceController extends Controller
 
             if (count($sitesList) <= 7) {
                 return response()->json([
-                    'countError' => 'Список сайов должен содержать минимум 7 сайтов'
+                    'countError' => 'Список сайтов должен содержать минимум 7 сайтов'
                 ], 500);
             }
 
             foreach ($sitesList as $item) {
                 $relevance->domains[] = [
-                    'item' => str_replace('www.', "", mb_strtolower(trim($item))),
+                    'item' => str_replace('www.', '', mb_strtolower(trim($item))),
                     'ignored' => false,
                 ];
             }
@@ -125,17 +125,22 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
-        try {
-            $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-            $relevance = new Relevance($params->main_page_link, $request->input('separator'));
-            $relevance->setMainPage($params->html_main_page);
-            $relevance->setDomains($params->sites);
-            $relevance->parseSites();
-            $relevance->analysis($request);
-            return RelevanceController::successResponse($relevance);
-        } catch (Exception $e) {
-            return RelevanceController::errorResponse($request, $e);
-        }
+        $messages = [
+            'link.required' => __('A link to the landing page is required.'),
+        ];
+
+        $request->validate([
+            'link' => 'required|website',
+        ], $messages);
+
+        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+        $relevance = new Relevance($request->input('link'), $request->input('separator'));
+        $relevance->setMainPage($params->html_main_page);
+        $relevance->setDomains($params->sites);
+        $relevance->parseSites();
+        $relevance->analysis($request);
+
+        return RelevanceController::successResponse($relevance);
     }
 
     /**
@@ -153,11 +158,12 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        $relevance = new Relevance($request->input('link'), $request->input('separator'));
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
+        $relevance = new Relevance($request->input('link'), $request->input('separator'));
         $relevance->getMainPageHtml();
         $relevance->setSites($params->sites);
         $relevance->analysis($request);
+
         return RelevanceController::successResponse($relevance);
     }
 
@@ -202,10 +208,12 @@ class RelevanceController extends Controller
             $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
+
             $relevance->removeIgnoredDomains(
                 $request->input('count'),
                 $request->input('ignoredDomains'),
-                $xmlResponse
+                $xmlResponse,
+                filter_var($request->input('exp'), FILTER_VALIDATE_BOOLEAN)
             );
         }
         $relevance->parseSites();

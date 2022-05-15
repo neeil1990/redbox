@@ -80,6 +80,7 @@ class Relevance
     public function getMainPageHtml()
     {
         $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
+
         $this->setMainPage($html);
     }
 
@@ -98,6 +99,7 @@ class Relevance
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
+            $this->sites[$domain]['defaultHtml'] = $result;
             $this->sites[$domain]['site'] = $domain;
 
             if (Str::lower($mainUrl['host']) == Str::lower($compUrl['host'])) {
@@ -746,12 +748,15 @@ class Relevance
     public function setSites($sites)
     {
         $this->params['sites'] = $sites;
+
         foreach (json_decode($sites, true) as $key => $site) {
             $this->sites[$key] = [
                 'danger' => $site['danger'],
-                'html' => gzuncompress(base64_decode($site['html'])),
+                'html' => gzuncompress(base64_decode($site['defaultHtml'])),
+                'defaultHtml' => gzuncompress(base64_decode($site['defaultHtml'])),
                 'ignored' => $site['ignored'],
                 'mainPage' => $site['mainPage'],
+                'equallyHost' => isset($site['equallyHost']),
                 'site' => $key,
             ];
         }
@@ -773,11 +778,13 @@ class Relevance
     public function setDomains($sites)
     {
         $array = json_decode($sites, true);
+
         foreach ($array as $item) {
             $this->domains[] = [
                 'item' => $item['site'],
                 'ignored' => $item['ignored'],
                 'mainPage' => $item['mainPage'],
+                'equallyHost' => isset($item['equallyHost']),
             ];
         }
     }
@@ -1022,14 +1029,9 @@ class Relevance
     {
         //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
-            if (isset($this->sites[$key]['defaultHtml'])) {
-                $encode = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
-            } else {
-                $encode = base64_encode(gzcompress($this->sites[$key]['html'], 9));
-            }
+            $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
 
-            $this->sites[$key]['html'] = $encode;
-            unset($this->sites[$key]['defaultHtml']);
+            unset($this->sites[$key]['html']);
             unset($this->sites[$key]['linkText']);
             unset($this->sites[$key]['hiddenText']);
 
