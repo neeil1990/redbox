@@ -522,7 +522,7 @@
                 let input = el.closest('.input-group').find('input');
 
                 if(input.val()){
-                    let newOption = new Option(input.val(), input.val(), false, false);
+                    let newOption = new Option(input.val(), input.val(), false, true);
                     keywordSelect2.append(newOption).trigger('change');
 
                     toastr.success('Добавленно');
