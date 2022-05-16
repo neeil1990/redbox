@@ -98,6 +98,7 @@ class TestRelevance
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
+            $this->sites[$domain]['defaultHtml'] = $result;
             $this->sites[$domain]['site'] = $domain;
 
             if (Str::lower($mainUrl['host']) == Str::lower($compUrl['host'])) {
@@ -121,6 +122,7 @@ class TestRelevance
             $this->sites[$this->params['main_page_link']]['ignored'] = false;
             $this->sites[$this->params['main_page_link']]['site'] = $this->params['main_page_link'];
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
+            $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->mainPage['html'];
             $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
         }
     }
