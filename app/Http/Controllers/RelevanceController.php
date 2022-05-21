@@ -7,7 +7,6 @@ use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
 use App\TestRelevance;
-use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +33,7 @@ class RelevanceController extends Controller
                 break;
             }
         }
+
         $config = RelevanceAnalysisConfig::first();
 
         return view('relevance-analysis.index', ['admin' => $admin, 'config' => $config]);
@@ -53,7 +53,10 @@ class RelevanceController extends Controller
         }
         $config = RelevanceAnalysisConfig::first();
 
-        return view('relevance-analysis.test', ['admin' => $admin, 'config' => $config]);
+        return view('relevance-analysis.test', [
+            'admin' => $admin,
+            'config' => $config,
+        ]);
     }
 
     /**
@@ -254,9 +257,9 @@ class RelevanceController extends Controller
 
     /**
      * @param $fileName
-     * @return array|false|Application|Factory|View|mixed
+     * @return View
      */
-    public function showChildrenRows($fileName)
+    public function showChildrenRows($fileName): View
     {
         $filePath = public_path('children/' . $fileName . '.json');
 
@@ -315,7 +318,6 @@ class RelevanceController extends Controller
             'sites' => $relevance->sites,
             'tfCompClouds' => $relevance->tfCompClouds,
             'phrases' => $relevance->phrases,
-            //new functions
             'avgCoveragePercent' => $relevance->avgCoveragePercent ?? null,
             'recommendations' => $relevance->recommendations ?? null,
             'ltp_count' => $config->ltp_count,

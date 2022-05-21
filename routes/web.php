@@ -12,8 +12,11 @@
 */
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\ProjectRelevanceHistory;
+use App\RelevanceHistory;
 use App\TelegramBot;
 use App\TextAnalyzer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -187,6 +190,11 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
     Route::post('/change-config', 'RelevanceController@changeConfig')->name('changeConfig');
+    Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
+    Route::post('/change-group-name', 'HistoryRelevanceController@changeGroupName')->name('change.group.name');
+    Route::post('/change-state', 'HistoryRelevanceController@changeCalculateState')->name('change.state');
+    Route::get('/show-details-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
+    Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
@@ -199,4 +207,8 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
     Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
+});
+
+Route::get('/bla', function () {
+    dd(parse_url('https://ru.wikipedia.org/wiki/Собака'));
 });

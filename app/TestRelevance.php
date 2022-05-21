@@ -2,14 +2,16 @@
 
 namespace App;
 
+use App\Http\Controllers\TextLengthController;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
 {
-    public $separator = "\n\nseparator\n\n";
-
     public $competitorsTextAndLinksCloud;
 
     public $mainPageIsRelevance = false;
@@ -128,10 +130,10 @@ class TestRelevance
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @return void
      */
-    public function analysis($request)
+    public function analysis(Request $request)
     {
         $this->removeNoIndex($request->noIndex);
         $this->getHiddenData($request->hiddenText);
@@ -151,6 +153,7 @@ class TestRelevance
         $this->calculateWidthPoints();
         $this->calculateTotalPoints();
         $this->prepareClouds();
+        $this->saveHistory($request);
     }
 
     /**
@@ -329,8 +332,6 @@ class TestRelevance
         foreach ($this->sites as $key => $site) {
             $points = $site['coverage'] + $site['coverageTf'] + $site['density']['densityMainPercent'];
             $this->sites[$key]['mainPoints'] = min(round(($points / 3) * 2, 2), 100);
-//            $this->sites[$key]['mainWithGainFixPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainFixPercent']) / 3, 2);
-//            $this->sites[$key]['mainWithGainPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainPercent']) / 3, 2);
         }
     }
 
@@ -1044,6 +1045,89 @@ class TestRelevance
         }
         $this->params['sites'] = json_encode($this->sites);
         $this->params->save();
+    }
+
+    /**
+     * @return void
+     */
+    public function saveHistory($request)
+    {
+        $time = Carbon::now()->toDateTimeString();
+        $link = parse_url($this->params['main_page_link']);
+
+        DB::transaction(function () use ($request, $time, $link) {
+            $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time);
+
+            $id = RelevanceHistory::createOrUpdate(
+                $request,
+                $this->params['main_page_link'],
+                $this->sites,
+                $time,
+                $mainHistory
+            );
+
+            $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
+
+            $mainHistory->total_points = $info['points'];
+            $mainHistory->count_sites = $info['count'];
+            $mainHistory->save();
+
+            $this->saveHistoryResult($id);
+        });
+
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function saveHistoryResult($id)
+    {
+        $count = count($this->sites);
+        $text = Relevance::concatenation([$this->competitorsText, $this->competitorsLinks]);
+        $avgCountWords = TextLengthController::countingWord($text) / $count;
+        $mainPageText = Relevance::concatenation([
+            $this->mainPage['html'],
+            $this->mainPage['linkText'],
+            $this->mainPage['hiddenText']
+        ]);
+
+        $result = new RelevanceHistoryResult([
+            'clouds_competitors' => json_encode([
+                'totalTf' => json_encode($this->competitorsCloud['totalTf']),
+                'textTf' => json_encode($this->competitorsCloud['textTf']),
+                'linkTf' => json_encode($this->competitorsCloud['linkTf']),
+
+                'textAndLinks' => json_encode($this->competitorsTextAndLinksCloud),
+                'links' => json_encode($this->competitorsLinksCloud),
+                'text' => json_encode($this->competitorsTextCloud),
+            ]),
+            'clouds_main_page' => json_encode([
+                'totalTf' => json_encode($this->mainPage['totalTf']),
+                'textTf' => json_encode($this->mainPage['textTf']),
+                'linkTf' => json_encode($this->mainPage['linkTf']),
+                'textWithLinks' => json_encode($this->mainPage['textWithLinks']),
+                'links' => json_encode($this->mainPage['links']),
+                'text' => json_encode($this->mainPage['text']),
+            ]),
+            'avg' => json_encode([
+                'countWords' => $avgCountWords,
+                'countSymbols' => Str::length($text) / $count,
+            ]),
+            'main_page' => json_encode([
+                'countWords' => TextLengthController::countingWord($mainPageText),
+                'countSymbols' => Str::length($mainPageText),
+            ]),
+            'unigram_table' => json_encode($this->wordForms),
+            'sites' => json_encode($this->sites),
+            'tf_comp_clouds' => json_encode($this->tfCompClouds),
+            'phrases' => json_encode($this->phrases),
+            'avg_coverage_percent' => json_encode($this->avgCoveragePercent),
+            'recommendations' => json_encode($this->recommendations),
+            'project_id' => $id,
+        ]);
+
+        $result->save();
     }
 
 }
