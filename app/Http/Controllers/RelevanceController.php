@@ -98,7 +98,7 @@ class RelevanceController extends Controller
         $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'phrase') {
-            $xml = new SimplifiedXmlFacade(20, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
@@ -196,7 +196,7 @@ class RelevanceController extends Controller
                 ];
             }
         } else {
-            $xml = new SimplifiedXmlFacade(5, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
