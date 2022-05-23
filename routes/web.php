@@ -160,7 +160,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('check-domain-information/{id}', 'DomainInformationController@checkDomain')->name('check.domain.information');
 
     Route::get('text-analyzer', 'TextAnalyzerController@index')->name('text.analyzer.view');
-    Route::get('text-analyzer/{url}', 'TextAnalyzerController@redirectToAnalyse')->name('text.analyzer.redirect');
+    Route::get('/redirect-to-text-analyzer/{url}', 'TextAnalyzerController@redirectToAnalyse')->name('text.analyzer.redirect');
     Route::post('text-analyzer', 'TextAnalyzerController@analyze')->name('text.analyzer');
 
     Route::get('news', 'NewsController@index')->name('news');
@@ -210,5 +210,8 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function () {
+    dd(\Illuminate\Support\Str::length(
+        '1234'
+    ));
     dd(parse_url('https://ru.wikipedia.org/wiki/Собака'));
 });

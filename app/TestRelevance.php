@@ -4,10 +4,8 @@ namespace App;
 
 use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -46,11 +44,21 @@ class TestRelevance
 
     public $phrases;
 
+    public $countSymbols;
+
+    public $countSymbolsInMyPage;
+
+    public $countWords;
+
+    public $countWordsInMyPage;
+
     public $params;
 
     public $pages;
 
     public $sites;
+
+    public $countNotIgnoredSites = 0;
 
     public $recommendations = [];
 
@@ -69,6 +77,8 @@ class TestRelevance
         $this->competitorsLinks = '';
         $this->competitorsTextAndLinks = '';
         $this->maxWordLength = $separator;
+        $this->countSymbols = 0;
+        $this->countWords = 0;
 
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
         $this->params['main_page_link'] = $link;
@@ -91,26 +101,26 @@ class TestRelevance
     public function parseSites()
     {
         $mainUrl = parse_url($this->params['main_page_link']);
+        $host = Str::lower($mainUrl['host']);
 
         foreach ($this->domains as $item) {
             $domain = strtolower($item['item']);
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
-
-            $compUrl = parse_url($domain);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
             $this->sites[$domain]['defaultHtml'] = $result;
             $this->sites[$domain]['site'] = $domain;
 
-            if (Str::lower($mainUrl['host']) == Str::lower($compUrl['host'])) {
+            $compUrl = parse_url($domain);
+            if ($host == Str::lower($compUrl['host'])) {
                 $this->sites[$domain]['equallyHost'] = true;
             }
 
             if ($domain == $this->params['main_page_link']) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
-                $this->sites[$domain]['inRelevance'] = true;
+                $this->sites[$domain]['inRelevance'] = $item['inRelevance'] ?? true;
                 $this->sites[$domain]['ignored'] = false;
             } else {
                 $this->sites[$domain]['mainPage'] = false;
@@ -130,10 +140,10 @@ class TestRelevance
     }
 
     /**
-     * @param Request $request
+     * @param $request
      * @return void
      */
-    public function analysis(Request $request)
+    public function analysis($request)
     {
         $this->removeNoIndex($request->noIndex);
         $this->getHiddenData($request->hiddenText);
@@ -143,16 +153,23 @@ class TestRelevance
         $this->deleteEverythingExceptCharacters();
         $this->getTextFromCompetitors();
         $this->separateAllText();
+
         $this->preparePhrasesTable();
+
         $this->searchWordForms();
+
         $this->processingOfGeneralInformation();
+
         $this->prepareUnigramTable();
+
         $this->analyzeRecommendations();
-        $this->calculateDensity();
-        $this->calculateCoveragePoints();
-        $this->calculateWidthPoints();
-        $this->calculateTotalPoints();
+
+        $this->prepareAnalysedSitesTable();
+
         $this->prepareClouds();
+
+        $this->saveResults();
+
         $this->saveHistory($request);
     }
 
@@ -338,6 +355,30 @@ class TestRelevance
     /**
      * @return void
      */
+    public function calculateTextInfo()
+    {
+
+        foreach ($this->sites as $key => $site) {
+            if (!$site['ignored']) {
+                $this->countNotIgnoredSites++;
+                $countSymbols = Str::length($site['html']) + Str::length($site['linkText']) + Str::length($site['hiddenText']);
+                $countWords = TextLengthController::countingWord($site['html'] . ' ' . $site['linkText'] . ' ' . $site['hiddenText']);
+
+                if ($this->sites[$key]['mainPage']) {
+                    $this->countSymbolsInMyPage = $countSymbols;
+                    $this->countWordsInMyPage = $countWords;
+                }
+
+                $this->countSymbols += $countSymbols;
+                $this->countWords += $countWords;
+                $this->sites[$key]['countSymbols'] = max($countSymbols, 0);
+            }
+        }
+    }
+
+    /**
+     * @return void
+     */
     public function analyzeRecommendations()
     {
         foreach ($this->wordForms as $wordForm) {
@@ -378,6 +419,18 @@ class TestRelevance
                 }
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function prepareAnalysedSitesTable()
+    {
+        $this->calculateDensity();
+        $this->calculateCoveragePoints();
+        $this->calculateWidthPoints();
+        $this->calculateTotalPoints();
+        $this->calculateTextInfo();
     }
 
     /**
@@ -1083,15 +1136,6 @@ class TestRelevance
      */
     public function saveHistoryResult($id)
     {
-        $count = count($this->sites);
-        $text = Relevance::concatenation([$this->competitorsText, $this->competitorsLinks]);
-        $avgCountWords = TextLengthController::countingWord($text) / $count;
-        $mainPageText = Relevance::concatenation([
-            $this->mainPage['html'],
-            $this->mainPage['linkText'],
-            $this->mainPage['hiddenText']
-        ]);
-
         $result = new RelevanceHistoryResult([
             'clouds_competitors' => json_encode([
                 'totalTf' => json_encode($this->competitorsCloud['totalTf']),
@@ -1111,12 +1155,12 @@ class TestRelevance
                 'text' => json_encode($this->mainPage['text']),
             ]),
             'avg' => json_encode([
-                'countWords' => $avgCountWords,
-                'countSymbols' => Str::length($text) / $count,
+                'countWords' => $this->countWords / $this->countNotIgnoredSites,
+                'countSymbols' => $this->countSymbols / $this->countNotIgnoredSites,
             ]),
             'main_page' => json_encode([
-                'countWords' => TextLengthController::countingWord($mainPageText),
-                'countSymbols' => Str::length($mainPageText),
+                'countWords' => $this->countWordsInMyPage,
+                'countSymbols' => $this->countSymbolsInMyPage,
             ]),
             'unigram_table' => json_encode($this->wordForms),
             'sites' => json_encode($this->sites),

@@ -44,6 +44,7 @@ class RelevanceController extends Controller
      */
     public function testView()
     {
+        $config = RelevanceAnalysisConfig::first();
         $admin = false;
         foreach (Auth::user()->role as $role) {
             if ($role == '1' || $role == '3') {
@@ -51,7 +52,6 @@ class RelevanceController extends Controller
                 break;
             }
         }
-        $config = RelevanceAnalysisConfig::first();
 
         return view('relevance-analysis.test', [
             'admin' => $admin,
@@ -87,12 +87,6 @@ class RelevanceController extends Controller
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
             $sitesList = explode("\n", $sitesList);
 
-            if (count($sitesList) <= 7) {
-                return response()->json([
-                    'countError' => 'Список сайтов должен содержать минимум 7 сайтов'
-                ], 500);
-            }
-
             foreach ($sitesList as $item) {
                 $relevance->domains[] = [
                     'item' => str_replace('www.', '', mb_strtolower(trim($item))),
@@ -104,7 +98,7 @@ class RelevanceController extends Controller
         $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'phrase') {
-            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(20, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
@@ -195,12 +189,6 @@ class RelevanceController extends Controller
             $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
             $sitesList = explode("\n", $sitesList);
 
-            if (count($sitesList) <= 7) {
-                return response()->json([
-                    'countError' => 'Список сайов должен содержать минимум 7 сайтов'
-                ], 500);
-            }
-
             foreach ($sitesList as $item) {
                 $relevance->domains[] = [
                     'item' => str_replace('www.', "", mb_strtolower(trim($item))),
@@ -208,7 +196,7 @@ class RelevanceController extends Controller
                 ];
             }
         } else {
-            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(5, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
@@ -277,15 +265,6 @@ class RelevanceController extends Controller
     {
         $config = RelevanceAnalysisConfig::first();
 
-        $count = count($relevance->sites);
-        $text = Relevance::concatenation([$relevance->competitorsText, $relevance->competitorsLinks]);
-        $avgCountWords = TextLengthController::countingWord($text) / $count;
-        $mainPageText = Relevance::concatenation([
-            $relevance->mainPage['html'],
-            $relevance->mainPage['linkText'],
-            $relevance->mainPage['hiddenText']
-        ]);
-
         return response()->json([
             'clouds' => [
                 'competitors' => [
@@ -307,12 +286,12 @@ class RelevanceController extends Controller
                 ]
             ],
             'avg' => [
-                'countWords' => $avgCountWords,
-                'countSymbols' => Str::length($text) / $count,
+                'countWords' => $relevance->countWords / $relevance->countNotIgnoredSites,
+                'countSymbols' => $relevance->countSymbols / $relevance->countNotIgnoredSites,
             ],
             'mainPage' => [
-                'countWords' => TextLengthController::countingWord($mainPageText),
-                'countSymbols' => Str::length($mainPageText),
+                'countWords' => $relevance->countWordsInMyPage,
+                'countSymbols' => $relevance->countSymbolsInMyPage,
             ],
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
