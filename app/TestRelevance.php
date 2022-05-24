@@ -357,7 +357,6 @@ class TestRelevance
      */
     public function calculateTextInfo()
     {
-
         foreach ($this->sites as $key => $site) {
             if (!$site['ignored']) {
                 $this->countNotIgnoredSites++;

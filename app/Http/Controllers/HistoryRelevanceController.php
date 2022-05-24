@@ -8,7 +8,6 @@ use App\RelevanceHistoryResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class HistoryRelevanceController extends Controller
@@ -66,7 +65,6 @@ class HistoryRelevanceController extends Controller
      */
     public function changeCalculateState(Request $request): JsonResponse
     {
-        Log::debug('r', $request->all());
         $project = RelevanceHistory::where('id', '=', $request->id)->first();
 
         $project->calculate = filter_var($request->calculate, FILTER_VALIDATE_BOOLEAN);
@@ -107,6 +105,46 @@ class HistoryRelevanceController extends Controller
     public function getDetailsInfo(Request $request): JsonResponse
     {
         $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->first();
+        $history = json_decode($history, true);
+
+        $clouds_competitors = json_decode($history['clouds_competitors'], true);
+        $clouds_main_page = json_decode($history['clouds_main_page'], true);
+        $avg = json_decode($history['avg'], true);
+        $main_page = json_decode($history['main_page'], true);
+
+        $history = [
+            'clouds_competitors' => [
+                'totalTf' => json_decode($clouds_competitors['totalTf'], true),
+                'textTf' => json_decode($clouds_competitors['textTf'], true),
+                'linkTf' => json_decode($clouds_competitors['linkTf'], true),
+
+                'textAndLinks' => json_decode($clouds_competitors['textAndLinks'], true),
+                'links' => json_decode($clouds_competitors['links'], true),
+                'text' => json_decode($clouds_competitors['text'], true),
+            ],
+            'clouds_main_page' => [
+                'totalTf' => json_decode($clouds_main_page['totalTf'], true),
+                'textTf' => json_decode($clouds_main_page['textTf'], true),
+                'linkTf' => json_decode($clouds_main_page['linkTf'], true),
+                'textWithLinks' => json_decode($clouds_main_page['textWithLinks'], true),
+                'links' => json_decode($clouds_main_page['links'], true),
+                'text' => json_decode($clouds_main_page['text'], true),
+            ],
+            'avg' => [
+                'countWords' => json_decode($avg['countWords'], true),
+                'countSymbols' => json_decode($avg['countSymbols'], true),
+            ],
+            'main_page' => [
+                'countWords' => json_decode($main_page['countSymbols'], true),
+                'countSymbols' => json_decode($main_page['countSymbols'], true),
+            ],
+            'unigram_table' => json_decode($history['unigram_table'], true),
+            'sites' => json_decode($history['sites'], true),
+            'tf_comp_clouds' => json_decode($history['tf_comp_clouds'], true),
+            'phrases' => json_decode($history['phrases'], true),
+            'avg_coverage_percent' => json_decode($history['avg_coverage_percent'], true),
+            'recommendations' => json_decode($history['recommendations'], true),
+        ];
 
         return response()->json([
             'history' => $history

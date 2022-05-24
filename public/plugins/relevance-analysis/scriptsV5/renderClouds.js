@@ -8,6 +8,7 @@ function renderClouds(competitors, mainPage, tfCompClouds, hide) {
 }
 
 $("#tf-idf-clouds").click(function () {
+    console.log('lck')
     if (!$('.tf-idf-clouds').is(':visible')) {
         $('.tf-idf-clouds').show()
         if (!generatedTfIdf) {

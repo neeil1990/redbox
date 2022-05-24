@@ -84,6 +84,11 @@
         </div>
     </div>
 
+    <div class="text-center" id="preloaderBlock">
+        <img src="/img/1485.gif" alt="preloader_gif">
+        <p>Загрузка..</p>
+    </div>
+
     <div class="tab-pane active" id="tab_1">
         <div class="pb-3 pt-3 text" style="display:none">
             <h3>{{ __('Comparing the amount of text') }}</h3>
@@ -597,6 +602,7 @@
                         </span>
                         @endif
                     </th>
+                    <th>Количество символов</th>
                     <th>{{ __('Result') }}</th>
                 </tr>
                 </thead>
@@ -605,7 +611,7 @@
             </table>
         </div>
 
-        <div class="pb-3" id="competitorsTfClouds" style="display: none !important;">
+        <div class="pb-3 pt-3" id="competitorsTfClouds" style="display: none !important;">
             <div class="align-items-end clouds-div">
                 <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
                     Облака первых 200 важных (по tf-idf) слов у конкурентов
@@ -705,15 +711,16 @@
             });
 
             function successRequest(history) {
-                console.log(history)
-                renderTextTable(JSON.parse(history.avg), JSON.parse(history.main_page))
-                renderRecommendationsTable(JSON.parse(history.recommendations), 10)
-                renderUnigramTable(JSON.parse(history.unigram_table), 10);
-                renderPhrasesTable(JSON.parse(history.phrases), 10)
-                renderScannedSitesList(JSON.parse(history.sites), JSON.parse(history.avg_coverage_percent), 10, false, 0);
-                renderClouds(JSON.parse(history.clouds_competitors), JSON.parse(history.clouds_main_page), JSON.parse(history.tf_comp_clouds), false);
+                renderTextTable(history.avg, history.main_page)
+                renderRecommendationsTable(history.recommendations, 10)
+                renderUnigramTable(history.unigram_table, 10);
+                renderPhrasesTable(history.phrases, 10)
+                renderScannedSitesList(history.sites, history.avg_coverage_percent, 10, false, 0);
+                renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false);
+                setTimeout(function () {
+                    $('#preloaderBlock').hide(300)
+                }, 1500)
             }
-
         </script>
     @endslot
 @endcomponent
