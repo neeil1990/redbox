@@ -220,16 +220,16 @@
                                 <th style="z-index: 9999; background: white !important; min-width: 160px; max-width:160px; height: 83px">
                                     Посадочная страница
                                 </th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Позиция в топе
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Позиция в топе
                                 </th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Баллы</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Охват важных
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Баллы</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Охват важных
                                     слова
                                 </th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Охват tf</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Ширина</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Плотность</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px">Учитывать в
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Охват tf</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Ширина</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Плотность</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Учитывать в
                                     расчёте общего
                                     балла
                                 </th>
