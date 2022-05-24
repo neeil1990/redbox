@@ -1047,12 +1047,12 @@
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderClouds.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderUnigramTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderScannedSitesList.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderTextTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderPhrasesTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderRecommendationsTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderClouds.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderUnigramTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderScannedSitesList.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderTextTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderPhrasesTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderRecommendationsTable.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -1087,21 +1087,6 @@
                 }
             })
 
-            $('#tf-idf-clouds').click(() => {
-                if ($('.tf-idf-clouds').is(':visible')) {
-                    $('.tf-idf-clouds').hide()
-                } else {
-                    $('.tf-idf-clouds').show()
-                }
-            })
-
-            $('#text-clouds').click(() => {
-                if ($('.text-clouds').is(':visible')) {
-                    $('.text-clouds').hide()
-                } else {
-                    $('.text-clouds').show()
-                }
-            })
         </script>
         <script>
             var generatedTfIdf = false

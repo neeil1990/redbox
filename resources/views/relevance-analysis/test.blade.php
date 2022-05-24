@@ -47,13 +47,13 @@
                 width: auto;
             }
 
-            .pb-3.unigramd thead th {
+            .pb-3.unigram thead th {
                 position: sticky;
                 top: 0;
                 z-index: 1;
             }
 
-            .pb-3.unigramd tbody th {
+            .pb-3.unigram tbody th {
                 position: sticky;
                 left: 0;
             }
@@ -358,7 +358,6 @@
                             </button>
                             <div class="tf-idf-clouds" style="display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
-
                                     <div class="col-lg-5 col-md-10">
                                         <span>{{ __('Average tf-idf values of links and competitor text') }}</span>
                                         <div style="height: 350px" id="competitorsTfCloud"
@@ -1117,22 +1116,6 @@
                     $('.form-group.required.list-words.mt-1').show(300)
                 } else {
                     $('.form-group.required.list-words.mt-1').hide(300)
-                }
-            })
-
-            $('#tf-idf-clouds').click(() => {
-                if ($('.tf-idf-clouds').is(':visible')) {
-                    $('.tf-idf-clouds').hide()
-                } else {
-                    $('.tf-idf-clouds').show()
-                }
-            })
-
-            $('#text-clouds').click(() => {
-                if ($('.text-clouds').is(':visible')) {
-                    $('.text-clouds').hide()
-                } else {
-                    $('.text-clouds').show()
                 }
             })
         </script>

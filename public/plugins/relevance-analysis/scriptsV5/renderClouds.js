@@ -8,7 +8,7 @@ function renderClouds(competitors, mainPage, tfCompClouds, hide) {
 }
 
 $("#tf-idf-clouds").click(function () {
-    if ($('.tf-idf-clouds').is(':visible')) {
+    if (!$('.tf-idf-clouds').is(':visible')) {
         $('.tf-idf-clouds').show()
         if (!generatedTfIdf) {
             let competitors = JSON.parse(sessionStorage.getItem('competitors'))
@@ -33,7 +33,7 @@ $("#tf-idf-clouds").click(function () {
 });
 
 $("#text-clouds").click(function () {
-    if ($('.text-clouds').is(':visible')) {
+    if (!$('.text-clouds').is(':visible')) {
         $('.text-clouds').show()
         if (!generatedText) {
             let competitors = JSON.parse(sessionStorage.getItem('competitors'))
