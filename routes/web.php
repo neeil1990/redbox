@@ -195,6 +195,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-state', 'HistoryRelevanceController@changeCalculateState')->name('change.state');
     Route::get('/show-details-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
+    Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');

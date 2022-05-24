@@ -16,6 +16,7 @@ function renderUnigramTable(unigramTable, count) {
                 'copy', 'csv', 'excel'
             ]
         });
+
         $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
         //Добавляем только в ниграм
         $.each($(".dt-buttons"), function (key, value) {
@@ -50,7 +51,6 @@ function renderUnigramTable(unigramTable, count) {
                 (isNaN(min) && target <= max) ||
                 (min <= target && isNaN(max)) ||
                 (min <= target && target <= max);
-
         }
 
         $.fn.dataTable.ext.search.push(function (settings, data) {

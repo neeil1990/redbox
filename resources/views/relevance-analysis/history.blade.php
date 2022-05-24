@@ -73,6 +73,12 @@
         </style>
     @endslot
 
+    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message" id="message-info"></div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -91,12 +97,12 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
                     <h3>Основные истории</h3>
-                    <table id="main_history_table" class="table table-bordered table-striped dataTable dtr-inline mb-3">
+                    <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
                             <th>Название проекта</th>
-                            <th class="col-2">Группа</th>
-                            <th class="col-2">Количество проанализированных страниц</th>
+                            <th>Группа</th>
+                            <th>Количество проанализированных страниц</th>
                             <th>Последняя проверка</th>
                             <th>Общий балл</th>
                         </tr>
@@ -104,7 +110,14 @@
                         <tbody>
                         @foreach($main as $item)
                             <tr>
-                                <td style="cursor:pointer;" class="project_name" data-order="{{ $item->id }}">{{ $item->name }}</td>
+                                <td>
+                                    <nav class="scrollto">
+                                        <a href="#history_table" class="project_name" style="cursor:pointer;"
+                                           data-order="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </a>
+                                    </nav>
+                                </td>
                                 <td data-order="{{ $item->group_name }}">
                                     <input type="text" class="form form-control group-name-input"
                                            value="{{ $item->group_name }}"
@@ -120,123 +133,110 @@
                     </table>
                     <div style="display:none;" class="history">
                         <h3>Последние проверки</h3>
-                        <table id="history_table" class="table table-bordered table-striped dataTable dtr-inline w-100">
+                        <table id="history_table" class="table table-bordered table-hover dataTable dtr-inline w-100">
                             <thead>
                             <tr>
                                 <th>
-                                    <div style="width: 90px">
-                                        <input class="w-100 form form-control" type="number" name="dataMin" id="dataMin" placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="dataMax" id="dataMax" placeholder="max">
-                                    </div>
+                                    <input class="w-100 form form-control search-input" type="date" name="dataMin"
+                                           id="dataMin"
+                                           placeholder="min">
+                                    <input class="w-100 form form-control" type="date" name="dataMax" id="dataMax"
+                                           placeholder="max">
                                 </th>
                                 <th>
-                                    <div style="width: 90px">
-                                        <input class="w-100 form form-control" type="number" name="phraseSearch" id="phraseSearch" placeholder="phrase">
-                                    </div>
+                                    <input class="w-100 form form-control search-input" type="text"
+                                           name="phraseSearch" id="phraseSearch" placeholder="phrase">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="text"
+                                           name="regionSearch" id="regionSearch" placeholder="region">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="text"
+                                           name="mainPageSearch" id="mainPageSearch" placeholder="link">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minPosition" id="minPosition" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxPosition" id="maxPosition" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minPoints" id="minPoints" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxPoints" id="maxPoints" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minCoverage" id="minCoverage" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxCoverage" id="maxCoverage" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minCoverageTf" id="minCoverageTf" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxCoverageTf" id="maxCoverageTf" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number" name="minWidth"
+                                           id="minWidth" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxWidth" id="maxWidth" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minDensity" id="minDensity" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxDensity" id="maxDensity" placeholder="max">
                                 </th>
                                 <th>
                                     <div>
-                                        <input class="w-100 form form-control" type="number" name="regionSearch" id="regionSearch" placeholder="region">
+                                        Переключить всё
+                                        <div class='d-flex w-100'>
+                                            <div class='__helper-link ui_tooltip_w'>
+                                                <div
+                                                    class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success changeAllState'>
+                                                    <input type='checkbox' class='custom-control-input'
+                                                           id='changeAllState'>
+                                                    <label class='custom-control-label' for='changeAllState'></label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="mainPageSearch" id="mainPageSearch" placeholder="link">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="minPosition" id="minPosition" placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="maxPosition" id="maxPosition" placeholder="max">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="minPoints" id="minPoints" placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="maxPoints" id="maxPoints" placeholder="max">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="minCoverage" id="minCoverage" placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="maxCoverage" id="maxCoverage" placeholder="max">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="minCoveradeTf" id="minCoveradeTf"placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="maxCoveradeTf" id="maxCoveradeTf" placeholder="max">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="minWidth" id="minWidth" placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="maxWidth" id="maxWidth" placeholder="max">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div>
-                                        <input class="w-100 form form-control" type="number" name="minDensity" id="minDensity" placeholder="min">
-                                        <input class="w-100 form form-control" type="number" name="maxDensity" id="maxDensity" placeholder="max">
-                                    </div>
-                                </th>
-                                <th>
+
                                 </th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th>Дата последней проверки</th>
-                                <th>Фраза</th>
-                                <th>Регион</th>
-                                <th>Посадочная страница</th>
-                                <th>Позиция в топе</th>
-                                <th>Баллы</th>
-                                <th>Охват важных слова</th>
-                                <th>Охват tf</th>
-                                <th>Ширина</th>
-                                <th>Плотность</th>
-                                <th>Учитывать в расчёте общего балла</th>
-                                <th></th>
+                                <th style="z-index: 9999; background: white !important;">Дата последней проверки</th>
+                                <th style="z-index: 9999; background: white !important; min-width: 160px; height: 83px">
+                                    Фраза
+                                </th>
+                                <th style="z-index: 9999; background: white !important; min-width: 160px; height: 83px">
+                                    Регион
+                                </th>
+                                <th style="z-index: 9999; background: white !important; min-width: 160px; max-width:160px; height: 83px">
+                                    Посадочная страница
+                                </th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Позиция в топе
+                                </th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Баллы</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Охват важных
+                                    слова
+                                </th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Охват tf</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Ширина</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Плотность</th>
+                                <th style="z-index: 9999; background: white !important; height: 83px">Учитывать в
+                                    расчёте общего
+                                    балла
+                                </th>
+                                <th style="z-index: 9999; background: white !important;"></th>
                             </tr>
                             </thead>
-                            <tbody>
-                            @foreach($history as $item)
-                                <tr data-order="{{ $item->project_relevance_history_id }}" class="children-row">
-                                    <td class="col-1">{{ $item->last_check }}</td>
-                                    <td class="col-1">{{ $item->phrase }}</td>
-                                    <td class="col-2">{{ $item->getRegionName($item->region) }}</td>
-                                    <td class="col-2">{{ $item->main_link }}</td>
-                                    <td class="col-1">{{ $item->position }}</td>
-                                    <td class="col-1">{{ $item->points }}</td>
-                                    <td class="col-1">{{ $item->coverage }}</td>
-                                    <td class="col-1">{{ $item->coverage_tf }}</td>
-                                    <td class="col-1">{{ $item->width }}</td>
-                                    <td class="col-1">{{ $item->density }}</td>
-                                    <td>
-                                        <div class="d-flex justify-content-center">
-                                            <div class="__helper-link ui_tooltip_w">
-                                                <div
-                                                    class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                    <input type="checkbox"
-                                                           class="custom-control-input switch"
-                                                           id="calculate-project-{{ $item->id }}"
-                                                           name="noIndex"
-                                                           data-target="{{ $item->id }}"
-                                                           data-name="calculate"
-                                                           @if($item->calculate ) checked @endif>
-                                                    <label class="custom-control-label"
-                                                           for="calculate-project-{{ $item->id }}"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('show.history', $item->id) }}" target="_blank"
-                                           class="btn btn-secondary">Подробная
-                                            информация</a>
-                                    </td>
-                                </tr>
-                            @endforeach
+                            <tbody id="historyTbody">
                             </tbody>
                         </table>
                     </div>
@@ -254,80 +254,12 @@
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-        <script>
-            let mainHistory = $('#main_history_table').DataTable({
-                "order": [[1, "desc"]],
-                "pageLength": 10,
-                "searching": true,
-                dom: 'lBfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel'
-                ]
-            });
-
-            let history = $('#history_table').DataTable({
-                "order": [[1, "desc"]],
-                "pageLength": 10,
-                "searching": true,
-                dom: 'lBfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel'
-                ]
-            });
-
-            $.each($(".dt-button"), function (key, value) {
-                $(this).addClass('btn btn-secondary')
-            });
-
-            $('.project_name').click(function () {
-                let target = $(this).attr('data-order')
-                $('.history').show()
-                // children-row
-                $.each($('.children-row'), function (key, value) {
-                    if ($(this).attr('data-order') === target) {
-                        $(this).show()
-                    } else {
-                        $(this).hide()
-                    }
-                })
-                // console.log($(this).attr('data-order'))
-            });
-        </script>
-        <script>
-            $(".group-name-input").change(function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('change.group.name') }}",
-                    data: {
-                        id: $(this).attr('data-target'),
-                        name: $(this).val()
-                    },
-                    success: function (response) {
-                    },
-                });
-            });
-
-            $(".switch").change(function () {
-                console.log($(this).attr('data-target'))
-                console.log($(this).is(':checked'))
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('change.state') }}",
-                    data: {
-                        id: $(this).attr('data-target'),
-                        calculate: $(this).is(':checked')
-                    },
-                    success: function (response) {
-                        console.log(response)
-                    },
-                });
-            })
-        </script>
+        <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
     @endslot
 @endcomponent

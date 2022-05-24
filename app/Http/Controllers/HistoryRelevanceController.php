@@ -8,6 +8,7 @@ use App\RelevanceHistoryResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class HistoryRelevanceController extends Controller
@@ -33,15 +34,30 @@ class HistoryRelevanceController extends Controller
 
     /**
      * @param Request $request
-     * @return void
+     * @return JsonResponse
      */
-    public function changeGroupName(Request $request)
+    public function getStories(Request $request): JsonResponse
+    {
+        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
+
+        return response()->json([
+            'stories' => $history->stories
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeGroupName(Request $request): JsonResponse
     {
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
 
         $project->group_name = $request->name;
 
         $project->save();
+
+        return response()->json([], 200);
     }
 
     /**
@@ -50,14 +66,13 @@ class HistoryRelevanceController extends Controller
      */
     public function changeCalculateState(Request $request): JsonResponse
     {
+        Log::debug('r', $request->all());
         $project = RelevanceHistory::where('id', '=', $request->id)->first();
 
         $project->calculate = filter_var($request->calculate, FILTER_VALIDATE_BOOLEAN);
 
         $project->save();
 
-//        $mainHistory = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
-//
         $info = ProjectRelevanceHistory::calculateInfo($project->projectRelevanceHistory->stories);
 
         $project->projectRelevanceHistory->total_points = $info['points'];

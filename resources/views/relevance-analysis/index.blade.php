@@ -972,16 +972,16 @@
                 <th>{{ __('Coverage by tf') }}
                     @if($admin)
                         <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __bottom">
-                            <span class="ui_tooltip_content" style="width: 300px">
-                                Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
-                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
-                                Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
-                                Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
+                            <i class="fa fa-question-circle"></i>
+                            <span class="ui_tooltip __bottom">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
+                                    Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
+                                    Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
+                                    Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
+                                </span>
                             </span>
                         </span>
-                    </span>
                     @endif
                 </th>
                 <th>{{ __('Width') }}
@@ -1045,19 +1045,19 @@
         </div>
     </div>
     @slot('js')
-        <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
-        <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderClouds.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderUnigramTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderScannedSitesList.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderTextTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderPhrasesTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/relevance-analysis/scriptsV3/renderRecommendationsTable.js') }}"></script>
-        <script defer src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script defer src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
+        <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderClouds.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderUnigramTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderScannedSitesList.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderTextTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderPhrasesTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV4/renderRecommendationsTable.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
