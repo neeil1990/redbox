@@ -124,7 +124,7 @@
                                            name="group_name"
                                            data-target="{{ $item->id }}">
                                 </td>
-                                <td>{{ $item->count_sites }}</td>
+                                <td class="col-2">{{ $item->count_sites }}</td>
                                 <td>{{ $item->last_check }}</td>
                                 <td>{{ $item->total_points }}</td>
                             </tr>
