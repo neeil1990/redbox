@@ -98,7 +98,7 @@ class RelevanceController extends Controller
         $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'phrase') {
-            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(100, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
@@ -109,7 +109,7 @@ class RelevanceController extends Controller
             );
 
         }
-        $relevance->parseSites();
+        $relevance->parseSites($xmlResponse);
         $relevance->analysis($request);
 
         return RelevanceController::successResponse($relevance);
@@ -196,7 +196,7 @@ class RelevanceController extends Controller
                 ];
             }
         } else {
-            $xml = new SimplifiedXmlFacade(50, $request->input('region'));
+            $xml = new SimplifiedXmlFacade(100, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
@@ -207,7 +207,7 @@ class RelevanceController extends Controller
                 filter_var($request->input('exp'), FILTER_VALIDATE_BOOLEAN)
             );
         }
-        $relevance->parseSites();
+        $relevance->parseSites($xmlResponse);
 
         $relevance->analysis($request);
 

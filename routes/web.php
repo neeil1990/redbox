@@ -209,10 +209,3 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 });
-
-Route::get('/bla', function () {
-    dd(\Illuminate\Support\Str::length(
-        '1234'
-    ));
-    dd(parse_url('https://ru.wikipedia.org/wiki/Собака'));
-});

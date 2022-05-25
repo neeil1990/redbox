@@ -43,12 +43,12 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
 
         if (value['danger']) {
             warning = "<td class='bg-warning'>" +
-                "   <u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
+                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</span>"
                 + ignorBlock +
                 "</td>";
         } else {
             warning = "<td>" +
-                "   <u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
+                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </span>"
                 + ignorBlock +
                 "</td>"
         }
@@ -62,11 +62,19 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             className = 'bg-warning-elem'
         }
 
+        var position
+
+        if (!value['position']) {
+            position = 'не попал в топ 100'
+        } else {
+            position = value['position']
+        }
+
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
-            "<td data-order='" + iterator + "'>" + iterator + "</td>" +
+            "<td data-order='" + iterator + "'>" + position + "</td>" +
             "<td data-order='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
-            "   <span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>"
+            "   <span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
             + noTop + btnGroup
             + "</td>" +
             "<td data-order='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +

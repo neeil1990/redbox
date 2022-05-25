@@ -95,9 +95,10 @@ class Relevance
     }
 
     /**
+     * @param bool|array $xmlResponse
      * @return void
      */
-    public function parseSites()
+    public function parseSites($xmlResponse = false)
     {
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
@@ -110,6 +111,7 @@ class Relevance
             $this->sites[$domain]['html'] = $result;
             $this->sites[$domain]['defaultHtml'] = $result;
             $this->sites[$domain]['site'] = $domain;
+            $this->sites[$domain]['position'] = $item['position'];
 
             $compUrl = parse_url($domain);
             if ($host == Str::lower($compUrl['host'])) {
@@ -137,6 +139,11 @@ class Relevance
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
             $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->mainPage['html'];
             $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
+            if ($xmlResponse) {
+                $this->sites[$this->params['main_page_link']]['position'] = array_search('https://almamed.su/category/laringoskopy/', $xmlResponse);
+            } else {
+                $this->sites[$this->params['main_page_link']]['position'] = 'Нет возможности узнать позицию сайта';
+            }
         }
     }
 
@@ -174,11 +181,9 @@ class Relevance
 
         $this->prepareAnalysedSitesTable();
 
-        $this->calculateTextInfo();
-
         $this->prepareClouds();
 
-        $this->saveResults();
+        $this->saveResults($request->count);
     }
 
     /**
@@ -365,22 +370,22 @@ class Relevance
      */
     public function calculateTextInfo()
     {
-
         foreach ($this->sites as $key => $site) {
+            $this->countNotIgnoredSites++;
+            $countSymbols = Str::length($site['html']) + Str::length($site['linkText']) + Str::length($site['hiddenText']);
+            $countWords = TextLengthController::countingWord($site['html'] . ' ' . $site['linkText'] . ' ' . $site['hiddenText']);
+
+            if ($this->sites[$key]['mainPage']) {
+                $this->countSymbolsInMyPage = $countSymbols;
+                $this->countWordsInMyPage = $countWords;
+            }
+
             if (!$site['ignored']) {
-                $this->countNotIgnoredSites++;
-                $countSymbols = Str::length($site['html']) + Str::length($site['linkText']) + Str::length($site['hiddenText']);
-                $countWords = TextLengthController::countingWord($site['html'] . ' ' . $site['linkText'] . ' ' . $site['hiddenText']);
-
-                if ($this->sites[$key]['mainPage']) {
-                    $this->countSymbolsInMyPage = $countSymbols;
-                    $this->countWordsInMyPage = $countWords;
-                }
-
                 $this->countSymbols += $countSymbols;
                 $this->countWords += $countWords;
-                $this->sites[$key]['countSymbols'] = max($countSymbols, 0);
             }
+
+            $this->sites[$key]['countSymbols'] = max($countSymbols, 0);
         }
     }
 
@@ -438,6 +443,7 @@ class Relevance
         $this->calculateCoveragePoints();
         $this->calculateWidthPoints();
         $this->calculateTotalPoints();
+        $this->calculateTextInfo();
     }
 
     /**
@@ -751,44 +757,48 @@ class Relevance
     }
 
     /**
-     * @param $count
+     * @param $maxLength
      * @param $ignoredDomains
      * @param $sites
+     * @param bool $exp
      * @return void
      */
-    public function removeIgnoredDomains($count, $ignoredDomains, $sites)
+    public function removeIgnoredDomains($maxLength, $ignoredDomains, $sites, bool $exp = false)
     {
-        if (isset($ignoredDomains)) {
-            $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
-            $ignoredDomains = explode("\n", $ignoredDomains);
-            $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
-            $iterator = 0;
+        $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
+        $ignoredDomains = explode("\n", $ignoredDomains);
+        $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
+        $iterator = 0;
 
-            foreach ($sites as $item) {
+        foreach ($sites as $key => $item) {
+            $domain = parse_url($item);
+            $domain = str_replace('www.', "", mb_strtolower($domain['host']));
 
-                $domain = parse_url($item);
-                $domain = str_replace('www.', "", mb_strtolower($domain['host']));
-
+            if ($iterator < $maxLength) {
+                $this->domains[$key] = [
+                    'item' => $item,
+                    'position' => $key + 1,
+                ];
 
                 if (in_array($domain, $ignoredDomains)) {
-                    $this->domains[] = [
-                        'item' => $item,
-                        'ignored' => true,
-                    ];
+                    $this->domains[$key]['ignored'] = true;
                 } else {
-                    $this->domains[] = [
-                        'item' => $item,
-                        'ignored' => false,
-                    ];
+                    $this->domains[$key]['ignored'] = false;
                     $iterator++;
                 }
 
-                if ($iterator == $count) {
+            } else {
+                if ($exp && $key < 50) {
+                    $this->domains[$key] = [
+                        'exp' => true,
+                        'ignored' => true,
+                        'item' => $item,
+                        'position' => $key + 1,
+                    ];
+                } else {
                     break;
                 }
             }
-        } else {
-            $this->domains = array_slice($sites, 0, $count - 1);
         }
     }
 
@@ -818,10 +828,10 @@ class Relevance
                 'mainPage' => $site['mainPage'],
                 'equallyHost' => $site['equallyHost'] ?? false,
                 'site' => $key,
+                'position' => $site['position'],
             ];
         }
     }
-
 
     /**
      * @param $domains
@@ -835,13 +845,13 @@ class Relevance
             $this->domains[$key] = [
                 'item' => $item['site'],
                 'ignored' => $item['ignored'],
+                'position' => $item['position'],
             ];
 
             if (isset($item['inRelevance']) && $item['inRelevance'] == false) {
                 $this->domains[$key]['inRelevance'] = false;
             }
         }
-
     }
 
     /**
@@ -1087,9 +1097,10 @@ class Relevance
     }
 
     /**
+     * @param $count
      * @return void
      */
-    public function saveResults()
+    public function saveResults($count)
     {
         //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
@@ -1098,6 +1109,8 @@ class Relevance
             unset($this->sites[$key]['linkText']);
             unset($this->sites[$key]['hiddenText']);
         }
+
+        $this->sites = array_slice($this->sites, 0, $count);
 
         $this->params['sites'] = json_encode($this->sites);
         $this->params->save();
