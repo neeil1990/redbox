@@ -1097,22 +1097,25 @@ class TestRelevance
     }
 
     /**
-     * @param $count
      * @return void
      */
-    public function saveResults($count)
+    public function saveResults()
     {
+        $saveObject = [];
         //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
-            $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
-            unset($this->sites[$key]['html']);
-            unset($this->sites[$key]['linkText']);
-            unset($this->sites[$key]['hiddenText']);
+            if (!array_key_exists('exp', $this->sites[$key])) {
+                unset($this->sites[$key]['html']);
+                unset($this->sites[$key]['linkText']);
+                unset($this->sites[$key]['hiddenText']);
+                $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
+
+                $saveObject[$key] = $this->sites[$key];
+            }
+
         }
 
-        $this->sites = array_slice($this->sites, 0, $count);
-
-        $this->params['sites'] = json_encode($this->sites);
+        $this->params['sites'] = json_encode($saveObject);
         $this->params->save();
     }
 
