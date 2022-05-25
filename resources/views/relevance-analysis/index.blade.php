@@ -1047,12 +1047,12 @@
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderClouds.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderUnigramTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderScannedSitesList.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderTextTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderPhrasesTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV5/renderRecommendationsTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderUnigramTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderScannedSitesList.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderTextTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderPhrasesTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>

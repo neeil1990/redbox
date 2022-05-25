@@ -1102,7 +1102,6 @@ class TestRelevance
     public function saveResults()
     {
         $saveObject = [];
-        //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
             if (!array_key_exists('exp', $this->sites[$key])) {
                 unset($this->sites[$key]['html']);
