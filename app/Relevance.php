@@ -183,7 +183,7 @@ class Relevance
 
         $this->prepareClouds();
 
-        $this->saveResults($request->count);
+        $this->saveResults();
     }
 
     /**
@@ -1097,10 +1097,9 @@ class Relevance
     }
 
     /**
-     * @param $count
      * @return void
      */
-    public function saveResults($count)
+    public function saveResults()
     {
         //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
@@ -1110,7 +1109,6 @@ class Relevance
             unset($this->sites[$key]['hiddenText']);
         }
 
-        $this->sites = array_slice($this->sites, 0, $count);
 
         $this->params['sites'] = json_encode($this->sites);
         $this->params->save();
