@@ -807,10 +807,11 @@ class TestRelevance
         foreach (json_decode($sites, true) as $key => $site) {
             $this->sites[$key] = [
                 'danger' => $site['danger'],
-                'html' => gzuncompress(base64_decode($site['html'])),
+                'html' => gzuncompress(base64_decode($site['defaultHtml'])),
+                'defaultHtml' => gzuncompress(base64_decode($site['defaultHtml'])),
                 'ignored' => $site['ignored'],
                 'mainPage' => $site['mainPage'],
-                'equallyHost' => isset($site['equallyHost']),
+                'equallyHost' => $site['equallyHost'] ?? false,
                 'site' => $key,
             ];
         }

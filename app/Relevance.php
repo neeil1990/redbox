@@ -4,7 +4,6 @@ namespace App;
 
 use App\Http\Controllers\TextLengthController;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -115,6 +114,8 @@ class Relevance
             $compUrl = parse_url($domain);
             if ($host == Str::lower($compUrl['host'])) {
                 $this->sites[$domain]['equallyHost'] = true;
+            } else {
+                $this->sites[$domain]['equallyHost'] = false;
             }
 
             if ($domain == $this->params['main_page_link']) {
@@ -146,12 +147,19 @@ class Relevance
     public function analysis($request)
     {
         $this->removeNoIndex($request->noIndex);
+
         $this->getHiddenData($request->hiddenText);
+
         $this->separateLinksFromText();
+
         $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
+
         $this->removeListWords($request);
+
         $this->deleteEverythingExceptCharacters();
+
         $this->getTextFromCompetitors();
+
         $this->separateAllText();
 
         $this->preparePhrasesTable();
@@ -808,7 +816,7 @@ class Relevance
                 'defaultHtml' => gzuncompress(base64_decode($site['defaultHtml'])),
                 'ignored' => $site['ignored'],
                 'mainPage' => $site['mainPage'],
-                'equallyHost' => isset($site['equallyHost']),
+                'equallyHost' => $site['equallyHost'] ?? false,
                 'site' => $key,
             ];
         }
@@ -1089,7 +1097,6 @@ class Relevance
             unset($this->sites[$key]['html']);
             unset($this->sites[$key]['linkText']);
             unset($this->sites[$key]['hiddenText']);
-
         }
 
         $this->params['sites'] = json_encode($this->sites);
