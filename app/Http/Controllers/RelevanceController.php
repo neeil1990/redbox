@@ -91,6 +91,7 @@ class RelevanceController extends Controller
                 $relevance->domains[] = [
                     'item' => str_replace('www.', '', mb_strtolower(trim($item))),
                     'ignored' => false,
+                    'position' => count($relevance->domains) + 1
                 ];
             }
         }
@@ -191,10 +192,12 @@ class RelevanceController extends Controller
 
             foreach ($sitesList as $item) {
                 $relevance->domains[] = [
-                    'item' => str_replace('www.', "", mb_strtolower(trim($item))),
+                    'item' => str_replace('www.', '', mb_strtolower(trim($item))),
                     'ignored' => false,
+                    'position' => count($relevance->domains) + 1
                 ];
             }
+            $relevance->parseSites();
         } else {
             $xml = new SimplifiedXmlFacade(100, $request->input('region'));
             $xml->setQuery($request->input('phrase'));
@@ -206,8 +209,8 @@ class RelevanceController extends Controller
                 $xmlResponse,
                 filter_var($request->input('exp'), FILTER_VALIDATE_BOOLEAN)
             );
+            $relevance->parseSites($xmlResponse);
         }
-        $relevance->parseSites($xmlResponse);
 
         $relevance->analysis($request);
 

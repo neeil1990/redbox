@@ -96,10 +96,10 @@ class TestRelevance
     }
 
     /**
-     * @param $xmlResponse
+     * @param bool|array $xmlResponse
      * @return void
      */
-    public function parseSites($xmlResponse)
+    public function parseSites($xmlResponse = false)
     {
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
@@ -140,7 +140,11 @@ class TestRelevance
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
             $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->mainPage['html'];
             $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
-            $this->sites[$this->params['main_page_link']]['position'] = array_search('https://almamed.su/category/laringoskopy/', $xmlResponse);
+            if ($xmlResponse) {
+                $this->sites[$this->params['main_page_link']]['position'] = array_search('https://almamed.su/category/laringoskopy/', $xmlResponse);
+            } else {
+                $this->sites[$this->params['main_page_link']]['position'] = 'Нет возможности узнать позицию сайта';
+            }
         }
     }
 
