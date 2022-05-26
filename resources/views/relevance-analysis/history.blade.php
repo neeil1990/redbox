@@ -70,6 +70,11 @@
             .bg-my-site {
                 background: #4eb767c4;
             }
+
+            .table-header {
+                z-index: 9999;
+                background: white;
+            }
         </style>
     @endslot
 
@@ -102,7 +107,7 @@
                         <tr>
                             <th>Название проекта</th>
                             <th>Группа</th>
-                            <th>Количество проанализированных страниц</th>
+                            <th class="table-header">Количество проанализированных страниц</th>
                             <th>Последняя проверка</th>
                             <th>Общий балл</th>
                         </tr>
@@ -192,6 +197,9 @@
                                            name="maxDensity" id="maxDensity" placeholder="max">
                                 </th>
                                 <th>
+
+                                </th>
+                                <th>
                                     <div>
                                         Переключить всё
                                         <div class='d-flex w-100'>
@@ -210,30 +218,44 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th style="z-index: 9999; background: white !important;">Дата последней проверки</th>
-                                <th style="z-index: 9999; background: white !important; min-width: 160px; height: 83px">
+                                <th class="table-header">Дата последней проверки</th>
+                                <th class="table-header" style="min-width: 160px; height: 83px">
                                     Фраза
                                 </th>
-                                <th style="z-index: 9999; background: white !important; min-width: 160px; height: 83px">
+                                <th class="table-header" style="min-width: 160px; height: 83px">
                                     Регион
                                 </th>
-                                <th style="z-index: 9999; background: white !important; min-width: 160px; max-width:160px; height: 83px">
+                                <th class="table-header" style="min-width: 160px; max-width:160px; height: 83px">
                                     Посадочная страница
                                 </th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Позиция в топе
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Позиция в топе
                                 </th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Баллы</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Охват важных
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Баллы
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Охват важных
                                     слова
                                 </th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Охват tf</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Ширина</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Плотность</th>
-                                <th style="z-index: 9999; background: white !important; height: 83px; min-width: 69px">Учитывать в
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Охват tf
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Ширина
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Плотность
+                                </th>
+                                <th class="table-header" style="min-width: 200px">
+                                    Комментарий
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Учитывать в
                                     расчёте общего
                                     балла
                                 </th>
-                                <th style="z-index: 9999; background: white !important;"></th>
+                                <th class="table-header"></th>
                             </tr>
                             </thead>
                             <tbody id="historyTbody">

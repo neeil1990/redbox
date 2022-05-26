@@ -25,9 +25,18 @@ class HistoryRelevanceController extends Controller
             }
         }
 
+        $admin = false;
+        foreach (Auth::user()->role as $role) {
+            if ($role == '1' || $role == '3') {
+                $admin = true;
+                break;
+            }
+        }
+
         return view('relevance-analysis.history', [
             'main' => $main,
             'history' => $history,
+            'admin' => $admin
         ]);
     }
 
@@ -48,7 +57,7 @@ class HistoryRelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function changeGroupName(Request $request): JsonResponse
+    public function editGroupName(Request $request): JsonResponse
     {
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
 
@@ -149,6 +158,21 @@ class HistoryRelevanceController extends Controller
         return response()->json([
             'history' => $history
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editComment(Request $request): JsonResponse
+    {
+        $project = RelevanceHistory::where('id', '=', $request->id)->first();
+
+        $project->comment = $request->comment;
+
+        $project->save();
+
+        return response()->json([], 200);
     }
 
     public function createQueueView()

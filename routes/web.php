@@ -191,7 +191,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
     Route::post('/change-config', 'RelevanceController@changeConfig')->name('changeConfig');
     Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
-    Route::post('/change-group-name', 'HistoryRelevanceController@changeGroupName')->name('change.group.name');
+    Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
+    Route::post('/edit-history-comment', 'HistoryRelevanceController@editComment')->name('edit.history.comment');
     Route::post('/change-state', 'HistoryRelevanceController@changeCalculateState')->name('change.state');
     Route::get('/show-details-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');

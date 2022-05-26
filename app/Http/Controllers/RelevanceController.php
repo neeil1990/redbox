@@ -22,9 +22,9 @@ use Illuminate\View\View;
 class RelevanceController extends Controller
 {
     /**
-     * @return array|false|Application|Factory|View|mixed
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $admin = false;
         foreach (Auth::user()->role as $role) {
@@ -40,9 +40,9 @@ class RelevanceController extends Controller
     }
 
     /**
-     * @return array|false|Application|Factory|View|mixed
+     * @return View
      */
-    public function testView()
+    public function testView(): View
     {
         $config = RelevanceAnalysisConfig::first();
         $admin = false;
@@ -91,7 +91,7 @@ class RelevanceController extends Controller
                 $relevance->domains[] = [
                     'item' => str_replace('www.', '', mb_strtolower(trim($item))),
                     'ignored' => false,
-                    'position' => count($relevance->domains) + 1
+                    'positi3131on' => count($relevance->domains) + 1
                 ];
             }
         }

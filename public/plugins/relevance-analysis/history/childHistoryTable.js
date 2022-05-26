@@ -39,16 +39,19 @@ $('.project_name').click(function () {
                 let checked = val.calculate ? 'checked' : ''
                 tbody.append(
                     "<tr class='render'>" +
-                    "<td class='col-1'>" + val.last_check + "</td>" +
-                    "<td class='col-1'>" + val.phrase + "</td>" +
-                    "<td class='col-1'>" + val.region + "</td>" +
-                    "<td class='col-1'>" + val.main_link + "</td>" +
-                    "<td class='col-1'>" + val.position + "</td>" +
-                    "<td class='col-1'>" + val.points + "</td>" +
-                    "<td class='col-1'>" + val.coverage + "</td>" +
-                    "<td class='col-1'>" + val.coverage_tf + "</td>" +
-                    "<td class='col-1'>" + val.width + "</td>" +
-                    "<td class='col-1'>" + val.density + "</td>" +
+                    "<td>" + val.last_check + "</td>" +
+                    "<td>" + val.phrase + "</td>" +
+                    "<td>" + val.region + "</td>" +
+                    "<td>" + val.main_link + "</td>" +
+                    "<td>" + val.position + "</td>" +
+                    "<td>" + val.points + "</td>" +
+                    "<td>" + val.coverage + "</td>" +
+                    "<td>" + val.coverage_tf + "</td>" +
+                    "<td>" + val.width + "</td>" +
+                    "<td>" + val.density + "</td>" +
+                    "<td>" +
+                    "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                    "</td>" +
                     "<td>" +
                     "   <div class='d-flex justify-content-center'> " +
                     "       <div class='__helper-link ui_tooltip_w'> " +
@@ -89,6 +92,26 @@ $('.project_name').click(function () {
                 }, {
                     duration: 370,
                     easing: "linear"
+                });
+
+                $('.history-comment').change(function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/edit-history-comment",
+                        data: {
+                            id: $(this).attr('data-target'),
+                            comment: $(this).val()
+                        },
+                        success: function () {
+                            $('#toast-container').show(300)
+                            $('#message-info').html('Коментарий успешно сохранён')
+                            setInterval(function () {
+                                $('#toast-container').hide(300)
+                            }, 3000)
+                        },
+                    });
+                    // edit-history-comment
                 });
 
                 function isValidate(min, max, target, settings) {

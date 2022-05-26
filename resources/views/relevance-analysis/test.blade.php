@@ -1162,18 +1162,12 @@
                         let message = ''
                         if (response.responseText) {
                             let messages = JSON.parse(response.responseText);
-                            try {
-                                if (messages['errors']['link']) {
-                                    message += messages['errors']['link'] + "<br>"
-                                }
-                                if (messages['errors']['phrase']) {
-                                    message += messages['errors']['phrase'] + "<br>"
-                                }
-                                if (messages['errors']['siteList']) {
-                                    message += messages['errors']['siteList'] + "<br>"
-                                }
-                            } catch (e) {
-                                message += messages.countError + "<br>"
+                            $.each(messages['errors'], function (key, value) {
+                                message += value + "<br>"
+                            });
+
+                            if (message === '') {
+                                message = 'Произошла непредвиденная ошибка, обратитесь к администратору'
                             }
 
                             $('.toast-message.error-message').html(message)

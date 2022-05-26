@@ -14,7 +14,7 @@ $(".group-name-input").change(function () {
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "/change-group-name",
+        url: "/edit-group-name",
         data: {
             id: $(this).attr('data-target'),
             name: $(this).val()
