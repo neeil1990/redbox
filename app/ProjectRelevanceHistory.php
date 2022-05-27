@@ -50,15 +50,16 @@ class ProjectRelevanceHistory extends Model
     /**
      * @param $host
      * @param $time
+     * @param $userId
      * @return ProjectRelevanceHistory
      */
-    public static function createOrUpdate($host, $time): ProjectRelevanceHistory
+    public static function createOrUpdate($host, $time, $userId): ProjectRelevanceHistory
     {
         $main = ProjectRelevanceHistory::firstOrNew([
             'name' => $host,
         ]);
         $main->last_check = $time;
-        $main->user_id = Auth::id();
+        $main->user_id = $userId;
         $main->save();
 
         return $main;

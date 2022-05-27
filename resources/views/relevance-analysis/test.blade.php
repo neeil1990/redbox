@@ -97,6 +97,9 @@
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="{{ route('relevance.history') }}">История</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="{{ route('create.queue.view') }}">Создать очередь задач</a>
+                </li>
             </ul>
         </div>
         <div class="card-body">
@@ -305,15 +308,15 @@
                                 {{ __('Full analysis') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
-                    <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="ui_tooltip __top">
-                            <span class="ui_tooltip_content">
-                                {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
-                                {{ __('Based on all the data received, an analysis will be performed.') }} <br>
-                            </span>
-                        </span>
-                    </span>
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span class="ui_tooltip __top">
+                                        <span class="ui_tooltip_content">
+                                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
+                                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                                        </span>
+                                    </span>
+                                </span>
                             </button>
                         </div>
                     </div>

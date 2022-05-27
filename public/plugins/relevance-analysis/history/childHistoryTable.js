@@ -37,6 +37,17 @@ $('.project_name').click(function () {
 
             $.each(response.stories, function (key, val) {
                 let checked = val.calculate ? 'checked' : ''
+                let state
+
+                if (val.state == 1) {
+                    state = "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-secondary'> Подробная информация</a>"
+                } else {
+                    state = '<div class="text-center" id="preloaderBlock">' +
+                        '<img src="/img/1485.gif" alt="preloader_gif" width="50">' +
+                        '<p>Обрабатывается..</p>' +
+                        '</div>'
+                }
+
                 tbody.append(
                     "<tr class='render'>" +
                     "<td>" + val.last_check + "</td>" +
@@ -63,7 +74,7 @@ $('.project_name').click(function () {
                     "   </div>" +
                     "</td>" +
                     "<td>" +
-                    "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-secondary'> Подробная информация</a>" +
+                    state +
                     "</td>" +
                     "</tr>"
                 )

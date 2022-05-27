@@ -174,14 +174,4 @@ class HistoryRelevanceController extends Controller
 
         return response()->json([], 200);
     }
-
-    public function createQueueView()
-    {
-        return view('relevance-analysis.queue');
-    }
-
-    public function createTaskQueue(Request $request)
-    {
-
-    }
 }

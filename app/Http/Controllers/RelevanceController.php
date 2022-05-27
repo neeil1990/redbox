@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Jobs\RelevanceAnalysis;
+use App\Jobs\RelevanceAnalysisQueue;
+use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
+use App\Session;
 use App\TestRelevance;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +19,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class RelevanceController extends Controller
@@ -212,7 +214,7 @@ class RelevanceController extends Controller
             $relevance->parseSites($xmlResponse);
         }
 
-        $relevance->analysis($request);
+        $relevance->analysis($request, Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
@@ -309,6 +311,40 @@ class RelevanceController extends Controller
             'hide_ignored_domains' => $config->hide_ignored_domains,
             'boostPercent' => $config->boostPercent,
         ]);
+    }
+
+    public function createQueue()
+    {
+        $config = RelevanceAnalysisConfig::first();
+        $admin = false;
+        foreach (Auth::user()->role as $role) {
+            if ($role == '1' || $role == '3') {
+                $admin = true;
+                break;
+            }
+        }
+
+        return view('relevance-analysis.queue', [
+            'config' => $config,
+            'admin' => $admin,
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function createTaskQueue(Request $request): RedirectResponse
+    {
+        $rows = explode("\r\n", $request->params);
+        foreach ($rows as $row) {
+            Queue::addInQueue($row, $request);
+        }
+
+        flash()->overlay('Ваши задачи были добавлены в очередь', ' ')->success();
+
+
+        return Redirect::back();
     }
 
     /**

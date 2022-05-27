@@ -181,12 +181,15 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
 
+    Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
     Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
+
+    Route::get('/create-analysis-queue', 'RelevanceController@createQueue')->name('create.queue.view');
+    Route::post('/create-analysis-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
-    Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
     Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
     Route::post('/change-config', 'RelevanceController@changeConfig')->name('changeConfig');

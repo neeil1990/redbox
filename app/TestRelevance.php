@@ -62,11 +62,14 @@ class TestRelevance
 
     public $recommendations = [];
 
+    public $phrase;
+
     /**
      * @param $link
+     * @param $phrase
      * @param $separator
      */
-    public function __construct($link, $separator)
+    public function __construct($link, $phrase, $separator)
     {
         $this->pages = [];
         $this->domains = [];
@@ -76,9 +79,11 @@ class TestRelevance
         $this->competitorsText = '';
         $this->competitorsLinks = '';
         $this->competitorsTextAndLinks = '';
-        $this->maxWordLength = $separator;
         $this->countSymbols = 0;
         $this->countWords = 0;
+
+        $this->maxWordLength = $separator;
+        $this->phrase = $phrase;
 
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
         $this->params['main_page_link'] = $link;
@@ -150,17 +155,19 @@ class TestRelevance
 
     /**
      * @param $request
+     * @param $userId
+     * @param int|boolean $historyId
      * @return void
      */
-    public function analysis($request)
+    public function analysis($request, $userId, $historyId = false)
     {
-        $this->removeNoIndex($request->noIndex);
+        $this->removeNoIndex($request);
 
-        $this->getHiddenData($request->hiddenText);
+        $this->getHiddenData($request);
 
         $this->separateLinksFromText();
 
-        $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
+        $this->removePartsOfSpeech($request);
 
         $this->removeListWords($request);
 
@@ -186,7 +193,7 @@ class TestRelevance
 
 //        $this->saveResults();
 
-        $this->saveHistory($request);
+        $this->saveHistory($request, $userId, $historyId);
     }
 
     /**
@@ -215,12 +222,12 @@ class TestRelevance
 
     /**
      * Удалить текст, который помечен <noindex>
-     * @param $noIndex
+     * @param $request
      * @return void
      */
-    public function removeNoIndex($noIndex)
+    public function removeNoIndex($request)
     {
-        if ($noIndex == 'false') {
+        if (isset($request->noIndex)) {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
@@ -243,12 +250,12 @@ class TestRelevance
     }
 
     /**
-     * @param $hiddenText
+     * @param $request
      * @return void
      */
-    public function getHiddenData($hiddenText)
+    public function getHiddenData($request)
     {
-        if ($hiddenText == 'true') {
+        if (isset($request->hiddenText)) {
             $this->mainPage['hiddenText'] = TestRelevance::getHiddenText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['hiddenText'] = TestRelevance::getHiddenText($this->sites[$key]['html']);
@@ -490,12 +497,12 @@ class TestRelevance
 
     /**
      * Удаляем союзы, предлоги, местоимения
-     * @param $conjunctionsPrepositionsPronouns
+     * @param $request
      * @return void
      */
-    public function removePartsOfSpeech($conjunctionsPrepositionsPronouns)
+    public function removePartsOfSpeech($request)
     {
-        if ($conjunctionsPrepositionsPronouns == 'false') {
+        if (isset($request->conjunctionsPrepositionsPronouns)) {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['hiddenText']);
@@ -514,8 +521,8 @@ class TestRelevance
      */
     public function removeListWords($request)
     {
-        if ($request->switchMyListWords == 'true') {
-            $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
+        if (isset($request['switchMyListWords'])) {
+            $listWords = str_replace(["\r\n", "\n\r"], "\n", $request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
             $this->mainPage['html'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = TestRelevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
@@ -1123,31 +1130,50 @@ class TestRelevance
     }
 
     /**
+     * @param $request
+     * @param $userId
+     * @param $historyId
      * @return void
      */
-    public function saveHistory($request)
+    public function saveHistory($request, $userId, $historyId)
     {
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
 
-        DB::transaction(function () use ($request, $time, $link) {
-            $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time);
+        DB::transaction(function () use ($request, $time, $link, $userId, $historyId) {
+            $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
 
-            $id = RelevanceHistory::createOrUpdate(
-                $request,
-                $this->params['main_page_link'],
-                $this->sites,
-                $time,
-                $mainHistory
-            );
+            foreach ($this->sites as $site) {
+                if ($site['mainPage']) {
+                    $default = [
+                        'mainPoints' => $site['mainPoints'],
+                        'coverage' => $site['coverage'],
+                        'coverageTf' => $site['coverageTf'],
+                        'width' => $site['width'],
+                        'density' => $site['density']['densityMainPercent'],
+                        'position' => $site['position']
+                    ];
 
-            $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
+                    $id = RelevanceHistory::createOrUpdate(
+                        $this->phrase,
+                        $this->params['main_page_link'],
+                        $request['region'],
+                        $default,
+                        $time,
+                        $mainHistory,
+                        $historyId
+                    );
 
-            $mainHistory->total_points = $info['points'];
-            $mainHistory->count_sites = $info['count'];
-            $mainHistory->save();
+                    $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
 
-            $this->saveHistoryResult($id);
+                    $mainHistory->total_points = $info['points'];
+                    $mainHistory->count_sites = $info['count'];
+                    $mainHistory->save();
+
+                    $this->saveHistoryResult($id);
+                    return;
+                }
+            }
         });
 
     }
