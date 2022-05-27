@@ -60,30 +60,20 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            $relevance = new TestRelevance($this->link, $this->phrase, $this->separator);
-            $relevance->getMainPageHtml();
+        $relevance = new TestRelevance($this->link, $this->phrase, $this->separator);
+        $relevance->getMainPageHtml();
 
-            $xml = new SimplifiedXmlFacade(100, $this->region);
-            $xml->setQuery($this->phrase);
-            $xmlResponse = $xml->getXMLResponse();
+        $xml = new SimplifiedXmlFacade(100, $this->region);
+        $xml->setQuery($this->phrase);
+        $xmlResponse = $xml->getXMLResponse();
 
-            $relevance->removeIgnoredDomains(
-                $this->count,
-                $this->ignoredDomains,
-                $xmlResponse,
-                false
-            );
-            $relevance->parseSites($xmlResponse);
-            $relevance->analysis($this->request, $this->userId, $this->historyId);
-
-        } catch (\Exception $e) {
-            Log::debug('debug', [
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ]);
-        }
-
+        $relevance->removeIgnoredDomains(
+            $this->count,
+            $this->ignoredDomains,
+            $xmlResponse,
+            false
+        );
+        $relevance->parseSites($xmlResponse);
+        $relevance->analysis($this->request, $this->userId, $this->historyId);
     }
 }
