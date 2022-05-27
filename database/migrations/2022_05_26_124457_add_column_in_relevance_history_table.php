@@ -25,8 +25,11 @@ class AddColumnInRelevanceHistoryTable extends Migration
      */
     public function down()
     {
-        Schema::table('relevance_history', function (Blueprint $table) {
-            $table->dropColumn('comment');
-        });
+        if (Schema::hasColumn('relevance_history', 'comment')) {
+            Schema::table('relevance_history', function (Blueprint $table) {
+                $table->dropColumn('comment');
+            });
+        }
+
     }
 }

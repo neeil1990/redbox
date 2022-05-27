@@ -22,14 +22,14 @@ class Queue extends Model
         try {
             $userId = Auth::id();
             $item = explode(';', $row);
-            $link = parse_url($item[0]);
+            $link = parse_url($item[1]);
 
             if (count($item) == 2 && isset($link['host'])) {
-                $historyId = Queue::prepareHistory($request, $item[0], $userId, $item[1]);
+                $historyId = Queue::prepareHistory($request, $item[1], $userId, $item[0]);
 
                 RelevanceAnalysisQueue::dispatch(
-                    trim($item[0]),
                     trim($item[1]),
+                    trim($item[0]),
                     $request->separator,
                     $request->region,
                     $request->count,
@@ -84,6 +84,7 @@ class Queue extends Model
             $default,
             $time,
             $mainHistory,
+            false,
             0
         );
     }

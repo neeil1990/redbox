@@ -55,7 +55,7 @@
         <label for="params">Посадочные страницы и ссылки</label>
         <textarea name="params" id="params" cols="30"
                   rows="10" class="form form-control"
-                  placeholder="{{ __('Your landing page') }};{{ __('Keyword') }}{{ "\n" }}{{ __('Your landing page') }};{{ __('Keyword') }}"
+                  placeholder="{{ __('Keyword') }};{{ __('Your landing page') }}{{ "\n" }}{{ __('Keyword') }};{{ __('Your landing page') }}"
         ></textarea>
         <span class="text-muted mb-3">Как это работает
             <span class="__helper-link ui_tooltip_w">
@@ -64,8 +64,8 @@
                     <span class="ui_tooltip_content">
                         Нужно ввести данные в формате:
                         <br><br>
-                        Ссылка на посадочную страницу;ключевая фраза <br>
-                        Ссылка на посадочную страницу2;ключевая фраза2
+                        Ключевая фраза;Ссылка на посадочную страницу<br>
+                        Ключевая фраза2;Ссылка на посадочную страницу2;
                         <br> <br>
 
                         И изменить конфигурацию формы так как вам потребуется. <br>

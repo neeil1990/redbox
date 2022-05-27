@@ -185,7 +185,7 @@ class RelevanceController extends Controller
             'siteList' => 'required_without:link',
         ], $messages);
 
-        $relevance = new TestRelevance($request->input('link'), $request->input('separator'));
+        $relevance = new TestRelevance($request->input('link'), $request->input('phrase'), $request->input('separator'));
         $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'list') {

@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalysisQueue implements ShouldQueue
 {
@@ -43,9 +42,9 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function __construct($link, $phrase, $separator, $region, $count, $ignoredDomains, $userId, $request, $historyId)
     {
         $this->link = $link;
+        $this->phrase = $phrase;
         $this->separator = $separator;
         $this->region = $region;
-        $this->phrase = $phrase;
         $this->count = $count;
         $this->ignoredDomains = $ignoredDomains;
         $this->request = $request;
