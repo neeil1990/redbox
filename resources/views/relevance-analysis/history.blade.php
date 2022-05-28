@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Relevance history') ])
+@component('component.card', ['title' =>  'История анализа'])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -88,13 +88,15 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">Ваша история</a>
+                    <a class="nav-link" href="{{ route('test.relevance.view') }}">Анализатор</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#tab_2" data-toggle="tab">Управление доступом</a>
+                    <a class="nav-link active" href="{{ route('relevance.history') }}">История</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#tab_3" data-toggle="tab">Доступные истории других пользователей</a>
+                    <a class="nav-link" href="{{ route('create.queue.view') }}">
+                        Просканировать страницы
+                    </a>
                 </li>
             </ul>
         </div>
@@ -262,9 +264,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div class="tab-pane" id="tab_2">
-                    Управление доступом
                 </div>
                 <div class="tab-pane" id="tab_3">
                     Доступные истории других пользователей

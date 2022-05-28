@@ -95,10 +95,12 @@
                     </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="{{ route('relevance.history') }}">История</a>
+                    <a class="nav-link" href="{{ route('relevance.history') }}">История</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="{{ route('create.queue.view') }}">Создать очередь задач</a>
+                    <a class="nav-link" href="{{ route('create.queue.view') }}">
+                        Просканировать страницы
+                    </a>
                 </li>
             </ul>
         </div>
