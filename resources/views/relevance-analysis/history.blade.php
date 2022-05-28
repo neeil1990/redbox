@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  'История анализа'])
+@component('component.card', ['title' =>  'Ваша история анализа'])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>

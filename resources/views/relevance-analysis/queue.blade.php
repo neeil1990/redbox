@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Create Queue') ])
+@component('component.card', ['title' =>  'Просканировать страницы' ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>

@@ -88,12 +88,8 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">Анализатор</a></li>
-                @if($admin)
-                    <li class="nav-item">
-                        <a class="nav-link" href="#tab_2" data-toggle="tab">Администрирование модуля</a>
-                    </li>
-                @endif
+                    <a class="nav-link active" href="#tab_1" data-toggle="tab">Анализатор</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('relevance.history') }}">История</a>
                 </li>
@@ -102,6 +98,11 @@
                         Просканировать страницы
                     </a>
                 </li>
+                @if($admin)
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tab_2" data-toggle="tab">Администрирование модуля</a>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="card-body">
