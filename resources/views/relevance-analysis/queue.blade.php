@@ -66,31 +66,31 @@
             </ul>
         </div>
         <div class="card-body">
+            {!! Form::open(['action' =>'RelevanceController@createTaskQueue', 'method' => 'POST', 'class' => 'express-form'])!!}
             <div class="col-6 pt-3 pb-3">
                 <label for="params">Посадочные страницы и ссылки</label>
                 <textarea name="params" id="params" cols="30"
                           rows="10" class="form form-control"
-                          placeholder="{{ __('Keyword') }};{{ __('Your landing page') }}{{ "\n" }}{{ __('Keyword') }};{{ __('Your landing page') }}"
-                ></textarea>
+                          placeholder="{{ __('Keyword') }};{{ __('Your landing page') }}{{ "\n" }}{{ __('Keyword') }};{{ __('Your landing page') }}"></textarea>
                 <span class="text-muted mb-3">Как это работает
-            <span class="__helper-link ui_tooltip_w">
-                <i class="fa fa-question-circle"></i>
-                <span class="ui_tooltip __bottom ">
-                    <span class="ui_tooltip_content">
-                        Нужно ввести данные в формате:
-                        <br><br>
-                        Ключевая фраза;Ссылка на посадочную страницу<br>
-                        Ключевая фраза2;Ссылка на посадочную страницу2;
-                        <br> <br>
+                <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __bottom ">
+                            <span class="ui_tooltip_content">
+                                Нужно ввести данные в формате:
+                                <br><br>
+                                Ключевая фраза;Ссылка на посадочную страницу<br>
+                                Ключевая фраза2;Ссылка на посадочную страницу2;
+                                <br> <br>
 
-                        И изменить конфигурацию формы так как вам потребуется. <br>
-                        После нажатия кнопки "Добавить в очередь" ваши задачи будут помещены в очередь, которая состоит из очереди ваших задач и задач других пользователей.
-                        Когда очередь дойдёт до вас, ваши проекты будут проанализированы и помещены на страницу с историей
-                        <a href="{{ route('relevance.history') }}" target="_blank">тут</a>.
+                                И изменить конфигурацию формы так как вам потребуется. <br>
+                                После нажатия кнопки "Добавить в очередь" ваши задачи будут помещены в очередь, которая состоит из очереди ваших задач и задач других пользователей.
+                                Когда очередь дойдёт до вас, ваши проекты будут проанализированы и помещены на страницу с историей
+                                <a href="{{ route('relevance.history') }}" target="_blank">тут</a>.
+                            </span>
+                        </span>
                     </span>
                 </span>
-            </span>
-        </span>
 
                 <div class="form-group required pt-3">
                     <label>{{ __('Top 10/20') }}</label>
@@ -252,9 +252,7 @@
 
             <div class="d-flex flex-column">
                 <div class="btn-group col-lg-3 col-md-5 mb-2">
-                    <button class="btn btn-secondary" id="full-analyse">
-                        Добавить в очередь
-                    </button>
+                    <input type="submit" class="btn btn-secondary" id="full-analyse" value="Добавить в очередь">
                 </div>
             </div>
             {!! Form::close() !!}
