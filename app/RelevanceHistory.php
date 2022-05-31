@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceHistory extends Model
 {
@@ -15,7 +14,7 @@ class RelevanceHistory extends Model
     /**
      * @param $phrase
      * @param $link
-     * @param $region
+     * @param $request
      * @param $site
      * @param $time
      * @param $mainHistory
@@ -23,7 +22,7 @@ class RelevanceHistory extends Model
      * @param $historyId
      * @return int
      */
-    public static function createOrUpdate($phrase, $link, $region, $site, $time, $mainHistory, $state, $historyId = 0): int
+    public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId = 0): int
     {
         if ($historyId > 0) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
@@ -32,8 +31,9 @@ class RelevanceHistory extends Model
             $history = new RelevanceHistory([
                 'phrase' => $phrase,
                 'main_link' => $link,
-                'region' => $region,
+                'region' => $request['region'],
                 'state' => $state,
+                'request' => json_encode($request->all())
             ]);
         }
 

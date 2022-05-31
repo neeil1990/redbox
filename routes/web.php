@@ -178,8 +178,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
     Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
 
-    Route::get('/create-analysis-queue', 'RelevanceController@createQueue')->name('create.queue.view');
-    Route::post('/create-analysis-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
+    Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
+    Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
@@ -194,6 +194,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/show-details-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
+    Route::get('/relevance-repeat-scan/{object}', 'HistoryRelevanceController@repeatScan')->name('relevance-repeat-scan');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');

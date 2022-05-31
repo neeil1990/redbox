@@ -341,10 +341,9 @@ class RelevanceController extends Controller
             Queue::addInQueue($row, $request);
         }
 
-        flash()->overlay('Ваши задачи были добавлены в очередь', ' ')->success();
+        flash()->overlay('Ваши задачи были добавлены в очередь, те задачи которые не прошли валидацию - были проигнорированы', ' ')->success();
 
-
-        return Redirect::back();
+        return Redirect::route('relevance.history');
     }
 
     /**

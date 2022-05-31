@@ -67,7 +67,6 @@ class Queue extends Model
             return ProjectRelevanceHistory::createOrUpdate($host['host'], $time, $userId);
         });
 
-
         $default = [
             'mainPoints' => 0,
             'coverage' => 0,
@@ -80,7 +79,7 @@ class Queue extends Model
         return RelevanceHistory::createOrUpdate(
             $phrase,
             $link,
-            $request['region'],
+            $request,
             $default,
             $time,
             $mainHistory,

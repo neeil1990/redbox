@@ -91,13 +91,18 @@
                     <a class="nav-link" href="{{ route('test.relevance.view') }}">Анализатор</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('relevance.history') }}">История</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="{{ route('create.queue.view') }}">
-                        Просканировать страницы
+                        Создать задачи по анализу страниц
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#tab_1" data-toggle="tab">История</a>
+                </li>
+                @if($admin)
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tab_2" data-toggle="tab">Администрирование модуля</a>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="card-body">
@@ -144,11 +149,15 @@
                             <thead>
                             <tr>
                                 <th>
-                                    <input class="w-100 form form-control search-input" type="date" name="dataMin"
-                                           id="dataMin"
-                                           placeholder="min">
-                                    <input class="w-100 form form-control" type="date" name="dataMax" id="dataMax"
-                                           placeholder="max">
+                                    <input class="w-100 form form-control" type="date" name="dateMin"
+                                           id="dateMin"
+                                           value="{{ Carbon\Carbon::parse('2022-03-01')->toDateString() }}">
+                                    <input class="w-100 form form-control" type="date" name="dateMax" id="dateMax"
+                                           value="{{ Carbon\Carbon::now()->toDateString() }}">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="text"
+                                           name="projectComment" id="projectComment" placeholder="comment">
                                 </th>
                                 <th>
                                     <input class="w-100 form form-control search-input" type="text"
@@ -199,9 +208,6 @@
                                            name="maxDensity" id="maxDensity" placeholder="max">
                                 </th>
                                 <th>
-
-                                </th>
-                                <th>
                                     <div>
                                         Переключить всё
                                         <div class='d-flex w-100'>
@@ -221,6 +227,9 @@
                             </tr>
                             <tr>
                                 <th class="table-header">Дата последней проверки</th>
+                                <th class="table-header" style="min-width: 200px">
+                                    Комментарий
+                                </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
                                     Фраза
                                 </th>
@@ -249,9 +258,6 @@
                                 <th class="table-header" style="height: 83px; min-width: 69px">
                                     Плотность
                                 </th>
-                                <th class="table-header" style="min-width: 200px">
-                                    Комментарий
-                                </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
                                     Учитывать в
                                     расчёте общего
@@ -265,8 +271,8 @@
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane" id="tab_3">
-                    Доступные истории других пользователей
+                <div class="tab-pane" id="tab_2">
+                    @include('layouts.relevance-config')
                 </div>
             </div>
         </div>
@@ -274,6 +280,135 @@
 
 
     @slot('js')
+        <script>
+            function getRegionName(id) {
+                switch (id) {
+                    case '1' :
+                        return "{{ __('Moscow') }}";
+                    case '20' :
+                        return "{{ __('Arkhangelsk') }}";
+                    case '37' :
+                        return "{{ __('Astrakhan') }}";
+                    case '197' :
+                        return "{{ __('Barnaul') }}";
+                    case '4' :
+                        return "{{ __('Belgorod') }}";
+                    case '77' :
+                        return "{{ __('Blagoveshchensk') }}";
+                    case '191' :
+                        return "{{ __('Bryansk') }}";
+                    case '24' :
+                        return "{{ __('Veliky Novgorod') }}";
+                    case '75' :
+                        return "{{ __('Vladivostok') }}";
+                    case '33' :
+                        return "{{ __('Vladikavkaz') }}";
+                    case '192' :
+                        return "{{ __('Vladimir') }}";
+                    case '38' :
+                        return "{{ __('Volgograd') }}";
+                    case '21' :
+                        return "{{ __('Vologda') }}";
+                    case '193' :
+                        return "{{ __('Voronezh') }}";
+                    case '1106' :
+                        return "{{ __('Grozny') }}";
+                    case '54' :
+                        return "{{ __('Ekaterinburg') }}";
+                    case '5' :
+                        return "{{ __('Ivanovo') }}";
+                    case '63' :
+                        return "{{ __('Irkutsk') }}";
+                    case '41' :
+                        return "{{ __('Yoshkar-ola') }}";
+                    case '43' :
+                        return "{{ __('Kazan') }}";
+                    case '22' :
+                        return "{{ __('Kaliningrad') }}";
+                    case '64' :
+                        return "{{ __('Kemerovo') }}";
+                    case '7' :
+                        return "{{ __('Kostroma') }}";
+                    case '35' :
+                        return "{{ __('Krasnodar') }}";
+                    case '62' :
+                        return "{{ __('Krasnoyarsk') }}";
+                    case '53' :
+                        return "{{ __('Kurgan') }}";
+                    case '8' :
+                        return "{{ __('Kursk') }}";
+                    case '9' :
+                        return "{{ __('Lipetsk') }}";
+                    case '28' :
+                        return "{{ __('Makhachkala') }}";
+                    case '213' :
+                        return "{{ __('Moscow') }}";
+                    case '23' :
+                        return "{{ __('Murmansk') }}";
+                    case '1092' :
+                        return "{{ __('Nazran') }}";
+                    case '30' :
+                        return "{{ __('Nalchik') }}";
+                    case '47' :
+                        return "{{ __('Nizhniy Novgorod') }}";
+                    case '65' :
+                        return "{{ __('Novosibirsk') }}";
+                    case '66' :
+                        return "{{ __('Omsk') }}";
+                    case '10' :
+                        return "{{ __('Eagle') }}";
+                    case '48' :
+                        return "{{ __('Orenburg') }}";
+                    case '49' :
+                        return "{{ __('Penza') }}";
+                    case '50' :
+                        return "{{ __('Perm') }}";
+                    case '25' :
+                        return "{{ __('Pskov') }}";
+                    case '39' :
+                        return "{{ __('Rostov-on') }}";
+                    case '11' :
+                        return "{{ __('Ryazan') }}";
+                    case '51' :
+                        return "{{ __('Samara') }}";
+                    case '42' :
+                        return "{{ __('Saransk') }}";
+                    case '2' :
+                        return "{{ __('Saint-Petersburg') }}";
+                    case '12' :
+                        return "{{ __('Smolensk') }}";
+                    case '239' :
+                        return "{{ __('Sochi') }}";
+                    case '36' :
+                        return "{{ __('Stavropol') }}";
+                    case '973' :
+                        return "{{ __('Surgut') }}";
+                    case '13' :
+                        return "{{ __('Tambov') }}";
+                    case '14' :
+                        return "{{ __('Tver') }}";
+                    case '67' :
+                        return "{{ __('Tomsk') }}";
+                    case '15' :
+                        return "{{ __('Tula') }}";
+                    case '195' :
+                        return "{{ __('Ulyanovsk') }}";
+                    case '172' :
+                        return "{{ __('Ufa') }}";
+                    case '76' :
+                        return "{{ __('Khabarovsk') }}";
+                    case '45' :
+                        return "{{ __('Cheboksary') }}";
+                    case '56' :
+                        return "{{ __('Chelyabinsk') }}";
+                    case '1104' :
+                        return "{{ __('Cherkessk') }}";
+                    case '16' :
+                        return "{{ __('Yaroslavl') }}";
+
+                }
+            }
+        </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>

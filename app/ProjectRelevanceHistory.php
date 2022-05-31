@@ -57,9 +57,10 @@ class ProjectRelevanceHistory extends Model
     {
         $main = ProjectRelevanceHistory::firstOrNew([
             'name' => $host,
+            'user_id' => $userId,
         ]);
+
         $main->last_check = $time;
-        $main->user_id = $userId;
         $main->save();
 
         return $main;

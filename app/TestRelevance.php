@@ -1157,7 +1157,7 @@ class TestRelevance
                     $id = RelevanceHistory::createOrUpdate(
                         $this->phrase,
                         $this->params['main_page_link'],
-                        $request['region'],
+                        $request,
                         $default,
                         $time,
                         $mainHistory,

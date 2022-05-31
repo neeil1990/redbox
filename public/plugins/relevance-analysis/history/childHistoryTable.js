@@ -10,6 +10,7 @@ function changeState(elem) {
     });
 }
 
+
 $('#changeAllState').on('change', function () {
     let state = $(this).is(':checked')
     $.each($('.custom-control-input.switch'), function () {
@@ -40,7 +41,10 @@ $('.project_name').click(function () {
                 let state
 
                 if (val.state == 1) {
-                    state = "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-secondary'> Подробная информация</a>"
+                    state =
+                        "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-link'> Подробная информация</a>"
+                        +
+                        "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>"
                 } else {
                     state = '<div class="text-center" id="preloaderBlock">' +
                         '<img src="/img/1485.gif" alt="preloader_gif" width="50">' +
@@ -48,21 +52,27 @@ $('.project_name').click(function () {
                         '</div>'
                 }
 
+                let position = val.position
+
+                if (val.position == 0) {
+                    position = 'Не попал в топ 100'
+                }
+
                 tbody.append(
                     "<tr class='render'>" +
                     "<td>" + val.last_check + "</td>" +
+                    "<td>" +
+                    "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                    "</td>" +
                     "<td>" + val.phrase + "</td>" +
-                    "<td>" + val.region + "</td>" +
+                    "<td>" + getRegionName(val.region) + "</td>" +
                     "<td>" + val.main_link + "</td>" +
-                    "<td>" + val.position + "</td>" +
+                    "<td>" + position + "</td>" +
                     "<td>" + val.points + "</td>" +
                     "<td>" + val.coverage + "</td>" +
                     "<td>" + val.coverage_tf + "</td>" +
                     "<td>" + val.width + "</td>" +
                     "<td>" + val.density + "</td>" +
-                    "<td>" +
-                    "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                    "</td>" +
                     "<td>" +
                     "   <div class='d-flex justify-content-center'> " +
                     "       <div class='__helper-link ui_tooltip_w'> " +
@@ -122,23 +132,83 @@ $('.project_name').click(function () {
                             }, 3000)
                         },
                     });
-                    // edit-history-comment
                 });
 
+                $('.relevance-repeat-scan').click(function () {
+                    let elem = $(this)
+                    $.ajax({
+                        type: "get",
+                        dataType: "json",
+                        url: "/relevance-repeat-scan/" + $(this).attr('data-order'),
+                        success: function () {
+                            elem.parent().html('<div class="text-center" id="preloaderBlock">' +
+                                '<img src="/img/1485.gif" alt="preloader_gif" width="50">' +
+                                '<p>Обрабатывается..</p>' +
+                                '</div>')
+                        },
+                    });
+                });
+
+                //------------------------ CUSTOM FILTERS -----------------------
+
                 function isValidate(min, max, target, settings) {
-                    if (settings.nTable.id !== 'history_table') {
-                        return true;
-                    }
+                    // if (settings.nTable.id !== 'history_table') {
+                    //     return true;
+                    // }
                     return (isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && target <= max) ||
                         (min <= target && isNaN(max)) ||
                         (min <= target && target <= max);
                 }
 
+                function isIncludes(target, search) {
+                    if (search.length > 0) {
+                        return target.includes(search)
+                    } else {
+                        return true;
+                    }
+                }
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    var projectComment = String($('#projectComment').val()).toLowerCase();
+                    var target = String(data[1]).toLowerCase();
+                    return isIncludes(target, projectComment)
+                });
+                $('#projectComment').keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    var phraseSearch = String($('#phraseSearch').val()).toLowerCase();
+                    var target = String(data[2]).toLowerCase();
+                    return isIncludes(target, phraseSearch)
+                });
+                $('#phraseSearch').keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    var regionSearch = String($('#regionSearch').val()).toLowerCase();
+                    var target = String(data[3]).toLowerCase();
+                    return isIncludes(target, regionSearch)
+                });
+                $('#regionSearch').keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    var mainPageSearch = String($('#mainPageSearch').val()).toLowerCase();
+                    var target = String(data[4]).toLowerCase();
+                    return isIncludes(target, mainPageSearch)
+                });
+                $('#mainPageSearch').keyup(function () {
+                    table.draw();
+                });
+
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     var maxPosition = parseFloat($('#maxPosition').val());
                     var minPosition = parseFloat($('#minPosition').val());
-                    var target = parseFloat(data[4]);
+                    var target = parseFloat(data[5]);
                     return isValidate(minPosition, maxPosition, target, settings)
                 });
                 $('#minPosition, #maxPosition').keyup(function () {
@@ -148,7 +218,7 @@ $('.project_name').click(function () {
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     var maxPoints = parseFloat($('#maxPoints').val());
                     var minPoints = parseFloat($('#minPoints').val());
-                    var target = parseFloat(data[5]);
+                    var target = parseFloat(data[6]);
                     return isValidate(minPoints, maxPoints, target, settings)
                 });
                 $('#minPoints, #maxPoints').keyup(function () {
@@ -158,7 +228,7 @@ $('.project_name').click(function () {
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     var maxCoverage = parseFloat($('#maxCoverage').val());
                     var minCoverage = parseFloat($('#minCoverage').val());
-                    var target = parseFloat(data[6]);
+                    var target = parseFloat(data[7]);
                     return isValidate(minCoverage, maxCoverage, target, settings)
                 });
                 $('#minCoverage, #maxCoverage').keyup(function () {
@@ -168,7 +238,7 @@ $('.project_name').click(function () {
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     var maxCoverageTf = parseFloat($('#maxCoverageTf').val());
                     var minCoverageTf = parseFloat($('#minCoverageTf').val());
-                    var target = parseFloat(data[7]);
+                    var target = parseFloat(data[8]);
                     return isValidate(minCoverageTf, maxCoverageTf, target, settings)
                 });
                 $('#minCoverageTf, #maxCoverageTf').keyup(function () {
@@ -178,7 +248,7 @@ $('.project_name').click(function () {
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     var maxWidth = parseFloat($('#maxWidth').val());
                     var minWidth = parseFloat($('#minWidth').val());
-                    var target = parseFloat(data[8]);
+                    var target = parseFloat(data[9]);
                     return isValidate(minWidth, maxWidth, target, settings)
                 });
                 $('#minWidth, #maxWidth').keyup(function () {
@@ -188,10 +258,30 @@ $('.project_name').click(function () {
                 $.fn.dataTable.ext.search.push(function (settings, data) {
                     var maxDensity = parseFloat($('#maxDensity').val());
                     var minDensity = parseFloat($('#minDensity').val());
-                    var target = parseFloat(data[9]);
+                    var target = parseFloat(data[10]);
                     return isValidate(minDensity, maxDensity, target, settings)
                 });
                 $('#minDensity, #maxDensity').keyup(function () {
+                    table.draw();
+                });
+
+                function isDateValid(target) {
+                    let date = new Date(target)
+                    let dateMin = new Date($('#dateMin').val() + ' 00:00:00')
+                    let dateMax = new Date($('#dateMax').val() + ' 23:59:00')
+                    if (date >= dateMin && date <= dateMax) {
+                        return true;
+                    }
+                }
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    var target = String(data[0]);
+                    return isDateValid(target)
+                });
+                $('#dateMin').change(function () {
+                    table.draw();
+                });
+                $('#dateMax').change(function () {
                     table.draw();
                 });
             });

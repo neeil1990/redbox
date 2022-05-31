@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RelevanceAnalysisQueue;
 use App\ProjectRelevanceHistory;
+use App\Queue;
+use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use Illuminate\Http\JsonResponse;
@@ -33,10 +36,13 @@ class HistoryRelevanceController extends Controller
             }
         }
 
+        $config = RelevanceAnalysisConfig::first();
+
         return view('relevance-analysis.history', [
             'main' => $main,
             'history' => $history,
-            'admin' => $admin
+            'admin' => $admin,
+            'config' => $config
         ]);
     }
 
@@ -65,7 +71,7 @@ class HistoryRelevanceController extends Controller
 
         $project->save();
 
-        return response()->json([], 200);
+        return response()->json([]);
     }
 
     /**
@@ -172,6 +178,32 @@ class HistoryRelevanceController extends Controller
 
         $project->save();
 
-        return response()->json([], 200);
+        return response()->json([]);
+    }
+
+    /**
+     * @param RelevanceHistory $object
+     * @return JsonResponse
+     */
+    public function repeatScan(RelevanceHistory $object): JsonResponse
+    {
+        $request = json_decode($object->request, true);
+
+        RelevanceAnalysisQueue::dispatch(
+            trim($request['link']),
+            trim($request['phrase']),
+            $request['separator'],
+            $request['region'],
+            $request['count'],
+            $request['ignoredDomains'],
+            Auth::id(),
+            $request,
+            $object->id
+        );
+
+        $object->state = 0;
+        $object->save();
+
+        return response()->json([]);
     }
 }
