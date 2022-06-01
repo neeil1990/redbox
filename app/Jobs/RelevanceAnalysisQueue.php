@@ -11,7 +11,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Log;
-use phpDocumentor\Reflection\Types\Void_;
 
 class RelevanceAnalysisQueue implements ShouldQueue
 {
@@ -79,16 +78,22 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->parseSites($xmlResponse);
             $relevance->analysis($this->request, $this->userId, $this->historyId);
         } catch (\Exception $exception) {
-            Log::debug('message', [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine()
-            ]);
-            $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
+            // игнорируем ошибку packets out of order
+            if (
+                strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
+                $exception->getLine() != 664
+            ) {
+                $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
 
-            $object->state = -1;
+                $object->state = -1;
 
-            $object->save();
+                $object->save();
+                Log::debug('message', [
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine()
+                ]);
+            }
         }
 
     }
