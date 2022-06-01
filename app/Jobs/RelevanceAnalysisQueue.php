@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use phpDocumentor\Reflection\Types\Void_;
 
 class RelevanceAnalysisQueue implements ShouldQueue
@@ -77,7 +78,8 @@ class RelevanceAnalysisQueue implements ShouldQueue
             );
             $relevance->parseSites($xmlResponse);
             $relevance->analysis($this->request, $this->userId, $this->historyId);
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
+            Log::debug('message', [$exception->getMessage(), $exception->getFile(), $exception->getLine()]);
             $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
 
             $object->state = -1;
