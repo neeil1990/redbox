@@ -71,8 +71,6 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
         }
 
         let width = value['width']
-        console.log(value)
-        console.log(width)
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
             "<td data-order='" + iterator + "'>" + position + "</td>" +
