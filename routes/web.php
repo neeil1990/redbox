@@ -208,3 +208,8 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 });
+
+
+Route::get('/ttest', function () {
+    dump(config('database'));
+});
