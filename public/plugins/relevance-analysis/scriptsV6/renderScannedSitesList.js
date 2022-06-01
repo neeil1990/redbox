@@ -70,8 +70,9 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             position = value['position']
         }
 
+        let width = value['width']
         console.log(value)
-        console.log(value['width'])
+        console.log(width)
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
             "<td data-order='" + iterator + "'>" + position + "</td>" +
@@ -82,7 +83,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             "<td data-order='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +
             "<td data-order='" + value['coverage'] + "'>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
-            "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
+            "<td data-order='" + width + "'>" + width + "</td>" +
             "<td data-order='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>" +
             "<td data-order='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>" +
             warning +
