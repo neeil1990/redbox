@@ -78,7 +78,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->parseSites($xmlResponse);
             $relevance->analysis($this->request, $this->userId, $this->historyId);
         } catch (\Exception $exception) {
-            // игнорируем ошибку packets out of order
+            // игнорируем ошибку: packets out of order
             if (
                 strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
                 $exception->getLine() != 664
