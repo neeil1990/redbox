@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use phpDocumentor\Reflection\Types\Void_;
 
 class RelevanceAnalysisQueue implements ShouldQueue
 {
@@ -60,29 +61,37 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        $relevance = new TestRelevance($this->link, $this->phrase, $this->separator);
-        $relevance->getMainPageHtml();
+        try {
+            $relevance = new TestRelevance($this->link, $this->phrase, $this->separator);
+            $relevance->getMainPageHtml();
 
-        $xml = new SimplifiedXmlFacade(100, $this->region);
-        $xml->setQuery($this->phrase);
-        $xmlResponse = $xml->getXMLResponse();
+            $xml = new SimplifiedXmlFacade(100, $this->region);
+            $xml->setQuery($this->phrase);
+            $xmlResponse = $xml->getXMLResponse();
 
-        $relevance->removeIgnoredDomains(
-            $this->count,
-            $this->ignoredDomains,
-            $xmlResponse,
-            false
-        );
-        $relevance->parseSites($xmlResponse);
-        $relevance->analysis($this->request, $this->userId, $this->historyId);
+            $relevance->removeIgnoredDomains(
+                $this->count,
+                $this->ignoredDomains,
+                $xmlResponse,
+                false
+            );
+            $relevance->parseSites($xmlResponse);
+            $relevance->analysis($this->request, $this->userId, $this->historyId);
+        } catch (\Exception $exception){
+            $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
+
+            $object->state = -1;
+
+            $object->save();
+        }
+
     }
 
+    /**
+     * @return void
+     */
     public function failed()
     {
-        $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
 
-        $object->state = -1;
-
-        $object->save();
     }
 }
