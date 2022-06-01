@@ -5,7 +5,6 @@ namespace App;
 use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -1140,42 +1139,40 @@ class TestRelevance
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
 
-        DB::transaction(function () use ($request, $time, $link, $userId, $historyId) {
-            $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
+        $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
 
-            foreach ($this->sites as $site) {
-                if ($site['mainPage']) {
-                    $default = [
-                        'mainPoints' => $site['mainPoints'],
-                        'coverage' => $site['coverage'],
-                        'coverageTf' => $site['coverageTf'],
-                        'width' => $site['width'],
-                        'density' => $site['density']['densityMainPercent'],
-                        'position' => $site['position']
-                    ];
+        foreach ($this->sites as $site) {
+            if ($site['mainPage']) {
+                $site = [
+                    'mainPoints' => $site['mainPoints'],
+                    'coverage' => $site['coverage'],
+                    'coverageTf' => $site['coverageTf'],
+                    'width' => $site['width'],
+                    'density' => $site['density']['densityMainPercent'],
+                    'position' => $site['position']
+                ];
 
-                    $id = RelevanceHistory::createOrUpdate(
-                        $this->phrase,
-                        $this->params['main_page_link'],
-                        $request,
-                        $default,
-                        $time,
-                        $mainHistory,
-                        true,
-                        $historyId
-                    );
+                $id = RelevanceHistory::createOrUpdate(
+                    $this->phrase,
+                    $this->params['main_page_link'],
+                    $request,
+                    $site,
+                    $time,
+                    $mainHistory,
+                    true,
+                    $historyId
+                );
 
-                    $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
+                $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
 
-                    $mainHistory->total_points = $info['points'];
-                    $mainHistory->count_sites = $info['count'];
-                    $mainHistory->save();
+                $mainHistory->total_points = $info['points'];
+                $mainHistory->count_sites = $info['count'];
+                $mainHistory->save();
 
-                    $this->saveHistoryResult($id);
-                    return;
-                }
+                $this->saveHistoryResult($id);
+                return;
             }
-        });
+        }
 
     }
 
