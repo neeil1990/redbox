@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\RelevanceHistory;
 use App\TestRelevance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -74,5 +75,14 @@ class RelevanceAnalysisQueue implements ShouldQueue
         );
         $relevance->parseSites($xmlResponse);
         $relevance->analysis($this->request, $this->userId, $this->historyId);
+    }
+
+    public function failed()
+    {
+        $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
+
+        $object->state = -1;
+
+        $object->save();
     }
 }

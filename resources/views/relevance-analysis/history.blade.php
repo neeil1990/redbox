@@ -75,6 +75,94 @@
                 z-index: 9999;
                 background: white;
             }
+
+            .col {
+                display: block;
+                float: left;
+                margin: 1% 0 1% 1.6%;
+            }
+
+            .col:first-of-type {
+                margin-left: 0;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 940px;
+                margin: 0 auto;
+                position: relative;
+                text-align: center;
+            }
+
+            /* CLEARFIX */
+
+            .cf:before,
+            .cf:after {
+                content: " ";
+                display: table;
+            }
+
+            .cf:after {
+                clear: both;
+            }
+
+            .cf {
+                *zoom: 1;
+            }
+
+            .row {
+                margin: 30px 0;
+            }
+
+            .loader {
+                width: 100px;
+                height: 100px;
+                border-radius: 100%;
+                position: relative;
+                margin: 0 auto;
+            }
+
+            #loader-1 {
+                display: flex;
+                justify-content: center;
+            }
+
+            #loader-1:before,
+            #loader-1:after {
+                content: "";
+                position: absolute;
+                width: 50%;
+                height: 50%;
+                border-radius: 100%;
+                border: 10px solid transparent;
+                border-top-color: #5a6268;
+            }
+
+            #loader-1:before {
+                z-index: 100;
+                animation: spin 1s infinite;
+            }
+
+            #loader-1:after {
+                border: 10px solid #ccc;
+            }
+
+            @keyframes spin {
+                0% {
+                    -webkit-transform: rotate(0deg);
+                    -ms-transform: rotate(0deg);
+                    -o-transform: rotate(0deg);
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    -webkit-transform: rotate(360deg);
+                    -ms-transform: rotate(360deg);
+                    -o-transform: rotate(360deg);
+                    transform: rotate(360deg);
+                }
+            }
+
         </style>
     @endslot
 

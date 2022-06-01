@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Jobs\RelevanceAnalysisQueue;
 use App\ProjectRelevanceHistory;
-use App\Queue;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
@@ -190,8 +189,8 @@ class HistoryRelevanceController extends Controller
         $request = json_decode($object->request, true);
 
         RelevanceAnalysisQueue::dispatch(
-            trim($request['link']),
-            trim($request['phrase']),
+            $object->main_link,
+            $object->phrase,
             $request['separator'],
             $request['region'],
             $request['count'],

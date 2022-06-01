@@ -40,16 +40,24 @@ $('.project_name').click(function () {
                 let checked = val.calculate ? 'checked' : ''
                 let state
 
-                if (val.state == 1) {
+                if (val.state === 1) {
                     state =
-                        "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-link'> Подробная информация</a>"
-                        +
                         "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>"
-                } else {
-                    state = '<div class="text-center" id="preloaderBlock">' +
-                        '<img src="/img/1485.gif" alt="preloader_gif" width="50">' +
+                        +
+                        "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-link'> Подробная информация</a>"
+
+                } else if (val.state === 0) {
+                    state =
                         '<p>Обрабатывается..</p>' +
+                        '<div class="text-center" id="preloaderBlock">' +
+                        '        <div class="three col">' +
+                        '            <div class="loader" id="loader-1"></div>' +
+                        '        </div>' +
                         '</div>'
+                } else if (val.state === -1) {
+                    state =
+                        "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>" +
+                        "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
                 }
 
                 let position = val.position
@@ -141,10 +149,14 @@ $('.project_name').click(function () {
                         dataType: "json",
                         url: "/relevance-repeat-scan/" + $(this).attr('data-order'),
                         success: function () {
-                            elem.parent().html('<div class="text-center" id="preloaderBlock">' +
-                                '<img src="/img/1485.gif" alt="preloader_gif" width="50">' +
+                            elem.parent().html(
                                 '<p>Обрабатывается..</p>' +
-                                '</div>')
+                                '<div class="text-center" id="preloaderBlock">' +
+                                '        <div class="three col">' +
+                                '            <div class="loader" id="loader-1"></div>' +
+                                '        </div>' +
+                                '</div>'
+                            )
                         },
                     });
                 });
