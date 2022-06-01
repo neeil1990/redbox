@@ -270,7 +270,7 @@ class RelevanceController extends Controller
     {
         $config = RelevanceAnalysisConfig::first();
 
-        return response()->json([
+        $result = [
             'clouds' => [
                 'competitors' => [
                     'totalTf' => $relevance->competitorsCloud['totalTf'],
@@ -310,10 +310,15 @@ class RelevanceController extends Controller
             'scanned_sites_count' => $config->scanned_sites_count,
             'hide_ignored_domains' => $config->hide_ignored_domains,
             'boostPercent' => $config->boostPercent,
-        ]);
+        ];
+
+        return response()->json($result);
     }
 
-    public function createQueue()
+    /**
+     * @return View
+     */
+    public function createQueue(): View
     {
         $config = RelevanceAnalysisConfig::first();
         $admin = false;
