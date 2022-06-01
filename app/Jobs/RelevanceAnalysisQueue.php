@@ -79,7 +79,11 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->parseSites($xmlResponse);
             $relevance->analysis($this->request, $this->userId, $this->historyId);
         } catch (\Exception $exception) {
-            Log::debug('message', [$exception->getMessage(), $exception->getFile(), $exception->getLine()]);
+            Log::debug('message', [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ]);
             $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
 
             $object->state = -1;
