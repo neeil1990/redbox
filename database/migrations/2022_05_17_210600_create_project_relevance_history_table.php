@@ -19,7 +19,7 @@ class CreateProjectRelevanceHistoryTable extends Migration
             $table->string('last_check');
             $table->integer('total_points')->nullable();
             $table->integer('count_sites')->nullable();
-            $table->string('group_name')->default('no name');
+            $table->string('group_name')->default('');
             $table->timestamps();
 
             $table->unsignedBigInteger('user_id');

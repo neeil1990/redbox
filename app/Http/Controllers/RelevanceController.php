@@ -333,18 +333,16 @@ class RelevanceController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function createTaskQueue(Request $request): RedirectResponse
+    public function createTaskQueue(Request $request): JsonResponse
     {
         $rows = explode("\r\n", $request->params);
         foreach ($rows as $row) {
             Queue::addInQueue($row, $request);
         }
 
-        flash()->overlay('Ваши задачи были добавлены в очередь, те задачи которые не прошли валидацию - были проигнорированы', ' ')->success();
-
-        return Redirect::route('relevance.history');
+        return response()->json([]);
     }
 
     /**

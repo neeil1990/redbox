@@ -954,13 +954,11 @@ class TestRelevance
     {
         $array = explode(" ", $text);
 
-        Log::debug('before', [count($array)]);
         foreach ($array as $key => $item) {
             if (Str::length($item) < $this->maxWordLength) {
                 unset($array[$key]);
             }
         }
-        Log::debug('after', [count($array)]);
         return implode(" ", $array);
     }
 
@@ -1186,7 +1184,8 @@ class TestRelevance
      */
     public function saveHistoryResult($id)
     {
-        $result = RelevanceHistoryResult::firstOrNew('project_id', '=', $id);
+        $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
+
         $result->clouds_competitors = json_encode([
             'totalTf' => json_encode($this->competitorsCloud['totalTf']),
             'textTf' => json_encode($this->competitorsCloud['textTf']),

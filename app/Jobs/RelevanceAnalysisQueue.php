@@ -80,6 +80,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
                 }
                 $relevance->parseSites();
             }
+
             $relevance->analysis($this->request, $this->userId, $this->historyId);
 
         } catch (\Exception $exception) {

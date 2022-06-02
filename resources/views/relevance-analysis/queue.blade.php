@@ -49,6 +49,17 @@
             }
         </style>
     @endslot
+    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message" id="toast-message">Ваши задачи успешно добавлены в очередь</div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
+        <div class="toast toast-error" aria-live="polite">
+            <div class="toast-message error-message" id="toast-message">Что-то пошло не так, попробуйте повторить попытку позднее.</div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -73,7 +84,6 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    {!! Form::open(['action' =>'RelevanceController@createTaskQueue', 'method' => 'POST', 'class' => 'express-form'])!!}
                     <div class="col-6 pt-3 pb-3">
                         <label for="params">Посадочные страницы и ссылки</label>
                         <textarea name="params" id="params" cols="30"
@@ -260,10 +270,9 @@
 
                     <div class="d-flex flex-column">
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <input type="submit" class="btn btn-secondary" id="full-analyse" value="Добавить в очередь">
+                            <input type="submit" class="btn btn-secondary" id="add-in-queue" value="Добавить в очередь">
                         </div>
                     </div>
-                    {!! Form::close() !!}
                 </div>
                 <div class="tab-pane" id="tab_2">
                     @include('layouts.relevance-config')
@@ -271,4 +280,42 @@
             </div>
         </div>
     </div>
+    @slot('js')
+        <script>
+            $('#add-in-queue').click(() => {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('create.queue') }}",
+                    data: {
+                        params: $('#params').val(),
+                        type: 'phrase',
+                        separator: $('#separator').val(),
+                        link: $('.form-control.link').val(),
+                        listWords: $('.form-control.listWords').val(),
+                        count: $('.custom-select.rounded-0.count').val(),
+                        region: $('.custom-select.rounded-0.region').val(),
+                        ignoredDomains: $('.form-control.ignoredDomains').val(),
+
+                        noIndex: $('#switchNoindex').is(':checked'),
+                        hiddenText: $('#switchAltAndTitle').is(':checked'),
+                        switchMyListWords: $('#switchMyListWords').is(':checked'),
+                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
+                    },
+                    success: function (response) {
+                        $('.toast-top-right.success-message').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.success-message').hide(300)
+                        }, 3500)
+                    },
+                    error: function () {
+                        $('.toast-top-right.error-message.empty').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message.empty').hide(300)
+                        }, 3500)
+                    }
+                });
+            })
+        </script>
+    @endslot
 @endcomponent
