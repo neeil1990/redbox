@@ -1,4 +1,7 @@
-function renderClouds(competitors, mainPage, tfCompClouds, hide) {
+function renderClouds(competitors, mainPage, tfCompClouds, hide, disableFunctions = false) {
+    if (disableFunctions) {
+        sessionStorage.setItem('disableFunctions', '1')
+    }
     $('.clouds').show()
     $('#competitorsTfClouds').show()
     sessionStorage.setItem('competitors', JSON.stringify(competitors))
@@ -79,14 +82,14 @@ $('#coverage-clouds-button').click(function () {
                     "        </button> " +
                     "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" +
                     "            <a target='_blank' class='dropdown-item' href='" + key + "'>" +
-                    "                <i class='fas fa-external-link-alt'></i> Перейти на посадочную страницу</a>" +
-                    "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" +
-                    "                  data-target='" + key + "'>" +
-                    "                <i class='fas fa-external-link-alt'></i>" +
-                    "                Добавить в игнорируемые домены" +
-                    "            </span>" +
-                    "        </div>" +
-                    "</div>";
+                    "                <i class='fas fa-external-link-alt'></i> Перейти на посадочную страницу</a>"
+                if (sessionStorage.getItem('disableFunctions') !== '1') {
+                    btnGroup += "<span class='dropdown-item add-in-ignored-domains' style='cursor: pointer' data-target='" + key + "'>" +
+                        "<i class='fas fa-external-link-alt'></i>" +
+                        "Добавить в игнорируемые домены </span>"
+                }
+
+                btnGroup += "</div></div>";
                 let item = arrayToObj(value)
                 $('#coverage-clouds').append(
                     "<div style='width: 50%;' class='render'>" +

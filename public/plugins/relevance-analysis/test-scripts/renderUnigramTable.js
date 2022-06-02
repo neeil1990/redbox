@@ -1,5 +1,8 @@
-function renderUnigramTable(unigramTable, count) {
+function renderUnigramTable(unigramTable, count, disableFunctions = false) {
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
+    if (disableFunctions) {
+        sessionStorage.setItem('disableFunctions', '1')
+    }
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
     $.each(unigramTable, function (key, wordWorm) {
@@ -38,7 +41,6 @@ function renderUnigramTable(unigramTable, count) {
                     window.open('/show-children-rows/' + response.filename, '_blank');
                 },
                 error: function (response) {
-                    console.log(response.message)
                 }
             });
         });
@@ -205,11 +207,17 @@ function renderMainTr(tBody, key, wordWorm) {
     let repeatInTextMainPageWarning = repeatInTextMainPage == 0 ? "class='bg-warning-elem'" : ""
     let repeatInLinkMainPageWarning = repeatInLinkMainPage == 0 ? " class='bg-warning-elem'" : ""
     let totalInMainPage = repeatInLinkMainPage == 0 && repeatInTextMainPage == 0 ? " class='bg-warning-elem'" : ""
+
     let lockBlock =
         "    <span class='lock-block'>" +
         "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
+
+    if (sessionStorage.getItem('disableFunctions') === '1') {
+        lockBlock = "";
+    }
+
     tBody.append(
         "<tr class='render'>" +
         "   <td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
@@ -276,6 +284,10 @@ function renderChildTr(elem, key, word, stats) {
         "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
+
+    if (sessionStorage.getItem('disableFunctions') === '1') {
+        lockBlock = "";
+    }
     elem.after(
         "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
         "<td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +

@@ -1,4 +1,4 @@
-function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent) {
+function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent, disableFunctions = false) {
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
@@ -16,19 +16,18 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             "           </a>" +
             "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" +
             "                <i class='fas fa-external-link-alt'></i> Перейти в текстовый анализатор" +
-            "           </a>" +
-            "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" +
-            "                  data-target='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt'></i>" +
-            "                Добавить в игнорируемые домены" +
-            "            </span>" +
-            "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
-            "                 data-target='" + value['site'] + "'>" +
-            "               <i class='fas fa-external-link-alt'></i>" +
-            "               Исключить из игнорируемых доменов" +
-            "           </span>" +
-            "        </div>" +
-            "</div>";
+            "           </a>"
+        if (!disableFunctions) {
+            btnGroup += "<span class='dropdown-item add-in-ignored-domains' style='cursor: pointer' data-target='" + value['site'] + "'>" +
+                "<i class='fas fa-external-link-alt'></i> Добавить в игнорируемые домены </span>" +
+                "<span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
+                "      data-target='" + value['site'] + "'>" +
+                "    <i class='fas fa-external-link-alt'></i>" +
+                "    Исключить из игнорируемых доменов" +
+                "</span>"
+        }
+
+        btnGroup += "</div></div>";
 
         let noTop = ''
         let ignorBlock = ''
