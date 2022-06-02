@@ -27,6 +27,7 @@ class RelevanceHistory extends Model
         if ($historyId > 0) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
             $history->state = $state;
+            $history->request = json_encode($request);
         } else {
             $history = new RelevanceHistory([
                 'phrase' => $phrase,

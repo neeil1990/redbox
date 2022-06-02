@@ -10,7 +10,6 @@ use App\RelevanceHistoryResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class HistoryRelevanceController extends Controller
@@ -119,7 +118,7 @@ class HistoryRelevanceController extends Controller
      */
     public function getDetailsInfo(Request $request): JsonResponse
     {
-        $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->first();
+        $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
         $history = json_decode($history, true);
 
         $clouds_competitors = json_decode($history['clouds_competitors'], true);
@@ -189,12 +188,6 @@ class HistoryRelevanceController extends Controller
     public function repeatScan(Request $request): JsonResponse
     {
         RelevanceAnalysisQueue::dispatch(
-            $request['link'],
-            $request['phrase'],
-            $request['separator'],
-            $request['region'],
-            $request['count'],
-            $request['ignoredDomains'],
             Auth::id(),
             $request->all(),
             $request['id']

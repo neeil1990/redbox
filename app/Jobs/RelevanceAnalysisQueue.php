@@ -18,18 +18,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
 
     public $tries = 1;
 
-    private $link;
-
-    private $separator;
-
-    private $region;
-
-    private $phrase;
-
-    private $count;
-
-    private $ignoredDomains;
-
     private $request;
 
     private $userId;
@@ -41,17 +29,16 @@ class RelevanceAnalysisQueue implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($link, $phrase, $separator, $region, $count, $ignoredDomains, $userId, $request, $historyId)
+    public function __construct($userId, $request, $historyId, $link = false, $phrase = false)
     {
-        $this->link = $link;
-        $this->phrase = $phrase;
-        $this->separator = $separator;
-        $this->region = $region;
-        $this->count = $count;
-        $this->ignoredDomains = $ignoredDomains;
         $this->request = $request;
         $this->userId = $userId;
         $this->historyId = $historyId;
+
+        if ($link != false) {
+            $this->request['link'] = $link;
+            $this->request['phrase'] = $phrase;
+        }
     }
 
     /**
@@ -62,21 +49,39 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function handle()
     {
         try {
-            $relevance = new TestRelevance($this->link, $this->phrase, $this->separator);
+            $relevance = new TestRelevance($this->request['link'], $this->request['phrase'], $this->request['separator']);
             $relevance->getMainPageHtml();
 
-            $xml = new SimplifiedXmlFacade(100, $this->region);
-            $xml->setQuery($this->phrase);
-            $xmlResponse = $xml->getXMLResponse();
+            if ($this->request['type'] == 'phrase') {
 
-            $relevance->removeIgnoredDomains(
-                $this->count,
-                $this->ignoredDomains,
-                $xmlResponse,
-                false
-            );
-            $relevance->parseSites($xmlResponse);
+                $xml = new SimplifiedXmlFacade(100, $this->request['region']);
+                $xml->setQuery($this->request['phrase']);
+                $xmlResponse = $xml->getXMLResponse();
+
+                $relevance->removeIgnoredDomains(
+                    $this->request['count'],
+                    $this->request['ignoredDomains'],
+                    $xmlResponse,
+                    false
+                );
+                $relevance->parseSites($xmlResponse);
+
+            } elseif ($this->request['type'] == 'list') {
+
+                $sitesList = str_replace("\r\n", "\n", $this->request['siteList']);
+                $sitesList = explode("\n", $sitesList);
+
+                foreach ($sitesList as $item) {
+                    $relevance->domains[] = [
+                        'item' => str_replace('www.', '', mb_strtolower(trim($item))),
+                        'ignored' => false,
+                        'position' => count($relevance->domains) + 1
+                    ];
+                }
+                $relevance->parseSites();
+            }
             $relevance->analysis($this->request, $this->userId, $this->historyId);
+
         } catch (\Exception $exception) {
             // игнорируем ошибку: packets out of order
             if (

@@ -3,15 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use App\Jobs\RelevanceAnalysis;
-use App\Jobs\RelevanceAnalysisQueue;
 use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
-use App\Session;
 use App\TestRelevance;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

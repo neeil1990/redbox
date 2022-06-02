@@ -250,20 +250,20 @@
                                                 {!! Form::text("link", null ,["class" => "form-control link", "required"]) !!}
                                             </div>
 
-                                            {{--                                            <div class="form-group required">--}}
-                                            {{--                                                <label>{{ __('Тип проверки') }}</label>--}}
-                                            {{--                                                {!! Form::select('type', [--}}
-                                            {{--                                                    'phrase' => 'Ключевая фраза',--}}
-                                            {{--                                                    'list' => 'Список сканируемых сайтов',--}}
-                                            {{--                                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}--}}
-                                            {{--                                            </div>--}}
+{{--                                            <div class="form-group required">--}}
+{{--                                                <label>{{ __('Тип проверки') }}</label>--}}
+{{--                                                {!! Form::select('type', [--}}
+{{--                                                    'phrase' => 'Ключевая фраза',--}}
+{{--                                                    'list' => 'Список сканируемых сайтов',--}}
+{{--                                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}--}}
+{{--                                            </div>--}}
 
-                                            {{--                                            <div id="site-list" style="display: none">--}}
-                                            {{--                                                <div class="form-group required">--}}
-                                            {{--                                                    <label>Список сайтов</label>--}}
-                                            {{--                                                    {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}--}}
-                                            {{--                                                </div>--}}
-                                            {{--                                            </div>--}}
+                                            <div id="site-list">
+                                                <div class="form-group required">
+                                                    <label>Список сайтов</label>
+                                                    {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
+                                                </div>
+                                            </div>
 
                                             <div id="key-phrase">
                                                 <div class="form-group required">
@@ -413,8 +413,7 @@
                                                             <input type="checkbox"
                                                                    class="custom-control-input"
                                                                    id="switchMyListWords"
-                                                                   name="switchMyListWords"
-                                                                   @if($config->remove_my_list_words == 'yes') checked @endif>
+                                                                   name="switchMyListWords">
                                                             <label class="custom-control-label"
                                                                    for="switchMyListWords"></label>
                                                         </div>
@@ -430,13 +429,10 @@
                                         </div>
                                     </div>
                                     <input type="hidden" id="hiddenId">
+                                    <input type="hidden" id="type">
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-secondary"
-                                                id="relevance-repeat-scan"
-                                                data-dismiss="modal">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                                        <button type="button" class="btn btn-secondary" id="relevance-repeat-scan" data-dismiss="modal">
                                             Повторить анализ
                                         </button>
                                     </div>

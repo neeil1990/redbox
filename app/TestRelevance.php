@@ -148,7 +148,7 @@ class TestRelevance
             if ($xmlResponse) {
                 $this->sites[$this->params['main_page_link']]['position'] = array_search('https://almamed.su/category/laringoskopy/', $xmlResponse);
             } else {
-                $this->sites[$this->params['main_page_link']]['position'] = 'Нет возможности узнать позицию сайта';
+                $this->sites[$this->params['main_page_link']]['position'] = count($this->domains) + 1;
             }
         }
     }
@@ -947,18 +947,21 @@ class TestRelevance
 
     /**
      * Обрезать все слова короче N символов
-     * @param $text
+     * @param string $text
      * @return string
      */
-    public function separateText($text): string
+    public function separateText(string $text): string
     {
-        $text = explode(" ", $text);
-        foreach ($text as $key => $item) {
+        $array = explode(" ", $text);
+
+        Log::debug('before', [count($array)]);
+        foreach ($array as $key => $item) {
             if (Str::length($item) < $this->maxWordLength) {
-                unset($text[$key]);
+                unset($array[$key]);
             }
         }
-        return implode(" ", $text);
+        Log::debug('after', [count($array)]);
+        return implode(" ", $array);
     }
 
     /**
@@ -1183,40 +1186,42 @@ class TestRelevance
      */
     public function saveHistoryResult($id)
     {
-        $result = new RelevanceHistoryResult([
-            'clouds_competitors' => json_encode([
-                'totalTf' => json_encode($this->competitorsCloud['totalTf']),
-                'textTf' => json_encode($this->competitorsCloud['textTf']),
-                'linkTf' => json_encode($this->competitorsCloud['linkTf']),
+        $result = RelevanceHistoryResult::firstOrNew('project_id', '=', $id);
+        $result->clouds_competitors = json_encode([
+            'totalTf' => json_encode($this->competitorsCloud['totalTf']),
+            'textTf' => json_encode($this->competitorsCloud['textTf']),
+            'linkTf' => json_encode($this->competitorsCloud['linkTf']),
 
-                'textAndLinks' => json_encode($this->competitorsTextAndLinksCloud),
-                'links' => json_encode($this->competitorsLinksCloud),
-                'text' => json_encode($this->competitorsTextCloud),
-            ]),
-            'clouds_main_page' => json_encode([
-                'totalTf' => json_encode($this->mainPage['totalTf']),
-                'textTf' => json_encode($this->mainPage['textTf']),
-                'linkTf' => json_encode($this->mainPage['linkTf']),
-                'textWithLinks' => json_encode($this->mainPage['textWithLinks']),
-                'links' => json_encode($this->mainPage['links']),
-                'text' => json_encode($this->mainPage['text']),
-            ]),
-            'avg' => json_encode([
-                'countWords' => $this->countWords / $this->countNotIgnoredSites,
-                'countSymbols' => $this->countSymbols / $this->countNotIgnoredSites,
-            ]),
-            'main_page' => json_encode([
-                'countWords' => $this->countWordsInMyPage,
-                'countSymbols' => $this->countSymbolsInMyPage,
-            ]),
-            'unigram_table' => json_encode($this->wordForms),
-            'sites' => json_encode($this->sites),
-            'tf_comp_clouds' => json_encode($this->tfCompClouds),
-            'phrases' => json_encode($this->phrases),
-            'avg_coverage_percent' => json_encode($this->avgCoveragePercent),
-            'recommendations' => json_encode($this->recommendations),
-            'project_id' => $id,
+            'textAndLinks' => json_encode($this->competitorsTextAndLinksCloud),
+            'links' => json_encode($this->competitorsLinksCloud),
+            'text' => json_encode($this->competitorsTextCloud),
         ]);
+
+        $result->clouds_main_page = json_encode([
+            'totalTf' => json_encode($this->mainPage['totalTf']),
+            'textTf' => json_encode($this->mainPage['textTf']),
+            'linkTf' => json_encode($this->mainPage['linkTf']),
+            'textWithLinks' => json_encode($this->mainPage['textWithLinks']),
+            'links' => json_encode($this->mainPage['links']),
+            'text' => json_encode($this->mainPage['text']),
+        ]);
+
+        $result->avg = json_encode([
+            'countWords' => $this->countWords / $this->countNotIgnoredSites,
+            'countSymbols' => $this->countSymbols / $this->countNotIgnoredSites,
+        ]);
+
+        $result->main_page = json_encode([
+            'countWords' => $this->countWordsInMyPage,
+            'countSymbols' => $this->countSymbolsInMyPage,
+        ]);
+
+        $result->unigram_table = json_encode($this->wordForms);
+        $result->sites = json_encode($this->sites);
+        $result->tf_comp_clouds = json_encode($this->tfCompClouds);
+        $result->phrases = json_encode($this->phrases);
+        $result->avg_coverage_percent = json_encode($this->avgCoveragePercent);
+        $result->recommendations = json_encode($this->recommendations);
 
         $result->save();
     }

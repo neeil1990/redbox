@@ -44,7 +44,6 @@ $('.project_name').click(function () {
                         '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
                         '   Повторить анализ' +
                         '</button>'
-                        // "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>"
                         +
                         "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-link'> Подробная информация</a>"
 
@@ -70,13 +69,19 @@ $('.project_name').click(function () {
                     position = 'Не попал в топ 100'
                 }
 
+                let phrase = val.phrase
+
+                if (phrase == null) {
+                    phrase = 'Был использван анализ без ключевой фразы'
+                }
+
                 tbody.append(
                     "<tr class='render'>" +
                     "<td>" + val.last_check + "</td>" +
                     "<td>" +
                     "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
                     "</td>" +
-                    "<td>" + val.phrase + "</td>" +
+                    "<td>" + phrase + "</td>" +
                     "<td>" + getRegionName(val.region) + "</td>" +
                     "<td>" + val.main_link + "</td>" +
                     "<td>" + position + "</td>" +
@@ -154,9 +159,18 @@ $('.project_name').click(function () {
                         url: "/get-history-info/" + id,
                         success: function (response) {
                             let history = response.history
+                            if (history.type === 'list') {
+                                $('#key-phrase').hide()
+                                $('#site-list').show()
+                                $('#siteList').val(history.siteList)
+                            } else {
+                                $('#key-phrase').show()
+                                $('#site-list').hide()
+                                $('.form-control.phrase').val(history.phrase)
+                            }
+                            $('#type').val(history.type)
                             $('#hiddenId').val(id)
                             $('.form-control.link').val(history.link)
-                            $('.form-control.phrase').val(history.phrase)
                             $(".custom-select#count").val(history.count).change();
                             $(".custom-select.rounded-0.region").val(history.region).change();
                             $(".form-control.ignoredDomains").html(history.ignoredDomains);
@@ -189,6 +203,8 @@ $('.project_name').click(function () {
                         url: "/repeat-scan",
                         data: {
                             id: id,
+                            type: $('#type').val(),
+                            siteList: $('#siteList').val(),
                             link: $('.form-control.link').val(),
                             phrase: $('.form-control.phrase').val(),
                             count: $(".custom-select#count").val(),
