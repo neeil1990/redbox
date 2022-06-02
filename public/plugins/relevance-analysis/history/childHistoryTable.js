@@ -10,7 +10,6 @@ function changeState(elem) {
     });
 }
 
-
 $('#changeAllState').on('change', function () {
     let state = $(this).is(':checked')
     $.each($('.custom-control-input.switch'), function () {
@@ -42,7 +41,10 @@ $('.project_name').click(function () {
 
                 if (val.state === 1) {
                     state =
-                        "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>"
+                        '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                        '   Повторить анализ' +
+                        '</button>'
+                        // "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>"
                         +
                         "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-link'> Подробная информация</a>"
 
@@ -56,7 +58,9 @@ $('.project_name').click(function () {
                         '</div>'
                 } else if (val.state === -1) {
                     state =
-                        "<button data-order='" + val.id + "' class='btn btn-secondary mt-3 relevance-repeat-scan'>Повторить анализ</button>" +
+                        '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                        '   Повторить анализ' +
+                        '</button>' +
                         "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
                 }
 
@@ -91,7 +95,7 @@ $('.project_name').click(function () {
                     "       </div>" +
                     "   </div>" +
                     "</td>" +
-                    "<td>" +
+                    "<td id='history-state-" + val.id + "'>" +
                     state +
                     "</td>" +
                     "</tr>"
@@ -142,22 +146,76 @@ $('.project_name').click(function () {
                     });
                 });
 
-                $('.relevance-repeat-scan').click(function () {
-                    let elem = $(this)
+                $('.get-history-info').click(function () {
+                    let id = $(this).attr('data-order')
                     $.ajax({
                         type: "get",
                         dataType: "json",
-                        url: "/relevance-repeat-scan/" + $(this).attr('data-order'),
+                        url: "/get-history-info/" + id,
+                        success: function (response) {
+                            let history = response.history
+                            $('#hiddenId').val(id)
+                            $('.form-control.link').val(history.link)
+                            $('.form-control.phrase').val(history.phrase)
+                            $(".custom-select#count").val(history.count).change();
+                            $(".custom-select.rounded-0.region").val(history.region).change();
+                            $(".form-control.ignoredDomains").html(history.ignoredDomains);
+                            $("#separator").val(history.separator);
+
+                            if (history.noIndex === "true") {
+                                $('#switchNoindex').trigger('click')
+                            }
+
+                            if (history.hiddenText === "true") {
+                                $('#switchAltAndTitle').trigger('click')
+                            }
+
+                            if (history.conjunctionsPrepositionsPronouns === "true") {
+                                $('#switchConjunctionsPrepositionsPronouns').trigger('click')
+                            }
+
+                            if (history.switchMyListWords === "true") {
+                                $('#switchMyListWords').trigger('click')
+                            }
+                        },
+                    });
+                });
+
+                $('#relevance-repeat-scan').click(function () {
+                    let id = $('#hiddenId').val()
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/repeat-scan",
+                        data: {
+                            id: id,
+                            link: $('.form-control.link').val(),
+                            phrase: $('.form-control.phrase').val(),
+                            count: $(".custom-select#count").val(),
+                            region: $(".custom-select.rounded-0.region").val(),
+                            ignoredDomains: $(".form-control.ignoredDomains").html(),
+                            separator: $("#separator").val(),
+                            switchNoindex: $('#switchNoindex').is(':checked'),
+                            switchAltAndTitle: $('#switchAltAndTitle').is(':checked'),
+                            switchConjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
+                            switchMyListWords: $('#switchMyListWords').is(':checked'),
+                            listWords: $('.form-control.listWords').val(),
+                        },
                         success: function () {
-                            elem.parent().html(
-                                '<p>Обрабатывается..</p>' +
+                            $('#history-state-' + id).html('<p>Обрабатывается..</p>' +
                                 '<div class="text-center" id="preloaderBlock">' +
                                 '        <div class="three col">' +
                                 '            <div class="loader" id="loader-1"></div>' +
                                 '        </div>' +
-                                '</div>'
-                            )
+                                '</div>')
                         },
+                        error: function () {
+                            $('#toast-container').show(300)
+                            $('#message-info').html('Что-то пошло не так, повторите попытку позже.')
+                            setInterval(function () {
+                                $('#toast-container').hide(300)
+                            }, 3500)
+                        }
                     });
                 });
 
@@ -280,7 +338,7 @@ $('.project_name').click(function () {
                 function isDateValid(target) {
                     let date = new Date(target)
                     let dateMin = new Date($('#dateMin').val() + ' 00:00:00')
-                    let dateMax = new Date($('#dateMax').val() + ' 23:59:00')
+                    let dateMax = new Date($('#dateMax').val() + ' 23:59:59')
                     if (date >= dateMin && date <= dateMax) {
                         return true;
                     }
@@ -300,5 +358,3 @@ $('.project_name').click(function () {
         },
     });
 });
-
-

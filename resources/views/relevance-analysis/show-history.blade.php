@@ -705,17 +705,17 @@
                         id: {{ $id }}
                     },
                     success: function (response) {
-                        successRequest(response.history)
+                        successRequest(response.history, response.config)
                     },
                 });
             });
 
-            function successRequest(history) {
+            function successRequest(history, config) {
                 renderTextTable(history.avg, history.main_page)
-                renderRecommendationsTable(history.recommendations, 10)
-                renderUnigramTable(history.unigram_table, 10);
-                renderPhrasesTable(history.phrases, 10)
-                renderScannedSitesList(history.sites, history.avg_coverage_percent, 10, false, 0);
+                renderRecommendationsTable(history.recommendations, config.recommendations_count)
+                renderUnigramTable(history.unigram_table, config.ltp_count);
+                renderPhrasesTable(history.phrases, config.ltps_count)
+                renderScannedSitesList(history.sites, history.avg_coverage_percent, config.scanned_sites_count, false, config.boostPercent);
                 renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false);
                 setTimeout(function () {
                     $('#preloaderBlock').hide(300)

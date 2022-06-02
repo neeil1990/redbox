@@ -10,6 +10,7 @@ use App\RelevanceHistoryResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class HistoryRelevanceController extends Controller
@@ -149,7 +150,7 @@ class HistoryRelevanceController extends Controller
                 'countSymbols' => json_decode($avg['countSymbols'], true),
             ],
             'main_page' => [
-                'countWords' => json_decode($main_page['countSymbols'], true),
+                'countWords' => json_decode($main_page['countWords'], true),
                 'countSymbols' => json_decode($main_page['countSymbols'], true),
             ],
             'unigram_table' => json_decode($history['unigram_table'], true),
@@ -161,7 +162,8 @@ class HistoryRelevanceController extends Controller
         ];
 
         return response()->json([
-            'history' => $history
+            'history' => $history,
+            'config' => RelevanceAnalysisConfig::first(),
         ]);
     }
 
@@ -181,28 +183,38 @@ class HistoryRelevanceController extends Controller
     }
 
     /**
-     * @param RelevanceHistory $object
+     * @param Request $request
      * @return JsonResponse
      */
-    public function repeatScan(RelevanceHistory $object): JsonResponse
+    public function repeatScan(Request $request): JsonResponse
     {
-        $request = json_decode($object->request, true);
-
         RelevanceAnalysisQueue::dispatch(
-            $object->main_link,
-            $object->phrase,
+            $request['link'],
+            $request['phrase'],
             $request['separator'],
             $request['region'],
             $request['count'],
             $request['ignoredDomains'],
             Auth::id(),
-            $request,
-            $object->id
+            $request->all(),
+            $request['id']
         );
 
+        $object = RelevanceHistory::where('id', '=', $request->id)->first();
         $object->state = 0;
         $object->save();
 
         return response()->json([]);
+    }
+
+    /**
+     * @param RelevanceHistory $object
+     * @return JsonResponse
+     */
+    public function getHistoryInfo(RelevanceHistory $object): JsonResponse
+    {
+        return response()->json([
+            'history' => json_decode($object->request)
+        ]);
     }
 }
