@@ -255,6 +255,7 @@
                         </div>
 
                         <input type="hidden" name="countTasks" id="countTasks" value="1">
+                        <input type="hidden" name="type" id="type" value="phrase">
                     </div>
 
                     <div class="d-flex flex-column">

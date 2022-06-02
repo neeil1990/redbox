@@ -94,7 +94,6 @@ class HistoryRelevanceController extends Controller
         return response()->json([]);
     }
 
-
     /**
      * @param int $id
      * @return void
