@@ -227,7 +227,7 @@ class TestRelevance
      */
     public function removeNoIndex($request)
     {
-        if ($request->noIndex == 'false') {
+        if ($request['noIndex'] == 'false') {
             Log::debug('removeNoIndex srabotal');
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
@@ -256,7 +256,7 @@ class TestRelevance
      */
     public function getHiddenData($request)
     {
-        if ($request->hiddenText == 'true') {
+        if ($request['hiddenText'] == 'true') {
             Log::debug('getHiddenData srabotal');
             $this->mainPage['hiddenText'] = TestRelevance::getHiddenText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
@@ -504,7 +504,7 @@ class TestRelevance
      */
     public function removePartsOfSpeech($request)
     {
-        if ($request->conjunctionsPrepositionsPronouns == 'false') {
+        if ($request['conjunctionsPrepositionsPronouns'] == 'false') {
             Log::debug('removePartsOfSpeech srabotal');
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
@@ -524,7 +524,7 @@ class TestRelevance
      */
     public function removeListWords($request)
     {
-        if ($request->switchMyListWords == 'true') {
+        if ($request['switchMyListWords'] == 'true') {
             Log::debug('removeListWords srabotal');
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
