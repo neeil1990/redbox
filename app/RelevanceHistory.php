@@ -34,7 +34,7 @@ class RelevanceHistory extends Model
                 'main_link' => $link,
                 'region' => $request['region'],
                 'state' => $state,
-                'request' => json_encode($request->all())
+                'request' => json_encode($request)
             ]);
         }
 

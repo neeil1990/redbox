@@ -2,10 +2,10 @@
 
 namespace App;
 
+use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -151,6 +151,53 @@ class TestRelevance
                 $this->sites[$this->params['main_page_link']]['position'] = count($this->domains) + 1;
             }
         }
+    }
+
+    /**
+     * @param $siteList
+     * @return void
+     */
+    public function prepareDomains($siteList)
+    {
+        $sitesList = str_replace("\r\n", "\n", $siteList);
+        $sitesList = explode("\n", $sitesList);
+
+        foreach ($sitesList as $item) {
+            $this->domains[] = [
+                'item' => str_replace('www.', '', mb_strtolower(trim($item))),
+                'ignored' => false,
+                'position' => count($this->domains) + 1
+            ];
+        }
+    }
+
+    /**
+     * @param $request
+     * @return void
+     */
+    public function analysisByPhrase($request)
+    {
+        $xml = new SimplifiedXmlFacade($request['region']);
+        $xml->setQuery($request['phrase']);
+        $xmlResponse = $xml->getXMLResponse();
+
+        $this->removeIgnoredDomains(
+            $request,
+            $xmlResponse,
+            false
+        );
+
+        $this->parseSites($xmlResponse);
+    }
+
+    /**
+     * @param $siteList
+     * @return void
+     */
+    public function analysisByList($siteList)
+    {
+        $this->prepareDomains($siteList);
+        $this->parseSites();
     }
 
     /**
@@ -767,15 +814,14 @@ class TestRelevance
     }
 
     /**
-     * @param $maxLength
-     * @param $ignoredDomains
+     * @param $request
      * @param $sites
      * @param $exp
      * @return void
      */
-    public function removeIgnoredDomains($maxLength, $ignoredDomains, $sites, $exp)
+    public function removeIgnoredDomains($request, $sites, $exp)
     {
-        $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
+        $ignoredDomains = str_replace("\r\n", "\n", $request['ignoredDomains']);
         $ignoredDomains = explode("\n", $ignoredDomains);
         $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
         $iterator = 0;
@@ -784,7 +830,7 @@ class TestRelevance
             $domain = parse_url($item);
             $domain = str_replace('www.', "", mb_strtolower($domain['host']));
 
-            if ($iterator < $maxLength) {
+            if ($iterator < $request['count']) {
                 $this->domains[$key] = [
                     'item' => $item,
                     'position' => $key + 1,

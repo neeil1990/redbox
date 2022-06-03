@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Classes\Xml\SimplifiedXmlFacade;
 use App\RelevanceHistory;
 use App\TestRelevance;
 use Illuminate\Bus\Queueable;
@@ -53,32 +52,10 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
-
-                $xml = new SimplifiedXmlFacade(100, $this->request['region']);
-                $xml->setQuery($this->request['phrase']);
-                $xmlResponse = $xml->getXMLResponse();
-
-                $relevance->removeIgnoredDomains(
-                    $this->request['count'],
-                    $this->request['ignoredDomains'],
-                    $xmlResponse,
-                    false
-                );
-                $relevance->parseSites($xmlResponse);
+                $relevance->analysisByPhrase($this->request);
 
             } elseif ($this->request['type'] == 'list') {
-
-                $sitesList = str_replace("\r\n", "\n", $this->request['siteList']);
-                $sitesList = explode("\n", $sitesList);
-
-                foreach ($sitesList as $item) {
-                    $relevance->domains[] = [
-                        'item' => str_replace('www.', '', mb_strtolower(trim($item))),
-                        'ignored' => false,
-                        'position' => count($relevance->domains) + 1
-                    ];
-                }
-                $relevance->parseSites();
+                $relevance->analysisByList($this->request['siteList']);
             }
 
             $relevance->analysis($this->request, $this->userId, $this->historyId);

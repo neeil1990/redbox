@@ -97,7 +97,7 @@ class RelevanceController extends Controller
         $relevance->getMainPageHtml();
 
         if ($request->input('type') === 'phrase') {
-            $xml = new SimplifiedXmlFacade(100, $request->input('region'));
+            $xml = new SimplifiedXmlFacade($request->input('region'));
             $xml->setQuery($request->input('phrase'));
             $xmlResponse = $xml->getXMLResponse();
 
@@ -184,33 +184,14 @@ class RelevanceController extends Controller
         $relevance = new TestRelevance($request->input('link'), $request->input('phrase'), $request->input('separator'));
         $relevance->getMainPageHtml();
 
-        if ($request->input('type') === 'list') {
-            $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
-            $sitesList = explode("\n", $sitesList);
+        if ($request['type'] == 'phrase') {
+            $relevance->analysisByPhrase($request->all());
 
-            foreach ($sitesList as $item) {
-                $relevance->domains[] = [
-                    'item' => str_replace('www.', '', mb_strtolower(trim($item))),
-                    'ignored' => false,
-                    'position' => count($relevance->domains) + 1
-                ];
-            }
-            $relevance->parseSites();
-        } else {
-            $xml = new SimplifiedXmlFacade(100, $request->input('region'));
-            $xml->setQuery($request->input('phrase'));
-            $xmlResponse = $xml->getXMLResponse();
-
-            $relevance->removeIgnoredDomains(
-                $request->input('count'),
-                $request->input('ignoredDomains'),
-                $xmlResponse,
-                filter_var($request->input('exp'), FILTER_VALIDATE_BOOLEAN)
-            );
-            $relevance->parseSites($xmlResponse);
+        } elseif ($request['type'] == 'list') {
+            $relevance->analysisByList($request['siteList']);
         }
 
-        $relevance->analysis($request, Auth::id());
+        $relevance->analysis($request->all(), Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
