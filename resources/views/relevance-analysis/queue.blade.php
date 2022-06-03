@@ -302,13 +302,15 @@
                         switchMyListWords: $('#switchMyListWords').is(':checked'),
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
-                    success: function (response) {
+                    success: function () {
+                        $('#params').val('')
                         $('.toast-top-right.success-message').show(300)
                         setTimeout(() => {
                             $('.toast-top-right.success-message').hide(300)
                         }, 3500)
                     },
                     error: function () {
+                        $('#params').val('')
                         $('.toast-top-right.error-message.empty').show(300)
                         setTimeout(() => {
                             $('.toast-top-right.error-message.empty').hide(300)
