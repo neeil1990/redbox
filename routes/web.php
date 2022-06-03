@@ -11,7 +11,6 @@
 |
 */
 
-use App\RelevanceHistoryResult;
 use App\TelegramBot;
 use Illuminate\Support\Facades\Auth;
 

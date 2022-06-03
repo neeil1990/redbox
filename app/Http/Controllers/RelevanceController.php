@@ -318,7 +318,7 @@ class RelevanceController extends Controller
      */
     public function createTaskQueue(Request $request): JsonResponse
     {
-        $rows = explode("\r\n", $request->params);
+        $rows = explode("\n", $request->params);
         foreach ($rows as $row) {
             Queue::addInQueue($row, $request);
         }
