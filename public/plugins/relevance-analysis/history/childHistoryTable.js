@@ -45,7 +45,7 @@ $('.project_name').click(function () {
                         '   Повторить анализ' +
                         '</button>'
                         +
-                        "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-link'> Подробная информация</a>"
+                        "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
 
                 } else if (val.state === 0) {
                     state =

@@ -19,12 +19,13 @@ class Queue extends Model
      */
     public static function addInQueue($row, $request)
     {
+        Log::info('addInQueue');
         $userId = Auth::id();
         $item = explode(';', $row);
-        $link = parse_url($item[1]);
+        $link = parse_url(trim($item[1]));
 
         if (count($item) == 2 && isset($link['host'])) {
-            $historyId = Queue::prepareHistory($request, $item[1], $userId, $item[0]);
+            $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
 
             RelevanceAnalysisQueue::dispatch(
                 $userId,
