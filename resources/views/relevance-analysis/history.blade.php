@@ -7,6 +7,10 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
+            #history_table > thead > tr:nth-child(2) > th:nth-child(13) {
+                z-index: 999;
+            }
+
             .ui_tooltip_content {
                 font-weight: normal;
             }
