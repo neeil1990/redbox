@@ -19,7 +19,6 @@ class Queue extends Model
      */
     public static function addInQueue($row, $request)
     {
-        Log::info('addInQueue');
         $userId = Auth::id();
         $item = explode(';', $row);
         $link = parse_url(trim($item[1]));

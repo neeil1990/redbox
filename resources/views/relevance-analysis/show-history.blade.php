@@ -614,7 +614,7 @@
         <div class="pb-3 pt-3" id="competitorsTfClouds" style="display: none !important;">
             <div class="align-items-end clouds-div">
                 <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
-                    Облака первых 200 важных (по tf-idf) слов у конкурентов
+                    {{ __('Clouds of the first 200 important (tf-idf) words from competitors') }}
                 </button>
             </div>
             <div style="display: none" id="coverage-clouds" class="pt-2">
@@ -628,7 +628,7 @@
                             <label class='custom-control-label' for='showOrHideIgnoredClouds'></label>
                         </div>
                     </div>
-                    <p>скрыть игнорируемые домены</p>
+                    <p>{{ __('hide ignored domains') }}</p>
                 </div>
             </div>
         </div>

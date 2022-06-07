@@ -175,8 +175,11 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
 
-    Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
-    Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
+    Route::get('/test-relevance', 'TestRelevanceController@testView')->name('test.relevance.view');
+    Route::post('/test-analyse', 'TestRelevanceController@testAnalyse')->name('test.relevance');
+    Route::get('/create-queue-test', 'TestRelevanceController@createQueue')->name('create.queue.testView');
+    Route::post('/create-queue-test-post', 'TestRelevanceController@createTaskQueue')->name('create.queue.test.post');
+    Route::get('/history-test', 'TestRelevanceController@history')->name('relevance.history.test');
 
     Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
     Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');

@@ -181,10 +181,10 @@
             <div class="card-header d-flex p-0">
                 <ul class="nav nav-pills p-2">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('relevance-analysis') }}">{{ __('Analyzer') }}</a>
+                        <a class="nav-link" href="{{ route('test.relevance.view') }}">{{ __('Analyzer') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('create.queue.view') }}">
+                        <a class="nav-link" href="{{ route('create.queue.testView') }}">
                             {{ __('Create page analysis tasks') }}
                         </a>
                     </li>

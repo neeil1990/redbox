@@ -88,19 +88,19 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">Анализатор</a>
+                    <a class="nav-link active" href="#tab_1">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('create.queue.view') }}">
-                        Создать задачи по анализу страниц
+                    <a class="nav-link" href="{{ route('create.queue.testView') }}">
+                        {{ __('Create page analysis tasks') }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('relevance.history') }}">История</a>
+                    <a class="nav-link" href="{{ route('relevance.history.test') }}">{{ __('History') }}</a>
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="#tab_2" data-toggle="tab">Администрирование модуля</a>
+                        <a class="nav-link" href="#tab_2" data-toggle="tab">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -840,7 +840,7 @@
                                         </span>
                                     @endif
                                 </th>
-                                <th>Общее количество символов</th>
+                                <th>{{ __('Total number of characters') }}</th>
                                 <th>{{ __('Result') }}</th>
                             </tr>
                             </thead>
@@ -852,7 +852,7 @@
                     <div class="pb-3" id="competitorsTfClouds" style="display: none !important;">
                         <div class="align-items-end clouds-div">
                             <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
-                                Облака первых 200 важных (по tf-idf) слов у конкурентов
+                                {{ __('Clouds of the first 200 important (tf-idf) words from competitors') }}
                             </button>
                         </div>
                         <div style="display: none" id="coverage-clouds" class="pt-2">
@@ -866,7 +866,7 @@
                                         <label class='custom-control-label' for='showOrHideIgnoredClouds'></label>
                                     </div>
                                 </div>
-                                <p>скрыть игнорируемые домены</p>
+                                <p>{{ __('hide ignored domains') }}</p>
                             </div>
                         </div>
                     </div>

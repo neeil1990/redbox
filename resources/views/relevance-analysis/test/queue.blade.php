@@ -51,28 +51,30 @@
     @endslot
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="toast-message">{{ __('Your tasks have been successfully added to the queue') }}</div>
+            <div class="toast-message"
+                 id="toast-message">{{ __('Your tasks have been successfully added to the queue') }}</div>
         </div>
     </div>
 
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message" id="toast-message">{{ __('Something went wrong, try again later.') }}</div>
+            <div class="toast-message error-message"
+                 id="toast-message">{{ __('Something went wrong, try again later.') }}</div>
         </div>
     </div>
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('relevance-analysis') }}">{{ __('Analyzer') }}</a>
+                    <a class="nav-link" href="{{ route('test.relevance.view') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">
+                    <a class="nav-link active" href="#tab_1">
                         {{ __('Create page analysis tasks') }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
+                    <a class="nav-link" href="{{ route('relevance.history.test') }}">{{ __('History') }}</a>
                 </li>
                 @if($admin)
                     <li class="nav-item">
@@ -286,7 +288,7 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('create.queue') }}",
+                    url: "{{ route('create.queue.test.post') }}",
                     data: {
                         params: $('#params').val(),
                         type: 'phrase',

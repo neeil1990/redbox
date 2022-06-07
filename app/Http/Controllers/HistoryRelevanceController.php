@@ -96,10 +96,14 @@ class HistoryRelevanceController extends Controller
 
     /**
      * @param int $id
-     * @return void
+     * @return View|void
      */
     public function show(int $id)
     {
+        $object = RelevanceHistory::where('id', '=', $id)->first();
+        if ($object->projectRelevanceHistory->user_id != Auth::id()) {
+            return abort(403, __("You don't have access to this object"));
+        }
         $admin = false;
         foreach (Auth::user()->role as $role) {
             if ($role == '1' || $role == '3') {

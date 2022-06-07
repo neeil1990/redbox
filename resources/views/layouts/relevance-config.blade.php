@@ -92,7 +92,7 @@
 
             <div class="mt-3 mb-3">
                 <div class="mt-3 mb-3">
-                    <p>Скрыть игнорируемые домены</p>
+                    <p>{{ __('hide ignored domains') }}</p>
                     {!! Form::select('hide_ignored_domains', array_unique([
                             $config->hide_ignored_domains => $config->hide_ignored_domains,
                             'yes' => __('yes'),

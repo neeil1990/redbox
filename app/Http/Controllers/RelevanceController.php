@@ -38,78 +38,34 @@ class RelevanceController extends Controller
     }
 
     /**
-     * @return View
-     */
-    public function testView(): View
-    {
-        $config = RelevanceAnalysisConfig::first();
-        $admin = false;
-        foreach (Auth::user()->role as $role) {
-            if ($role == '1' || $role == '3') {
-                $admin = true;
-                break;
-            }
-        }
-
-        return view('relevance-analysis.test', [
-            'admin' => $admin,
-            'config' => $config,
-        ]);
-    }
-
-    /**
      * @param Request $request
      * @return JsonResponse
      */
     public function analysis(Request $request): JsonResponse
     {
-        $relevance = new Relevance($request->input('link'), $request->input('separator'));
-
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
             'siteList.required' => __('The list of sites is required to fill in.'),
         ];
 
-        if ($request->input('type') === 'phrase') {
-            $request->validate([
-                'link' => 'required|website',
-                'phrase' => 'required',
-            ], $messages);
-        } else {
-            $request->validate([
-                'link' => 'required|website',
-                'siteList' => 'required',
-            ], $messages);
+        $request->validate([
+            'link' => 'required|website',
+            'phrase' => 'required_without:siteList|not_website',
+            'siteList' => 'required_without:link',
+        ], $messages);
 
-            $sitesList = str_replace("\r\n", "\n", $request->input('siteList'));
-            $sitesList = explode("\n", $sitesList);
-
-            foreach ($sitesList as $item) {
-                $relevance->domains[] = [
-                    'item' => str_replace('www.', '', mb_strtolower(trim($item))),
-                    'ignored' => false,
-                    'positi3131on' => count($relevance->domains) + 1
-                ];
-            }
-        }
-
+        $relevance = new Relevance($request->input('link'), $request->input('phrase'), $request->input('separator'));
         $relevance->getMainPageHtml();
 
-        if ($request->input('type') === 'phrase') {
-            $xml = new SimplifiedXmlFacade($request->input('region'));
-            $xml->setQuery($request->input('phrase'));
-            $xmlResponse = $xml->getXMLResponse();
+        if ($request['type'] == 'phrase') {
+            $relevance->analysisByPhrase($request->all());
 
-            $relevance->removeIgnoredDomains(
-                $request->input('count'),
-                $request->input('ignoredDomains'),
-                $xmlResponse
-            );
-
+        } elseif ($request['type'] == 'list') {
+            $relevance->analysisByList($request['siteList']);
         }
-        $relevance->parseSites($xmlResponse);
-        $relevance->analysis($request);
+
+        $relevance->analysis($request->all(), Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
@@ -130,11 +86,11 @@ class RelevanceController extends Controller
         ], $messages);
 
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-        $relevance = new Relevance($request->input('link'), $request->input('separator'));
+        $relevance = new Relevance($request->input('link'), '', $request->input('separator'));
         $relevance->setMainPage($params->html_main_page);
         $relevance->setDomains($params->sites);
         $relevance->parseSites();
-        $relevance->analysis($request);
+        $relevance->analysis($request->all(), Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
@@ -155,46 +111,14 @@ class RelevanceController extends Controller
         ], $messages);
 
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-        $relevance = new Relevance($request->input('link'), $request->input('separator'));
+        $relevance = new Relevance($request->input('link'), '', $request->input('separator'));
         $relevance->getMainPageHtml();
         $relevance->setSites($params->sites);
-        $relevance->analysis($request);
-
-        return RelevanceController::successResponse($relevance);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function testAnalyse(Request $request): JsonResponse
-    {
-        $messages = [
-            'link.required' => __('A link to the landing page is required.'),
-            'phrase.required_without' => __('The keyword is required to fill in.'),
-            'siteList.required_without' => __('The list of sites is required to fill in.'),
-        ];
-
-        $request->validate([
-            'link' => 'required|website',
-            'phrase' => 'required_without:siteList|not_website',
-            'siteList' => 'required_without:link',
-        ], $messages);
-
-        $relevance = new TestRelevance($request->input('link'), $request->input('phrase'), $request->input('separator'));
-        $relevance->getMainPageHtml();
-
-        if ($request['type'] == 'phrase') {
-            $relevance->analysisByPhrase($request->all());
-
-        } elseif ($request['type'] == 'list') {
-            $relevance->analysisByList($request['siteList']);
-        }
-
         $relevance->analysis($request->all(), Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
+
 
     /**
      * @param Request $request
@@ -243,7 +167,7 @@ class RelevanceController extends Controller
      * @param $relevance
      * @return JsonResponse
      */
-    public function successResponse($relevance): JsonResponse
+    public static function successResponse($relevance): JsonResponse
     {
         $config = RelevanceAnalysisConfig::first();
 
