@@ -6,71 +6,7 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <style>
-            .ui_tooltip_content {
-                font-weight: normal;
-            }
-
-            .bg-warning-elem {
-                background-color: #f5e2aa !important;
-            }
-
-            #unigramTBody > tr > td:nth-child(1) {
-                text-align: center;
-            }
-
-            #app > div > div > div.card-body > div.d-flex.flex-column > div > button.btn.btn-secondary.col-2 > span > i {
-                color: #fffdfd !important;
-            }
-
-            th {
-                background: white;
-                position: sticky;
-                top: 0;
-            }
-
-            .fa.fa-question-circle {
-                color: white;
-            }
-
-            #unigramTBody > tr > td:nth-child(8),
-            #unigramTBody > tr > td:nth-child(10),
-            #unigramTBody > tr > td:nth-child(12),
-            #phrasesTBody > tr > td:nth-child(7),
-            #phrasesTBody > tr > td:nth-child(9),
-            #phrasesTBody > tr > td:nth-child(11),
-            #recommendationsTBody > tr > td:nth-child(5) {
-                background: #ebf0f5;
-            }
-
-            .ui_tooltip.__left, .ui_tooltip.__right {
-                width: auto;
-            }
-
-            .pb-3.unigram thead th {
-                position: sticky;
-                top: 0;
-                z-index: 1;
-            }
-
-            .pb-3.unigram tbody th {
-                position: sticky;
-                left: 0;
-            }
-
-            .dataTables_paginate.paging_simple_numbers {
-                padding-bottom: 50px;
-            }
-
-            .dt-buttons {
-                margin-left: 20px;
-                float: left;
-            }
-
-            .bg-my-site {
-                background: #4eb767c4;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
@@ -438,7 +374,7 @@
                             </div>
                             <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5"
                                     style="cursor: pointer;">
-                                Облака текста сайтов из топа и посадочной страницы
+                               {{ __("Clouds of site text from the top and landing page") }}
                             </button>
                             <div class="text-clouds" style=" display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -492,7 +428,7 @@
                             <tr style="position: relative; z-index: 100">
                                 <th class="сol-1">
                                     <span class="text-muted" style="font-weight: 400">
-                                        Вы можете удалить слово из таблицы, если оно было проработано
+                                        {{ __("You can delete a word from the table if it has been worked out") }}
                                     </span>
                                 </th>
                                 <th>Слово</th>

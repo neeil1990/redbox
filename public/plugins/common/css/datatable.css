@@ -382,7 +382,6 @@ a.paginate_button.current, .paginate_button {
     background-color: #f8f9fa !important;
     border-color: #ddd !important;
     color: #444 !important;
-    display: inline-block !important;
     font-weight: 400 !important;
     text-align: center !important;
     vertical-align: middle !important;
@@ -390,7 +389,6 @@ a.paginate_button.current, .paginate_button {
     -moz-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
-    padding: .375rem .75rem !important;
     font-size: 1rem !important;
     line-height: 1.5 !important;
     border-radius: .25rem !important;

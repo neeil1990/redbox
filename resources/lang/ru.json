@@ -744,7 +744,7 @@
     "How it works": "Как это работает",
     "You need to enter the data in the format:": "Нужно ввести данные в формате:",
     "Keyword;Link to landing page": "Ключевая фраза;Ссылка на посадочную страницу",
-    "Keyword 2;Link to landing page2;": "Ключевая фраза;Ссылка на посадочную страницу",
+    "Keyword 2;Link to landing page2;": "Другая ключевая фраза;Другая ссылка на посадочную страницу",
     "And change the configuration of the form as you need.": "И изменить конфигурацию формы так как вам потребуется.",
     "After clicking the 'Add to Queue' button, your tasks will be placed in a queue, which consists of a queue of your tasks and the tasks of other users.": "После нажатия кнопки 'Добавить в очередь' ваши задачи будут помещены в очередь, которая состоит из очереди ваших задач и задач других пользователей.",
     "When the turn comes to you, your projects will be analyzed and placed on the history page.": "Когда очередь дойдёт до вас, ваши проекты будут проанализированы и помещены на страницу с историей",
@@ -759,5 +759,13 @@
     "hide ignored domains": "скрыть игнорируемые домены",
     "Total number of characters": "Общее количество символов",
     "You don't have access to this object": "У вас нет доступа до этого объекта",
-    "Show details": "Показать детали"
+    "Show details": "Показать детали",
+    "Something went wrong, please try again later.": "Что-то пошло не так, повторите попытку позже.",
+    "Recent checks": "Последние проверки",
+    "Processed..": "Обрабатывается..",
+    "Load..": "Загрузка..",
+    "Clouds of site text from the top and landing page": "Облака текста сайтов из топа и посадочной страницы",
+    "You can delete a word from the table if it has been worked out": "Вы можете удалить слово из таблицы, если оно было проработано",
+    "The reanalysis task has been successfully added to the queue": "Задача на повторный анализ успешно добавлена в очередь",
+    "Standing in line for reanalysis": "Стоит в очереди на повторный анализ"
 }

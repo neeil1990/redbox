@@ -391,7 +391,6 @@ a.paginate_button.current, .paginate_button {
     -moz-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
-    padding: .375rem .75rem !important;
     font-size: 1rem !important;
     line-height: 1.5 !important;
     border-radius: .25rem !important;

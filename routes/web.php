@@ -194,7 +194,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
     Route::post('/edit-history-comment', 'HistoryRelevanceController@editComment')->name('edit.history.comment');
     Route::post('/change-state', 'HistoryRelevanceController@changeCalculateState')->name('change.state');
-    Route::get('/show-details-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
+    Route::get('/show-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');

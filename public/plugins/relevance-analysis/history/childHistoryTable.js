@@ -45,7 +45,7 @@ $('.project_name').click(function () {
                         '   Повторить анализ' +
                         '</button>'
                         +
-                        "<a href='/show-details-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+                        "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
 
                 } else if (val.state === 0) {
                     state =
@@ -151,7 +151,8 @@ $('.project_name').click(function () {
                     });
                 });
 
-                $('.get-history-info').click(function () {
+
+                $('.get-history-info').unbind("click").click(function () {
                     let id = $(this).attr('data-order')
                     $.ajax({
                         type: "get",
@@ -195,7 +196,7 @@ $('.project_name').click(function () {
                     });
                 });
 
-                $('#relevance-repeat-scan').click(function () {
+                $('#relevance-repeat-scan').unbind("click").click(function () {
                     let id = $('#hiddenId').val()
                     $.ajax({
                         type: "POST",

@@ -10,6 +10,7 @@ use App\RelevanceHistoryResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class HistoryRelevanceController extends Controller
@@ -112,7 +113,8 @@ class HistoryRelevanceController extends Controller
             }
         }
 
-        return view('relevance-analysis.show-history', ['admin' => $admin, 'id' => $id]);
+        $object->request = json_decode($object->request, true);
+        return view('relevance-analysis.show-history', ['admin' => $admin, 'id' => $id, 'object' => $object]);
     }
 
     /**
@@ -190,17 +192,20 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatScan(Request $request): JsonResponse
     {
-        RelevanceAnalysisQueue::dispatch(
-            Auth::id(),
-            $request->all(),
-            $request['id']
-        );
-
         $object = RelevanceHistory::where('id', '=', $request->id)->first();
-        $object->state = 0;
-        $object->save();
+        if ($object->state == 1 || $object->state == -1) {
+            $object->state = 0;
+            $object->save();
 
-        return response()->json([]);
+            RelevanceAnalysisQueue::dispatch(
+                Auth::id(),
+                $request->all(),
+                $request['id']
+            );
+            return response()->json([]);
+        }
+
+        return response()->json([], 500);
     }
 
     /**

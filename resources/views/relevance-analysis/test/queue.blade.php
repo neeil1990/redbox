@@ -6,48 +6,7 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <style>
-            .ui_tooltip_content {
-                font-weight: normal;
-                width: 460px;
-            }
-
-            .bg-warning-elem {
-                background-color: #f5e2aa !important;
-            }
-
-            #unigramTBody > tr > td:nth-child(1) {
-                text-align: center;
-            }
-
-            .ui_tooltip.__left, .ui_tooltip.__right {
-                width: auto;
-            }
-
-            .pb-3.unigram thead th {
-                position: sticky;
-                top: 0;
-                z-index: 1;
-            }
-
-            .pb-3.unigram tbody th {
-                position: sticky;
-                left: 0;
-            }
-
-            .dataTables_paginate.paging_simple_numbers {
-                padding-bottom: 50px;
-            }
-
-            .dt-buttons {
-                margin-left: 20px;
-                float: left;
-            }
-
-            .bg-my-site {
-                background: #4eb767c4;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
     @endslot
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">

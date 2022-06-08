@@ -1,0 +1,159 @@
+a.paginate_button.current {
+    background: #ebf0f5 !important;
+}
+
+.ui_tooltip_content {
+    font-weight: normal;
+}
+
+.bg-warning-elem {
+    background-color: #f5e2aa !important;
+}
+
+#unigramTBody > tr > td:nth-child(1) {
+    text-align: center;
+}
+
+#app > div > div > div.card-body > div.d-flex.flex-column > div > button.btn.btn-secondary.col-2 > span > i {
+    color: #fffdfd !important;
+}
+
+th {
+    background: white;
+    position: sticky;
+    top: 0;
+}
+
+.fa.fa-question-circle {
+    color: white;
+}
+
+#unigramTBody > tr > td:nth-child(8),
+#unigramTBody > tr > td:nth-child(10),
+#unigramTBody > tr > td:nth-child(12),
+#phrasesTBody > tr > td:nth-child(7),
+#phrasesTBody > tr > td:nth-child(9),
+#phrasesTBody > tr > td:nth-child(11),
+#recommendationsTBody > tr > td:nth-child(5) {
+    background: #ebf0f5;
+}
+
+.ui_tooltip.__left, .ui_tooltip.__right {
+    width: auto;
+}
+
+.pb-3.unigramd thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.pb-3.unigramd tbody th {
+    position: sticky;
+    left: 0;
+}
+
+.dataTables_paginate.paging_simple_numbers {
+    padding-bottom: 50px;
+}
+
+.dt-buttons {
+    margin-left: 20px;
+    float: left;
+}
+
+.bg-my-site {
+    background: #4eb767c4;
+}
+
+.table-header {
+    z-index: 100;
+    background: white;
+}
+
+.col {
+    display: block;
+    float: left;
+    margin: 1% 0 1% 1.6%;
+}
+
+.col:first-of-type {
+    margin-left: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 940px;
+    margin: 0 auto;
+    position: relative;
+    text-align: center;
+}
+
+/* CLEARFIX */
+
+.cf:before,
+.cf:after {
+    content: " ";
+    display: table;
+}
+
+.cf:after {
+    clear: both;
+}
+
+.cf {
+    *zoom: 1;
+}
+
+.row {
+    margin: 30px 0;
+}
+
+.loader {
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    position: relative;
+    margin: 0 auto;
+}
+
+#loader-1 {
+    display: flex;
+    justify-content: center;
+}
+
+#loader-1:before,
+#loader-1:after {
+    content: "";
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    border-radius: 100%;
+    border: 10px solid transparent;
+    border-top-color: #5a6268;
+}
+
+#loader-1:before {
+    z-index: 100;
+    animation: spin 1s infinite;
+}
+
+#loader-1:after {
+    border: 10px solid #ccc;
+}
+
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
