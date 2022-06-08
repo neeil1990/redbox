@@ -702,7 +702,7 @@
                             <div id="site-list" @if($object['request']['type'] != 'list') style="display: none"@endif>
                                 <div class="form-group required">
                                     <label>{{ __('List of sites') }}</label>
-                                    {!! Form::textarea("siteList", $object['request']['siteList'] ,["class" => "form-control", 'id'=>'siteList'] ) !!}
+                                    {!! Form::textarea("siteList", $object['request']['siteList'] ?? null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
                                 </div>
                             </div>
 
