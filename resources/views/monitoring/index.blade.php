@@ -97,6 +97,36 @@
                         title: 'Слов',
                         data: 'keywords'
                     },
+                    {
+                        title: '% в ТОП 3',
+                        data: null,
+                        defaultContent: '10',
+                    },
+                    {
+                        title: '% в ТОП 5',
+                        data: null,
+                        defaultContent: '25',
+                    },
+                    {
+                        title: '% в ТОП 10',
+                        data: null,
+                        defaultContent: '80',
+                    },
+                    {
+                        title: '% в ТОП 30',
+                        data: null,
+                        defaultContent: '95',
+                    },
+                    {
+                        title: '% в ТОП 100',
+                        data: null,
+                        defaultContent: '100',
+                    },
+                    {
+                        title: 'Ср.Позиция',
+                        data: null,
+                        defaultContent: '3',
+                    },
                 ],
                 initComplete: function () {
                     let api = this.api();
