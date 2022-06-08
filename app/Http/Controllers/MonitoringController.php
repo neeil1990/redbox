@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
@@ -33,10 +34,6 @@ class MonitoringController extends Controller
      */
     public function index()
     {
-        /** @var User $user */
-        $user = $this->user;
-        $projects = $user->monitoringProjects()->get();
-
         //$model = new MonitoringKeyword();
         //$query = $model->where('id', 9)->first();
 
@@ -44,7 +41,25 @@ class MonitoringController extends Controller
         //dispatch((new PositionQueue($query))->onQueue('position'));
 
 
-        return view('monitoring.index', compact('projects'));
+        return view('monitoring.index');
+    }
+
+    public function getProjects()
+    {
+        /** @var User $user */
+        $user = $this->user;
+        $projects = $user->monitoringProjects()->get();
+
+        return (new ProjectDataTable($projects))->handle();
+    }
+
+    public function getKeywordsByProject(int $project_id)
+    {
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->where('id', $project_id)->first();
+
+        return $project->keywords;
     }
 
     /**
