@@ -15,7 +15,7 @@ class SearchCompetitors
         $array = explode("\n", $request['phrases']);
         $phrases = array_diff($array, ['']);
         $resultArray = [];
-        $xml = new SimplifiedXmlFacade($request['count'], $request['region']);
+        $xml = new SimplifiedXmlFacade($request['region'], $request['count']);
 
         foreach ($phrases as $phrase) {
             $xml->setQuery($phrase);

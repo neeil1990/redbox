@@ -1,8 +1,10 @@
-function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent) {
+function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent, disableFunctions = false) {
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
     $.each(sites, function (key, value) {
+        let site = value['site']
+
         let btnGroup =
             "<div class='btn-group'>" +
             "        <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" +
@@ -10,19 +12,22 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             "        </button> " +
             "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" +
             "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt'></i> Перейти на посадочную страницу</a>" +
-            "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" +
-            "                  data-target='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt'></i>" +
-            "                Добавить в игнорируемые домены" +
-            "            </span>" +
-            "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
-            "                 data-target='" + value['site'] + "'>" +
-            "               <i class='fas fa-external-link-alt'></i>" +
-            "               Исключить из игнорируемых доменов" +
-            "           </span>" +
-            "        </div>" +
-            "</div>";
+            "                <i class='fas fa-external-link-alt'></i> Перейти на посадочную страницу" +
+            "           </a>" +
+            "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" +
+            "                <i class='fas fa-external-link-alt'></i> Перейти в текстовый анализатор" +
+            "           </a>"
+        if (!disableFunctions) {
+            btnGroup += "<span class='dropdown-item add-in-ignored-domains' style='cursor: pointer' data-target='" + value['site'] + "'>" +
+                "<i class='fas fa-external-link-alt'></i> Добавить в игнорируемые домены </span>" +
+                "<span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
+                "      data-target='" + value['site'] + "'>" +
+                "    <i class='fas fa-external-link-alt'></i>" +
+                "    Исключить из игнорируемых доменов" +
+                "</span>"
+        }
+
+        btnGroup += "</div></div>";
 
         let noTop = ''
         let ignorBlock = ''
@@ -37,12 +42,12 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
 
         if (value['danger']) {
             warning = "<td class='bg-warning'>" +
-                "   <u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</u>"
+                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</span>"
                 + ignorBlock +
                 "</td>";
         } else {
             warning = "<td>" +
-                "   <u data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </u>"
+                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </span>"
                 + ignorBlock +
                 "</td>"
         }
@@ -56,17 +61,27 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             className = 'bg-warning-elem'
         }
 
+        var position
+
+        if (!value['position']) {
+            position = 'не попал в топ 100'
+        } else {
+            position = value['position']
+        }
+
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
-            "<td data-order='" + iterator + "'>" + iterator + "</td>" +
+            "<td data-order='" + iterator + "'>" + position + "</td>" +
             "<td data-order='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
-            "   <span class='analyzed-site' id='site-" + iterator + "'>" + value['site'] + "</span>" + noTop + btnGroup
+            "   <span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
+            + noTop + btnGroup
             + "</td>" +
             "<td data-order='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +
             "<td data-order='" + value['coverage'] + "'>" + value['coverage'] + "% </td>" +
             "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
             "<td data-order='" + value['width'] + "'>" + value['width'] + "</td>" +
             "<td data-order='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>" +
+            "<td data-order='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>" +
             warning +
             "</tr>"
         )

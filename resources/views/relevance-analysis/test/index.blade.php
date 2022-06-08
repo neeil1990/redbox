@@ -88,15 +88,15 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">{{ __('Analyzer') }}</a>
+                    <a class="nav-link active" href="#tab_1">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('create.queue.view') }}">
+                    <a class="nav-link" href="{{ route('create.queue.testView') }}">
                         {{ __('Create page analysis tasks') }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
+                    <a class="nav-link" href="{{ route('relevance.history.test') }}">{{ __('History') }}</a>
                 </li>
                 @if($admin)
                     <li class="nav-item">
@@ -117,14 +117,14 @@
                         <div class="form-group required">
                             <label>{{ __('Тип проверки') }}</label>
                             {!! Form::select('type', [
-                                'phrase' => __('Keyword'),
-                                'list' => __('List of scanned sites'),
+                                'phrase' => 'Ключевая фраза',
+                                'list' => 'Список сканируемых сайтов',
                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
                         </div>
 
                         <div id="site-list" style="display: none">
                             <div class="form-group required">
-                                <label>{{ __('List of scanned sites') }}</label>
+                                <label>{{ __('Список сайтов') }}</label>
                                 {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
                             </div>
                         </div>
@@ -311,44 +311,15 @@
                                 {{ __('Full analysis') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content">
-                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
-                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
-                        </span>
-                    </span>
-                </span>
-                            </button>
-                        </div>
-                        <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse">
-                                {{ __('Repeated analysis of competitor sites') }}
-                            </button>
-                            <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content">
-                            {{ __('Updating the content of competitors that was received as a result of the last request') }}
-                        </span>
-                    </span>
-                </span>
-                            </button>
-                        </div>
-                        <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button class="btn btn-secondary" id="repeat-main-page-analyse">
-                                {{ __('Repeated analysis of the landing page') }}
-                            </button>
-                            <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span
-                            class="ui_tooltip_content">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
-                    </span>
-                </span>
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span class="ui_tooltip __top">
+                                        <span class="ui_tooltip_content">
+                                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
+                                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                                        </span>
+                                    </span>
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -909,13 +880,14 @@
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderUnigramTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderScannedSitesList.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderTextTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderPhrasesTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderClouds.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderUnigramTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script
+            src="{{ asset('plugins/relevance-analysis/test-scripts/renderRecommendationsTable.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -924,10 +896,10 @@
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
-                    $('#recButton').html('Показать')
+                    $(this).html('Показать')
                 } else {
                     $('.pb-3.recommendations').show()
-                    $('#recButton').html('Скрыть')
+                    $(this).html('Скрыть')
                 }
             });
 
@@ -948,7 +920,6 @@
                     $('.form-group.required.list-words.mt-1').hide(300)
                 }
             })
-
         </script>
         <script>
             var generatedTfIdf = false
@@ -960,20 +931,23 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('analysis.relevance') }}",
+                    url: "{{ route('test.relevance') }}",
                     data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+
                         type: $('#check-type').val(),
                         siteList: $('#siteList').val(),
                         separator: $('#separator').val(),
                         link: $('.form-control.link').val(),
                         phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
                         listWords: $('.form-control.listWords').val(),
                         count: $('.custom-select.rounded-0.count').val(),
                         region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
                         ignoredDomains: $('.form-control.ignoredDomains').val(),
+
+                        exp: $('#exp').is(':checked'),
+                        noIndex: $('#switchNoindex').is(':checked'),
+                        hiddenText: $('#switchAltAndTitle').is(':checked'),
                         switchMyListWords: $('#switchMyListWords').is(':checked'),
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
@@ -1013,104 +987,6 @@
                 });
             })
 
-            $('#repeat-main-page-analyse').click(() => {
-                var interval = startProgressBar()
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('repeat.main.page.analysis') }}",
-                    data: {
-                        type: $('#check-type').val(),
-                        siteList: $('#siteList').val(),
-                        separator: $('#separator').val(),
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
-                    beforeSend: function () {
-                        refreshAllRenderElements()
-                        $('#full-analyse').prop("disabled", true);
-                        $('#repeat-main-page-analyse').prop("disabled", true);
-                        $('#repeat-relevance-analyse').prop("disabled", true);
-                    },
-                    success: function (response) {
-                        successRequest(response, interval)
-                    },
-                    error: function (response) {
-                        if (response.responseText) {
-                            var block = false;
-                            prepareMessage(response)
-                        } else {
-                            $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
-                        }
-
-                        $('.toast-top-right.error-message.empty').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message.empty').hide(300)
-                        }, 5000)
-
-                        errorRequest(interval, block)
-                    }
-                });
-            })
-
-            $('#repeat-relevance-analyse').click(() => {
-                var interval = startProgressBar()
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('repeat.relevance.analysis') }}",
-                    data: {
-                        type: $('#check-type').val(),
-                        siteList: $('#siteList').val(),
-                        separator: $('#separator').val(),
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
-                    beforeSend: function () {
-                        refreshAllRenderElements()
-                        $('#full-analyse').prop("disabled", true);
-                        $('#repeat-main-page-analyse').prop("disabled", true);
-                        $('#repeat-relevance-analyse').prop("disabled", true);
-                    },
-                    success: function (response) {
-                        successRequest(response, interval)
-                    },
-                    error: function (response) {
-                        if (response.responseText) {
-                            var block = false
-                            prepareMessage(response)
-                        } else {
-                            $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
-                        }
-
-                        $('.toast-top-right.error-message.empty').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message.empty').hide(300)
-                        }, 5000)
-
-                        errorRequest(interval, block)
-                    }
-                });
-            })
-
             function successRequest(response, interval) {
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar(interval)
@@ -1128,8 +1004,8 @@
             function errorRequest(interval) {
                 stopProgressBar(interval)
                 $("#full-analyse").prop("disabled", false);
-                $("#repeat-main-page-analyse").prop("disabled", false);
-                $("#repeat-relevance-analyse").prop("disabled", false);
+                $("#repeat-main-page-analyse").prop("disabled", true);
+                $("#repeat-relevance-analyse").prop("disabled", true);
             }
 
             function refreshAllRenderElements() {
@@ -1182,35 +1058,36 @@
             }
 
             function startProgressBar() {
+                let interval = 783;
+
+                if ($('#exp').is(':checked')) {
+                    interval = 1532
+                }
+
                 let percent = 0;
                 $('.progress-bar').css({
                     opacity: 1
                 });
-
                 $("#progress-bar").show(300)
+
                 return setInterval(() => {
                     percent += Math.random();
                     setProgressBarStyles(percent.toFixed(2))
-                }, 1321)
+                }, interval)
             }
+        </script>
+        <script>
+            $('#main_history_table').DataTable({
+                "order": [[1, "desc"]],
+                "pageLength": 10,
+                "searching": true,
+            });
 
-            function prepareMessage(response) {
-                let message = ''
-                if (response.responseText) {
-                    let messages = JSON.parse(response.responseText);
-                    $.each(messages['errors'], function (key, value) {
-                        message += value + "<br>"
-                    });
-
-                    if (message === '') {
-                        message = 'Произошла непредвиденная ошибка, обратитесь к администратору'
-                    }
-
-                    $('.toast-message.error-message').html(message)
-                } else {
-                    $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
-                }
-            }
+            $('#history_table').DataTable({
+                "order": [[1, "desc"]],
+                "pageLength": 10,
+                "searching": true,
+            });
         </script>
     @endslot
 @endcomponent

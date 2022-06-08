@@ -2,8 +2,10 @@
 
 namespace App;
 
+use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Http\Controllers\TextLengthController;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
@@ -44,6 +46,16 @@ class Relevance
 
     public $phrases;
 
+    public $countSymbols;
+
+    public $countSymbolsInMyPage;
+
+    public $countWords;
+
+    public $countWordsInMyPage;
+
+    public $countNotIgnoredSites = 0;
+
     public $params;
 
     public $pages;
@@ -54,9 +66,10 @@ class Relevance
 
     /**
      * @param $link
+     * @param $phrase
      * @param $separator
      */
-    public function __construct($link, $separator)
+    public function __construct($link, $phrase, $separator)
     {
         $this->pages = [];
         $this->domains = [];
@@ -66,7 +79,11 @@ class Relevance
         $this->competitorsText = '';
         $this->competitorsLinks = '';
         $this->competitorsTextAndLinks = '';
+        $this->countSymbols = 0;
+        $this->countWords = 0;
+
         $this->maxWordLength = $separator;
+        $this->phrase = $phrase;
 
         $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
         $this->params['main_page_link'] = $link;
@@ -80,36 +97,39 @@ class Relevance
     public function getMainPageHtml()
     {
         $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
-
         $this->setMainPage($html);
     }
 
     /**
+     * @param bool|array $xmlResponse
      * @return void
      */
-    public function parseSites()
+    public function parseSites($xmlResponse = false)
     {
         $mainUrl = parse_url($this->params['main_page_link']);
+        $host = Str::lower($mainUrl['host']);
 
         foreach ($this->domains as $item) {
             $domain = strtolower($item['item']);
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
-            $compUrl = parse_url($domain);
-
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
             $this->sites[$domain]['defaultHtml'] = $result;
             $this->sites[$domain]['site'] = $domain;
+            $this->sites[$domain]['position'] = $item['position'];
 
-            if (Str::lower($mainUrl['host']) == Str::lower($compUrl['host'])) {
+            $compUrl = parse_url($domain);
+            if ($host == Str::lower($compUrl['host'])) {
                 $this->sites[$domain]['equallyHost'] = true;
+            } else {
+                $this->sites[$domain]['equallyHost'] = false;
             }
 
             if ($domain == $this->params['main_page_link']) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
-                $this->sites[$domain]['inRelevance'] = true;
+                $this->sites[$domain]['inRelevance'] = $item['inRelevance'] ?? true;
                 $this->sites[$domain]['ignored'] = false;
             } else {
                 $this->sites[$domain]['mainPage'] = false;
@@ -125,34 +145,55 @@ class Relevance
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
             $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->mainPage['html'];
             $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
+            if ($xmlResponse) {
+                $this->sites[$this->params['main_page_link']]['position'] = array_search('https://almamed.su/category/laringoskopy/', $xmlResponse);
+            } else {
+                $this->sites[$this->params['main_page_link']]['position'] = count($this->domains) + 1;
+            }
         }
     }
 
     /**
      * @param $request
+     * @param $userId
+     * @param $historyId
      * @return void
      */
-    public function analysis($request)
+    public function analysis($request, $userId, $historyId = false)
     {
-        $this->removeNoIndex($request->noIndex);
-        $this->getHiddenData($request->hiddenText);
+        $this->removeNoIndex($request);
+
+        $this->getHiddenData($request);
+
         $this->separateLinksFromText();
-        $this->removePartsOfSpeech($request->conjunctionsPrepositionsPronouns);
+
+        $this->removePartsOfSpeech($request);
+
         $this->removeListWords($request);
+
         $this->deleteEverythingExceptCharacters();
+
         $this->getTextFromCompetitors();
+
         $this->separateAllText();
+
         $this->preparePhrasesTable();
+
         $this->searchWordForms();
+
         $this->processingOfGeneralInformation();
+
         $this->prepareUnigramTable();
+
         $this->analyzeRecommendations();
-        $this->calculateDensity();
-        $this->calculateCoveragePoints();
-        $this->calculateWidthPoints();
-        $this->calculateTotalPoints();
+
+        $this->prepareAnalysedSitesTable();
+
         $this->prepareClouds();
+
         $this->saveResults();
+
+        $this->saveHistory($request, $userId, $historyId);
     }
 
     /**
@@ -181,12 +222,12 @@ class Relevance
 
     /**
      * Удалить текст, который помечен <noindex>
-     * @param $noIndex
+     * @param $request
      * @return void
      */
-    public function removeNoIndex($noIndex)
+    public function removeNoIndex($request)
     {
-        if ($noIndex == 'false') {
+        if ($request['noIndex'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
@@ -209,12 +250,12 @@ class Relevance
     }
 
     /**
-     * @param $hiddenText
+     * @param $request
      * @return void
      */
-    public function getHiddenData($hiddenText)
+    public function getHiddenData($request)
     {
-        if ($hiddenText == 'true') {
+        if ($request['hiddenText'] == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['hiddenText'] = Relevance::getHiddenText($this->sites[$key]['html']);
@@ -331,8 +372,30 @@ class Relevance
         foreach ($this->sites as $key => $site) {
             $points = $site['coverage'] + $site['coverageTf'] + $site['density']['densityMainPercent'];
             $this->sites[$key]['mainPoints'] = min(round(($points / 3) * 2, 2), 100);
-//            $this->sites[$key]['mainWithGainFixPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainFixPercent']) / 3, 2);
-//            $this->sites[$key]['mainWithGainPoints'] = round(($site['coverage'] + $site['coverageTf'] + $site['density']['densityMainWithGainPercent']) / 3, 2);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function calculateTextInfo()
+    {
+        foreach ($this->sites as $key => $site) {
+            $this->countNotIgnoredSites++;
+            $countSymbols = Str::length($site['html']) + Str::length($site['linkText']) + Str::length($site['hiddenText']);
+            $countWords = TextLengthController::countingWord($site['html'] . ' ' . $site['linkText'] . ' ' . $site['hiddenText']);
+
+            if ($this->sites[$key]['mainPage']) {
+                $this->countSymbolsInMyPage = $countSymbols;
+                $this->countWordsInMyPage = $countWords;
+            }
+
+            if (!$site['ignored']) {
+                $this->countSymbols += $countSymbols;
+                $this->countWords += $countWords;
+            }
+
+            $this->sites[$key]['countSymbols'] = max($countSymbols, 0);
         }
     }
 
@@ -382,6 +445,18 @@ class Relevance
     }
 
     /**
+     * @return void
+     */
+    public function prepareAnalysedSitesTable()
+    {
+        $this->calculateDensity();
+        $this->calculateCoveragePoints();
+        $this->calculateWidthPoints();
+        $this->calculateTotalPoints();
+        $this->calculateTextInfo();
+    }
+
+    /**
      * @param $wordsInText
      * @return float
      */
@@ -422,12 +497,12 @@ class Relevance
 
     /**
      * Удаляем союзы, предлоги, местоимения
-     * @param $conjunctionsPrepositionsPronouns
+     * @param $request
      * @return void
      */
-    public function removePartsOfSpeech($conjunctionsPrepositionsPronouns)
+    public function removePartsOfSpeech($request)
     {
-        if ($conjunctionsPrepositionsPronouns == 'false') {
+        if ($request['conjunctionsPrepositionsPronouns'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['hiddenText']);
@@ -446,8 +521,8 @@ class Relevance
      */
     public function removeListWords($request)
     {
-        if ($request->switchMyListWords == 'true') {
-            $listWords = str_replace(["\r\n", "\n\r"], "\n", $request->listWords);
+        if ($request['switchMyListWords'] == 'true') {
+            $listWords = str_replace(["\r\n", "\n\r"], "\n", $request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
             $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
@@ -692,44 +767,47 @@ class Relevance
     }
 
     /**
-     * @param $count
-     * @param $ignoredDomains
+     * @param $request
      * @param $sites
+     * @param $exp
      * @return void
      */
-    public function removeIgnoredDomains($count, $ignoredDomains, $sites)
+    public function removeIgnoredDomains($request, $sites, $exp)
     {
-        if (isset($ignoredDomains)) {
-            $ignoredDomains = str_replace("\r\n", "\n", $ignoredDomains);
-            $ignoredDomains = explode("\n", $ignoredDomains);
-            $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
-            $iterator = 0;
+        $ignoredDomains = str_replace("\r\n", "\n", $request['ignoredDomains']);
+        $ignoredDomains = explode("\n", $ignoredDomains);
+        $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
+        $iterator = 0;
 
-            foreach ($sites as $item) {
+        foreach ($sites as $key => $item) {
+            $domain = parse_url($item);
+            $domain = str_replace('www.', "", mb_strtolower($domain['host']));
 
-                $domain = parse_url($item);
-                $domain = str_replace('www.', "", mb_strtolower($domain['host']));
-
+            if ($iterator < $request['count']) {
+                $this->domains[$key] = [
+                    'item' => $item,
+                    'position' => $key + 1,
+                ];
 
                 if (in_array($domain, $ignoredDomains)) {
-                    $this->domains[] = [
-                        'item' => $item,
-                        'ignored' => true,
-                    ];
+                    $this->domains[$key]['ignored'] = true;
                 } else {
-                    $this->domains[] = [
-                        'item' => $item,
-                        'ignored' => false,
-                    ];
+                    $this->domains[$key]['ignored'] = false;
                     $iterator++;
                 }
 
-                if ($iterator == $count) {
+            } else {
+                if ($exp && $key < 50) {
+                    $this->domains[$key] = [
+                        'exp' => true,
+                        'ignored' => true,
+                        'item' => $item,
+                        'position' => $key + 1,
+                    ];
+                } else {
                     break;
                 }
             }
-        } else {
-            $this->domains = array_slice($sites, 0, $count - 1);
         }
     }
 
@@ -757,10 +835,33 @@ class Relevance
                 'defaultHtml' => gzuncompress(base64_decode($site['defaultHtml'])),
                 'ignored' => $site['ignored'],
                 'mainPage' => $site['mainPage'],
-                'equallyHost' => isset($site['equallyHost']),
+                'equallyHost' => $site['equallyHost'] ?? false,
                 'site' => $key,
+                'position' => $site['position'],
             ];
         }
+    }
+
+    /**
+     * @param $domains
+     * @return void
+     */
+    public function setDomains($domains)
+    {
+        $array = json_decode($domains, true);
+
+        foreach ($array as $key => $item) {
+            $this->domains[$key] = [
+                'item' => $item['site'],
+                'ignored' => $item['ignored'],
+                'position' => $item['position'],
+            ];
+
+            if (isset($item['inRelevance']) && $item['inRelevance'] == false) {
+                $this->domains[$key]['inRelevance'] = false;
+            }
+        }
+
     }
 
     /**
@@ -770,24 +871,6 @@ class Relevance
     public static function concatenation(array $array): string
     {
         return implode(' ', $array);
-    }
-
-    /**
-     * @param $sites
-     * @return void
-     */
-    public function setDomains($sites)
-    {
-        $array = json_decode($sites, true);
-
-        foreach ($array as $item) {
-            $this->domains[] = [
-                'item' => $item['site'],
-                'ignored' => $item['ignored'],
-                'mainPage' => $item['mainPage'],
-                'equallyHost' => isset($item['equallyHost']),
-            ];
-        }
     }
 
     /**
@@ -1028,17 +1111,164 @@ class Relevance
      */
     public function saveResults()
     {
+        $saveObject = [];
         //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
-            $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
+            if (!array_key_exists('exp', $this->sites[$key])) {
+                unset($this->sites[$key]['html']);
+                unset($this->sites[$key]['linkText']);
+                unset($this->sites[$key]['hiddenText']);
+                $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
 
-            unset($this->sites[$key]['html']);
-            unset($this->sites[$key]['linkText']);
-            unset($this->sites[$key]['hiddenText']);
+                $saveObject[$key] = $this->sites[$key];
+            }
 
         }
-        $this->params['sites'] = json_encode($this->sites);
+
+        $this->params['sites'] = json_encode($saveObject);
         $this->params->save();
+    }
+
+    /**
+     * @param $request
+     * @param $userId
+     * @param $historyId
+     * @return void
+     */
+    public function saveHistory($request, $userId, $historyId)
+    {
+        $time = Carbon::now()->toDateTimeString();
+        $link = parse_url($this->params['main_page_link']);
+
+        $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
+
+        foreach ($this->sites as $site) {
+            if ($site['mainPage']) {
+                $site = [
+                    'mainPoints' => $site['mainPoints'],
+                    'coverage' => $site['coverage'],
+                    'coverageTf' => $site['coverageTf'],
+                    'width' => $site['width'],
+                    'density' => $site['density']['densityMainPercent'],
+                    'position' => $site['position']
+                ];
+
+                $id = RelevanceHistory::createOrUpdate(
+                    $this->phrase,
+                    $this->params['main_page_link'],
+                    $request,
+                    $site,
+                    $time,
+                    $mainHistory,
+                    true,
+                    $historyId
+                );
+
+                $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
+
+                $mainHistory->total_points = $info['points'];
+                $mainHistory->count_sites = $info['count'];
+                $mainHistory->save();
+
+                $this->saveHistoryResult($id);
+                return;
+            }
+        }
+
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function saveHistoryResult($id)
+    {
+        $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
+
+        $result->clouds_competitors = json_encode([
+            'totalTf' => json_encode($this->competitorsCloud['totalTf']),
+            'textTf' => json_encode($this->competitorsCloud['textTf']),
+            'linkTf' => json_encode($this->competitorsCloud['linkTf']),
+
+            'textAndLinks' => json_encode($this->competitorsTextAndLinksCloud),
+            'links' => json_encode($this->competitorsLinksCloud),
+            'text' => json_encode($this->competitorsTextCloud),
+        ]);
+
+        $result->clouds_main_page = json_encode([
+            'totalTf' => json_encode($this->mainPage['totalTf']),
+            'textTf' => json_encode($this->mainPage['textTf']),
+            'linkTf' => json_encode($this->mainPage['linkTf']),
+            'textWithLinks' => json_encode($this->mainPage['textWithLinks']),
+            'links' => json_encode($this->mainPage['links']),
+            'text' => json_encode($this->mainPage['text']),
+        ]);
+
+        $result->avg = json_encode([
+            'countWords' => $this->countWords / $this->countNotIgnoredSites,
+            'countSymbols' => $this->countSymbols / $this->countNotIgnoredSites,
+        ]);
+
+        $result->main_page = json_encode([
+            'countWords' => $this->countWordsInMyPage,
+            'countSymbols' => $this->countSymbolsInMyPage,
+        ]);
+
+        $result->unigram_table = json_encode($this->wordForms);
+        $result->sites = json_encode($this->sites);
+        $result->tf_comp_clouds = json_encode($this->tfCompClouds);
+        $result->phrases = json_encode($this->phrases);
+        $result->avg_coverage_percent = json_encode($this->avgCoveragePercent);
+        $result->recommendations = json_encode($this->recommendations);
+
+        $result->save();
+    }
+
+    /**
+     * @param $request
+     * @return void
+     */
+    public function analysisByPhrase($request)
+    {
+        $xml = new SimplifiedXmlFacade($request['region']);
+        $xml->setQuery($request['phrase']);
+        $xmlResponse = $xml->getXMLResponse();
+
+        $this->removeIgnoredDomains(
+            $request,
+            $xmlResponse,
+            false
+        );
+
+        $this->parseSites($xmlResponse);
+    }
+
+    /**
+     * @param $siteList
+     * @return void
+     */
+    public function analysisByList($siteList)
+    {
+        $this->prepareDomains($siteList);
+        $this->parseSites();
+    }
+
+    /**
+     * @param $siteList
+     * @return void
+     */
+    public function prepareDomains($siteList)
+    {
+        $sitesList = str_replace("\r\n", "\n", $siteList);
+        $sitesList = explode("\n", $sitesList);
+
+        foreach ($sitesList as $item) {
+            $this->domains[] = [
+                'item' => str_replace('www.', '', mb_strtolower(trim($item))),
+                'ignored' => false,
+                'position' => count($this->domains) + 1
+            ];
+        }
     }
 
 }

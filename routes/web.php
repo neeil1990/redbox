@@ -11,11 +11,8 @@
 |
 */
 
-use App\Classes\Xml\SimplifiedXmlFacade;
 use App\TelegramBot;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -157,7 +154,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('check-domain-information/{id}', 'DomainInformationController@checkDomain')->name('check.domain.information');
 
     Route::get('text-analyzer', 'TextAnalyzerController@index')->name('text.analyzer.view');
-    Route::get('text-analyzer/{url}', 'TextAnalyzerController@redirectToAnalyse')->name('text.analyzer.redirect');
+    Route::get('/redirect-to-text-analyzer/{url}', 'TextAnalyzerController@redirectToAnalyse')->name('text.analyzer.redirect');
     Route::post('text-analyzer', 'TextAnalyzerController@analyze')->name('text.analyzer');
 
     Route::get('news', 'NewsController@index')->name('news');
@@ -178,15 +175,30 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
 
-    Route::post('/ttt', 'RelevanceController@testAnalyse')->name('test.relevance');
+    Route::get('/test-relevance', 'TestRelevanceController@testView')->name('test.relevance.view');
+    Route::post('/test-analyse', 'TestRelevanceController@testAnalyse')->name('test.relevance');
+    Route::get('/create-queue-test', 'TestRelevanceController@createQueue')->name('create.queue.testView');
+    Route::post('/create-queue-test-post', 'TestRelevanceController@createTaskQueue')->name('create.queue.test.post');
+    Route::get('/history-test', 'TestRelevanceController@history')->name('relevance.history.test');
+
+    Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
+    Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
-    Route::get('/test-relevance', 'RelevanceController@testView')->name('test.relevance.view');
     Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
     Route::post('/change-config', 'RelevanceController@changeConfig')->name('changeConfig');
+    Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
+    Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
+    Route::post('/edit-history-comment', 'HistoryRelevanceController@editComment')->name('edit.history.comment');
+    Route::post('/change-state', 'HistoryRelevanceController@changeCalculateState')->name('change.state');
+    Route::get('/show-details-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
+    Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
+    Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
+    Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
+    Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');

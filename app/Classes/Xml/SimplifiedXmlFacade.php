@@ -3,6 +3,7 @@
 namespace App\Classes\Xml;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Ixudra\Curl\Facades\Curl;
 
 class SimplifiedXmlFacade extends XmlFacade
@@ -15,10 +16,9 @@ class SimplifiedXmlFacade extends XmlFacade
     protected $count;
 
     /**
-     * @param $count
      * @param $lr -- region
      */
-    public function __construct($count, $lr)
+    public function __construct($lr, $count = 100)
     {
         $this->count = $count;
         $this->lr = $lr;
@@ -77,7 +77,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
         $json = json_encode($xml);
 
-        return json_decode($json, TRUE);;
+        return json_decode($json, TRUE);
     }
 
     /**
@@ -104,11 +104,10 @@ class SimplifiedXmlFacade extends XmlFacade
         $sites = [];
         foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
             if (array_key_exists(0, $item['doc'])) {
-                $sites[] = $item['doc'][0]['url'];
+                $sites[] = Str::lower($item['doc'][0]['url']);
             } else {
-                $sites[] = $item['doc']['url'];
+                $sites[] = Str::lower($item['doc']['url']);
             }
-
         }
 
         return $sites;

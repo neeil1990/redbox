@@ -130,7 +130,7 @@ function renderPhrasesTable(phrases, count) {
             $('#phrasesMinLinkIYP, #phrasesMaxLinkIYP').keyup(function () {
                 table.draw();
             });
-        }, 2000)
+        }, 400)
 
     });
 }
