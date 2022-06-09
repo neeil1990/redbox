@@ -6,6 +6,7 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -218,8 +219,6 @@ class TestRelevance
 
         $this->removeListWords($request);
 
-        $this->deleteEverythingExceptCharacters();
-
         $this->getTextFromCompetitors();
 
         $this->separateAllText();
@@ -289,10 +288,10 @@ class TestRelevance
     public function separateLinksFromText()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = TestRelevance::clearHTMLFromLinks($this->mainPage['html']);
+        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TestRelevance::clearHTMLFromLinks($this->mainPage['html']));
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
-            $this->sites[$key]['html'] = TestRelevance::clearHTMLFromLinks($this->sites[$key]['html']);
+            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TestRelevance::clearHTMLFromLinks($this->sites[$key]['html']));
         }
     }
 
@@ -988,6 +987,7 @@ class TestRelevance
         foreach ($matches as $items) {
             $html = str_replace($items[0], "", $html);
         }
+
         return $html;
     }
 
@@ -999,12 +999,12 @@ class TestRelevance
     public function separateText(string $text): string
     {
         $array = explode(" ", $text);
-
         foreach ($array as $key => $item) {
             if (Str::length($item) < $this->maxWordLength) {
                 unset($array[$key]);
             }
         }
+
         return implode(" ", $array);
     }
 

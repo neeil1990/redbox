@@ -139,22 +139,31 @@ class TextAnalyzer
     }
 
     /**
-     * @param $text
+     * @param $html
      * @return array|string|string[]|null
      */
-    public static function deleteEverythingExceptCharacters($text)
+    public static function deleteEverythingExceptCharacters($html)
     {
-        $text = preg_replace(["'<style[^>]*?>.*?</style>'si", "'<script[^>]*?>.*?</script>'si"], "", $text);
-        $text = str_replace(">", "> ", $text);
-        $text = trim(strip_tags($text));
+        $html = preg_replace([
+            "'<style[^>]*?>.*?</style>'si",
+            "'<script[^>]*?>.*?</script>'si",
+            "'array\n\(\n.*?\n\)\n'si",
+            "'array.*?\(.*?\)'si",
+            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+        ], "", $html);
+
+        $html = str_replace(">", "> ", $html);
+
+        $text = trim(strip_tags($html));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
         $text = str_replace([
-            "\n", "\t", "\r", "nbsp", "quot",
+            "\n", "\t", "\r", "nbsp", "quot", "mdash",
             "»", "«", ".", ",", "!", "?",
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"
         ], ' ', $text);
         $text = preg_replace("/[0-9]/", "", $text);
+
         return preg_replace('| +|', ' ', $text);
     }
 
@@ -401,46 +410,6 @@ class TextAnalyzer
         $collection = $collection->sortByDesc('count')->toArray();
 
         return array_slice($collection, 0, 26);
-    }
-
-    /**
-     * @param $html
-     * @return string
-     */
-    public static function getDataText($html): string
-    {
-        $dataText = '';
-        preg_match_all("<.*?data-text=\"(.*?)\".*?>",
-            $html,
-            $matches,
-            PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            if ($match[1] != "") {
-                $dataText .= $match[1] . ' ';
-            }
-        }
-
-        return TextAnalyzer::deleteEverythingExceptCharacters($dataText);
-    }
-
-    /**
-     * @param $html
-     * @return string
-     */
-    public static function getTittleText($html): string
-    {
-        $titleText = '';
-        preg_match_all("<a.*?title=\"(.*?)\".*?>",
-            $html,
-            $matches,
-            PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            if ($match[1] != "") {
-                $titleText .= $match[1] . ' ';
-            }
-        }
-
-        return TextAnalyzer::deleteEverythingExceptCharacters($titleText);
     }
 
     /**

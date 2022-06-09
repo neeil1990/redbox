@@ -171,8 +171,6 @@ class Relevance
 
         $this->removeListWords($request);
 
-        $this->deleteEverythingExceptCharacters();
-
         $this->getTextFromCompetitors();
 
         $this->separateAllText();
@@ -242,10 +240,10 @@ class Relevance
     public function separateLinksFromText()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = Relevance::clearHTMLFromLinks($this->mainPage['html']);
+        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TestRelevance::clearHTMLFromLinks($this->mainPage['html']));
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
-            $this->sites[$key]['html'] = Relevance::clearHTMLFromLinks($this->sites[$key]['html']);
+            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TestRelevance::clearHTMLFromLinks($this->sites[$key]['html']));
         }
     }
 

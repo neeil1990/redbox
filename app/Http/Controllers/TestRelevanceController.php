@@ -9,6 +9,7 @@ use App\TestRelevance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class TestRelevanceController extends Controller
@@ -56,7 +57,6 @@ class TestRelevanceController extends Controller
 
         if ($request['type'] == 'phrase') {
             $relevance->analysisByPhrase($request->all());
-
         } elseif ($request['type'] == 'list') {
             $relevance->analysisByList($request['siteList']);
         }
