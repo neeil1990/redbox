@@ -77,9 +77,8 @@
                 columns: [
                     {
                         orderable: false,
-                        width: '25px',
                         data: null,
-                        defaultContent: '<a href="" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
+                        defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
                     },
                     {
                         title: 'Название проекта',
@@ -95,32 +94,27 @@
                     },
                     {
                         title: 'Слов',
-                        data: 'keywords'
+                        data: 'count'
                     },
                     {
                         title: '% в ТОП 3',
-                        data: null,
-                        defaultContent: '10',
+                        data: 'top_three',
                     },
                     {
                         title: '% в ТОП 5',
-                        data: null,
-                        defaultContent: '25',
+                        data: 'top_fifth',
                     },
                     {
                         title: '% в ТОП 10',
-                        data: null,
-                        defaultContent: '80',
+                        data: 'top_ten',
                     },
                     {
                         title: '% в ТОП 30',
-                        data: null,
-                        defaultContent: '95',
+                        data: 'top_thirty',
                     },
                     {
                         title: '% в ТОП 100',
-                        data: null,
-                        defaultContent: '100',
+                        data: 'top_one_hundred',
                     },
                     {
                         title: 'Ср.Позиция',
