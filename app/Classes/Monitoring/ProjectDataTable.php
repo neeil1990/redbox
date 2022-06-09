@@ -105,16 +105,16 @@ class ProjectDataTable
 
     private function getIsNotEmptyPositions(Collection $keywords)
     {
-        if($keywords->isEmpty())
-            return null;
-
         $positions = collect([]);
+
+        if($keywords->isEmpty())
+            return $positions;
 
         foreach($keywords as $keyword){
             $position = $keyword->positions()->whereNotNull('position')->get()->pluck('position');
             $positions = $positions->merge($position);
         }
 
-        return ($positions->isNotEmpty()) ? $positions : null;
+        return $positions;
     }
 }
