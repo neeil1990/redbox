@@ -114,8 +114,14 @@ class ProjectDataTable
 
         foreach($keywords as $keyword){
 
-            $position = $keyword->positions()->whereNotNull('position')->get();
-            $positions = $positions->merge($position->sortByDesc('id')->unique('monitoring_searchengine_id')->pluck('position'));
+            $position = $keyword->positions()->get();
+            $lastPositionsForKeyword = $position->transform(function ($item){
+                if(is_null($item->position))
+                    $item->position = 1000;
+                return $item;
+            })->sortByDesc('id')->unique('monitoring_searchengine_id')->pluck('position');
+
+            $positions = $positions->merge($lastPositionsForKeyword);
         }
 
         return $positions;
