@@ -4,7 +4,9 @@
 namespace App\Classes\Monitoring;
 
 
+use App\MonitoringPosition;
 use App\MonitoringProject;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use \Illuminate\Support\Collection;
 
@@ -111,8 +113,9 @@ class ProjectDataTable
             return $positions;
 
         foreach($keywords as $keyword){
-            $position = $keyword->positions()->whereNotNull('position')->get()->pluck('position');
-            $positions = $positions->merge($position);
+
+            $position = $keyword->positions()->whereNotNull('position')->get();
+            $positions = $positions->merge($position->sortByDesc('id')->unique('monitoring_searchengine_id')->pluck('position'));
         }
 
         return $positions;
