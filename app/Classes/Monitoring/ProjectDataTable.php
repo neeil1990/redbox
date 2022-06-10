@@ -80,7 +80,7 @@ class ProjectDataTable
         foreach ($this->model as $model) {
 
             $keywords = $model->keywords()->get();
-            $positions = $this->getIsNotEmptyPositions($keywords);
+            $positions = $this->getLastPositionsByKeywords($keywords);
 
             $model->top_three = $this->calculatePercentByPositions($positions, 3);
             $model->top_fifth = $this->calculatePercentByPositions($positions, 5);
@@ -105,7 +105,7 @@ class ProjectDataTable
         return $totalPercent;
     }
 
-    private function getIsNotEmptyPositions(Collection $keywords)
+    private function getLastPositionsByKeywords(Collection $keywords)
     {
         $positions = collect([]);
 
