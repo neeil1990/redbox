@@ -59,6 +59,7 @@
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                lengthMenu: [10, 20, 30, 50, 100],
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
@@ -71,9 +72,10 @@
                         "previous":   "«"
                     },
                 },
+                serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
-                    dataSrc: '',
+                    //dataSrc: '',
                 },
                 order: [
                     [1, 'asc'],
@@ -135,7 +137,7 @@
                 initComplete: function () {
                     let api = this.api();
 
-                    this.find('tbody tr').click(function(){
+                    this.find('tbody').on('click', 'tr', function(){
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
 
                         if($(this).hasClass(HIGHLIGHT_TR_CLASS)){
@@ -145,7 +147,7 @@
                         }
                     });
 
-                    this.find('tbody td .dt-control').click(function () {
+                    this.find('tbody').on('click', 'td .dt-control', function () {
                         let icon = $(this).find('i');
                         let tr = $(this).closest('tr');
                         let row = api.row(tr);

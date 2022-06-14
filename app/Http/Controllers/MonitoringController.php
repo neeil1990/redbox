@@ -44,13 +44,21 @@ class MonitoringController extends Controller
         return view('monitoring.index');
     }
 
-    public function getProjects()
+    public function getProjects(Request $request)
     {
+        $page = $request->input('start', 0) + 1;
         /** @var User $user */
         $user = $this->user;
-        $projects = $user->monitoringProjects()->get();
+        $projects = $user->monitoringProjects()->paginate($request->input('length', 1), ['*'], 'page', $page);
 
-        return (new ProjectDataTable($projects))->handle();
+        $data = collect([
+            'data' => (new ProjectDataTable(collect($projects->items())))->handle(),
+            'draw' => $request->input('draw'),
+            'recordsFiltered' => $projects->total(),
+            'recordsTotal' => $projects->total(),
+        ]);
+
+        return $data;
     }
 
     public function getKeywordsByProject(int $project_id)
