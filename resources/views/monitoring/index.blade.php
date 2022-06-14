@@ -44,10 +44,12 @@
                 if (clicks) {
                     //Uncheck all checkboxes
                     $('.table tbody tr').removeClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr').find('.form-check-input').prop('checked', false);
                     $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
                 } else {
                     //Check all checkboxes
                     $('.table tbody tr').addClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr').find('.form-check-input').prop('checked', true);
                     $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
                 }
                 $(this).data('clicks', !clicks)
@@ -73,8 +75,16 @@
                     url: '/monitoring/projects/get',
                     dataSrc: '',
                 },
-                order: [[1, 'asc']],
+                order: [
+                    [1, 'asc'],
+                    [2, 'asc'],
+                ],
                 columns: [
+                    {
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<div class="form-check"><input class="form-check-input" type="checkbox"></div>',
+                    },
                     {
                         orderable: false,
                         data: null,
@@ -127,6 +137,12 @@
 
                     this.find('tbody tr').click(function(){
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
+
+                        if($(this).hasClass(HIGHLIGHT_TR_CLASS)){
+                            $(this).find('.form-check-input').prop('checked', true);
+                        }else{
+                            $(this).find('.form-check-input').prop('checked', false);
+                        }
                     });
 
                     this.find('tbody td .dt-control').click(function () {
@@ -140,7 +156,7 @@
                             tr.removeClass('shown');
 
                             icon.removeClass('fa-minus-circle');
-                            icon.addClass('fa-plus-circle')
+                            icon.addClass('fa-plus-circle');
                         } else {
                             // Open this row
                             let data = row.data();
