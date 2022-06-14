@@ -75,7 +75,6 @@
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
-                    //dataSrc: '',
                 },
                 order: [
                     [1, 'asc'],
@@ -130,8 +129,7 @@
                     },
                     {
                         title: 'Ср.Позиция',
-                        data: null,
-                        defaultContent: '3',
+                        data: 'middle_position',
                     },
                 ],
                 initComplete: function () {

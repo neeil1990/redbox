@@ -87,6 +87,8 @@ class ProjectDataTable
             $model->top_ten = $this->calculatePercentByPositions($positions, 10);
             $model->top_thirty = $this->calculatePercentByPositions($positions, 30);
             $model->top_one_hundred = $this->calculatePercentByPositions($positions, 100);
+
+            $model->middle_position = round($positions->sum() / $positions->count());
         }
     }
 
@@ -117,7 +119,7 @@ class ProjectDataTable
             $position = $keyword->positions()->get();
             $lastPositionsForKeyword = $position->transform(function ($item){
                 if(is_null($item->position))
-                    $item->position = 1000;
+                    $item->position = 101;
                 return $item;
             })->sortByDesc('id')->unique('monitoring_searchengine_id')->pluck('position');
 
