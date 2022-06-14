@@ -146,7 +146,7 @@
                                 "</a></li>"
                         }
 
-                        if(window.location.href === el.link){
+                        if (window.location.href === el.link) {
                             item = $(item).addClass('menu-open');
                         }
 
