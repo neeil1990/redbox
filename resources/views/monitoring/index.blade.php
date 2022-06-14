@@ -131,6 +131,19 @@
                         title: 'Ср.Позиция',
                         data: 'middle_position',
                     },
+                    {
+                        width: '120px',
+                        title: 'Отчеты в pdf',
+                        data: null,
+                        class: 'project-actions text-right',
+                        defaultContent: '<a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i> View</a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i> View</a>',
+                    },
+                    {
+                        width: '120px',
+                        data: null,
+                        class: 'project-actions text-right',
+                        defaultContent: '<a class="btn btn-success btn-sm" href="#"><i class="fas fa-plus"></i></a> <a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i></a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i></a>',
+                    },
                 ],
                 initComplete: function () {
                     let api = this.api();
