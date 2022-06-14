@@ -88,7 +88,7 @@ class ProjectDataTable
             $model->top_thirty = $this->calculatePercentByPositions($positions, 30);
             $model->top_one_hundred = $this->calculatePercentByPositions($positions, 100);
 
-            $model->middle_position = round($positions->sum() / $positions->count());
+            $model->middle_position = ($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
         }
     }
 
