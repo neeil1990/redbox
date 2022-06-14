@@ -61,7 +61,7 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    public function getKeywordsByProject(int $project_id)
+    public function getChildRowsPageByProject(int $project_id)
     {
         /** @var User $user */
         $user = $this->user;

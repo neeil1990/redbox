@@ -174,7 +174,7 @@
                             // Open this row
                             let data = row.data();
 
-                            axios.get(`/monitoring/${data.id}/keywords/get`).then(function(response){
+                            axios.get(`/monitoring/${data.id}/child-rows/get`).then(function(response){
                                 let keywords = response.data;
                                 row.child(tableFormat(keywords)).show();
                             });
