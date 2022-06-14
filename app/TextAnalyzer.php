@@ -76,7 +76,7 @@ class TextAnalyzer
         $alt = '';
         $title = '';
         $html = mb_strtolower($string);
-        if (empty($request->noIndex)) {
+        if (isset($request->noIndex)) {
             $html = TextAnalyzer::removeNoindexText($html);
         } else {
             $response['noIndex'] = true;
@@ -92,7 +92,7 @@ class TextAnalyzer
         $html = TextAnalyzer::clearHTMLFromLinks($html);
         $text = TextAnalyzer::deleteEverythingExceptCharacters($html);
 
-        if (empty($request->conjunctionsPrepositionsPronouns)) {
+        if (isset($request->conjunctionsPrepositionsPronouns)) {
             $text = TextAnalyzer::removeConjunctionsPrepositionsPronouns($text);
             $title = TextAnalyzer::removeConjunctionsPrepositionsPronouns($title);
             $alt = TextAnalyzer::removeConjunctionsPrepositionsPronouns($alt);
