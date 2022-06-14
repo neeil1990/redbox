@@ -4,7 +4,9 @@
 namespace App\Classes\Monitoring;
 
 
+use App\MonitoringPosition;
 use App\MonitoringProject;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use \Illuminate\Support\Collection;
 
@@ -23,6 +25,7 @@ class ProjectDataTable
         $this->setUrl();
         $this->setSearchEngines();
         $this->setKeywords();
+        $this->setTopPercentKeywords();
 
         return $this->getData();
     }
@@ -68,7 +71,59 @@ class ProjectDataTable
     protected function setKeywords()
     {
         foreach ($this->model as $model) {
-            $model->keywords = $model->keywords()->count();
+            $model->count = $model->keywords()->count();
         }
+    }
+
+    protected function setTopPercentKeywords()
+    {
+        foreach ($this->model as $model) {
+
+            $keywords = $model->keywords()->get();
+            $positions = $this->getLastPositionsByKeywords($keywords);
+
+            $model->top_three = $this->calculatePercentByPositions($positions, 3);
+            $model->top_fifth = $this->calculatePercentByPositions($positions, 5);
+            $model->top_ten = $this->calculatePercentByPositions($positions, 10);
+            $model->top_thirty = $this->calculatePercentByPositions($positions, 30);
+            $model->top_one_hundred = $this->calculatePercentByPositions($positions, 100);
+        }
+    }
+
+    private function calculatePercentByPositions(Collection $positions, int $desired)
+    {
+        if($positions->isEmpty())
+            return 0;
+
+        $itemsCount = $positions->count();
+        $desiredCount = $positions->filter(function ($val) use ($desired){
+            return $val <= $desired;
+        })->count();
+
+        $totalPercent = round(($desiredCount / $itemsCount) * 100, 2);
+
+        return $totalPercent;
+    }
+
+    private function getLastPositionsByKeywords(Collection $keywords)
+    {
+        $positions = collect([]);
+
+        if($keywords->isEmpty())
+            return $positions;
+
+        foreach($keywords as $keyword){
+
+            $position = $keyword->positions()->get();
+            $lastPositionsForKeyword = $position->transform(function ($item){
+                if(is_null($item->position))
+                    $item->position = 1000;
+                return $item;
+            })->sortByDesc('id')->unique('monitoring_searchengine_id')->pluck('position');
+
+            $positions = $positions->merge($lastPositionsForKeyword);
+        }
+
+        return $positions;
     }
 }
