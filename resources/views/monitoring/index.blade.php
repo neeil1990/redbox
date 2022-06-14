@@ -7,6 +7,17 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+        <style>
+            .table-hover tbody tr:hover {
+                background-color: #FFF;
+            }
+            .table-hover tbody tr.hover:hover {
+                color: #212529;
+                background-color: rgba(0,0,0,.075);
+            }
+
+        </style>
     @endslot
 
     <div class="row mb-1">
@@ -175,8 +186,7 @@
                             let data = row.data();
 
                             axios.get(`/monitoring/${data.id}/child-rows/get`).then(function(response){
-                                let keywords = response.data;
-                                row.child(tableFormat(keywords)).show();
+                                row.child(response.data).show();
                             });
 
                             tr.addClass('shown');
@@ -192,6 +202,7 @@
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                 },
                 drawCallback: function(){
+                    this.find('tbody tr').addClass('hover');
                     $('.pagination').addClass('pagination-sm');
                 },
             });
@@ -206,28 +217,6 @@
                 });
             });
 
-            function tableFormat(data) {
-                let table = $('<table />');
-
-                $.each(data, function (i, item) {
-                    let tr = $('<tr />');
-
-                    tr.append($('<td />').html($('<a />', {
-                        href: `/monitoring/keywords/${item.id}`,
-                        target: '_blank',
-                    }).text(item.query)));
-
-                    if(item.page)
-                        tr.append($('<td />').text(item.page));
-
-                    tr.append($('<td />').text(item.target));
-                    tr.append($('<td />').text(item.created_at));
-
-                    table.append(tr);
-                });
-
-                return table;
-            }
         </script>
     @endslot
 
