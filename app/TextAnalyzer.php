@@ -30,14 +30,14 @@ class TextAnalyzer
         curl_setopt($curl, CURLOPT_TIMEOUT, 4);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
-        return TextAnalyzer::tryConnect($curl);
+        return TextAnalyzer::curlConnect($curl);
     }
 
     /**
      * @param $curl
      * @return bool|string|string[]|null
      */
-    public static function tryConnect($curl)
+    public static function curlConnect($curl)
     {
         $userAgents = [
             //Mozilla Firefox
@@ -62,6 +62,14 @@ class TextAnalyzer
         }
 
         curl_close($curl);
+        try {
+            $contentType = trim(str_replace('text/html;', '', $headers['content_type']));
+            $contentType = trim(str_replace('charset=', '', $contentType));
+            $html = mb_convert_encoding($html, "utf-8", $contentType);
+        } catch (\Exception $exception) {
+
+        }
+
         return $html;
     }
 
