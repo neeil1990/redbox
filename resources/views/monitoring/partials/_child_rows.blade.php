@@ -5,13 +5,15 @@
                 <tr>
                     <th>Источник</th>
                     <th>Дата</th>
+                    <th>Средняя позиция</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($engines as $engine)
                 <tr>
-                    <td>{{ $engine->engine->location->name }}</td>
-                    <td>{{ $engine->created_at }}</td>
+                    <td>{{ $engine->location->name }}</td>
+                    <td>{{ $engine->latest_position }}</td>
+                    <td>{{ $engine->middle_position }}</td>
                 </tr>
                 @endforeach
             </tbody>

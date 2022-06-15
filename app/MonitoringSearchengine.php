@@ -12,4 +12,9 @@ class MonitoringSearchengine extends Model
     {
         return $this->hasOne(Location::class, 'lr', 'lr');
     }
+
+    public function positions()
+    {
+        return $this->hasMany(MonitoringPosition::class);
+    }
 }

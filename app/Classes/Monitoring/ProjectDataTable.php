@@ -81,15 +81,46 @@ class ProjectDataTable
 
             $keywords = $model->keywords()->get();
             $positions = $this->getLastPositionsByKeywords($keywords);
+            $pre_positions = $this->getPreLastPositionsByKeywords($keywords);
 
-            $model->top_three = $this->calculatePercentByPositions($positions, 3);
-            $model->top_fifth = $this->calculatePercentByPositions($positions, 5);
-            $model->top_ten = $this->calculatePercentByPositions($positions, 10);
-            $model->top_thirty = $this->calculatePercentByPositions($positions, 30);
-            $model->top_one_hundred = $this->calculatePercentByPositions($positions, 100);
+            $top_three = $this->calculatePercentByPositions($positions, 3);
+            $top_three_pre = $this->calculatePercentByPositions($pre_positions, 3);
+            $model->top_three = $top_three . $this->differentTopPercent($top_three, $top_three_pre);
+
+            $top_fifth = $this->calculatePercentByPositions($positions, 5);
+            $top_fifth_pre = $this->calculatePercentByPositions($pre_positions, 5);
+            $model->top_fifth = $top_fifth . $this->differentTopPercent($top_fifth, $top_fifth_pre);
+
+            $top_ten = $this->calculatePercentByPositions($positions, 10);
+            $top_ten_pre = $this->calculatePercentByPositions($pre_positions, 10);
+            $model->top_ten = $top_ten . $this->differentTopPercent($top_ten, $top_ten_pre);
+
+            $top_thirty = $this->calculatePercentByPositions($positions, 30);
+            $top_thirty_pre = $this->calculatePercentByPositions($pre_positions, 30);
+            $model->top_thirty = $top_thirty . $this->differentTopPercent($top_thirty, $top_thirty_pre);
+
+            $top_one_hundred = $this->calculatePercentByPositions($positions, 100);
+            $top_one_hundred_pre = $this->calculatePercentByPositions($pre_positions, 100);
+            $model->top_one_hundred = $top_one_hundred . $this->differentTopPercent($top_one_hundred, $top_one_hundred_pre);
 
             $model->middle_position = ($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
         }
+    }
+
+    private function differentTopPercent($a, $b)
+    {
+        $total = $a - $b;
+
+        if(!$total || !$b)
+            return '';
+
+        if($total > 0){
+            $total = ' (+'. $total .')';
+        }else{
+            $total = ' ('. $total .')';
+        }
+
+        return $total;
     }
 
     private function calculatePercentByPositions(Collection $positions, int $desired)
@@ -127,5 +158,30 @@ class ProjectDataTable
         }
 
         return $positions;
+    }
+
+    private function getPreLastPositionsByKeywords(Collection $keywords)
+    {
+        $pre_positions = collect([]);
+
+        if($keywords->isEmpty())
+            return $pre_positions;
+
+        foreach($keywords as $keyword){
+
+            $positions = $keyword->positions()->get();
+
+            $engines = [];
+            foreach ($positions as $position)
+                $engines[$position->monitoring_searchengine_id][] = $position;
+
+            foreach ($engines as $engine){
+
+                if((isset($engine[count($engine) - 2])))
+                    $pre_positions = $pre_positions->merge($engine[count($engine) - 2]->position);
+            }
+        }
+
+        return $pre_positions;
     }
 }

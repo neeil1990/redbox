@@ -67,17 +67,20 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $project_id)->first();
 
-        $positions = collect([]);
-        foreach($project->keywords as $keyword){
-            $position = $keyword->positions()->get();
+        $engines = $project->searchengines()->with('location')->get();
 
-            $lastPositions = $position->sortByDesc('id')->unique('monitoring_searchengine_id');
+        $engines->transform(function($item){
 
-            $positions = $positions->merge($lastPositions);
-        }
+            $positions = $item->positions()->get();
 
-        $engines = $positions->sortByDesc('id')->unique('monitoring_searchengine_id')->transform(function($item){
-            $item->load('engine');
+            $item->middle_position = __('None');
+            $item->latest_position = __('None');
+
+            if($positions->isNotEmpty()){
+
+                $item->middle_position = round($positions->sum('position') / $positions->count());
+                $item->latest_position = $positions->last()->created_at;
+            }
 
             return $item;
         });
