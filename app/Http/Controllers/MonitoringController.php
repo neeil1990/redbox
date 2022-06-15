@@ -9,6 +9,7 @@ use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class MonitoringController extends Controller
@@ -75,17 +76,95 @@ class MonitoringController extends Controller
 
             $item->middle_position = __('None');
             $item->latest_position = __('None');
+            $item->top_1 = 0;
+            $item->top_3 = 0;
+            $item->top_5 = 0;
+            $item->top_10 = 0;
+            $item->top_20 = 0;
+            $item->top_50 = 0;
+            $item->top_100 = 0;
 
             if($positions->isNotEmpty()){
 
                 $item->middle_position = round($positions->sum('position') / $positions->count());
                 $item->latest_position = $positions->last()->created_at;
+
+                $last_positions = $positions->transform(function ($item){
+                    if(is_null($item->position))
+                        $item->position = 101;
+                    return $item;
+                })->sortByDesc('id')->unique('monitoring_keyword_id')->pluck('position');
+
+                $keywords = [];
+                foreach ($positions->sortByDesc('id') as $position){
+                    $keywords[$position->monitoring_keyword_id][] = $position;
+                }
+
+                $last_positions_pre = [];
+                foreach ($keywords as $keyword){
+
+                    if((isset($keyword[count($keyword) - 2]))){
+                        $last_positions_pre[] = $keyword[count($keyword) - 2]->position;
+                    }
+                }
+
+                $item->top_1 = $this->calculatePercentByPositions($last_positions, 1) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 1),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 1));
+
+                $item->top_3 = $this->calculatePercentByPositions($last_positions, 3) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 3),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 3));
+
+                $item->top_5 = $this->calculatePercentByPositions($last_positions, 5) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 5),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 5));
+
+                $item->top_10 = $this->calculatePercentByPositions($last_positions, 10) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 10),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 10));
+
+                $item->top_20 = $this->calculatePercentByPositions($last_positions, 20) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 20),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 20));
+
+                $item->top_50 = $this->calculatePercentByPositions($last_positions, 50) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 50),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 50));
+
+                $item->top_100 = $this->calculatePercentByPositions($last_positions, 100) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 100),
+                    $this->calculatePercentByPositions(collect($last_positions_pre), 100));
             }
 
             return $item;
         });
 
         return view('monitoring.partials._child_rows', compact('engines'));
+    }
+
+    private function differentTopPercent($a, $b)
+    {
+        $total = $a - $b;
+
+        if(!$total || !$b)
+            return '';
+
+        if($total > 0){
+            $total = ' (+'. $total .')';
+        }else{
+            $total = ' ('. $total .')';
+        }
+
+        return $total;
+    }
+
+    private function calculatePercentByPositions(Collection $positions, int $desired)
+    {
+        if($positions->isEmpty())
+            return 0;
+
+        $itemsCount = $positions->count();
+        $desiredCount = $positions->filter(function ($val) use ($desired){
+            return $val <= $desired;
+        })->count();
+
+        $totalPercent = round(($desiredCount / $itemsCount) * 100, 2);
+
+        return $totalPercent;
     }
 
     /**
