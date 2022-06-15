@@ -7,6 +7,17 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+        <style>
+            .table-hover tbody tr:hover {
+                background-color: #FFF;
+            }
+            .table-hover tbody tr.main:hover {
+                color: #212529;
+                background-color: rgba(0,0,0,.075);
+            }
+
+        </style>
     @endslot
 
     <div class="row mb-1">
@@ -43,11 +54,13 @@
                 var clicks = $(this).data('clicks');
                 if (clicks) {
                     //Uncheck all checkboxes
-                    $('.table tbody tr').removeClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').find('.form-check-input').prop('checked', false);
                     $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
                 } else {
                     //Check all checkboxes
-                    $('.table tbody tr').addClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').find('.form-check-input').prop('checked', true);
                     $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
                 }
                 $(this).data('clicks', !clicks)
@@ -57,6 +70,7 @@
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                lengthMenu: [10, 20, 30, 50, 100],
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
@@ -69,12 +83,20 @@
                         "previous":   "«"
                     },
                 },
+                serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
-                    dataSrc: '',
                 },
-                order: [[1, 'asc']],
+                order: [
+                    [1, 'asc'],
+                    [2, 'asc'],
+                ],
                 columns: [
+                    {
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<div class="form-check"><input class="form-check-input" type="checkbox"></div>',
+                    },
                     {
                         orderable: false,
                         data: null,
@@ -118,18 +140,36 @@
                     },
                     {
                         title: 'Ср.Позиция',
+                        data: 'middle_position',
+                    },
+                    {
+                        width: '120px',
+                        title: 'Отчеты в pdf',
                         data: null,
-                        defaultContent: '3',
+                        class: 'project-actions text-right',
+                        defaultContent: '<a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i> View</a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i> View</a>',
+                    },
+                    {
+                        width: '120px',
+                        data: null,
+                        class: 'project-actions text-right',
+                        defaultContent: '<a class="btn btn-success btn-sm" href="#"><i class="fas fa-plus"></i></a> <a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i></a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i></a>',
                     },
                 ],
                 initComplete: function () {
                     let api = this.api();
 
-                    this.find('tbody tr').click(function(){
+                    this.find('tbody').on('click', 'tr.main', function(){
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
+
+                        if($(this).hasClass(HIGHLIGHT_TR_CLASS)){
+                            $(this).find('.form-check-input').prop('checked', true);
+                        }else{
+                            $(this).find('.form-check-input').prop('checked', false);
+                        }
                     });
 
-                    this.find('tbody td .dt-control').click(function () {
+                    this.find('tbody').on('click', 'td .dt-control', function () {
                         let icon = $(this).find('i');
                         let tr = $(this).closest('tr');
                         let row = api.row(tr);
@@ -140,14 +180,13 @@
                             tr.removeClass('shown');
 
                             icon.removeClass('fa-minus-circle');
-                            icon.addClass('fa-plus-circle')
+                            icon.addClass('fa-plus-circle');
                         } else {
                             // Open this row
                             let data = row.data();
 
-                            axios.get(`/monitoring/${data.id}/keywords/get`).then(function(response){
-                                let keywords = response.data;
-                                row.child(tableFormat(keywords)).show();
+                            axios.get(`/monitoring/${data.id}/child-rows/get`).then(function(response){
+                                row.child(response.data).show();
                             });
 
                             tr.addClass('shown');
@@ -163,6 +202,7 @@
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                 },
                 drawCallback: function(){
+                    this.find('tbody tr').addClass('main');
                     $('.pagination').addClass('pagination-sm');
                 },
             });
@@ -177,28 +217,6 @@
                 });
             });
 
-            function tableFormat(data) {
-                let table = $('<table />');
-
-                $.each(data, function (i, item) {
-                    let tr = $('<tr />');
-
-                    tr.append($('<td />').html($('<a />', {
-                        href: `/monitoring/keywords/${item.id}`,
-                        target: '_blank',
-                    }).text(item.query)));
-
-                    if(item.page)
-                        tr.append($('<td />').text(item.page));
-
-                    tr.append($('<td />').text(item.target));
-                    tr.append($('<td />').text(item.created_at));
-
-                    table.append(tr);
-                });
-
-                return table;
-            }
         </script>
     @endslot
 
