@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-6">
-        <table class="table table-hover table-sm table-bordered">
+        <table class="table table-sm table-bordered">
             <thead>
                 <tr>
                     <th>Источник</th>
@@ -9,7 +9,7 @@
             </thead>
             <tbody>
                 @foreach($engines as $engine)
-                <tr class="hover">
+                <tr>
                     <td>{{ $engine->engine->location->name }}</td>
                     <td>{{ $engine->created_at }}</td>
                 </tr>

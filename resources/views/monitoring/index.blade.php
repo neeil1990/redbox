@@ -12,7 +12,7 @@
             .table-hover tbody tr:hover {
                 background-color: #FFF;
             }
-            .table-hover tbody tr.hover:hover {
+            .table-hover tbody tr.main:hover {
                 color: #212529;
                 background-color: rgba(0,0,0,.075);
             }
@@ -54,13 +54,13 @@
                 var clicks = $(this).data('clicks');
                 if (clicks) {
                     //Uncheck all checkboxes
-                    $('.table tbody tr').removeClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr').find('.form-check-input').prop('checked', false);
+                    $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').find('.form-check-input').prop('checked', false);
                     $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
                 } else {
                     //Check all checkboxes
-                    $('.table tbody tr').addClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr').find('.form-check-input').prop('checked', true);
+                    $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').find('.form-check-input').prop('checked', true);
                     $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
                 }
                 $(this).data('clicks', !clicks)
@@ -159,7 +159,7 @@
                 initComplete: function () {
                     let api = this.api();
 
-                    this.find('tbody').on('click', 'tr', function(){
+                    this.find('tbody').on('click', 'tr.main', function(){
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
 
                         if($(this).hasClass(HIGHLIGHT_TR_CLASS)){
@@ -202,7 +202,7 @@
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                 },
                 drawCallback: function(){
-                    this.find('tbody tr').addClass('hover');
+                    this.find('tbody tr').addClass('main');
                     $('.pagination').addClass('pagination-sm');
                 },
             });
