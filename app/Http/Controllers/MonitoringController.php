@@ -73,7 +73,7 @@ class MonitoringController extends Controller
 
         $engines->transform(function($item){
 
-            $positions = $item->positions()->get();
+            $positions = $item->positions()->whereNotNull('position')->get();
 
             if($positions->isNotEmpty()){
 
