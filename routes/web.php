@@ -14,6 +14,7 @@
 use App\TelegramBot;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 Route::get('info', function () {
     phpinfo();
@@ -216,8 +217,4 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 
-});
-
-Route::get('/bla', function () {
-    dd(parse_url('https://импрегнация.рф/'));
 });
