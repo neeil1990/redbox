@@ -80,62 +80,34 @@ class ProjectDataTable
         foreach ($this->model as $model) {
 
             $keywords = $model->keywords()->get();
+
+            $this->calculateTopPercent($keywords, $model);
+
             $positions = $this->getLastPositionsByKeywords($keywords);
-            $pre_positions = $this->getPreLastPositionsByKeywords($keywords);
-
-            $top_three = $this->calculatePercentByPositions($positions, 3);
-            $top_three_pre = $this->calculatePercentByPositions($pre_positions, 3);
-            $model->top_three = $top_three . $this->differentTopPercent($top_three, $top_three_pre);
-
-            $top_fifth = $this->calculatePercentByPositions($positions, 5);
-            $top_fifth_pre = $this->calculatePercentByPositions($pre_positions, 5);
-            $model->top_fifth = $top_fifth . $this->differentTopPercent($top_fifth, $top_fifth_pre);
-
-            $top_ten = $this->calculatePercentByPositions($positions, 10);
-            $top_ten_pre = $this->calculatePercentByPositions($pre_positions, 10);
-            $model->top_ten = $top_ten . $this->differentTopPercent($top_ten, $top_ten_pre);
-
-            $top_thirty = $this->calculatePercentByPositions($positions, 30);
-            $top_thirty_pre = $this->calculatePercentByPositions($pre_positions, 30);
-            $model->top_thirty = $top_thirty . $this->differentTopPercent($top_thirty, $top_thirty_pre);
-
-            $top_one_hundred = $this->calculatePercentByPositions($positions, 100);
-            $top_one_hundred_pre = $this->calculatePercentByPositions($pre_positions, 100);
-            $model->top_one_hundred = $top_one_hundred . $this->differentTopPercent($top_one_hundred, $top_one_hundred_pre);
 
             $model->middle_position = ($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
         }
     }
 
-    private function differentTopPercent($a, $b)
+    private function calculateTopPercent(Collection $keywords, &$model)
     {
-        $total = $a - $b;
+        $positions = $this->getLastPositionsByKeywords($keywords);
+        $pre_positions = $this->getPreLastPositionsByKeywords($keywords);
 
-        if(!$total || !$b)
-            return '';
+        $percents = [
+            'top_three' => 3,
+            'top_fifth' => 5,
+            'top_ten' => 10,
+            'top_thirty' => 30,
+            'top_one_hundred' => 100,
+        ];
 
-        if($total > 0){
-            $total = ' (+'. $total .')';
-        }else{
-            $total = ' ('. $total .')';
+        foreach ($percents as $name => $percent){
+
+            $last = Helper::calculateTopPercentByPositions($positions, $percent);
+            $preLast = Helper::calculateTopPercentByPositions($pre_positions, $percent);
+            $model->$name = $last . Helper::differentTopPercent($last, $preLast);
         }
-
-        return $total;
-    }
-
-    private function calculatePercentByPositions(Collection $positions, int $desired)
-    {
-        if($positions->isEmpty())
-            return 0;
-
-        $itemsCount = $positions->count();
-        $desiredCount = $positions->filter(function ($val) use ($desired){
-            return $val <= $desired;
-        })->count();
-
-        $totalPercent = round(($desiredCount / $itemsCount) * 100, 2);
-
-        return $totalPercent;
     }
 
     private function getLastPositionsByKeywords(Collection $keywords)

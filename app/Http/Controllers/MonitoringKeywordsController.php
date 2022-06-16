@@ -88,9 +88,11 @@ class MonitoringKeywordsController extends Controller
                     'region' => $region['name'],
                     'engine' => ucfirst($engine->engine),
                 ];
+
                 $data['positions'][$engine->lr]['item'][] = [
                     'id' => $position->id,
                     'engine' => $engine->engine,
+                    'engine_id' => $position->monitoring_searchengine_id,
                     'position' => $position->position ?: '>100',
                     'created_at' => $position->created_at->format('d.m.Y H:m:s'),
                 ];
