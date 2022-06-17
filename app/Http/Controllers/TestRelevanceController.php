@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\ProjectRelevanceHistory;
 use App\Queue;
 use App\RelevanceAnalysisConfig;
+use App\RelevanceProgress;
 use App\TestRelevance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,7 +59,7 @@ class TestRelevanceController extends Controller
         if ($request['type'] == 'phrase') {
             $relevance->analysisByPhrase($request->all());
         } elseif ($request['type'] == 'list') {
-            $relevance->analysisByList($request['siteList']);
+            $relevance->analysisByList($request->all());
         }
 
         $relevance->analysis($request->all(), Auth::id());

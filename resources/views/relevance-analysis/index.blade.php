@@ -289,8 +289,10 @@
                         </div>
                     </div>
 
-                    <div id="progress-bar">
+                    <div id="progress-bar" style="display: none">
                         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+                        <span class="text-muted" id="progress-bar-state">Подготовка данных..</span>
+                        <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
                     <div class="pb-3 pt-3 text" style="display:none">
@@ -374,7 +376,7 @@
                             </div>
                             <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5"
                                     style="cursor: pointer;">
-                               {{ __("Clouds of site text from the top and landing page") }}
+                                {{ __("Clouds of site text from the top and landing page") }}
                             </button>
                             <div class="text-clouds" style=" display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -431,14 +433,14 @@
                                         {{ __("You can delete a word from the table if it has been worked out") }}
                                     </span>
                                 </th>
-                                <th>Слово</th>
+                                <th>{{ __('Word') }}</th>
                                 <th>Tf</th>
-                                <th>Среднее кол-во повторений у конкурентов</th>
-                                <th>Количество у вас на странице</th>
-                                <th>Рекомендуемый диапозон</th>
-                                <th>Уровень спама</th>
-                                <th>Добавить</th>
-                                <th>Удалить</th>
+                                <th>{{ __('Average number of repetitions of competitors') }}</th>
+                                <th>{{ __('The number you have on the page') }}</th>
+                                <th>{{ __('Recommended range') }}</th>
+                                <th>{{ __('Spam level') }}</th>
+                                <th>{{ __('Add') }}</th>
+                                <th>{{ __('Remove') }}</th>
                             </tr>
                             </thead>
                             <tbody id="recommendationsTBody">
@@ -842,6 +844,7 @@
             </div>
         </div>
     </div>
+    <input type="hidden" name="hash" id="hiddenHash">
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
@@ -890,39 +893,104 @@
             var generatedTfIdf = false
             var generatedText = false
             var generatedCompetitorCoverage = false
+            var progressInterval
+
+            function endProgress(progressInterval) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('end.relevance.progress') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        hash: $('#hiddenHash').val()
+                    },
+                    success: function () {
+                        console.log('Процесс завершён: ' + $('#hiddenHash').val())
+                        $('#hiddenHash').val('empty')
+                        clearInterval(progressInterval)
+                    },
+                });
+            }
+
+            function getProgress() {
+                let interval = setInterval(() => {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('get.relevance.progress') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            hash: $('#hiddenHash').val()
+                        },
+                        success: function (response) {
+                            if (response.progress == null) {
+                                clearInterval(interval)
+                                return stopProgressBar()
+                            } else {
+                                setProgressBarStyles(response.progress.progress)
+                            }
+                        },
+                    });
+                }, 1000);
+            }
+
+            function startProgress(type) {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "{{ route('start.relevance.progress') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                    },
+                    success: function (response) {
+                        $('#hiddenHash').val(response.hash)
+                        if (type === 'full') {
+                            startAnalyse()
+                        } else if (type === 'repeatMainPage') {
+                            repeatMainPageAnalyse()
+                        } else if (type === 'repeatRelevance') {
+                            repeatRelevance()
+                        }
+                    },
+                });
+            }
+
+            // ----------------------------
 
             $('#full-analyse').click(() => {
-                var interval = startProgressBar()
+                startProgress('full')
+            })
+
+            $('#repeat-main-page-analyse').click(() => {
+                startProgress('repeatMainPage')
+            })
+
+            $('#repeat-relevance-analyse').click(() => {
+                startProgress('repeatRelevance')
+            })
+
+            // ----------------------------
+
+            function startAnalyse() {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('analysis.relevance') }}",
-                    data: {
-                        type: $('#check-type').val(),
-                        siteList: $('#siteList').val(),
-                        separator: $('#separator').val(),
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
+                    data: getData(),
                     beforeSend: function () {
                         refreshAllRenderElements()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
+                        $("#progress-bar").show(300)
+                        getProgress()
                     },
                     success: function (response) {
-                        successRequest(response, interval)
+                        endProgress()
+                        successRequest(response)
                     },
                     error: function (response) {
+                        endProgress()
                         let message = ''
                         if (response.responseText) {
                             let messages = JSON.parse(response.responseText);
@@ -944,45 +1012,30 @@
                             $('.toast-top-right.error-message.empty').hide(300)
                         }, 5000)
 
-                        errorRequest(interval)
+                        errorRequest()
                     }
                 });
-            })
+            }
 
-            $('#repeat-main-page-analyse').click(() => {
-                var interval = startProgressBar()
+            function repeatMainPageAnalyse() {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('repeat.main.page.analysis') }}",
-                    data: {
-                        type: $('#check-type').val(),
-                        siteList: $('#siteList').val(),
-                        separator: $('#separator').val(),
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
+                    data: getData(),
                     beforeSend: function () {
                         refreshAllRenderElements()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
+                        $("#progress-bar").show(300)
+                        getProgress()
                     },
                     success: function (response) {
-                        successRequest(response, interval)
+                        successRequest(response)
                     },
                     error: function (response) {
                         if (response.responseText) {
-                            var block = false;
                             prepareMessage(response)
                         } else {
                             $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
@@ -993,45 +1046,30 @@
                             $('.toast-top-right.error-message.empty').hide(300)
                         }, 5000)
 
-                        errorRequest(interval, block)
+                        errorRequest()
                     }
                 });
-            })
+            }
 
-            $('#repeat-relevance-analyse').click(() => {
-                var interval = startProgressBar()
+            function repeatRelevance() {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('repeat.relevance.analysis') }}",
-                    data: {
-                        type: $('#check-type').val(),
-                        siteList: $('#siteList').val(),
-                        separator: $('#separator').val(),
-                        link: $('.form-control.link').val(),
-                        phrase: $('.form-control.phrase').val(),
-                        noIndex: $('#switchNoindex').is(':checked'),
-                        listWords: $('.form-control.listWords').val(),
-                        count: $('.custom-select.rounded-0.count').val(),
-                        region: $('.custom-select.rounded-0.region').val(),
-                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ignoredDomains: $('.form-control.ignoredDomains').val(),
-                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
-                    },
+                    data: getData(),
                     beforeSend: function () {
                         refreshAllRenderElements()
                         $('#full-analyse').prop("disabled", true);
                         $('#repeat-main-page-analyse').prop("disabled", true);
                         $('#repeat-relevance-analyse').prop("disabled", true);
+                        $("#progress-bar").show(300)
+                        getProgress()
                     },
                     success: function (response) {
-                        successRequest(response, interval)
+                        successRequest(response)
                     },
                     error: function (response) {
                         if (response.responseText) {
-                            var block = false
                             prepareMessage(response)
                         } else {
                             $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
@@ -1042,14 +1080,16 @@
                             $('.toast-top-right.error-message.empty').hide(300)
                         }, 5000)
 
-                        errorRequest(interval, block)
+                        errorRequest()
                     }
                 });
-            })
+            }
 
-            function successRequest(response, interval) {
+            // ----------------------------
+
+            function successRequest(response) {
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
-                stopProgressBar(interval)
+                stopProgressBar()
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
                 renderUnigramTable(response.unigramTable, response.ltp_count);
@@ -1061,8 +1101,8 @@
                 $("#repeat-relevance-analyse").prop("disabled", false);
             }
 
-            function errorRequest(interval) {
-                stopProgressBar(interval)
+            function errorRequest() {
+                stopProgressBar()
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
@@ -1102,32 +1142,23 @@
                     width: percent + '%'
                 })
                 bar.html(percent + '%');
+
+                if (percent < 40) {
+                    $('#progress-bar-state').html('Парсинг сайтов..')
+                } else {
+                    $('#progress-bar-state').html('Обработка полученных данных..')
+                }
             }
 
-            function stopProgressBar(interval) {
-                window.clearInterval(interval)
+            function stopProgressBar() {
+                $('#progress-bar-state').html('Подготовка данных..')
                 setProgressBarStyles(100)
                 setTimeout(() => {
                     $('.progress-bar').css({
-                        opacity: 0,
                         width: 0 + '%'
                     });
                     $("#progress-bar").hide(300)
                 }, 3000)
-
-            }
-
-            function startProgressBar() {
-                let percent = 0;
-                $('.progress-bar').css({
-                    opacity: 1
-                });
-
-                $("#progress-bar").show(300)
-                return setInterval(() => {
-                    percent += Math.random();
-                    setProgressBarStyles(percent.toFixed(2))
-                }, 1321)
             }
 
             function prepareMessage(response) {
@@ -1145,6 +1176,26 @@
                     $('.toast-message.error-message').html(message)
                 } else {
                     $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
+                }
+            }
+
+            function getData() {
+                return {
+                    type: $('#check-type').val(),
+                    hash: $('#hiddenHash').val(),
+                    siteList: $('#siteList').val(),
+                    separator: $('#separator').val(),
+                    link: $('.form-control.link').val(),
+                    phrase: $('.form-control.phrase').val(),
+                    noIndex: $('#switchNoindex').is(':checked'),
+                    listWords: $('.form-control.listWords').val(),
+                    count: $('.custom-select.rounded-0.count').val(),
+                    region: $('.custom-select.rounded-0.region').val(),
+                    hiddenText: $('#switchAltAndTitle').is(':checked'),
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    ignoredDomains: $('.form-control.ignoredDomains').val(),
+                    switchMyListWords: $('#switchMyListWords').is(':checked'),
+                    conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                 }
             }
         </script>

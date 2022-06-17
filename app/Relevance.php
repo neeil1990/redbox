@@ -6,12 +6,11 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Relevance
 {
-    public $separator = "\n\nseparator\n\n";
-
     public $competitorsTextAndLinksCloud;
 
     public $mainPageIsRelevance = false;
@@ -54,22 +53,27 @@ class Relevance
 
     public $countWordsInMyPage;
 
-    public $countNotIgnoredSites = 0;
-
     public $params;
 
     public $pages;
 
     public $sites;
 
+    public $countNotIgnoredSites = 0;
+
     public $recommendations = [];
+
+    public $phrase;
+
+    public $queue;
 
     /**
      * @param $link
      * @param $phrase
      * @param $separator
+     * @param bool $queue
      */
-    public function __construct($link, $phrase, $separator)
+    public function __construct($link, $phrase, $separator, bool $queue = false)
     {
         $this->pages = [];
         $this->domains = [];
@@ -81,6 +85,7 @@ class Relevance
         $this->competitorsTextAndLinks = '';
         $this->countSymbols = 0;
         $this->countWords = 0;
+        $this->queue = $queue;
 
         $this->maxWordLength = $separator;
         $this->phrase = $phrase;
@@ -156,41 +161,31 @@ class Relevance
     /**
      * @param $request
      * @param $userId
-     * @param $historyId
+     * @param int|boolean $historyId
      * @return void
      */
     public function analysis($request, $userId, $historyId = false)
     {
         $this->removeNoIndex($request);
-
+        RelevanceProgress::editProgress(20, $request);
         $this->getHiddenData($request);
-
         $this->separateLinksFromText();
-
         $this->removePartsOfSpeech($request);
-
+        RelevanceProgress::editProgress(50, $request);
         $this->removeListWords($request);
-
         $this->getTextFromCompetitors();
-
+        RelevanceProgress::editProgress(70, $request);
         $this->separateAllText();
-
         $this->preparePhrasesTable();
-
         $this->searchWordForms();
-
+        RelevanceProgress::editProgress(80, $request);
         $this->processingOfGeneralInformation();
-
         $this->prepareUnigramTable();
-
         $this->analyzeRecommendations();
-
         $this->prepareAnalysedSitesTable();
-
+        RelevanceProgress::editProgress(90, $request);
         $this->prepareClouds();
-
         $this->saveResults();
-
         $this->saveHistory($request, $userId, $historyId);
     }
 
@@ -240,10 +235,10 @@ class Relevance
     public function separateLinksFromText()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TestRelevance::clearHTMLFromLinks($this->mainPage['html']));
+        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(Relevance::clearHTMLFromLinks($this->mainPage['html']));
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
-            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TestRelevance::clearHTMLFromLinks($this->sites[$key]['html']));
+            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(Relevance::clearHTMLFromLinks($this->sites[$key]['html']));
         }
     }
 
@@ -1109,22 +1104,24 @@ class Relevance
      */
     public function saveResults()
     {
-        $saveObject = [];
-        //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
-        foreach ($this->sites as $key => $site) {
-            if (!array_key_exists('exp', $this->sites[$key])) {
-                unset($this->sites[$key]['html']);
-                unset($this->sites[$key]['linkText']);
-                unset($this->sites[$key]['hiddenText']);
-                $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
+        if (!$this->queue) {
+            $saveObject = [];
+            //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
+            foreach ($this->sites as $key => $site) {
+                if (!array_key_exists('exp', $this->sites[$key])) {
+                    unset($this->sites[$key]['html']);
+                    unset($this->sites[$key]['linkText']);
+                    unset($this->sites[$key]['hiddenText']);
+                    $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
 
-                $saveObject[$key] = $this->sites[$key];
+                    $saveObject[$key] = $this->sites[$key];
+                }
+
             }
 
+            $this->params['sites'] = json_encode($saveObject);
+            $this->params->save();
         }
-
-        $this->params['sites'] = json_encode($saveObject);
-        $this->params->save();
     }
 
     /**
@@ -1169,6 +1166,8 @@ class Relevance
                 $mainHistory->save();
 
                 $this->saveHistoryResult($id);
+
+                RelevanceProgress::editProgress(100, $request);
                 return;
             }
         }
@@ -1228,6 +1227,7 @@ class Relevance
      */
     public function analysisByPhrase($request)
     {
+        RelevanceProgress::editProgress(10, $request);
         $xml = new SimplifiedXmlFacade($request['region']);
         $xml->setQuery($request['phrase']);
         $xmlResponse = $xml->getXMLResponse();
@@ -1237,17 +1237,19 @@ class Relevance
             $xmlResponse,
             false
         );
+        RelevanceProgress::editProgress(15, $request);
 
         $this->parseSites($xmlResponse);
     }
 
     /**
-     * @param $siteList
+     * @param $request
      * @return void
      */
-    public function analysisByList($siteList)
+    public function analysisByList($request)
     {
-        $this->prepareDomains($siteList);
+        RelevanceProgress::editProgress(10, $request);
+        $this->prepareDomains($request['siteList']);
         $this->parseSites();
     }
 

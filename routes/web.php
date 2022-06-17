@@ -11,6 +11,7 @@
 |
 */
 
+use App\RelevanceProgress;
 use App\TelegramBot;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
@@ -182,6 +183,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/create-queue-test', 'TestRelevanceController@createQueue')->name('create.queue.testView');
     Route::post('/create-queue-test-post', 'TestRelevanceController@createTaskQueue')->name('create.queue.test.post');
     Route::get('/history-test', 'TestRelevanceController@history')->name('relevance.history.test');
+    Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
+    Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
+    Route::post('/end-relevance-progress-percent', 'RelevanceProgressController@endProgress')->name('end.relevance.progress');
 
     Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
     Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');

@@ -6,7 +6,6 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TestRelevance
@@ -178,6 +177,7 @@ class TestRelevance
      */
     public function analysisByPhrase($request)
     {
+        RelevanceProgress::editProgress(10, $request);
         $xml = new SimplifiedXmlFacade($request['region']);
         $xml->setQuery($request['phrase']);
         $xmlResponse = $xml->getXMLResponse();
@@ -187,17 +187,20 @@ class TestRelevance
             $xmlResponse,
             false
         );
+        RelevanceProgress::editProgress(15, $request);
 
         $this->parseSites($xmlResponse);
+        RelevanceProgress::editProgress(20, $request);
     }
 
     /**
-     * @param $siteList
+     * @param $request
      * @return void
      */
-    public function analysisByList($siteList)
+    public function analysisByList($request)
     {
-        $this->prepareDomains($siteList);
+        RelevanceProgress::editProgress(10, $request);
+        $this->prepareDomains($request['siteList']);
         $this->parseSites();
     }
 
@@ -210,35 +213,25 @@ class TestRelevance
     public function analysis($request, $userId, $historyId = false)
     {
         $this->removeNoIndex($request);
-
+        RelevanceProgress::editProgress(20, $request);
         $this->getHiddenData($request);
-
         $this->separateLinksFromText();
-
         $this->removePartsOfSpeech($request);
-
+        RelevanceProgress::editProgress(50, $request);
         $this->removeListWords($request);
-
         $this->getTextFromCompetitors();
-
+        RelevanceProgress::editProgress(70, $request);
         $this->separateAllText();
-
         $this->preparePhrasesTable();
-
         $this->searchWordForms();
-
+        RelevanceProgress::editProgress(80, $request);
         $this->processingOfGeneralInformation();
-
         $this->prepareUnigramTable();
-
         $this->analyzeRecommendations();
-
         $this->prepareAnalysedSitesTable();
-
+        RelevanceProgress::editProgress(90, $request);
         $this->prepareClouds();
-
 //        $this->saveResults();
-
         $this->saveHistory($request, $userId, $historyId);
     }
 
@@ -1218,6 +1211,8 @@ class TestRelevance
                 $mainHistory->save();
 
                 $this->saveHistoryResult($id);
+
+                RelevanceProgress::editProgress(100, $request);
                 return;
             }
         }

@@ -767,5 +767,9 @@
     "Clouds of site text from the top and landing page": "Облака текста сайтов из топа и посадочной страницы",
     "You can delete a word from the table if it has been worked out": "Вы можете удалить слово из таблицы, если оно было проработано",
     "The reanalysis task has been successfully added to the queue": "Задача на повторный анализ успешно добавлена в очередь",
-    "Standing in line for reanalysis": "Стоит в очереди на повторный анализ"
+    "Standing in line for reanalysis": "Стоит в очереди на повторный анализ",
+    "Average number of repetitions of competitors": "Среднее кол-во повторений у конкурентов",
+    "The number you have on the page": "Количество у вас на странице",
+    "Recommended range": "Рекомендуемый диапазон",
+    "Spam level": "Уровень спама"
 }

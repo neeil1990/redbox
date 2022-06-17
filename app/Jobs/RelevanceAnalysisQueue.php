@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Relevance;
 use App\RelevanceHistory;
 use App\TestRelevance;
 use Illuminate\Bus\Queueable;
@@ -48,20 +49,20 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function handle()
     {
         try {
-            $relevance = new TestRelevance($this->request['link'], $this->request['phrase'], $this->request['separator']);
+            $relevance = new Relevance($this->request['link'], $this->request['phrase'], $this->request['separator'], true);
             $relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
                 $relevance->analysisByPhrase($this->request);
 
             } elseif ($this->request['type'] == 'list') {
-                $relevance->analysisByList($this->request['siteList']);
+                $relevance->analysisByList($this->request);
             }
 
             $relevance->analysis($this->request, $this->userId, $this->historyId);
 
         } catch (\Exception $exception) {
-            // игнорируем ошибку: packets out of order
+            //  игнорируем ошибку: "packets out of order" и другие ошибки бд
             if (
                 strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
                 $exception->getLine() != 664

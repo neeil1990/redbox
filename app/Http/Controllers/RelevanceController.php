@@ -7,6 +7,7 @@ use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
+use App\RelevanceProgress;
 use App\TestRelevance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +44,7 @@ class RelevanceController extends Controller
      */
     public function analysis(Request $request): JsonResponse
     {
+        Log::debug('r', $request->all());
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
@@ -62,7 +64,7 @@ class RelevanceController extends Controller
             $relevance->analysisByPhrase($request->all());
 
         } elseif ($request['type'] == 'list') {
-            $relevance->analysisByList($request['siteList']);
+            $relevance->analysisByList($request->all());
         }
 
         $relevance->analysis($request->all(), Auth::id());
@@ -77,6 +79,7 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
+        RelevanceProgress::editProgress(10, $request);
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
         ];
@@ -102,6 +105,7 @@ class RelevanceController extends Controller
      */
     public function repeatMainPageAnalysis(Request $request): JsonResponse
     {
+        RelevanceProgress::editProgress(10, $request);
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
         ];
@@ -113,6 +117,7 @@ class RelevanceController extends Controller
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
         $relevance = new Relevance($request->input('link'), '', $request->input('separator'));
         $relevance->getMainPageHtml();
+        RelevanceProgress::editProgress(15, $request);
         $relevance->setSites($params->sites);
         $relevance->analysis($request->all(), Auth::id());
 
