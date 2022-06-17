@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
@@ -72,62 +73,12 @@ class MonitoringController extends Controller
 
         $engines->transform(function($item){
 
-            $positions = $item->positions()->get();
-
-            $item->middle_position = __('None');
-            $item->latest_position = __('None');
-            $item->top_1 = 0;
-            $item->top_3 = 0;
-            $item->top_5 = 0;
-            $item->top_10 = 0;
-            $item->top_20 = 0;
-            $item->top_50 = 0;
-            $item->top_100 = 0;
+            $positions = $item->positions()->whereNotNull('position')->get();
 
             if($positions->isNotEmpty()){
 
-                $item->middle_position = round($positions->sum('position') / $positions->count());
-                $item->latest_position = $positions->last()->created_at;
-
-                $last_positions = $positions->transform(function ($item){
-                    if(is_null($item->position))
-                        $item->position = 101;
-                    return $item;
-                })->sortByDesc('id')->unique('monitoring_keyword_id')->pluck('position');
-
-                $keywords = [];
-                foreach ($positions->sortByDesc('id') as $position){
-                    $keywords[$position->monitoring_keyword_id][] = $position;
-                }
-
-                $last_positions_pre = [];
-                foreach ($keywords as $keyword){
-
-                    if((isset($keyword[count($keyword) - 2]))){
-                        $last_positions_pre[] = $keyword[count($keyword) - 2]->position;
-                    }
-                }
-
-                $item->top_1 = $this->calculatePercentByPositions($last_positions, 1) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 1),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 1));
-
-                $item->top_3 = $this->calculatePercentByPositions($last_positions, 3) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 3),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 3));
-
-                $item->top_5 = $this->calculatePercentByPositions($last_positions, 5) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 5),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 5));
-
-                $item->top_10 = $this->calculatePercentByPositions($last_positions, 10) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 10),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 10));
-
-                $item->top_20 = $this->calculatePercentByPositions($last_positions, 20) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 20),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 20));
-
-                $item->top_50 = $this->calculatePercentByPositions($last_positions, 50) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 50),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 50));
-
-                $item->top_100 = $this->calculatePercentByPositions($last_positions, 100) . $this->differentTopPercent($this->calculatePercentByPositions($last_positions, 100),
-                    $this->calculatePercentByPositions(collect($last_positions_pre), 100));
+                $this->calculateTopPercent($positions, $item);
+                $item->latest_created = $positions->last()->created_at;
             }
 
             return $item;
@@ -136,36 +87,40 @@ class MonitoringController extends Controller
         return view('monitoring.partials._child_rows', compact('engines'));
     }
 
-    private function differentTopPercent($a, $b)
+    private function calculateTopPercent(Collection $positions, &$model)
     {
-        $total = $a - $b;
+        $percents = [
+            'top_1' => 1,
+            'top_3' => 3,
+            'top_5' => 5,
+            'top_10' => 10,
+            'top_20' => 20,
+            'top_50' => 50,
+            'top_100' => 100,
+        ];
 
-        if(!$total || !$b)
-            return '';
+        $last_positions = $positions->sortByDesc('id')->unique('monitoring_keyword_id');
 
-        if($total > 0){
-            $total = ' (+'. $total .')';
-        }else{
-            $total = ' ('. $total .')';
+        $pre_last_position = $positions->groupBy('monitoring_keyword_id')->transform(function($val, $i){
+            $count = $val->count() - 2;
+
+            if(isset($val[$count]))
+                return $val[$count];
+
+            return $val[$val->count() - 1];
+        });
+
+        foreach ($percents as $name => $percent){
+
+            $last = Helper::calculateTopPercentByPositions($last_positions->pluck('position'), $percent);
+            $pre_last = Helper::calculateTopPercentByPositions($pre_last_position->pluck('position'), $percent);
+            $model->$name = $last . Helper::differentTopPercent($last, $pre_last);
         }
 
-        return $total;
+        $model->middle_position = round($last_positions->sum('position') / $last_positions->count(), 2);
     }
 
-    private function calculatePercentByPositions(Collection $positions, int $desired)
-    {
-        if($positions->isEmpty())
-            return 0;
 
-        $itemsCount = $positions->count();
-        $desiredCount = $positions->filter(function ($val) use ($desired){
-            return $val <= $desired;
-        })->count();
-
-        $totalPercent = round(($desiredCount / $itemsCount) * 100, 2);
-
-        return $totalPercent;
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -244,11 +199,75 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
+        $navigations = $this->navigations();
+
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        return view('monitoring.show', compact('project'));
+        $region = $project->searchengines()->orderBy('id', 'asc')->first();
+
+        $region->load('location');
+
+        $position = $region->positions()->get();
+
+        $dates = $position->unique(function($item){
+            return $item->date;
+        })->pluck('date')->sortByDesc(null)
+            ->prepend('Query')
+            ->prepend('#')
+            ->values();
+
+        $groups = $position->groupBy('monitoring_keyword_id')
+            ->transform(function($item){
+
+                $unique = $item->sortByDesc('id')->unique(function($item){
+                    return $item->created_at->format('d.m.Y');
+                });
+
+                return $unique;
+        });
+
+        $table = [];
+        $length = $dates->count();
+        foreach ($groups as $id => $group){
+
+            $table[$id] = [];
+            for($i = 0; $i < $length; $i++){
+
+                if($i === 0)
+                    $table[$id][] = $id;
+                elseif($i === 1){
+                    $key = MonitoringKeyword::findOrFail($id);
+                    $table[$id][] = $key->query;
+                }
+                else {
+                    $model = $group->firstWhere('date', $dates[$i]);
+                    if($model)
+                        $table[$id][] = $model->position;
+                    else
+                        $table[$id][] = '-';
+                }
+            }
+        }
+
+        $table = collect($table)->prepend($dates);
+
+        return view('monitoring.show', compact('table', 'navigations', 'region'));
+    }
+
+    private function navigations()
+    {
+        $navigations = [
+            ['h3' => '150', 'p' => 'Проекты', 'icon' => 'fas fa-shopping-cart', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Мои конкуренты', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-success'],
+            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-warning'],
+            ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-danger'],
+            ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-comments', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'ion ion-stats-bars', 'href' => '/backlink', 'a' => 'More info', 'bg' => 'bg-success'],
+        ];
+
+        return $navigations;
     }
 
     /**

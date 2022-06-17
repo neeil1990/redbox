@@ -36,6 +36,8 @@
                     <table class="table table-striped table-sm">
                         <thead>
                         <tr>
+                            <th>ID</th>
+                            <th>ID REGION</th>
                             <th>Дата</th>
                             <th>Позиция</th>
                             <th></th>
@@ -44,6 +46,8 @@
                         <tbody>
                             @foreach($d['item'] as $position)
                             <tr>
+                                <td>{{$position['id']}}</td>
+                                <td>{{$position['engine_id']}}</td>
                                 <td>{{$position['created_at']}}</td>
                                 <td>{{$position['position']}}</td>
                                 <td>

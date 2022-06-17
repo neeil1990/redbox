@@ -3,74 +3,76 @@
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+
+        <style>
+            .table tr:first-child td {
+                font-weight: bold;
+            }
+        </style>
     @endslot
 
-    <div class="row">
-        <div class="col-lg-3 col-6">
-            <!-- small card -->
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{ $project->name }}</h3>
+    <h5 class="mb-2 mt-4">Navigations</h5>
 
-                    <p>{{ $project->url }}</p>
+    <div class="row">
+        @foreach($navigations as $navigation)
+        <div class="col-lg-2 col-6">
+            <div class="small-box {{ $navigation['bg'] }}">
+                <div class="inner">
+                    <h3>{{ $navigation['h3'] }}</h3>
+                    <p>{{ $navigation['p'] }}</p>
                 </div>
                 <div class="icon">
-                    <i class="ion ion-stats-bars"></i>
+                    <i class="{{ $navigation['icon'] }}"></i>
                 </div>
-                <a href="{{ route('monitoring.index') }}" class="small-box-footer">
-                    Перейти к проектам <i class="fas fa-arrow-circle-right"></i>
+                <a href="{{ $navigation['href'] }}" class="small-box-footer">
+                    {{ $navigation['a'] }} <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
+        @endforeach
     </div>
 
-    <div class="row mb-1">
-
-        <div class="col-md-6">
+    <div class="row">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Ваши запросы</h3>
+                    <h3 class="card-title">[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}</h3>
+                    <div class="card-tools">
 
-                    <div class="card-tools"></div>
+                    </div>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Запрос</th>
-                                <th>Страница</th>
-                                <th>Группа</th>
-                                <th>Цель</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
+                <!-- ./card-header -->
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
                         <tbody>
-                        @foreach($project->keywords as $keyword)
-                            <tr>
-                                <td><b>{{$keyword->id}}</b></td>
-                                <td><a href="{{ route('keywords.show', $keyword->id) }}">{{ $keyword->query }}</a></td>
-                                <td>{{ $keyword->page }}</td>
-                                <td>{{ $keyword->group->name }}</td>
-                                <td>{{ $keyword->target }}</td>
-                                <td>
-                                    {!! Form::open(['route' => ['keywords.update', $keyword->id], 'method' => 'PATCH']) !!}
-                                        {!! Form::submit('Обновить', ['class' => 'btn btn-block btn-success btn-xs']) !!}
-                                    {!! Form::close() !!}
-                                </td>
-                                <td>
-                                    <button type="button" data-id="{{$keyword->id}}" class="btn btn-block btn-info btn-xs adding-queue">Добавить в очередь</button>
-                                </td>
-                            </tr>
-                        @endforeach
+                            @foreach($table as $rows)
+                                <tr>
+                                    @foreach($rows as $col)
+                                    <td>{{$col}}</td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
+            <!-- /.card -->
         </div>
+    </div>
 
+    <h5 class="mb-2 mt-4">Testing</h5>
+
+    <div class="row">
+        @foreach($table as $key => $rows)
+            @if($key)
+                <div class="col-2">
+                    {!! Form::open(['route' => ['keywords.update', $rows[0]], 'method' => 'PATCH']) !!}
+                    {!! Form::submit('Обновить id: ' . $rows[0], ['class' => 'btn btn-block btn-success btn-xs']) !!}
+                    {!! Form::close() !!}
+                </div>
+            @endif
+        @endforeach
     </div>
 
     @slot('js')
