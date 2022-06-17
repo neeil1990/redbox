@@ -207,6 +207,8 @@ class MonitoringController extends Controller
 
         $region = $project->searchengines()->orderBy('id', 'asc')->first();
 
+        $region->load('location');
+
         $position = $region->positions()->get();
 
         $dates = $position->unique(function($item){
@@ -251,7 +253,7 @@ class MonitoringController extends Controller
 
         $table = collect($table)->prepend($dates);
 
-        return view('monitoring.show', compact('table', 'navigations'));
+        return view('monitoring.show', compact('table', 'navigations', 'region'));
     }
 
     private function navigations()
