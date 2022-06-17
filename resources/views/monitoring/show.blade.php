@@ -61,6 +61,20 @@
         </div>
     </div>
 
+    <h5 class="mb-2 mt-4">Testing</h5>
+
+    <div class="row">
+        @foreach($table as $key => $rows)
+            @if($key)
+                <div class="col-2">
+                    {!! Form::open(['route' => ['keywords.update', $rows[0]], 'method' => 'PATCH']) !!}
+                    {!! Form::submit('Обновить id: ' . $rows[0], ['class' => 'btn btn-block btn-success btn-xs']) !!}
+                    {!! Form::close() !!}
+                </div>
+            @endif
+        @endforeach
+    </div>
+
     @slot('js')
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
