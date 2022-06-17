@@ -199,11 +199,73 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
+        $navigations = $this->navigations();
+
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        return view('monitoring.show', compact('project'));
+        $region = $project->searchengines()->orderBy('id', 'asc')->first();
+
+        $position = $region->positions()->get();
+
+        $dates = $position->unique(function($item){
+            return $item->date;
+        })->pluck('date')->sortByDesc(null)
+            ->prepend('Query')
+            ->prepend('#')
+            ->values();
+
+        $groups = $position->groupBy('monitoring_keyword_id')
+            ->transform(function($item){
+
+                $unique = $item->sortByDesc('id')->unique(function($item){
+                    return $item->created_at->format('d.m.Y');
+                });
+
+                return $unique;
+        });
+
+        $table = [];
+        $length = $dates->count();
+        foreach ($groups as $id => $group){
+
+            $table[$id] = [];
+            for($i = 0; $i < $length; $i++){
+
+                if($i === 0)
+                    $table[$id][] = $id;
+                elseif($i === 1){
+                    $key = MonitoringKeyword::findOrFail($id);
+                    $table[$id][] = $key->query;
+                }
+                else {
+                    $model = $group->firstWhere('date', $dates[$i]);
+                    if($model)
+                        $table[$id][] = $model->position;
+                    else
+                        $table[$id][] = '-';
+                }
+            }
+        }
+
+        $table = collect($table)->prepend($dates);
+
+        return view('monitoring.show', compact('table', 'navigations'));
+    }
+
+    private function navigations()
+    {
+        $navigations = [
+            ['h3' => '150', 'p' => 'Проекты', 'icon' => 'fas fa-shopping-cart', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Мои конкуренты', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-success'],
+            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-warning'],
+            ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-danger'],
+            ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-comments', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'ion ion-stats-bars', 'href' => '/backlink', 'a' => 'More info', 'bg' => 'bg-success'],
+        ];
+
+        return $navigations;
     }
 
     /**

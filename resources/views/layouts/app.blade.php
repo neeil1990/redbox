@@ -215,10 +215,6 @@
                 }
             });
         }
-
-        let resp = $('#app > div > div > div.card-body > div:nth-child(2) > div:nth-child(2) > div')
-        resp.removeClass('col-md-6')
-        resp.addClass('col-md-12')
     });
 </script>
 @include('flash::message')
