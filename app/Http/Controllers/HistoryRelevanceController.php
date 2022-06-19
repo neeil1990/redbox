@@ -7,6 +7,7 @@ use App\ProjectRelevanceHistory;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
+use App\RelevanceTags;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,15 +21,11 @@ class HistoryRelevanceController extends Controller
      */
     public function index(): View
     {
-        $history = [];
+        $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
+        $config = RelevanceAnalysisConfig::first();
         $main = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
-        foreach ($main as $item) {
-            foreach ($item->stories as $story) {
-                $history[] = $story;
-            }
-        }
-
         $admin = false;
+
         foreach (Auth::user()->role as $role) {
             if ($role == '1' || $role == '3') {
                 $admin = true;
@@ -36,13 +33,11 @@ class HistoryRelevanceController extends Controller
             }
         }
 
-        $config = RelevanceAnalysisConfig::first();
-
         return view('relevance-analysis.history', [
             'main' => $main,
-            'history' => $history,
             'admin' => $admin,
-            'config' => $config
+            'config' => $config,
+            'tags' => $tags
         ]);
     }
 

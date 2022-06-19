@@ -15,6 +15,108 @@
         </div>
     </div>
 
+    <div id="toast-container" class="toast-top-right error-message" style="display:none;">
+        <div class="toast toast-error" aria-live="polite">
+            <div class="toast-message" id="message-error-info"></div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Мои метки</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        Ваши созданные метки:
+                        <ul class="mt-3" id="tags-list">
+                            @foreach($tags as $tag)
+                                <li>
+                                    <div class="btn-group mb-2">
+                                        <input type="color" class="tag-color-input" data-target="{{ $tag->id }}"
+                                               value="{{ $tag->color }}" style="height: 37px">
+                                        <input type="text" class="form form-control w-100 tag-name-input d-inline"
+                                               style="display: inline !important;"
+                                               data-target="{{ $tag->id }}" value="{{ $tag->name }}">
+                                        <button type="button" class="btn btn-secondary col-2 remove-tag"
+                                                data-target="{{ $tag->id }}">
+                                            <i class="fa fa-trash text-white"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div class="border-top">
+                        <h5 class="mt-3">Добавить новую метку</h5>
+                        <div class="mb-3">
+                            <label for="tag-name">Название метки</label>
+                            <input type="text" id="tag-name" name="tag-name" class="form form-control">
+                        </div>
+                        <div class="mt-3 mb-3">
+                            <label for="tag-color">Задать цвет</label>
+                            <input type="color" name="tag-color" id="tag-color">
+                        </div>
+                        <button class="btn btn-secondary mt-3" id="create-tag">
+                            Создать метку
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal"
+                            data-target="#create-link"
+                            data-dismiss="modal">
+                        Добавить метку к проекту
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="create-link" tabindex="-1" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Добавить метку к проекту </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="project-id">Ваши проекты</label>
+                    <select name="project-id" id="project-id" class="form form-control mb-3">
+                        @foreach($main as $story)
+                            <option value="{{ $story->id }}">{{ $story->name }}</option>
+                        @endforeach
+                    </select>
+
+                    <label for="tag-id">Ваши метки </label>
+                    <select name="tag-id" id="tag-id" class="form form-control">
+                        @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}" id="option-tag-{{$tag->id}}">
+                                {{ $tag->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary create-new-link">
+                        {{ __('Save') }}
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">
+                        {{ __('Close') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <div class="card-header d-flex p-0">
@@ -41,12 +143,20 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <h3>{{ __('History') }}</h3>
+                    <div class="d-flex justify-content-between mb-3">
+                        <h3>{{ __('History') }}</h3>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal"
+                                    data-target="#exampleModal">
+                                Управление метками
+                            </button>
+                        </div>
+                    </div>
                     <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Group') }}</th>
+                            <th>{{ __('Tags') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th>{{ __('Last check') }}</th>
                             <th>{{ __('Total score') }}</th>
@@ -61,11 +171,16 @@
                                         {{ $item->name }}
                                     </a>
                                 </td>
-                                <td data-order="{{ $item->group_name }}">
-                                    <input type="text" class="form form-control group-name-input"
-                                           value="{{ $item->group_name }}"
-                                           name="group_name"
-                                           data-target="{{ $item->id }}">
+                                <td id="project-{{ $item->id }}">
+                                    @foreach($item->relevanceTags as $tag)
+                                        <div style="color: {{ $tag->color }}">{{ $tag->name }}
+                                            <i class="fa fa-trash remove-project-relevance-link"
+                                               style="opacity: 0.5; cursor: pointer"
+                                               data-tag="{{ $tag->id }}"
+                                               data-history="{{ $item->id }}">
+                                            </i>
+                                        </div>
+                                    @endforeach
                                 </td>
                                 <td class="col-2">{{ $item->count_sites }}</td>
                                 <td>{{ $item->last_check }}</td>
@@ -409,8 +524,6 @@
             </div>
         </div>
     </div>
-
-
     @slot('js')
         <script>
             $('input#switchMyListWords').click(function () {
@@ -545,7 +658,6 @@
                         return "{{ __('Cherkessk') }}";
                     case '16' :
                         return "{{ __('Yaroslavl') }}";
-
                 }
             }
         </script>
@@ -557,5 +669,192 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
+        <script>
+            setInterval(() => {
+                refreshMethods()
+            }, 1000)
+
+            $('.create-new-link').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('create.link.project.with.tag') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        projectId: $('#project-id').val(),
+                        tagId: $('#tag-id').val()
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            $('#project-' + response.project.id).append(
+                                '<div style="color: ' + response.tag.color + '">' + response.tag.name + '' +
+                                ' <i class="fa fa-trash remove-project-relevance-link" style="opacity: 0.5; cursor: pointer"' +
+                                ' data-tag="' + response.tag.id + '" data-history="' + response.project.id + '"></i>' +
+                                '</div>'
+                            )
+                            getSuccessMessage(response.message)
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message)
+                        }
+                    },
+                });
+            })
+
+            function refreshMethods() {
+                $('#create-tag').unbind().on('click', function () {
+                    if ($('#tag-name').val() !== '') {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('store.relevance.tag') }}",
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                name: $('#tag-name').val(),
+                                color: $('#tag-color').val()
+                            },
+                            success: function (response) {
+                                if (response.code === 201) {
+                                    $('#tags-list').append(
+                                        '<li data-target="' + response.tag.id + '"> ' +
+                                        '   <div class="btn-group mb-2"> ' +
+                                        '<input type="color" class="tag-color-input" data-target="' + response.tag.id + '" value="' + response.tag.color + '" style="height: 37px">' +
+                                        '       <input type="text" class="form form-control w-100 tag-name-input d-inline" style="display: inline !important;" ' +
+                                        '       data-target="' + response.tag.id + '" value="' + response.tag.name + '">' +
+                                        '<button type="button" class="btn btn-secondary col-2 remove-tag" data-target="' + response.tag.id + '"> ' +
+                                        '       <i class="fa fa-trash text-white"></i></button> ' +
+                                        '   </div> ' +
+                                        '</li>'
+                                    )
+                                    getSuccessMessage('Метка успешно создана')
+
+
+                                    $('#tag-id').append(
+                                        '<option value="' + response.tag.id + '" id="option-tag-' + response.tag.id + '">' + response.tag.name + '</option>'
+                                    )
+                                } else if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                }
+                            },
+                        });
+                    }
+                })
+
+                $('.remove-tag').unbind().on('click', function () {
+                    let ojb = $(this)
+                    let id = $(this).attr('data-target')
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('destroy.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target')
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage('Метка успешно удалена')
+                                ojb.parent().parent().remove()
+                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
+                                    $(this).parent().remove()
+                                })
+
+                                $('#option-tag-' + id).remove()
+                            }
+                        },
+                    });
+                })
+
+                $('.tag-name-input').unbind().on('change', function () {
+                    var prev = this.defaultValue;
+                    var current = $(this).val();
+
+                    let id = $(this).attr('data-target')
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target'),
+                            name: $(this).val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
+                                    let oldHtml = $(this).parent().html()
+                                    let newHtml = oldHtml.replace(prev, current)
+                                    $(this).parent().html(newHtml)
+                                })
+                            }
+                        },
+                    });
+                    this.defaultValue = current
+                })
+
+                $('.tag-color-input').unbind().on('change', function () {
+                    let id = $(this).attr('data-target')
+                    let color = $(this).val()
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target'),
+                            color: $(this).val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
+                                    $(this).parent().css('color', color)
+                                })
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+
+                $('.remove-project-relevance-link').unbind().on('click', function () {
+                    let elem = $(this)
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('destroy.link.project.with.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-tag'),
+                            projectId: $(this).attr('data-history')
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                elem.parent().remove()
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+            }
+
+            function getSuccessMessage(message) {
+                $('.toast-top-right.success-message').show(300)
+                $('#message-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.success-message').hide(300)
+                }, 3000)
+            }
+
+            function getErrorMessage(message) {
+                $('.toast-top-right.error-message').show(300)
+                $('#message-error-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.error-message').hide(300)
+                }, 3000)
+            }
+        </script>
     @endslot
 @endcomponent

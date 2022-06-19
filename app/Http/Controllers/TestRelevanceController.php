@@ -6,6 +6,7 @@ use App\ProjectRelevanceHistory;
 use App\Queue;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceProgress;
+use App\RelevanceTags;
 use App\TestRelevance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -106,15 +107,11 @@ class TestRelevanceController extends Controller
      */
     public function history(): View
     {
-        $history = [];
+        $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
+        $config = RelevanceAnalysisConfig::first();
         $main = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
-        foreach ($main as $item) {
-            foreach ($item->stories as $story) {
-                $history[] = $story;
-            }
-        }
-
         $admin = false;
+
         foreach (Auth::user()->role as $role) {
             if ($role == '1' || $role == '3') {
                 $admin = true;
@@ -122,13 +119,11 @@ class TestRelevanceController extends Controller
             }
         }
 
-        $config = RelevanceAnalysisConfig::first();
-
         return view('relevance-analysis.test.history', [
             'main' => $main,
-            'history' => $history,
             'admin' => $admin,
-            'config' => $config
+            'config' => $config,
+            'tags' => $tags
         ]);
     }
 }

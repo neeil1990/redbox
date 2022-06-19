@@ -186,6 +186,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
     Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
     Route::post('/end-relevance-progress-percent', 'RelevanceProgressController@endProgress')->name('end.relevance.progress');
+    Route::post('/create-link-project-with-tag', 'ProjectRelevanceHistoryTagsController@store')->name('create.link.project.with.tag');
+    Route::post('/destroy-link-project-with-tag', 'ProjectRelevanceHistoryTagsController@destroy')->name('destroy.link.project.with.tag');
 
     Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
     Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
@@ -205,6 +207,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
+    Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
+    Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
+    Route::post('/edit-tag', 'RelevanceTagsController@edit')->name('edit.relevance.tag');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
