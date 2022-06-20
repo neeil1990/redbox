@@ -28,6 +28,11 @@
             .table tr.body td:nth-child(4) {
                 font-size: 12px;
             }
+
+            .bg-a673ef {
+                background-color: #a673ef!important;
+                color: #FFF;
+            }
         </style>
     @endslot
 

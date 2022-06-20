@@ -288,12 +288,12 @@ class MonitoringController extends Controller
         $count = $user->monitoringProjects()->count();
 
         $navigations = [
-            ['h3' => $count, 'p' => 'Проекты', 'icon' => 'fas fa-shopping-cart', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Мои конкуренты', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'bg' => 'bg-success'],
+            ['h3' => $count, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Мои конкуренты', 'icon' => 'fas fa-user-secret', 'href' => '#', 'bg' => 'bg-success'],
             ['h3' => '150', 'p' => 'Анализ ТОП-100', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
-            ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'bg' => 'bg-danger'],
-            ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-comments', 'href' => '#', 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'ion ion-stats-bars', 'href' => route('backlink'), 'bg' => 'bg-success'],
+            ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
+            ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-a673ef'],
         ];
 
         return $navigations;
