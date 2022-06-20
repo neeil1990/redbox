@@ -8,6 +8,7 @@ use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
+use App\MonitoringProject;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -199,11 +200,11 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
-        $navigations = $this->navigations();
-
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
+
+        $navigations = $this->navigations();
 
         $region = $project->searchengines()->orderBy('id', 'asc')->first();
 
@@ -214,7 +215,12 @@ class MonitoringController extends Controller
         $dates = $position->unique(function($item){
             return $item->date;
         })->pluck('date')->sortByDesc(null)
-            ->prepend('Query')
+            ->prepend(__('Target'))
+            ->prepend(__('Group'))
+            ->prepend(__('URL'))
+            ->prepend(__('Query'))
+            ->prepend(__(''))
+            ->prepend('ID')
             ->prepend('#')
             ->values();
 
@@ -235,18 +241,36 @@ class MonitoringController extends Controller
             $table[$id] = [];
             for($i = 0; $i < $length; $i++){
 
-                if($i === 0)
-                    $table[$id][] = $id;
-                elseif($i === 1){
-                    $key = MonitoringKeyword::findOrFail($id);
-                    $table[$id][] = $key->query;
-                }
-                else {
-                    $model = $group->firstWhere('date', $dates[$i]);
-                    if($model)
-                        $table[$id][] = $model->position;
-                    else
-                        $table[$id][] = '-';
+                $key = MonitoringKeyword::findOrFail($id);
+
+                switch ($i) {
+                    case 0:
+                        $table[$id][] = '<input type="checkbox" value="'. $id .'">';
+                        break;
+                    case 1:
+                        $table[$id][] = $id;
+                        break;
+                    case 2:
+                        $table[$id][] = '<a class="btn btn-success btn-sm mr-1" href="#"><i class="fas fa-pen"></i></a><a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i></a>';
+                        break;
+                    case 3:
+                        $table[$id][] = $key->query . ' <a href="'. $key->page .'" target="_blank" title="Целевой URL: '. $key->page .'"><i class="fas fa-link"></i></a>';
+                        break;
+                    case 4:
+                        $table[$id][] = '<a href="#" data-toggle="tooltip" title="url: url"><i class="fas fa-link"></i></a> <span class="right badge badge-danger">15</span>';
+                        break;
+                    case 5:
+                        $table[$id][] = $key->group->name;
+                        break;
+                    case 6:
+                        $table[$id][] = $key->target;
+                        break;
+                    default:
+                        $model = $group->firstWhere('date', $dates[$i]);
+                        if($model)
+                            $table[$id][] = $model->position;
+                        else
+                            $table[$id][] = '-';
                 }
             }
         }
@@ -258,13 +282,18 @@ class MonitoringController extends Controller
 
     private function navigations()
     {
+        /** @var User $user */
+        $user = $this->user;
+
+        $count = $user->monitoringProjects()->count();
+
         $navigations = [
-            ['h3' => '150', 'p' => 'Проекты', 'icon' => 'fas fa-shopping-cart', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Мои конкуренты', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-success'],
-            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-warning'],
-            ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-danger'],
-            ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-comments', 'href' => '#', 'a' => 'More info', 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'ion ion-stats-bars', 'href' => '/backlink', 'a' => 'More info', 'bg' => 'bg-success'],
+            ['h3' => $count, 'p' => 'Проекты', 'icon' => 'fas fa-shopping-cart', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Мои конкуренты', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'bg' => 'bg-success'],
+            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
+            ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'ion ion-stats-bars', 'href' => '#', 'bg' => 'bg-danger'],
+            ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-comments', 'href' => '#', 'bg' => 'bg-info'],
+            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'ion ion-stats-bars', 'href' => route('backlink'), 'bg' => 'bg-success'],
         ];
 
         return $navigations;

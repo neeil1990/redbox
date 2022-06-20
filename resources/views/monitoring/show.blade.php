@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Monitoring')])
+@component('component.card', ['title' => __('Monitoring position')])
 
     @slot('css')
         <!-- Toastr -->
@@ -8,15 +8,33 @@
             .table tr:first-child td {
                 font-weight: bold;
             }
+
+            .table tr td {
+                width: 80px;
+            }
+            .table tr td:nth-child(1) {
+                width: 40px;
+                text-align: center;
+            }
+            .table tr td:nth-child(2) {
+                width: 40px;
+            }
+            .table tr td:nth-child(3) {
+                width: 100px;
+            }
+            .table tr td:nth-child(4) {
+                width: 230px;
+            }
+            .table tr.body td:nth-child(4) {
+                font-size: 12px;
+            }
         </style>
     @endslot
-
-    <h5 class="mb-2 mt-4">Navigations</h5>
 
     <div class="row">
         @foreach($navigations as $navigation)
         <div class="col-lg-2 col-6">
-            <div class="small-box {{ $navigation['bg'] }}">
+            <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}">
                 <div class="inner">
                     <h3>{{ $navigation['h3'] }}</h3>
                     <p>{{ $navigation['p'] }}</p>
@@ -24,10 +42,7 @@
                 <div class="icon">
                     <i class="{{ $navigation['icon'] }}"></i>
                 </div>
-                <a href="{{ $navigation['href'] }}" class="small-box-footer">
-                    {{ $navigation['a'] }} <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
+            </a>
         </div>
         @endforeach
     </div>
@@ -43,12 +58,12 @@
                 </div>
                 <!-- ./card-header -->
                 <div class="card-body">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-sm table-bordered table-hover" style="width: auto">
                         <tbody>
-                            @foreach($table as $rows)
-                                <tr>
+                            @foreach($table as $i => $rows)
+                                <tr class="{{($i) ? 'body' : 'head'}}">
                                     @foreach($rows as $col)
-                                    <td>{{$col}}</td>
+                                    <td>{!! $col !!}</td>
                                     @endforeach
                                 </tr>
                             @endforeach
@@ -67,8 +82,8 @@
         @foreach($table as $key => $rows)
             @if($key)
                 <div class="col-2">
-                    {!! Form::open(['route' => ['keywords.update', $rows[0]], 'method' => 'PATCH']) !!}
-                    {!! Form::submit('Обновить id: ' . $rows[0], ['class' => 'btn btn-block btn-success btn-xs']) !!}
+                    {!! Form::open(['route' => ['keywords.update', $rows[1]], 'method' => 'PATCH']) !!}
+                    {!! Form::submit('Обновить id: ' . $rows[1], ['class' => 'btn btn-block btn-success btn-xs']) !!}
                     {!! Form::close() !!}
                 </div>
             @endif

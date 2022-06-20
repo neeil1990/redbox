@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Monitoring')])
+@component('component.card', ['title' => __('Monitoring position')])
 
     @slot('css')
         <!-- Toastr -->
