@@ -9,29 +9,8 @@
                 font-weight: bold;
             }
 
-            .table tr td {
-                width: 80px;
-            }
-            .table tr td:nth-child(1) {
-                width: 40px;
-                text-align: center;
-            }
-            .table tr td:nth-child(2) {
-                width: 40px;
-            }
             .table tr td:nth-child(3) {
-                width: 100px;
-            }
-            .table tr td:nth-child(4) {
-                width: 230px;
-            }
-            .table tr.body td:nth-child(4) {
-                font-size: 12px;
-            }
-
-            .bg-a673ef {
-                background-color: #a673ef!important;
-                color: #FFF;
+               text-align: left;
             }
         </style>
     @endslot
@@ -63,7 +42,7 @@
                 </div>
                 <!-- ./card-header -->
                 <div class="card-body">
-                    <table class="table table-sm table-bordered table-hover" style="width: auto">
+                    <table class="table table-responsive table-bordered table-hover text-center">
                         <tbody>
                             @foreach($table as $i => $rows)
                                 <tr class="{{($i) ? 'body' : 'head'}}">
@@ -81,7 +60,7 @@
         </div>
     </div>
 
-    <h5 class="mb-2 mt-4">Testing</h5>
+    {{--<h5 class="mb-2 mt-4">Testing</h5>
 
     <div class="row">
         @foreach($table as $key => $rows)
@@ -93,7 +72,7 @@
                 </div>
             @endif
         @endforeach
-    </div>
+    </div>--}}
 
     @slot('js')
         <!-- Toastr -->

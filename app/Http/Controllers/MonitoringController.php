@@ -220,7 +220,6 @@ class MonitoringController extends Controller
             ->prepend(__('URL'))
             ->prepend(__('Query'))
             ->prepend(__(''))
-            ->prepend('ID')
             ->prepend('#')
             ->values();
 
@@ -245,25 +244,22 @@ class MonitoringController extends Controller
 
                 switch ($i) {
                     case 0:
-                        $table[$id][] = '<input type="checkbox" value="'. $id .'">';
+                        $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
                         break;
                     case 1:
-                        $table[$id][] = $id;
+                        $table[$id][] = view('monitoring.partials.show.btn');
                         break;
                     case 2:
-                        $table[$id][] = '<a class="btn btn-success btn-sm mr-1" href="#"><i class="fas fa-pen"></i></a><a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i></a>';
+                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $key]);
                         break;
                     case 3:
-                        $table[$id][] = $key->query . ' <a href="'. $key->page .'" target="_blank" title="Целевой URL: '. $key->page .'"><i class="fas fa-link"></i></a>';
+                        $table[$id][] = view('monitoring.partials.show.url');
                         break;
                     case 4:
-                        $table[$id][] = '<a href="#" data-toggle="tooltip" title="url: url"><i class="fas fa-link"></i></a> <span class="right badge badge-danger">15</span>';
+                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $key->group]);
                         break;
                     case 5:
-                        $table[$id][] = $key->group->name;
-                        break;
-                    case 6:
-                        $table[$id][] = $key->target;
+                        $table[$id][] = view('monitoring.partials.show.target', ['key' => $key]);
                         break;
                     default:
                         $model = $group->firstWhere('date', $dates[$i]);
@@ -293,7 +289,7 @@ class MonitoringController extends Controller
             ['h3' => '150', 'p' => 'Анализ ТОП-100', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
             ['h3' => '150', 'p' => 'План продвижения', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
             ['h3' => '150', 'p' => 'Аудит сайта', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-a673ef'],
+            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
         ];
 
         return $navigations;
