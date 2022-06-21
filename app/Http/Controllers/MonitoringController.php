@@ -221,6 +221,7 @@ class MonitoringController extends Controller
             ->prepend(__('Query'))
             ->prepend(__(''))
             ->prepend('#')
+            ->prepend('ID')
             ->values();
 
         $groups = $position->groupBy('monitoring_keyword_id')
@@ -244,21 +245,24 @@ class MonitoringController extends Controller
 
                 switch ($i) {
                     case 0:
-                        $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
+                        $table[$id][] = $id;
                         break;
                     case 1:
-                        $table[$id][] = view('monitoring.partials.show.btn');
+                        $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
                         break;
                     case 2:
-                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $key]);
+                        $table[$id][] = view('monitoring.partials.show.btn');
                         break;
                     case 3:
-                        $table[$id][] = view('monitoring.partials.show.url');
+                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $key]);
                         break;
                     case 4:
-                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $key->group]);
+                        $table[$id][] = view('monitoring.partials.show.url');
                         break;
                     case 5:
+                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $key->group]);
+                        break;
+                    case 6:
                         $table[$id][] = view('monitoring.partials.show.target', ['key' => $key]);
                         break;
                     default:
