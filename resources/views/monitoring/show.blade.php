@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Monitoring')])
+@component('component.card', ['title' => __('Monitoring position')])
 
     @slot('css')
         <!-- Toastr -->
@@ -8,15 +8,17 @@
             .table tr:first-child td {
                 font-weight: bold;
             }
+
+            .table tr td:nth-child(4) {
+               text-align: left;
+            }
         </style>
     @endslot
-
-    <h5 class="mb-2 mt-4">Navigations</h5>
 
     <div class="row">
         @foreach($navigations as $navigation)
         <div class="col-lg-2 col-6">
-            <div class="small-box {{ $navigation['bg'] }}">
+            <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}">
                 <div class="inner">
                     <h3>{{ $navigation['h3'] }}</h3>
                     <p>{{ $navigation['p'] }}</p>
@@ -24,10 +26,7 @@
                 <div class="icon">
                     <i class="{{ $navigation['icon'] }}"></i>
                 </div>
-                <a href="{{ $navigation['href'] }}" class="small-box-footer">
-                    {{ $navigation['a'] }} <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
+            </a>
         </div>
         @endforeach
     </div>
@@ -43,12 +42,12 @@
                 </div>
                 <!-- ./card-header -->
                 <div class="card-body">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-responsive table-bordered table-hover text-center">
                         <tbody>
-                            @foreach($table as $rows)
-                                <tr>
+                            @foreach($table as $i => $rows)
+                                <tr class="{{($i) ? 'body' : 'head'}}">
                                     @foreach($rows as $col)
-                                    <td>{{$col}}</td>
+                                    <td>{!! $col !!}</td>
                                     @endforeach
                                 </tr>
                             @endforeach

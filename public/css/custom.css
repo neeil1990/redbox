@@ -35,6 +35,16 @@ img.img-flag {
     vertical-align: sub;
 }
 
+.bg-purple-light {
+    background-color: #a673ef!important;
+}
+.bg-purple-light, .bg-purple-light>a {
+    color: #fff!important;
+}
+a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, button.bg-purple-light:hover {
+    background-color: #605ca8!important;
+}
+
 @media (max-width: 768px) {
     .login-box {
         width: 360px;
