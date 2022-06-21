@@ -7,6 +7,13 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            #tab_1 > div.d-flex.flex-column > div:nth-child(3) > button.btn.btn-secondary.col-2 > span > span > span,
+            #tab_1 > div.d-flex.flex-column > div:nth-child(2) > button.btn.btn-secondary.col-2 > span > span > span,
+            #tab_1 > div.d-flex.flex-column > div:nth-child(1) > button.btn.btn-secondary.col-2 > span > span > span {
+                width: 400px;
+            }
+        </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
@@ -247,44 +254,44 @@
                                 {{ __('Full analysis') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content">
-                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
-                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
-                        </span>
-                    </span>
-                </span>
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span class="ui_tooltip __right">
+                                        <span class="ui_tooltip_content">
+                                            {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
+                                            {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                                        </span>
+                                    </span>
+                                </span>
                             </button>
                         </div>
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse">
+                            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse" disabled>
                                 {{ __('Repeated analysis of competitor sites') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span class="ui_tooltip_content">
-                            {{ __('Updating the content of competitors that was received as a result of the last request') }}
-                        </span>
-                    </span>
-                </span>
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span class="ui_tooltip __right">
+                                        <span class="ui_tooltip_content">
+                                            {{ __('Updating the content of competitors that was received as a result of the last request') }}
+                                        </span>
+                                    </span>
+                                </span>
                             </button>
                         </div>
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button class="btn btn-secondary" id="repeat-main-page-analyse">
+                            <button class="btn btn-secondary" id="repeat-main-page-analyse" disabled>
                                 {{ __('Repeated analysis of the landing page') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle"></i>
-                    <span class="ui_tooltip __right">
-                        <span
-                            class="ui_tooltip_content">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
-                    </span>
-                </span>
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span class="ui_tooltip __right">
+                                        <span
+                                            class="ui_tooltip_content">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
+                                    </span>
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -888,8 +895,46 @@
                 }
             })
 
+            window.onbeforeunload = function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('remove.page.history') }}",
+                    data: {
+                        pageHash: window.session,
+                    },
+                });
+            };
         </script>
         <script>
+            String.prototype.shuffle = function () {
+                var a = this.split(""),
+                    n = a.length;
+
+                for (var i = n - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = a[i];
+                    a[i] = a[j];
+                    a[j] = tmp;
+                }
+                return a.join("").replaceAll(" ", "");
+            }
+
+            window.session = String(new Date()).shuffle();
+            localStorage.setItem("session", window.session);
+
+            var onStorage = function (e) {
+                if (e.key === 'session' && e.newValue !== window.session)
+                    localStorage.setItem("multitab", window.session);
+                if (e.key === "multitab" && e.newValue && e.newValue !== window.session) {
+                    window.removeEventListener("storage", onStorage);
+                    localStorage.setItem("session", localStorage.getItem("multitab"));
+                    localStorage.removeItem("multitab");
+                    // alert("Новая вкладка");
+                }
+            };
+            window.addEventListener('storage', onStorage);
+
             var generatedTfIdf = false
             var generatedText = false
             var generatedCompetitorCoverage = false
@@ -905,7 +950,6 @@
                         hash: $('#hiddenHash').val()
                     },
                     success: function () {
-                        console.log('Процесс завершён: ' + $('#hiddenHash').val())
                         $('#hiddenHash').val('empty')
                         clearInterval(progressInterval)
                     },
@@ -999,7 +1043,7 @@
                             });
 
                             if (message === '') {
-                                message = 'Произошла непредвиденная ошибка, обратитесь к администратору'
+                                message = "{{ __('An error has occurred, repeat the request.') }}"
                             }
 
                             $('.toast-message.error-message').html(message)
@@ -1181,6 +1225,7 @@
 
             function getData() {
                 return {
+                    pageHash: window.session,
                     type: $('#check-type').val(),
                     hash: $('#hiddenHash').val(),
                     siteList: $('#siteList').val(),

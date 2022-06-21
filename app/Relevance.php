@@ -67,13 +67,13 @@ class Relevance
 
     public $queue;
 
+    public $request;
+
     /**
-     * @param $link
-     * @param $phrase
-     * @param $separator
+     * @param $request
      * @param bool $queue
      */
-    public function __construct($link, $phrase, $separator, bool $queue = false)
+    public function __construct($request, bool $queue = false)
     {
         $this->pages = [];
         $this->domains = [];
@@ -86,12 +86,26 @@ class Relevance
         $this->countSymbols = 0;
         $this->countWords = 0;
         $this->queue = $queue;
+        $this->request = $request;
 
-        $this->maxWordLength = $separator;
-        $this->phrase = $phrase;
+        $this->maxWordLength = $request['separator'];
+        $this->phrase = $request['phrase'] ?? '';
 
-        $this->params = RelevanceAnalyseResults::firstOrNew(['user_id' => Auth::id()]);
-        $this->params['main_page_link'] = $link;
+
+        if ($queue) {
+            $params = [
+                'user_id' => Auth::id(),
+            ];
+        } else {
+            $params = [
+                'user_id' => Auth::id(),
+                'page_hash' => $request['pageHash']
+            ];
+        }
+
+        $this->params = RelevanceAnalyseResults::firstOrNew($params);
+
+        $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
     }
@@ -159,34 +173,33 @@ class Relevance
     }
 
     /**
-     * @param $request
      * @param $userId
      * @param int|boolean $historyId
      * @return void
      */
-    public function analysis($request, $userId, $historyId = false)
+    public function analysis($userId, $historyId = false)
     {
-        $this->removeNoIndex($request);
-        RelevanceProgress::editProgress(20, $request);
-        $this->getHiddenData($request);
+        $this->removeNoIndex();
+        RelevanceProgress::editProgress(20, $this->request);
+        $this->getHiddenData();
         $this->separateLinksFromText();
-        $this->removePartsOfSpeech($request);
-        RelevanceProgress::editProgress(50, $request);
-        $this->removeListWords($request);
+        $this->removePartsOfSpeech();
+        RelevanceProgress::editProgress(50, $this->request);
+        $this->removeListWords();
         $this->getTextFromCompetitors();
-        RelevanceProgress::editProgress(70, $request);
+        RelevanceProgress::editProgress(70, $this->request);
         $this->separateAllText();
         $this->preparePhrasesTable();
         $this->searchWordForms();
-        RelevanceProgress::editProgress(80, $request);
+        RelevanceProgress::editProgress(80, $this->request);
         $this->processingOfGeneralInformation();
         $this->prepareUnigramTable();
         $this->analyzeRecommendations();
         $this->prepareAnalysedSitesTable();
-        RelevanceProgress::editProgress(90, $request);
+        RelevanceProgress::editProgress(90, $this->request);
         $this->prepareClouds();
         $this->saveResults();
-        $this->saveHistory($request, $userId, $historyId);
+        $this->saveHistory($userId, $historyId);
     }
 
     /**
@@ -215,12 +228,11 @@ class Relevance
 
     /**
      * Удалить текст, который помечен <noindex>
-     * @param $request
      * @return void
      */
-    public function removeNoIndex($request)
+    public function removeNoIndex()
     {
-        if ($request['noIndex'] == 'false') {
+        if ($this->request['noIndex'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
@@ -243,12 +255,11 @@ class Relevance
     }
 
     /**
-     * @param $request
      * @return void
      */
-    public function getHiddenData($request)
+    public function getHiddenData()
     {
-        if ($request['hiddenText'] == 'true') {
+        if ($this->request['hiddenText'] == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['hiddenText'] = Relevance::getHiddenText($this->sites[$key]['html']);
@@ -490,12 +501,11 @@ class Relevance
 
     /**
      * Удаляем союзы, предлоги, местоимения
-     * @param $request
      * @return void
      */
-    public function removePartsOfSpeech($request)
+    public function removePartsOfSpeech()
     {
-        if ($request['conjunctionsPrepositionsPronouns'] == 'false') {
+        if ($this->request['conjunctionsPrepositionsPronouns'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['hiddenText']);
@@ -512,10 +522,10 @@ class Relevance
      * @param $request
      * @return void
      */
-    public function removeListWords($request)
+    public function removeListWords()
     {
-        if ($request['switchMyListWords'] == 'true') {
-            $listWords = str_replace(["\r\n", "\n\r"], "\n", $request['listWords']);
+        if ($this->request['switchMyListWords'] == 'true') {
+            $listWords = str_replace(["\r\n", "\n\r"], "\n", $this->request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
             $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
@@ -1120,17 +1130,17 @@ class Relevance
             }
 
             $this->params['sites'] = json_encode($saveObject);
+            $this->params['page_hash'] = $this->request['pageHash'];
             $this->params->save();
         }
     }
 
     /**
-     * @param $request
      * @param $userId
      * @param $historyId
      * @return void
      */
-    public function saveHistory($request, $userId, $historyId)
+    public function saveHistory($userId, $historyId)
     {
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
@@ -1151,7 +1161,7 @@ class Relevance
                 $id = RelevanceHistory::createOrUpdate(
                     $this->phrase,
                     $this->params['main_page_link'],
-                    $request,
+                    $this->request,
                     $site,
                     $time,
                     $mainHistory,
@@ -1166,8 +1176,6 @@ class Relevance
                 $mainHistory->save();
 
                 $this->saveHistoryResult($id);
-
-                RelevanceProgress::editProgress(100, $request);
                 return;
             }
         }
