@@ -1,2 +1,2 @@
-<span class="badge badge-info">{{ $key->target }}</span>
+<span class="badge badge-info target">{{ $key->target }}</span>
 
