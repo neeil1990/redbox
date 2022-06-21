@@ -8,7 +8,6 @@ use App\RelevanceTags;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class ProjectRelevanceHistoryTagsController extends Controller
 {
@@ -64,7 +63,6 @@ class ProjectRelevanceHistoryTagsController extends Controller
         $link = ProjectRelevanceHistoryTags::where('relevance_history_id', '=', $request->projectId)
             ->where('tags_id', '=', $request->tagId)->first();
 
-        Log::debug('l', [$link]);
         if (isset($link)) {
             $link->delete();
             return response()->json([

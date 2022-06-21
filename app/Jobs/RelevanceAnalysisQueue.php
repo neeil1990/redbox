@@ -49,7 +49,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function handle()
     {
         try {
-            $relevance = new Relevance($this->request['link'], $this->request['phrase'], $this->request['separator'], true);
+            $relevance = new Relevance($this->request, true);
             $relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
@@ -59,7 +59,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
                 $relevance->analysisByList($this->request);
             }
 
-            $relevance->analysis($this->request, $this->userId, $this->historyId);
+            $relevance->analysis($this->userId, $this->historyId);
 
         } catch (\Exception $exception) {
             //  игнорируем ошибку: "packets out of order" и другие ошибки бд
@@ -72,11 +72,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
                 $object->state = -1;
 
                 $object->save();
-                Log::debug('message', [
-                    'message' => $exception->getMessage(),
-                    'file' => $exception->getFile(),
-                    'line' => $exception->getLine()
-                ]);
             }
         }
 

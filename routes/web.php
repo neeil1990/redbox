@@ -189,6 +189,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/create-link-project-with-tag', 'ProjectRelevanceHistoryTagsController@store')->name('create.link.project.with.tag');
     Route::post('/destroy-link-project-with-tag', 'ProjectRelevanceHistoryTagsController@destroy')->name('destroy.link.project.with.tag');
 
+    Route::post('/remove-page-history', 'RelevanceController@removePageHistory')->name('remove.page.history');
     Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
     Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');

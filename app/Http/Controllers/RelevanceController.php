@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceProgress;
-use App\TestRelevance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,7 +42,6 @@ class RelevanceController extends Controller
      */
     public function analysis(Request $request): JsonResponse
     {
-        Log::debug('r', $request->all());
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
@@ -57,7 +54,7 @@ class RelevanceController extends Controller
             'siteList' => 'required_without:link',
         ], $messages);
 
-        $relevance = new Relevance($request->input('link'), $request->input('phrase'), $request->input('separator'));
+        $relevance = new Relevance($request->all());
         $relevance->getMainPageHtml();
 
         if ($request['type'] == 'phrase') {
@@ -67,7 +64,7 @@ class RelevanceController extends Controller
             $relevance->analysisByList($request->all());
         }
 
-        $relevance->analysis($request->all(), Auth::id());
+        $relevance->analysis(Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
@@ -88,12 +85,14 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-        $relevance = new Relevance($request->input('link'), '', $request->input('separator'));
+        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
+            ->where('page_hash', '=', $request['pageHash'])
+            ->first();
+        $relevance = new Relevance($request->all());
         $relevance->setMainPage($params->html_main_page);
         $relevance->setDomains($params->sites);
         $relevance->parseSites();
-        $relevance->analysis($request->all(), Auth::id());
+        $relevance->analysis(Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
@@ -114,12 +113,14 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())->first();
-        $relevance = new Relevance($request->input('link'), '', $request->input('separator'));
+        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
+            ->where('page_hash', '=', $request['pageHash'])
+            ->first();
+        $relevance = new Relevance($request->all());
         $relevance->getMainPageHtml();
         RelevanceProgress::editProgress(15, $request);
         $relevance->setSites($params->sites);
-        $relevance->analysis($request->all(), Auth::id());
+        $relevance->analysis(Auth::id());
 
         return RelevanceController::successResponse($relevance);
     }
@@ -305,5 +306,18 @@ class RelevanceController extends Controller
         $config->save();
 
         return Redirect::back();
+    }
+
+    /**
+     * @param Request $request
+     * @return void
+     */
+    public function removePageHistory(Request $request)
+    {
+        $count = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
+            ->where('page_hash', '=', $request['pageHash'])
+            ->delete();
+
+        Log::debug("У пользователя " . Auth::id() . " была отчищена история сканирования");
     }
 }
