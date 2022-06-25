@@ -806,5 +806,17 @@
     "The number of entries in the table of analyzed sites by default": "Количество записей в таблице проанализированных сайтов по умолчанию",
     "The number of entries in the default recommendation table": "Количество записей в таблице рекомендаций по умолчанию",
     "add % to coverage": "добавить % к охвату",
-    "TF-idf clouds of sites from the top and landing page": "Облака TF-idf посадочной страницы и конкурентов"
+    "TF-idf clouds of sites from the top and landing page": "Облака TF-idf посадочной страницы и конкурентов",
+    "Users who have access to the project": "Пользователи которым доступен проект",
+    "Viewing only": "Только просмотр",
+    "Viewing and launching a re-analysis": "Просмотр и запуск повторного анализа",
+    "Remove access": "Удалить доступ",
+    "More": "Подробнее",
+    "Granting access": "Выдача доступов",
+    "Take access rights": "Забрать доступы",
+    "Email of the user you want to give access to": "Почта пользователя которому вы хотите дать доступ",
+    "Access level": "Уровень доступа",
+    "Viewing and the ability to run a re-analysis": "Просмотр и возможность запуска повторного анализа",
+    "Give access": "Дать доступ",
+    "The mail of the user from whom you want to take access": "Почта пользователя у которого вы хотите забрать доступ"
 }

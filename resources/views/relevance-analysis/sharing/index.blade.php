@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  "{{ __('Share your projects') }}" ])
+@component('component.card', ['title' =>  __('Share your projects') ])
 @section('content')
     @slot('css')
         <link rel="stylesheet" type="text/css"
@@ -46,7 +46,7 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('show.config') }}" >{{ __('Module administration') }}</a>
+                        <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -60,7 +60,7 @@
                         <tr>
                             <th>{{ __('Project name') }}</th>
                             <th>{{ __('Tags') }}</th>
-                            <th>Пользователи которым доступен проект</th>
+                            <th>{{ __('Users who have access to the project') }}</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -114,23 +114,25 @@
                                                                                 style="width: 350px"
                                                                                 data-target="{{ $share->id }}">
                                                                             @if($share->access == 1)
-                                                                                <option value="1">Только просмотр
+                                                                                <option value="1">
+                                                                                    {{ __('Viewing only') }}
                                                                                 </option>
-                                                                                <option value="2">Просмотр и запуск
-                                                                                    повторного анализа
+                                                                                <option value="2">
+                                                                                    {{ __('Viewing and launching a re-analysis') }}
                                                                                 </option>
                                                                             @elseif($share->access == 2)
-                                                                                <option value="2">Просмотр и запуск
-                                                                                    повторного анализа
+                                                                                <option value="2">
+                                                                                    {{ __('Viewing and launching a re-analysis') }}
                                                                                 </option>
-                                                                                <option value="1">Только просмотр
+                                                                                <option value="1"
+                                                                                >{{ __('Viewing only') }}
                                                                                 </option>
                                                                             @endif
                                                                         </select>
 
                                                                         <button class="btn btn-secondary removeAccess"
                                                                                 data-target="{{ $share->id }}">
-                                                                            Убрать доступ до проекта
+                                                                            {{ __('Remove access') }}
                                                                         </button>
                                                                     </div>
                                                                 </td>
@@ -147,7 +149,7 @@
                                 <td class="col-2">
                                     <a href="{{ route('share.project.conf', $item->id) }}"
                                        class="btn btn-secondary">
-                                        Подробности
+                                        {{ __('More') }}
                                     </a>
                                 </td>
                             </tr>
@@ -157,10 +159,10 @@
                 </div>
             </div>
             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#accessModal">
-                Выдача доступов
+                {{ __('Granting access') }}
             </button>
             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#offAccessModal">
-                Забрать доступы
+                {{ __('Take access rights') }}
             </button>
         </div>
 
@@ -168,21 +170,21 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="accessModalLabel">Выдача доступов</h5>
+                        <h5 class="modal-title" id="accessModalLabel">{{ __('Granting access') }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div>
-                            <label for="email">Почта пользователя которому вы хотите дать доступ</label>
+                            <label for="email">{{ __('Email of the user you want to give access to') }}</label>
                             <input type="email" class="form form-control" id="access-email" name="access-email">
                         </div>
                         <div>
-                            <label for="access">Уровень доступа</label>
+                            <label for="access">{{ __('Access level') }}</label>
                             <select name="access" id="access" class="form form-control">
-                                <option value="1">Только просмотр</option>
-                                <option value="2">Просмотр и возможность запуска повторного анализа</option>
+                                <option value="1">{{ __('Viewing only') }}</option>
+                                <option value="2">{{ __('Viewing and the ability to run a re-analysis') }}</option>
                             </select>
                         </div>
                         <div>
@@ -196,7 +198,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button class="set-access-button btn btn-secondary">Дать доступ</button>
+                        <button class="set-access-button btn btn-secondary">{{ __('Give access') }}</button>
                     </div>
                 </div>
             </div>
@@ -207,14 +209,14 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="offAccessModalLabel">Забрать доступы</h5>
+                        <h5 class="modal-title" id="offAccessModalLabel">{{ __('Take access rights') }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div>
-                            <label for="email">Почта пользователя у которого вы хотите забрать доступ</label>
+                            <label for="email">{{ __('The mail of the user from whom you want to take access') }}</label>
                             <input type="email" class="form form-control" id="off-email" name="off-email">
                         </div>
                         <div>
@@ -229,7 +231,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button class="off-access-button btn btn-secondary">Забрать доступ</button>
+                        <button class="off-access-button btn btn-secondary">{{ __('Take access rights') }}</button>
                     </div>
                 </div>
             </div>
@@ -289,16 +291,17 @@
                                         $('.toast-top-right.success-message').hide(300)
                                     }, 3000)
                                     if (response.objects.length > 0) {
+                                        console.log(response)
                                         $.each(response.objects, function (key, value) {
                                             let options
                                             if (value['access'] === '1') {
                                                 options =
-                                                    '<option value="1">Только просмотр</option> ' +
+                                                    '<option value="1">{{ __('Viewing only')}}</option> ' +
                                                     '<option value="2">Просмотр и запуск повторного анализа</option>'
                                             } else {
                                                 options =
                                                     '<option value="2">Просмотр и запуск повторного анализа</option>' +
-                                                    '<option value="1">Только просмотр</option> '
+                                                    '<option value="1">{{ __('Viewing only') }}</option> '
 
                                             }
                                             $('.project-' + value['project_id']).append(
