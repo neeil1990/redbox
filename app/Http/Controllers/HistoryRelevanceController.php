@@ -193,7 +193,7 @@ class HistoryRelevanceController extends Controller
             $object->save();
 
             RelevanceAnalysisQueue::dispatch(
-                Auth::id(),
+                $object->mainHistory->user_id,
                 $request->all(),
                 $request['id']
             );

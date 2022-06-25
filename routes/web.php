@@ -235,3 +235,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
 });
+
+Route::get('bla', function () {
+    $i = \App\RelevanceHistory::first();
+    dd($i->mainHistory->user_id);
+});

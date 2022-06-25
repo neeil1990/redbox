@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RelevanceHistory extends Model
 {
@@ -58,5 +59,13 @@ class RelevanceHistory extends Model
     public function projectRelevanceHistory(): BelongsTo
     {
         return $this->belongsTo(ProjectRelevanceHistory::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function mainHistory(): HasOne
+    {
+        return $this->hasOne(ProjectRelevanceHistory::class, 'id', 'project_relevance_history_id');
     }
 }
