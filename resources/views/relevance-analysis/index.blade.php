@@ -31,7 +31,7 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">{{ __('Analyzer') }}</a>
+                    <a class="nav-link active" href="{{ route('relevance-analysis') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('create.queue.view') }}">
@@ -41,9 +41,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('sharing.view') }}" class="nav-link">{{ __('Share your projects') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('access.project') }}" class="nav-link">{{ __('Projects available to you') }}</a>
+                </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="#tab_2" data-toggle="tab">{{ __('Module administration') }}</a>
+                        <a class="nav-link" href="{{ route('show.config') }}" >{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -334,7 +340,7 @@
                         <div class="d-flex flex-column pb-3">
                             <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3"
                                     style="cursor: pointer">
-                                Облака tf-idf сайтов из топа и посадочной страницы
+                                "{{ __('TF-idf clouds of sites from the top and landing page') }}"
                             </button>
                             <div class="tf-idf-clouds" style="display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -845,9 +851,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="tab_2">
-                    @include('layouts.relevance-config')
-                </div>
+
             </div>
         </div>
     </div>

@@ -28,6 +28,10 @@ th {
     color: white;
 }
 
+#tab_1 > div.col-6.pt-3.pb-3 > span > span > i {
+    color: gray !important;
+}
+
 #unigramTBody > tr > td:nth-child(8),
 #unigramTBody > tr > td:nth-child(10),
 #unigramTBody > tr > td:nth-child(12),

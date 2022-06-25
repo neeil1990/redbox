@@ -7,7 +7,9 @@ use App\ProjectRelevanceHistory;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
+use App\RelevanceSharing;
 use App\RelevanceTags;
+use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,18 +25,11 @@ class HistoryRelevanceController extends Controller
     {
         $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
         $config = RelevanceAnalysisConfig::first();
-        $main = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
-        $admin = false;
-
-        foreach (Auth::user()->role as $role) {
-            if ($role == '1' || $role == '3') {
-                $admin = true;
-                break;
-            }
-        }
+        $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
+        $admin = User::isUserAdmin();
 
         return view('relevance-analysis.history', [
-            'main' => $main,
+            'main' => $projects,
             'admin' => $admin,
             'config' => $config,
             'tags' => $tags
@@ -97,19 +92,24 @@ class HistoryRelevanceController extends Controller
     public function show(int $id)
     {
         $object = RelevanceHistory::where('id', '=', $id)->first();
-        if ($object->projectRelevanceHistory->user_id != Auth::id()) {
+
+        $access = RelevanceSharing::where('user_id', '=', Auth::id())
+            ->where('project_id', '=', $object->project_relevance_history_id)
+            ->first();
+
+        if (!isset($access) && $object->projectRelevanceHistory->user_id != Auth::id()) {
             return abort(403, __("You don't have access to this object"));
         }
-        $admin = false;
-        foreach (Auth::user()->role as $role) {
-            if ($role == '1' || $role == '3') {
-                $admin = true;
-                break;
-            }
-        }
+
+        $admin = User::isUserAdmin();
 
         $object->request = json_decode($object->request, true);
-        return view('relevance-analysis.show-history', ['admin' => $admin, 'id' => $id, 'object' => $object]);
+        return view('relevance-analysis.show-history', [
+            'admin' => $admin,
+            'id' => $id,
+            'object' => $object,
+            'access' => $access ?? null
+        ]);
     }
 
     /**

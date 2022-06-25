@@ -11,11 +11,8 @@
 |
 */
 
-use App\RelevanceProgress;
 use App\TelegramBot;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 
 Route::get('info', function () {
     phpinfo();
@@ -211,6 +208,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
     Route::post('/edit-tag', 'RelevanceTagsController@edit')->name('edit.relevance.tag');
+    Route::get('/relevance-config', 'RelevanceController@showConfig')->name('show.config');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
@@ -227,4 +225,13 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 
+    Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');
+    Route::get('/share-my-project-config/{project}', 'SharingController@shareProjectConf')->name('share.project.conf');
+    Route::post('/get-access-to-my-project', 'SharingController@setAccess')->name('get.access.to.my.project');
+    Route::post('/get-multiply-access-to-my-project', 'SharingController@setMultiplyAccess')->name('get.multiply.access.to.my.project');
+    Route::post('/remove-multiply-access-to-my-project', 'SharingController@removeMultiplyAccess')->name('remove.multiply.access');
+    Route::post('/remove-access-to-my-project', 'SharingController@removeAccess')->name('remove.access.to.my.project');
+    Route::post('/remove-guest-access', 'SharingController@removeGuestAccess')->name('remove.guest.access');
+    Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
+    Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
 });

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b525881584ebf1bee9f1739aef89fc8",
+    "content-hash": "fae5f50d0fdafdbcef98330db16edc60",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -1322,6 +1322,50 @@
                 "source": "https://github.com/io-developer/php-whois/tree/4.1.3"
             },
             "time": "2021-08-28T10:18:39+00:00"
+        },
+        {
+            "name": "istvan-ujjmeszaros/bootstrap-duallistbox",
+            "version": "4.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/istvan-ujjmeszaros/bootstrap-duallistbox.git",
+                "reference": "3ccface38d08c2bfb4dd56c958ddbd33348c688f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/istvan-ujjmeszaros/bootstrap-duallistbox/zipball/3ccface38d08c2bfb4dd56c958ddbd33348c688f",
+                "reference": "3ccface38d08c2bfb4dd56c958ddbd33348c688f",
+                "shasum": ""
+            },
+            "suggest": {
+                "components/jquery": "2.0.*",
+                "twbs/bootstrap": "3.*"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "István Ujj-Mészáros",
+                    "homepage": "https://github.com/istvan-ujjmeszaros"
+                }
+            ],
+            "description": "A responsive dual listbox widget optimized for Twitter Bootstrap. It works on all modern browsers and on touch devices.",
+            "homepage": "https://www.virtuosoft.eu/code/bootstrap-duallistbox/",
+            "keywords": [
+                "bootstrap",
+                "bootstrap duallistbox",
+                "bootstrap select",
+                "duallistbox",
+                "select"
+            ],
+            "support": {
+                "issues": "https://github.com/istvan-ujjmeszaros/bootstrap-duallistbox/issues",
+                "source": "https://github.com/istvan-ujjmeszaros/bootstrap-duallistbox/tree/v4.0.2"
+            },
+            "time": "2020-04-25T00:19:39+00:00"
         },
         {
             "name": "ixudra/curl",

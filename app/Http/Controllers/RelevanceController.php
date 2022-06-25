@@ -7,6 +7,7 @@ use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceProgress;
+use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,14 +24,7 @@ class RelevanceController extends Controller
      */
     public function index(): View
     {
-        $admin = false;
-        foreach (Auth::user()->role as $role) {
-            if ($role == '1' || $role == '3') {
-                $admin = true;
-                break;
-            }
-        }
-
+        $admin = User::isUserAdmin();
         $config = RelevanceAnalysisConfig::first();
 
         return view('relevance-analysis.index', ['admin' => $admin, 'config' => $config]);
@@ -228,13 +222,7 @@ class RelevanceController extends Controller
     public function createQueue(): View
     {
         $config = RelevanceAnalysisConfig::first();
-        $admin = false;
-        foreach (Auth::user()->role as $role) {
-            if ($role == '1' || $role == '3') {
-                $admin = true;
-                break;
-            }
-        }
+        $admin = User::isUserAdmin();
 
         return view('relevance-analysis.queue', [
             'config' => $config,
@@ -314,10 +302,24 @@ class RelevanceController extends Controller
      */
     public function removePageHistory(Request $request)
     {
-        $count = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
+        RelevanceAnalyseResults::where('user_id', '=', Auth::id())
             ->where('page_hash', '=', $request['pageHash'])
             ->delete();
 
         Log::debug("У пользователя " . Auth::id() . " была отчищена история сканирования");
+    }
+
+    /**
+     * @return View
+     */
+    public function showConfig(): View
+    {
+        $admin = User::isUserAdmin();
+        $config = RelevanceAnalysisConfig::first();
+
+        return view('relevance-analysis.relevance-config', [
+            'admin' => $admin,
+            'config' => $config,
+        ]);
     }
 }

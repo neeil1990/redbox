@@ -235,9 +235,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="tab_2">
-                    @include('layouts.relevance-config')
-                </div>
+
             </div>
         </div>
     </div>

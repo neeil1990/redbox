@@ -10,15 +10,18 @@
     @endslot
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="toast-message">{{ __('Your tasks have been successfully added to the queue') }}</div>
+            <div class="toast-message"
+                 id="toast-message">{{ __('Your tasks have been successfully added to the queue') }}</div>
         </div>
     </div>
 
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message" id="toast-message">{{ __('Something went wrong, try again later.') }}</div>
+            <div class="toast-message error-message"
+                 id="toast-message">{{ __('Something went wrong, try again later.') }}</div>
         </div>
     </div>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -26,16 +29,22 @@
                     <a class="nav-link" href="{{ route('relevance-analysis') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#tab_1" data-toggle="tab">
+                    <a class="nav-link active" href="{{ route('create.queue.view') }}">
                         {{ __('Create page analysis tasks') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('sharing.view') }}" class="nav-link">{{ __('Share your projects') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('access.project') }}" class="nav-link">{{ __('Projects available to you') }}</a>
+                </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="#tab_2" data-toggle="tab">{{ __('Module administration') }}</a>
+                        <a class="nav-link" href="{{ route('show.config') }}" >{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -233,9 +242,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="tab_2">
-                    @include('layouts.relevance-config')
-                </div>
+
             </div>
         </div>
     </div>

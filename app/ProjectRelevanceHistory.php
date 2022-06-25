@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectRelevanceHistory extends Model
@@ -19,6 +20,22 @@ class ProjectRelevanceHistory extends Model
     public function stories(): HasMany
     {
         return $this->hasMany(RelevanceHistory::class)->orderByDesc('last_check');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'relevance_sharing', 'project_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function sharing(): HasMany
+    {
+        return $this->hasMany(RelevanceSharing::class, 'project_id', 'id');
     }
 
     /**

@@ -16,6 +16,7 @@
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
         "io-developer/php-whois": "^4.1",
+        "istvan-ujjmeszaros/bootstrap-duallistbox": "^4.0",
         "ixudra/curl": "^6.21",
         "jenssegers/agent": "^2.6",
         "karlmonson/laravel-ping": "^1.0",

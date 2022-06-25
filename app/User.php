@@ -12,10 +12,13 @@ use App\Notifications\RepairDomainNotification;
 use App\Notifications\sendNotificationAboutChangeDNS;
 use App\Notifications\sendNotificationAboutExpirationRegistrationPeriod;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -195,5 +198,27 @@ class User extends Authenticatable implements MustVerifyEmail
     public function projects()
     {
         return $this->hasMany(ProjectTracking::class);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isUserAdmin(): bool
+    {
+        foreach (Auth::user()->role as $role) {
+            if ($role == '1' || $role == '3') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function project(): HasMany
+    {
+        return $this->hasMany(ProjectRelevanceHistory::class);
     }
 }

@@ -11,109 +11,13 @@
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="message-info"></div>
+            <div class="toast-message" id="toast-success-message"></div>
         </div>
     </div>
 
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message" id="message-error-info"></div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ __('My Tags') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        {{ __('Your created tags:') }}
-                        <ul class="mt-3" id="tags-list">
-                            @foreach($tags as $tag)
-                                <li>
-                                    <div class="btn-group mb-2">
-                                        <input type="color" class="tag-color-input" data-target="{{ $tag->id }}"
-                                               value="{{ $tag->color }}" style="height: 37px">
-                                        <input type="text" class="form form-control w-100 tag-name-input d-inline"
-                                               style="display: inline !important;"
-                                               data-target="{{ $tag->id }}" value="{{ $tag->name }}">
-                                        <button type="button" class="btn btn-secondary col-2 remove-tag"
-                                                data-target="{{ $tag->id }}">
-                                            <i class="fa fa-trash text-white"></i>
-                                        </button>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <div class="border-top">
-                        <h5 class="mt-3">{{ __('Add a new label') }}</h5>
-                        <div class="mb-3">
-                            <label for="tag-name">{{ __('Label name') }}</label>
-                            <input type="text" id="tag-name" name="tag-name" class="form form-control">
-                        </div>
-                        <div class="mt-3 mb-3">
-                            <label for="tag-color">{{ __('Set a color') }}</label>
-                            <input type="color" name="tag-color" id="tag-color">
-                        </div>
-                        <button class="btn btn-secondary mt-3" id="create-tag">
-                            {{ __('Create a label') }}
-                        </button>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-toggle="modal"
-                            data-target="#create-link"
-                            data-dismiss="modal">
-                        {{ __('Add a label to a project') }}
-                    </button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="create-link" tabindex="-1" aria-labelledby="exampleModalLabel">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ __('Add a label to a project') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <label for="project-id">{{ __('Your projects') }}</label>
-                    <select name="project-id" id="project-id" class="form form-control mb-3">
-                        @foreach($main as $story)
-                            <option value="{{ $story->id }}">{{ $story->name }}</option>
-                        @endforeach
-                    </select>
-
-                    <label for="tag-id">{{ __('Your tags') }}</label>
-                    <select name="tag-id" id="tag-id" class="form form-control">
-                        @foreach($tags as $tag)
-                            <option value="{{ $tag->id }}" id="option-tag-{{$tag->id}}">
-                                {{ $tag->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary create-new-link">
-                        {{ __('Save') }}
-                    </button>
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">
-                        {{ __('Close') }}
-                    </button>
-                </div>
-            </div>
+            <div class="toast-message error-message" id="toast-message"></div>
         </div>
     </div>
 
@@ -130,13 +34,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
+                        <a class="nav-link" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('sharing.view') }}" class="nav-link">{{ __('Share your projects') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('access.project') }}" class="nav-link">{{ __('Projects available to you') }}</a>
+                        <a href="{{ route('access.project') }}" class="nav-link active">{{ __('Projects available to you') }}</a>
                     </li>
                     @if($admin)
                         <li class="nav-item">
@@ -149,47 +53,49 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div>
-                            <button type="button" class="btn btn-secondary" data-toggle="modal"
-                                    data-target="#exampleModal">
-                                {{ __('Managing labels') }}
-                            </button>
-                        </div>
-                    </div>
                     <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Tags') }}</th>
+                            <th>{{ __('Owner') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th>{{ __('Last check') }}</th>
                             <th>{{ __('Total score') }}</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($main as $item)
+                        @foreach($projects as $item)
                             <tr>
                                 <td class="project_name" style="cursor:pointer;"
-                                    data-order="{{ $item->id }}">
-                                    <a href="#history_table_{{ $item->name }}">
-                                        {{ $item->name }}
+                                    data-order="{{ $item->project[0]->id }}"
+                                    data-access="{{ $item->access }}">
+                                    <a href="#history_table_{{ $item->project[0]->name }}">
+                                        {{ $item->project[0]->name }}
                                     </a>
+                                    <p>
+                                        @if($item->access == 1)
+                                            Доступен только просмотр
+                                        @elseif($item->access == 2)
+                                            Доступен просмотр и возможность запуска повторного анализа
+                                        @endif
+                                    </p>
                                 </td>
-                                <td id="project-{{ $item->id }}">
-                                    @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}">{{ $tag->name }}
-                                            <i class="fa fa-trash remove-project-relevance-link"
-                                               style="opacity: 0.5; cursor: pointer"
-                                               data-tag="{{ $tag->id }}"
-                                               data-history="{{ $item->id }}">
-                                            </i>
-                                        </div>
-                                    @endforeach
+                                <td id="project-{{ $item->project[0]->id }}">
+                                    {{ $item->owner->email }}
+                                    <span class="text-muted">
+                                        {{ $item->owner->name }}
+                                        {{ $item->owner->last_name }}
+                                    </span>
                                 </td>
-                                <td class="col-2">{{ $item->count_sites }}</td>
-                                <td>{{ $item->last_check }}</td>
-                                <td>{{ $item->total_points }}</td>
+                                <td class="col-2">{{ $item->project[0]->count_sites }}</td>
+                                <td>{{ $item->project[0]->last_check }}</td>
+                                <td>{{ $item->project[0]->total_points }}</td>
+                                <td>
+                                    <button class="btn btn-secondary remove-access" data-target="{{ $item->id }}">
+                                        Отказаться от доступа
+                                    </button>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -386,7 +292,8 @@
                                     <input type="hidden" id="hiddenId">
                                     <input type="hidden" id="type">
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Close') }}
                                         </button>
                                         <button type="button" class="btn btn-secondary" id="relevance-repeat-scan"
                                                 data-dismiss="modal">
@@ -460,19 +367,6 @@
                                            name="maxDensity" id="maxDensity" placeholder="max">
                                 </th>
                                 <th>
-                                    <div>
-                                        Переключить всё
-                                        <div class='d-flex w-100'>
-                                            <div class='__helper-link ui_tooltip_w'>
-                                                <div
-                                                    class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success changeAllState'>
-                                                    <input type='checkbox' class='custom-control-input'
-                                                           id='changeAllState'>
-                                                    <label class='custom-control-label' for='changeAllState'></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                 </th>
                                 <th></th>
@@ -523,6 +417,7 @@
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -666,198 +561,401 @@
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
-            setInterval(() => {
-                refreshMethods()
-            }, 1000)
-
-            $('.create-new-link').on('click', function () {
+            $('.remove-access').on('click', function () {
+                let button = $(this)
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('create.link.project.with.tag') }}",
+                    url: "{{ route('remove.guest.access') }}",
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        projectId: $('#project-id').val(),
-                        tagId: $('#tag-id').val()
+                        id: button.attr('data-target'),
                     },
                     success: function (response) {
-                        if (response.code === 200) {
-                            $('#project-' + response.project.id).append(
-                                '<div style="color: ' + response.tag.color + '">' + response.tag.name + '' +
-                                ' <i class="fa fa-trash remove-project-relevance-link" style="opacity: 0.5; cursor: pointer"' +
-                                ' data-tag="' + response.tag.id + '" data-history="' + response.project.id + '"></i>' +
-                                '</div>'
-                            )
-                            getSuccessMessage(response.message)
+                        if (response.code === 201) {
+                            $('.toast-top-right.success-message').show(300)
+                            $('.toast-message').html(response.message)
+                            setTimeout(() => {
+                                $('.toast-top-right.success-message').hide(300)
+                            }, 3000)
+                            button.parent().parent().remove()
                         } else if (response.code === 415) {
-                            getErrorMessage(response.message)
+                            $('.toast-top-right.error-message').show(300)
+                            $('.toast-message.error-message').html(response.message)
+                            setTimeout(() => {
+                                $('.toast-top-right.error-message').hide(300)
+                            }, 3000)
                         }
                     },
                 });
-            })
+            });
 
-            function refreshMethods() {
-                $('#create-tag').unbind().on('click', function () {
-                    if ($('#tag-name').val() !== '') {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('store.relevance.tag') }}",
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                name: $('#tag-name').val(),
-                                color: $('#tag-color').val()
-                            },
-                            success: function (response) {
-                                if (response.code === 201) {
-                                    $('#tags-list').append(
-                                        '<li data-target="' + response.tag.id + '"> ' +
-                                        '   <div class="btn-group mb-2"> ' +
-                                        '<input type="color" class="tag-color-input" data-target="' + response.tag.id + '" value="' + response.tag.color + '" style="height: 37px">' +
-                                        '       <input type="text" class="form form-control w-100 tag-name-input d-inline" style="display: inline !important;" ' +
-                                        '       data-target="' + response.tag.id + '" value="' + response.tag.name + '">' +
-                                        '<button type="button" class="btn btn-secondary col-2 remove-tag" data-target="' + response.tag.id + '"> ' +
-                                        '       <i class="fa fa-trash text-white"></i></button> ' +
-                                        '   </div> ' +
-                                        '</li>'
-                                    )
-                                    getSuccessMessage('Метка успешно создана')
+            $('.project_name').click(function () {
+
+                let elem = $(this)
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/get-stories",
+                    data: {
+                        history_id: $(this).attr('data-order'),
+                    },
+                    success: function (response) {
+                        $('#changeAllState').prop('checked', false);
+                        $('.search-input').val('')
+                        $('.history').show()
+                        $("#history_table").dataTable().fnDestroy();
+                        $('.render').remove()
+                        let tbody = $('#historyTbody')
+
+                        $.each(response.stories, function (key, val) {
+                            let state
+
+                            if (val.state === 1) {
+                                state =
+                                    '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                    '   Повторить анализ' +
+                                    '</button>'
+                                    +
+                                    "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+
+                            } else if (val.state === 0) {
+                                state =
+                                    '<p>Обрабатывается..</p>' +
+                                    '<div class="text-center" id="preloaderBlock">' +
+                                    '        <div class="three col">' +
+                                    '            <div class="loader" id="loader-1"></div>' +
+                                    '        </div>' +
+                                    '</div>'
+                            } else if (val.state === -1) {
+                                state =
+                                    '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                    '   Повторить анализ' +
+                                    '</button>' +
+                                    "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
+                            }
+
+                            let position = val.position
+
+                            if (val.position == 0) {
+                                position = 'Не попал в топ 100'
+                            }
+
+                            let phrase = val.phrase
+
+                            if (phrase == null) {
+                                phrase = 'Был использван анализ без ключевой фразы'
+                            }
+
+                            let calculate
+                            if (val.calculate == 1) {
+                                calculate = 'Учитывается при рисчёте баллов'
+                            } else {
+                                calculate = 'Не учитывается'
+                            }
+
+                            tbody.append(
+                                "<tr class='render'>" +
+                                "<td>" + val.last_check + "</td>" +
+                                "<td>" +
+                                "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                "</td>" +
+                                "<td>" + phrase + "</td>" +
+                                "<td>" + getRegionName(val.region) + "</td>" +
+                                "<td>" + val.main_link + "</td>" +
+                                "<td>" + position + "</td>" +
+                                "<td>" + val.points + "</td>" +
+                                "<td>" + val.coverage + "</td>" +
+                                "<td>" + val.coverage_tf + "</td>" +
+                                "<td>" + val.width + "</td>" +
+                                "<td>" + val.density + "</td>" +
+                                "<td>" +
+                                calculate +
+                                "</td>" +
+                                "<td id='history-state-" + val.id + "'>" +
+                                state +
+                                "</td>" +
+                                "</tr>"
+                            )
+                        })
+
+                        $(document).ready(function () {
+                            let table = $('#history_table').DataTable({
+                                "order": [[0, "desc"]],
+                                "pageLength": 25,
+                                "searching": true,
+                                dom: 'lBfrtip',
+                                buttons: [
+                                    'copy', 'csv', 'excel'
+                                ]
+                            });
+
+                            $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+
+                            $(".dt-button").addClass('btn btn-secondary')
+
+                            $('#history_table_filter').hide()
+
+                            let href = '#history_table';
+                            $('html, body').animate({
+                                scrollTop: $(href).offset().top
+                            }, {
+                                duration: 370,
+                                easing: "linear"
+                            });
+
+                            $('.history-comment').change(function () {
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: "/edit-history-comment",
+                                    data: {
+                                        id: $(this).attr('data-target'),
+                                        comment: $(this).val()
+                                    },
+                                    success: function () {
+                                        $('.toast-top-right.success-message').show(300)
+                                        $('#toast-success-message').html('Коментарий успешно сохранён')
+                                        setInterval(function () {
+                                            $('#toast-container').hide(300)
+                                        }, 3000)
+                                    },
+                                });
+                            });
 
 
-                                    $('#tag-id').append(
-                                        '<option value="' + response.tag.id + '" id="option-tag-' + response.tag.id + '">' + response.tag.name + '</option>'
-                                    )
-                                } else if (response.code === 415) {
-                                    getErrorMessage(response.message)
+                            $('.get-history-info').unbind("click").click(function () {
+                                let id = $(this).attr('data-order')
+                                $.ajax({
+                                    type: "get",
+                                    dataType: "json",
+                                    url: "/get-history-info/" + id,
+                                    success: function (response) {
+                                        let history = response.history
+                                        if (history.type === 'list') {
+                                            $('#key-phrase').hide()
+                                            $('#site-list').show()
+                                            $('#siteList').val(history.siteList)
+                                        } else {
+                                            $('#key-phrase').show()
+                                            $('#site-list').hide()
+                                            $('.form-control.phrase').val(history.phrase)
+                                        }
+                                        $('#type').val(history.type)
+                                        $('#hiddenId').val(id)
+                                        $('.form-control.link').val(history.link)
+                                        $(".custom-select#count").val(history.count).change();
+                                        $(".custom-select.rounded-0.region").val(history.region).change();
+                                        $(".form-control.ignoredDomains").html(history.ignoredDomains);
+                                        $("#separator").val(history.separator);
+
+                                        if (history.noIndex === "true") {
+                                            $('#switchNoindex').trigger('click')
+                                        }
+
+                                        if (history.hiddenText === "true") {
+                                            $('#switchAltAndTitle').trigger('click')
+                                        }
+
+                                        if (history.conjunctionsPrepositionsPronouns === "true") {
+                                            $('#switchConjunctionsPrepositionsPronouns').trigger('click')
+                                        }
+
+                                        if (history.switchMyListWords === "true") {
+                                            $('#switchMyListWords').trigger('click')
+                                        }
+                                    },
+                                });
+                            });
+
+                            $('#relevance-repeat-scan').unbind("click").click(function () {
+                                let id = $('#hiddenId').val()
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: "/repeat-scan",
+                                    data: {
+                                        id: id,
+                                        type: $('#type').val(),
+                                        siteList: $('#siteList').val(),
+                                        link: $('.form-control.link').val(),
+                                        phrase: $('.form-control.phrase').val(),
+                                        count: $(".custom-select#count").val(),
+                                        region: $(".custom-select.rounded-0.region").val(),
+                                        ignoredDomains: $(".form-control.ignoredDomains").html(),
+                                        separator: $("#separator").val(),
+                                        noIndex: $('#switchNoindex').is(':checked'),
+                                        hiddenText: $('#switchAltAndTitle').is(':checked'),
+                                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
+                                        switchMyListWords: $('#switchMyListWords').is(':checked'),
+                                        listWords: $('.form-control.listWords').val(),
+                                    },
+                                    success: function () {
+                                        $('#history-state-' + id).html('<p>Обрабатывается..</p>' +
+                                            '<div class="text-center" id="preloaderBlock">' +
+                                            '        <div class="three col">' +
+                                            '            <div class="loader" id="loader-1"></div>' +
+                                            '        </div>' +
+                                            '</div>')
+                                    },
+                                    error: function () {
+                                        $('#toast-container').show(300)
+                                        $('#message-info').html('Что-то пошло не так, повторите попытку позже.')
+                                        setInterval(function () {
+                                            $('#toast-container').hide(300)
+                                        }, 3500)
+                                    }
+                                });
+                            });
+
+                            if (elem.attr('data-access') === '1') {
+                                $('#historyTbody > tr > td:nth-child(13) > button:first-child').hide()
+                            } else if (elem.attr('data-access') === '2') {
+                                $('#historyTbody > tr > td:nth-child(13) > button:first-child').show()
+                            }
+
+                            //------------------------ CUSTOM FILTERS -----------------------
+
+                            function isValidate(min, max, target, settings) {
+                                return (isNaN(min) && isNaN(max)) ||
+                                    (isNaN(min) && target <= max) ||
+                                    (min <= target && isNaN(max)) ||
+                                    (min <= target && target <= max);
+                            }
+
+                            function isIncludes(target, search) {
+                                if (search.length > 0) {
+                                    return target.includes(search)
+                                } else {
+                                    return true;
                                 }
-                            },
+                            }
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var projectComment = String($('#projectComment').val()).toLowerCase();
+                                var target = String(data[1]).toLowerCase();
+                                return isIncludes(target, projectComment)
+                            });
+                            $('#projectComment').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var phraseSearch = String($('#phraseSearch').val()).toLowerCase();
+                                var target = String(data[2]).toLowerCase();
+                                return isIncludes(target, phraseSearch)
+                            });
+                            $('#phraseSearch').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var regionSearch = String($('#regionSearch').val()).toLowerCase();
+                                var target = String(data[3]).toLowerCase();
+                                return isIncludes(target, regionSearch)
+                            });
+                            $('#regionSearch').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var mainPageSearch = String($('#mainPageSearch').val()).toLowerCase();
+                                var target = String(data[4]).toLowerCase();
+                                return isIncludes(target, mainPageSearch)
+                            });
+                            $('#mainPageSearch').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var maxPosition = parseFloat($('#maxPosition').val());
+                                var minPosition = parseFloat($('#minPosition').val());
+                                var target = parseFloat(data[5]);
+                                return isValidate(minPosition, maxPosition, target, settings)
+                            });
+                            $('#minPosition, #maxPosition').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var maxPoints = parseFloat($('#maxPoints').val());
+                                var minPoints = parseFloat($('#minPoints').val());
+                                var target = parseFloat(data[6]);
+                                return isValidate(minPoints, maxPoints, target, settings)
+                            });
+                            $('#minPoints, #maxPoints').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var maxCoverage = parseFloat($('#maxCoverage').val());
+                                var minCoverage = parseFloat($('#minCoverage').val());
+                                var target = parseFloat(data[7]);
+                                return isValidate(minCoverage, maxCoverage, target, settings)
+                            });
+                            $('#minCoverage, #maxCoverage').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var maxCoverageTf = parseFloat($('#maxCoverageTf').val());
+                                var minCoverageTf = parseFloat($('#minCoverageTf').val());
+                                var target = parseFloat(data[8]);
+                                return isValidate(minCoverageTf, maxCoverageTf, target, settings)
+                            });
+                            $('#minCoverageTf, #maxCoverageTf').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var maxWidth = parseFloat($('#maxWidth').val());
+                                var minWidth = parseFloat($('#minWidth').val());
+                                var target = parseFloat(data[9]);
+                                return isValidate(minWidth, maxWidth, target, settings)
+                            });
+                            $('#minWidth, #maxWidth').keyup(function () {
+                                table.draw();
+                            });
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var maxDensity = parseFloat($('#maxDensity').val());
+                                var minDensity = parseFloat($('#minDensity').val());
+                                var target = parseFloat(data[10]);
+                                return isValidate(minDensity, maxDensity, target, settings)
+                            });
+                            $('#minDensity, #maxDensity').keyup(function () {
+                                table.draw();
+                            });
+
+                            function isDateValid(target) {
+                                let date = new Date(target)
+                                let dateMin = new Date($('#dateMin').val() + ' 00:00:00')
+                                let dateMax = new Date($('#dateMax').val() + ' 23:59:59')
+                                if (date >= dateMin && date <= dateMax) {
+                                    return true;
+                                }
+                            }
+
+                            $.fn.dataTable.ext.search.push(function (settings, data) {
+                                var target = String(data[0]);
+                                return isDateValid(target)
+                            });
+                            $('#dateMin').change(function () {
+                                table.draw();
+                            });
+                            $('#dateMax').change(function () {
+                                table.draw();
+                            });
                         });
-                    }
-                })
-
-                $('.remove-tag').unbind().on('click', function () {
-                    let ojb = $(this)
-                    let id = $(this).attr('data-target')
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('destroy.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target')
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage('Метка успешно удалена')
-                                ojb.parent().parent().remove()
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    $(this).parent().remove()
-                                })
-
-                                $('#option-tag-' + id).remove()
-                            }
-                        },
-                    });
-                })
-
-                $('.tag-name-input').unbind().on('change', function () {
-                    var prev = this.defaultValue;
-                    var current = $(this).val();
-
-                    let id = $(this).attr('data-target')
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target'),
-                            name: $(this).val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    let oldHtml = $(this).parent().html()
-                                    let newHtml = oldHtml.replace(prev, current)
-                                    $(this).parent().html(newHtml)
-                                })
-                            }
-                        },
-                    });
-                    this.defaultValue = current
-                })
-
-                $('.tag-color-input').unbind().on('change', function () {
-                    let id = $(this).attr('data-target')
-                    let color = $(this).val()
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target'),
-                            color: $(this).val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    $(this).parent().css('color', color)
-                                })
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-
-                $('.remove-project-relevance-link').unbind().on('click', function () {
-                    let elem = $(this)
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('destroy.link.project.with.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-tag'),
-                            projectId: $(this).attr('data-history')
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                elem.parent().remove()
-                                getSuccessMessage(response.message)
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-            }
-
-            function getSuccessMessage(message) {
-                $('.toast-top-right.success-message').show(300)
-                $('#message-info').html(message)
-                setTimeout(() => {
-                    $('.toast-top-right.success-message').hide(300)
-                }, 3000)
-            }
-
-            function getErrorMessage(message) {
-                $('.toast-top-right.error-message').show(300)
-                $('#message-error-info').html(message)
-                setTimeout(() => {
-                    $('.toast-top-right.error-message').hide(300)
-                }, 3000)
-            }
+                    },
+                });
+            });
         </script>
     @endslot
 @endcomponent

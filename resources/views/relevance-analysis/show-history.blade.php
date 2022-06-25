@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
     @endslot
+
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
             <div class="toast-message error-message" id="toast-message">
@@ -600,18 +601,20 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab_2">
-                    <div class="col-5">
+                    @if(isset($access) && $access->access > 1 || !isset($access))
+                        <div class="col-5">
 
-                        <input type="hidden" name="hiddenId" id="hiddenId" value="{{ $object->id }}">
-                        <input type="hidden" name="type" id="type" value="{{ $object['request']['type'] }}">
+                            <input type="hidden" name="hiddenId" id="hiddenId" value="{{ $object->id }}">
+                            <input type="hidden" name="type" id="type" value="{{ $object['request']['type'] }}">
 
-                        <div class="form-group required">
-                            <label>{{ __('Your landing page') }}</label>
-                            {!! Form::text("link", $object['request']['link'] ,["class" => "form-control link", "required"]) !!}
-                        </div>
+                            <div class="form-group required">
+                                <label>{{ __('Your landing page') }}</label>
+                                {!! Form::text("link", $object['request']['link'] ,["class" => "form-control link", "required"]) !!}
+                            </div>
 
 
-                            <div id="key-phrase" @if($object['request']['type'] != 'phrase') style="display: none"@endif>
+                            <div id="key-phrase"
+                                 @if($object['request']['type'] != 'phrase') style="display: none"@endif>
                                 <div class="form-group required">
                                     <label>{{ __('Keyword') }}</label>
                                     {!! Form::text("phrase", $object['request']['phrase'] ,["class" => "form-control phrase", "required"]) !!}
@@ -706,88 +709,91 @@
                                 </div>
                             </div>
 
-                        <div class="form-group required d-flex align-items-center">
-                            <span>{{ __('Cut the words shorter') }}</span>
-                            <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator"
-                                   id="separator"
-                                   value="{{ $object['request']['separator'] }}">
-                            <span>{{ __('symbols') }}</span>
-                        </div>
-
-                        <div class="switch mt-3 mb-3">
-                            <div class="d-flex">
-                                <div class="__helper-link ui_tooltip_w">
-                                    <div
-                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                        <input type="checkbox"
-                                               class="custom-control-input"
-                                               id="switchNoindex"
-                                               name="noIndex"
-                                               @if($object['request']['noIndex'] == 'true') checked @endif>
-                                        <label class="custom-control-label" for="switchNoindex"></label>
-                                    </div>
-                                </div>
-                                <p>{{ __('Track the text in the noindex tag') }}</p>
+                            <div class="form-group required d-flex align-items-center">
+                                <span>{{ __('Cut the words shorter') }}</span>
+                                <input type="number" class="form form-control col-2 ml-1 mr-1" name="separator"
+                                       id="separator"
+                                       value="{{ $object['request']['separator'] }}">
+                                <span>{{ __('symbols') }}</span>
                             </div>
 
-                            <div class="d-flex">
-                                <div class="__helper-link ui_tooltip_w">
-                                    <div
-                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                        <input type="checkbox"
-                                               class="custom-control-input"
-                                               id="switchAltAndTitle"
-                                               name="hiddenText"
-                                               @if($object['request']['hiddenText'] == 'true') checked @endif>
-                                        <label class="custom-control-label" for="switchAltAndTitle"></label>
+                            <div class="switch mt-3 mb-3">
+                                <div class="d-flex">
+                                    <div class="__helper-link ui_tooltip_w">
+                                        <div
+                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="switchNoindex"
+                                                   name="noIndex"
+                                                   @if($object['request']['noIndex'] == 'true') checked @endif>
+                                            <label class="custom-control-label" for="switchNoindex"></label>
+                                        </div>
                                     </div>
+                                    <p>{{ __('Track the text in the noindex tag') }}</p>
                                 </div>
-                                <p>{{ __('Track words in the alt, title, and data-text attributes') }}</p>
-                            </div>
 
-                            <div class="d-flex">
-                                <div class="__helper-link ui_tooltip_w">
-                                    <div
-                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                        <input type="checkbox"
-                                               class="custom-control-input"
-                                               id="switchConjunctionsPrepositionsPronouns"
-                                               name="conjunctionsPrepositionsPronouns"
-                                               @if($object['request']['conjunctionsPrepositionsPronouns'] == 'true') checked @endif>
-                                        <label class="custom-control-label"
-                                               for="switchConjunctionsPrepositionsPronouns"></label>
+                                <div class="d-flex">
+                                    <div class="__helper-link ui_tooltip_w">
+                                        <div
+                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="switchAltAndTitle"
+                                                   name="hiddenText"
+                                                   @if($object['request']['hiddenText'] == 'true') checked @endif>
+                                            <label class="custom-control-label" for="switchAltAndTitle"></label>
+                                        </div>
                                     </div>
+                                    <p>{{ __('Track words in the alt, title, and data-text attributes') }}</p>
                                 </div>
-                                <p>{{ __('Track conjunctions, prepositions, pronouns') }}</p>
-                            </div>
 
-                            <div class="d-flex">
-                                <div class="__helper-link ui_tooltip_w">
-                                    <div
-                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                        <input type="checkbox"
-                                               class="custom-control-input"
-                                               id="switchMyListWords"
-                                               name="switchMyListWords"
-                                               @if($object['request']['switchMyListWords'] == 'true') checked @endif>
-                                        <label class="custom-control-label" for="switchMyListWords"></label>
+                                <div class="d-flex">
+                                    <div class="__helper-link ui_tooltip_w">
+                                        <div
+                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="switchConjunctionsPrepositionsPronouns"
+                                                   name="conjunctionsPrepositionsPronouns"
+                                                   @if($object['request']['conjunctionsPrepositionsPronouns'] == 'true') checked @endif>
+                                            <label class="custom-control-label"
+                                                   for="switchConjunctionsPrepositionsPronouns"></label>
+                                        </div>
                                     </div>
+                                    <p>{{ __('Track conjunctions, prepositions, pronouns') }}</p>
                                 </div>
-                                <span>{{ __('Exclude') }}
+
+                                <div class="d-flex">
+                                    <div class="__helper-link ui_tooltip_w">
+                                        <div
+                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="switchMyListWords"
+                                                   name="switchMyListWords"
+                                                   @if($object['request']['switchMyListWords'] == 'true') checked @endif>
+                                            <label class="custom-control-label" for="switchMyListWords"></label>
+                                        </div>
+                                    </div>
+                                    <span>{{ __('Exclude') }}
                                     <span class="text-muted">{{ __('(your own list of words)') }}</span>
                                 </span>
+                                </div>
+
+                                <div class="form-group required list-words mt-1"
+                                     @if($object['request']['switchMyListWords'] == 'false') style="display:none;" @endif >
+                                    {!! Form::textarea('listWords', $object['request']['listWords'],['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
+                                </div>
                             </div>
 
-                            <div class="form-group required list-words mt-1"
-                                 @if($object['request']['switchMyListWords'] == 'false') style="display:none;" @endif >
-                                {!! Form::textarea('listWords', $object['request']['listWords'],['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
-                            </div>
+                            <button type="button" class="btn btn-secondary" id="relevance-repeat-scan">
+                                {{ __('Repeat the analysis') }}
+                            </button>
                         </div>
-
-                        <button type="button" class="btn btn-secondary" id="relevance-repeat-scan">
-                            {{ __('Repeat the analysis') }}
-                        </button>
-                    </div>
+                    @else
+                        <h3>{{ __("You don't have access to this object") }}</h3>
+                    @endif
                 </div>
             </div>
         </div>
