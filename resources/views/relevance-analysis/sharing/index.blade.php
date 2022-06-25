@@ -291,7 +291,6 @@
                                         $('.toast-top-right.success-message').hide(300)
                                     }, 3000)
                                     if (response.objects.length > 0) {
-                                        console.log(response)
                                         $.each(response.objects, function (key, value) {
                                             let options
                                             if (value['access'] === '1') {
