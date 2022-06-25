@@ -308,8 +308,8 @@
                                                 '<tr data-widget="expandable-table" aria-expanded="false"' +
                                                 ' class="share-' + value['id'] + '"> ' +
                                                 '<td> ' +
-                                                '<i class="expandable-table-caret fas fa-caret-right fa-fw"></i> ' +
-                                                +response.user.email + ' ' +
+                                                '<i class="expandable-table-caret fas fa-caret-right fa-fw"></i> '
+                                                + response.user.email + ' ' +
                                                 '<span class="text-muted"> ' +
                                                 response.user.name + ' ' + response.user.last_name +
                                                 '</span> ' +
