@@ -188,17 +188,27 @@ class HistoryRelevanceController extends Controller
     public function repeatScan(Request $request): JsonResponse
     {
         $object = RelevanceHistory::where('id', '=', $request->id)->first();
-        if ($object->state == 1 || $object->state == -1) {
-            $object->state = 0;
-            $object->save();
+        $userId = Auth::id();
+        $ownerId = $object->mainHistory->user_id;
 
-            RelevanceAnalysisQueue::dispatch(
-                $object->mainHistory->user_id,
-                $request->all(),
-                $request['id']
-            );
-            return response()->json([]);
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $ownerId)
+            ->first();
+
+        if ($ownerId == $userId || isset($share)) {
+            if ($object->state == 1 || $object->state == -1) {
+                $object->state = 0;
+                $object->save();
+
+                RelevanceAnalysisQueue::dispatch(
+                    $ownerId,
+                    $request->all(),
+                    $request['id']
+                );
+                return response()->json([]);
+            }
         }
+
 
         return response()->json([], 500);
     }
