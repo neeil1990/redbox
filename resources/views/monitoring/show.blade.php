@@ -12,6 +12,17 @@
             .table tr td:nth-child(4) {
                text-align: left;
             }
+
+            .table tr td:nth-child(4) {
+                position: sticky;
+                left: 0;
+                background-color: #FFF;
+                box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.019);
+                z-index: 1;
+            }
+            .table tr:first-child td:nth-child(4) {
+                box-shadow: none;
+            }
         </style>
     @endslot
 
@@ -79,6 +90,7 @@
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 
         <script>
+
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "1500"
@@ -100,7 +112,58 @@
 
             });
 
-            $('[data-toggle="tooltip"]').tooltip();
+            $('.table tr').each(function (i, item) {
+                let target = $(item).find('.target').text();
+                let positions = $(item).find('td span[data-position]');
+
+                $.each(positions, function (i, item) {
+                    let current = $(item).data('position');
+                    let nextTo = $(positions[i + 1]).data('position');
+
+                    let total = nextTo - current;
+
+                    if(total){
+
+                        if(total > 0)
+                            total = '+' + total;
+
+                        $(item).find('sup').text(total);
+                    }
+
+                    if(target >= current)
+                        $(item).closest('td').css('background-color', '#99e4b9');
+                    else{
+                        if(target >= nextTo)
+                            $(item).closest('td').css('background-color', '#fbe1df');
+                    }
+                });
+
+
+            });
+
+            $('[data-toggle="tooltip"]').tooltip({
+                placement: 'right',
+            });
+
+            $('[data-toggle="popover"]').popover({
+                trigger: 'manual',
+                placement: 'right',
+                html: true,
+            }).on("mouseenter", function() {
+                $(this).popover("show");
+            }).on("mouseleave", function() {
+                let self = this;
+
+                let timeout = setTimeout(function(){
+                    $(self).popover("hide");
+                }, 300);
+
+                $('.popover').hover(function () {
+                    clearTimeout(timeout);
+                }, function () {
+                    $(self).popover("hide");
+                });
+            });
         </script>
     @endslot
 
