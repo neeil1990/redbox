@@ -818,5 +818,6 @@
     "Access level": "Уровень доступа",
     "Viewing and the ability to run a re-analysis": "Просмотр и возможность запуска повторного анализа",
     "Give access": "Дать доступ",
-    "The mail of the user from whom you want to take access": "Почта пользователя у которого вы хотите забрать доступ"
+    "The mail of the user from whom you want to take access": "Почта пользователя у которого вы хотите забрать доступ",
+    "Owner": "Владелец"
 }
