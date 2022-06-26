@@ -54,8 +54,9 @@ class SharingController extends Controller
      */
     public function setAccess(Request $request): JsonResponse
     {
+        $authId = Auth::id();
         $user = User::where('email', '=', $request->email)
-            ->where('id', '!=', Auth::id())
+            ->where('id', '!=', $authId)
             ->first();
 
         if (!isset($user)) {
@@ -67,7 +68,7 @@ class SharingController extends Controller
         }
 
         $project = ProjectRelevanceHistory::where('id', '=', $request->project_id)
-            ->where('user_id', '=', Auth::id())->first();
+            ->where('user_id', '=', $authId)->first();
 
         if (!isset($project)) {
             return response()->json([
@@ -77,12 +78,25 @@ class SharingController extends Controller
             ]);
         }
 
-        $share = RelevanceSharing::firstOrCreate([
-            'user_id' => $user->id,
-            'project_id' => $request->project_id,
-            'access' => $request->access,
-            'owner_id' => Auth::id(),
-        ]);
+        $share = RelevanceSharing::where('user_id', '=', $user->id)
+            ->where('project_id', '=', $request->project_id)
+            ->where('owner_id', '=', $authId)
+            ->first();
+
+        if (isset($share)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Пользователь уже получил доступ до этого проекта',
+                'code' => 415
+            ]);
+        }
+
+        $share = new  RelevanceSharing();
+        $share->project_id = $request->project_id;
+        $share->owner_id = $authId;
+        $share->user_id = $user->id;
+        $share->access = $request->access;
+        $share->save();
 
         return response()->json([
             'success' => true,
