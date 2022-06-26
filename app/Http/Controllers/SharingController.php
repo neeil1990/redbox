@@ -66,7 +66,7 @@ class SharingController extends Controller
             ]);
         }
 
-        $project = ProjectRelevanceHistory::where('id', '=', $request->id)
+        $project = ProjectRelevanceHistory::where('id', '=', $request->project_id)
             ->where('user_id', '=', Auth::id())->first();
 
         if (!isset($project)) {

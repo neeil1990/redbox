@@ -61,7 +61,7 @@
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th>{{ __('Last check') }}</th>
                             <th>{{ __('Total score') }}</th>
-                            <th></th>
+                            <th class="col-2"></th>
                         </tr>
                         </thead>
                         <tbody>
