@@ -72,7 +72,7 @@
                     <th>Почтовый адрес</th>
                     <th>Права</th>
                     <th class="col-3">Дата выдачи доступа к проекту</th>
-                    <th></th>
+                    <th class="col-2"></th>
                 </tr>
                 </thead>
                 <tbody id="accessProjects">
