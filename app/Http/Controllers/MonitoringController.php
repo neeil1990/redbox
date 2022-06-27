@@ -220,7 +220,7 @@ class MonitoringController extends Controller
             ->prepend(__('URL'))
             ->prepend(__('Query'))
             ->prepend(__(''))
-            ->prepend('#')
+            ->prepend('<input type="checkbox" id="selected-checkbox">')
             ->prepend('ID')
             ->values();
 
@@ -251,7 +251,7 @@ class MonitoringController extends Controller
                         $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
                         break;
                     case 2:
-                        $table[$id][] = view('monitoring.partials.show.btn');
+                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $key]);
                         break;
                     case 3:
                         $table[$id][] = view('monitoring.partials.show.query', ['key' => $key]);
@@ -267,7 +267,7 @@ class MonitoringController extends Controller
                         break;
                     default:
                         $model = $group->firstWhere('date', $dates[$i]);
-                        if($model)
+                        if($model && $model->position)
                             $table[$id][] = view('monitoring.partials.show.position', ['model' => $model]);
                         else
                             $table[$id][] = '-';

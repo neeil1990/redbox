@@ -8,6 +8,11 @@ class MonitoringProject extends Model
 {
     protected $fillable = ['name', 'url', 'status'];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function keywords(){
 
         return $this->hasMany(MonitoringKeyword::class);

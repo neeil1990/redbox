@@ -85,6 +85,8 @@
         @endforeach
     </div>
 
+    @include('monitoring.keywords.modal.edit')
+
     @slot('js')
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
@@ -95,6 +97,56 @@
                 "preventDuplicates": true,
                 "timeOut": "1500"
             };
+
+            $('#edit-modal').on('show.bs.modal', function (event) {
+                let button = $(event.relatedTarget);
+
+                let id = button.data('id');
+
+                let modal = $(this);
+
+                axios.get(`/monitoring/keywords/${id}/edit`).then(function (response) {
+
+                    let content = response.data;
+
+                    modal.find('.modal-body').html(content);
+                });
+            });
+
+            $('#edit-modal').find('.save-modal').click(function () {
+                let form = $(this).closest('.modal-content').find('form');
+                let action = form.attr('action');
+                let data = {};
+
+                $.each(form.serializeArray(), function (inc, item) {
+                    $.extend( data, {[item.name]: item.value} );
+                });
+
+                axios.patch(action, data)
+                    .then(function (response) {
+                        window.location.reload();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            });
+
+            $('.delete-keyword').click(function () {
+                let item = $(this);
+                let id = item.data('id');
+
+                if (window.confirm("Do you really want to delete?")) {
+
+                    axios.delete(`/monitoring/keywords/${id}`);
+
+                    item.closest('tr').remove();
+                }
+            });
+
+            $('#selected-checkbox').change(function () {
+
+                $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+            });
 
             $('.adding-queue').click(function () {
                 let id = $(this).data('id');
