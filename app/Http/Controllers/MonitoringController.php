@@ -267,7 +267,7 @@ class MonitoringController extends Controller
                         break;
                     default:
                         $model = $group->firstWhere('date', $dates[$i]);
-                        if($model)
+                        if($model && $model->position)
                             $table[$id][] = view('monitoring.partials.show.position', ['model' => $model]);
                         else
                             $table[$id][] = '-';
