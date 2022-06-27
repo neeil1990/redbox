@@ -111,7 +111,15 @@ class MonitoringKeywordsController extends Controller
      */
     public function edit($id)
     {
-        //
+        /** @var User $user */
+        $user = $this->user;
+
+        $keyword = MonitoringKeyword::findOrFail($id);
+        if($keyword->project->user->id === $user->id){
+            return view('monitoring.keywords.edit', compact('keyword'));
+        }
+        else
+            return abort('404');
     }
 
     /**
@@ -121,7 +129,22 @@ class MonitoringKeywordsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Request $request, $id)
+    {
+        /** @var User $user */
+        $user = $this->user;
+
+        $keyword = MonitoringKeyword::findOrFail($id);
+        if($keyword->project->user->id === $user->id){
+
+            $keyword->update($request->all());
+            return $keyword;
+        }
+        else
+            return abort('404');
+    }
+
+    protected function scanPosition($id)
     {
         $model = new MonitoringKeyword();
         $query = $model->where('id', $id)->first();
