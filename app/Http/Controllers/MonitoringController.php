@@ -220,7 +220,7 @@ class MonitoringController extends Controller
             ->prepend(__('URL'))
             ->prepend(__('Query'))
             ->prepend(__(''))
-            ->prepend('#')
+            ->prepend('<input type="checkbox" id="selected-checkbox">')
             ->prepend('ID')
             ->values();
 

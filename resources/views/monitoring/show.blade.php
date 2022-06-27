@@ -96,6 +96,11 @@
                 "timeOut": "1500"
             };
 
+            $('#selected-checkbox').change(function () {
+
+                $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+            });
+
             $('.adding-queue').click(function () {
                 let id = $(this).data('id');
 
