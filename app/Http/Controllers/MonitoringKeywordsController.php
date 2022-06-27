@@ -7,6 +7,7 @@ use App\Jobs\PositionQueue;
 use App\Location;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -150,9 +151,13 @@ class MonitoringKeywordsController extends Controller
      */
     public function destroy($id)
     {
-        $position = new MonitoringPosition();
-        $position->where('id', $id)->delete();
+        /** @var User $user */
+        $user = $this->user;
 
-        return redirect()->back();
+        $keyword = MonitoringKeyword::findOrFail($id);
+        if($keyword->project->user->id === $user->id)
+            $keyword->delete();
+
+        return $keyword;
     }
 }

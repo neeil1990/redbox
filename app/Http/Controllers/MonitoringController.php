@@ -251,7 +251,7 @@ class MonitoringController extends Controller
                         $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
                         break;
                     case 2:
-                        $table[$id][] = view('monitoring.partials.show.btn');
+                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $key]);
                         break;
                     case 3:
                         $table[$id][] = view('monitoring.partials.show.query', ['key' => $key]);
