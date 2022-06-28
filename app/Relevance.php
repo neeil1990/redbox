@@ -1334,7 +1334,7 @@ class Relevance
                 ->first();
             if (empty($uniqueDomain)) {
                 $uniqueDomain = new RelevanceAllUniqueDomains();
-                $uniqueDomain->name = $page;
+                $uniqueDomain->name = $url['host'];
                 $uniqueDomain->save();
             }
         }

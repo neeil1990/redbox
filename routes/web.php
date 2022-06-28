@@ -11,6 +11,7 @@
 |
 */
 
+use App\RelevanceAllUniquePages;
 use App\RelevanceStatistics;
 use App\TelegramBot;
 use App\TextAnalyzer;
@@ -242,13 +243,14 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('bla', function () {
-    $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
+    $uniquePage = RelevanceAllUniquePages::where('name', '=', 'https://himopttorg.ru/catalog/smazochnye_materialy_1/')
+        ->first();
 
-    if ($toDay->id) {
-        $toDay->count_checks += 1;
-    } else {
-        $toDay->count_checks = 1;
+    if (empty($uniquePage)) {
+        $uniquePage = new RelevanceAllUniquePages();
+        $uniquePage->name = 'https://himopttorg.ru/catalog/smazochnye_materialy_1/';
+        $uniquePage->save();
     }
 
-    $toDay->save();
+//
 });
