@@ -165,7 +165,7 @@ class Relevance
             $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->mainPage['html'];
             $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
             if ($xmlResponse) {
-                $this->sites[$this->params['main_page_link']]['position'] = array_search('https://almamed.su/category/laringoskopy/', $xmlResponse);
+                $this->sites[$this->params['main_page_link']]['position'] = array_search(Str::lower($this->params['main_page_link']), $xmlResponse);
             } else {
                 $this->sites[$this->params['main_page_link']]['position'] = count($this->domains) + 1;
             }
@@ -200,6 +200,7 @@ class Relevance
             RelevanceProgress::editProgress(90, $this->request);
             $this->prepareClouds();
             $this->saveHistory($userId, $historyId);
+            RelevanceProgress::endProgress($this->request['hash']);
         } catch (\Throwable $e) {
             $this->saveError();
             Log::debug('Relevance Error', [

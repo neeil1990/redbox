@@ -11,6 +11,7 @@
 |
 */
 
+use App\Classes\Xml\SimplifiedXmlFacade;
 use App\RelevanceAllUniquePages;
 use App\RelevanceStatistics;
 use App\TelegramBot;
@@ -240,17 +241,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
-});
-
-Route::get('bla', function () {
-    $uniquePage = RelevanceAllUniquePages::where('name', '=', 'https://himopttorg.ru/catalog/smazochnye_materialy_1/')
-        ->first();
-
-    if (empty($uniquePage)) {
-        $uniquePage = new RelevanceAllUniquePages();
-        $uniquePage->name = 'https://himopttorg.ru/catalog/smazochnye_materialy_1/';
-        $uniquePage->save();
-    }
-
-//
 });
