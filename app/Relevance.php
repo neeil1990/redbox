@@ -200,7 +200,6 @@ class Relevance
             RelevanceProgress::editProgress(90, $this->request);
             $this->prepareClouds();
             $this->saveHistory($userId, $historyId);
-            RelevanceProgress::endProgress($this->request['hash']);
         } catch (\Throwable $e) {
             $this->saveError();
             Log::debug('Relevance Error', [
