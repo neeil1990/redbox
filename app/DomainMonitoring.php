@@ -72,7 +72,7 @@ class DomainMonitoring extends Model
             if ((boolean)$oldState == true && (boolean)$project->broken == false) {
                 $user->repairDomainNotification($project);
                 if ($user->telegram_bot_active) {
-                    TelegramBot::repairedDomenNotification($project, $user->chat_id);
+                    TelegramBot::repairedDomainNotification($project, $user->chat_id);
                     $project->time_last_notification = Carbon::now();
                 }
             }

@@ -31,7 +31,7 @@ class TelegramBot extends Model
      * @param $chatId
      * @return void
      */
-    public static function repairedDomenNotification($project, $chatId)
+    public static function repairedDomainNotification($project, $chatId)
     {
         TelegramBot::PrepareRecoveryMessage($project, $chatId);
     }
@@ -56,10 +56,10 @@ class TelegramBot extends Model
     }
 
     /**
-     * @param false $offset
+     * @param string|null $offset
      * @return array
      */
-    public static function getUpdates($offset = null): array
+    public static function getUpdates(string $offset = null): array
     {
         $data = [];
         if (isset($offset)) {
@@ -103,6 +103,8 @@ class TelegramBot extends Model
                 }
             }
         }
+
+        return false;
     }
 
     /**
