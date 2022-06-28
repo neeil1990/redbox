@@ -601,7 +601,7 @@
         <script>
             let usersProjects = $('#users_projects').DataTable({
                 "order": [[0, "desc"]],
-                "pageLength": 100,
+                "pageLength": 10,
                 "searching": true,
                 dom: 'lBfrtip',
                 buttons: [
