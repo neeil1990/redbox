@@ -49,7 +49,10 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('show.config') }}" >{{ __('Module administration') }}</a>
+                        <a class="nav-link" href="{{ route('all.relevance.projects') }}">Статистика</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>

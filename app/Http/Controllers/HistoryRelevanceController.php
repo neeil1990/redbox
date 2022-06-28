@@ -93,6 +93,10 @@ class HistoryRelevanceController extends Controller
     {
         $object = RelevanceHistory::where('id', '=', $id)->first();
 
+        if (!isset($object)) {
+            return abort(404);
+        }
+
         $access = RelevanceSharing::where('user_id', '=', Auth::id())
             ->where('project_id', '=', $object->project_relevance_history_id)
             ->first();

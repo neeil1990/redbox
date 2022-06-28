@@ -179,27 +179,35 @@ class Relevance
      */
     public function analysis($userId, $historyId = false)
     {
-        $this->removeNoIndex();
-        RelevanceProgress::editProgress(20, $this->request);
-        $this->getHiddenData();
-        $this->separateLinksFromText();
-        $this->removePartsOfSpeech();
-        RelevanceProgress::editProgress(50, $this->request);
-        $this->removeListWords();
-        $this->getTextFromCompetitors();
-        RelevanceProgress::editProgress(70, $this->request);
-        $this->separateAllText();
-        $this->preparePhrasesTable();
-        $this->searchWordForms();
-        RelevanceProgress::editProgress(80, $this->request);
-        $this->processingOfGeneralInformation();
-        $this->prepareUnigramTable();
-        $this->analyzeRecommendations();
-        $this->prepareAnalysedSitesTable();
-        RelevanceProgress::editProgress(90, $this->request);
-        $this->prepareClouds();
-        $this->saveResults();
-        $this->saveHistory($userId, $historyId);
+        try {
+            $this->removeNoIndex();
+            RelevanceProgress::editProgress(20, $this->request);
+            $this->getHiddenData();
+            $this->separateLinksFromText();
+            $this->removePartsOfSpeech();
+            RelevanceProgress::editProgress(50, $this->request);
+            $this->removeListWords();
+            $this->getTextFromCompetitors();
+            RelevanceProgress::editProgress(70, $this->request);
+            $this->separateAllText();
+            $this->preparePhrasesTable();
+            $this->searchWordForms();
+            RelevanceProgress::editProgress(80, $this->request);
+            $this->processingOfGeneralInformation();
+            $this->prepareUnigramTable();
+            $this->analyzeRecommendations();
+            $this->prepareAnalysedSitesTable();
+            RelevanceProgress::editProgress(90, $this->request);
+            $this->prepareClouds();
+            $this->saveHistory($userId, $historyId);
+        } catch (\Throwable $e) {
+            $this->saveError();
+            Log::debug('Relevance Error', [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -1142,6 +1150,9 @@ class Relevance
      */
     public function saveHistory($userId, $historyId)
     {
+        $this->saveResults();
+        $this->saveStatistic();
+
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
 
@@ -1279,4 +1290,51 @@ class Relevance
         }
     }
 
+    /**
+     * @return void
+     */
+    public function saveStatistic()
+    {
+        $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
+        if ($toDay->id) {
+            $toDay->count_checks += 1;
+        } else {
+            $toDay->count_checks = 1;
+        }
+        $toDay->save();
+
+        RelevanceUniquePages::firstOrCreate([
+            'name' => $this->params['main_page_link']
+        ]);
+
+        $url = parse_url($this->params['main_page_link']);
+        RelevanceUniqueDomains::firstOrCreate([
+            'name' => $url['host']
+        ]);
+
+        foreach ($this->sites as $page => $item) {
+            $url = parse_url($page);
+            RelevanceAllUniquePages::firstOrCreate([
+                'name' => $page
+            ]);
+
+            RelevanceAllUniqueDomains::firstOrCreate([
+                'name' => $url['host']
+            ]);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function saveError()
+    {
+        $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
+        if ($toDay->id) {
+            $toDay->count_fails += 1;
+        } else {
+            $toDay->count_fails = 1;
+        }
+        $toDay->save();
+    }
 }

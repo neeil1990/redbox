@@ -263,41 +263,6 @@ class RelevanceController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
-     */
-    public function changeConfig(Request $request): RedirectResponse
-    {
-        $config = RelevanceAnalysisConfig::first();
-        if (!$config) {
-            $config = new RelevanceAnalysisConfig();
-        }
-
-        $config->count_sites = $request->count;
-        $config->region = $request->region;
-        $config->ignored_domains = $request->ignored_domains;
-        $config->separator = $request->separator;
-
-        $config->noindex = $request->noindex;
-        $config->meta_tags = $request->meta_tags;
-        $config->parts_of_speech = $request->parts_of_speech;
-        $config->remove_my_list_words = $request->remove_my_list_words;
-        $config->my_list_words = $request->my_list_words;
-        $config->hide_ignored_domains = $request->hide_ignored_domains;
-
-        $config->ltp_count = $request->ltp_count;
-        $config->ltps_count = $request->ltps_count;
-        $config->scanned_sites_count = $request->scanned_sites_count;
-        $config->recommendations_count = $request->recommendations_count;
-
-        $config->boostPercent = $request->boostPercent;
-
-        $config->save();
-
-        return Redirect::back();
-    }
-
-    /**
-     * @param Request $request
      * @return void
      */
     public function removePageHistory(Request $request)
@@ -309,17 +274,4 @@ class RelevanceController extends Controller
         Log::debug("У пользователя " . Auth::id() . " была отчищена история сканирования");
     }
 
-    /**
-     * @return View
-     */
-    public function showConfig(): View
-    {
-        $admin = User::isUserAdmin();
-        $config = RelevanceAnalysisConfig::first();
-
-        return view('relevance-analysis.relevance-config', [
-            'admin' => $admin,
-            'config' => $config,
-        ]);
-    }
 }

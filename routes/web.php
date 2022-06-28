@@ -11,7 +11,10 @@
 |
 */
 
+use App\RelevanceStatistics;
 use App\TelegramBot;
+use App\TextAnalyzer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -195,7 +198,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
     Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
-    Route::post('/change-config', 'RelevanceController@changeConfig')->name('changeConfig');
     Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
     Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
     Route::post('/edit-history-comment', 'HistoryRelevanceController@editComment')->name('edit.history.comment');
@@ -208,7 +210,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
     Route::post('/edit-tag', 'RelevanceTagsController@edit')->name('edit.relevance.tag');
-    Route::get('/relevance-config', 'RelevanceController@showConfig')->name('show.config');
+    Route::get('/relevance-config', 'AdminController@showConfig')->name('show.config');
+    Route::post('/change-config', 'AdminController@changeConfig')->name('changeConfig');
+
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
@@ -234,9 +238,17 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/remove-guest-access', 'SharingController@removeGuestAccess')->name('remove.guest.access');
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
+    Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
 
 Route::get('bla', function () {
-    $i = \App\RelevanceHistory::first();
-    dd($i->mainHistory->user_id);
+    $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
+
+    if ($toDay->id) {
+        $toDay->count_checks += 1;
+    } else {
+        $toDay->count_checks = 1;
+    }
+
+    $toDay->save();
 });
