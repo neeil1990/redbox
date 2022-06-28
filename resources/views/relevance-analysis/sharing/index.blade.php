@@ -59,7 +59,7 @@
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Tags') }}</th>
+                             <th class="table-header">{{ __('Tags') }}</th>
                             <th>{{ __('Users who have access to the project') }}</th>
                             <th></th>
                         </tr>

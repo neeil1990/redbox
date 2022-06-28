@@ -136,11 +136,15 @@
                         <a href="{{ route('sharing.view') }}" class="nav-link">{{ __('Share your projects') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('access.project') }}" class="nav-link">{{ __('Projects available to you') }}</a>
+                        <a href="{{ route('access.project') }}"
+                           class="nav-link">{{ __('Projects available to you') }}</a>
                     </li>
                     @if($admin)
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('show.config') }}" >{{ __('Module administration') }}</a>
+                            <a class="nav-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                         </li>
                     @endif
                 </ul>
@@ -161,7 +165,7 @@
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Tags') }}</th>
+                            <th class="table-header">{{ __('Tags') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th>{{ __('Last check') }}</th>
                             <th>{{ __('Total score') }}</th>
@@ -386,7 +390,8 @@
                                     <input type="hidden" id="hiddenId">
                                     <input type="hidden" id="type">
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Close') }}
                                         </button>
                                         <button type="button" class="btn btn-secondary" id="relevance-repeat-scan"
                                                 data-dismiss="modal">
