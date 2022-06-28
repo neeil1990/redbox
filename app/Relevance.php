@@ -205,7 +205,8 @@ class Relevance
             Log::debug('Relevance Error', [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'userId' => Auth::id(),
             ]);
         }
     }
