@@ -46,11 +46,11 @@ function renderUnigramTable(unigramTable, count) {
             if (settings.nTable.id !== 'unigram') {
                 return true;
             }
+
             return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && target <= max) ||
                 (min <= target && isNaN(max)) ||
                 (min <= target && target <= max);
-
         }
 
         $.fn.dataTable.ext.search.push(function (settings, data) {

@@ -46,6 +46,9 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
@@ -59,7 +62,7 @@
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Tags') }}</th>
+                             <th class="table-header">{{ __('Tags') }}</th>
                             <th>{{ __('Users who have access to the project') }}</th>
                             <th></th>
                         </tr>

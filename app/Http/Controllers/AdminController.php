@@ -10,6 +10,7 @@ use App\RelevanceStatistics;
 use App\RelevanceUniqueDomains;
 use App\RelevanceUniquePages;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -27,8 +28,10 @@ class AdminController extends Controller
      */
     public function relevanceHistoryProjects(): View
     {
+        $firstDay = new Carbon('first day of this month');
         $config = RelevanceAnalysisConfig::first();
 
+        $month = RelevanceStatistics::where('created_at', '>=', $firstDay->toDateString())->sum('count_checks');
         $statistics = RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first();
         $projects = ProjectRelevanceHistory::all();
 
@@ -38,6 +41,7 @@ class AdminController extends Controller
             'admin' => true,
             'statistics' => [
                 'toDay' => $statistics,
+                'month' => $month,
                 'pages' => RelevanceUniquePages::count(),
                 'domains' => RelevanceUniqueDomains::count(),
                 'allDomains' => RelevanceAllUniqueDomains::count(),

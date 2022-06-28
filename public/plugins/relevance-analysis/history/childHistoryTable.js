@@ -10,16 +10,51 @@ function changeState(elem) {
     });
 }
 
-$('#changeAllState').on('change', function () {
-    let state = $(this).is(':checked')
-    $.each($('.custom-control-input.switch'), function () {
-        if (state !== $(this).is(':checked')) {
-            $(this).trigger('click');
-        }
-    });
-});
+function isValidate(min, max, target, settings) {
+    if (settings.nTable.id === 'history_table') {
+        return (isNaN(min) && isNaN(max)) ||
+            (isNaN(min) && target <= max) ||
+            (min <= target && isNaN(max)) ||
+            (min <= target && target <= max);
+    } else {
+        return true;
+    }
+}
 
-$(document).ready(function (){
+function isIncludes(target, search, settings) {
+    if (settings.nTable.id === 'history_table') {
+        if (search.length > 0) {
+            return target.includes(search)
+        } else {
+            return true;
+        }
+    } else {
+        return true;
+    }
+}
+
+function isDateValid(target, settings) {
+    if (settings.nTable.id === 'history_table') {
+        let date = new Date(target)
+        let dateMin = new Date($('#dateMin').val() + ' 00:00:00')
+        let dateMax = new Date($('#dateMax').val() + ' 23:59:59')
+        if (date >= dateMin && date <= dateMax) {
+            return true;
+        }
+    }
+}
+
+$(document).ready(function () {
+
+    $('#changeAllState').on('change', function () {
+        let state = $(this).is(':checked')
+        $.each($('.custom-control-input.switch'), function () {
+            if (state !== $(this).is(':checked')) {
+                $(this).trigger('click');
+            }
+        });
+    });
+
     setInterval(() => {
         $('.project_name').unbind().click(function () {
             $.ajax({
@@ -110,7 +145,7 @@ $(document).ready(function (){
                     })
 
                     $(document).ready(function () {
-                        let table = $('#history_table').DataTable({
+                        let historyTable = $('#history_table').DataTable({
                             "order": [[0, "desc"]],
                             "pageLength": 25,
                             "searching": true,
@@ -134,7 +169,7 @@ $(document).ready(function (){
                             easing: "linear"
                         });
 
-                        $('.history-comment').change(function () {
+                        $('.history-comment').unbind().change(function () {
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
@@ -152,7 +187,6 @@ $(document).ready(function (){
                                 },
                             });
                         });
-
 
                         $('.get-history-info').unbind("click").click(function () {
                             let id = $(this).attr('data-order')
@@ -239,139 +273,121 @@ $(document).ready(function (){
                         });
 
                         //------------------------ CUSTOM FILTERS -----------------------
-
-                        function isValidate(min, max, target, settings) {
-                            if (settings.nTable.id !== 'history_table') {
-                                return true;
-                            }
-                            return (isNaN(min) && isNaN(max)) ||
-                                (isNaN(min) && target <= max) ||
-                                (min <= target && isNaN(max)) ||
-                                (min <= target && target <= max);
-                        }
-
-                        function isIncludes(target, search) {
-                            if (search.length > 0) {
-                                return target.includes(search)
-                            } else {
-                                return true;
-                            }
-                        }
-
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var projectComment = String($('#projectComment').val()).toLowerCase();
                             var target = String(data[1]).toLowerCase();
-                            return isIncludes(target, projectComment)
+                            return isIncludes(target, projectComment, settings)
                         });
                         $('#projectComment').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var phraseSearch = String($('#phraseSearch').val()).toLowerCase();
                             var target = String(data[2]).toLowerCase();
-                            return isIncludes(target, phraseSearch)
+                            return isIncludes(target, phraseSearch, settings)
                         });
                         $('#phraseSearch').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var regionSearch = String($('#regionSearch').val()).toLowerCase();
                             var target = String(data[3]).toLowerCase();
-                            return isIncludes(target, regionSearch)
+                            return isIncludes(target, regionSearch, settings)
                         });
                         $('#regionSearch').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var mainPageSearch = String($('#mainPageSearch').val()).toLowerCase();
                             var target = String(data[4]).toLowerCase();
-                            return isIncludes(target, mainPageSearch)
+                            return isIncludes(target, mainPageSearch, settings)
                         });
                         $('#mainPageSearch').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var maxPosition = parseFloat($('#maxPosition').val());
                             var minPosition = parseFloat($('#minPosition').val());
                             var target = parseFloat(data[5]);
                             return isValidate(minPosition, maxPosition, target, settings)
                         });
                         $('#minPosition, #maxPosition').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var maxPoints = parseFloat($('#maxPoints').val());
                             var minPoints = parseFloat($('#minPoints').val());
                             var target = parseFloat(data[6]);
                             return isValidate(minPoints, maxPoints, target, settings)
                         });
                         $('#minPoints, #maxPoints').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var maxCoverage = parseFloat($('#maxCoverage').val());
                             var minCoverage = parseFloat($('#minCoverage').val());
                             var target = parseFloat(data[7]);
                             return isValidate(minCoverage, maxCoverage, target, settings)
                         });
                         $('#minCoverage, #maxCoverage').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var maxCoverageTf = parseFloat($('#maxCoverageTf').val());
                             var minCoverageTf = parseFloat($('#minCoverageTf').val());
                             var target = parseFloat(data[8]);
                             return isValidate(minCoverageTf, maxCoverageTf, target, settings)
                         });
                         $('#minCoverageTf, #maxCoverageTf').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var maxWidth = parseFloat($('#maxWidth').val());
                             var minWidth = parseFloat($('#minWidth').val());
                             var target = parseFloat(data[9]);
                             return isValidate(minWidth, maxWidth, target, settings)
                         });
                         $('#minWidth, #maxWidth').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
+                            console.log('aboba')
                             var maxDensity = parseFloat($('#maxDensity').val());
                             var minDensity = parseFloat($('#minDensity').val());
                             var target = parseFloat(data[10]);
                             return isValidate(minDensity, maxDensity, target, settings)
                         });
                         $('#minDensity, #maxDensity').keyup(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
-
-                        function isDateValid(target) {
-                            let date = new Date(target)
-                            let dateMin = new Date($('#dateMin').val() + ' 00:00:00')
-                            let dateMax = new Date($('#dateMax').val() + ' 23:59:59')
-                            if (date >= dateMin && date <= dateMax) {
-                                return true;
-                            }
-                        }
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
                             var target = String(data[0]);
-                            return isDateValid(target)
+                            return isDateValid(target, settings)
                         });
                         $('#dateMin').change(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
                         $('#dateMax').change(function () {
-                            table.draw();
+                            historyTable.draw();
                         });
                     });
                 },

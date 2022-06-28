@@ -45,7 +45,7 @@
                     </li>
                     @if($admin)
                         <li class="nav-item">
-                            <a class="nav-link active" href="{{ route('all.relevance.projects') }}">Статистика</a>
+                            <a class="nav-link active" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
@@ -62,6 +62,7 @@
                         <thead>
                         <tr>
                             <th>{{ __('Number of checks for the current day') }}</th>
+                            <th>{{ __('Number of checks for the current month') }}</th>
                             <th>{{ __('Number of errors for the current day') }}</th>
                             <th>{{ __('Number of unique landing pages') }}</th>
                             <th>{{ __('Number of unique landing domains') }}</th>
@@ -72,6 +73,7 @@
                         <tbody>
                         <tr>
                             <td> {{ $statistics['toDay']['count_checks'] ?? 0 }} </td>
+                            <td> {{ $statistics['month']}} </td>
                             <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
                             <td> {{ $statistics['pages'] }} </td>
                             <td> {{ $statistics['domains'] }} </td>
@@ -86,7 +88,7 @@
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Tags') }}</th>
+                             <th class="table-header">{{ __('Tags') }}</th>
                             <th>{{ __('Owner') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th>{{ __('Last check') }}</th>
@@ -600,9 +602,9 @@
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
             let usersProjects = $('#users_projects').DataTable({
-                "order": [[0, "desc"]],
-                "pageLength": 10,
-                "searching": true,
+                order: [[0, "desc"]],
+                pageLength: 10,
+                searching: true,
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
