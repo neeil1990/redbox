@@ -10,6 +10,7 @@ use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\MonitoringProject;
 use App\User;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -195,26 +196,36 @@ class MonitoringController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $navigations = $this->navigations();
+
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        $navigations = $this->navigations();
+        $keywords = $project->keywords();
+
+        $this->filter($keywords, $request);
+
+        $keywords = $keywords->get();
 
         $region = $project->searchengines()->orderBy('id', 'asc')->first();
-
         $region->load('location');
 
-        $position = $region->positions()->get();
+        $keywords->load(['positions' => function($query) use ($region){
+            $query->where('monitoring_searchengine_id', $region->id);
+        }]);
 
-        $dates = $position->unique(function($item){
-            return $item->date;
-        })->pluck('date')->sortByDesc(null)
+        $dates = $region->positions()
+            ->get()
+            ->unique(function($item){
+                return $item->date;
+            })->pluck('date')->sortByDesc(null)
             ->prepend(__('Target'))
             ->prepend(__('Group'))
             ->prepend(__('URL'))
@@ -224,24 +235,27 @@ class MonitoringController extends Controller
             ->prepend('ID')
             ->values();
 
-        $groups = $position->groupBy('monitoring_keyword_id')
-            ->transform(function($item){
+        $keywords->transform(function($item){
 
-                $unique = $item->sortByDesc('id')->unique(function($item){
-                    return $item->created_at->format('d.m.Y');
-                });
+            $unique = $item->positions->sortByDesc('id')->unique(function($item){
+                return $item->created_at->format('d.m.Y');
+            });
 
-                return $unique;
+            $item->last_positions = $unique;
+
+            return $item;
         });
 
         $table = [];
+
         $length = $dates->count();
-        foreach ($groups as $id => $group){
+        foreach ($keywords as $keyword){
+
+            $id = $keyword->id;
 
             $table[$id] = [];
-            for($i = 0; $i < $length; $i++){
 
-                $key = MonitoringKeyword::findOrFail($id);
+            for($i = 0; $i < $length; $i++){
 
                 switch ($i) {
                     case 0:
@@ -251,22 +265,22 @@ class MonitoringController extends Controller
                         $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
                         break;
                     case 2:
-                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $key]);
+                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $keyword]);
                         break;
                     case 3:
-                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $key]);
+                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $keyword]);
                         break;
                     case 4:
                         $table[$id][] = view('monitoring.partials.show.url');
                         break;
                     case 5:
-                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $key->group]);
+                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $keyword->group]);
                         break;
                     case 6:
-                        $table[$id][] = view('monitoring.partials.show.target', ['key' => $key]);
+                        $table[$id][] = view('monitoring.partials.show.target', ['key' => $keyword]);
                         break;
                     default:
-                        $model = $group->firstWhere('date', $dates[$i]);
+                        $model = $keyword->last_positions->firstWhere('date', $dates[$i]);
                         if($model && $model->position)
                             $table[$id][] = view('monitoring.partials.show.position', ['model' => $model]);
                         else
@@ -278,6 +292,21 @@ class MonitoringController extends Controller
         $table = collect($table)->prepend($dates);
 
         return view('monitoring.show', compact('table', 'navigations', 'region'));
+    }
+
+    /**
+     * @param $keywords
+     * @param $request
+     */
+    protected function filter(&$keywords, Request $request)
+    {
+        $field = $request->input('field', null);
+        $query = $request->input('query', null);
+
+        if($query){
+
+            $keywords->where($field, 'like', $query.'%');
+        }
     }
 
     private function navigations()
