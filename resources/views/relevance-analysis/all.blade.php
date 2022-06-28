@@ -71,8 +71,8 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td> {{ $statistics['toDay']['count_checks'] }} </td>
-                            <td> {{ $statistics['toDay']['count_fails'] }} </td>
+                            <td> {{ $statistics['toDay']['count_checks'] ?? 0 }} </td>
+                            <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
                             <td> {{ $statistics['pages'] }} </td>
                             <td> {{ $statistics['domains'] }} </td>
                             <td> {{ $statistics['allDomains'] }} </td>
