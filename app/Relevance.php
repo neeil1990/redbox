@@ -1304,39 +1304,16 @@ class Relevance
         }
         $toDay->save();
 
-        $page = RelevanceUniquePages::where('name', '=', $this->params['main_page_link'])
-            ->first();
-        if (empty($page)) {
-            $page = new RelevanceAllUniquePages();
-            $page->name = $this->params['main_page_link'];
-            $page->save();
-        }
+        RelevanceUniquePages::firstOrCreate(['name' => Str::lower($this->params['main_page_link'])]);
 
-        $url = parse_url($this->params['main_page_link']);
-        $domain = RelevanceUniqueDomains::where('name', '=', $url['host'])->first();
-        if (empty($domain)) {
-            $domain = new RelevanceUniqueDomains();
-            $domain->name = $url['host'];
-            $domain->save();
-        }
+        $mainUrl = parse_url($this->params['main_page_link']);
+        RelevanceUniqueDomains::firstOrCreate(['name' => Str::lower($mainUrl['host'])]);
 
-        foreach ($this->sites as $page => $item) {
-            $url = parse_url($page);
-            $uniquePage = RelevanceAllUniquePages::where('name', '=', $page)
-                ->first();
-            if (empty($uniquePage)) {
-                $uniquePage = new RelevanceAllUniquePages();
-                $uniquePage->name = $page;
-                $uniquePage->save();
-            }
+        foreach ($this->sites as $url => $item) {
+            RelevanceAllUniquePages::firstOrCreate(['name' => Str::lower($url)]);
 
-            $uniqueDomain = RelevanceAllUniqueDomains::where('name', '=', $url['host'])
-                ->first();
-            if (empty($uniqueDomain)) {
-                $uniqueDomain = new RelevanceAllUniqueDomains();
-                $uniqueDomain->name = $url['host'];
-                $uniqueDomain->save();
-            }
+            $link = parse_url($url);
+            RelevanceAllUniqueDomains::firstOrCreate(['name' => Str::lower($link['host'])]);
         }
     }
 

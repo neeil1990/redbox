@@ -15,7 +15,7 @@ class CreateRelevanceAllUniquePagesTable extends Migration
     {
         Schema::create('relevance_all_unique_pages', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->text('name');
             $table->timestamps();
         });
     }
