@@ -9,22 +9,3 @@ let mainHistory = $('#main_history_table').DataTable({
 });
 
 $(".dt-button").addClass('btn btn-secondary')
-
-$(".group-name-input").change(function () {
-    $.ajax({
-        type: "POST",
-        dataType: "json",
-        url: "/edit-group-name",
-        data: {
-            id: $(this).attr('data-target'),
-            name: $(this).val()
-        },
-        success: function () {
-            $('#toast-container').show(300)
-            $('#message-info').html('Название успешно изменено')
-            setInterval(function () {
-                $('#toast-container').hide(300)
-            }, 3000)
-        },
-    });
-});

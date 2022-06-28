@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  'Статисткика'])
+@component('component.card', ['title' =>  __('Statistics')])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -57,16 +57,16 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <h3>Общая статистика модуля</h3>
+                    <h3>{{ __('General statistics of the module') }}</h3>
                     <table id="statistics_table" class="table table-bordered table-hover dataTable dtr-inline mb-5">
                         <thead>
                         <tr>
-                            <th>Количетсво проверок за текущие сутки</th>
-                            <th>Количетсво ошибок за текущие сутки</th>
-                            <th>Количество уникальных посадочных страниц</th>
-                            <th>Количество уникальных посадочных доменов</th>
-                            <th>Общее количество уникальных проанализированных доменов</th>
-                            <th>Общее количество уникальных проанализированных сайтов</th>
+                            <th>{{ __('Number of checks for the current day') }}</th>
+                            <th>{{ __('Number of errors for the current day') }}</th>
+                            <th>{{ __('Number of unique landing pages') }}</th>
+                            <th>{{ __('Number of unique landing domains') }}</th>
+                            <th>{{ __('Total number of unique analyzed domains') }}</th>
+                            <th>{{ __('Total number of unique analyzed sites') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -81,8 +81,8 @@
                         </tbody>
                     </table>
 
-                    <h3>Все проекты пользователей</h3>
-                    <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
+                    <h3>{{ __('All user projects') }}</h3>
+                    <table id="users_projects" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
@@ -407,42 +407,39 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th class="table-header">Дата последней проверки</th>
+                                <th class="table-header">{{ __('Date of last check') }}</th>
                                 <th class="table-header" style="min-width: 200px">
-                                    Комментарий
+                                    {{ __('Comment') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
-                                    Фраза
+                                    {{ __('Phrase') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
-                                    Регион
+                                    {{ __('Region') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; max-width:160px; height: 83px">
-                                    Посадочная страница
+                                    {{ __('Landing page') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Позиция в топе
+                                    {{ __('Position in the top') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Баллы
+                                    {{ __('Points') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Охват важных
-                                    слова
+                                    {{ __('Coverage of important words') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Охват tf
+                                    {{ __('TF coverage') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Ширина
+                                    {{ __('Width') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Плотность
+                                    {{ __('Density') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Учитывать в
-                                    расчёте общего
-                                    балла
+                                    {{ __('Take into account when calculating the total score') }}
                                 </th>
                                 <th class="table-header"></th>
                             </tr>
@@ -602,175 +599,18 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
-            setInterval(() => {
-                refreshMethods()
-            }, 1000)
+            let usersProjects = $('#users_projects').DataTable({
+                "order": [[0, "desc"]],
+                "pageLength": 100,
+                "searching": true,
+                dom: 'lBfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+            });
 
-            $('.create-new-link').on('click', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('create.link.project.with.tag') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        projectId: $('#project-id').val(),
-                        tagId: $('#tag-id').val()
-                    },
-                    success: function (response) {
-                        if (response.code === 200) {
-                            $('#project-' + response.project.id).append(
-                                '<div style="color: ' + response.tag.color + '">' + response.tag.name + '' +
-                                ' <i class="fa fa-trash remove-project-relevance-link" style="opacity: 0.5; cursor: pointer"' +
-                                ' data-tag="' + response.tag.id + '" data-history="' + response.project.id + '"></i>' +
-                                '</div>'
-                            )
-                            getSuccessMessage(response.message)
-                        } else if (response.code === 415) {
-                            getErrorMessage(response.message)
-                        }
-                    },
-                });
-            })
+            $(".dt-button").addClass('btn btn-secondary')
 
-            function refreshMethods() {
-                $('#create-tag').unbind().on('click', function () {
-                    if ($('#tag-name').val() !== '') {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('store.relevance.tag') }}",
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                name: $('#tag-name').val(),
-                                color: $('#tag-color').val()
-                            },
-                            success: function (response) {
-                                if (response.code === 201) {
-                                    $('#tags-list').append(
-                                        '<li data-target="' + response.tag.id + '"> ' +
-                                        '   <div class="btn-group mb-2"> ' +
-                                        '<input type="color" class="tag-color-input" data-target="' + response.tag.id + '" value="' + response.tag.color + '" style="height: 37px">' +
-                                        '       <input type="text" class="form form-control w-100 tag-name-input d-inline" style="display: inline !important;" ' +
-                                        '       data-target="' + response.tag.id + '" value="' + response.tag.name + '">' +
-                                        '<button type="button" class="btn btn-secondary col-2 remove-tag" data-target="' + response.tag.id + '"> ' +
-                                        '       <i class="fa fa-trash text-white"></i></button> ' +
-                                        '   </div> ' +
-                                        '</li>'
-                                    )
-                                    getSuccessMessage('Метка успешно создана')
-
-
-                                    $('#tag-id').append(
-                                        '<option value="' + response.tag.id + '" id="option-tag-' + response.tag.id + '">' + response.tag.name + '</option>'
-                                    )
-                                } else if (response.code === 415) {
-                                    getErrorMessage(response.message)
-                                }
-                            },
-                        });
-                    }
-                })
-
-                $('.remove-tag').unbind().on('click', function () {
-                    let ojb = $(this)
-                    let id = $(this).attr('data-target')
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('destroy.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target')
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage('Метка успешно удалена')
-                                ojb.parent().parent().remove()
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    $(this).parent().remove()
-                                })
-
-                                $('#option-tag-' + id).remove()
-                            }
-                        },
-                    });
-                })
-
-                $('.tag-name-input').unbind().on('change', function () {
-                    var prev = this.defaultValue;
-                    var current = $(this).val();
-
-                    let id = $(this).attr('data-target')
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target'),
-                            name: $(this).val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    let oldHtml = $(this).parent().html()
-                                    let newHtml = oldHtml.replace(prev, current)
-                                    $(this).parent().html(newHtml)
-                                })
-                            }
-                        },
-                    });
-                    this.defaultValue = current
-                })
-
-                $('.tag-color-input').unbind().on('change', function () {
-                    let id = $(this).attr('data-target')
-                    let color = $(this).val()
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target'),
-                            color: $(this).val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    $(this).parent().css('color', color)
-                                })
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-
-                $('.remove-project-relevance-link').unbind().on('click', function () {
-                    let elem = $(this)
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('destroy.link.project.with.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-tag'),
-                            projectId: $(this).attr('data-history')
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                elem.parent().remove()
-                                getSuccessMessage(response.message)
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-            }
 
             function getSuccessMessage(message) {
                 $('.toast-top-right.success-message').show(300)

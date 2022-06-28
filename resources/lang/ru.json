@@ -819,5 +819,19 @@
     "Viewing and the ability to run a re-analysis": "Просмотр и возможность запуска повторного анализа",
     "Give access": "Дать доступ",
     "The mail of the user from whom you want to take access": "Почта пользователя у которого вы хотите забрать доступ",
-    "Owner": "Владелец"
+    "Owner": "Владелец",
+    "Statistics": "Статистика",
+    "General statistics of the module": "Общая статистика модуля",
+    "Number of errors for the current day": "Количество ошибок за текущие сутки",
+    "Number of unique landing pages": "Количество уникальных посадочных страниц",
+    "Number of unique landing domains": "Количество уникальных посадочных доменов",
+    "Total number of unique analyzed domains": "Общее количество уникальных проанализированных доменов",
+    "Total number of unique analyzed sites": "Общее количество уникальных проанализированных сайтов",
+    "All user projects": "Все проекты пользователей",
+    "Date of last check": "Дата последней проверки",
+    "Comment": "Комментарий",
+    "Landing page": "Посадочная страница",
+    "Coverage of important words": "Охват важных слов",
+    "TF coverage": "Охват tf",
+    "Take into account when calculating the total score": "Учитывать в расчёте общего балла"
 }
