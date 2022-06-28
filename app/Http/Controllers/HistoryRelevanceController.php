@@ -91,6 +91,7 @@ class HistoryRelevanceController extends Controller
      */
     public function show(int $id)
     {
+        $admin = User::isUserAdmin();
         $object = RelevanceHistory::where('id', '=', $id)->first();
 
         if (!isset($object)) {
@@ -101,7 +102,7 @@ class HistoryRelevanceController extends Controller
             ->where('project_id', '=', $object->project_relevance_history_id)
             ->first();
 
-        if (!isset($access) && $object->projectRelevanceHistory->user_id != Auth::id()) {
+        if (!isset($access) && $object->projectRelevanceHistory->user_id != Auth::id() && !$admin) {
             return abort(403, __("You don't have access to this object"));
         }
 
