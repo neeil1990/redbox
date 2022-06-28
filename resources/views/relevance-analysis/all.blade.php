@@ -58,27 +58,39 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
                     <h3>{{ __('General statistics of the module') }}</h3>
-                    <table id="statistics_table" class="table table-bordered table-hover dataTable dtr-inline mb-5">
-                        <thead>
-                        <tr>
-                            <th>{{ __('Number of checks for the current day') }}</th>
-                            <th>{{ __('Number of checks for the current month') }}</th>
-                            <th>{{ __('Number of errors for the current day') }}</th>
-                            <th>{{ __('Number of unique landing pages') }}</th>
-                            <th>{{ __('Number of unique landing domains') }}</th>
-                            <th>{{ __('Total number of unique analyzed domains') }}</th>
-                            <th>{{ __('Total number of unique analyzed sites') }}</th>
-                        </tr>
-                        </thead>
+                    <table style="margin: 0 0 35px 0 !important; width: 35%" id="statistics_table" class="table table-bordered table-hover dataTable dtr-inline mb-5">
                         <tbody>
                         <tr>
+                            <th class="col-10">{{ __('Number of checks for the current day') }}</th>
                             <td> {{ $statistics['toDay']['count_checks'] ?? 0 }} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of checks for the current month') }}</th>
                             <td> {{ $statistics['month']}} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of errors for the current day') }}</th>
                             <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of unique landing pages') }}</th>
                             <td> {{ $statistics['pages'] }} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of unique landing domains') }}</th>
                             <td> {{ $statistics['domains'] }} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Total number of unique analyzed domains') }}</th>
                             <td> {{ $statistics['allDomains'] }} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Total number of unique analyzed sites') }}</th>
                             <td> {{ $statistics['allPages'] }} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of tasks in the queue') }}</th>
+                            <td> {{ $statistics['countJobs'] }} </td>
                         </tr>
                         </tbody>
                     </table>

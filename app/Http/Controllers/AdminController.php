@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs;
 use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
 use App\RelevanceAllUniquePages;
@@ -45,7 +46,8 @@ class AdminController extends Controller
                 'pages' => RelevanceUniquePages::count(),
                 'domains' => RelevanceUniqueDomains::count(),
                 'allDomains' => RelevanceAllUniqueDomains::count(),
-                'allPages' => RelevanceAllUniquePages::count()
+                'allPages' => RelevanceAllUniquePages::count(),
+                'countJobs' => Jobs::count(),
             ]
         ]);
     }
