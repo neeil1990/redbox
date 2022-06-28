@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  "Проект $project->name" ])
+@component('component.card', ['title' =>  "$project->name" ])
 @section('content')
     @slot('css')
         <link rel="stylesheet" type="text/css"
