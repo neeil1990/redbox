@@ -241,9 +241,9 @@ $(document).ready(function (){
                         //------------------------ CUSTOM FILTERS -----------------------
 
                         function isValidate(min, max, target, settings) {
-                            // if (settings.nTable.id !== 'history_table') {
-                            //     return true;
-                            // }
+                            if (settings.nTable.id !== 'history_table') {
+                                return true;
+                            }
                             return (isNaN(min) && isNaN(max)) ||
                                 (isNaN(min) && target <= max) ||
                                 (min <= target && isNaN(max)) ||

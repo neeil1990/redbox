@@ -823,6 +823,7 @@
     "Statistics": "Статистика",
     "General statistics of the module": "Общая статистика модуля",
     "Number of errors for the current day": "Количество ошибок за текущие сутки",
+    "Number of checks for the current day": "Количество проверок за текущие сутки",
     "Number of unique landing pages": "Количество уникальных посадочных страниц",
     "Number of unique landing domains": "Количество уникальных посадочных доменов",
     "Total number of unique analyzed domains": "Общее количество уникальных проанализированных доменов",
