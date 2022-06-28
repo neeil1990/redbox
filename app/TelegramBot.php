@@ -224,16 +224,18 @@ class TelegramBot extends Model
      */
     public static function sendMessage($text, $chatId)
     {
-        $data = [
-            'text' => $text,
-            'chat_id' => $chatId,
-            'parse_mode' => 'HTML',
-            'disable_web_page_preview' => true,
-        ];
+        if ($chatId) {
+            $data = [
+                'text' => $text,
+                'chat_id' => $chatId,
+                'parse_mode' => 'HTML',
+                'disable_web_page_preview' => true,
+            ];
 
-        file_get_contents("https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/sendMessage?"
-            . http_build_query($data)
-        );
+            file_get_contents("https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/sendMessage?"
+                . http_build_query($data)
+            );
+        }
 
         return http_response_code(200);
     }
