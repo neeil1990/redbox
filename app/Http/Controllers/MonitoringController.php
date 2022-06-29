@@ -200,7 +200,7 @@ class MonitoringController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $navigations = $this->navigations();
 
@@ -208,11 +208,27 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
+        $region = $project->searchengines()->orderBy('id', 'asc')->first();
+
+        $region->load('location');
+
+        $headers = $this->getHeaderKeywordsTable($region);
+
+        return view('monitoring.show', compact('navigations', 'region', 'project', 'headers'));
+    }
+
+    public function getTableKeywords(Request $request, $id)
+    {
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->where('id', $id)->first();
+
         $keywords = $project->keywords();
 
-        $this->filter($keywords, $request);
+        $this->filter($project, $keywords, $request);
 
-        $keywords = $keywords->get();
+        $page = $request->input('start', 0) + 1;
+        $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
 
         $region = $project->searchengines()->orderBy('id', 'asc')->first();
         $region->load('location');
@@ -220,20 +236,6 @@ class MonitoringController extends Controller
         $keywords->load(['positions' => function($query) use ($region){
             $query->where('monitoring_searchengine_id', $region->id);
         }]);
-
-        $dates = $region->positions()
-            ->get()
-            ->unique(function($item){
-                return $item->date;
-            })->pluck('date')->sortByDesc(null)
-            ->prepend(__('Target'))
-            ->prepend(__('Group'))
-            ->prepend(__('URL'))
-            ->prepend(__('Query'))
-            ->prepend(__(''))
-            ->prepend('<input type="checkbox" id="selected-checkbox">')
-            ->prepend('ID')
-            ->values();
 
         $keywords->transform(function($item){
 
@@ -248,7 +250,9 @@ class MonitoringController extends Controller
 
         $table = [];
 
-        $length = $dates->count();
+        $headers = $this->getHeaderKeywordsTable($region);
+        $length = $headers->count();
+
         foreach ($keywords as $keyword){
 
             $id = $keyword->id;
@@ -262,54 +266,86 @@ class MonitoringController extends Controller
                         $table[$id][] = $id;
                         break;
                     case 1:
-                        $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id]);
+                        $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id])->render();
                         break;
                     case 2:
-                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $keyword]);
+                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $keyword])->render();
                         break;
                     case 3:
-                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $keyword]);
+                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $keyword])->render();
                         break;
                     case 4:
-                        $table[$id][] = view('monitoring.partials.show.url');
+                        $table[$id][] = view('monitoring.partials.show.url')->render();
                         break;
                     case 5:
-                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $keyword->group]);
+                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $keyword->group])->render();
                         break;
                     case 6:
-                        $table[$id][] = view('monitoring.partials.show.target', ['key' => $keyword]);
+                        $table[$id][] = view('monitoring.partials.show.target', ['key' => $keyword])->render();
                         break;
                     default:
-                        $model = $keyword->last_positions->firstWhere('date', $dates[$i]);
+                        $model = $keyword->last_positions->firstWhere('date', $headers[$i]);
                         if($model && $model->position)
-                            $table[$id][] = view('monitoring.partials.show.position', ['model' => $model]);
+                            $table[$id][] = view('monitoring.partials.show.position', ['model' => $model])->render();
                         else
                             $table[$id][] = '-';
                 }
             }
         }
 
-        $table = collect($table)->prepend($dates);
+        $data = collect([
+            'data' => collect($table)->values(),
+            'draw' => $request->input('draw'),
+            'recordsFiltered' => $keywords->total(),
+            'recordsTotal' => $keywords->total(),
+        ]);
 
-        return view('monitoring.show', compact('table', 'navigations', 'region', 'project'));
+        return $data;
+    }
+
+    protected function getHeaderKeywordsTable($region)
+    {
+        return $region->positions()
+            ->get()
+            ->unique(function($item){
+                return $item->date;
+            })
+            ->pluck('date')
+            ->sortByDesc(null)
+            ->prepend(__('Target'))
+            ->prepend(__('Group'))
+            ->prepend(__('URL'))
+            ->prepend(__('Query'))
+            ->prepend(__(''))
+            ->prepend('<input type="checkbox" id="selected-checkbox">')
+            ->prepend('ID')
+            ->values();
     }
 
     /**
      * @param $keywords
      * @param $request
      */
-    protected function filter(&$keywords, Request $request)
+    protected function filter($project, &$keywords, Request $request)
     {
-        $field = $request->input('field', null);
-        $query = $request->input('query', null);
+        $columns = $request->input('columns', []);
 
-        $group = $request->input('group');
+        foreach ($columns as $column){
 
-        if($group)
-            $keywords->where('monitoring_group_id', '=', $group);
-
-        if($query)
-            $keywords->where($field, 'like', '%'.$query.'%');
+            switch ($column['data']) {
+                case 3:
+                    if($column['search']['value'])
+                        $keywords->where('query', 'like', '%'.$column['search']['value'].'%');
+                    break;
+                case 5:
+                    if($column['search']['value']){
+                        $group = $project->groups()->where('name', 'like', $column['search']['value'].'%')->first();
+                        if($group)
+                            $keywords->where('monitoring_group_id', '=', $group->id);
+                    }
+                    break;
+            }
+        }
     }
 
     private function navigations()
