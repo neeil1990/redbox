@@ -234,7 +234,7 @@ class TelegramBot extends Model
                 'disable_web_page_preview' => true,
             ];
 
-            file_get_contents("https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/sendMessage?"
+            file_get_contents("https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/sendMessage?chat_id=$chatId"
                 . http_build_query($data)
             );
         }
