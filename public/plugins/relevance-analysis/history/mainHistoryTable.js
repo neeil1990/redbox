@@ -1,4 +1,4 @@
-let mainHistory = $('#main_history_table').DataTable({
+$('#main_history_table').DataTable({
     "order": [[0, "desc"]],
     "pageLength": 10,
     "searching": true,

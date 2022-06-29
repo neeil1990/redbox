@@ -41,6 +41,8 @@ function isDateValid(target, settings) {
         if (date >= dateMin && date <= dateMax) {
             return true;
         }
+    } else {
+        return true;
     }
 }
 
@@ -274,7 +276,6 @@ $(document).ready(function () {
 
                         //------------------------ CUSTOM FILTERS -----------------------
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var projectComment = String($('#projectComment').val()).toLowerCase();
                             var target = String(data[1]).toLowerCase();
                             return isIncludes(target, projectComment, settings)
@@ -284,7 +285,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var phraseSearch = String($('#phraseSearch').val()).toLowerCase();
                             var target = String(data[2]).toLowerCase();
                             return isIncludes(target, phraseSearch, settings)
@@ -294,7 +294,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var regionSearch = String($('#regionSearch').val()).toLowerCase();
                             var target = String(data[3]).toLowerCase();
                             return isIncludes(target, regionSearch, settings)
@@ -304,7 +303,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var mainPageSearch = String($('#mainPageSearch').val()).toLowerCase();
                             var target = String(data[4]).toLowerCase();
                             return isIncludes(target, mainPageSearch, settings)
@@ -314,7 +312,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var maxPosition = parseFloat($('#maxPosition').val());
                             var minPosition = parseFloat($('#minPosition').val());
                             var target = parseFloat(data[5]);
@@ -325,7 +322,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var maxPoints = parseFloat($('#maxPoints').val());
                             var minPoints = parseFloat($('#minPoints').val());
                             var target = parseFloat(data[6]);
@@ -336,7 +332,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var maxCoverage = parseFloat($('#maxCoverage').val());
                             var minCoverage = parseFloat($('#minCoverage').val());
                             var target = parseFloat(data[7]);
@@ -347,7 +342,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var maxCoverageTf = parseFloat($('#maxCoverageTf').val());
                             var minCoverageTf = parseFloat($('#minCoverageTf').val());
                             var target = parseFloat(data[8]);
@@ -358,7 +352,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var maxWidth = parseFloat($('#maxWidth').val());
                             var minWidth = parseFloat($('#minWidth').val());
                             var target = parseFloat(data[9]);
@@ -369,7 +362,6 @@ $(document).ready(function () {
                         });
 
                         $.fn.dataTable.ext.search.push(function (settings, data) {
-                            console.log('aboba')
                             var maxDensity = parseFloat($('#maxDensity').val());
                             var minDensity = parseFloat($('#minDensity').val());
                             var target = parseFloat(data[10]);
