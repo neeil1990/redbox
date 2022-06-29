@@ -291,7 +291,7 @@ class MonitoringController extends Controller
 
         $table = collect($table)->prepend($dates);
 
-        return view('monitoring.show', compact('table', 'navigations', 'region'));
+        return view('monitoring.show', compact('table', 'navigations', 'region', 'project'));
     }
 
     /**
@@ -303,10 +303,13 @@ class MonitoringController extends Controller
         $field = $request->input('field', null);
         $query = $request->input('query', null);
 
-        if($query){
+        $group = $request->input('group');
 
-            $keywords->where($field, 'like', $query.'%');
-        }
+        if($group)
+            $keywords->where('monitoring_group_id', '=', $group);
+
+        if($query)
+            $keywords->where($field, 'like', '%'.$query.'%');
     }
 
     private function navigations()

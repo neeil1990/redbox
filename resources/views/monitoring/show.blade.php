@@ -49,6 +49,22 @@
                     <h3 class="card-title">[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}</h3>
                     <div class="card-tools">
 
+                        <form action="">
+                            <div class="input-group">
+
+                                {{ Form::select('group', $project->groups->prepend(['id' => 0, 'name' => __('All groups')])->pluck('name', 'id'), request('group', null), ['class' => 'custom-select rounded-0 text-muted']) }}
+
+                                <input type="text" name="query" value="{{ request('query', null) }}" placeholder="Search..." class="form-control">
+
+                                <span class="input-group-append">
+                                    {{ Form::select('field', ['query' => 'Query', 'target' => 'Target'], request('field', null), ['class' => 'custom-select rounded-0 text-muted search-select']) }}
+
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <!-- ./card-header -->
