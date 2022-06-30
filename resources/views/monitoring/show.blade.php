@@ -3,12 +3,12 @@
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 
         <style>
-            .table tr:first-child td {
-                font-weight: bold;
-            }
-
             .table tr td:nth-child(4) {
                text-align: left;
             }
@@ -22,6 +22,9 @@
             }
             .table tr:first-child td:nth-child(4) {
                 box-shadow: none;
+            }
+            .dataTables_filter {
+                display: none;
             }
         </style>
     @endslot
@@ -45,27 +48,18 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}</h3>
-                    <div class="card-tools">
 
-                    </div>
-                </div>
-                <!-- ./card-header -->
-                <div class="card-body">
-                    <table class="table table-responsive table-bordered table-hover text-center">
-                        <tbody>
-                            @foreach($table as $i => $rows)
-                                <tr class="{{($i) ? 'body' : 'head'}}">
-                                    @foreach($rows as $col)
-                                    <td>{!! $col !!}</td>
-                                    @endforeach
-                                </tr>
+                <table class="table table-responsive table-bordered table-hover text-center">
+                    <thead>
+                        <tr>
+                            @foreach($headers as $header)
+                                <th>{!! $header !!}</th>
                             @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
+                        </tr>
+                    </thead>
+
+                </table>
+
             </div>
             <!-- /.card -->
         </div>
@@ -74,7 +68,7 @@
     <h5 class="mb-2 mt-4">Testing</h5>
 
     <div class="row">
-        @foreach($table as $key => $rows)
+        {{--@foreach($table as $key => $rows)
             @if($key)
                 <div class="col-2">
                     {!! Form::open(['route' => ['keywords.update', $rows[0]], 'method' => 'PATCH']) !!}
@@ -82,7 +76,7 @@
                     {!! Form::close() !!}
                 </div>
             @endif
-        @endforeach
+        @endforeach--}}
     </div>
 
     @include('monitoring.keywords.modal.edit')
@@ -90,6 +84,15 @@
     @slot('js')
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+        <!-- Bootstrap 4 -->
+        <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 
         <script>
 
@@ -97,6 +100,112 @@
                 "preventDuplicates": true,
                 "timeOut": "1500"
             };
+
+            $('.table').DataTable({
+                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                "ordering": false,
+                scrollX: true,
+                lengthMenu: [1, 20, 30, 50, 100],
+                pageLength: 1,
+                pagingType: "simple_numbers",
+                language: {
+                    lengthMenu: "_MENU_",
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search...",
+                    paginate: {
+                        "first":      "«",
+                        "last":       "»",
+                        "next":       "»",
+                        "previous":   "«"
+                    },
+                },
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/monitoring/{{ $project->id }}/table',
+                },
+                //rowReorder: true,
+                columnDefs: [
+                    //{ orderable: true, className: 'reorder', targets: 3 },
+                    //{ orderable: false, targets: '_all' },
+                    { "width": "350px", "targets": 3 }
+                ],
+                initComplete: function(){
+                    let api = this.api();
+
+                    api.columns().every(function() {
+                        let that = this;
+
+                        $('input', this.header()).on('keyup change', function () {
+                            if (that.search() !== this.value) {
+                                that.search(this.value).draw();
+                            }
+                        });
+                    });
+
+                    this.closest('.card').find('.card-header .card-title').html("[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}");
+                    this.closest('.card').find('.card-header label').css('margin-bottom', 0);
+                },
+                drawCallback: function(){
+
+                    $('.table tr').each(function (i, item) {
+                        let target = $(item).find('.target').text();
+                        let positions = $(item).find('td span[data-position]');
+
+                        $.each(positions, function (i, item) {
+                            let current = $(item).data('position');
+                            let nextTo = $(positions[i + 1]).data('position');
+
+                            let total = nextTo - current;
+
+                            if(total){
+
+                                if(total > 0)
+                                    total = '+' + total;
+
+                                $(item).find('sup').text(total);
+                            }
+
+                            if(target >= current)
+                                $(item).closest('td').css('background-color', '#99e4b9');
+                            else{
+                                if(target >= nextTo)
+                                    $(item).closest('td').css('background-color', '#fbe1df');
+                            }
+                        });
+                    });
+
+                    $('.pagination').addClass('pagination-sm');
+
+                    $('[data-toggle="popover"]').popover({
+                        trigger: 'manual',
+                        placement: 'right',
+                        html: true,
+                    }).on("mouseenter", function() {
+                        $(this).popover("show");
+                    }).on("mouseleave", function() {
+                        let self = this;
+
+                        let timeout = setTimeout(function(){
+                            $(self).popover("hide");
+                        }, 300);
+
+                        $('.popover').hover(function () {
+                            clearTimeout(timeout);
+                        }, function () {
+                            $(self).popover("hide");
+                        });
+                    });
+                },
+            });
+
+            $('.table thead th').each(function () {
+                let title = $(this).text();
+
+                if(title === 'Query' || title === 'Группа'){
+                    $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+                }
+            });
 
             $('#edit-modal').on('show.bs.modal', function (event) {
                 let button = $(event.relatedTarget);
@@ -164,58 +273,6 @@
 
             });
 
-            $('.table tr').each(function (i, item) {
-                let target = $(item).find('.target').text();
-                let positions = $(item).find('td span[data-position]');
-
-                $.each(positions, function (i, item) {
-                    let current = $(item).data('position');
-                    let nextTo = $(positions[i + 1]).data('position');
-
-                    let total = nextTo - current;
-
-                    if(total){
-
-                        if(total > 0)
-                            total = '+' + total;
-
-                        $(item).find('sup').text(total);
-                    }
-
-                    if(target >= current)
-                        $(item).closest('td').css('background-color', '#99e4b9');
-                    else{
-                        if(target >= nextTo)
-                            $(item).closest('td').css('background-color', '#fbe1df');
-                    }
-                });
-
-
-            });
-
-            $('[data-toggle="tooltip"]').tooltip({
-                placement: 'right',
-            });
-
-            $('[data-toggle="popover"]').popover({
-                trigger: 'manual',
-                placement: 'right',
-                html: true,
-            }).on("mouseenter", function() {
-                $(this).popover("show");
-            }).on("mouseleave", function() {
-                let self = this;
-
-                let timeout = setTimeout(function(){
-                    $(self).popover("hide");
-                }, 300);
-
-                $('.popover').hover(function () {
-                    clearTimeout(timeout);
-                }, function () {
-                    $(self).popover("hide");
-                });
-            });
         </script>
     @endslot
 
