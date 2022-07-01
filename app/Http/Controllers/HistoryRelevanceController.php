@@ -229,4 +229,61 @@ class HistoryRelevanceController extends Controller
             'history' => json_decode($object->request)
         ]);
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function removeEmptyResults(Request $request): JsonResponse
+    {
+        $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
+        $admin = User::isUserAdmin();
+
+        if ($main->user_id != Auth::id() && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+
+        $items = RelevanceHistory::where('project_relevance_history_id', '=', $request->id)
+            ->distinct('main_link')
+            ->get('main_link');
+
+        foreach ($items as $link) {
+            $records = RelevanceHistory::where('comment', '!=', '')
+                ->where('main_link', '=', $link->main_link)
+                ->latest('last_check')
+                ->get();
+            if (count($records) >= 1) {
+                RelevanceHistory::where('comment', '=', '')
+                    ->where('main_link', '=', $link->main_link)
+                    ->delete();
+            } else {
+                $records = RelevanceHistory::where('comment', '=', '')
+                    ->where('main_link', '=', $link->main_link)
+                    ->latest('last_check')
+                    ->get();
+                foreach ($records as $key => $record) {
+                    if ($key != array_key_first($records->toArray())) {
+                        $record->delete();
+                    }
+                }
+            }
+        }
+
+        $info = ProjectRelevanceHistory::calculateInfo($main->stories);
+
+        $main->total_points = $info['points'];
+        $main->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Success'),
+            'points' => $info['points'],
+            'objectId' => $request->id,
+            'code' => 200
+        ]);
+    }
 }

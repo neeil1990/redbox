@@ -7,12 +7,6 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
-        <style>
-            td:hover i {
-                opacity: 1 !important;
-                transition: .3s;
-            }
-        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -118,13 +112,58 @@
                         </thead>
                         <tbody>
                         @foreach($projects as $item)
+                            <div class="modal fade" id="removeModal{{ $item->id }}" tabindex="-1"
+                                 aria-labelledby="removeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="removeModalLabel">Удаление результатов у
+                                                проекта {{ $item->name }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Подтвердите действие.
+                                            <p>
+                                                <b>У вас не будет возможности восстановить данные.</b>
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary remove-empty-results"
+                                                    data-target="{{ $item->id }}" data-dismiss="modal">
+                                                Удалить
+                                            </button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                Не удалять
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <tr>
-                                <td class="project_name" style="cursor:pointer;"
-                                    data-order="{{ $item->id }}">
-                                    <a href="#history_table_{{ $item->name }}">
+                                <td>
+                                    <a href="#history_table_{{ $item->name }}"
+                                       class="project_name" style="cursor:pointer;"
+                                       data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                     </a>
-                                    <i class="fa fa-eye" style="opacity: 0"></i>
+                                    <div class="dropdown" style="display: inline">
+                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
+                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <span class="dropdown-item project_name"
+                                                  style="cursor:pointer;"
+                                                  data-order="{{ $item->id }}">
+                                                Показать результаты анализа
+                                            </span>
+                                            <span class="dropdown-item"
+                                                  style="cursor:pointer;"
+                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">
+                                                Удалить результаты без комментариев
+                                            </span>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
@@ -636,6 +675,25 @@
 
             $(".dt-button").addClass('btn btn-secondary')
 
+            $('.remove-empty-results').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('remove.empty.results') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $(this).attr('data-target'),
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            getSuccessMessage(response.message)
+                            $('a[data-order="' + response.objectId + '"]').trigger('click')
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message)
+                        }
+                    },
+                });
+            })
 
             function getSuccessMessage(message) {
                 $('.toast-top-right.success-message').show(300)
@@ -652,6 +710,7 @@
                     $('.toast-top-right.error-message').hide(300)
                 }, 3000)
             }
+
         </script>
     @endslot
 @endcomponent

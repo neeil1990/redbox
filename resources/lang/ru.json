@@ -837,5 +837,11 @@
     "TF coverage": "Охват tf",
     "Take into account when calculating the total score": "Учитывать в расчёте общего балла",
     "Number of tasks in the queue": "Количество задач в очереди",
-    "Number of saved scans": "Количество сохранённых сканирований"
+    "Number of saved scans": "Количество сохранённых сканирований",
+    "Success": "Успешно",
+    "The label was created successfully": "Метка успешно создана",
+    "Such a label already exists": "Такая метка уже существует",
+    "The label does not exist": "Метка не существует",
+    "Label changed successfully": "Метка успешно изменена",
+    "The label was successfully deleted": "Метка была успешно удалена"
 }

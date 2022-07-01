@@ -41,14 +41,14 @@ class RelevanceTagsController extends Controller
                 'success' => true,
                 'code' => 201,
                 'tag' => $newTag,
-                'message' => 'Метка успешно создана'
+                'message' => __('The label was created successfully')
             ]);
         }
 
         return response()->json([
             'success' => false,
             'code' => 415,
-            'message' => 'Такая метка уже существует'
+            'message' => __('Such a label already exists')
         ]);
     }
 
@@ -64,6 +64,7 @@ class RelevanceTagsController extends Controller
             $tag->delete();
             return response()->json([
                 'success' => true,
+                'message' => __('The label was successfully deleted'),
                 'code' => 200
             ]);
         }
@@ -93,14 +94,14 @@ class RelevanceTagsController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Метка успешно изменена',
+                'message' => __('Label changed successfully'),
                 'code' => 200
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Метка не существует',
+            'message' => __('The label does not exist'),
             'code' => 415
         ]);
     }

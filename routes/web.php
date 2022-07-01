@@ -13,6 +13,7 @@
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\RelevanceAllUniquePages;
+use App\RelevanceHistory;
 use App\RelevanceStatistics;
 use App\TelegramBot;
 use App\TextAnalyzer;
@@ -200,6 +201,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
     Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
     Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
+
     Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
     Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
     Route::post('/edit-history-comment', 'HistoryRelevanceController@editComment')->name('edit.history.comment');
@@ -209,12 +211,14 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
+    Route::post('/remove-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
+
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
     Route::post('/edit-tag', 'RelevanceTagsController@edit')->name('edit.relevance.tag');
+
     Route::get('/relevance-config', 'AdminController@showConfig')->name('show.config');
     Route::post('/change-config', 'AdminController@changeConfig')->name('changeConfig');
-
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');

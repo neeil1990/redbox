@@ -46,33 +46,17 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            $relevance = new Relevance($this->request, true);
-            $relevance->getMainPageHtml();
+        $relevance = new Relevance($this->request, true);
+        $relevance->getMainPageHtml();
 
-            if ($this->request['type'] == 'phrase') {
-                $relevance->analysisByPhrase($this->request);
+        if ($this->request['type'] == 'phrase') {
+            $relevance->analysisByPhrase($this->request);
 
-            } elseif ($this->request['type'] == 'list') {
-                $relevance->analysisByList($this->request);
-            }
-
-            $relevance->analysis($this->userId, $this->historyId);
-
-        } catch (\Exception $exception) {
-            //  игнорируем ошибку: "packets out of order" и другие ошибки бд
-            if (
-                strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
-                $exception->getLine() != 664
-            ) {
-                $object = RelevanceHistory::where('id', '=', $this->historyId)->first();
-
-                $object->state = -1;
-
-                $object->save();
-            }
+        } elseif ($this->request['type'] == 'list') {
+            $relevance->analysisByList($this->request);
         }
 
+        $relevance->analysis($this->userId, $this->historyId);
     }
 
     /**
