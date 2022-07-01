@@ -836,5 +836,6 @@
     "Coverage of important words": "Охват важных слов",
     "TF coverage": "Охват tf",
     "Take into account when calculating the total score": "Учитывать в расчёте общего балла",
-    "Number of tasks in the queue": "Количество задач в очереди"
+    "Number of tasks in the queue": "Количество задач в очереди",
+    "Number of saved scans": "Количество сохранённых сканирований"
 }

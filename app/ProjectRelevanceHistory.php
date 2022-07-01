@@ -95,6 +95,12 @@ class ProjectRelevanceHistory extends Model
             'user_id' => $userId,
         ]);
 
+        if (isset($main->id)) {
+            $main->count_checks += 1;
+        } else {
+            $main->count_checks = 1;
+        }
+
         $main->last_check = $time;
         $main->save();
 

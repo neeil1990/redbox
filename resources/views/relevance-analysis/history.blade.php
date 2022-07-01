@@ -7,6 +7,12 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            td:hover i {
+                opacity: 1 !important;
+                transition: .3s;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -167,18 +173,20 @@
                             <th>{{ __('Project name') }}</th>
                             <th class="table-header">{{ __('Tags') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
-                            <th>{{ __('Last check') }}</th>
+                            <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th>{{ __('Total score') }}</th>
+                            <th>{{ __('Last check') }}</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($main as $item)
                             <tr>
-                                <td class="project_name" style="cursor:pointer;"
+                                <td class="project_name d-flex justify-content-between" style="cursor:pointer;"
                                     data-order="{{ $item->id }}">
                                     <a href="#history_table_{{ $item->name }}">
                                         {{ $item->name }}
                                     </a>
+                                    <i class="fa fa-eye" style="opacity: 0"></i>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
@@ -192,8 +200,9 @@
                                     @endforeach
                                 </td>
                                 <td class="col-2">{{ $item->count_sites }}</td>
-                                <td>{{ $item->last_check }}</td>
+                                <td class="col-2">{{ $item->count_checks }}</td>
                                 <td>{{ $item->total_points }}</td>
+                                <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach
                         </tbody>
