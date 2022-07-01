@@ -7,6 +7,12 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            td:hover i {
+                opacity: 1 !important;
+                transition: .3s;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -59,11 +65,13 @@
                     <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
-                            <th>{{ __('Project name') }}</th>
-                            <th>{{ __('Owner') }}</th>
+                        <tr>
+                            <th class="table-header">{{ __('Project name') }}</th>
+                            <th class="table-header">{{ __('Tags') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
-                            <th>{{ __('Last check') }}</th>
-                            <th>{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Number of saved scans') }}</th>
+                            <th class="table-header">{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Last check') }}</th>
                             <th class="col-2"></th>
                         </tr>
                         </thead>
@@ -76,6 +84,7 @@
                                     <a href="#history_table_{{ $item->project[0]->name }}">
                                         {{ $item->project[0]->name }}
                                     </a>
+                                    <i class="fa fa-eye" style="opacity: 0"></i>
                                     <p>
                                         @if($item->access == 1)
                                             Доступен только просмотр
@@ -92,8 +101,10 @@
                                     </span>
                                 </td>
                                 <td class="col-2">{{ $item->project[0]->count_sites }}</td>
-                                <td>{{ $item->project[0]->last_check }}</td>
+                                <td class="col-2">{{ $item->project[0]->count_checks }}</td>
                                 <td>{{ $item->project[0]->total_points }}</td>
+                                <td>{{ $item->project[0]->last_check }}</td>
+
                                 <td>
                                     <button class="btn btn-secondary remove-access" data-target="{{ $item->id }}">
                                         Отказаться от доступа

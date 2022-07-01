@@ -170,12 +170,12 @@
                     <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
-                            <th>{{ __('Project name') }}</th>
+                            <th class="table-header">{{ __('Project name') }}</th>
                             <th class="table-header">{{ __('Tags') }}</th>
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
-                            <th>{{ __('Total score') }}</th>
-                            <th>{{ __('Last check') }}</th>
+                            <th class="table-header">{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
                         <tbody>

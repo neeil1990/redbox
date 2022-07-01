@@ -7,6 +7,12 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            td:hover i {
+                opacity: 1 !important;
+                transition: .3s;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -45,7 +51,8 @@
                     </li>
                     @if($admin)
                         <li class="nav-item">
-                            <a class="nav-link active" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                            <a class="nav-link active"
+                               href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
@@ -58,7 +65,8 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
                     <h3>{{ __('General statistics of the module') }}</h3>
-                    <table style="margin: 0 0 35px 0 !important; width: 35%" id="statistics_table" class="table table-bordered table-hover dataTable dtr-inline mb-5">
+                    <table style="margin: 0 0 35px 0 !important; width: 35%" id="statistics_table"
+                           class="table table-bordered table-hover dataTable dtr-inline mb-5">
                         <tbody>
                         <tr>
                             <th class="col-10">{{ __('Number of checks for the current day') }}</th>
@@ -99,12 +107,13 @@
                     <table id="users_projects" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
-                            <th>{{ __('Project name') }}</th>
-                             <th class="table-header">{{ __('Tags') }}</th>
-                            <th>{{ __('Owner') }}</th>
-                            <th class="table-header">{{ __('Number of analyzed pages') }}</th>
-                            <th>{{ __('Last check') }}</th>
-                            <th>{{ __('Total score') }}</th>
+                            <th class="table-header col-2">{{ __('Project name') }}</th>
+                            <th class="table-header">{{ __('Tags') }}</th>
+                            <th class="table-header col-2">{{ __('Owner') }}</th>
+                            <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
+                            <th class="table-header col-2">{{ __('Number of saved scans') }}</th>
+                            <th class="table-header">{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -115,6 +124,7 @@
                                     <a href="#history_table_{{ $item->name }}">
                                         {{ $item->name }}
                                     </a>
+                                    <i class="fa fa-eye" style="opacity: 0"></i>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
@@ -130,8 +140,9 @@
                                     </span>
                                 </td>
                                 <td class="col-2">{{ $item->count_sites }}</td>
-                                <td>{{ $item->last_check }}</td>
+                                <td>{{ $item->count_checks }}</td>
                                 <td>{{ $item->total_points }}</td>
+                                <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach
                         </tbody>
