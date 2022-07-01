@@ -101,12 +101,12 @@
                 "timeOut": "1500"
             };
 
-            $('.table').DataTable({
+            let table = $('.table').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 "ordering": false,
                 scrollX: true,
-                lengthMenu: [1, 20, 30, 50, 100],
-                pageLength: 1,
+                lengthMenu: [5, 20, 30, 50, 100],
+                pageLength: 5,
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
@@ -119,7 +119,7 @@
                         "previous":   "«"
                     },
                 },
-                processing: true,
+                processing: false,
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/{{ $project->id }}/table',
@@ -133,6 +133,26 @@
                 initComplete: function(){
                     let api = this.api();
 
+                    $('.search-button').click(function () {
+                        let a = $(this);
+                        let span = a.parent();
+                        let b = span.find('b');
+                        let input = span.find('input');
+
+                        let toggleClass = 'd-none';
+
+                        a.addClass(toggleClass);
+                        b.addClass(toggleClass);
+
+                        input.unbind( "blur" );
+
+                        input.removeClass(toggleClass).focus().blur(function () {
+                            $(this).addClass(toggleClass);
+                            a.removeClass(toggleClass);
+                            b.removeClass(toggleClass);
+                        });
+                    });
+
                     api.columns().every(function() {
                         let that = this;
 
@@ -141,6 +161,10 @@
                                 that.search(this.value).draw();
                             }
                         });
+                    });
+
+                    $('#selected-checkbox').change(function () {
+                        $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
                     });
 
                     this.closest('.card').find('.card-header .card-title').html("[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}");
@@ -199,14 +223,6 @@
                 },
             });
 
-            $('.table thead th').each(function () {
-                let title = $(this).text();
-
-                if(title === 'Query' || title === 'Группа'){
-                    $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-                }
-            });
-
             $('#edit-modal').on('show.bs.modal', function (event) {
                 let button = $(event.relatedTarget);
 
@@ -233,14 +249,16 @@
 
                 axios.patch(action, data)
                     .then(function (response) {
-                        window.location.reload();
+                        table.draw(false);
+
+                        $('#edit-modal').modal('hide');
                     })
                     .catch(function (error) {
                         console.log(error);
                     });
             });
 
-            $('.delete-keyword').click(function () {
+            $('.table').on('click', '.delete-keyword' ,function () {
                 let item = $(this);
                 let id = item.data('id');
 
@@ -251,28 +269,6 @@
                     item.closest('tr').remove();
                 }
             });
-
-            $('#selected-checkbox').change(function () {
-
-                $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
-            });
-
-            $('.adding-queue').click(function () {
-                let id = $(this).data('id');
-
-                axios.post('/monitoring/keywords/queue', {
-                    id: id,
-                })
-                    .then(function (response) {
-                        if(response.data.id)
-                            toastr.info('Выполните необходимые команды для запуска очереди.', 'Задание добавленно в очередь', {timeOut: 20000, closeButton: true});
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-
-            });
-
         </script>
     @endslot
 
