@@ -37,12 +37,7 @@ class MonitoringGroupsController extends Controller
     public function store(Request $request)
     {
         $model = new MonitoringGroup();
-
-        return $model->create([
-            'user_id' => Auth::id(),
-            'type' => $request->input('type'),
-            'name' => $request->input('name'),
-        ]);
+        return $model->create($request->all());
     }
 
     /**
@@ -53,8 +48,7 @@ class MonitoringGroupsController extends Controller
      */
     public function show($id)
     {
-        $model = new MonitoringGroup();
-        return $model->where('user_id', Auth::id())->where('type', $id)->get();
+
     }
 
     /**

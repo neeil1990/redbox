@@ -317,7 +317,7 @@ class MonitoringController extends Controller
             ->prepend(__('URL'))
             ->prepend(view('monitoring.partials.show.header.query')->render())
             ->prepend(__(''))
-            ->prepend('<input type="checkbox" id="selected-checkbox">')
+            ->prepend('')
             ->prepend('ID')
             ->values();
     }

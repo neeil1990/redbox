@@ -17,7 +17,15 @@
 
     <div class="form-group">
         <label class="col-form-label">{{ __('Groups') }}:</label>
-        {{ Form::select('group', $keyword->project->groups->pluck('name', 'id'), $keyword->monitoring_group_id, ['class' => 'custom-select']) }}
+        {{ Form::select('monitoring_group_id', $keyword->project->groups->pluck('name', 'id'), $keyword->monitoring_group_id, ['class' => 'custom-select']) }}
+    </div>
+
+    <div class="input-group mb-3">
+        <input type="text" data-id="{{ $keyword->project->id }}" placeholder="{{ __('Name of group') }}" class="form-control">
+
+        <div class="input-group-append">
+            <button type="button" class="btn btn-success" id="create-group">{{ __('Create a new group') }}</button>
+        </div>
     </div>
 
 </form>

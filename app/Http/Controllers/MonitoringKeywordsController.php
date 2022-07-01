@@ -7,6 +7,7 @@ use App\Jobs\PositionQueue;
 use App\Location;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
+use App\MonitoringProject;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,11 @@ class MonitoringKeywordsController extends Controller
     public function index()
     {
         //
+    }
+
+    public function showControlsPanel()
+    {
+        return view('monitoring.keywords.controls');
     }
 
     /**
@@ -122,6 +128,12 @@ class MonitoringKeywordsController extends Controller
             return abort('404');
     }
 
+    public function editPlural($id)
+    {
+        $project = MonitoringProject::findOrFail($id);
+        return view('monitoring.keywords.edit_plural', compact('project'));
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -142,6 +154,17 @@ class MonitoringKeywordsController extends Controller
         }
         else
             return abort('404');
+    }
+
+    public function updatePlural(Request $request)
+    {
+        $keywords = MonitoringKeyword::whereIn('id', $request->input('id', []))->update([
+            'monitoring_group_id' => $request->input('monitoring_group_id'),
+            'target' => $request->input('target'),
+            'page' => $request->input('page'),
+        ]);
+
+        return $keywords;
     }
 
     protected function scanPosition($id)

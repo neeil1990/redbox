@@ -7,6 +7,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
         <style>
             .table tr td:nth-child(4) {
@@ -22,9 +25,6 @@
             }
             .table tr:first-child td:nth-child(4) {
                 box-shadow: none;
-            }
-            .dataTables_filter {
-                display: none;
             }
         </style>
     @endslot
@@ -93,6 +93,8 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <!-- Select2 -->
+        <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
         <script>
 
@@ -102,7 +104,7 @@
             };
 
             let table = $('.table').DataTable({
-                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
                 "ordering": false,
                 scrollX: true,
                 lengthMenu: [5, 20, 30, 50, 100],
@@ -132,6 +134,53 @@
                 ],
                 initComplete: function(){
                     let api = this.api();
+
+                    axios.get(`/monitoring/keywords/show/controls`).then(function (response) {
+
+                        let container = $('.mailbox-controls');
+                        let content = response.data;
+
+                        container.html(content);
+
+                        let checkbox = container.find('.checkbox-toggle');
+
+                        //Enable check and uncheck all functionality
+                        checkbox.click(function () {
+                            let clicks = $(this).data('clicks');
+                            if (clicks) {
+                                //Uncheck all checkboxes
+                                $('.table tbody tr').find('input[type="checkbox"]').prop('checked', false);
+                                $('.far.fa-check-square', checkbox).removeClass('fa-check-square').addClass('fa-square');
+                            } else {
+                                //Check all checkboxes
+                                $('.table tbody tr').find('input[type="checkbox"]').prop('checked', true);
+                                $('.far.fa-square', checkbox).removeClass('fa-square').addClass('fa-check-square');
+                            }
+                            $(this).data('clicks', !clicks)
+                        });
+
+                        let deletes = container.find('.delete-multiple');
+
+                        deletes.click(function () {
+
+                            let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
+                            if(checkboxes.length){
+
+                                if (window.confirm("Do you really want to delete?")) {
+
+                                    $.each(checkboxes, function (i, checkbox) {
+                                        let id = $(checkbox).val();
+
+                                        axios.delete(`/monitoring/keywords/${id}`);
+                                    });
+
+                                    window.location.reload();
+                                }
+                            }else{
+                                toastr.error('Выберите хотя бы один элемент.');
+                            }
+                        });
+                    });
 
                     $('.search-button').click(function () {
                         let a = $(this);
@@ -163,12 +212,9 @@
                         });
                     });
 
-                    $('#selected-checkbox').change(function () {
-                        $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
-                    });
-
                     this.closest('.card').find('.card-header .card-title').html("[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
+                    $('.dataTables_length').find('select').removeClass('custom-select-sm');
                 },
                 drawCallback: function(){
 
@@ -226,36 +272,136 @@
             $('#edit-modal').on('show.bs.modal', function (event) {
                 let button = $(event.relatedTarget);
 
-                let id = button.data('id');
+                let type = button.data('type');
 
                 let modal = $(this);
 
-                axios.get(`/monitoring/keywords/${id}/edit`).then(function (response) {
+                switch (type) {
+                    case "edit_singular":
 
-                    let content = response.data;
+                        let id = button.data('id');
 
-                    modal.find('.modal-body').html(content);
-                });
+                        axios.get(`/monitoring/keywords/${id}/edit`).then(function (response) {
+
+                            let content = response.data;
+
+                            modal.find('.modal-body').html(content);
+
+                            let group = modal.find('.custom-select[name="monitoring_group_id"]');
+                            group.select2({
+                                theme: 'bootstrap4'
+                            });
+
+                            modal.find('#create-group').click(function(){
+                                let el = $(this);
+                                let input = el.closest('.input-group').find('input');
+
+                                if(input.val()){
+
+                                    let id_project = input.data('id');
+
+                                    axios.post('/monitoring/groups', {
+                                        monitoring_project_id: id_project,
+                                        type: "keyword",
+                                        name: input.val(),
+                                    }).then(function (response) {
+
+                                        let newOption = new Option(response.data.name, response.data.id, false, true);
+                                        group.append(newOption).trigger('change');
+
+                                        toastr.success('Добавленно');
+
+                                        input.val(null);
+                                    }).catch(function (error) {
+
+                                        toastr.error('Something is going wrong');
+                                    });
+                                }
+                            });
+                        });
+                        break;
+                    case "edit_plural":
+
+                        let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
+
+                        if(checkboxes.length){
+
+                            axios.get('/monitoring/keywords/{{ $project->id }}/edit-plural').then(function (response) {
+
+                                let content = response.data;
+
+                                modal.find('.modal-body').html(content);
+
+                                let group = modal.find('.custom-select[name="monitoring_group_id"]');
+                                group.select2({
+                                    theme: 'bootstrap4'
+                                });
+                                modal.find('#create-group').click(function(){
+                                    let el = $(this);
+                                    let input = el.closest('.input-group').find('input');
+
+                                    if(input.val()){
+
+                                        let id_project = '{{ $project->id }}';
+
+                                        axios.post('/monitoring/groups', {
+                                            monitoring_project_id: id_project,
+                                            type: "keyword",
+                                            name: input.val(),
+                                        }).then(function (response) {
+
+                                            let newOption = new Option(response.data.name, response.data.id, false, true);
+                                            group.append(newOption).trigger('change');
+
+                                            toastr.success('Добавленно');
+
+                                            input.val(null);
+                                        }).catch(function (error) {
+
+                                            toastr.error('Something is going wrong');
+                                        });
+                                    }
+                                });
+                            });
+
+                        }else{
+                            let content = $('<p />').text('Выберите хотябы один элемент.');
+
+                            modal.find('.modal-body').html(content);
+                        }
+
+                        break;
+                }
             });
 
             $('#edit-modal').find('.save-modal').click(function () {
                 let form = $(this).closest('.modal-content').find('form');
                 let action = form.attr('action');
+                let method = form.attr('method');
                 let data = {};
 
                 $.each(form.serializeArray(), function (inc, item) {
                     $.extend( data, {[item.name]: item.value} );
                 });
 
-                axios.patch(action, data)
-                    .then(function (response) {
-                        table.draw(false);
-
-                        $('#edit-modal').modal('hide');
-                    })
-                    .catch(function (error) {
-                        console.log(error);
+                let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
+                if(checkboxes.length && method === 'POST'){
+                    $.extend( data, {id: []} );
+                    $.each(checkboxes, function (i, checkbox) {
+                        data.id.push($(checkbox).val());
                     });
+                }
+
+                axios({
+                    method: method,
+                    url: action,
+                    data: data
+                }).then(function (response) {
+                        table.draw(false);
+                        $('#edit-modal').modal('hide');
+                }).catch(function (error) {
+                        console.log(error);
+                });
             });
 
             $('.table').on('click', '.delete-keyword' ,function () {
