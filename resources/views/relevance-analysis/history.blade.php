@@ -181,7 +181,7 @@
                         <tbody>
                         @foreach($main as $item)
                             <tr>
-                                <td class="project_name d-flex justify-content-between" style="cursor:pointer;"
+                                <td class="project_name" style="cursor:pointer;"
                                     data-order="{{ $item->id }}">
                                     <a href="#history_table_{{ $item->name }}">
                                         {{ $item->name }}
