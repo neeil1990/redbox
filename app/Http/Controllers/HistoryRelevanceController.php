@@ -275,8 +275,10 @@ class HistoryRelevanceController extends Controller
 
         $info = ProjectRelevanceHistory::calculateInfo($main->stories);
 
-        $main->total_points = $info['points'];
-        $main->save();
+        if ($main->total_points != $info['points']) {
+            $main->total_points = $info['points'];
+            $main->save();
+        }
 
         return response()->json([
             'success' => true,
