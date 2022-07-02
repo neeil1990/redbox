@@ -254,15 +254,18 @@ class HistoryRelevanceController extends Controller
         foreach ($items as $link) {
             $records = RelevanceHistory::where('comment', '!=', '')
                 ->where('main_link', '=', $link->main_link)
+                ->where('project_relevance_history_id', '=', $request->id)
                 ->latest('last_check')
                 ->get();
             if (count($records) >= 1) {
                 RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
+                    ->where('project_relevance_history_id', '=', $request->id)
                     ->delete();
             } else {
                 $records = RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
+                    ->where('project_relevance_history_id', '=', $request->id)
                     ->latest('last_check')
                     ->get();
                 foreach ($records as $key => $record) {
