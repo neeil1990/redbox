@@ -76,11 +76,7 @@ class HistoryRelevanceController extends Controller
 
         $project->save();
 
-        $info = ProjectRelevanceHistory::calculateInfo($project->projectRelevanceHistory->stories);
-
-        $project->projectRelevanceHistory->total_points = $info['points'];
-        $project->projectRelevanceHistory->count_sites = $info['count'];
-        $project->projectRelevanceHistory->save();
+        ProjectRelevanceHistory::calculateInfo($project->projectRelevanceHistory);
 
         return response()->json([]);
     }
@@ -248,23 +244,29 @@ class HistoryRelevanceController extends Controller
         }
 
         $items = RelevanceHistory::where('project_relevance_history_id', '=', $request->id)
-            ->distinct('main_link')
-            ->get('main_link');
+            ->distinct(['main_link', 'phrase', 'region'])
+            ->get(['main_link', 'phrase', 'region']);
 
         foreach ($items as $link) {
             $records = RelevanceHistory::where('comment', '!=', '')
                 ->where('main_link', '=', $link->main_link)
+                ->where('phrase', '=', $link->phrase)
+                ->where('region', '=', $link->region)
                 ->where('project_relevance_history_id', '=', $request->id)
                 ->latest('last_check')
                 ->get();
             if (count($records) >= 1) {
                 RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
+                    ->where('phrase', '=', $link->phrase)
+                    ->where('region', '=', $link->region)
                     ->where('project_relevance_history_id', '=', $request->id)
                     ->delete();
             } else {
                 $records = RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
+                    ->where('phrase', '=', $link->phrase)
+                    ->where('region', '=', $link->region)
                     ->where('project_relevance_history_id', '=', $request->id)
                     ->latest('last_check')
                     ->get();
@@ -276,17 +278,14 @@ class HistoryRelevanceController extends Controller
             }
         }
 
-        $info = ProjectRelevanceHistory::calculateInfo($main->stories);
-
-        if ($main->total_points != $info['points']) {
-            $main->total_points = $info['points'];
-            $main->save();
-        }
+        $info = ProjectRelevanceHistory::calculateInfo($main);
 
         return response()->json([
             'success' => true,
             'message' => __('Success'),
             'points' => $info['points'],
+            'countSites' => $info['count'],
+            'countChecks' => $info['count_checks'],
             'objectId' => $request->id,
             'code' => 200
         ]);

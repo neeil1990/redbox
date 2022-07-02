@@ -239,9 +239,9 @@
                                         </div>
                                     @endforeach
                                 </td>
-                                <td class="col-2">{{ $item->count_sites }}</td>
-                                <td class="col-2">{{ $item->count_checks }}</td>
-                                <td>{{ $item->total_points }}</td>
+                                <td class="col-2 count-sites-{{ $item->id }}">{{ $item->count_sites }}</td>
+                                <td class="col-2 count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
+                                <td class="col-2 total-points-{{ $item->id }}">{{ $item->total_points }}</td>
                                 <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach
@@ -769,6 +769,9 @@
                     success: function (response) {
                         if (response.code === 200) {
                             getSuccessMessage(response.message)
+                            $('.count-sites-' + response.objectId).html(response.countSites)
+                            $('.total-points-' + response.objectId).html(response.points)
+                            $('.count-checks-' + response.objectId).html(response.countChecks)
                             $('a[data-order="' + response.objectId + '"]').trigger('click')
                         } else if (response.code === 415) {
                             getErrorMessage(response.message)

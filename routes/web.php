@@ -251,3 +251,41 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
+
+
+Route::get('/bla', function () {
+    $items = RelevanceHistory::where('project_relevance_history_id', '=', 60)
+        ->distinct(['main_link', 'phrase', 'region'])
+        ->get(['main_link', 'phrase', 'region']);
+
+    foreach ($items as $link) {
+        $records = RelevanceHistory::where('comment', '!=', '')
+            ->where('main_link', '=', $link->main_link)
+            ->where('phrase', '=', $link->phrase)
+            ->where('region', '=', $link->region)
+            ->where('project_relevance_history_id', '=', 60)
+            ->latest('last_check')
+            ->get();
+        if (count($records) >= 1) {
+            RelevanceHistory::where('comment', '=', '')
+                ->where('main_link', '=', $link->main_link)
+                ->where('phrase', '=', $link->phrase)
+                ->where('region', '=', $link->region)
+                ->where('project_relevance_history_id', '=', 60)
+                ->delete();
+        } else {
+            $records = RelevanceHistory::where('comment', '=', '')
+                ->where('main_link', '=', $link->main_link)
+                ->where('phrase', '=', $link->phrase)
+                ->where('region', '=', $link->region)
+                ->where('project_relevance_history_id', '=', 60)
+                ->latest('last_check')
+                ->get();
+            foreach ($records as $key => $record) {
+                if ($key != array_key_first($records->toArray())) {
+                    $record->delete();
+                }
+            }
+        }
+    }
+});

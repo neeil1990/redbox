@@ -1180,7 +1180,7 @@ class TestRelevance
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
 
-        $mainHistory = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
+        $main = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
 
         foreach ($this->sites as $site) {
             if ($site['mainPage']) {
@@ -1199,16 +1199,12 @@ class TestRelevance
                     $request,
                     $site,
                     $time,
-                    $mainHistory,
+                    $main,
                     true,
                     $historyId
                 );
 
-                $info = ProjectRelevanceHistory::calculateInfo($mainHistory->stories);
-
-                $mainHistory->total_points = $info['points'];
-                $mainHistory->count_sites = $info['count'];
-                $mainHistory->save();
+                ProjectRelevanceHistory::calculateInfo($main);
 
                 $this->saveHistoryResult($id);
 

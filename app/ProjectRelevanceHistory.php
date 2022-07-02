@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProjectRelevanceHistory extends Model
 {
@@ -56,29 +57,43 @@ class ProjectRelevanceHistory extends Model
     }
 
     /**
-     * @param $stories
+     * @param $main
      * @return array
      */
-    public static function calculateInfo($stories): array
+    public static function calculateInfo($main): array
     {
         $points = 0;
-        $will = [];
 
-        foreach ($stories as $story) {
-            if ($story->calculate && !in_array($story->main_link, $will)) {
-                $will[] = $story->main_link;
-                $points += $story->points;
-            }
+        $items = RelevanceHistory::where('project_relevance_history_id', '=', $main->id)
+            ->distinct(['main_link', 'phrase', 'region'])
+            ->get(['main_link', 'phrase', 'region']);
+
+        foreach ($items as $item) {
+            $record = RelevanceHistory::where('main_link', '=', $item->main_link)
+                ->where('project_relevance_history_id', '=', $main->id)
+                ->where('phrase', '=', $item->phrase)
+                ->where('region', '=', $item->region)
+                ->where('calculate', '=', 1)
+                ->latest('last_check')
+                ->first();
+
+            $points += $record->points ?? 0;
         }
 
-        if (count($will) == 0) {
-            $count = 1;
-        } else {
-            $count = count($will);
-        }
+        $count = count($items);
+
+        $points = $points / $count;
+        $countChecks = RelevanceHistory::where('project_relevance_history_id', '=', $main->id)->count();
+
+        $main->count_sites = $count;
+        $main->total_points = $points;
+        $main->count_checks = $countChecks;
+        $main->save();
+
         return [
-            'points' => $points / $count,
-            'count' => $count
+            'points' => $points,
+            'count' => $count,
+            'count_checks' => $countChecks
         ];
     }
 
