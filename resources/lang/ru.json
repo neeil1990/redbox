@@ -843,5 +843,13 @@
     "Such a label already exists": "Такая метка уже существует",
     "The label does not exist": "Метка не существует",
     "Label changed successfully": "Метка успешно изменена",
-    "The label was successfully deleted": "Метка была успешно удалена"
+    "The label was successfully deleted": "Метка была успешно удалена",
+    "Deleting results from a project": "Удаление результатов у проекта",
+    "Confirm the action.": "Подтвердите действие.",
+    "You will not be able to recover the data.": "У вас не будет возможности восстановить данные.",
+    "Do not delete": "Не удалять",
+    "Show the results of the analysis": "Показать результаты анализа",
+    "Delete results without comments": "Удалить результаты без комментариев",
+    "Switch everything": "Переключить всё",
+    "Scores": "Баллы"
 }

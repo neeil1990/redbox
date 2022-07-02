@@ -179,25 +179,25 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="removeModalLabel">Удаление результатов у
-                                                проекта {{ $item->name }}</h5>
+                                            <h5 class="modal-title" id="removeModalLabel">
+                                                {{ __('Deleting results from a project') }} {{ $item->name }}</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            Подтвердите действие.
+                                            {{ __('Confirm the action.') }}
                                             <p>
-                                                <b>У вас не будет возможности восстановить данные.</b>
+                                                <b>{{ __('You will not be able to recover the data.') }}</b>
                                             </p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary remove-empty-results"
                                                     data-target="{{ $item->id }}" data-dismiss="modal">
-                                                Удалить
+                                                {{ __('Remove') }}
                                             </button>
                                             <button type="button" class="btn btn-default" data-dismiss="modal">
-                                                Не удалять
+                                                {{ __('Do not delete') }}
                                             </button>
                                         </div>
                                     </div>
@@ -218,12 +218,12 @@
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
-                                                Показать результаты анализа
+                                                {{ __('Show the results of the analysis') }}
                                             </span>
                                             <span class="dropdown-item"
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
-                                                Удалить результаты без комментариев
+                                                {{ __('Delete results without comments') }}
                                             </span>
                                         </div>
                                     </div>
@@ -515,7 +515,7 @@
                                 </th>
                                 <th>
                                     <div>
-                                        Переключить всё
+                                        {{ __('Switch everything') }}
                                         <div class='d-flex w-100'>
                                             <div class='__helper-link ui_tooltip_w'>
                                                 <div
@@ -532,42 +532,39 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th class="table-header">Дата последней проверки</th>
+                                <th class="table-header">{{ __('Date of last check') }}</th>
                                 <th class="table-header" style="min-width: 200px">
-                                    Комментарий
+                                    {{ __('Comment') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
-                                    Фраза
+                                    {{ __('Phrase') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
-                                    Регион
+                                    {{ __('Region') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; max-width:160px; height: 83px">
-                                    Посадочная страница
+                                    {{ __('Main page') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Позиция в топе
+                                    {{ __('Position in the top') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Баллы
+                                    {{ __('Scores') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Охват важных
-                                    слова
+                                    {{ __('Coverage of important words') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Охват tf
+                                    {{ __('TF coverage') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Ширина
+                                    {{ __('Width') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Плотность
+                                    {{ __('Density') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Учитывать в
-                                    расчёте общего
-                                    балла
+                                    {{ __('Take into account when calculating the total score') }}
                                 </th>
                                 <th class="table-header"></th>
                             </tr>
