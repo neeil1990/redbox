@@ -163,9 +163,8 @@ $(document).ready(function () {
 
                         $('#history_table_filter').hide()
 
-                        let href = '#history_table';
                         $('html, body').animate({
-                            scrollTop: $(href).offset().top
+                            scrollTop: $('#tab_1 > div.history > h3').offset().top
                         }, {
                             duration: 370,
                             easing: "linear"
