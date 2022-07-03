@@ -86,12 +86,12 @@
                                 <td>
                                     <table class="table table-hover">
                                         <tbody>
-                                        <tr data-widget="expandable-table" aria-expanded="false">
+                                        <tr data-widget="expandable-table" aria-expanded="true">
                                             <td>
                                                 <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
                                             </td>
                                         </tr>
-                                        <tr class="expandable-body d-none">
+                                        <tr class="expandable-body">
                                             <td>
                                                 <div class="p-0" style="display: none;">
                                                     <table class="table table-hover">

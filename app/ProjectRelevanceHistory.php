@@ -63,6 +63,7 @@ class ProjectRelevanceHistory extends Model
     public static function calculateInfo($main): array
     {
         $points = 0;
+        $position = 0;
 
         $items = RelevanceHistory::where('project_relevance_history_id', '=', $main->id)
             ->distinct(['main_link', 'phrase', 'region'])
@@ -77,23 +78,28 @@ class ProjectRelevanceHistory extends Model
                 ->latest('last_check')
                 ->first();
 
-            $points += $record->points ?? 0;
+            if (isset($record)) {
+                $points += $record->points;
+                $position += $record->position;
+            }
         }
 
         $count = count($items);
-
         $points = $points / $count;
+        $position = $position / $count;
         $countChecks = RelevanceHistory::where('project_relevance_history_id', '=', $main->id)->count();
 
         $main->count_sites = $count;
         $main->total_points = $points;
         $main->count_checks = $countChecks;
+        $main->avg_position = $position;
         $main->save();
 
         return [
             'points' => $points,
             'count' => $count,
-            'count_checks' => $countChecks
+            'countChecks' => $countChecks,
+            'avgPosition' => $position
         ];
     }
 

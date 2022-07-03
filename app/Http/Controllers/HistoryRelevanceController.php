@@ -285,7 +285,8 @@ class HistoryRelevanceController extends Controller
             'message' => __('Success'),
             'points' => $info['points'],
             'countSites' => $info['count'],
-            'countChecks' => $info['count_checks'],
+            'countChecks' => $info['countChecks'],
+            'avgPosition' => $info['avgPosition'],
             'objectId' => $request->id,
             'code' => 200
         ]);

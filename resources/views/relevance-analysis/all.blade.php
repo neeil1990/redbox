@@ -7,6 +7,12 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            td:hover i {
+                opacity: 1 !important;
+                transition: .3s;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -107,6 +113,7 @@
                             <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
                             <th class="table-header col-2">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Avg position') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -117,25 +124,25 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="removeModalLabel">Удаление результатов у
-                                                проекта {{ $item->name }}</h5>
+                                            <h5 class="modal-title" id="removeModalLabel">
+                                                {{ __('Deleting results from a project') }} {{ $item->name }}</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            Подтвердите действие.
+                                            {{ __('Confirm the action.') }}
                                             <p>
-                                                <b>У вас не будет возможности восстановить данные.</b>
+                                                <b>{{ __('You will not be able to recover the data.') }}</b>
                                             </p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary remove-empty-results"
                                                     data-target="{{ $item->id }}" data-dismiss="modal">
-                                                Удалить
+                                                {{ __('Remove') }}
                                             </button>
                                             <button type="button" class="btn btn-default" data-dismiss="modal">
-                                                Не удалять
+                                                {{ __('Do not delete') }}
                                             </button>
                                         </div>
                                     </div>
@@ -144,7 +151,8 @@
                             <tr>
                                 <td>
                                     <a href="#history_table_{{ $item->name }}"
-                                       class="project_name" style="cursor:pointer;"
+                                       class="project_name"
+                                       style="cursor:pointer;"
                                        data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                     </a>
@@ -155,12 +163,12 @@
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
-                                                Показать результаты анализа
+                                                {{ __('Show the results of the analysis') }}
                                             </span>
                                             <span class="dropdown-item"
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
-                                                Удалить результаты без комментариев
+                                                {{ __('Delete results without comments') }}
                                             </span>
                                         </div>
                                     </div>
@@ -168,6 +176,11 @@
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
                                         <div style="color: {{ $tag->color }}">{{ $tag->name }}
+                                            <i class="fa fa-trash remove-project-relevance-link"
+                                               style="opacity: 0.5; cursor: pointer"
+                                               data-tag="{{ $tag->id }}"
+                                               data-history="{{ $item->id }}">
+                                            </i>
                                         </div>
                                     @endforeach
                                 </td>
@@ -178,9 +191,10 @@
                                         {{ $item->user->last_name }}
                                     </span>
                                 </td>
-                                <td class="col-2">{{ $item->count_sites }}</td>
-                                <td>{{ $item->count_checks }}</td>
-                                <td>{{ $item->total_points }}</td>
+                                <td class="count-sites-{{ $item->id }}">{{ $item->count_sites }}</td>
+                                <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
+                                <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
+                                <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
                                 <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach
@@ -687,6 +701,10 @@
                     success: function (response) {
                         if (response.code === 200) {
                             getSuccessMessage(response.message)
+                            $('.count-sites-' + response.objectId).html(response.countSites)
+                            $('.total-points-' + response.objectId).html(response.points)
+                            $('.count-checks-' + response.objectId).html(response.countChecks)
+                            $('.total-positions-' + response.objectId).html(response.avgPosition)
                             $('a[data-order="' + response.objectId + '"]').trigger('click')
                         } else if (response.code === 415) {
                             getErrorMessage(response.message)

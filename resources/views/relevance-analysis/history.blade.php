@@ -7,6 +7,12 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            td:hover i {
+                opacity: 1 !important;
+                transition: .3s;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -169,6 +175,7 @@
                             <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Avg position') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -242,6 +249,7 @@
                                 <td class="col-2 count-sites-{{ $item->id }}">{{ $item->count_sites }}</td>
                                 <td class="col-2 count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="col-2 total-points-{{ $item->id }}">{{ $item->total_points }}</td>
+                                <td class="col-2 total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
                                 <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach
@@ -769,6 +777,7 @@
                             $('.count-sites-' + response.objectId).html(response.countSites)
                             $('.total-points-' + response.objectId).html(response.points)
                             $('.count-checks-' + response.objectId).html(response.countChecks)
+                            $('.total-positions-' + response.objectId).html(response.avgPosition)
                             $('a[data-order="' + response.objectId + '"]').trigger('click')
                         } else if (response.code === 415) {
                             getErrorMessage(response.message)

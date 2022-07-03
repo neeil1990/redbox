@@ -66,25 +66,35 @@
                         <thead>
                         <tr>
                         <tr>
-                            <th class="table-header">{{ __('Project name') }}</th>
-                            <th class="table-header">{{ __('Tags') }}</th>
-                            <th class="table-header">{{ __('Number of analyzed pages') }}</th>
-                            <th class="table-header">{{ __('Number of saved scans') }}</th>
+                            <th class="table-header col-2">{{ __('Project name') }}</th>
+                            <th class="table-header col-2">{{ __('Owner') }}</th>
+                            <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
+                            <th class="table-header col-2">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
+                            <th class="table-header">{{ __('Avg position') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
-                            <th class="col-2"></th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($projects as $item)
                             <tr>
-                                <td class="project_name" style="cursor:pointer;"
-                                    data-order="{{ $item->project[0]->id }}"
-                                    data-access="{{ $item->access }}">
-                                    <a href="#history_table_{{ $item->project[0]->name }}">
+                                <td>
+                                    <a href="#history_table_{{ $item->project[0]->name }}"
+                                       class="project_name" style="cursor:pointer;"
+                                       data-order="{{ $item->project[0]->id }}"
+                                       data-access="{{ $item->access }}">
                                         {{ $item->project[0]->name }}
                                     </a>
-                                    <i class="fa fa-eye" style="opacity: 0"></i>
+                                    <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
+                                       aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <span class="dropdown-item project_name"
+                                                  style="cursor:pointer;"
+                                                  data-order="{{ $item->id }}">
+                                                {{ __('Show the results of the analysis') }}
+                                            </span>
+                                    </div>
                                     <p>
                                         @if($item->access == 1)
                                             Доступен только просмотр
@@ -103,6 +113,7 @@
                                 <td class="col-2">{{ $item->project[0]->count_sites }}</td>
                                 <td class="col-2">{{ $item->project[0]->count_checks }}</td>
                                 <td>{{ $item->project[0]->total_points }}</td>
+                                <td>{{ $item->project[0]->avg_position }}</td>
                                 <td>{{ $item->project[0]->last_check }}</td>
 
                                 <td>
