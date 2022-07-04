@@ -12,6 +12,7 @@
 */
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniquePages;
 use App\RelevanceHistory;
 use App\RelevanceStatistics;
@@ -252,4 +253,12 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
+});
+
+Route::get('/calculate-all-projects-stats', function () {
+    $projects = ProjectRelevanceHistory::all();
+
+    foreach ($projects as $project) {
+        ProjectRelevanceHistory::calculateInfo($project);
+    }
 });
