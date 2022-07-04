@@ -212,8 +212,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
-    Route::post('/remove-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
-    Route::post('/remove-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
+    Route::post('/remove-scan-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
+    Route::post('/remove-scan-results-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');

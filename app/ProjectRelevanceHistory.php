@@ -84,7 +84,7 @@ class ProjectRelevanceHistory extends Model
             }
         }
 
-        $count = count($items);
+        $count = count($items) == 0 ? 1 : count($items);
         $points = $points / $count;
         $position = $position / $count;
         $countChecks = RelevanceHistory::where('project_relevance_history_id', '=', $main->id)->count();
