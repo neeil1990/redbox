@@ -80,7 +80,7 @@ class ProjectRelevanceHistory extends Model
 
             if (isset($record)) {
                 $points += $record->points;
-                $position += $record->position;
+                $position += $record->position == 0 ? 100 : $record->position;
             }
         }
 

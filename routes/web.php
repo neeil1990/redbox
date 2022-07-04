@@ -255,3 +255,11 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
+
+Route::get('/calculate-all-projects-stats', function () {
+    $projects = ProjectRelevanceHistory::all();
+
+    foreach ($projects as $project) {
+        ProjectRelevanceHistory::calculateInfo($project);
+    }
+});
