@@ -148,6 +148,158 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="modal fade" id="removeWithFiltersModal{{ $item->id }}" tabindex="-1"
+                                 aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="removeWithFiltersModalLabel">
+                                                {{ __('Deleting results from a project') }} {{ $item->name }}
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="d-flex flex-row">
+                                                <div>
+                                                    <label>{{ __('Scans performed after (inclusive)') }}</label>
+                                                    <input class="form form-control" type="date"
+                                                           id="date-filter-after-{{ $item->id }}">
+                                                </div>
+
+                                                <div>
+                                                    <label>{{ __('Scans performed before (inclusive)') }}</label>
+                                                    <input class="form form-control" type="date"
+                                                           id="date-filter-before-{{ $item->id }}">
+                                                </div>
+                                            </div>
+
+                                            <label class="mt-3">{{ __('Comment') }}</label>
+                                            <input type="text" class="form form-control" name="comment-filter"
+                                                   id="comment-filter-{{ $item->id }}">
+
+                                            <label class="mt-3">{{ __('Phrase') }}</label>
+                                            <input type="text" class="form form-control" name="phrase-filter"
+                                                   id="phrase-filter-{{ $item->id }}">
+
+                                            <label class="mt-3">{{ __('Region') }}</label>
+                                            {!! Form::select('region', [
+                                                   'none' => __("Don't search for matches by region"),
+                                                   'all' => 'Любой регион',
+                                                   '1' => __('Moscow'),
+                                                   '20' => __('Arkhangelsk'),
+                                                   '37' => __('Astrakhan'),
+                                                   '197' => __('Barnaul'),
+                                                   '4' => __('Belgorod'),
+                                                   '77' => __('Blagoveshchensk'),
+                                                   '191' => __('Bryansk'),
+                                                   '24' => __('Veliky Novgorod'),
+                                                   '75' => __('Vladivostok'),
+                                                   '33' => __('Vladikavkaz'),
+                                                   '192' => __('Vladimir'),
+                                                   '38' => __('Volgograd'),
+                                                   '21' => __('Vologda'),
+                                                   '193' => __('Voronezh'),
+                                                   '1106' => __('Grozny'),
+                                                   '54' => __('Ekaterinburg'),
+                                                   '5' => __('Ivanovo'),
+                                                   '63' => __('Irkutsk'),
+                                                   '41' => __('Yoshkar-ola'),
+                                                   '43' => __('Kazan'),
+                                                   '22' => __('Kaliningrad'),
+                                                   '64' => __('Kemerovo'),
+                                                   '7' => __('Kostroma'),
+                                                   '35' => __('Krasnodar'),
+                                                   '62' => __('Krasnoyarsk'),
+                                                   '53' => __('Kurgan'),
+                                                   '8' => __('Kursk'),
+                                                   '9' => __('Lipetsk'),
+                                                   '28' => __('Makhachkala'),
+                                                   '213' => __('Moscow'),
+                                                   '23' => __('Murmansk'),
+                                                   '1092' => __('Nazran'),
+                                                   '30' => __('Nalchik'),
+                                                   '47' => __('Nizhniy Novgorod'),
+                                                   '65' => __('Novosibirsk'),
+                                                   '66' => __('Omsk'),
+                                                   '10' => __('Eagle'),
+                                                   '48' => __('Orenburg'),
+                                                   '49' => __('Penza'),
+                                                   '50' => __('Perm'),
+                                                   '25' => __('Pskov'),
+                                                   '39' => __('Rostov-on-Don'),
+                                                   '11' => __('Ryazan'),
+                                                   '51' => __('Samara'),
+                                                   '42' => __('Saransk'),
+                                                   '2' => __('Saint-Petersburg'),
+                                                   '12' => __('Smolensk'),
+                                                   '239' => __('Sochi'),
+                                                   '36' => __('Stavropol'),
+                                                   '973' => __('Surgut'),
+                                                   '13' => __('Tambov'),
+                                                   '14' => __('Tver'),
+                                                   '67' => __('Tomsk'),
+                                                   '15' => __('Tula'),
+                                                   '195' => __('Ulyanovsk'),
+                                                   '172' => __('Ufa'),
+                                                   '76' => __('Khabarovsk'),
+                                                   '45' => __('Cheboksary'),
+                                                   '56' => __('Chelyabinsk'),
+                                                   '1104' => __('Cherkessk'),
+                                                   '16' => __('Yaroslavl'),
+                                                   ], null, ['class' => 'custom-select rounded-0 region', 'id' => 'region-filter-'. $item->id]) !!}
+
+                                            <label class="mt-3">{{ __('Link') }}</label>
+                                            <input type="text" class="form form-control"
+                                                   name="link-filter"
+                                                   id="link-filter-{{ $item->id }}">
+
+                                            <div class="d-flex flex-row mt-3 mb-3" >
+                                                <div>
+                                                    <label>{{ __('Position from (inclusive)') }}</label>
+                                                    <input class="form form-control" type="number"
+                                                           id="position-filter-after-{{ $item->id }}"
+                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
+                                                </div>
+
+                                                <div>
+                                                    <label>{{ __('Position up to (inclusive)') }}</label>
+                                                    <input class="form form-control" type="number"
+                                                           id="position-filter-before-{{ $item->id }}"
+                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
+                                                </div>
+                                            </div>
+
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('According to your project') }} {{ $item->name }} {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>
+                                                        {{ __('All matches found will be deleted.') }} <br>
+                                                        {{ __("If you don't want to search by any parameter, then leave the field empty.") }}
+                                                    </span>
+                                                </span>
+                                            </span>
+
+                                            <div class="text-danger mt-3 mb-3">
+                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}, {{ __('if you leave all fields empty, be careful') }}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary remove-with-filters"
+                                                    data-dismiss="modal" data-target="{{ $item->id }}">
+                                                {{ __('Remove') }}
+                                            </button>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">{{ __('Do not delete') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <tr>
                                 <td>
                                     <a href="#history_table_{{ $item->name }}"
@@ -169,6 +321,12 @@
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
                                                 {{ __('Delete results without comments') }}
+                                            </span>
+                                            <span class="dropdown-item"
+                                                  style="cursor:pointer;"
+                                                  data-toggle="modal"
+                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
+                                                {{ __('Delete using filters') }}
                                             </span>
                                         </div>
                                     </div>
@@ -671,6 +829,7 @@
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -688,47 +847,6 @@
             });
 
             $(".dt-button").addClass('btn btn-secondary')
-
-            $('.remove-empty-results').on('click', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('remove.empty.results') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: $(this).attr('data-target'),
-                    },
-                    success: function (response) {
-                        if (response.code === 200) {
-                            getSuccessMessage(response.message)
-                            $('.count-sites-' + response.objectId).html(response.countSites)
-                            $('.total-points-' + response.objectId).html(response.points)
-                            $('.count-checks-' + response.objectId).html(response.countChecks)
-                            $('.total-positions-' + response.objectId).html(response.avgPosition)
-                            $('a[data-order="' + response.objectId + '"]').trigger('click')
-                        } else if (response.code === 415) {
-                            getErrorMessage(response.message)
-                        }
-                    },
-                });
-            })
-
-            function getSuccessMessage(message) {
-                $('.toast-top-right.success-message').show(300)
-                $('#message-info').html(message)
-                setTimeout(() => {
-                    $('.toast-top-right.success-message').hide(300)
-                }, 3000)
-            }
-
-            function getErrorMessage(message) {
-                $('.toast-top-right.error-message').show(300)
-                $('#message-error-info').html(message)
-                setTimeout(() => {
-                    $('.toast-top-right.error-message').hide(300)
-                }, 3000)
-            }
-
         </script>
     @endslot
 @endcomponent

@@ -291,4 +291,72 @@ class HistoryRelevanceController extends Controller
             'code' => 200
         ]);
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function removeEmptyResultsFilters(Request $request): JsonResponse
+    {
+        $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
+        $admin = User::isUserAdmin();
+
+        if ($main->user_id != Auth::id() && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+
+        $query = RelevanceHistory::where('project_relevance_history_id', '=', $request->id);
+
+        if (isset($request->positionAfter)) {
+            $query->where('position', '>=', $request->positionAfter);
+        }
+
+        if (isset($request->positionBefore)) {
+            $query->where('position', '<=', $request->positionBefore);
+        }
+
+        if (isset($request->after)) {
+            $query->where('last_check', '>=', $request->after);
+        }
+
+        if (isset($request->before)) {
+            $query->where('last_check', '<=', $request->before);
+        }
+
+        if (isset($request->comment)) {
+            $query->where('comment', '=', $request->comment);
+        }
+
+        if (isset($request->phrase)) {
+            $query->where('phrase', '=', $request->phrase);
+        }
+
+        if ($request->region === 'all') {
+            $query->where('region', '!=', 0);
+        } elseif ($request->region !== 'none') {
+            $query->where('region', '=', $request->region);
+        }
+
+        if (isset($request->link)) {
+            $query->where('main_link', '=', $request->link);
+        }
+
+        $count = $query->delete();
+        $info = ProjectRelevanceHistory::calculateInfo($main);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('It was deleted') . ' ' . $count . ' ' . __('projects'),
+            'points' => $info['points'],
+            'countSites' => $info['count'],
+            'countChecks' => $info['countChecks'],
+            'avgPosition' => $info['avgPosition'],
+            'objectId' => $request->id,
+            'code' => 200
+        ]);
+    }
 }
