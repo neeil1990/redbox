@@ -21,6 +21,24 @@ $(document).ready(function () {
 
     $('.remove-with-filters').on('click', function () {
         let id = $(this).attr('data-target');
+
+        console.log($('#comment-filter-' + id).val())
+        if ($('#comment-filter-' + id).val() == '' &&
+            $('#phrase-filter-' + id).val() == '' &&
+            $('#region-filter-' + id).val() == 'none' &&
+            $('#link-filter-' + id).val() == '' &&
+            $('#date-filter-before-' + id).val() == '' &&
+            $('#date-filter-after-' + id).val() == '' &&
+            $('#position-filter-after-' + id).val() == '' &&
+            $('#position-filter-before-' + id).val() == ''
+        ) {
+            let response = prompt('У вас будут удалены ВСЕ результаты проекта. Напишите "Да", если вы хотите подтверить опперацию')
+            if (response !== 'Да') {
+                getSuccessMessage('Удаление было отменено')
+                return;
+            }
+        }
+
         $.ajax({
             type: "POST",
             dataType: "json",

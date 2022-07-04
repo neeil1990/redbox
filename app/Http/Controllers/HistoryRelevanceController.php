@@ -346,10 +346,7 @@ class HistoryRelevanceController extends Controller
             $query->where('main_link', '=', $request->link);
         }
 
-        $count = $query->get();
-
-        Log::debug('count', [$count]);
-        $count = 1;
+        $count = $query->delete();
         $info = ProjectRelevanceHistory::calculateInfo($main);
 
         return response()->json([

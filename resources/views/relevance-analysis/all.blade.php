@@ -284,6 +284,10 @@
                                                     </span>
                                                 </span>
                                             </span>
+
+                                            <div class="text-danger mt-3 mb-3">
+                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}, {{ __('if you leave all fields empty, be careful') }}
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary remove-with-filters"
