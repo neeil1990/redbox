@@ -8,12 +8,14 @@ use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
+use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\User;
 use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MonitoringController extends Controller
 {
@@ -239,7 +241,7 @@ class MonitoringController extends Controller
 
         $keywords->transform(function($item){
 
-            $unique = $item->positions->sortByDesc('id')->unique(function($item){
+            $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
                 return $item->created_at->format('d.m.Y');
             });
 
@@ -251,6 +253,7 @@ class MonitoringController extends Controller
         $table = [];
 
         $headers = $this->getHeaderKeywordsTable($region);
+
         $length = $headers->count();
 
         foreach ($keywords as $keyword){
@@ -305,13 +308,10 @@ class MonitoringController extends Controller
 
     protected function getHeaderKeywordsTable($region)
     {
-        return $region->positions()
-            ->get()
-            ->unique(function($item){
-                return $item->date;
-            })
-            ->pluck('date')
-            ->sortByDesc(null)
+        $model = $region->positions()
+            ->select(DB::raw('*, DATE(created_at) as date'))->groupBy('date')->orderBy('date', 'desc')->get();
+
+        $header = $model->pluck('date')
             ->prepend(__('Target'))
             ->prepend(view('monitoring.partials.show.header.group')->render())
             ->prepend(__('URL'))
@@ -320,6 +320,8 @@ class MonitoringController extends Controller
             ->prepend('')
             ->prepend('ID')
             ->values();
+
+        return $header;
     }
 
     /**
