@@ -32,6 +32,10 @@ $(document).ready(function () {
                 phrase: $('#phrase-filter-' + id).val(),
                 region: $('#region-filter-' + id).val(),
                 link: $('#link-filter-' + id).val(),
+                before: $('#date-filter-before-' + id).val(),
+                after: $('#date-filter-after-' + id).val(),
+                positionAfter: $('#position-filter-after-' + id).val(),
+                positionBefore: $('#position-filter-before-' + id).val()
             },
             success: function (response) {
                 if (response.code === 200) {

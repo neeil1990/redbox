@@ -234,6 +234,21 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
+
+                                            <div class="d-flex flex-row">
+                                                <div>
+                                                    <label>{{ __('Scans performed after (inclusive)') }}</label>
+                                                    <input class="form form-control" type="date"
+                                                           id="date-filter-after-{{ $item->id }}">
+                                                </div>
+
+                                                <div>
+                                                    <label>{{ __('Scans performed before (inclusive)') }}</label>
+                                                    <input class="form form-control" type="date"
+                                                           id="date-filter-before-{{ $item->id }}">
+                                                </div>
+                                            </div>
+
                                             <label class="mt-3">{{ __('Comment') }}</label>
                                             <input type="text" class="form form-control" name="comment-filter"
                                                    id="comment-filter-{{ $item->id }}">
@@ -241,7 +256,6 @@
                                             <label class="mt-3">{{ __('Phrase') }}</label>
                                             <input type="text" class="form form-control" name="phrase-filter"
                                                    id="phrase-filter-{{ $item->id }}">
-
 
                                             <label class="mt-3">{{ __('Region') }}</label>
                                             {!! Form::select('region', [
@@ -314,6 +328,23 @@
                                             <input type="text" class="form form-control"
                                                    name="link-filter"
                                                    id="link-filter-{{ $item->id }}">
+
+                                            <div class="d-flex flex-row mt-3 mb-3" >
+                                                <div>
+                                                    <label>{{ __('Position from (inclusive)') }}</label>
+                                                    <input class="form form-control" type="number"
+                                                           id="position-filter-after-{{ $item->id }}"
+                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
+                                                </div>
+
+                                                <div>
+                                                    <label>{{ __('Position up to (inclusive)') }}</label>
+                                                    <input class="form form-control" type="number"
+                                                           id="position-filter-before-{{ $item->id }}"
+                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
+                                                </div>
+                                            </div>
+
                                             <span class="__helper-link ui_tooltip_w">
                                                 {{ __('How it works') }}
                                                 <i class="fa fa-question-circle" style="color: grey"></i>

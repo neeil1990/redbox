@@ -298,6 +298,7 @@ class HistoryRelevanceController extends Controller
      */
     public function removeEmptyResultsFilters(Request $request): JsonResponse
     {
+        Log::debug('r', $request->all());
         $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
         $admin = User::isUserAdmin();
 
@@ -309,27 +310,46 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        $record = RelevanceHistory::where('project_relevance_history_id', '=', $request->id);
+        $query = RelevanceHistory::where('project_relevance_history_id', '=', $request->id);
+
+        if (isset($request->positionAfter)) {
+            $query->where('position', '>=', $request->positionAfter);
+        }
+
+        if (isset($request->positionBefore)) {
+            $query->where('position', '<=', $request->positionBefore);
+        }
+
+        if (isset($request->after)) {
+            $query->where('last_check', '>=', $request->after);
+        }
+
+        if (isset($request->before)) {
+            $query->where('last_check', '<=', $request->before);
+        }
 
         if (isset($request->comment)) {
-            $record->where('comment', '=', $request->comment);
+            $query->where('comment', '=', $request->comment);
         }
 
         if (isset($request->phrase)) {
-            $record->where('phrase', '=', $request->phrase);
+            $query->where('phrase', '=', $request->phrase);
         }
 
         if ($request->region === 'all') {
-            $record->where('region', '!=', 0);
+            $query->where('region', '!=', 0);
         } elseif ($request->region !== 'none') {
-            $record->where('region', '=', $request->region);
+            $query->where('region', '=', $request->region);
         }
 
         if (isset($request->link)) {
-            $record->where('main_link', '=', $request->link);
+            $query->where('main_link', '=', $request->link);
         }
 
-        $count = $record->delete();
+        $count = $query->get();
+
+        Log::debug('count', [$count]);
+        $count = 1;
         $info = ProjectRelevanceHistory::calculateInfo($main);
 
         return response()->json([
