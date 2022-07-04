@@ -11,6 +11,7 @@ use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\User;
+use Carbon\Carbon;
 use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -204,6 +205,8 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
+        $carbon = Carbon::now();
+
         $navigations = $this->navigations();
 
         /** @var User $user */
@@ -214,13 +217,15 @@ class MonitoringController extends Controller
 
         $region->load('location');
 
-        $headers = $this->getHeaderKeywordsTable($region);
+        $headers = $this->getHeaderKeywordsTable($region, $carbon);
 
         return view('monitoring.show', compact('navigations', 'region', 'project', 'headers'));
     }
 
     public function getTableKeywords(Request $request, $id)
     {
+        $carbon = Carbon::now();
+
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
@@ -235,8 +240,10 @@ class MonitoringController extends Controller
         $region = $project->searchengines()->orderBy('id', 'asc')->first();
         $region->load('location');
 
-        $keywords->load(['positions' => function($query) use ($region){
-            $query->where('monitoring_searchengine_id', $region->id);
+        $keywords->load(['positions' => function($query) use ($region, $carbon){
+
+            $query->where('monitoring_searchengine_id', $region->id)
+            ->where('created_at', '>=', $carbon->subMonth());
         }]);
 
         $keywords->transform(function($item){
@@ -252,7 +259,7 @@ class MonitoringController extends Controller
 
         $table = [];
 
-        $headers = $this->getHeaderKeywordsTable($region);
+        $headers = $this->getHeaderKeywordsTable($region, $carbon);
 
         $length = $headers->count();
 
@@ -306,10 +313,12 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    protected function getHeaderKeywordsTable($region)
+    protected function getHeaderKeywordsTable($region, $carbon)
     {
         $model = $region->positions()
-            ->select(DB::raw('*, DATE(created_at) as date'))->groupBy('date')->orderBy('date', 'desc')->get();
+            ->select(DB::raw('*, DATE(created_at) as date'))
+            ->where('created_at', '>=', $carbon->subMonth())
+            ->groupBy('date')->orderBy('date', 'desc')->get();
 
         $header = $model->pluck('date')
             ->prepend(__('Target'))
