@@ -186,6 +186,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/create-queue-test', 'TestRelevanceController@createQueue')->name('create.queue.testView');
     Route::post('/create-queue-test-post', 'TestRelevanceController@createTaskQueue')->name('create.queue.test.post');
     Route::get('/history-test', 'TestRelevanceController@history')->name('relevance.history.test');
+
     Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
     Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
     Route::post('/end-relevance-progress-percent', 'RelevanceProgressController@endProgress')->name('end.relevance.progress');
@@ -212,6 +213,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
     Route::post('/remove-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
+    Route::post('/remove-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
@@ -250,42 +252,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
-});
-
-
-Route::get('/bla', function () {
-    $items = RelevanceHistory::where('project_relevance_history_id', '=', 60)
-        ->distinct(['main_link', 'phrase', 'region'])
-        ->get(['main_link', 'phrase', 'region']);
-
-    foreach ($items as $link) {
-        $records = RelevanceHistory::where('comment', '!=', '')
-            ->where('main_link', '=', $link->main_link)
-            ->where('phrase', '=', $link->phrase)
-            ->where('region', '=', $link->region)
-            ->where('project_relevance_history_id', '=', 60)
-            ->latest('last_check')
-            ->get();
-        if (count($records) >= 1) {
-            RelevanceHistory::where('comment', '=', '')
-                ->where('main_link', '=', $link->main_link)
-                ->where('phrase', '=', $link->phrase)
-                ->where('region', '=', $link->region)
-                ->where('project_relevance_history_id', '=', 60)
-                ->delete();
-        } else {
-            $records = RelevanceHistory::where('comment', '=', '')
-                ->where('main_link', '=', $link->main_link)
-                ->where('phrase', '=', $link->phrase)
-                ->where('region', '=', $link->region)
-                ->where('project_relevance_history_id', '=', 60)
-                ->latest('last_check')
-                ->get();
-            foreach ($records as $key => $record) {
-                if ($key != array_key_first($records->toArray())) {
-                    $record->delete();
-                }
-            }
-        }
-    }
 });

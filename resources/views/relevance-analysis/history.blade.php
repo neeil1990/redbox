@@ -187,13 +187,23 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="removeModalLabel">
-                                                {{ __('Deleting results from a project') }} {{ $item->name }}</h5>
+                                                {{ __('Deleting results from a project') }} {{ $item->name }}
+                                            </h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            {{ __('Confirm the action.') }}
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('All scan results that have no comment will be deleted.') }} <br>
+                                                        {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}
+                                                    </span>
+                                                </span>
+                                            </span>
                                             <p>
                                                 <b>{{ __('You will not be able to recover the data.') }}</b>
                                             </p>
@@ -206,6 +216,123 @@
                                             <button type="button" class="btn btn-default" data-dismiss="modal">
                                                 {{ __('Do not delete') }}
                                             </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="removeWithFiltersModal{{ $item->id }}" tabindex="-1"
+                                 aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="removeWithFiltersModalLabel">
+                                                {{ __('Deleting results from a project') }} {{ $item->name }}
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label class="mt-3">{{ __('Comment') }}</label>
+                                            <input type="text" class="form form-control" name="comment-filter"
+                                                   id="comment-filter-{{ $item->id }}">
+
+                                            <label class="mt-3">{{ __('Phrase') }}</label>
+                                            <input type="text" class="form form-control" name="phrase-filter"
+                                                   id="phrase-filter-{{ $item->id }}">
+
+
+                                            <label class="mt-3">{{ __('Region') }}</label>
+                                            {!! Form::select('region', [
+                                                   'none' => __("Don't search for matches by region"),
+                                                   'all' => 'Любой регион',
+                                                   '1' => __('Moscow'),
+                                                   '20' => __('Arkhangelsk'),
+                                                   '37' => __('Astrakhan'),
+                                                   '197' => __('Barnaul'),
+                                                   '4' => __('Belgorod'),
+                                                   '77' => __('Blagoveshchensk'),
+                                                   '191' => __('Bryansk'),
+                                                   '24' => __('Veliky Novgorod'),
+                                                   '75' => __('Vladivostok'),
+                                                   '33' => __('Vladikavkaz'),
+                                                   '192' => __('Vladimir'),
+                                                   '38' => __('Volgograd'),
+                                                   '21' => __('Vologda'),
+                                                   '193' => __('Voronezh'),
+                                                   '1106' => __('Grozny'),
+                                                   '54' => __('Ekaterinburg'),
+                                                   '5' => __('Ivanovo'),
+                                                   '63' => __('Irkutsk'),
+                                                   '41' => __('Yoshkar-ola'),
+                                                   '43' => __('Kazan'),
+                                                   '22' => __('Kaliningrad'),
+                                                   '64' => __('Kemerovo'),
+                                                   '7' => __('Kostroma'),
+                                                   '35' => __('Krasnodar'),
+                                                   '62' => __('Krasnoyarsk'),
+                                                   '53' => __('Kurgan'),
+                                                   '8' => __('Kursk'),
+                                                   '9' => __('Lipetsk'),
+                                                   '28' => __('Makhachkala'),
+                                                   '213' => __('Moscow'),
+                                                   '23' => __('Murmansk'),
+                                                   '1092' => __('Nazran'),
+                                                   '30' => __('Nalchik'),
+                                                   '47' => __('Nizhniy Novgorod'),
+                                                   '65' => __('Novosibirsk'),
+                                                   '66' => __('Omsk'),
+                                                   '10' => __('Eagle'),
+                                                   '48' => __('Orenburg'),
+                                                   '49' => __('Penza'),
+                                                   '50' => __('Perm'),
+                                                   '25' => __('Pskov'),
+                                                   '39' => __('Rostov-on-Don'),
+                                                   '11' => __('Ryazan'),
+                                                   '51' => __('Samara'),
+                                                   '42' => __('Saransk'),
+                                                   '2' => __('Saint-Petersburg'),
+                                                   '12' => __('Smolensk'),
+                                                   '239' => __('Sochi'),
+                                                   '36' => __('Stavropol'),
+                                                   '973' => __('Surgut'),
+                                                   '13' => __('Tambov'),
+                                                   '14' => __('Tver'),
+                                                   '67' => __('Tomsk'),
+                                                   '15' => __('Tula'),
+                                                   '195' => __('Ulyanovsk'),
+                                                   '172' => __('Ufa'),
+                                                   '76' => __('Khabarovsk'),
+                                                   '45' => __('Cheboksary'),
+                                                   '56' => __('Chelyabinsk'),
+                                                   '1104' => __('Cherkessk'),
+                                                   '16' => __('Yaroslavl'),
+                                                   ], null, ['class' => 'custom-select rounded-0 region', 'id' => 'region-filter-'. $item->id]) !!}
+
+                                            <label class="mt-3">{{ __('Link') }}</label>
+                                            <input type="text" class="form form-control"
+                                                   name="link-filter"
+                                                   id="link-filter-{{ $item->id }}">
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('According to your project') }} {{ $item->name }} {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>
+                                                        {{ __('All matches found will be deleted.') }} <br>
+                                                        {{ __("If you don't want to search by any parameter, then leave the field empty.") }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary remove-with-filters"
+                                                    data-dismiss="modal" data-target="{{ $item->id }}">
+                                                {{ __('Remove') }}
+                                            </button>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">{{ __('Do not delete') }}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -231,6 +358,12 @@
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
                                                 {{ __('Delete results without comments') }}
+                                            </span>
+                                            <span class="dropdown-item"
+                                                  style="cursor:pointer;"
+                                                  data-toggle="modal"
+                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
+                                                {{ __('Delete using filters') }}
                                             </span>
                                         </div>
                                     </div>
@@ -551,7 +684,7 @@
                                     {{ __('Region') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; max-width:160px; height: 83px">
-                                    {{ __('Main page') }}
+                                    {{ __('Landing page') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
                                     {{ __('Position in the top') }}
@@ -774,11 +907,32 @@
                     success: function (response) {
                         if (response.code === 200) {
                             getSuccessMessage(response.message)
-                            $('.count-sites-' + response.objectId).html(response.countSites)
-                            $('.total-points-' + response.objectId).html(response.points)
-                            $('.count-checks-' + response.objectId).html(response.countChecks)
-                            $('.total-positions-' + response.objectId).html(response.avgPosition)
-                            $('a[data-order="' + response.objectId + '"]').trigger('click')
+                            triggerClick(response)
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message)
+                        }
+                    },
+                });
+            })
+
+            $('.remove-with-filters').on('click', function () {
+                let id = $(this).attr('data-target');
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('remove.with.filters') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: id,
+                        comment: $('#comment-filter-' + id).val(),
+                        phrase: $('#phrase-filter-' + id).val(),
+                        region: $('#region-filter-' + id).val(),
+                        link: $('#link-filter-' + id).val(),
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            getSuccessMessage(response.message)
+                            triggerClick(response)
                         } else if (response.code === 415) {
                             getErrorMessage(response.message)
                         }
@@ -939,6 +1093,14 @@
                 setTimeout(() => {
                     $('.toast-top-right.error-message').hide(300)
                 }, 3000)
+            }
+
+            function triggerClick(response) {
+                $('.count-sites-' + response.objectId).html(response.countSites)
+                $('.total-points-' + response.objectId).html(response.points)
+                $('.count-checks-' + response.objectId).html(response.countChecks)
+                $('.total-positions-' + response.objectId).html(response.avgPosition)
+                $('a[data-order="' + response.objectId + '"]').trigger('click')
             }
         </script>
     @endslot

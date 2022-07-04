@@ -852,5 +852,15 @@
     "Delete results without comments": "Удалить результаты без комментариев",
     "Switch everything": "Переключить всё",
     "Scores": "Баллы",
-    "Avg position": "Средняя позиция"
+    "Avg position": "Средняя позиция",
+    "projects": "проект(ов)",
+    "Don't search for matches by region": "Не искать совпадения по региону",
+    "It was deleted": "Было удалено",
+    "Delete using filters": "Удалить используя фильтры",
+    "If you don't want to search by any parameter, then leave the field empty.": "Если вы не хотите искать по какому либу параметру, то оставьте поле пустым.",
+    "All matches found will be deleted.": "Все найденые совпадения будут удалены.",
+    "According to your project": "По вашему проекту",
+    "the results of the scans will be searched by the filter that you will generate.": "будет произведён поиск результатов сканирований по фильтру, который вы сформируете.",
+    "All scan results that have no comment will be deleted.": "Будут удалены все результаты сканирования, у которых отсутсвует комментарий.",
+    "But the most recent and unique (by fields: phrase, region, link) will not be deleted.": "Но самый свежий и уникальный (по полям: фраза, регион, ссылка) не будет удалён."
 }

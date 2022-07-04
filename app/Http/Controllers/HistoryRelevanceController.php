@@ -291,4 +291,56 @@ class HistoryRelevanceController extends Controller
             'code' => 200
         ]);
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function removeEmptyResultsFilters(Request $request): JsonResponse
+    {
+        $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
+        $admin = User::isUserAdmin();
+
+        if ($main->user_id != Auth::id() && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+
+        $record = RelevanceHistory::where('project_relevance_history_id', '=', $request->id);
+
+        if (isset($request->comment)) {
+            $record->where('comment', '=', $request->comment);
+        }
+
+        if (isset($request->phrase)) {
+            $record->where('phrase', '=', $request->phrase);
+        }
+
+        if ($request->region === 'all') {
+            $record->where('region', '!=', 0);
+        } elseif ($request->region !== 'none') {
+            $record->where('region', '=', $request->region);
+        }
+
+        if (isset($request->link)) {
+            $record->where('main_link', '=', $request->link);
+        }
+
+        $count = $record->delete();
+        $info = ProjectRelevanceHistory::calculateInfo($main);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('It was deleted') . ' ' . $count . ' ' . __('projects'),
+            'points' => $info['points'],
+            'countSites' => $info['count'],
+            'countChecks' => $info['countChecks'],
+            'avgPosition' => $info['avgPosition'],
+            'objectId' => $request->id,
+            'code' => 200
+        ]);
+    }
 }
