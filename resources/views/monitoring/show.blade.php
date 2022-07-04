@@ -10,6 +10,8 @@
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+        <!-- daterange picker -->
+        <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
 
         <style>
             .table tr td:nth-child(4) {
@@ -67,17 +69,28 @@
 
     <h5 class="mb-2 mt-4">Testing</h5>
 
-    <div class="row">
-        {{--@foreach($table as $key => $rows)
-            @if($key)
-                <div class="col-2">
-                    {!! Form::open(['route' => ['keywords.update', $rows[0]], 'method' => 'PATCH']) !!}
-                    {!! Form::submit('Обновить id: ' . $rows[0], ['class' => 'btn btn-block btn-success btn-xs']) !!}
-                    {!! Form::close() !!}
-                </div>
-            @endif
-        @endforeach--}}
+    {!! Form::open(['route' => ['keywords.set.test.positions', $project->id], 'method' => 'patch']) !!}
+
+        <input type="hidden" name="search" value="{{ $region->id }}">
+
+        <div class="form-group">
+        <label>[Year-month-day] Date range:</label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                  <i class="far fa-calendar-alt"></i>
+              </span>
+            </div>
+
+            <input type="text" name="date" class="form-control float-right" id="reservation">
+
+            <span class="input-group-append">
+                <button type="submit" class="btn btn-info btn-flat">Вставить позиции.</button>
+            </span>
+        </div>
+        <!-- /.input group -->
     </div>
+    {!! Form::close() !!}
 
     @include('monitoring.keywords.modal.edit')
 
@@ -95,6 +108,11 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <!-- Select2 -->
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+        <!-- InputMask -->
+        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+        <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+        <!-- date-range-picker -->
+        <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
 
         <script>
 
@@ -102,6 +120,12 @@
                 "preventDuplicates": true,
                 "timeOut": "1500"
             };
+
+            $('#reservation').daterangepicker({
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
 
             let table = $('.table').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
@@ -125,6 +149,7 @@
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/{{ $project->id }}/table',
+                    type: 'POST',
                 },
                 //rowReorder: true,
                 columnDefs: [

@@ -11,6 +11,8 @@ use App\MonitoringProject;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class MonitoringKeywordsController extends Controller
 {
@@ -205,5 +207,32 @@ class MonitoringKeywordsController extends Controller
             $keyword->delete();
 
         return $keyword;
+    }
+
+    public function setTestPositions(Request $request, $id_project)
+    {
+        $project = MonitoringProject::findOrFail($id_project);
+        $search = $request->input('search');
+        $dates = explode(' - ', $request->input('date'));
+
+        $startDate = Carbon::createFromFormat('Y-m-d', $dates[0]);
+        $endDate = Carbon::createFromFormat('Y-m-d', $dates[1]);
+
+        $dateRange = CarbonPeriod::create($startDate, $endDate)->toArray();
+
+        $project->keywords->each(function($key) use ($search, $dateRange){
+
+            foreach($dateRange as $date){
+
+                factory(MonitoringPosition::class)->create([
+                    'monitoring_keyword_id' => $key->id,
+                    'monitoring_searchengine_id' => $search,
+                    'created_at' => $date,
+                    'updated_at' => $date,
+                ]);
+            }
+        });
+
+        return redirect()->back();
     }
 }
