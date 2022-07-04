@@ -298,7 +298,6 @@ class HistoryRelevanceController extends Controller
      */
     public function removeEmptyResultsFilters(Request $request): JsonResponse
     {
-        Log::debug('r', $request->all());
         $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
         $admin = User::isUserAdmin();
 
