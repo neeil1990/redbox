@@ -107,11 +107,11 @@
                     <table id="users_projects" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
-                            <th class="table-header col-2">{{ __('Project name') }}</th>
+                            <th class="table-header">{{ __('Project name') }}</th>
                             <th class="table-header">{{ __('Tags') }}</th>
-                            <th class="table-header col-2">{{ __('Owner') }}</th>
-                            <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
-                            <th class="table-header col-2">{{ __('Number of saved scans') }}</th>
+                            <th class="table-header">{{ __('Owner') }}</th>
+                            <th class="table-header">{{ __('Number of analyzed pages') }}</th>
+                            <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
