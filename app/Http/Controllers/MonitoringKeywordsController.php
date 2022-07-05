@@ -46,20 +46,28 @@ class MonitoringKeywordsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
-        //
+        $project = MonitoringProject::findOrFail($id);
+
+        return view('monitoring.keywords.create', compact('project'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function store(Request $request)
     {
-        //
+        $id = $request->input('monitoring_project_id');
+
+        $project = MonitoringProject::findOrFail($id);
+
+        $keyword = $project->keywords()->create($request->all());
+
+        return $keyword;
     }
 
     /**
@@ -234,5 +242,10 @@ class MonitoringKeywordsController extends Controller
         });
 
         return redirect()->back();
+    }
+
+    public function showEmptyModal()
+    {
+        return view('monitoring.keywords.empty');
     }
 }

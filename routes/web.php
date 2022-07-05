@@ -230,6 +230,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/{project_id}/table', 'MonitoringController@getTableKeywords')->name('monitoring.get.table.keywords');
 
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
+    Route::get('/monitoring/keywords/{project_id}/create', 'MonitoringKeywordsController@create');
+    Route::get('/monitoring/keywords/empty/modal', 'MonitoringKeywordsController@showEmptyModal');
     Route::get('/monitoring/keywords/show/controls', 'MonitoringKeywordsController@showControlsPanel')->name('keywords.show.controls.panel');
     Route::get('/monitoring/keywords/{id}/edit-plural', 'MonitoringKeywordsController@editPlural')->name('keywords.edit.plural');
     Route::post('/monitoring/keywords/update-plural', 'MonitoringKeywordsController@updatePlural')->name('keywords.update.plural');
