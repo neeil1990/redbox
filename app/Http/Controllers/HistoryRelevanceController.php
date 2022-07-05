@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\RelevanceAnalysisQueue;
 use App\ProjectRelevanceHistory;
+use App\Relevance;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
@@ -120,53 +121,20 @@ class HistoryRelevanceController extends Controller
     {
         try {
             $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
-            $history = json_decode($history, true);
+            if (!$history->compressed) {
+                foreach ($history->getOriginal() as $key => $item) {
+                    if ($key != 'id' && $key != 'project_id' && $key != 'created_at' && $key != 'updated_at') {
+                        $history[$key] = base64_encode(gzcompress($item, 9));
+                    }
+                }
 
-            $clouds_competitors = json_decode(gzuncompress(base64_decode($history['clouds_competitors'])), true);
-            $clouds_main_page = json_decode(gzuncompress(base64_decode($history['clouds_main_page'])), true);
-            $avg = json_decode(gzuncompress(base64_decode($history['avg'])), true);
-            $main_page = json_decode(gzuncompress(base64_decode($history['main_page'])), true);
+                $history->compressed = true;
+                $history->save();
 
-            $history = [
-                'clouds_competitors' => [
-                    'totalTf' => json_decode($clouds_competitors['totalTf'], true),
-                    'textTf' => json_decode($clouds_competitors['textTf'], true),
-                    'linkTf' => json_decode($clouds_competitors['linkTf'], true),
+                $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
+            }
+            $history = Relevance::uncompressed($history);
 
-                    'textAndLinks' => json_decode($clouds_competitors['textAndLinks'], true),
-                    'links' => json_decode($clouds_competitors['links'], true),
-                    'text' => json_decode($clouds_competitors['text'], true),
-                ],
-                'clouds_main_page' => [
-                    'totalTf' => json_decode($clouds_main_page['totalTf'], true),
-                    'textTf' => json_decode($clouds_main_page['textTf'], true),
-                    'linkTf' => json_decode($clouds_main_page['linkTf'], true),
-                    'textWithLinks' => json_decode($clouds_main_page['textWithLinks'], true),
-                    'links' => json_decode($clouds_main_page['links'], true),
-                    'text' => json_decode($clouds_main_page['text'], true),
-                ],
-                'avg' => [
-                    'countWords' => json_decode($avg['countWords'], true),
-                    'countSymbols' => json_decode($avg['countSymbols'], true),
-                ],
-                'main_page' => [
-                    'countWords' => json_decode($main_page['countWords'], true),
-                    'countSymbols' => json_decode($main_page['countSymbols'], true),
-                ],
-
-                'unigram_table' => json_decode(gzuncompress(base64_decode($history['unigram_table'])), true),
-                'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
-                'tf_comp_clouds' => json_decode(gzuncompress(base64_decode($history['tf_comp_clouds'])), true),
-                'phrases' => json_decode(gzuncompress(base64_decode($history['phrases'])), true),
-                'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
-                'recommendations' => json_decode(gzuncompress(base64_decode($history['recommendations'])), true),
-            ];
-
-            return response()->json([
-                'code' => 200,
-                'history' => $history,
-                'config' => RelevanceAnalysisConfig::first(),
-            ]);
         } catch (\Throwable $exception) {
             return response()->json([
                 'code' => 415,
@@ -174,6 +142,11 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
+        return response()->json([
+            'code' => 200,
+            'history' => $history,
+            'config' => RelevanceAnalysisConfig::first(),
+        ]);
     }
 
     /**
