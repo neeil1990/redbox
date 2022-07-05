@@ -10,6 +10,7 @@ use App\RelevanceHistoryResult;
 use App\RelevanceSharing;
 use App\RelevanceTags;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -263,12 +264,17 @@ class HistoryRelevanceController extends Controller
                 ->latest('last_check')
                 ->get();
             if (count($records) >= 1) {
-                Log::debug('я бы удалил', [RelevanceHistory::where('comment', '=', '')
+                $count = RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
                     ->where('phrase', '=', $link->phrase)
                     ->where('region', '=', $link->region)
                     ->where('project_relevance_history_id', '=', $request->id)
-                    ->count()]);
+                    ->delete();
+                Log::debug('Чистка проектов без фильтров 1 сценарий', [
+                    'user' => Auth::id(),
+                    'count' => $count,
+                    'time' => Carbon::now()->toDateString()
+                ]);
             } else {
                 $records = RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
@@ -281,10 +287,14 @@ class HistoryRelevanceController extends Controller
                 foreach ($records as $key => $record) {
                     if ($key != array_key_first($records->toArray())) {
                         $iterator++;
-//                        $record->delete();
+                        $record->delete();
                     }
                 }
-                Log::debug('я бы удалил', [$iterator]);
+                Log::debug('Чистка проектов без фильтров 2 сценарий', [
+                    'user' => Auth::id(),
+                    'count' => $iterator,
+                    'time' => Carbon::now()->toDateString()
+                ]);
             }
         }
 
@@ -355,8 +365,12 @@ class HistoryRelevanceController extends Controller
             $query->where('main_link', '=', $request->link);
         }
 
-        $count = $query->count();
-        Log::debug('я бы удалил', [$count]);
+        $count = $query->delete();
+        Log::debug('Чистка проектов c фильтрами', [
+            'user' => Auth::id(),
+            'count' => $count,
+            'time' => Carbon::now()->toDateString()
+        ]);
         $info = ProjectRelevanceHistory::calculateInfo($main);
 
         return response()->json([
