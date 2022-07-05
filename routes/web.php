@@ -12,8 +12,10 @@
 */
 
 use App\ProjectRelevanceHistory;
+use App\RelevanceHistoryResult;
 use App\TelegramBot;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -252,10 +254,18 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
 
-Route::get('/calculate-all-projects-stats', function () {
-    $projects = ProjectRelevanceHistory::all();
+Route::get('/gzcompress-table', function () {
+    DB::transaction(function() {
+        $items = \App\RelevanceHistoryResult::all();
 
-    foreach ($projects as $project) {
-        ProjectRelevanceHistory::calculateInfo($project);
-    }
+        foreach ($items as $result) {
+            foreach ($result->getOriginal() as $key => $item) {
+                if ($key != 'id' && $key != 'project_id' && $key != 'created_at' && $key != 'updated_at') {
+                    $result[$key] = base64_encode(gzcompress($item, 9));
+                }
+            }
+
+            $result->save();
+        }
+    });
 });

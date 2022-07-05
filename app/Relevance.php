@@ -1214,7 +1214,7 @@ class Relevance
     {
         $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
 
-        $result->clouds_competitors = json_encode([
+        $result->clouds_competitors = base64_encode(gzcompress(json_encode([
             'totalTf' => json_encode($this->competitorsCloud['totalTf']),
             'textTf' => json_encode($this->competitorsCloud['textTf']),
             'linkTf' => json_encode($this->competitorsCloud['linkTf']),
@@ -1222,33 +1222,34 @@ class Relevance
             'textAndLinks' => json_encode($this->competitorsTextAndLinksCloud),
             'links' => json_encode($this->competitorsLinksCloud),
             'text' => json_encode($this->competitorsTextCloud),
-        ]);
+        ]), 9));
 
-        $result->clouds_main_page = json_encode([
+
+        $result->clouds_main_page = base64_encode(gzcompress(json_encode([
             'totalTf' => json_encode($this->mainPage['totalTf']),
             'textTf' => json_encode($this->mainPage['textTf']),
             'linkTf' => json_encode($this->mainPage['linkTf']),
             'textWithLinks' => json_encode($this->mainPage['textWithLinks']),
             'links' => json_encode($this->mainPage['links']),
             'text' => json_encode($this->mainPage['text']),
-        ]);
+        ]), 9));
 
-        $result->avg = json_encode([
+        $result->avg = base64_encode(gzcompress(json_encode([
             'countWords' => $this->countWords / $this->countNotIgnoredSites,
             'countSymbols' => $this->countSymbols / $this->countNotIgnoredSites,
-        ]);
+        ]), 9));
 
-        $result->main_page = json_encode([
+        $result->main_page = base64_encode(gzcompress(json_encode([
             'countWords' => $this->countWordsInMyPage,
             'countSymbols' => $this->countSymbolsInMyPage,
-        ]);
+        ]), 9));
 
-        $result->unigram_table = json_encode($this->wordForms);
-        $result->sites = json_encode($this->sites);
-        $result->tf_comp_clouds = json_encode($this->tfCompClouds);
-        $result->phrases = json_encode($this->phrases);
-        $result->avg_coverage_percent = json_encode($this->avgCoveragePercent);
-        $result->recommendations = json_encode($this->recommendations);
+        $result->unigram_table = base64_encode(gzcompress(json_encode($this->wordForms), 9));
+        $result->sites = base64_encode(gzcompress(json_encode($this->sites), 9));
+        $result->tf_comp_clouds = base64_encode(gzcompress(json_encode($this->tfCompClouds), 9));
+        $result->phrases = base64_encode(gzcompress(json_encode($this->phrases), 9));
+        $result->avg_coverage_percent = base64_encode(gzcompress(json_encode($this->avgCoveragePercent), 9));
+        $result->recommendations = base64_encode(gzcompress(json_encode($this->recommendations), 9));
 
         $result->save();
     }

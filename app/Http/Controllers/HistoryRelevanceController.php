@@ -122,10 +122,10 @@ class HistoryRelevanceController extends Controller
             $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
             $history = json_decode($history, true);
 
-            $clouds_competitors = json_decode($history['clouds_competitors'], true);
-            $clouds_main_page = json_decode($history['clouds_main_page'], true);
-            $avg = json_decode($history['avg'], true);
-            $main_page = json_decode($history['main_page'], true);
+            $clouds_competitors = json_decode(gzuncompress(base64_decode($history['clouds_competitors'])), true);
+            $clouds_main_page = json_decode(gzuncompress(base64_decode($history['clouds_main_page'])), true);
+            $avg = json_decode(gzuncompress(base64_decode($history['avg'])), true);
+            $main_page = json_decode(gzuncompress(base64_decode($history['main_page'])), true);
 
             $history = [
                 'clouds_competitors' => [
@@ -153,12 +153,13 @@ class HistoryRelevanceController extends Controller
                     'countWords' => json_decode($main_page['countWords'], true),
                     'countSymbols' => json_decode($main_page['countSymbols'], true),
                 ],
-                'unigram_table' => json_decode($history['unigram_table'], true),
-                'sites' => json_decode($history['sites'], true),
-                'tf_comp_clouds' => json_decode($history['tf_comp_clouds'], true),
-                'phrases' => json_decode($history['phrases'], true),
-                'avg_coverage_percent' => json_decode($history['avg_coverage_percent'], true),
-                'recommendations' => json_decode($history['recommendations'], true),
+
+                'unigram_table' => json_decode(gzuncompress(base64_decode($history['unigram_table'])), true),
+                'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
+                'tf_comp_clouds' => json_decode(gzuncompress(base64_decode($history['tf_comp_clouds'])), true),
+                'phrases' => json_decode(gzuncompress(base64_decode($history['phrases'])), true),
+                'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
+                'recommendations' => json_decode(gzuncompress(base64_decode($history['recommendations'])), true),
             ];
 
             return response()->json([
