@@ -9,11 +9,9 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
     @endslot
 
-    <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
+    <div id="toast-container" class="toast-top-right error-message" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message" id="toast-message">
-                {{ __("Something went wrong, please try again later.") }}
-            </div>
+            <div class="toast-message" id="message-error-info"></div>
         </div>
     </div>
 
@@ -809,6 +807,7 @@
         <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -870,7 +869,16 @@
                         id: {{ $id }}
                     },
                     success: function (response) {
-                        successRequest(response.history, response.config)
+                        if (response.code === 200) {
+                            successRequest(response.history, response.config)
+                        } else if (response.code === 415) {
+                            $('.toast-top-right.error-message').show(300)
+                            $('#message-error-info').html(response.message)
+                            $('#preloaderBlock').html(response.message)
+                            setTimeout(() => {
+                                $('.toast-top-right.error-message').hide(300)
+                            }, 10000)
+                        }
                     },
                 });
 
