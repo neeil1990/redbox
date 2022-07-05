@@ -165,7 +165,7 @@ class HistoryRelevanceController extends Controller
                 'history' => $history,
                 'config' => RelevanceAnalysisConfig::first(),
             ]);
-        } catch (\Throwable $exception){
+        } catch (\Throwable $exception) {
             return response()->json([
                 'code' => 415,
                 'message' => __('The data was lost')
@@ -263,12 +263,12 @@ class HistoryRelevanceController extends Controller
                 ->latest('last_check')
                 ->get();
             if (count($records) >= 1) {
-                RelevanceHistory::where('comment', '=', '')
+                Log::debug('я бы удалил', [RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
                     ->where('phrase', '=', $link->phrase)
                     ->where('region', '=', $link->region)
                     ->where('project_relevance_history_id', '=', $request->id)
-                    ->delete();
+                    ->count()]);
             } else {
                 $records = RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
@@ -277,11 +277,14 @@ class HistoryRelevanceController extends Controller
                     ->where('project_relevance_history_id', '=', $request->id)
                     ->latest('last_check')
                     ->get();
+                $iterator = 0;
                 foreach ($records as $key => $record) {
                     if ($key != array_key_first($records->toArray())) {
-                        $record->delete();
+                        $iterator++;
+//                        $record->delete();
                     }
                 }
+                Log::debug('я бы удалил', [$iterator]);
             }
         }
 
@@ -352,7 +355,8 @@ class HistoryRelevanceController extends Controller
             $query->where('main_link', '=', $request->link);
         }
 
-        $count = $query->delete();
+        $count = $query->count();
+        Log::debug('я бы удалил', [$count]);
         $info = ProjectRelevanceHistory::calculateInfo($main);
 
         return response()->json([

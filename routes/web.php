@@ -11,14 +11,8 @@
 |
 */
 
-use App\Classes\Xml\SimplifiedXmlFacade;
 use App\ProjectRelevanceHistory;
-use App\RelevanceAllUniquePages;
-use App\RelevanceHistory;
-use App\RelevanceStatistics;
 use App\TelegramBot;
-use App\TextAnalyzer;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
