@@ -1251,6 +1251,7 @@ class Relevance
         $result->avg_coverage_percent = base64_encode(gzcompress(json_encode($this->avgCoveragePercent), 9));
         $result->recommendations = base64_encode(gzcompress(json_encode($this->recommendations), 9));
 
+        $result->compressed = true;
         $result->save();
     }
 
@@ -1344,6 +1345,10 @@ class Relevance
         $toDay->save();
     }
 
+    /**
+     * @param $history
+     * @return array
+     */
     public static function uncompressed($history)
     {
         $history = json_decode($history, true);
