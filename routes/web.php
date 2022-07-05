@@ -266,7 +266,7 @@ Route::get('/gzcompress-table', function () {
             }
 
             $result->save();
-            dump($result->id);
+            \Illuminate\Support\Facades\Log::debug('gzcompress', [$result->id]);
             sleep(1);
         }
     });
