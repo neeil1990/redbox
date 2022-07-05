@@ -255,7 +255,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/gzcompress-table', function () {
-    DB::transaction(function() {
+    DB::transaction(function () {
         $items = \App\RelevanceHistoryResult::all();
 
         foreach ($items as $result) {
@@ -266,6 +266,8 @@ Route::get('/gzcompress-table', function () {
             }
 
             $result->save();
+            dump($result->id);
+            sleep(1);
         }
     });
 });
