@@ -255,17 +255,15 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/gzcompress-table', function () {
-    DB::transaction(function() {
-        $items = \App\RelevanceHistoryResult::all();
+    $items = \App\RelevanceHistoryResult::all();
 
-        foreach ($items as $result) {
-            foreach ($result->getOriginal() as $key => $item) {
-                if ($key != 'id' && $key != 'project_id' && $key != 'created_at' && $key != 'updated_at') {
-                    $result[$key] = base64_encode(gzcompress($item, 9));
-                }
+    foreach ($items as $result) {
+        foreach ($result->getOriginal() as $key => $item) {
+            if ($key != 'id' && $key != 'project_id' && $key != 'created_at' && $key != 'updated_at') {
+                $result[$key] = base64_encode(gzcompress($item, 9));
             }
-
-            $result->save();
         }
-    });
+
+        $result->save();
+    }
 });
