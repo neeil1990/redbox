@@ -18,6 +18,7 @@ class RelevanceCleaningResults
 
         $results = RelevanceHistoryResult::where([
             ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
+            ['cleaning', '=', 0]
         ])->get();
 
         if (count($results) > 0) {
@@ -29,8 +30,9 @@ class RelevanceCleaningResults
                 $result->unigram_table =
                 $result->tf_comp_clouds =
                 $result->phrases =
-                $result->recommendations = 'empty';
+                $result->recommendations = '';
 
+                $result->cleaning = 1;
                 $result->save();
             }
         }

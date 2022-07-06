@@ -938,7 +938,7 @@
             });
 
             function successRequest(history, config) {
-                if (history.unigram_table !== 'empty') {
+                if (!history.cleaning) {
                     renderTextTable(history.avg, history.main_page)
                     renderRecommendationsTable(history.recommendations, config.recommendations_count)
                     renderUnigramTable(history.unigram_table, config.ltp_count, true);

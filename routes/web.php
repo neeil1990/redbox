@@ -11,18 +11,12 @@
 |
 */
 
-
 use App\RelevanceHistoryResult;
-use App\TelegramBot;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
     phpinfo();
-});
-
-Route::get('telegram', function () {
-    $user = \Illuminate\Support\Facades\Auth::user();
-    TelegramBot::sendMessage("test", $user->chat_id);
 });
 
 Auth::routes(['verify' => true]);

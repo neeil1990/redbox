@@ -1355,7 +1355,7 @@ class Relevance
     {
         $history = json_decode($history, true);
 
-        if ($history['clouds_competitors'] !== 'empty') {
+        if (!$history['cleaning']) {
             $clouds_competitors = json_decode(gzuncompress(base64_decode($history['clouds_competitors'])), true);
             $clouds_main_page = json_decode(gzuncompress(base64_decode($history['clouds_main_page'])), true);
             $avg = json_decode(gzuncompress(base64_decode($history['avg'])), true);
@@ -1394,41 +1394,13 @@ class Relevance
                 'phrases' => json_decode(gzuncompress(base64_decode($history['phrases'])), true),
                 'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
                 'recommendations' => json_decode(gzuncompress(base64_decode($history['recommendations'])), true),
+                'cleaning' => false
             ];
         } else {
             $data = [
-                'clouds_competitors' => [
-                    'totalTf' => 'empty',
-                    'textTf' => 'empty',
-                    'linkTf' => 'empty',
-
-                    'textAndLinks' => 'empty',
-                    'links' => 'empty',
-                    'text' => 'empty',
-                ],
-                'clouds_main_page' => [
-                    'totalTf' => 'empty',
-                    'textTf' => 'empty',
-                    'linkTf' => 'empty',
-                    'textWithLinks' => 'empty',
-                    'links' => 'empty',
-                    'text' => 'empty',
-                ],
-                'avg' => [
-                    'countWords' => 'empty',
-                    'countSymbols' => 'empty',
-                ],
-                'main_page' => [
-                    'countWords' => 'empty',
-                    'countSymbols' => 'empty',
-                ],
-
-                'unigram_table' => 'empty',
                 'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
-                'tf_comp_clouds' => 'empty',
-                'phrases' => 'empty',
                 'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
-                'recommendations' => 'empty',
+                'cleaning' => true
             ];
         }
 
