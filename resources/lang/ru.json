@@ -871,5 +871,10 @@
     "0 - did not get into the top 100": "0 - не попал в топ 100",
     "You can delete all the results associated with the project": "Вы можете удалить все результаты связанные с проектом",
     "if you leave all fields empty, be careful": "если оставите все поля пустыми, будьте осторожны",
-    "The data was lost": "Данные были утеряны"
+    "The data was lost": "Данные были утеряны",
+    "Analyzer Settings": "Настройки анализатора",
+    "Settings for auto-cleaning results": "Настройки автоотчистки результатов",
+    "Auto-cleaning every": "Автоотчистка каждые",
+    "Cleaning parameters have been successfully changed": "Параметры отчистки успешно изменены",
+    "Relevance analysis configuration": "Конфигурация анализа релевантности"
 }

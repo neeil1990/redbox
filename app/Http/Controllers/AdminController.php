@@ -12,6 +12,7 @@ use App\RelevanceUniqueDomains;
 use App\RelevanceUniquePages;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -102,4 +103,24 @@ class AdminController extends Controller
         return Redirect::back();
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeCleaningInterval(Request $request): JsonResponse
+    {
+        $config = RelevanceAnalysisConfig::first();
+        if (!$config) {
+            $config = new RelevanceAnalysisConfig();
+        }
+
+        $config->cleaning_interval = $request->newInterval;
+        $config->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Cleaning parameters have been successfully changed'),
+            'code' => 200
+        ]);
+    }
 }

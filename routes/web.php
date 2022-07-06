@@ -11,11 +11,10 @@
 |
 */
 
-use App\ProjectRelevanceHistory;
+
 use App\RelevanceHistoryResult;
 use App\TelegramBot;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -218,6 +217,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/relevance-config', 'AdminController@showConfig')->name('show.config');
     Route::post('/change-config', 'AdminController@changeConfig')->name('changeConfig');
+    Route::post('/change-cleaning-interval', 'AdminController@changeCleaningInterval')->name('change.cleaning.interval');
 
     Route::get('/balance', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
@@ -252,20 +252,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
-});
-
-Route::get('/gzcompress-table', function () {
-    $items = \App\RelevanceHistoryResult::all();
-
-    foreach ($items as $result) {
-        foreach ($result->getOriginal() as $key => $item) {
-            if ($key != 'id' && $key != 'project_id' && $key != 'created_at' && $key != 'updated_at') {
-                $result[$key] = base64_encode(gzcompress($item, 9));
-            }
-        }
-
-        $result->save();
-        \Illuminate\Support\Facades\Log::debug('gzcompress', [$result->id]);
-        sleep(1);
-    }
 });

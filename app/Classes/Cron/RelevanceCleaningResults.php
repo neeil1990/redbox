@@ -1,0 +1,41 @@
+<?php
+
+
+namespace App\Classes\Cron;
+
+use App\RelevanceAnalysisConfig;
+use App\RelevanceHistoryResult;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
+
+class RelevanceCleaningResults
+{
+    public function __invoke()
+    {
+        Log::debug('Запущена отчистка');
+        $config = RelevanceAnalysisConfig::first();
+
+        $results = RelevanceHistoryResult::where([
+            ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
+        ])->get();
+
+        if (count($results) > 0) {
+            foreach ($results as $result) {
+                $result->clouds_competitors =
+                $result->clouds_main_page =
+                $result->avg =
+                $result->main_page =
+                $result->unigram_table =
+                $result->tf_comp_clouds =
+                $result->phrases =
+                $result->recommendations = 'empty';
+
+                $result->save();
+            }
+        }
+
+        Log::debug('Было отичищено: ', [count($results)]);
+    }
+
+}

@@ -132,7 +132,9 @@ class Relevance
         $host = Str::lower($mainUrl['host']);
 
         foreach ($this->domains as $item) {
-            $domain = strtolower($item['item']);
+            $domain = Str::lower($item['item']);
+            $domain = $domain[-1] === '/' ? $domain : $domain . '/';
+
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
@@ -142,13 +144,13 @@ class Relevance
             $this->sites[$domain]['position'] = $item['position'];
 
             $compUrl = parse_url($domain);
-            if ($host == Str::lower($compUrl['host'])) {
+            if ($host == $compUrl['host']) {
                 $this->sites[$domain]['equallyHost'] = true;
             } else {
                 $this->sites[$domain]['equallyHost'] = false;
             }
 
-            if (Str::lower($domain) == Str::lower($this->params['main_page_link'])) {
+            if ($domain == Str::lower($this->params['main_page_link'])) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
                 $this->sites[$domain]['inRelevance'] = $item['inRelevance'] ?? true;
@@ -1349,48 +1351,87 @@ class Relevance
      * @param $history
      * @return array
      */
-    public static function uncompressed($history)
+    public static function uncompressed($history): array
     {
         $history = json_decode($history, true);
 
-        $clouds_competitors = json_decode(gzuncompress(base64_decode($history['clouds_competitors'])), true);
-        $clouds_main_page = json_decode(gzuncompress(base64_decode($history['clouds_main_page'])), true);
-        $avg = json_decode(gzuncompress(base64_decode($history['avg'])), true);
-        $main_page = json_decode(gzuncompress(base64_decode($history['main_page'])), true);
+        if ($history['clouds_competitors'] !== 'empty') {
+            $clouds_competitors = json_decode(gzuncompress(base64_decode($history['clouds_competitors'])), true);
+            $clouds_main_page = json_decode(gzuncompress(base64_decode($history['clouds_main_page'])), true);
+            $avg = json_decode(gzuncompress(base64_decode($history['avg'])), true);
+            $main_page = json_decode(gzuncompress(base64_decode($history['main_page'])), true);
 
-        return [
-            'clouds_competitors' => [
-                'totalTf' => json_decode($clouds_competitors['totalTf'], true),
-                'textTf' => json_decode($clouds_competitors['textTf'], true),
-                'linkTf' => json_decode($clouds_competitors['linkTf'], true),
+            $data = [
+                'clouds_competitors' => [
+                    'totalTf' => json_decode($clouds_competitors['totalTf'], true),
+                    'textTf' => json_decode($clouds_competitors['textTf'], true),
+                    'linkTf' => json_decode($clouds_competitors['linkTf'], true),
 
-                'textAndLinks' => json_decode($clouds_competitors['textAndLinks'], true),
-                'links' => json_decode($clouds_competitors['links'], true),
-                'text' => json_decode($clouds_competitors['text'], true),
-            ],
-            'clouds_main_page' => [
-                'totalTf' => json_decode($clouds_main_page['totalTf'], true),
-                'textTf' => json_decode($clouds_main_page['textTf'], true),
-                'linkTf' => json_decode($clouds_main_page['linkTf'], true),
-                'textWithLinks' => json_decode($clouds_main_page['textWithLinks'], true),
-                'links' => json_decode($clouds_main_page['links'], true),
-                'text' => json_decode($clouds_main_page['text'], true),
-            ],
-            'avg' => [
-                'countWords' => json_decode($avg['countWords'], true),
-                'countSymbols' => json_decode($avg['countSymbols'], true),
-            ],
-            'main_page' => [
-                'countWords' => json_decode($main_page['countWords'], true),
-                'countSymbols' => json_decode($main_page['countSymbols'], true),
-            ],
+                    'textAndLinks' => json_decode($clouds_competitors['textAndLinks'], true),
+                    'links' => json_decode($clouds_competitors['links'], true),
+                    'text' => json_decode($clouds_competitors['text'], true),
+                ],
+                'clouds_main_page' => [
+                    'totalTf' => json_decode($clouds_main_page['totalTf'], true),
+                    'textTf' => json_decode($clouds_main_page['textTf'], true),
+                    'linkTf' => json_decode($clouds_main_page['linkTf'], true),
+                    'textWithLinks' => json_decode($clouds_main_page['textWithLinks'], true),
+                    'links' => json_decode($clouds_main_page['links'], true),
+                    'text' => json_decode($clouds_main_page['text'], true),
+                ],
+                'avg' => [
+                    'countWords' => json_decode($avg['countWords'], true),
+                    'countSymbols' => json_decode($avg['countSymbols'], true),
+                ],
+                'main_page' => [
+                    'countWords' => json_decode($main_page['countWords'], true),
+                    'countSymbols' => json_decode($main_page['countSymbols'], true),
+                ],
 
-            'unigram_table' => json_decode(gzuncompress(base64_decode($history['unigram_table'])), true),
-            'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
-            'tf_comp_clouds' => json_decode(gzuncompress(base64_decode($history['tf_comp_clouds'])), true),
-            'phrases' => json_decode(gzuncompress(base64_decode($history['phrases'])), true),
-            'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
-            'recommendations' => json_decode(gzuncompress(base64_decode($history['recommendations'])), true),
-        ];
+                'unigram_table' => json_decode(gzuncompress(base64_decode($history['unigram_table'])), true),
+                'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
+                'tf_comp_clouds' => json_decode(gzuncompress(base64_decode($history['tf_comp_clouds'])), true),
+                'phrases' => json_decode(gzuncompress(base64_decode($history['phrases'])), true),
+                'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
+                'recommendations' => json_decode(gzuncompress(base64_decode($history['recommendations'])), true),
+            ];
+        } else {
+            $data = [
+                'clouds_competitors' => [
+                    'totalTf' => 'empty',
+                    'textTf' => 'empty',
+                    'linkTf' => 'empty',
+
+                    'textAndLinks' => 'empty',
+                    'links' => 'empty',
+                    'text' => 'empty',
+                ],
+                'clouds_main_page' => [
+                    'totalTf' => 'empty',
+                    'textTf' => 'empty',
+                    'linkTf' => 'empty',
+                    'textWithLinks' => 'empty',
+                    'links' => 'empty',
+                    'text' => 'empty',
+                ],
+                'avg' => [
+                    'countWords' => 'empty',
+                    'countSymbols' => 'empty',
+                ],
+                'main_page' => [
+                    'countWords' => 'empty',
+                    'countSymbols' => 'empty',
+                ],
+
+                'unigram_table' => 'empty',
+                'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
+                'tf_comp_clouds' => 'empty',
+                'phrases' => 'empty',
+                'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
+                'recommendations' => 'empty',
+            ];
+        }
+
+        return $data;
     }
 }

@@ -17,9 +17,7 @@
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">
-                {{ __('The reanalysis task has been successfully added to the queue') }}
-            </div>
+            <div class="toast-message" id="toast-message"></div>
         </div>
     </div>
 
@@ -483,7 +481,7 @@
                         </table>
                     </div>
 
-                    <div class="sites" style="display:none; margin-top:50px;">
+                    <div class="sites" style="display:none;">
                         <h3>{{ __('Analyzed sites') }}</h3>
                         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
                             <thead>
@@ -940,13 +938,25 @@
             });
 
             function successRequest(history, config) {
-                renderTextTable(history.avg, history.main_page)
-                renderRecommendationsTable(history.recommendations, config.recommendations_count)
-                renderUnigramTable(history.unigram_table, config.ltp_count, true);
-                renderPhrasesTable(history.phrases, config.ltps_count)
+                if (history.unigram_table !== 'empty') {
+                    renderTextTable(history.avg, history.main_page)
+                    renderRecommendationsTable(history.recommendations, config.recommendations_count)
+                    renderUnigramTable(history.unigram_table, config.ltp_count, true);
+                    renderPhrasesTable(history.phrases, config.ltps_count)
+                    renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false, true);
+                    $('.sites').css({
+                        'margin-top': '50px',
+                    });
+                } else {
+                    $('.toast-top-right.success-message').show(300)
+                    $('#toast-message').html('Ваша история успешно загружена, но её данные были частично удалены.')
+                    setTimeout(() => {
+                        $('.toast-top-right.success-message').hide(300)
+                    }, 10000)
+                }
                 renderScannedSitesList(history.sites, history.avg_coverage_percent, config.scanned_sites_count, false, config.boostPercent, true);
-                renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false, true);
                 setTimeout(function () {
+                    $('.dt-button').addClass('btn btn-secondary')
                     $('#preloaderBlock').hide(300)
                 }, 1500)
             }
