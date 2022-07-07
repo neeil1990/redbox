@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DomainMonitoring extends Model
 {
@@ -133,7 +134,7 @@ class DomainMonitoring extends Model
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $project->link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_COOKIE, Str::random(15));
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
