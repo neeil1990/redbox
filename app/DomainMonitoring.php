@@ -104,7 +104,6 @@ class DomainMonitoring extends Model
     {
         $oldState = $project->broken;
         $curl = DomainMonitoring::curlInit($project);
-        Log::debug('curl response', [$curl]);
         if (isset($curl) && $curl[1]['http_code'] === 200) {
             if (isset($project->phrase)) {
                 DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
@@ -134,7 +133,7 @@ class DomainMonitoring extends Model
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $project->link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_COOKIE, Str::random(15));
+        curl_setopt($curl, CURLOPT_COOKIE, Str::random(15) . '=' . Str::random(15));
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
