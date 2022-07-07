@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class DomainMonitoring extends Model
 {
@@ -102,6 +103,7 @@ class DomainMonitoring extends Model
     {
         $oldState = $project->broken;
         $curl = DomainMonitoring::curlInit($project);
+        Log::debug('curl response', [$curl]);
         if (isset($curl) && $curl[1]['http_code'] === 200) {
             if (isset($project->phrase)) {
                 DomainMonitoring::searchPhrase($curl, $project->phrase, $project);

@@ -11,8 +11,6 @@
 |
 */
 
-use App\RelevanceHistoryResult;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
