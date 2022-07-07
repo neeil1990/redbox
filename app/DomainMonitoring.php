@@ -126,7 +126,7 @@ class DomainMonitoring extends Model
 
     /**
      * @param $project
-     * @return array|false
+     * @return array|null
      */
     public static function curlInit($project)
     {
