@@ -113,6 +113,8 @@
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
         <!-- date-range-picker -->
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+        <!-- Papa parse -->
+        <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
 
         <script>
 
@@ -350,6 +352,37 @@
                             let content = response.data;
 
                             modal.find('.modal-content').html(content);
+
+                            modal.find('#upload-queries').click(function () {
+
+                                let self = $(this);
+                                let csv = self.closest('.input-group').find('#upload');
+
+                                if(csv[0].files.length && csv[0].files[0].type === 'text/csv'){
+
+                                    csv.parse({
+                                        config: {
+                                            skipEmptyLines: 'greedy',
+                                            complete: function (result) {
+
+                                                let value = '';
+                                                $.each(result.data, function(i, item){
+
+                                                    if(item[0])
+                                                        value += item[0] + '\r\n';
+                                                });
+
+                                                modal.find('textarea[name="query"]').val(value);
+                                            },
+                                            download: 0
+                                        }
+                                    });
+
+                                }else{
+
+                                    toastr.error('Загрузите файл формата .csv');
+                                }
+                            });
                         });
 
                         break;

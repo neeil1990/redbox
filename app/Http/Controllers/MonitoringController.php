@@ -234,7 +234,7 @@ class MonitoringController extends Controller
 
         $this->filter($project, $keywords, $request);
 
-        $page = $request->input('start', 0) + 1;
+        $page = ($request->input('start') / $request->input('length')) + 1;
         $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
 
         $region = $project->searchengines()->orderBy('id', 'asc')->first();

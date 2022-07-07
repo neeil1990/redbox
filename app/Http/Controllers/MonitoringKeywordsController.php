@@ -62,12 +62,21 @@ class MonitoringKeywordsController extends Controller
     public function store(Request $request)
     {
         $id = $request->input('monitoring_project_id');
+        $queries = preg_split("/\r\n|\n|\r/", $request->input('query'));
 
         $project = MonitoringProject::findOrFail($id);
 
-        $keyword = $project->keywords()->create($request->all());
+        foreach ($queries as $query) {
 
-        return $keyword;
+            $project->keywords()->create([
+                'monitoring_group_id' => $request->input('monitoring_group_id'),
+                'target' => $request->input('target'),
+                'page' => $request->input('page'),
+                'query' => $query,
+            ]);
+        }
+
+        return $project;
     }
 
     /**

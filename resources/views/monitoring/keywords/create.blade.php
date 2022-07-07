@@ -10,9 +10,20 @@
     </div>
 
     <div class="modal-body">
+
         <div class="form-group">
-            <label class="col-form-label">{{ __('Query') }}:</label>
-            <input type="text" class="form-control" name="query" value="">
+            <label>{{ __('Queries') }}:</label>
+            <textarea name="query" class="form-control" rows="10" placeholder="Введите ваш список запросов, каждый с новой строки"></textarea>
+        </div>
+
+        <div class="input-group">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="upload">
+                <label class="custom-file-label" for="upload">{{ __('Upload CSV file') }}</label>
+            </div>
+            <div class="input-group-append">
+                <span class="input-group-text" id="upload-queries">{{ __('Upload') }}</span>
+            </div>
         </div>
 
         <div class="form-group">
