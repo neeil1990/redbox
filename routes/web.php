@@ -275,7 +275,6 @@ Route::get('/cleaning-table', function () {
 
             $result->cleaning = 1;
             $result->save();
-            return;
         }
 
         $results = RelevanceHistoryResult::where([
