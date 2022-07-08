@@ -14,7 +14,7 @@ class AddColumnCleaningInRelevanceHistoryResultTable extends Migration
     public function up()
     {
         Schema::table('relevance_history_result', function (Blueprint $table) {
-            $table->boolean('cleaning')->default(0);
+            $table->boolean('cleaning')->index()->default(0);
         });
     }
 

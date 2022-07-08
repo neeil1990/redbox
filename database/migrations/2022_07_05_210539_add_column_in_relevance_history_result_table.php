@@ -14,7 +14,7 @@ class AddColumnInRelevanceHistoryResultTable extends Migration
     public function up()
     {
         Schema::table('relevance_history_result', function (Blueprint $table) {
-            $table->boolean('compressed')->default(false);
+            $table->boolean('compressed')->index()->default(false);
         });
     }
 

@@ -253,7 +253,7 @@ Route::get('/cleaning-table', function () {
     $results = RelevanceHistoryResult::where([
         ['created_at', '<', Carbon::now()->subDays(5)],
         ['cleaning', '=', 0]
-    ])->take(10)->get();
+    ])->take(5)->get();
 
     while (count($results) != 0) {
         Log::debug('count', [count($results)]);
@@ -280,7 +280,7 @@ Route::get('/cleaning-table', function () {
         $results = RelevanceHistoryResult::where([
             ['created_at', '<', Carbon::now()->subDays(5)],
             ['cleaning', '=', 0]
-        ])->take(10)->get();
+        ])->take(5)->get();
     }
 
 });
