@@ -309,7 +309,7 @@
     "Monitoring was successfully deleted": "Мониторинг был успешно удален",
     "Now notifications will come to you in a telegram": "Теперь уведомления будут приходить к вам в телеграм",
     "The project token was not found in the bot's telegram history": "Токен проекта не найден в истории телеграм бота",
-    "You have successfully unsubscribed from the mailing list": "Вы успешно отписались от рассылки",
+    "You have successfully unsubscribed from the mailing list": "Вы отписались от рассылки",
     "Everything all right": "Всё в порядке",
     "Keyword not found": "Ключевая фраза не найдена",
     "the domain did not respond": "домен не ответил",
@@ -879,5 +879,6 @@
     "Auto-cleaning every": "Автоотчистка каждые",
     "Cleaning parameters have been successfully changed": "Параметры отчистки успешно изменены",
     "Relevance analysis configuration": "Конфигурация анализа релевантности",
-    "Stary Oskol": "Старый Оскол"
+    "Stary Oskol": "Старый Оскол",
+    "Table size": "Размер таблицы"
 }

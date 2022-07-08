@@ -290,6 +290,7 @@
                                 <input type="number" class="form form-control w-25 d-inline" id="cleaningInterval"
                                        value="{{ $config->cleaning_interval }}">
                                 {{ __('days') }}
+                                <p>Размер таблицы {{ $size }} MB </p>
                             </div>
                         </div>
                     </div>

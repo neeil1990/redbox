@@ -15,6 +15,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -61,9 +62,17 @@ class AdminController extends Controller
     {
         $config = RelevanceAnalysisConfig::first();
 
+        $size = DB::statement('
+                SELECT table_name AS `Table`,
+                    round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB`
+                FROM information_schema.TABLES
+                WHERE table_schema = "lk_redbox_su_db"
+                    AND table_name = "relevance_history_result"');
+
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
             'config' => $config,
+            'size' => $size
         ]);
     }
 
