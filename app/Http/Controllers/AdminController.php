@@ -66,6 +66,7 @@ class AdminController extends Controller
         $db_name = env('DB_DATABASE');
         $user = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
+        dd($host, $user, $password, $db_name);
         $connection = mysqli_connect($host, $user, $password, $db_name);
 
         $query = 'SELECT table_name AS `Table`,
