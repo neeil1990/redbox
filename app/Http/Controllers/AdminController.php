@@ -75,7 +75,6 @@ class AdminController extends Controller
         $result = mysqli_query($connection, $query);
         $result = $result->fetch_assoc();
 
-        dd($result);
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
             'config' => $config,
