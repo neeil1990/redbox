@@ -11,7 +11,10 @@
 |
 */
 
+use App\RelevanceHistoryResult;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -244,4 +247,33 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
+});
+
+Route::get('/cleaning-table', function () {
+    $results = RelevanceHistoryResult::where([
+        ['created_at', '<', Carbon::now()->subDays(5)],
+        ['cleaning', '=', 0]
+    ])->get();
+
+    foreach ($results as $result) {
+        $result->clouds_competitors =
+        $result->clouds_main_page =
+        $result->avg =
+        $result->main_page =
+        $result->unigram_table =
+        $result->tf_comp_clouds =
+        $result->phrases =
+        $result->recommendations = '';
+
+        if (!$result->compressed) {
+            $result->sites = base64_encode(gzcompress($result->sites, 9));
+            $result->avg_coverage_percent = base64_encode(gzcompress($result->avg_coverage_percent, 9));
+            $result->compressed = 1;
+        }
+
+        $result->cleaning = 1;
+        $result->save();
+
+        Log::debug('Было отичищено: ', [count($results)]);
+    }
 });
