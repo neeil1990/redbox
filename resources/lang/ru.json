@@ -501,6 +501,7 @@
     "Lipetsk": "Липецк",
     "Makhachkala": "Махачкала",
     "Moscow": "Москва",
+    "Moscow and the area": "Москва и область",
     "Murmansk": "Мурманск",
     "Nazran": "Назрань",
     "Nalchik": "Нальчик",
@@ -876,5 +877,6 @@
     "Settings for auto-cleaning results": "Настройки автоотчистки результатов",
     "Auto-cleaning every": "Автоотчистка каждые",
     "Cleaning parameters have been successfully changed": "Параметры отчистки успешно изменены",
-    "Relevance analysis configuration": "Конфигурация анализа релевантности"
+    "Relevance analysis configuration": "Конфигурация анализа релевантности",
+    "Stary Oskol": "Старый Оскол"
 }

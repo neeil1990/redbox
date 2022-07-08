@@ -629,7 +629,8 @@
                                     <label>{{ __('Region') }}</label>
                                     {!! Form::select('region', array_unique([
                                            $object['request']['region'] => $object['request']['region'],
-                                           '1' => __('Moscow'),
+                                           '213' => __('Moscow'),
+                                           '1' => __('Moscow and the area'),
                                            '20' => __('Arkhangelsk'),
                                            '37' => __('Astrakhan'),
                                            '197' => __('Barnaul'),
@@ -658,7 +659,6 @@
                                            '8' => __('Kursk'),
                                            '9' => __('Lipetsk'),
                                            '28' => __('Makhachkala'),
-                                           '213' => __('Moscow'),
                                            '23' => __('Murmansk'),
                                            '1092' => __('Nazran'),
                                            '30' => __('Nalchik'),
@@ -678,6 +678,7 @@
                                            '12' => __('Smolensk'),
                                            '239' => __('Sochi'),
                                            '36' => __('Stavropol'),
+                                           '10649' => __('Stary Oskol'),
                                            '973' => __('Surgut'),
                                            '13' => __('Tambov'),
                                            '14' => __('Tver'),

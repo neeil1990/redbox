@@ -261,7 +261,8 @@
                                             {!! Form::select('region', [
                                                    'none' => __("Don't search for matches by region"),
                                                    'all' => 'Любой регион',
-                                                   '1' => __('Moscow'),
+                                                   '213' => __('Moscow'),
+                                                   '1' => __('Moscow and the area'),
                                                    '20' => __('Arkhangelsk'),
                                                    '37' => __('Astrakhan'),
                                                    '197' => __('Barnaul'),
@@ -290,7 +291,6 @@
                                                    '8' => __('Kursk'),
                                                    '9' => __('Lipetsk'),
                                                    '28' => __('Makhachkala'),
-                                                   '213' => __('Moscow'),
                                                    '23' => __('Murmansk'),
                                                    '1092' => __('Nazran'),
                                                    '30' => __('Nalchik'),
@@ -310,6 +310,7 @@
                                                    '12' => __('Smolensk'),
                                                    '239' => __('Sochi'),
                                                    '36' => __('Stavropol'),
+                                                   '10649' => __('Stary Oskol'),
                                                    '973' => __('Surgut'),
                                                    '13' => __('Tambov'),
                                                    '14' => __('Tver'),
@@ -329,7 +330,7 @@
                                                    name="link-filter"
                                                    id="link-filter-{{ $item->id }}">
 
-                                            <div class="d-flex flex-row mt-3 mb-3" >
+                                            <div class="d-flex flex-row mt-3 mb-3">
                                                 <div>
                                                     <label>{{ __('Position from (inclusive)') }}</label>
                                                     <input class="form form-control" type="number"
@@ -358,7 +359,8 @@
                                             </span>
 
                                             <div class="text-danger mt-3 mb-3">
-                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}, {{ __('if you leave all fields empty, be careful') }}
+                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}
+                                                , {{ __('if you leave all fields empty, be careful') }}
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -469,7 +471,8 @@
                                                     <label>{{ __('Region') }}</label>
                                                     {!! Form::select('region', array_unique([
                                                            $config->region => $config->region,
-                                                           '1' => __('Moscow'),
+                                                           '213' => __('Moscow'),
+                                                           '1' => __('Moscow and the area'),
                                                            '20' => __('Arkhangelsk'),
                                                            '37' => __('Astrakhan'),
                                                            '197' => __('Barnaul'),
@@ -498,7 +501,6 @@
                                                            '8' => __('Kursk'),
                                                            '9' => __('Lipetsk'),
                                                            '28' => __('Makhachkala'),
-                                                           '213' => __('Moscow'),
                                                            '23' => __('Murmansk'),
                                                            '1092' => __('Nazran'),
                                                            '30' => __('Nalchik'),
@@ -518,6 +520,7 @@
                                                            '12' => __('Smolensk'),
                                                            '239' => __('Sochi'),
                                                            '36' => __('Stavropol'),
+                                                           '10649' => __('Stary Oskol'),
                                                            '973' => __('Surgut'),
                                                            '13' => __('Tambov'),
                                                            '14' => __('Tver'),
@@ -767,9 +770,11 @@
             function getRegionName(id) {
                 switch (id) {
                     case '1' :
-                        return "{{ __('Moscow') }}";
+                        return "{{ __('Moscow and the area') }}";
                     case '20' :
                         return "{{ __('Arkhangelsk') }}";
+                    case '10649' :
+                        return "{{ __('Stary Oskol') }}";
                     case '37' :
                         return "{{ __('Astrakhan') }}";
                     case '197' :
