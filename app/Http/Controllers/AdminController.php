@@ -71,8 +71,7 @@ class AdminController extends Controller
         $query = 'SELECT table_name AS `Table`,
                         round(((data_length + index_length) / 1024 / 1024), 2)
                     FROM information_schema.TABLES
-                    WHERE table_schema = "laravel"
-                        AND table_name = "relevance_history_result";';
+                    WHERE table_name = "relevance_history_result";';
         $result = mysqli_query($connection, $query);
         $result = $result->fetch_assoc();
 
