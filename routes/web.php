@@ -273,7 +273,6 @@ Route::get('/cleaning-table', function () {
 
         $result->cleaning = 1;
         $result->save();
-
-        Log::debug('Было отичищено: ', [count($results)]);
+        return;
     }
 });
