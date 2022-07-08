@@ -66,7 +66,6 @@ class AdminController extends Controller
         $db_name = env('DB_DATABASE', 'lk_redbox_su_db');
         $user = env('DB_USERNAME', 'lk_redbox_su_usr');
         $password = env('DB_PASSWORD', '0066FJVQ16Muz63j');
-        dd($host, $user, $password, $db_name);
         $connection = mysqli_connect('127.0.0.1', 'lk_redbox_su_usr', '0066FJVQ16Muz63j', 'lk_redbox_su_db');
 
         $query = 'SELECT table_name AS `Table`,
