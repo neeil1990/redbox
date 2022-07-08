@@ -66,7 +66,7 @@ class AdminController extends Controller
         $db_name = env('DB_DATABASE', 'lk_redbox_su_db');
         $user = env('DB_USERNAME', 'lk_redbox_su_usr');
         $password = env('DB_PASSWORD', '0066FJVQ16Muz63j');
-        $connection = mysqli_connect('127.0.0.1', 'lk_redbox_su_usr', '0066FJVQ16Muz63j', 'lk_redbox_su_db');
+        $connection = mysqli_connect($host, $user, $password, $db_name);
 
         $query = 'SELECT table_name AS `Table`,
                         round(((data_length + index_length) / 1024 / 1024), 2)
@@ -76,6 +76,7 @@ class AdminController extends Controller
         $result = mysqli_query($connection, $query);
         $result = $result->fetch_assoc();
 
+        dd($result);
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
             'config' => $config,
