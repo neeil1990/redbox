@@ -62,12 +62,12 @@ class AdminController extends Controller
     public function showConfig(): View
     {
         $config = RelevanceAnalysisConfig::first();
-        $host = env('DB_HOST');
-        $db_name = env('DB_DATABASE');
-        $user = env('DB_USERNAME');
-        $password = env('DB_PASSWORD');
+        $host = env('DB_HOST', '127.0.0.1');
+        $db_name = env('DB_DATABASE', 'lk_redbox_su_db');
+        $user = env('DB_USERNAME', 'lk_redbox_su_usr');
+        $password = env('DB_PASSWORD', '0066FJVQ16Muz63j');
         dd($host, $user, $password, $db_name);
-        $connection = mysqli_connect($host, $user, $password, $db_name);
+        $connection = mysqli_connect('127.0.0.1', 'lk_redbox_su_usr', '0066FJVQ16Muz63j', 'lk_redbox_su_db');
 
         $query = 'SELECT table_name AS `Table`,
                         round(((data_length + index_length) / 1024 / 1024), 2)
