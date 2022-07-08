@@ -7,6 +7,7 @@ use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
 use App\RelevanceAllUniquePages;
 use App\RelevanceAnalysisConfig;
+use App\RelevanceHistoryResult;
 use App\RelevanceStatistics;
 use App\RelevanceUniqueDomains;
 use App\RelevanceUniquePages;
@@ -61,18 +62,24 @@ class AdminController extends Controller
     public function showConfig(): View
     {
         $config = RelevanceAnalysisConfig::first();
+        $host = env('DB_HOST');
+        $db_name = env('DB_DATABASE');
+        $user = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $connection = mysqli_connect($host, $user, $password, $db_name);
 
-        $size = DB::statement('
-                SELECT table_name AS `Table`,
-                    round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB`
-                FROM information_schema.TABLES
-                WHERE table_schema = "lk_redbox_su_db"
-                    AND table_name = "relevance_history_result"');
+        $query = 'SELECT table_name AS `Table`,
+                        round(((data_length + index_length) / 1024 / 1024), 2)
+                    FROM information_schema.TABLES
+                    WHERE table_schema = "laravel"
+                        AND table_name = "relevance_history_result";';
+        $result = mysqli_query($connection, $query);
+        $result = $result->fetch_assoc();
 
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
             'config' => $config,
-            'size' => $size
+            'size' => $result['round(((data_length + index_length) / 1024 / 1024), 2)']
         ]);
     }
 
