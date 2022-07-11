@@ -165,7 +165,7 @@
                         type: 'POST',
                         data: {
                             region_id: REGION_ID,
-                            dates: DATES,
+                            dates_range: DATES,
                         },
                     },
                     columns: columns,
