@@ -205,21 +205,13 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
-        $carbon = Carbon::now();
-
         $navigations = $this->navigations();
 
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        $region = $project->searchengines()->orderBy('id', 'asc')->first();
-
-        $region->load('location');
-
-        $headers = $this->getHeaderKeywordsTable($region, $carbon);
-
-        return view('monitoring.show', compact('navigations', 'region', 'project', 'headers'));
+        return view('monitoring.show', compact('navigations', 'project'));
     }
 
     public function getTableKeywords(Request $request, $id)
@@ -232,12 +224,17 @@ class MonitoringController extends Controller
 
         $keywords = $project->keywords();
 
-        $this->filter($project, $keywords, $request);
+        $this->filter($keywords, $request);
 
         $page = ($request->input('start') / $request->input('length')) + 1;
         $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
 
-        $region = $project->searchengines()->orderBy('id', 'asc')->first();
+        $region = $project->searchengines();
+
+        if($request->input('region_id'))
+            $region->where('id', $request->input('region_id'));
+
+        $region = $region->orderBy('id', 'asc')->first();
         $region->load('location');
 
         $keywords->load(['positions' => function($query) use ($region, $carbon){
@@ -261,49 +258,49 @@ class MonitoringController extends Controller
 
         $headers = $this->getHeaderKeywordsTable($region, $carbon);
 
-        $length = $headers->count();
-
         foreach ($keywords as $keyword){
 
             $id = $keyword->id;
 
-            $table[$id] = [];
+            $table[$id] = collect([]);
 
-            for($i = 0; $i < $length; $i++){
+            foreach ($headers as $i => $v){
 
                 switch ($i) {
-                    case 0:
-                        $table[$id][] = $id;
+                    case 'id':
+                        $table[$id]->put('id', $id);
                         break;
-                    case 1:
-                        $table[$id][] = view('monitoring.partials.show.checkbox', ['id' => $id])->render();
+                    case 'checkbox':
+                        $table[$id]->put('checkbox', view('monitoring.partials.show.checkbox', ['id' => $id])->render());
                         break;
-                    case 2:
-                        $table[$id][] = view('monitoring.partials.show.btn', ['key' => $keyword])->render();
+                    case 'btn':
+                        $table[$id]->put('btn', view('monitoring.partials.show.btn', ['key' => $keyword])->render());
                         break;
-                    case 3:
-                        $table[$id][] = view('monitoring.partials.show.query', ['key' => $keyword])->render();
+                    case 'query':
+                        $table[$id]->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
                         break;
-                    case 4:
-                        $table[$id][] = view('monitoring.partials.show.url')->render();
+                    case 'url':
+                        $table[$id]->put('url', view('monitoring.partials.show.url')->render());
                         break;
-                    case 5:
-                        $table[$id][] = view('monitoring.partials.show.group', ['group' => $keyword->group])->render();
+                    case 'group':
+                        $table[$id]->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
                         break;
-                    case 6:
-                        $table[$id][] = view('monitoring.partials.show.target', ['key' => $keyword])->render();
+                    case 'target':
+                        $table[$id]->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
                         break;
                     default:
-                        $model = $keyword->last_positions->firstWhere('date', $headers[$i]);
+                        $model = $keyword->last_positions->firstWhere('date', $v);
                         if($model && $model->position)
-                            $table[$id][] = view('monitoring.partials.show.position', ['model' => $model])->render();
+                            $table[$id]->put($i, view('monitoring.partials.show.position', ['model' => $model])->render());
                         else
-                            $table[$id][] = '-';
+                            $table[$id]->put($i, '-');
                 }
             }
         }
 
         $data = collect([
+            'region' => $region,
+            'columns' => $headers,
             'data' => collect($table)->values(),
             'draw' => $request->input('draw'),
             'recordsFiltered' => $keywords->total(),
@@ -320,43 +317,42 @@ class MonitoringController extends Controller
             ->where('created_at', '>=', $carbon->subMonth())
             ->groupBy('date')->orderBy('date', 'desc')->get();
 
-        $header = $model->pluck('date')
-            ->prepend(__('Target'))
-            ->prepend(view('monitoring.partials.show.header.group')->render())
-            ->prepend(__('URL'))
-            ->prepend(view('monitoring.partials.show.header.query')->render())
-            ->prepend(__(''))
-            ->prepend('')
-            ->prepend('ID')
-            ->values();
+        $header = collect([]);
+        foreach ($model as $i => $m)
+            $header->put('data_' . $i, $m->date);
+
+        $header->prepend(__('Target'), 'target')
+            ->prepend(__('Group'), 'group')
+            ->prepend(__('URL'), 'url')
+            ->prepend(view('monitoring.partials.show.header.query')->render(), 'query')
+            ->prepend('', 'btn')
+            ->prepend('', 'checkbox')
+            ->prepend('ID', 'id');
 
         return $header;
     }
 
-    /**
-     * @param $keywords
-     * @param $request
-     */
-    protected function filter($project, &$keywords, Request $request)
+    protected function filter(&$model, Request $request)
     {
         $columns = $request->input('columns', []);
+
+        //dd($columns);
 
         foreach ($columns as $column){
 
             switch ($column['data']) {
-                case 3:
+                case 'query':
                     if($column['search']['value'])
-                        $keywords->where('query', 'like', '%'.$column['search']['value'].'%');
+                        $model->where('query', 'like', '%'.$column['search']['value'].'%');
                     break;
-                case 5:
-                    if($column['search']['value']){
-                        $group = $project->groups()->where('name', 'like', $column['search']['value'].'%')->first();
-                        if($group)
-                            $keywords->where('monitoring_group_id', '=', $group->id);
-                    }
+                case 'group':
+                    if($column['search']['value'])
+                        $model->where('monitoring_group_id', '=', $column['search']['value']);
                     break;
             }
         }
+
+        return $columns;
     }
 
     private function navigations()
