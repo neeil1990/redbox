@@ -33,24 +33,24 @@
                                 {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), null, ['class' => 'custom-select', 'onchange' => '$("#filter").trigger("filtered")']) }}
                             </div>
                         </div>
+                    </form>
 
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label>{{ __('Date range') }}:</label>
-                                <div class="input-group">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label>{{ __('Date range') }}:</label>
+                            <div class="input-group">
 
-                                    <div class="input-group-prepend">
+                                <div class="input-group-prepend">
                                       <span class="input-group-text">
                                         <i class="far fa-calendar-alt"></i>
                                       </span>
-                                    </div>
-
-                                    <input name="checkbox" type="text" class="form-control float-right" id="date-range">
                                 </div>
-                                <!-- /.input group -->
+
+                                <input type="text" class="form-control float-right" id="date-range">
                             </div>
+                            <!-- /.input group -->
                         </div>
-                    </form>
+                    </div>
                 </div>
 
             </div>

@@ -237,10 +237,14 @@ class MonitoringController extends Controller
         $region = $region->orderBy('id', 'asc')->first();
         $region->load('location');
 
-        $keywords->load(['positions' => function($query) use ($region, $carbon){
+        $dates = null;
+        if($request->input('dates_range', null)){
+            $dates = explode(' - ', $request->input('dates_range'), 2);
+        }
 
-            $query->where('monitoring_searchengine_id', $region->id)
-            ->where('created_at', '>=', $carbon->subMonth());
+        $keywords->load(['positions' => function($query) use ($region, $dates){
+
+            $query->where('monitoring_searchengine_id', $region->id)->dateRange($dates);
         }]);
 
         $keywords->transform(function($item){
@@ -256,7 +260,7 @@ class MonitoringController extends Controller
 
         $table = [];
 
-        $headers = $this->getHeaderKeywordsTable($region, $carbon);
+        $headers = $this->getHeaderKeywordsTable($region, $dates);
 
         foreach ($keywords as $keyword){
 
@@ -310,11 +314,11 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    protected function getHeaderKeywordsTable($region, $carbon)
+    protected function getHeaderKeywordsTable($region, $dates)
     {
         $model = $region->positions()
             ->select(DB::raw('*, DATE(created_at) as date'))
-            ->where('created_at', '>=', $carbon->subMonth())
+            ->dateRange($dates)
             ->groupBy('date')->orderBy('date', 'desc')->get();
 
         $header = collect([]);

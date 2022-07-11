@@ -52,9 +52,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-
                 <table class="table table-responsive table-bordered table-hover text-center"></table>
-
             </div>
             <!-- /.card -->
         </div>
@@ -113,7 +111,9 @@
 
             const PROJECT_ID = '{{ $project->id }}';
             const REGION_ID = '{{ request('region', null) }}';
+            const DATES = '{{ request('dates', null) }}';
             const PAGE_LENGTH = 5;
+
             let table = $('.table');
 
             toastr.options = {
@@ -124,6 +124,7 @@
             axios.post(`/monitoring/${PROJECT_ID}/table`, {
                 length: PAGE_LENGTH,
                 region_id: REGION_ID,
+                dates_range: DATES,
             }).then(function (response) {
 
                 let region = response.data.region;
@@ -139,7 +140,7 @@
                     });
                 });
 
-                table.DataTable({
+                let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
                     "ordering": false,
                     scrollX: true,
@@ -163,7 +164,8 @@
                         url: `/monitoring/${PROJECT_ID}/table`,
                         type: 'POST',
                         data: {
-                            region_id: REGION_ID
+                            region_id: REGION_ID,
+                            dates: DATES,
                         },
                     },
                     columns: columns,
@@ -269,7 +271,7 @@
                             });
                         });
 
-                        this.closest('.card').find('.card-header .card-title').html(title);
+                        this.closest('.card').find('.card-header .card-title').html("");
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
                     },
@@ -333,10 +335,19 @@
                 }
             });
 
+            let startDate = null;
+            let endDate = null;
+            if(DATES){
+
+                let dates = DATES.split(" - ");
+                startDate = moment(dates[0]);
+                endDate = moment(dates[1]);
+            }
+
             $('#date-range').daterangepicker({
                 opens: 'left',
-                startDate: moment().subtract(30, 'days'),
-                endDate  : moment(),
+                startDate: startDate ?? moment().subtract(30, 'days'),
+                endDate  : endDate ?? moment(),
                 minDate: moment().subtract(90, 'days'),
                 ranges   : {
                     'Последние 7 дней' : [moment().subtract(6, 'days'), moment()],
@@ -357,9 +368,13 @@
                 }
             },
             function (start, end) {
-                $('#filter').trigger('filtered', [start, end]);
 
-                //$('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                let dates = start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD');
+
+                if(window.location.search)
+                    window.location.search = window.location.search + '&dates=' + dates;
+                else
+                    window.location.search = 'dates=' + dates;
             });
 
             $('.modal').on('show.bs.modal', function (event) {
