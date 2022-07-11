@@ -62,7 +62,7 @@
 
     {!! Form::open(['route' => ['keywords.set.test.positions', $project->id], 'method' => 'patch']) !!}
 
-        <input type="hidden" name="search" value="5">
+        <input type="hidden" name="search" value="{{ request('region', $project->searchengines[0]->id) }}">
 
         <div class="form-group">
         <label>[Year-month-day] Date range:</label>
