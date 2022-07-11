@@ -371,10 +371,12 @@
 
                 let dates = start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD');
 
-                if(window.location.search)
-                    window.location.search = window.location.search + '&dates=' + dates;
-                else
-                    window.location.search = 'dates=' + dates;
+                let url = new URL(window.location.href);
+                let params = new URLSearchParams(url.search);
+
+                params.set('dates', dates);
+
+                window.location.search = params.toString();
             });
 
             $('.modal').on('show.bs.modal', function (event) {
