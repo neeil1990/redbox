@@ -14,6 +14,7 @@ class RelevanceCleaningResults
     public function __invoke()
     {
         Log::debug('Запущена отчистка');
+        $total = 0;
         $config = RelevanceAnalysisConfig::first();
 
         $results = RelevanceHistoryResult::where([
@@ -42,12 +43,13 @@ class RelevanceCleaningResults
                 $result->save();
             }
 
+            $total += count($results);
             $results = RelevanceHistoryResult::where([
-                ['created_at', '<', Carbon::now()->subDays(5)],
+                ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
                 ['cleaning', '=', 0]
             ])->take(5)->get();
         }
-        Log::debug('Отчистка завершена');
+        Log::debug('Отчистка завершена', [$total]);
     }
 
 }

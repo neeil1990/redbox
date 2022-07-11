@@ -248,39 +248,3 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
-
-Route::get('/cleaning-table', function () {
-    $results = RelevanceHistoryResult::where([
-        ['created_at', '<', Carbon::now()->subDays(5)],
-        ['cleaning', '=', 0]
-    ])->take(5)->get();
-
-    while (count($results) != 0) {
-        Log::debug('count', [count($results)]);
-        foreach ($results as $result) {
-            $result->clouds_competitors =
-            $result->clouds_main_page =
-            $result->avg =
-            $result->main_page =
-            $result->unigram_table =
-            $result->tf_comp_clouds =
-            $result->phrases =
-            $result->recommendations = '';
-
-            if (!$result->compressed) {
-                $result->sites = base64_encode(gzcompress($result->sites, 9));
-                $result->avg_coverage_percent = base64_encode(gzcompress($result->avg_coverage_percent, 9));
-                $result->compressed = 1;
-            }
-
-            $result->cleaning = 1;
-            $result->save();
-        }
-
-        $results = RelevanceHistoryResult::where([
-            ['created_at', '<', Carbon::now()->subDays(5)],
-            ['cleaning', '=', 0]
-        ])->take(5)->get();
-    }
-
-});
