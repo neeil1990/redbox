@@ -327,6 +327,174 @@
                         });
                     },
                 });
+
+
+                $('.modal').on('show.bs.modal', function (event) {
+                    let button = $(event.relatedTarget);
+
+                    let type = button.data('type');
+
+                    let modal = $(this);
+
+                    let request = null;
+
+                    switch (type) {
+                        case "edit_singular":
+
+                            let id = button.data('id');
+
+                            request = axios.get(`/monitoring/keywords/${id}/edit`).then(function (response) {
+
+                                let content = response.data;
+
+                                modal.find('.modal-content').html(content);
+                            });
+                            break;
+                        case "edit_plural":
+
+                            let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
+
+                            if(checkboxes.length){
+
+                                request = axios.get(`/monitoring/keywords/${PROJECT_ID}/edit-plural`).then(function (response) {
+
+                                    let content = response.data;
+
+                                    modal.find('.modal-content').html(content);
+                                });
+
+                            }else{
+                                axios.get('/monitoring/keywords/empty/modal').then(function (response) {
+
+                                    let content = response.data;
+
+                                    modal.find('.modal-content').html(content);
+
+                                    modal.find('h5').text('Выберите хотябы один элемент.');
+                                    modal.find('p').text('Чтобы массово отредактировать элементы, нужно выбрать хотябы один элемент.');
+                                });
+                            }
+                            break;
+
+                        case "create_keywords":
+
+                            request = axios.get(`/monitoring/keywords/${PROJECT_ID}/create`).then(function (response) {
+
+                                let content = response.data;
+
+                                modal.find('.modal-content').html(content);
+
+                                modal.find('#upload-queries').click(function () {
+
+                                    let self = $(this);
+                                    let csv = self.closest('.input-group').find('#upload');
+
+                                    if(csv[0].files.length && csv[0].files[0].type === 'text/csv'){
+
+                                        csv.parse({
+                                            config: {
+                                                skipEmptyLines: 'greedy',
+                                                complete: function (result) {
+
+                                                    let value = '';
+                                                    $.each(result.data, function(i, item){
+
+                                                        if(item[0])
+                                                            value += item[0] + '\r\n';
+                                                    });
+
+                                                    modal.find('textarea[name="query"]').val(value);
+                                                },
+                                                download: 0
+                                            }
+                                        });
+
+                                    }else{
+
+                                        toastr.error('Загрузите файл формата .csv');
+                                    }
+                                });
+                            });
+
+                            break;
+                    }
+
+                    if(request){
+
+                        request.then(function () {
+
+                            let group = modal.find('.custom-select[name="monitoring_group_id"]');
+                            if(group.length){
+
+                                group.select2({
+                                    theme: 'bootstrap4'
+                                });
+
+                                modal.find('#create-group').click(function(){
+                                    let el = $(this);
+                                    let input = el.closest('.input-group').find('input');
+
+                                    if(input.val()){
+
+                                        let id_project = input.data('id');
+
+                                        axios.post('/monitoring/groups', {
+                                            monitoring_project_id: id_project,
+                                            type: "keyword",
+                                            name: input.val(),
+                                        }).then(function (response) {
+
+                                            let newOption = new Option(response.data.name, response.data.id, false, true);
+                                            group.append(newOption).trigger('change');
+
+                                            toastr.success('Добавленно');
+
+                                            input.val(null);
+                                        }).catch(function (error) {
+
+                                            toastr.error('Something is going wrong');
+                                        });
+                                    }
+                                });
+                            }
+
+                            modal.find('.save-modal').click(function () {
+                                let self = $(this);
+                                let form = self.closest('.modal-content').find('form');
+                                let action = form.attr('action');
+                                let method = form.attr('method');
+                                let data = {};
+
+                                $.each(form.serializeArray(), function (inc, item) {
+                                    $.extend( data, {[item.name]: item.value} );
+                                });
+
+                                let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
+
+                                if(checkboxes.length && method === 'POST'){
+                                    $.extend( data, {id: []} );
+                                    $.each(checkboxes, function (i, checkbox) {
+                                        data.id.push($(checkbox).val());
+                                    });
+                                }
+
+                                axios({
+                                    method: method,
+                                    url: action,
+                                    data: data
+                                }).then(function (response) {
+
+                                    dTable.draw(false);
+
+                                    self.closest('.modal').modal('hide');
+                                }).catch(function (error) {
+                                    console.log(error);
+                                });
+                            });
+
+                        });
+                    }
+                });
             });
 
             $('#reservation').daterangepicker({
@@ -377,173 +545,6 @@
                 params.set('dates', dates);
 
                 window.location.search = params.toString();
-            });
-
-            $('.modal').on('show.bs.modal', function (event) {
-                let button = $(event.relatedTarget);
-
-                let type = button.data('type');
-
-                let modal = $(this);
-
-                let request = null;
-
-                switch (type) {
-                    case "edit_singular":
-
-                        let id = button.data('id');
-
-                        request = axios.get(`/monitoring/keywords/${id}/edit`).then(function (response) {
-
-                            let content = response.data;
-
-                            modal.find('.modal-content').html(content);
-                        });
-                        break;
-                    case "edit_plural":
-
-                        let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
-
-                        if(checkboxes.length){
-
-                            request = axios.get(`/monitoring/keywords/${PROJECT_ID}/edit-plural`).then(function (response) {
-
-                                let content = response.data;
-
-                                modal.find('.modal-content').html(content);
-                            });
-
-                        }else{
-                            axios.get('/monitoring/keywords/empty/modal').then(function (response) {
-
-                                let content = response.data;
-
-                                modal.find('.modal-content').html(content);
-
-                                modal.find('h5').text('Выберите хотябы один элемент.');
-                                modal.find('p').text('Чтобы массово отредактировать элементы, нужно выбрать хотябы один элемент.');
-                            });
-                        }
-                        break;
-
-                    case "create_keywords":
-
-                        request = axios.get(`/monitoring/keywords/${PROJECT_ID}/create`).then(function (response) {
-
-                            let content = response.data;
-
-                            modal.find('.modal-content').html(content);
-
-                            modal.find('#upload-queries').click(function () {
-
-                                let self = $(this);
-                                let csv = self.closest('.input-group').find('#upload');
-
-                                if(csv[0].files.length && csv[0].files[0].type === 'text/csv'){
-
-                                    csv.parse({
-                                        config: {
-                                            skipEmptyLines: 'greedy',
-                                            complete: function (result) {
-
-                                                let value = '';
-                                                $.each(result.data, function(i, item){
-
-                                                    if(item[0])
-                                                        value += item[0] + '\r\n';
-                                                });
-
-                                                modal.find('textarea[name="query"]').val(value);
-                                            },
-                                            download: 0
-                                        }
-                                    });
-
-                                }else{
-
-                                    toastr.error('Загрузите файл формата .csv');
-                                }
-                            });
-                        });
-
-                        break;
-                }
-
-                if(request){
-
-                    request.then(function () {
-
-                        let group = modal.find('.custom-select[name="monitoring_group_id"]');
-                        if(group.length){
-
-                            group.select2({
-                                theme: 'bootstrap4'
-                            });
-
-                            modal.find('#create-group').click(function(){
-                                let el = $(this);
-                                let input = el.closest('.input-group').find('input');
-
-                                if(input.val()){
-
-                                    let id_project = input.data('id');
-
-                                    axios.post('/monitoring/groups', {
-                                        monitoring_project_id: id_project,
-                                        type: "keyword",
-                                        name: input.val(),
-                                    }).then(function (response) {
-
-                                        let newOption = new Option(response.data.name, response.data.id, false, true);
-                                        group.append(newOption).trigger('change');
-
-                                        toastr.success('Добавленно');
-
-                                        input.val(null);
-                                    }).catch(function (error) {
-
-                                        toastr.error('Something is going wrong');
-                                    });
-                                }
-                            });
-                        }
-
-                        modal.find('.save-modal').click(function () {
-                            let self = $(this);
-                            let form = self.closest('.modal-content').find('form');
-                            let action = form.attr('action');
-                            let method = form.attr('method');
-                            let data = {};
-
-                            $.each(form.serializeArray(), function (inc, item) {
-                                $.extend( data, {[item.name]: item.value} );
-                            });
-
-                            let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
-
-                            if(checkboxes.length && method === 'POST'){
-                                $.extend( data, {id: []} );
-                                $.each(checkboxes, function (i, checkbox) {
-                                    data.id.push($(checkbox).val());
-                                });
-                            }
-
-                            axios({
-                                method: method,
-                                url: action,
-                                data: data
-                            }).then(function (response) {
-
-                                table.draw(false);
-
-                                self.closest('.modal').modal('hide');
-                            }).catch(function (error) {
-                                console.log(error);
-                            });
-                        });
-
-                    });
-                }
             });
 
             $('.table').on('click', '.delete-keyword' ,function () {
