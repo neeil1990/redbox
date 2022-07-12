@@ -86,7 +86,6 @@
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
-                    type: 'POST',
                 },
                 order: [
                     [1, 'asc'],
@@ -121,27 +120,27 @@
                     },
                     {
                         title: '% в ТОП 3',
-                        data: 'top_three',
+                        data: null, //'top_three',
                     },
                     {
                         title: '% в ТОП 5',
-                        data: 'top_fifth',
+                        data: null, //'top_three',
                     },
                     {
                         title: '% в ТОП 10',
-                        data: 'top_ten',
+                        data: null, //'top_three',
                     },
                     {
                         title: '% в ТОП 30',
-                        data: 'top_thirty',
+                        data: null, //'top_three',
                     },
                     {
                         title: '% в ТОП 100',
-                        data: 'top_one_hundred',
+                        data: null, //'top_three',
                     },
                     {
                         title: 'Ср.Позиция',
-                        data: 'middle_position',
+                        data: null, //'top_three',
                     },
                     {
                         width: '120px',

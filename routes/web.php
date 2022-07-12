@@ -224,7 +224,7 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('tariff', 'TariffPayController');
 
     Route::resource('monitoring', 'MonitoringController');
-    Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
+    Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
     Route::post('/monitoring/{project_id}/table', 'MonitoringController@getTableKeywords')->name('monitoring.get.table.keywords');
 
