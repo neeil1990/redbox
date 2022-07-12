@@ -86,6 +86,7 @@
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
+                    type: 'POST',
                 },
                 order: [
                     [1, 'asc'],
