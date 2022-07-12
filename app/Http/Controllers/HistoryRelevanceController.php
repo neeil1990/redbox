@@ -226,7 +226,7 @@ class HistoryRelevanceController extends Controller
 
         $responseObject = [];
         foreach ($phrases as $phrase) {
-            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->get();
+            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->latest('id')->get();
         }
 
         return response()->json([
