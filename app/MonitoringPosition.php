@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class MonitoringPosition extends Model
 {
@@ -21,5 +23,20 @@ class MonitoringPosition extends Model
     public function getDateAttribute()
     {
         return $this->created_at->format('d.m.Y');
+    }
+
+    public function scopeDateRange($query, array $dates = null)
+    {
+        $start = Carbon::now()->subMonth();
+        $end = Carbon::now();
+
+        if($dates){
+
+            $start = Carbon::create($dates[0]);
+            $end = Carbon::create($dates[1]);
+        }
+
+        return $query->where(DB::raw('DATE(created_at)'), '>=', $start)
+            ->where(DB::raw('DATE(created_at)'), '<=', $end);
     }
 }

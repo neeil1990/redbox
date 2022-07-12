@@ -47,21 +47,12 @@
         @endforeach
     </div>
 
+    @include('monitoring.partials.show.filter')
+
     <div class="row">
         <div class="col-12">
             <div class="card">
-
-                <table class="table table-responsive table-bordered table-hover text-center">
-                    <thead>
-                        <tr>
-                            @foreach($headers as $header)
-                                <th>{!! $header !!}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
-
-                </table>
-
+                <table class="table table-responsive table-bordered table-hover text-center"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -71,7 +62,7 @@
 
     {!! Form::open(['route' => ['keywords.set.test.positions', $project->id], 'method' => 'patch']) !!}
 
-        <input type="hidden" name="search" value="{{ $region->id }}">
+        <input type="hidden" name="search" value="{{ request('region', $project->searchengines[0]->id) }}">
 
         <div class="form-group">
         <label>[Year-month-day] Date range:</label>
@@ -119,11 +110,224 @@
         <script>
 
             const PROJECT_ID = '{{ $project->id }}';
+            const REGION_ID = '{{ request('region', null) }}';
+            const DATES = '{{ request('dates', null) }}';
+            const PAGE_LENGTH = 5;
+
+            let table = $('.table');
 
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "1500"
             };
+
+            axios.post(`/monitoring/${PROJECT_ID}/table`, {
+                length: PAGE_LENGTH,
+                region_id: REGION_ID,
+                dates_range: DATES,
+            }).then(function (response) {
+
+                let region = response.data.region;
+                let title = `[${region.lr}] ${region.engine.toUpperCase()} ${region.location.name}`;
+
+                let columns = [];
+
+                $.each(response.data.columns, function (i, item) {
+                    columns.push({
+                        'title': item,
+                        'name': i,
+                        'data': i,
+                    });
+                });
+
+                let dTable = table.DataTable({
+                    dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
+                    "ordering": false,
+                    scrollX: true,
+                    lengthMenu: [5, 20, 30, 50, 100],
+                    pageLength: 5,
+                    pagingType: "simple_numbers",
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "Search...",
+                        paginate: {
+                            "first":      "«",
+                            "last":       "»",
+                            "next":       "»",
+                            "previous":   "«"
+                        },
+                    },
+                    processing: false,
+                    serverSide: true,
+                    ajax: {
+                        url: `/monitoring/${PROJECT_ID}/table`,
+                        type: 'POST',
+                        data: {
+                            region_id: REGION_ID,
+                            dates_range: DATES,
+                        },
+                    },
+                    columns: columns,
+                    //rowReorder: true,
+                    columnDefs: [
+                        //{ orderable: true, className: 'reorder', targets: 3 },
+                        //{ orderable: false, targets: '_all' },
+                        { "width": "350px", "targets": 3 },
+                    ],
+                    initComplete: function(){
+                        let api = this.api();
+
+                        axios.get(`/monitoring/keywords/show/controls`).then(function (response) {
+
+                            let container = $('.mailbox-controls');
+                            let content = response.data;
+
+                            container.html(content);
+
+                            let checkbox = container.find('.checkbox-toggle');
+
+                            //Enable check and uncheck all functionality
+                            checkbox.click(function () {
+                                let clicks = $(this).data('clicks');
+                                if (clicks) {
+                                    //Uncheck all checkboxes
+                                    $('.table tbody tr').find('input[type="checkbox"]').prop('checked', false);
+                                    $('.far.fa-check-square', checkbox).removeClass('fa-check-square').addClass('fa-square');
+                                } else {
+                                    //Check all checkboxes
+                                    $('.table tbody tr').find('input[type="checkbox"]').prop('checked', true);
+                                    $('.far.fa-square', checkbox).removeClass('fa-square').addClass('fa-check-square');
+                                }
+                                $(this).data('clicks', !clicks)
+                            });
+
+                            let deletes = container.find('.delete-multiple');
+
+                            deletes.click(function () {
+
+                                let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
+                                if(checkboxes.length){
+
+                                    if (window.confirm("Do you really want to delete?")) {
+
+                                        $.each(checkboxes, function (i, checkbox) {
+                                            let id = $(checkbox).val();
+
+                                            axios.delete(`/monitoring/keywords/${id}`);
+                                        });
+
+                                        window.location.reload();
+                                    }
+                                }else{
+                                    toastr.error('Выберите хотя бы один элемент.');
+                                }
+                            });
+                        });
+
+                        $('.search-button').click(function () {
+                            let a = $(this);
+                            let span = a.parent();
+                            let b = span.find('b');
+                            let input = span.find('input');
+
+                            let toggleClass = 'd-none';
+
+                            a.addClass(toggleClass);
+                            b.addClass(toggleClass);
+
+                            input.unbind( "blur" );
+
+                            input.removeClass(toggleClass).focus().blur(function () {
+                                $(this).addClass(toggleClass);
+                                a.removeClass(toggleClass);
+                                b.removeClass(toggleClass);
+                            });
+                        });
+
+                        api.columns().every(function() {
+                            let that = this;
+
+                            $('input', this.header()).on('keyup change', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+
+                        let filter = $('#filter');
+                        filter.unbind('filtered');
+                        filter.on('filtered', function(e, start, end){
+
+                            let form = $(this);
+
+                            $.each(form.serializeArray(), function (i, item) {
+                                let col = item.name;
+                                let val = item.value;
+
+                                console.log(col, val);
+
+                                api.column(col + ':name').search(val).draw();
+                            });
+                        });
+
+                        this.closest('.card').find('.card-header .card-title').html("");
+                        this.closest('.card').find('.card-header label').css('margin-bottom', 0);
+                        $('.dataTables_length').find('select').removeClass('custom-select-sm');
+                    },
+                    drawCallback: function(){
+
+                        $('.table tr').each(function (i, item) {
+                            let target = $(item).find('.target').text();
+                            let positions = $(item).find('td span[data-position]');
+
+                            $.each(positions, function (i, item) {
+                                let current = $(item).data('position');
+                                let nextTo = $(positions[i + 1]).data('position');
+
+                                let total = nextTo - current;
+
+                                if(total){
+
+                                    if(total > 0)
+                                        total = '+' + total;
+
+                                    $(item).find('sup').text(total);
+                                }
+
+                                if(target >= current)
+                                    $(item).closest('td').css('background-color', '#99e4b9');
+                                else{
+                                    if(target >= nextTo)
+                                        $(item).closest('td').css('background-color', '#fbe1df');
+                                }
+                            });
+                        });
+
+                        $('.pagination').addClass('pagination-sm');
+
+                        $('[data-toggle="popover"]').popover({
+                            trigger: 'manual',
+                            placement: 'right',
+                            html: true,
+                        }).on("mouseenter", function() {
+                            $(this).popover("show");
+                        }).on("mouseleave", function() {
+                            let self = this;
+
+                            let timeout = setTimeout(function(){
+                                $(self).popover("hide");
+                            }, 300);
+
+                            $('.popover').hover(function () {
+                                clearTimeout(timeout);
+                            }, function () {
+                                $(self).popover("hide");
+                            });
+                        });
+                    },
+                });
+            });
 
             $('#reservation').daterangepicker({
                 locale: {
@@ -131,171 +335,48 @@
                 }
             });
 
-            let table = $('.table').DataTable({
-                dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
-                "ordering": false,
-                scrollX: true,
-                lengthMenu: [5, 20, 30, 50, 100],
-                pageLength: 5,
-                pagingType: "simple_numbers",
-                language: {
-                    lengthMenu: "_MENU_",
-                    search: "_INPUT_",
-                    searchPlaceholder: "Search...",
-                    paginate: {
-                        "first":      "«",
-                        "last":       "»",
-                        "next":       "»",
-                        "previous":   "«"
-                    },
+            let startDate = null;
+            let endDate = null;
+            if(DATES){
+
+                let dates = DATES.split(" - ");
+                startDate = moment(dates[0]);
+                endDate = moment(dates[1]);
+            }
+
+            $('#date-range').daterangepicker({
+                opens: 'left',
+                startDate: startDate ?? moment().subtract(30, 'days'),
+                endDate  : endDate ?? moment(),
+                minDate: moment().subtract(90, 'days'),
+                ranges   : {
+                    'Последние 7 дней' : [moment().subtract(6, 'days'), moment()],
+                    'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
+                    'Прошлый месяц'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Все дни'  : [moment().subtract(89, 'days'), moment()],
                 },
-                processing: false,
-                serverSide: true,
-                ajax: {
-                    url: `/monitoring/${PROJECT_ID}/table`,
-                    type: 'POST',
+                alwaysShowCalendars: true,
+                showCustomRangeLabel: false,
+                isCustomDate: function(data){
+
+                    let date = data.format('YYYY-MM-DD');
+
+                  return ['position'];
                 },
-                //rowReorder: true,
-                columnDefs: [
-                    //{ orderable: true, className: 'reorder', targets: 3 },
-                    //{ orderable: false, targets: '_all' },
-                    { "width": "350px", "targets": 3 }
-                ],
-                initComplete: function(){
-                    let api = this.api();
+                locale: {
+                    format: 'DD-MM-YYYY'
+                }
+            },
+            function (start, end) {
 
-                    axios.get(`/monitoring/keywords/show/controls`).then(function (response) {
+                let dates = start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD');
 
-                        let container = $('.mailbox-controls');
-                        let content = response.data;
+                let url = new URL(window.location.href);
+                let params = new URLSearchParams(url.search);
 
-                        container.html(content);
+                params.set('dates', dates);
 
-                        let checkbox = container.find('.checkbox-toggle');
-
-                        //Enable check and uncheck all functionality
-                        checkbox.click(function () {
-                            let clicks = $(this).data('clicks');
-                            if (clicks) {
-                                //Uncheck all checkboxes
-                                $('.table tbody tr').find('input[type="checkbox"]').prop('checked', false);
-                                $('.far.fa-check-square', checkbox).removeClass('fa-check-square').addClass('fa-square');
-                            } else {
-                                //Check all checkboxes
-                                $('.table tbody tr').find('input[type="checkbox"]').prop('checked', true);
-                                $('.far.fa-square', checkbox).removeClass('fa-square').addClass('fa-check-square');
-                            }
-                            $(this).data('clicks', !clicks)
-                        });
-
-                        let deletes = container.find('.delete-multiple');
-
-                        deletes.click(function () {
-
-                            let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
-                            if(checkboxes.length){
-
-                                if (window.confirm("Do you really want to delete?")) {
-
-                                    $.each(checkboxes, function (i, checkbox) {
-                                        let id = $(checkbox).val();
-
-                                        axios.delete(`/monitoring/keywords/${id}`);
-                                    });
-
-                                    window.location.reload();
-                                }
-                            }else{
-                                toastr.error('Выберите хотя бы один элемент.');
-                            }
-                        });
-                    });
-
-                    $('.search-button').click(function () {
-                        let a = $(this);
-                        let span = a.parent();
-                        let b = span.find('b');
-                        let input = span.find('input');
-
-                        let toggleClass = 'd-none';
-
-                        a.addClass(toggleClass);
-                        b.addClass(toggleClass);
-
-                        input.unbind( "blur" );
-
-                        input.removeClass(toggleClass).focus().blur(function () {
-                            $(this).addClass(toggleClass);
-                            a.removeClass(toggleClass);
-                            b.removeClass(toggleClass);
-                        });
-                    });
-
-                    api.columns().every(function() {
-                        let that = this;
-
-                        $('input', this.header()).on('keyup change', function () {
-                            if (that.search() !== this.value) {
-                                that.search(this.value).draw();
-                            }
-                        });
-                    });
-
-                    this.closest('.card').find('.card-header .card-title').html("[{{$region->lr}}] {{ ucfirst($region->engine) }}, {{ $region->location->name }}");
-                    this.closest('.card').find('.card-header label').css('margin-bottom', 0);
-                    $('.dataTables_length').find('select').removeClass('custom-select-sm');
-                },
-                drawCallback: function(){
-
-                    $('.table tr').each(function (i, item) {
-                        let target = $(item).find('.target').text();
-                        let positions = $(item).find('td span[data-position]');
-
-                        $.each(positions, function (i, item) {
-                            let current = $(item).data('position');
-                            let nextTo = $(positions[i + 1]).data('position');
-
-                            let total = nextTo - current;
-
-                            if(total){
-
-                                if(total > 0)
-                                    total = '+' + total;
-
-                                $(item).find('sup').text(total);
-                            }
-
-                            if(target >= current)
-                                $(item).closest('td').css('background-color', '#99e4b9');
-                            else{
-                                if(target >= nextTo)
-                                    $(item).closest('td').css('background-color', '#fbe1df');
-                            }
-                        });
-                    });
-
-                    $('.pagination').addClass('pagination-sm');
-
-                    $('[data-toggle="popover"]').popover({
-                        trigger: 'manual',
-                        placement: 'right',
-                        html: true,
-                    }).on("mouseenter", function() {
-                        $(this).popover("show");
-                    }).on("mouseleave", function() {
-                        let self = this;
-
-                        let timeout = setTimeout(function(){
-                            $(self).popover("hide");
-                        }, 300);
-
-                        $('.popover').hover(function () {
-                            clearTimeout(timeout);
-                        }, function () {
-                            $(self).popover("hide");
-                        });
-                    });
-                },
+                window.location.search = params.toString();
             });
 
             $('.modal').on('show.bs.modal', function (event) {
