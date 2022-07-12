@@ -25,7 +25,7 @@ class ProjectDataTable
         $this->setUrl();
         $this->setSearchEngines();
         $this->setKeywords();
-        //$this->setTopPercentKeywords();
+        $this->setTopPercentKeywords();
 
         return $this->getData();
     }

@@ -120,27 +120,27 @@
                     },
                     {
                         title: '% в ТОП 3',
-                        data: null, //'top_three',
+                        data: 'top_three',
                     },
                     {
                         title: '% в ТОП 5',
-                        data: null, //'top_three',
+                        data: 'top_fifth',
                     },
                     {
                         title: '% в ТОП 10',
-                        data: null, //'top_three',
+                        data: 'top_ten',
                     },
                     {
                         title: '% в ТОП 30',
-                        data: null, //'top_three',
+                        data: 'top_thirty',
                     },
                     {
                         title: '% в ТОП 100',
-                        data: null, //'top_three',
+                        data: 'top_one_hundred',
                     },
                     {
                         title: 'Ср.Позиция',
-                        data: null, //'top_three',
+                        data: 'middle_position',
                     },
                     {
                         width: '120px',
