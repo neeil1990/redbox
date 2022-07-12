@@ -384,106 +384,105 @@ $(document).ready(function () {
                 },
             });
         });
-    }, 500)
+        $('.project_name_v2').unbind().click(function () {
+            hideListHistory()
+            hideTableHistory()
 
-    $('.project_name_v2').click(function () {
-        hideListHistory()
-        hideTableHistory()
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/get-stories-v2",
-            data: {
-                historyId: $(this).attr('data-order'),
-            },
-            success: function (response) {
-                $('#history-list-subject').show()
-                $('#list-history').show()
-                $.each(response.object, function (key, value) {
-                    let children = ''
-                    $.each(value, function (childKey, child) {
-                        children +=
-                            '<tr>' +
-                            '    <td>' + child['phrase'] + '</td>' +
-                            '    <td>' + getRegionName(child['region']) + '</td>' +
-                            '    <td>' + child['main_link'] + '</td>' +
-                            '    <td>' + child['position'] + '</td>' +
-                            '    <td>' + child['points'] + '</td>' +
-                            '    <td>' + child['coverage'] + '</td>' +
-                            '    <td>' + child['coverage_tf'] + '</td>' +
-                            '    <td>' + child['width'] + '</td>' +
-                            '    <td>' + child['density'] + '</td>' +
-                            '    <td>' + child['calculate'] + '</td>' +
-                            '    <td id="history-state-' + child['id'] + '" class="d-flex flex-column">' +
-                            '        <button type="button" class="btn btn-secondary get-history-info"' +
-                            '                data-order="' + child['id'] + '" data-toggle="modal"' +
-                            '                data-target="#staticBackdrop"> Повторить анализ' +
-                            '        </button>' +
-                            '        <a href="/show-history/' + child['id'] + '"' +
-                            '           target="_blank"' +
-                            '           class="btn btn-secondary mt-3">' +
-                            '            Подробная информация' +
-                            '        </a>' +
-                            '    </td>' +
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/get-stories-v2",
+                data: {
+                    historyId: $(this).attr('data-order'),
+                },
+                success: function (response) {
+                    $('#history-list-subject').show()
+                    $('#list-history').show()
+                    $.each(response.object, function (key, value) {
+                        let children = ''
+                        $.each(value, function (childKey, child) {
+                            children +=
+                                '<tr>' +
+                                '    <td>' + child['phrase'] + '</td>' +
+                                '    <td>' + getRegionName(child['region']) + '</td>' +
+                                '    <td>' + child['main_link'] + '</td>' +
+                                '    <td>' + child['position'] + '</td>' +
+                                '    <td>' + child['points'] + '</td>' +
+                                '    <td>' + child['coverage'] + '</td>' +
+                                '    <td>' + child['coverage_tf'] + '</td>' +
+                                '    <td>' + child['width'] + '</td>' +
+                                '    <td>' + child['density'] + '</td>' +
+                                '    <td>' + child['calculate'] + '</td>' +
+                                '    <td id="history-state-' + child['id'] + '" class="d-flex flex-column">' +
+                                '        <button type="button" class="btn btn-secondary get-history-info"' +
+                                '                data-order="' + child['id'] + '" data-toggle="modal"' +
+                                '                data-target="#staticBackdrop"> Повторить анализ' +
+                                '        </button>' +
+                                '        <a href="/show-history/' + child['id'] + '"' +
+                                '           target="_blank"' +
+                                '           class="btn btn-secondary mt-3">' +
+                                '            Подробная информация' +
+                                '        </a>' +
+                                '    </td>' +
+                                '</tr>'
+                        })
+                        $('#list-history-body').append(
+                            '<tr class="render-list-history">' +
+                            '<td>' + key +
+                            '    <i class="fa fa-plus show-stories" data-target="' + key + '"' +
+                            '       style="cursor:pointer;"></i>' +
+                            '</td>' +
+                            '<td>' + getRegionName(value[0]['region']) + '</td>' +
+                            '<td>' + value[0]['main_link'] + '</td>' +
+                            '<td>' + value[0]['position'] + '</td>' +
+                            '<td>' + value[0]['points'] + '</td>' +
+                            '<td>' + value[0]['coverage'] + '</td>' +
+                            '<td>' + value[0]['coverage_tf'] + '</td>' +
+                            '<td>' + value[0]['width'] + '</td>' +
+                            '<td>' + value[0]['density'] + '</td>' +
+                            '</tr>' +
+                            '<tr class="render-list-history">' +
+                            '   <td colspan="10" style="display: none" data-order="' + key + '">' +
+                            '       <div class="row w-100">' +
+                            '           <table' +
+                            '               class="table table-bordered table-striped dataTable dtr-inline list-children"' +
+                            '               id="list-history-' + value[0]['id'] + '">' +
+                            '               <thead>' +
+                            '               <tr>' +
+                            '                   <th class="col-2">Фраза</th>' +
+                            '                   <th class="col-1">Регион</th>' +
+                            '                   <th class="col-2">Посадочная</th>' +
+                            '                   <th class="col-1">Позиция в топе</th>' +
+                            '                   <th class="col-1">Баллы</th>' +
+                            '                   <th class="col-1">Охват важных слов</th>' +
+                            '                   <th class="col-1">Охват TF</th>' +
+                            '                   <th class="col-1">Ширина</th>' +
+                            '                   <th class="col-1">Плотность</th>' +
+                            '                   <th>Учитывать в расчёте общего балла</th>' +
+                            '                   <th class="col-1" colspan="1" rowspan="1"></th>' +
+                            '               </tr>' +
+                            '               </thead>' +
+                            '               <tbody>' +
+                            children +
+                            '               </tbody>' +
+                            '           </table>' +
+                            '       </div>' +
+                            '   </td>' +
                             '</tr>'
+                        )
                     })
-                    $('#list-history-body').append(
-                        '<tr class="render-list-history">' +
-                        '<td>' + key +
-                        '    <i class="fa fa-plus show-stories" data-target="' + key + '"' +
-                        '       style="cursor:pointer;"></i>' +
-                        '</td>' +
-                        '<td>' + getRegionName(value[0]['region']) + '</td>' +
-                        '<td>' + value[0]['main_link'] + '</td>' +
-                        '<td>' + value[0]['position'] + '</td>' +
-                        '<td>' + value[0]['points'] + '</td>' +
-                        '<td>' + value[0]['coverage'] + '</td>' +
-                        '<td>' + value[0]['coverage_tf'] + '</td>' +
-                        '<td>' + value[0]['width'] + '</td>' +
-                        '<td>' + value[0]['density'] + '</td>' +
-                        '</tr>' +
-                        '<tr class="render-list-history">' +
-                        '   <td colspan="10" style="display: none" data-order="' + key + '">' +
-                        '       <div class="row w-100">' +
-                        '           <table' +
-                        '               class="table table-bordered table-striped dataTable dtr-inline list-children"' +
-                        '               id="list-history-' + value[0]['id'] + '">' +
-                        '               <thead>' +
-                        '               <tr>' +
-                        '                   <th class="col-2">Фраза</th>' +
-                        '                   <th class="col-1">Регион</th>' +
-                        '                   <th class="col-2">Посадочная</th>' +
-                        '                   <th class="col-1">Позиция в топе</th>' +
-                        '                   <th class="col-1">Баллы</th>' +
-                        '                   <th class="col-1">Охват важных слов</th>' +
-                        '                   <th class="col-1">Охват TF</th>' +
-                        '                   <th class="col-1">Ширина</th>' +
-                        '                   <th class="col-1">Плотность</th>' +
-                        '                   <th>Учитывать в расчёте общего балла</th>' +
-                        '                   <th class="col-1" colspan="1" rowspan="1"></th>' +
-                        '               </tr>' +
-                        '               </thead>' +
-                        '               <tbody>' +
-                        children +
-                        '               </tbody>' +
-                        '           </table>' +
-                        '       </div>' +
-                        '   </td>' +
-                        '</tr>'
-                    )
-                })
 
-                $(document).ready(function () {
-                    $('.list-children').DataTable()
-                    $('.dataTables_wrapper.no-footer').css({
-                        width: '100%'
+                    $(document).ready(function () {
+                        $('.list-children').DataTable()
+                        $('.dataTables_wrapper.no-footer').css({
+                            width: '100%'
+                        })
+                        scrollTo('#history-list-subject')
                     })
-                    scrollTo('#history-list-subject')
-                })
-            }
-        });
-    })
+                }
+            });
+        })
+    }, 500)
 })
 
 
