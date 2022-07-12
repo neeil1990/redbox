@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs;
+use App\News;
 use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
 use App\RelevanceAllUniquePages;

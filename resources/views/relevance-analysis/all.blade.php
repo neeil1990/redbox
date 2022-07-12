@@ -317,6 +317,11 @@
                                                   data-order="{{ $item->id }}">
                                                 {{ __('Show the results of the analysis') }}
                                             </span>
+                                            <span class="dropdown-item project_name_v2"
+                                                  style="cursor:pointer;"
+                                                  data-order="{{ $item->id }}">
+                                                {{ __('View the results in a list') }}
+                                            </span>
                                             <span class="dropdown-item"
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
@@ -685,6 +690,26 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <h3 style="display: none" id="history-list-subject">{{ __('Scan history (list of phrases)') }}</h3>
+                    <table class="table table-bordered table-striped dataTable dtr-inline" id="list-history"
+                           style="display: none">
+                        <thead>
+                        <tr role="row">
+                            <th class="col-2">{{ __('Phrase') }}</th>
+                            <th class="col-1">{{ __('Region') }}</th>
+                            <th class="col-2">{{ __('Landing page') }}</th>
+                            <th class="col-1">{{ __('Position in the top') }}</th>
+                            <th class="col-1">{{ __('Scores') }}</th>
+                            <th class="col-1">{{ __('Coverage of important words') }}</th>
+                            <th class="col-1">{{ __('TF coverage') }}</th>
+                            <th class="col-1">{{ __('Width') }}</th>
+                            <th class="col-1">{{ __('Density') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody id="list-history-body">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -848,6 +873,26 @@
             });
 
             $(".dt-button").addClass('btn btn-secondary')
+
+            function refreshMethods() {
+                $('.fa.fa-plus.show-stories').unbind().on('click', function () {
+                    let target = $(this).attr('data-target');
+                    $("td[data-order='" + target + "']").show()
+
+                    $(this).attr('class', 'fa fa-minus hide-stories')
+                });
+
+                $('.fa.fa-minus.hide-stories').unbind().on('click', function () {
+                    let target = $(this).attr('data-target');
+                    $("td[data-order='" + target + "']").hide()
+
+                    $(this).attr('class', 'fa fa-plus show-stories')
+                });
+            }
+
+            setInterval(() => {
+                refreshMethods()
+            }, 200)
         </script>
     @endslot
 @endcomponent

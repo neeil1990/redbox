@@ -25,8 +25,23 @@ class HistoryRelevanceController extends Controller
      */
     public function index(): View
     {
-        $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
+        $projects = RelevanceHistory::where('project_relevance_history_id', '=', 1)
+        ->distinct(['phrase'])
+        ->get(['phrase']);
+
+        $phrases = [];
+        foreach ($projects as $project) {
+            $phrases[] = $project->phrase;
+        }
+        $phrases = array_unique($phrases);
+
+        $responseObject = [];
+        foreach ($phrases as $phrase) {
+            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->latest('id')->get();
+        }
+
         $config = RelevanceAnalysisConfig::first();
+        $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
         $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
         $admin = User::isUserAdmin();
 
@@ -34,7 +49,8 @@ class HistoryRelevanceController extends Controller
             'main' => $projects,
             'admin' => $admin,
             'config' => $config,
-            'tags' => $tags
+            'tags' => $tags,
+            'resp' => $responseObject
         ]);
     }
 
@@ -205,6 +221,32 @@ class HistoryRelevanceController extends Controller
     {
         return response()->json([
             'history' => json_decode($object->request)
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getHistoryInfoV2(Request $request): JsonResponse
+    {
+        $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)
+            ->distinct(['phrase'])
+            ->get(['phrase']);
+
+        $phrases = [];
+        foreach ($projects as $project) {
+            $phrases[] = $project->phrase;
+        }
+        $phrases = array_unique($phrases);
+
+        $responseObject = [];
+        foreach ($phrases as $phrase) {
+            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->latest('id')->get();
+        }
+
+        return response()->json([
+            'object' => $responseObject
         ]);
     }
 

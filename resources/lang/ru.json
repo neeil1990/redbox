@@ -880,5 +880,7 @@
     "Cleaning parameters have been successfully changed": "Параметры отчистки успешно изменены",
     "Relevance analysis configuration": "Конфигурация анализа релевантности",
     "Stary Oskol": "Старый Оскол",
-    "Table size": "Размер таблицы"
+    "Table size": "Размер таблицы",
+    "Scan history (list of phrases)": "История сканирования(список фраз)",
+    "View the results in a list": "Посмотреть результаты списком"
 }

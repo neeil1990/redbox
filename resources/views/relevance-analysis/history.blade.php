@@ -122,6 +122,209 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="staticBackdropLabel">{{ __('Repeat the analysis') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12">
+                        <div class="form-group required">
+                            <label>{{ __('Your landing page') }}</label>
+                            {!! Form::text("link", null ,["class" => "form-control link", "required"]) !!}
+                        </div>
+
+                        <div id="site-list">
+                            <div class="form-group required">
+                                <label>{{ __('List of sites') }}</label>
+                                {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
+                            </div>
+                        </div>
+
+                        <div id="key-phrase">
+                            <div class="form-group required">
+                                <label>{{ __('Keyword') }}</label>
+                                {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
+                            </div>
+
+                            <div class="form-group required">
+                                <label>{{ __('Top 10/20') }}</label>
+                                <select name="count" id="count"
+                                        class="custom-select rounded-0 count">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                </select>
+
+                            </div>
+
+                            <div class="form-group required">
+                                <label>{{ __('Region') }}</label>
+                                {!! Form::select('region', array_unique([
+                                       $config->region => $config->region,
+                                       '213' => __('Moscow'),
+                                       '1' => __('Moscow and the area'),
+                                       '20' => __('Arkhangelsk'),
+                                       '37' => __('Astrakhan'),
+                                       '197' => __('Barnaul'),
+                                       '4' => __('Belgorod'),
+                                       '77' => __('Blagoveshchensk'),
+                                       '191' => __('Bryansk'),
+                                       '24' => __('Veliky Novgorod'),
+                                       '75' => __('Vladivostok'),
+                                       '33' => __('Vladikavkaz'),
+                                       '192' => __('Vladimir'),
+                                       '38' => __('Volgograd'),
+                                       '21' => __('Vologda'),
+                                       '193' => __('Voronezh'),
+                                       '1106' => __('Grozny'),
+                                       '54' => __('Ekaterinburg'),
+                                       '5' => __('Ivanovo'),
+                                       '63' => __('Irkutsk'),
+                                       '41' => __('Yoshkar-ola'),
+                                       '43' => __('Kazan'),
+                                       '22' => __('Kaliningrad'),
+                                       '64' => __('Kemerovo'),
+                                       '7' => __('Kostroma'),
+                                       '35' => __('Krasnodar'),
+                                       '62' => __('Krasnoyarsk'),
+                                       '53' => __('Kurgan'),
+                                       '8' => __('Kursk'),
+                                       '9' => __('Lipetsk'),
+                                       '28' => __('Makhachkala'),
+                                       '23' => __('Murmansk'),
+                                       '1092' => __('Nazran'),
+                                       '30' => __('Nalchik'),
+                                       '47' => __('Nizhniy Novgorod'),
+                                       '65' => __('Novosibirsk'),
+                                       '66' => __('Omsk'),
+                                       '10' => __('Eagle'),
+                                       '48' => __('Orenburg'),
+                                       '49' => __('Penza'),
+                                       '50' => __('Perm'),
+                                       '25' => __('Pskov'),
+                                       '39' => __('Rostov-on-Don'),
+                                       '11' => __('Ryazan'),
+                                       '51' => __('Samara'),
+                                       '42' => __('Saransk'),
+                                       '2' => __('Saint-Petersburg'),
+                                       '12' => __('Smolensk'),
+                                       '239' => __('Sochi'),
+                                       '36' => __('Stavropol'),
+                                       '10649' => __('Stary Oskol'),
+                                       '973' => __('Surgut'),
+                                       '13' => __('Tambov'),
+                                       '14' => __('Tver'),
+                                       '67' => __('Tomsk'),
+                                       '15' => __('Tula'),
+                                       '195' => __('Ulyanovsk'),
+                                       '172' => __('Ufa'),
+                                       '76' => __('Khabarovsk'),
+                                       '45' => __('Cheboksary'),
+                                       '56' => __('Chelyabinsk'),
+                                       '1104' => __('Cherkessk'),
+                                       '16' => __('Yaroslavl'),
+                                       ]), null, ['class' => 'custom-select rounded-0 region']) !!}
+                            </div>
+
+                            <div class="form-group required" id="ignoredDomainsBlock">
+                                <label id="ignoredDomains">{{ __('Ignored domains') }}</label>
+                                {!! Form::textarea("ignoredDomains", null,["class" => "form-control ignoredDomains"] ) !!}
+                            </div>
+                        </div>
+
+                        <div class="form-group required d-flex align-items-center">
+                            <span>{{ __('Cut the words shorter') }}</span>
+                            <input type="number" class="form form-control col-2 ml-1 mr-1"
+                                   name="separator"
+                                   id="separator">
+                            <span>{{ __('symbols') }}</span>
+                        </div>
+
+                        <div class="switch mt-3 mb-3">
+                            <div class="d-flex">
+                                <div class="__helper-link ui_tooltip_w">
+                                    <div
+                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="switchNoindex"
+                                               name="noIndex">
+                                        <label class="custom-control-label"
+                                               for="switchNoindex"></label>
+                                    </div>
+                                </div>
+                                <p>{{ __('Track the text in the noindex tag') }}</p>
+                            </div>
+                            <div class="d-flex">
+                                <div class="__helper-link ui_tooltip_w">
+                                    <div
+                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="switchAltAndTitle"
+                                               name="hiddenText">
+                                        <label class="custom-control-label"
+                                               for="switchAltAndTitle"></label>
+                                    </div>
+                                </div>
+                                <p>{{ __('Track words in the alt, title, and data-text attributes') }}</p>
+                            </div>
+                            <div class="d-flex">
+                                <div class="__helper-link ui_tooltip_w">
+                                    <div
+                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="switchConjunctionsPrepositionsPronouns"
+                                               name="conjunctionsPrepositionsPronouns">
+                                        <label class="custom-control-label"
+                                               for="switchConjunctionsPrepositionsPronouns"></label>
+                                    </div>
+                                </div>
+                                <p>{{ __('Track conjunctions, prepositions, pronouns') }}</p>
+                            </div>
+                            <div class="d-flex">
+                                <div class="__helper-link ui_tooltip_w">
+                                    <div
+                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="switchMyListWords"
+                                               name="switchMyListWords">
+                                        <label class="custom-control-label"
+                                               for="switchMyListWords"></label>
+                                    </div>
+                                </div>
+                                <span>{{ __('Exclude') }}<span
+                                        class="text-muted">{{ __('(your own list of words)') }}</span></span>
+                            </div>
+                            <div class="form-group required list-words mt-1"
+                                 @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
+                                {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="hiddenId">
+                <input type="hidden" id="type">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">{{ __('Close') }}
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="relevance-repeat-scan"
+                            data-dismiss="modal">
+                        {{ __('Repeat the analysis') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-header d-flex p-0">
@@ -391,6 +594,11 @@
                                                   data-order="{{ $item->id }}">
                                                 {{ __('Show the results of the analysis') }}
                                             </span>
+                                            <span class="dropdown-item project_name_v2"
+                                                  style="cursor:pointer;"
+                                                  data-order="{{ $item->id }}">
+                                                {{ __('View the results in a list') }}
+                                            </span>
                                             <span class="dropdown-item"
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
@@ -426,209 +634,6 @@
                         </tbody>
                     </table>
                     <div style="display:none;" class="history">
-                        <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
-                             aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title"
-                                            id="staticBackdropLabel">{{ __('Repeat the analysis') }}</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="col-12">
-                                            <div class="form-group required">
-                                                <label>{{ __('Your landing page') }}</label>
-                                                {!! Form::text("link", null ,["class" => "form-control link", "required"]) !!}
-                                            </div>
-
-                                            <div id="site-list">
-                                                <div class="form-group required">
-                                                    <label>{{ __('List of sites') }}</label>
-                                                    {!! Form::textarea("siteList", null ,["class" => "form-control", 'id'=>'siteList'] ) !!}
-                                                </div>
-                                            </div>
-
-                                            <div id="key-phrase">
-                                                <div class="form-group required">
-                                                    <label>{{ __('Keyword') }}</label>
-                                                    {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
-                                                </div>
-
-                                                <div class="form-group required">
-                                                    <label>{{ __('Top 10/20') }}</label>
-                                                    <select name="count" id="count"
-                                                            class="custom-select rounded-0 count">
-                                                        <option value="10">10</option>
-                                                        <option value="20">20</option>
-                                                    </select>
-
-                                                </div>
-
-                                                <div class="form-group required">
-                                                    <label>{{ __('Region') }}</label>
-                                                    {!! Form::select('region', array_unique([
-                                                           $config->region => $config->region,
-                                                           '213' => __('Moscow'),
-                                                           '1' => __('Moscow and the area'),
-                                                           '20' => __('Arkhangelsk'),
-                                                           '37' => __('Astrakhan'),
-                                                           '197' => __('Barnaul'),
-                                                           '4' => __('Belgorod'),
-                                                           '77' => __('Blagoveshchensk'),
-                                                           '191' => __('Bryansk'),
-                                                           '24' => __('Veliky Novgorod'),
-                                                           '75' => __('Vladivostok'),
-                                                           '33' => __('Vladikavkaz'),
-                                                           '192' => __('Vladimir'),
-                                                           '38' => __('Volgograd'),
-                                                           '21' => __('Vologda'),
-                                                           '193' => __('Voronezh'),
-                                                           '1106' => __('Grozny'),
-                                                           '54' => __('Ekaterinburg'),
-                                                           '5' => __('Ivanovo'),
-                                                           '63' => __('Irkutsk'),
-                                                           '41' => __('Yoshkar-ola'),
-                                                           '43' => __('Kazan'),
-                                                           '22' => __('Kaliningrad'),
-                                                           '64' => __('Kemerovo'),
-                                                           '7' => __('Kostroma'),
-                                                           '35' => __('Krasnodar'),
-                                                           '62' => __('Krasnoyarsk'),
-                                                           '53' => __('Kurgan'),
-                                                           '8' => __('Kursk'),
-                                                           '9' => __('Lipetsk'),
-                                                           '28' => __('Makhachkala'),
-                                                           '23' => __('Murmansk'),
-                                                           '1092' => __('Nazran'),
-                                                           '30' => __('Nalchik'),
-                                                           '47' => __('Nizhniy Novgorod'),
-                                                           '65' => __('Novosibirsk'),
-                                                           '66' => __('Omsk'),
-                                                           '10' => __('Eagle'),
-                                                           '48' => __('Orenburg'),
-                                                           '49' => __('Penza'),
-                                                           '50' => __('Perm'),
-                                                           '25' => __('Pskov'),
-                                                           '39' => __('Rostov-on-Don'),
-                                                           '11' => __('Ryazan'),
-                                                           '51' => __('Samara'),
-                                                           '42' => __('Saransk'),
-                                                           '2' => __('Saint-Petersburg'),
-                                                           '12' => __('Smolensk'),
-                                                           '239' => __('Sochi'),
-                                                           '36' => __('Stavropol'),
-                                                           '10649' => __('Stary Oskol'),
-                                                           '973' => __('Surgut'),
-                                                           '13' => __('Tambov'),
-                                                           '14' => __('Tver'),
-                                                           '67' => __('Tomsk'),
-                                                           '15' => __('Tula'),
-                                                           '195' => __('Ulyanovsk'),
-                                                           '172' => __('Ufa'),
-                                                           '76' => __('Khabarovsk'),
-                                                           '45' => __('Cheboksary'),
-                                                           '56' => __('Chelyabinsk'),
-                                                           '1104' => __('Cherkessk'),
-                                                           '16' => __('Yaroslavl'),
-                                                           ]), null, ['class' => 'custom-select rounded-0 region']) !!}
-                                                </div>
-
-                                                <div class="form-group required" id="ignoredDomainsBlock">
-                                                    <label id="ignoredDomains">{{ __('Ignored domains') }}</label>
-                                                    {!! Form::textarea("ignoredDomains", null,["class" => "form-control ignoredDomains"] ) !!}
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group required d-flex align-items-center">
-                                                <span>{{ __('Cut the words shorter') }}</span>
-                                                <input type="number" class="form form-control col-2 ml-1 mr-1"
-                                                       name="separator"
-                                                       id="separator">
-                                                <span>{{ __('symbols') }}</span>
-                                            </div>
-
-                                            <div class="switch mt-3 mb-3">
-                                                <div class="d-flex">
-                                                    <div class="__helper-link ui_tooltip_w">
-                                                        <div
-                                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                            <input type="checkbox"
-                                                                   class="custom-control-input"
-                                                                   id="switchNoindex"
-                                                                   name="noIndex">
-                                                            <label class="custom-control-label"
-                                                                   for="switchNoindex"></label>
-                                                        </div>
-                                                    </div>
-                                                    <p>{{ __('Track the text in the noindex tag') }}</p>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <div class="__helper-link ui_tooltip_w">
-                                                        <div
-                                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                            <input type="checkbox"
-                                                                   class="custom-control-input"
-                                                                   id="switchAltAndTitle"
-                                                                   name="hiddenText">
-                                                            <label class="custom-control-label"
-                                                                   for="switchAltAndTitle"></label>
-                                                        </div>
-                                                    </div>
-                                                    <p>{{ __('Track words in the alt, title, and data-text attributes') }}</p>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <div class="__helper-link ui_tooltip_w">
-                                                        <div
-                                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                            <input type="checkbox"
-                                                                   class="custom-control-input"
-                                                                   id="switchConjunctionsPrepositionsPronouns"
-                                                                   name="conjunctionsPrepositionsPronouns">
-                                                            <label class="custom-control-label"
-                                                                   for="switchConjunctionsPrepositionsPronouns"></label>
-                                                        </div>
-                                                    </div>
-                                                    <p>{{ __('Track conjunctions, prepositions, pronouns') }}</p>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <div class="__helper-link ui_tooltip_w">
-                                                        <div
-                                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                            <input type="checkbox"
-                                                                   class="custom-control-input"
-                                                                   id="switchMyListWords"
-                                                                   name="switchMyListWords">
-                                                            <label class="custom-control-label"
-                                                                   for="switchMyListWords"></label>
-                                                        </div>
-                                                    </div>
-                                                    <span>{{ __('Exclude') }}<span
-                                                            class="text-muted">{{ __('(your own list of words)') }}</span></span>
-                                                </div>
-                                                <div class="form-group required list-words mt-1"
-                                                     @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
-                                                    {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" id="hiddenId">
-                                    <input type="hidden" id="type">
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{ __('Close') }}
-                                        </button>
-                                        <button type="button" class="btn btn-secondary" id="relevance-repeat-scan"
-                                                data-dismiss="modal">
-                                            {{ __('Repeat the analysis') }}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <h3>{{ __("Recent checks") }}</h3>
                         <table id="history_table" class="table table-bordered table-hover dataTable dtr-inline w-100">
                             <thead>
@@ -752,6 +757,26 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <h3 style="display: none" id="history-list-subject">{{ __('Scan history (list of phrases)') }}</h3>
+                    <table class="table table-bordered table-striped dataTable dtr-inline" id="list-history"
+                           style="display: none">
+                        <thead>
+                        <tr role="row">
+                            <th class="col-2">{{ __('Phrase') }}</th>
+                            <th class="col-1">{{ __('Region') }}</th>
+                            <th class="col-2">{{ __('Landing page') }}</th>
+                            <th class="col-1">{{ __('Position in the top') }}</th>
+                            <th class="col-1">{{ __('Scores') }}</th>
+                            <th class="col-1">{{ __('Coverage of important words') }}</th>
+                            <th class="col-1">{{ __('TF coverage') }}</th>
+                            <th class="col-1">{{ __('Width') }}</th>
+                            <th class="col-1">{{ __('Density') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody id="list-history-body">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -906,10 +931,6 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
-            setInterval(() => {
-                refreshMethods()
-            }, 1000)
-
             $('.create-new-link').on('click', function () {
                 $.ajax({
                     type: "POST",
@@ -937,6 +958,20 @@
             })
 
             function refreshMethods() {
+                $('.fa.fa-plus.show-stories').unbind().on('click', function () {
+                    let target = $(this).attr('data-target');
+                    $("td[data-order='" + target + "']").show()
+
+                    $(this).attr('class', 'fa fa-minus hide-stories')
+                });
+
+                $('.fa.fa-minus.hide-stories').unbind().on('click', function () {
+                    let target = $(this).attr('data-target');
+                    $("td[data-order='" + target + "']").hide()
+
+                    $(this).attr('class', 'fa fa-plus show-stories')
+                });
+
                 $('#create-tag').unbind().on('click', function () {
                     if ($('#tag-name').val() !== '') {
                         $.ajax({
@@ -1074,6 +1109,10 @@
                     });
                 })
             }
+
+            setInterval(() => {
+                refreshMethods()
+            }, 200)
         </script>
     @endslot
 @endcomponent

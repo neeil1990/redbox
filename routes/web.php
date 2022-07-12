@@ -202,6 +202,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/show-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
+    Route::post('/get-stories-v2', 'HistoryRelevanceController@getHistoryInfoV2')->name('get.stories.v2');
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
     Route::post('/remove-scan-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
@@ -248,45 +249,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
-});
-
-Route::get('/cleaning-table', function () {
-    Log::debug('Запущена отчистка');
-    $total = 0;
-    $config = RelevanceAnalysisConfig::first();
-
-    $results = RelevanceHistoryResult::where([
-        ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
-        ['cleaning', '=', 0]
-    ])->take(5)->get();
-
-    while (count($results) != 0) {
-        foreach ($results as $result) {
-            $result->clouds_competitors =
-            $result->clouds_main_page =
-            $result->avg =
-            $result->main_page =
-            $result->unigram_table =
-            $result->tf_comp_clouds =
-            $result->phrases =
-            $result->recommendations = '';
-
-            if (!$result->compressed) {
-                $result->sites = base64_encode(gzcompress($result->sites, 9));
-                $result->avg_coverage_percent = base64_encode(gzcompress($result->avg_coverage_percent, 9));
-                $result->compressed = 1;
-            }
-
-            $result->cleaning = 1;
-            $result->save();
-        }
-
-        $total += count($results);
-        $results = RelevanceHistoryResult::where([
-            ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
-            ['cleaning', '=', 0]
-        ])->take(5)->get();
-    }
-    Log::debug('Отчистка завершена', [$total]);
-
 });

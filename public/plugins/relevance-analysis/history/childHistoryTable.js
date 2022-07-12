@@ -1,3 +1,49 @@
+function getHistoryInfo() {
+    $('.get-history-info').unbind("click").click(function () {
+        let id = $(this).attr('data-order')
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: "/get-history-info/" + id,
+            success: function (response) {
+                let history = response.history
+                if (history.type === 'list') {
+                    $('#key-phrase').hide()
+                    $('#site-list').show()
+                    $('#siteList').val(history.siteList)
+                } else {
+                    $('#key-phrase').show()
+                    $('#site-list').hide()
+                    $('.form-control.phrase').val(history.phrase)
+                }
+                $('#type').val(history.type)
+                $('#hiddenId').val(id)
+                $('.form-control.link').val(history.link)
+                $(".custom-select#count").val(history.count).change();
+                $(".custom-select.rounded-0.region").val(history.region).change();
+                $(".form-control.ignoredDomains").html(history.ignoredDomains);
+                $("#separator").val(history.separator);
+
+                if (history.noIndex === "true") {
+                    $('#switchNoindex').trigger('click')
+                }
+
+                if (history.hiddenText === "true") {
+                    $('#switchAltAndTitle').trigger('click')
+                }
+
+                if (history.conjunctionsPrepositionsPronouns === "true") {
+                    $('#switchConjunctionsPrepositionsPronouns').trigger('click')
+                }
+
+                if (history.switchMyListWords === "true") {
+                    $('#switchMyListWords').trigger('click')
+                }
+            },
+        });
+    });
+}
+
 function changeState(elem) {
     $.ajax({
         type: "POST",
@@ -47,7 +93,7 @@ function isDateValid(target, settings) {
 }
 
 $(document).ready(function () {
-
+    getHistoryInfo()
     $('#changeAllState').on('change', function () {
         let state = $(this).is(':checked')
         $.each($('.custom-control-input.switch'), function () {
@@ -59,6 +105,9 @@ $(document).ready(function () {
 
     setInterval(() => {
         $('.project_name').unbind().click(function () {
+            hideListHistory()
+            hideTableHistory()
+
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -70,8 +119,6 @@ $(document).ready(function () {
                     $('#changeAllState').prop('checked', false);
                     $('.search-input').val('')
                     $('.history').show()
-                    $("#history_table").dataTable().fnDestroy();
-                    $('.render').remove()
                     let tbody = $('#historyTbody')
 
                     $.each(response.stories, function (key, val) {
@@ -163,12 +210,7 @@ $(document).ready(function () {
 
                         $('#history_table_filter').hide()
 
-                        $('html, body').animate({
-                            scrollTop: $('#tab_1 > div.history > h3').offset().top
-                        }, {
-                            duration: 370,
-                            easing: "linear"
-                        });
+                        scrollTo('#tab_1 > div.history > h3')
 
                         $('.history-comment').unbind().change(function () {
                             $.ajax({
@@ -189,49 +231,7 @@ $(document).ready(function () {
                             });
                         });
 
-                        $('.get-history-info').unbind("click").click(function () {
-                            let id = $(this).attr('data-order')
-                            $.ajax({
-                                type: "get",
-                                dataType: "json",
-                                url: "/get-history-info/" + id,
-                                success: function (response) {
-                                    let history = response.history
-                                    if (history.type === 'list') {
-                                        $('#key-phrase').hide()
-                                        $('#site-list').show()
-                                        $('#siteList').val(history.siteList)
-                                    } else {
-                                        $('#key-phrase').show()
-                                        $('#site-list').hide()
-                                        $('.form-control.phrase').val(history.phrase)
-                                    }
-                                    $('#type').val(history.type)
-                                    $('#hiddenId').val(id)
-                                    $('.form-control.link').val(history.link)
-                                    $(".custom-select#count").val(history.count).change();
-                                    $(".custom-select.rounded-0.region").val(history.region).change();
-                                    $(".form-control.ignoredDomains").html(history.ignoredDomains);
-                                    $("#separator").val(history.separator);
-
-                                    if (history.noIndex === "true") {
-                                        $('#switchNoindex').trigger('click')
-                                    }
-
-                                    if (history.hiddenText === "true") {
-                                        $('#switchAltAndTitle').trigger('click')
-                                    }
-
-                                    if (history.conjunctionsPrepositionsPronouns === "true") {
-                                        $('#switchConjunctionsPrepositionsPronouns').trigger('click')
-                                    }
-
-                                    if (history.switchMyListWords === "true") {
-                                        $('#switchMyListWords').trigger('click')
-                                    }
-                                },
-                            });
-                        });
+                        getHistoryInfo()
 
                         $('#relevance-repeat-scan').unbind("click").click(function () {
                             let id = $('#hiddenId').val()
@@ -385,4 +385,126 @@ $(document).ready(function () {
             });
         });
     }, 500)
+
+    $('.project_name_v2').click(function () {
+        hideListHistory()
+        hideTableHistory()
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/get-stories-v2",
+            data: {
+                historyId: $(this).attr('data-order'),
+            },
+            success: function (response) {
+                $('#tab_1 > h3').show()
+                $('#list-history').show()
+                $.each(response.object, function (key, value) {
+                    let children = ''
+                    $.each(value, function (childKey, child) {
+                        children =
+                            '<tr>' +
+                            '    <td>' + child['phrase'] + '</td>' +
+                            '    <td>' + getRegionName(child['region']) + '</td>' +
+                            '    <td>' + child['main_link'] + '</td>' +
+                            '    <td>' + child['position'] + '</td>' +
+                            '    <td>' + child['points'] + '</td>' +
+                            '    <td>' + child['coverage'] + '</td>' +
+                            '    <td>' + child['coverage_tf'] + '</td>' +
+                            '    <td>' + child['width'] + '</td>' +
+                            '    <td>' + child['density'] + '</td>' +
+                            '    <td>' + child['calculate'] + '</td>' +
+                            '    <td id="history-state-' + child['id'] + '" class="d-flex flex-column">' +
+                            '        <button type="button" class="btn btn-secondary get-history-info"' +
+                            '                data-order="' + child['id'] + '" data-toggle="modal"' +
+                            '                data-target="#staticBackdrop"> Повторить анализ' +
+                            '        </button>' +
+                            '        <a href="/show-history/' + child['id'] + '"' +
+                            '           target="_blank"' +
+                            '           class="btn btn-secondary mt-3">' +
+                            '            Подробная информация' +
+                            '        </a>' +
+                            '    </td>' +
+                            '</tr>'
+                    })
+                    $('#list-history-body').append(
+                        '<tr class="render-list-history">' +
+                        '<td>' + key +
+                        '    <i class="fa fa-plus show-stories" data-target="' + key + '"' +
+                        '       style="cursor:pointer;"></i>' +
+                        '</td>' +
+                        '<td>' + getRegionName(value[0]['region']) + '</td>' +
+                        '<td>' + value[0]['main_link'] + '</td>' +
+                        '<td>' + value[0]['position'] + '</td>' +
+                        '<td>' + value[0]['points'] + '</td>' +
+                        '<td>' + value[0]['coverage'] + '</td>' +
+                        '<td>' + value[0]['coverage_tf'] + '</td>' +
+                        '<td>' + value[0]['width'] + '</td>' +
+                        '<td>' + value[0]['density'] + '</td>' +
+                        '</tr>' +
+                        '<tr class="render-list-history">' +
+                        '   <td colspan="10" style="display: none" data-order="' + key + '">' +
+                        '       <div class="row w-100">' +
+                        '           <table' +
+                        '               class="table table-bordered table-striped dataTable dtr-inline list-children"' +
+                        '               id="list-history-' + value[0]['id'] + '">' +
+                        '               <thead>' +
+                        '               <tr>' +
+                        '                   <th class="col-2">Фраза</th>' +
+                        '                   <th class="col-1">Регион</th>' +
+                        '                   <th class="col-2">Посадочная</th>' +
+                        '                   <th class="col-1">Позиция в топе</th>' +
+                        '                   <th class="col-1">Баллы</th>' +
+                        '                   <th class="col-1">Охват важных слов</th>' +
+                        '                   <th class="col-1">Охват TF</th>' +
+                        '                   <th class="col-1">Ширина</th>' +
+                        '                   <th class="col-1">Плотность</th>' +
+                        '                   <th>Учитывать в расчёте общего балла</th>' +
+                        '                   <th class="col-1" colspan="1" rowspan="1"></th>' +
+                        '               </tr>' +
+                        '               </thead>' +
+                        '               <tbody>' +
+                        children +
+                        '               </tbody>' +
+                        '           </table>' +
+                        '       </div>' +
+                        '   </td>' +
+                        '</tr>'
+                    )
+                })
+
+                $(document).ready(function () {
+                    $('.list-children').DataTable()
+                    $('.dataTables_wrapper.no-footer').css({
+                        width: '100%'
+                    })
+                    scrollTo('#history-list-subject')
+                })
+            }
+        });
+    })
 })
+
+
+function scrollTo(elemPath) {
+    $('html, body').animate({
+        scrollTop: $(elemPath).offset().top
+    }, {
+        duration: 370,
+        easing: "linear"
+    });
+}
+
+function hideListHistory() {
+    $('#tab_1 > h3').hide()
+    $('#list-history').hide()
+    $('.render-list-history').remove()
+    $('.list-children').dataTable().fnDestroy();
+}
+
+function hideTableHistory() {
+    $("#history_table").dataTable().fnDestroy();
+    $('.render').remove()
+    $('.history').hide()
+}
