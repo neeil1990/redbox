@@ -25,21 +25,6 @@ class HistoryRelevanceController extends Controller
      */
     public function index(): View
     {
-        $projects = RelevanceHistory::where('project_relevance_history_id', '=', 1)
-        ->distinct(['phrase'])
-        ->get(['phrase']);
-
-        $phrases = [];
-        foreach ($projects as $project) {
-            $phrases[] = $project->phrase;
-        }
-        $phrases = array_unique($phrases);
-
-        $responseObject = [];
-        foreach ($phrases as $phrase) {
-            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->latest('id')->get();
-        }
-
         $config = RelevanceAnalysisConfig::first();
         $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
         $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
@@ -50,7 +35,6 @@ class HistoryRelevanceController extends Controller
             'admin' => $admin,
             'config' => $config,
             'tags' => $tags,
-            'resp' => $responseObject
         ]);
     }
 
@@ -242,7 +226,7 @@ class HistoryRelevanceController extends Controller
 
         $responseObject = [];
         foreach ($phrases as $phrase) {
-            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->latest('id')->get();
+            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->get();
         }
 
         return response()->json([

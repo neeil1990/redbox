@@ -398,12 +398,12 @@ $(document).ready(function () {
                 historyId: $(this).attr('data-order'),
             },
             success: function (response) {
-                $('#tab_1 > h3').show()
+                $('#history-list-subject').show()
                 $('#list-history').show()
                 $.each(response.object, function (key, value) {
                     let children = ''
                     $.each(value, function (childKey, child) {
-                        children =
+                        children +=
                             '<tr>' +
                             '    <td>' + child['phrase'] + '</td>' +
                             '    <td>' + getRegionName(child['region']) + '</td>' +
@@ -497,7 +497,7 @@ function scrollTo(elemPath) {
 }
 
 function hideListHistory() {
-    $('#tab_1 > h3').hide()
+    $('#history-list-subject').hide()
     $('#list-history').hide()
     $('.render-list-history').remove()
     $('.list-children').dataTable().fnDestroy();
