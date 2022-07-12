@@ -413,6 +413,7 @@ $(document).ready(function () {
                                 '    <td>' + child['width'] + '</td>' +
                                 '    <td>' + child['density'] + '</td>' +
                                 '    <td>' + child['calculate'] + '</td>' +
+                                '    <td>' + child['created_at'] + '</td>' +
                                 '    <td id="history-state-' + child['id'] + '" class="d-flex flex-column">' +
                                 '        <button type="button" class="btn btn-secondary get-history-info"' +
                                 '                data-order="' + child['id'] + '" data-toggle="modal"' +
@@ -459,6 +460,7 @@ $(document).ready(function () {
                             '                   <th class="col-1">Ширина</th>' +
                             '                   <th class="col-1">Плотность</th>' +
                             '                   <th>Учитывать в расчёте общего балла</th>' +
+                            '                   <th>Дата сканирования</th>' +
                             '                   <th class="col-1" colspan="1" rowspan="1"></th>' +
                             '               </tr>' +
                             '               </thead>' +
