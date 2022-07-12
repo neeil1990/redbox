@@ -16,7 +16,7 @@
                                 <select name="region" class="custom-select" id="searchengines" onchange="this.form.submit()">
                                     @foreach($project->searchengines as $search)
                                         @if($search->id == request('region'))
-                                            <option value="{{ $search->id }}" selected>{{ $search->engine }}[{{$search->lr}}] {{ $search->location->name }}</option>
+                                            <option value="{{ $search->id }}" selected>{{ strtoupper($search->engine) }} {{ $search->location->name }} [{{$search->lr}}]</option>
                                         @else
                                             <option value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }} [{{$search->lr}}]</option>
                                         @endif
