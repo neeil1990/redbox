@@ -401,12 +401,16 @@ $(document).ready(function () {
                     $.each(response.object, function (key, value) {
                         let children = ''
                         $.each(value, function (childKey, child) {
+                            let position = child['position']
+                            if (position == 0) {
+                                position = 'Не попал в топ 100'
+                            }
                             children +=
                                 '<tr>' +
                                 '    <td>' + child['phrase'] + '</td>' +
                                 '    <td>' + getRegionName(child['region']) + '</td>' +
                                 '    <td>' + child['main_link'] + '</td>' +
-                                '    <td>' + child['position'] + '</td>' +
+                                '    <td>' + position + '</td>' +
                                 '    <td>' + child['points'] + '</td>' +
                                 '    <td>' + child['coverage'] + '</td>' +
                                 '    <td>' + child['coverage_tf'] + '</td>' +
@@ -427,6 +431,11 @@ $(document).ready(function () {
                                 '    </td>' +
                                 '</tr>'
                         })
+
+                        let position = value[0]['position']
+                        if (position == 0) {
+                            position = 'Не попал в топ 100'
+                        }
                         $('#list-history-body').append(
                             '<tr class="render-list-history">' +
                             '<td>' + key +
@@ -435,7 +444,7 @@ $(document).ready(function () {
                             '</td>' +
                             '<td>' + getRegionName(value[0]['region']) + '</td>' +
                             '<td>' + value[0]['main_link'] + '</td>' +
-                            '<td>' + value[0]['position'] + '</td>' +
+                            '<td>' + position + '</td>' +
                             '<td>' + value[0]['points'] + '</td>' +
                             '<td>' + value[0]['coverage'] + '</td>' +
                             '<td>' + value[0]['coverage_tf'] + '</td>' +
