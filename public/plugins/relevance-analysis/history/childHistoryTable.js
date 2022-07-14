@@ -1,3 +1,4 @@
+let object
 let hash = 'Loremipsumdolorsit'
 hash = hash.split('').sort(function () {
     return 0.5 - Math.random()
@@ -120,7 +121,7 @@ function hideTableHistory() {
 }
 
 function format(data) {
-    let array = JSON.parse(sessionStorage.getItem(hash));
+    let array = object
 
     let child = ''
     $.each(array[data], function (key, value) {
@@ -615,8 +616,8 @@ $(document).ready(function () {
                 success: function (response) {
                     $('#history-list-subject').show()
                     $('#list-history').show()
+                    object = response.object
                     $.each(response.object, function (key, value) {
-                        sessionStorage.setItem(hash, JSON.stringify(response.object))
                         let position = value[0]['position']
                         if (position == 0) {
                             position = 'Не попал в топ 100'
