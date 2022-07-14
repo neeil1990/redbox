@@ -10,15 +10,15 @@
                 <div class="row">
 
                     <form action="" style="display: contents;">
-                        <div class="col-3">
+                        <div class="col-4">
                             <div class="form-group">
                                 <label>{{ __('Search engine') }}:</label>
                                 <select name="region" class="custom-select" id="searchengines" onchange="this.form.submit()">
                                     @foreach($project->searchengines as $search)
                                         @if($search->id == request('region'))
-                                            <option value="{{ $search->id }}" selected>[{{$search->lr}}] {{ $search->location->name }}</option>
+                                            <option value="{{ $search->id }}" selected>{{ strtoupper($search->engine) }} {{ $search->location->name }} [{{$search->lr}}]</option>
                                         @else
-                                            <option value="{{ $search->id }}">[{{$search->lr}}] {{ $search->location->name }}</option>
+                                            <option value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }} [{{$search->lr}}]</option>
                                         @endif
                                     @endforeach
                                 </select>
@@ -26,16 +26,7 @@
                         </div>
                     </form>
 
-                    <form action="" id="filter" style="display: contents;">
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label>{{ __('Groups') }}:</label>
-                                {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), null, ['class' => 'custom-select', 'onchange' => '$("#filter").trigger("filtered")']) }}
-                            </div>
-                        </div>
-                    </form>
-
-                    <div class="col-3">
+                    <div class="col-4">
                         <div class="form-group">
                             <label>{{ __('Date range') }}:</label>
                             <div class="input-group">
@@ -51,6 +42,15 @@
                             <!-- /.input group -->
                         </div>
                     </div>
+
+                    <form action="" id="filter" style="display: contents;">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>{{ __('Groups') }}:</label>
+                                {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), null, ['class' => 'custom-select', 'onchange' => '$("#filter").trigger("filtered")']) }}
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
             </div>
