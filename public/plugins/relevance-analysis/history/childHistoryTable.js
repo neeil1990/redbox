@@ -663,7 +663,7 @@ $(document).ready(function () {
                                 {data: 'width'},
                                 {data: 'density'},
                             ],
-                            order: [[1, 'asc']],
+                            order: [[1, 'desc']],
                         });
 
                         scrollTo('#history-list-subject')
@@ -683,7 +683,9 @@ $(document).ready(function () {
                                 row.child(format($(this).attr('data-target'))).show();
                                 tr.addClass('shown');
                                 let target = $(this).attr('data-target').replace(' ', '-')
-                                let table = $('#' + target).DataTable()
+                                let table = $('#' + target).DataTable({
+                                    order: [[0, 'desc']],
+                                })
                                 customFilters(target, table, target)
                             }
                         });
