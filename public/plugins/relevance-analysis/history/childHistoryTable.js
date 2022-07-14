@@ -1,4 +1,4 @@
-let hash = 'Loremipsumdolorsitonsecteturadipisicingelit'
+let hash = 'Loremipsumdolorsit'
 hash = hash.split('').sort(function () {
     return 0.5 - Math.random()
 }).join('');
