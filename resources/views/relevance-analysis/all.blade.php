@@ -8,9 +8,20 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
         <style>
-            td:hover i {
+            i:hover {
                 opacity: 1 !important;
                 transition: .3s;
+            }
+
+            .empty-td {
+                background: #dee2e6;
+                width: 0;
+                padding: 0 !important;
+                border: none;
+            }
+
+            .fixed-width {
+                max-width: 50px !important;
             }
         </style>
     @endslot
@@ -308,6 +319,14 @@
                                        data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                     </a>
+
+                                    <i class="fa fa-table project_name"
+                                       data-order="{{ $item->id }}"
+                                       style="opacity: 0.6; cursor:pointer;"></i>
+
+                                    <i class="fa fa-list project_name_v2"
+                                       data-order="{{ $item->id }}"
+                                       style="opacity: 0.6; cursor:pointer;"></i>
                                     <div class="dropdown" style="display: inline">
                                         <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
                                            aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
@@ -315,22 +334,26 @@
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
+                                                <i class="fa fa-table"></i>
                                                 {{ __('Show the results of the analysis') }}
                                             </span>
                                             <span class="dropdown-item project_name_v2"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
+                                                <i class="fa fa-list"></i>
                                                 {{ __('View the results in a list') }}
                                             </span>
                                             <span class="dropdown-item"
                                                   style="cursor:pointer;"
                                                   data-toggle="modal" data-target="#removeModal{{ $item->id }}">
+                                                <i class="fa fa-trash"></i>
                                                 {{ __('Delete results without comments') }}
                                             </span>
                                             <span class="dropdown-item"
                                                   style="cursor:pointer;"
                                                   data-toggle="modal"
                                                   data-target="#removeWithFiltersModal{{ $item->id }}">
+                                                <i class="fa fa-trash"></i>
                                                 {{ __('Delete using filters') }}
                                             </span>
                                         </div>
@@ -692,19 +715,103 @@
                     </div>
 
                     <h3 style="display: none" id="history-list-subject">{{ __('Scan history (list of phrases)') }}</h3>
-                    <table class="table table-bordered table-striped dataTable dtr-inline" id="list-history"
+                    <table class="table table-bordered table-hover dtr-inline no-footer" id="list-history"
                            style="display: none">
                         <thead>
-                        <tr role="row">
-                            <th class="col-2">{{ __('Phrase') }}</th>
-                            <th class="col-1">{{ __('Region') }}</th>
-                            <th class="col-2">{{ __('Landing page') }}</th>
-                            <th class="col-1">{{ __('Position in the top') }}</th>
-                            <th class="col-1">{{ __('Scores') }}</th>
-                            <th class="col-1">{{ __('Coverage of important words') }}</th>
-                            <th class="col-1">{{ __('TF coverage') }}</th>
-                            <th class="col-1">{{ __('Width') }}</th>
-                            <th class="col-1">{{ __('Density') }}</th>
+                        <tr>
+                            <th style="position: inherit;"></th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control" type="date" name="dateMinList" id="dateMinList"
+                                       value="{{ Carbon\Carbon::parse('2022-03-01')->toDateString() }}">
+                                <input class="w-100 form form-control" type="date" name="dateMaxList" id="dateMaxList"
+                                       value="{{ Carbon\Carbon::now()->toDateString() }}">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="projectCommentList" id="projectCommentList" placeholder="comment">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="phraseSearchList" id="phraseSearchList" placeholder="phrase">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="regionSearchList" id="regionSearchList" placeholder="region">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="mainPageSearchList" id="mainPageSearchList" placeholder="link">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minPositionList" id="minPositionList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxPositionList" id="maxPositionList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minPointsList" id="minPointsList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxPointsList" id="maxPointsList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minCoverageList" id="minCoverageList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxCoverageList" id="maxCoverageList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minCoverageTfList" id="minCoverageTfList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxCoverageTfList" id="maxCoverageTfList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number" name="minWidthList"
+                                       id="minWidthList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxWidthList" id="maxWidthList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minDensityList" id="minDensityList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxDensityList" id="maxDensityList" placeholder="max">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="table-header" style="position: inherit;"></th>
+                            <th class="table-header" style="position: inherit;">{{ __('Date of last check') }}</th>
+                            <th class="table-header" style="position: inherit; min-width: 150px">
+                                {{ __('Comment') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Phrase') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Region') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Landing page') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Position in the top') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Scores') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Coverage of important words') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('TF coverage') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Width') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Density') }}
+                            </th>
                         </tr>
                         </thead>
                         <tbody id="list-history-body">
@@ -893,6 +1000,22 @@
             setInterval(() => {
                 refreshMethods()
             }, 200)
+
+            function getSuccessMessage(message) {
+                $('.toast-top-right.success-message').show(300)
+                $('#message-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.success-message').hide(300)
+                }, 3000)
+            }
+
+            function getErrorMessage(message) {
+                $('.toast-top-right.error-message').show(300)
+                $('#message-error-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.error-message').hide(300)
+                }, 3000)
+            }
         </script>
     @endslot
 @endcomponent
