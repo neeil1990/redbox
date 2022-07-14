@@ -670,6 +670,7 @@ $(document).ready(function () {
                         scrollTo('#history-list-subject')
 
                         customFilters('list-history', listTable, 'List', 1)
+                        $('#list-history').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
 
                         $('#list-history').unbind().on('click', 'td.dt-control', function () {
                             let tr = $(this).closest('tr');
