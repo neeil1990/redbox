@@ -644,7 +644,7 @@ $(document).ready(function () {
                             width: '100%'
                         })
 
-                        $('.col-1.dt-control').append('<i class="fa fa-eye"></i>')
+                        $('#list-history-body > tr.render > td.col-1').append('<i class="fa fa-eye"></i>')
 
                         let listTable = $('#list-history').DataTable({
                             columns: [
