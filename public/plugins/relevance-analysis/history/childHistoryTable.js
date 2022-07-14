@@ -155,9 +155,9 @@ function format(data) {
             '<tr>' +
             '   <td>' + value['created_at'] + '</td>' +
             '   <td> <textarea style="width: 150px; height: 160px;" data-target="' + value['id'] + '" class="history-comment form form-control">' + value['comment'] + '</textarea></td>' +
-            '   <td>' + value['phrase'] + '</td>' +
-            '   <td>' + getRegionName(value['region']) + '</td>' +
-            '   <td>' + value['main_link'] + '</td>' +
+            '   <td style="width: 150px;">' + value['phrase'] + '</td>' +
+            '   <td style="width: 150px;">' + getRegionName(value['region']) + '</td>' +
+            '   <td style="width: 150px;">' + value['main_link'] + '</td>' +
             '   <td>' + value['position'] + '</td>' +
             '   <td>' + value['points'] + '</td>' +
             '   <td>' + value['coverage'] + '</td>' +
@@ -360,6 +360,7 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         table.draw();
     });
 
+
     $.fn.dataTable.ext.search.push(function (settings, data) {
         let phraseSearch = String($('#phraseSearch' + prefix).val()).toLowerCase();
         let target = String(data[index + 2]).toLowerCase();
@@ -545,32 +546,32 @@ $(document).ready(function () {
 
                         tbody.append(
                             "<tr class='render'>" +
-                            "<td>" + val.last_check + "</td>" +
-                            "<td>" +
-                            "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                            "</td>" +
-                            "<td>" + phrase + "</td>" +
-                            "<td>" + getRegionName(val.region) + "</td>" +
-                            "<td>" + val.main_link + "</td>" +
-                            "<td>" + position + "</td>" +
-                            "<td>" + val.points + "</td>" +
-                            "<td>" + val.coverage + "</td>" +
-                            "<td>" + val.coverage_tf + "</td>" +
-                            "<td>" + val.width + "</td>" +
-                            "<td>" + val.density + "</td>" +
-                            "<td>" +
-                            "   <div class='d-flex justify-content-center'> " +
-                            "       <div class='__helper-link ui_tooltip_w'> " +
-                            "           <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
-                            "               <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
-                            "               <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
-                            "           </div>" +
-                            "       </div>" +
-                            "   </div>" +
-                            "</td>" +
-                            "<td id='history-state-" + val.id + "'>" +
+                            "   <td>" + val.last_check + "</td>" +
+                            "   <td>" +
+                            "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                            "   </td>" +
+                            "   <td>" + phrase + "</td>" +
+                            "   <td>" + getRegionName(val.region) + "</td>" +
+                            "   <td>" + val.main_link + "</td>" +
+                            "   <td>" + position + "</td>" +
+                            "   <td>" + val.points + "</td>" +
+                            "   <td>" + val.coverage + "</td>" +
+                            "   <td>" + val.coverage_tf + "</td>" +
+                            "   <td>" + val.width + "</td>" +
+                            "   <td>" + val.density + "</td>" +
+                            "   <td>" +
+                            "      <div class='d-flex justify-content-center'> " +
+                            "          <div class='__helper-link ui_tooltip_w'> " +
+                            "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                            "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                            "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                            "              </div>" +
+                            "          </div>" +
+                            "      </div>" +
+                            "   </td>" +
+                            "   <td id='history-state-" + val.id + "'>" +
                             state +
-                            "</td>" +
+                            "   </td>" +
                             "</tr>"
                         )
                     })
@@ -626,7 +627,6 @@ $(document).ready(function () {
                             '<tr class="render">' +
                             '   <td data-target="' + key + '" class="col-1" style="text-align: center; vertical-align: inherit; width: 50px"></td>' +
                             '   <td>' + value[0]['created_at'] + '</td>' +
-                            "   <td><textarea style='height: 160px;' data-target='" + value[0]['id'] + "' class='history-comment form form-control' >" + value[0]['comment'] + "</textarea></td>" +
                             '   <td>' + key + '</td>' +
                             '   <td>' + getRegionName(value[0]['region']) + '</td>' +
                             '   <td>' + value[0]['main_link'] + '</td>' +
@@ -644,16 +644,15 @@ $(document).ready(function () {
                             width: '100%'
                         })
 
+                        $('.col-1.dt-control').append('<i class="fa fa-eye"></i>')
+
                         let listTable = $('#list-history').DataTable({
                             columns: [
                                 {
                                     className: 'dt-control',
                                     orderable: false,
-                                    data: null,
-                                    defaultContent: '',
                                 },
                                 {data: 'date'},
-                                {data: 'comment'},
                                 {data: 'phrase'},
                                 {data: 'region'},
                                 {data: 'link'},
@@ -664,13 +663,12 @@ $(document).ready(function () {
                                 {data: 'width'},
                                 {data: 'density'},
                             ],
-                            order: [[3, 'asc']],
+                            order: [[1, 'asc']],
                         });
 
-                        $('.col-1.dt-control').append('<i class="fa fa-eye"></i>')
                         scrollTo('#history-list-subject')
 
-                        customFilters('list-history', listTable, 'List', 1)
+                        customFiltersWithoutComment('list-history', listTable, 'List', 1)
                         $('#list-history').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
 
                         $('#list-history').unbind().on('click', 'td.dt-control', function () {
@@ -699,3 +697,109 @@ $(document).ready(function () {
     }, 500)
 
 })
+
+function customFiltersWithoutComment(tableID, table, prefix = '', index = 0) {
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let target = String(data[index]);
+        return isDateValid(target, settings, tableID, prefix)
+    });
+    $('#dateMin' + prefix).change(function () {
+        table.draw();
+    });
+    $('#dateMax' + prefix).change(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let phraseSearch = String($('#phraseSearch' + prefix).val()).toLowerCase();
+        let target = String(data[index + 1]).toLowerCase();
+        return isIncludes(target, phraseSearch, settings, tableID)
+    });
+    $('#phraseSearch' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let regionSearch = String($('#regionSearch' + prefix).val()).toLowerCase();
+        let target = String(data[index + 2]).toLowerCase();
+        return isIncludes(target, regionSearch, settings, tableID)
+    });
+    $('#regionSearch' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let mainPageSearch = String($('#mainPageSearch' + prefix).val()).toLowerCase();
+        let target = String(data[index + 3]).toLowerCase();
+        return isIncludes(target, mainPageSearch, settings, tableID)
+    });
+    $('#mainPageSearch' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxPosition = parseFloat($('#maxPosition' + prefix).val());
+        let minPosition = parseFloat($('#minPosition' + prefix).val());
+        let target = parseFloat(data[index + 4]);
+        return isValidate(minPosition, maxPosition, target, settings, tableID)
+    });
+    let pos = '#minPosition' + prefix + ', #maxPosition' + prefix
+    $(pos).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxPoints = parseFloat($('#maxPoints' + prefix).val());
+        let minPoints = parseFloat($('#minPoints' + prefix).val());
+        let target = parseFloat(data[index + 5]);
+        return isValidate(minPoints, maxPoints, target, settings, tableID)
+    });
+    let points = '#minPoints' + prefix + ', #maxPoints' + prefix
+    $(points).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxCoverage = parseFloat($('#maxCoverage' + prefix).val());
+        let minCoverage = parseFloat($('#minCoverage' + prefix).val());
+        let target = parseFloat(data[index + 6]);
+        return isValidate(minCoverage, maxCoverage, target, settings, tableID)
+    });
+    let coverage = '#minCoverage' + prefix + ', #maxCoverage' + prefix
+    $(coverage).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxCoverageTf = parseFloat($('#maxCoverageTf' + prefix).val());
+        let minCoverageTf = parseFloat($('#minCoverageTf' + prefix).val());
+        let target = parseFloat(data[index + 7]);
+        return isValidate(minCoverageTf, maxCoverageTf, target, settings, tableID)
+    });
+    let covTf = '#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix
+    $(covTf).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxWidth = parseFloat($('#maxWidth' + prefix).val());
+        let minWidth = parseFloat($('#minWidth' + prefix).val());
+        let target = parseFloat(data[index + 8]);
+        return isValidate(minWidth, maxWidth, target, settings, tableID)
+    });
+    let width = '#minWidth' + prefix + ', #maxWidth' + prefix
+    $(width).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxDensity = parseFloat($('#maxDensity' + prefix).val());
+        let minDensity = parseFloat($('#minDensity' + prefix).val());
+        let target = parseFloat(data[index + 9]);
+        return isValidate(minDensity, maxDensity, target, settings, tableID)
+    });
+    let density = '#minDensity' + prefix + ', #maxDensity' + prefix
+    $(density).keyup(function () {
+        table.draw();
+    });
+}

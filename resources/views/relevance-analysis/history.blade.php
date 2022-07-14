@@ -795,10 +795,6 @@
                             </th>
                             <th style="position: inherit;">
                                 <input class="w-100 form form-control search-input" type="text"
-                                       name="projectCommentList" id="projectCommentList" placeholder="comment">
-                            </th>
-                            <th style="position: inherit;">
-                                <input class="w-100 form form-control search-input" type="text"
                                        name="phraseSearchList" id="phraseSearchList" placeholder="phrase">
                             </th>
                             <th style="position: inherit;">
@@ -849,9 +845,6 @@
                         <tr>
                             <th class="table-header" style="position: inherit;"></th>
                             <th class="table-header" style="position: inherit;">{{ __('Date of last check') }}</th>
-                            <th class="table-header" style="position: inherit; min-width: 150px">
-                                {{ __('Comment') }}
-                            </th>
                             <th class="table-header" style="position: inherit;">
                                 {{ __('Phrase') }}
                             </th>
