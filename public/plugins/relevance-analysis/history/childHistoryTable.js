@@ -484,215 +484,216 @@ $(document).ready(function () {
             });
         });
 
+        $('.project_name').unbind().click(function () {
+            hideListHistory()
+            hideTableHistory()
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/get-stories",
+                data: {
+                    history_id: $(this).attr('data-order'),
+                },
+                success: function (response) {
+                    $('#changeAllState').prop('checked', false);
+                    $('#changeAllStateList').prop('checked', false);
+                    $('.search-input').val('')
+                    $('.history').show()
+                    let tbody = $('#historyTbody')
+
+                    $.each(response.stories, function (key, val) {
+                        let checked = val.calculate ? 'checked' : ''
+                        let state
+
+                        if (val.state === 1) {
+                            state =
+                                '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                '   Повторить анализ' +
+                                '</button>'
+                                +
+                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+
+                        } else if (val.state === 0) {
+                            state =
+                                '<p>Обрабатывается..</p>' +
+                                '<div class="text-center" id="preloaderBlock">' +
+                                '        <div class="three col">' +
+                                '            <div class="loader" id="loader-1"></div>' +
+                                '        </div>' +
+                                '</div>'
+                        } else if (val.state === -1) {
+                            state =
+                                '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                '   Повторить анализ' +
+                                '</button>' +
+                                "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
+                        }
+
+                        let position = val.position
+
+                        if (val.position == 0) {
+                            position = 'Не попал в топ 100'
+                        }
+
+                        let phrase = val.phrase
+
+                        if (phrase == null) {
+                            phrase = 'Был использван анализ без ключевой фразы'
+                        }
+
+                        tbody.append(
+                            "<tr class='render'>" +
+                            "<td>" + val.last_check + "</td>" +
+                            "<td>" +
+                            "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                            "</td>" +
+                            "<td>" + phrase + "</td>" +
+                            "<td>" + getRegionName(val.region) + "</td>" +
+                            "<td>" + val.main_link + "</td>" +
+                            "<td>" + position + "</td>" +
+                            "<td>" + val.points + "</td>" +
+                            "<td>" + val.coverage + "</td>" +
+                            "<td>" + val.coverage_tf + "</td>" +
+                            "<td>" + val.width + "</td>" +
+                            "<td>" + val.density + "</td>" +
+                            "<td>" +
+                            "   <div class='d-flex justify-content-center'> " +
+                            "       <div class='__helper-link ui_tooltip_w'> " +
+                            "           <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                            "               <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                            "               <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                            "           </div>" +
+                            "       </div>" +
+                            "   </div>" +
+                            "</td>" +
+                            "<td id='history-state-" + val.id + "'>" +
+                            state +
+                            "</td>" +
+                            "</tr>"
+                        )
+                    })
+
+                    $(document).ready(function () {
+                        let historyTable = $('#history_table').DataTable({
+                            "order": [[0, "desc"]],
+                            "pageLength": 25,
+                            "searching": true,
+                            dom: 'lBfrtip',
+                            buttons: [
+                                'copy', 'csv', 'excel'
+                            ]
+                        });
+
+                        $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+
+                        $(".dt-button").addClass('btn btn-secondary')
+
+                        $('#history_table_filter').hide()
+
+                        scrollTo('#tab_1 > div.history > h3')
+
+                        repeatScan()
+
+                        customFilters('history_table', historyTable)
+                    });
+                },
+            });
+        });
+
+        $('.project_name_v2').unbind().click(function () {
+            hideListHistory()
+            hideTableHistory()
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/get-stories-v2",
+                data: {
+                    historyId: $(this).attr('data-order'),
+                },
+                success: function (response) {
+                    $('#history-list-subject').show()
+                    $('#list-history').show()
+                    $.each(response.object, function (key, value) {
+                        sessionStorage.setItem(hash, JSON.stringify(response.object))
+                        let position = value[0]['position']
+                        if (position == 0) {
+                            position = 'Не попал в топ 100'
+                        }
+                        $('#list-history-body').append(
+                            '<tr class="render">' +
+                            '   <td data-target="' + key + '" class="col-1" style="text-align: center; vertical-align: inherit; width: 50px"></td>' +
+                            '   <td>' + value[0]['created_at'] + '</td>' +
+                            "   <td><textarea style='height: 160px;' data-target='" + value[0]['id'] + "' class='history-comment form form-control' >" + value[0]['comment'] + "</textarea></td>" +
+                            '   <td>' + key + '</td>' +
+                            '   <td>' + getRegionName(value[0]['region']) + '</td>' +
+                            '   <td>' + value[0]['main_link'] + '</td>' +
+                            '   <td>' + position + '</td>' +
+                            '   <td>' + value[0]['points'] + '</td>' +
+                            '   <td>' + value[0]['coverage'] + '</td>' +
+                            '   <td>' + value[0]['coverage_tf'] + '</td>' +
+                            '   <td>' + value[0]['width'] + '</td>' +
+                            '   <td>' + value[0]['density'] + '</td>' +
+                            '</tr>'
+                        )
+                    })
+                    $(document).ready(function () {
+                        $('.dataTables_wrapper.no-footer').css({
+                            width: '100%'
+                        })
+
+                        let listTable = $('#list-history').DataTable({
+                            columns: [
+                                {
+                                    className: 'dt-control',
+                                    orderable: false,
+                                    data: null,
+                                    defaultContent: '',
+                                },
+                                {data: 'date'},
+                                {data: 'comment'},
+                                {data: 'phrase'},
+                                {data: 'region'},
+                                {data: 'link'},
+                                {data: 'position'},
+                                {data: 'points'},
+                                {data: 'coverage'},
+                                {data: 'coverage_tf'},
+                                {data: 'width'},
+                                {data: 'density'},
+                            ],
+                            order: [[3, 'asc']],
+                        });
+
+                        $('.col-1.dt-control').append('<i class="fa fa-eye"></i>')
+                        scrollTo('#history-list-subject')
+
+                        customFilters('list-history', listTable, 'List', 1)
+
+                        $('#list-history').unbind().on('click', 'td.dt-control', function () {
+                            let tr = $(this).closest('tr');
+                            let row = listTable.row(tr);
+
+                            if (row.child.isShown()) {
+                                row.child.hide();
+                                tr.removeClass('shown');
+                                $('#' + $(this).attr('data-target').replace(' ', '-')).dataTable().fnDestroy()
+                            } else {
+                                row.child(format($(this).attr('data-target'))).show();
+                                tr.addClass('shown');
+                                let target = $(this).attr('data-target').replace(' ', '-')
+                                let table = $('#' + target).DataTable()
+                                customFilters(target, table, target)
+                            }
+                        });
+                    })
+                    repeatScan()
+                }
+            });
+        })
+
         getHistoryInfo()
     }, 500)
 
-    $('.project_name').unbind().click(function () {
-        hideListHistory()
-        hideTableHistory()
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/get-stories",
-            data: {
-                history_id: $(this).attr('data-order'),
-            },
-            success: function (response) {
-                $('#changeAllState').prop('checked', false);
-                $('#changeAllStateList').prop('checked', false);
-                $('.search-input').val('')
-                $('.history').show()
-                let tbody = $('#historyTbody')
-
-                $.each(response.stories, function (key, val) {
-                    let checked = val.calculate ? 'checked' : ''
-                    let state
-
-                    if (val.state === 1) {
-                        state =
-                            '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
-                            '   Повторить анализ' +
-                            '</button>'
-                            +
-                            "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
-
-                    } else if (val.state === 0) {
-                        state =
-                            '<p>Обрабатывается..</p>' +
-                            '<div class="text-center" id="preloaderBlock">' +
-                            '        <div class="three col">' +
-                            '            <div class="loader" id="loader-1"></div>' +
-                            '        </div>' +
-                            '</div>'
-                    } else if (val.state === -1) {
-                        state =
-                            '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
-                            '   Повторить анализ' +
-                            '</button>' +
-                            "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
-                    }
-
-                    let position = val.position
-
-                    if (val.position == 0) {
-                        position = 'Не попал в топ 100'
-                    }
-
-                    let phrase = val.phrase
-
-                    if (phrase == null) {
-                        phrase = 'Был использван анализ без ключевой фразы'
-                    }
-
-                    tbody.append(
-                        "<tr class='render'>" +
-                        "<td>" + val.last_check + "</td>" +
-                        "<td>" +
-                        "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                        "</td>" +
-                        "<td>" + phrase + "</td>" +
-                        "<td>" + getRegionName(val.region) + "</td>" +
-                        "<td>" + val.main_link + "</td>" +
-                        "<td>" + position + "</td>" +
-                        "<td>" + val.points + "</td>" +
-                        "<td>" + val.coverage + "</td>" +
-                        "<td>" + val.coverage_tf + "</td>" +
-                        "<td>" + val.width + "</td>" +
-                        "<td>" + val.density + "</td>" +
-                        "<td>" +
-                        "   <div class='d-flex justify-content-center'> " +
-                        "       <div class='__helper-link ui_tooltip_w'> " +
-                        "           <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
-                        "               <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
-                        "               <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
-                        "           </div>" +
-                        "       </div>" +
-                        "   </div>" +
-                        "</td>" +
-                        "<td id='history-state-" + val.id + "'>" +
-                        state +
-                        "</td>" +
-                        "</tr>"
-                    )
-                })
-
-                $(document).ready(function () {
-                    let historyTable = $('#history_table').DataTable({
-                        "order": [[0, "desc"]],
-                        "pageLength": 25,
-                        "searching": true,
-                        dom: 'lBfrtip',
-                        buttons: [
-                            'copy', 'csv', 'excel'
-                        ]
-                    });
-
-                    $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
-
-                    $(".dt-button").addClass('btn btn-secondary')
-
-                    $('#history_table_filter').hide()
-
-                    scrollTo('#tab_1 > div.history > h3')
-
-                    repeatScan()
-
-                    customFilters('history_table', historyTable)
-                });
-            },
-        });
-    });
-
-    $('.project_name_v2').unbind().click(function () {
-        hideListHistory()
-        hideTableHistory()
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/get-stories-v2",
-            data: {
-                historyId: $(this).attr('data-order'),
-            },
-            success: function (response) {
-                $('#history-list-subject').show()
-                $('#list-history').show()
-                $.each(response.object, function (key, value) {
-                    sessionStorage.setItem(hash, JSON.stringify(response.object))
-                    let position = value[0]['position']
-                    if (position == 0) {
-                        position = 'Не попал в топ 100'
-                    }
-                    $('#list-history-body').append(
-                        '<tr class="render">' +
-                        '   <td data-target="' + key + '" class="col-1" style="text-align: center; vertical-align: inherit; width: 50px"></td>' +
-                        '   <td>' + value[0]['created_at'] + '</td>' +
-                        "   <td><textarea style='height: 160px;' data-target='" + value[0]['id'] + "' class='history-comment form form-control' >" + value[0]['comment'] + "</textarea></td>" +
-                        '   <td>' + key + '</td>' +
-                        '   <td>' + getRegionName(value[0]['region']) + '</td>' +
-                        '   <td>' + value[0]['main_link'] + '</td>' +
-                        '   <td>' + position + '</td>' +
-                        '   <td>' + value[0]['points'] + '</td>' +
-                        '   <td>' + value[0]['coverage'] + '</td>' +
-                        '   <td>' + value[0]['coverage_tf'] + '</td>' +
-                        '   <td>' + value[0]['width'] + '</td>' +
-                        '   <td>' + value[0]['density'] + '</td>' +
-                        '</tr>'
-                    )
-                })
-                $(document).ready(function () {
-                    $('.dataTables_wrapper.no-footer').css({
-                        width: '100%'
-                    })
-
-                    let listTable = $('#list-history').DataTable({
-                        columns: [
-                            {
-                                className: 'dt-control',
-                                orderable: false,
-                                data: null,
-                                defaultContent: '',
-                            },
-                            {data: 'date'},
-                            {data: 'comment'},
-                            {data: 'phrase'},
-                            {data: 'region'},
-                            {data: 'link'},
-                            {data: 'position'},
-                            {data: 'points'},
-                            {data: 'coverage'},
-                            {data: 'coverage_tf'},
-                            {data: 'width'},
-                            {data: 'density'},
-                        ],
-                        order: [[3, 'asc']],
-                    });
-
-                    $('.col-1.dt-control').append('<i class="fa fa-eye"></i>')
-                    scrollTo('#history-list-subject')
-
-                    customFilters('list-history', listTable, 'List', 1)
-
-                    $('#list-history').unbind().on('click', 'td.dt-control', function () {
-                        let tr = $(this).closest('tr');
-                        let row = listTable.row(tr);
-
-                        if (row.child.isShown()) {
-                            row.child.hide();
-                            tr.removeClass('shown');
-                            $('#' + $(this).attr('data-target').replace(' ', '-')).dataTable().fnDestroy()
-                        } else {
-                            row.child(format($(this).attr('data-target'))).show();
-                            tr.addClass('shown');
-                            let target = $(this).attr('data-target').replace(' ', '-')
-                            let table = $('#' + target).DataTable()
-                            customFilters(target, table, target)
-                        }
-                    });
-                })
-                repeatScan()
-            }
-        });
-    })
 })
