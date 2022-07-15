@@ -587,6 +587,31 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="modal fade" id="repeatUniqueScan{{ $item->id }}" tabindex="-1"
+                                 aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{{ __('restart analyzed pages') }} {{ $item->name }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ __('Are you going to restart the scan') }}
+                                            <b>{{ $item->count_sites }}</b>
+                                            {{ __('unique pages, are you sure?') }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button data-target="{{ $item->id }}" type="button"
+                                                    class="btn btn-secondary repeat-scan-unique-sites"
+                                                    data-dismiss="modal">{{ __('Start') }}</button>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">{{ __('Close') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <tr>
                                 <td>
                                     <a href="#history_table_{{ $item->name }}"
@@ -647,7 +672,13 @@
                                         </div>
                                     @endforeach
                                 </td>
-                                <td class="col-2 count-sites-{{ $item->id }}">{{ $item->count_sites }}</td>
+                                <td class="col-2 count-sites-{{ $item->id }}">
+                                    {{ $item->count_sites }}
+                                    <i class="fa fa-repeat" style="opacity: 0.6"
+                                       data-target="#repeatUniqueScan{{ $item->id }}"
+                                       data-toggle="modal" data-placement="top"
+                                       title="{{ __('restart analyzed pages') }}"></i>
+                                </td>
                                 <td class="col-2 count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="col-2 total-points-{{ $item->id }}">{{ $item->total_points }}</td>
                                 <td class="col-2 total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
@@ -884,7 +915,6 @@
 
     @slot('js')
         <script>
-
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
                     $('.form-group.required.list-words.mt-1').show(300)

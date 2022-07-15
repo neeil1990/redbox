@@ -171,8 +171,8 @@ class HistoryRelevanceController extends Controller
     public function repeatScan(Request $request): JsonResponse
     {
         $admin = User::isUserAdmin();
-        $object = RelevanceHistory::where('id', '=', $request->id)->first();
         $userId = Auth::id();
+        $object = RelevanceHistory::where('id', '=', $request->id)->first();
         $ownerId = $object->mainHistory->user_id;
 
         $share = RelevanceSharing::where('user_id', '=', $userId)
@@ -189,10 +189,10 @@ class HistoryRelevanceController extends Controller
                     $request->all(),
                     $request['id']
                 );
+
                 return response()->json([]);
             }
         }
-
 
         return response()->json([], 500);
     }
@@ -374,6 +374,59 @@ class HistoryRelevanceController extends Controller
             'avgPosition' => $info['avgPosition'],
             'objectId' => $request->id,
             'code' => 200
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function repeatScanUniqueSites(Request $request): JsonResponse
+    {
+        $ids = [];
+        $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
+        $admin = User::isUserAdmin();
+
+        if ($project->user_id != Auth::id() && !$admin) {
+            return response()->json([
+                'success' => false,
+                'code' => 415,
+                'message' => __("You don't have access to this object")
+            ]);
+        }
+        $items = RelevanceHistory::where('project_relevance_history_id', '=', $request->id)
+            ->distinct(['main_link', 'phrase', 'region'])
+            ->get(['main_link', 'phrase', 'region']);
+
+        foreach ($items as $item) {
+            $record = RelevanceHistory::where('main_link', '=', $item->main_link)
+                ->where('project_relevance_history_id', '=', $request->id)
+                ->where('phrase', '=', $item->phrase)
+                ->where('region', '=', $item->region)
+                ->where('calculate', '=', 1)
+                ->latest('last_check')
+                ->first();
+
+            if ($record->state != 0) {
+                RelevanceAnalysisQueue::dispatch(
+                    $project->user_id,
+                    json_decode($record->request, true),
+                    $request['id']
+                );
+
+                $record->state = 0;
+                $record->save();
+
+                $ids[] = $record->id;
+            }
+
+        }
+
+        return response()->json([
+            'success' => false,
+            'code' => 200,
+            'message' => __('Your tasks have been successfully added to the queue'),
+            'object' => $ids,
         ]);
     }
 }

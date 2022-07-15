@@ -136,13 +136,23 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="removeModalLabel">
-                                                {{ __('Deleting results from a project') }} {{ $item->name }}</h5>
+                                                {{ __('Deleting results from a project') }} {{ $item->name }}
+                                            </h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            {{ __('Confirm the action.') }}
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('All scan results that have no comment will be deleted.') }} <br>
+                                                        {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}
+                                                    </span>
+                                                </span>
+                                            </span>
                                             <p>
                                                 <b>{{ __('You will not be able to recover the data.') }}</b>
                                             </p>
@@ -200,7 +210,8 @@
                                             {!! Form::select('region', [
                                                    'none' => __("Don't search for matches by region"),
                                                    'all' => 'Любой регион',
-                                                   '1' => __('Moscow'),
+                                                   '213' => __('Moscow'),
+                                                   '1' => __('Moscow and the area'),
                                                    '20' => __('Arkhangelsk'),
                                                    '37' => __('Astrakhan'),
                                                    '197' => __('Barnaul'),
@@ -229,7 +240,6 @@
                                                    '8' => __('Kursk'),
                                                    '9' => __('Lipetsk'),
                                                    '28' => __('Makhachkala'),
-                                                   '213' => __('Moscow'),
                                                    '23' => __('Murmansk'),
                                                    '1092' => __('Nazran'),
                                                    '30' => __('Nalchik'),
@@ -249,6 +259,7 @@
                                                    '12' => __('Smolensk'),
                                                    '239' => __('Sochi'),
                                                    '36' => __('Stavropol'),
+                                                   '10649' => __('Stary Oskol'),
                                                    '973' => __('Surgut'),
                                                    '13' => __('Tambov'),
                                                    '14' => __('Tver'),
@@ -268,7 +279,7 @@
                                                    name="link-filter"
                                                    id="link-filter-{{ $item->id }}">
 
-                                            <div class="d-flex flex-row mt-3 mb-3" >
+                                            <div class="d-flex flex-row mt-3 mb-3">
                                                 <div>
                                                     <label>{{ __('Position from (inclusive)') }}</label>
                                                     <input class="form form-control" type="number"
@@ -297,7 +308,8 @@
                                             </span>
 
                                             <div class="text-danger mt-3 mb-3">
-                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}, {{ __('if you leave all fields empty, be careful') }}
+                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}
+                                                , {{ __('if you leave all fields empty, be careful') }}
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -307,6 +319,31 @@
                                             </button>
                                             <button type="button" class="btn btn-default"
                                                     data-dismiss="modal">{{ __('Do not delete') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="repeatUniqueScan{{ $item->id }}" tabindex="-1"
+                                 aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{{ __('restart analyzed pages') }} {{ $item->name }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ __('Are you going to restart the scan') }}
+                                            <b>{{ $item->count_sites }}</b>
+                                            {{ __('unique pages, are you sure?') }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button data-target="{{ $item->id }}" type="button"
+                                                    class="btn btn-secondary repeat-scan-unique-sites"
+                                                    data-dismiss="modal">{{ __('Start') }}</button>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">{{ __('Close') }}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -377,7 +414,13 @@
                                         {{ $item->user->last_name }}
                                     </span>
                                 </td>
-                                <td class="count-sites-{{ $item->id }}">{{ $item->count_sites }}</td>
+                                <td class="col-2 count-sites-{{ $item->id }}">
+                                    {{ $item->count_sites }}
+                                    <i class="fa fa-repeat" style="opacity: 0.6"
+                                       data-target="#repeatUniqueScan{{ $item->id }}"
+                                       data-toggle="modal" data-placement="top"
+                                       title="{{ __('restart analyzed pages') }}"></i>
+                                </td>
                                 <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
                                 <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>

@@ -882,5 +882,8 @@
     "Stary Oskol": "Старый Оскол",
     "Table size": "Размер таблицы",
     "Scan history (list of phrases)": "История сканирования(список фраз)",
-    "View the results in a list": "Посмотреть результаты списком"
+    "View the results in a list": "Посмотреть результаты списком",
+    "restart analyzed pages": "перезапустить проанализированные страницы",
+    "unique pages, are you sure?": "уникальных страниц, вы уверены?",
+    "Are you going to restart the scan": "Вы собираетесь перезапустить сканирование"
 }

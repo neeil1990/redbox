@@ -11,11 +11,7 @@
 |
 */
 
-use App\RelevanceAnalysisConfig;
-use App\RelevanceHistoryResult;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -207,6 +203,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
     Route::post('/remove-scan-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
     Route::post('/remove-scan-results-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
+    Route::post('/repeat-scan-unique-sites', 'HistoryRelevanceController@repeatScanUniqueSites')->name('repeat.scan.unique.sites');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
