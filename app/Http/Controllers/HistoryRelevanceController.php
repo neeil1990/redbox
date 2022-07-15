@@ -214,19 +214,11 @@ class HistoryRelevanceController extends Controller
      */
     public function getHistoryInfoV2(Request $request): JsonResponse
     {
-        $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)
-            ->distinct(['phrase'])
-            ->get(['phrase']);
-
-        $phrases = [];
-        foreach ($projects as $project) {
-            $phrases[] = $project->phrase;
-        }
-        $phrases = array_unique($phrases);
+        $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)->latest('id')->get();
 
         $responseObject = [];
-        foreach ($phrases as $phrase) {
-            $responseObject[$phrase] = RelevanceHistory::where('phrase', '=', $phrase)->latest('id')->get();
+        foreach ($projects as $project) {
+            $responseObject[$project->phrase][] = $project->toArray();
         }
 
         return response()->json([
