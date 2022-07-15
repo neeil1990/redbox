@@ -416,10 +416,10 @@
                                 </td>
                                 <td class="col-2 count-sites-{{ $item->id }}">
                                     {{ $item->count_sites }}
-{{--                                    <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"--}}
-{{--                                       data-target="#repeatUniqueScan{{ $item->id }}"--}}
-{{--                                       data-toggle="modal" data-placement="top"--}}
-{{--                                       title="{{ __('restart analyzed pages') }}"></i>--}}
+                                    <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
+                                       data-target="#repeatUniqueScan{{ $item->id }}"
+                                       data-toggle="modal" data-placement="top"
+                                       title="{{ __('restart analyzed pages') }}"></i>
                                 </td>
                                 <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>

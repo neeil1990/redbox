@@ -411,9 +411,7 @@ class HistoryRelevanceController extends Controller
                 RelevanceAnalysisQueue::dispatch(
                     $project->user_id,
                     json_decode($record->request, true),
-                    $request->id,
-                    false,
-                    false,
+                    $record->id
                 );
 
                 $record->state = 0;

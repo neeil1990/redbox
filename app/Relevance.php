@@ -211,19 +211,18 @@ class Relevance
                 strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
                 $exception->getLine() != 664
             ) {
-                $object = RelevanceHistory::where('id', '=', $historyId)->first();
-
-                $object->state = -1;
-
-                $object->save();
-                $this->saveError();
-
                 Log::debug('Relevance Error', [
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
                     'message' => $exception->getMessage(),
                     'userId' => Auth::id(),
                 ]);
+
+                $object = RelevanceHistory::where('id', '=', $historyId)->first();
+                $object->state = -1;
+                $object->save();
+
+                $this->saveError();
             }
 
         }
