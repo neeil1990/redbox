@@ -27,7 +27,7 @@ class RelevanceHistory extends Model
     {
         if ($historyId > 0) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
-            if ($history->state == 0 || $history->state == -1) {
+            if ($history->state == -1) {
                 $history->delete();
             } else {
                 $history->state = $state;
