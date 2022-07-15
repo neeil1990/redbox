@@ -414,7 +414,6 @@ class HistoryRelevanceController extends Controller
                     $request->id,
                     false,
                     false,
-                    true
                 );
 
                 $record->state = 0;

@@ -23,19 +23,16 @@ class RelevanceAnalysisQueue implements ShouldQueue
 
     private $historyId;
 
-    private $returnState;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($userId, $request, $historyId, $link = false, $phrase = false, $returnState = false)
+    public function __construct($userId, $request, $historyId, $link = false, $phrase = false)
     {
         $this->request = $request;
         $this->userId = $userId;
         $this->historyId = $historyId;
-        $this->returnState = $returnState;
 
         if ($link != false) {
             $this->request['link'] = $link;
@@ -61,10 +58,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
         }
 
         $relevance->analysis($this->userId, $this->historyId);
-
-        if ($this->returnState) {
-            RelevanceHistory::where('id', '=', $this->historyId)->update(['state' => 1]);
-        }
     }
 
     /**
