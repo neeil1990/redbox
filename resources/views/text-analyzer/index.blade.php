@@ -231,10 +231,11 @@
     @endif
     @slot('js')
         @isset($url)
-            <script defer src="{{ asset('plugins/text-analyzer/js/run-script.js') }}"></script>
+            <script src="{{ asset('plugins/text-analyzer/js/run-script.js') }}"></script>
         @endisset
-        <script defer src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
-        <script defer src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
+        <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
+        <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
@@ -314,7 +315,7 @@
                     length = array.count
                     let a = [], b = {};
                     for (let i = 0; i < length; i++) {
-                        if(typeof array[i] != 'undefined'){
+                        if (typeof array[i] != 'undefined') {
                             b = array[i]
                             a.push(b);
                         }
