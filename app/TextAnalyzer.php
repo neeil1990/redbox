@@ -2,7 +2,6 @@
 
 namespace App;
 
-use DOMDocument;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
