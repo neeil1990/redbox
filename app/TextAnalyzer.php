@@ -55,6 +55,7 @@ class TextAnalyzer
             curl_setopt($curl, CURLOPT_USERAGENT, $agent);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
+            Log::debug('headers', [$headers]);
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
                 break;
