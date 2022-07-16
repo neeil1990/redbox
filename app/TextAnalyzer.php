@@ -21,8 +21,8 @@ class TextAnalyzer
         curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
         curl_setopt($curl, CURLOPT_COOKIE, 'realauth=SvBD85dINu3; expires=Sat, 25 Feb 2030 02:16:43 GMT; path=/; SameSite=Lax');
         curl_setopt($curl, CURLOPT_URL, $link);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -30,6 +30,7 @@ class TextAnalyzer
         curl_setopt($curl, CURLOPT_TIMEOUT, 4);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
 
         return TextAnalyzer::curlConnect($curl);
     }
@@ -56,7 +57,7 @@ class TextAnalyzer
             curl_setopt($curl, CURLOPT_USERAGENT, $agent);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
-            Log::debug('headers', [$headers]);
+            Log::debug('error', [curl_error($curl)]);
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
                 break;
