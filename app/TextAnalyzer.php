@@ -29,6 +29,7 @@ class TextAnalyzer
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
         curl_setopt($curl, CURLOPT_TIMEOUT, 4);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        curl_setopt($curl, CURLOPT_AUTOREFERER, true);
 
         return TextAnalyzer::curlConnect($curl);
     }
