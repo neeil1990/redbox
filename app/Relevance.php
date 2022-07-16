@@ -855,19 +855,50 @@ class Relevance
      */
     public function setSites($sites)
     {
+        $mainPageInRelevance = false;
         $this->params['sites'] = $sites;
 
         foreach (json_decode($sites, true) as $key => $site) {
-            $this->sites[$key] = [
-                'danger' => $site['danger'],
-                'html' => gzuncompress(base64_decode($site['defaultHtml'])),
-                'defaultHtml' => gzuncompress(base64_decode($site['defaultHtml'])),
-                'ignored' => $site['ignored'],
-                'mainPage' => $site['mainPage'],
-                'equallyHost' => $site['equallyHost'] ?? false,
-                'site' => $key,
-                'position' => $site['position'],
-            ];
+            if (isset($this->sites[$key]['mainPage']) && $this->sites[$key]['mainPage']) {
+                $this->sites[$key] = [
+                    'danger' => false,
+                    'html' => $this->mainPage['html'],
+                    'defaultHtml' => $this->mainPage['html'],
+                    'ignored' => false,
+                    'mainPage' => true,
+                    'equallyHost' => false,
+                    'site' => $key,
+                    'position' => $site['position'],
+                ];
+
+                $mainPageInRelevance = true;
+            } else {
+                $this->sites[$key] = [
+                    'danger' => $site['danger'],
+                    'html' => gzuncompress(base64_decode($site['defaultHtml'])),
+                    'defaultHtml' => gzuncompress(base64_decode($site['defaultHtml'])),
+                    'ignored' => $site['ignored'],
+                    'mainPage' => $site['mainPage'],
+                    'equallyHost' => $site['equallyHost'] ?? false,
+                    'site' => $key,
+                    'position' => $site['position'],
+                ];
+            }
+
+            if (!$mainPageInRelevance) {
+                $this->sites[$this->params['main_page_link']] = [
+                    'danger' => false,
+                    'html' => $this->mainPage['html'],
+                    'defaultHtml' => $this->mainPage['html'],
+                    'ignored' => false,
+                    'mainPage' => true,
+                    'equallyHost' => false,
+                    'site' => $this->params['main_page_link'],
+                    'position' => 0,
+                ];
+            }
+
+            Log::debug('$mainPageInRelevance', [$mainPageInRelevance]);
         }
     }
 

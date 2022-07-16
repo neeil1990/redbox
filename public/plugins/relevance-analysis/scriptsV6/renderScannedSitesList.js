@@ -65,15 +65,16 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
         var position
 
         if (!value['position']) {
-            position = 'не попал в топ 100'
+            position = "<td data-order='100'> не попал в топ 100 </td>"
+
         } else {
-            position = value['position']
+            position = "<td data-order='" + value['position'] + "'> " + value['position'] + " </td>"
         }
 
         let width = value['width']
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
-            "<td data-order='" + iterator + "'>" + position + "</td>" +
+            position +
             "<td data-order='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
             "   <span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
             + noTop + btnGroup
