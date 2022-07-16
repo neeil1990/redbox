@@ -937,7 +937,6 @@
                     window.removeEventListener("storage", onStorage);
                     localStorage.setItem("session", localStorage.getItem("multitab"));
                     localStorage.removeItem("multitab");
-                    // alert("Новая вкладка");
                 }
             };
             window.addEventListener('storage', onStorage);
@@ -1083,9 +1082,11 @@
                         getProgress()
                     },
                     success: function (response) {
+                        endProgress()
                         successRequest(response)
                     },
                     error: function (response) {
+                        endProgress()
                         if (response.responseText) {
                             prepareMessage(response)
                         } else {
@@ -1117,9 +1118,11 @@
                         getProgress()
                     },
                     success: function (response) {
+                        endProgress()
                         successRequest(response)
                     },
                     error: function (response) {
+                        endProgress()
                         if (response.responseText) {
                             prepareMessage(response)
                         } else {

@@ -897,8 +897,6 @@ class Relevance
                     'position' => 0,
                 ];
             }
-
-            Log::debug('$mainPageInRelevance', [$mainPageInRelevance]);
         }
     }
 
