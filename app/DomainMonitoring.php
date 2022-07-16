@@ -133,7 +133,7 @@ class DomainMonitoring extends Model
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $project->link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_COOKIE, Str::random(15) . '=' . Str::random(15));
+        curl_setopt($curl, CURLOPT_COOKIE, 'realauth=SvBD85dINu3; expires=Sat, 25 Feb 2030 02:16:43 GMT; path=/; SameSite=Lax');
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);

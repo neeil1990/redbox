@@ -17,9 +17,7 @@ class TextAnalyzer
     public static function curlInit($link)
     {
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
-        curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
-        curl_setopt($curl, CURLOPT_COOKIE, 'cookiename=cookievalue');
+        curl_setopt($curl, CURLOPT_COOKIE, 'realauth=SvBD85dINu3; expires=Sat, 25 Feb 2030 02:16:43 GMT; path=/; SameSite=Lax');
         curl_setopt($curl, CURLOPT_URL, $link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
