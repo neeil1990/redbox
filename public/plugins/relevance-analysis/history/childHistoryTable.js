@@ -31,28 +31,32 @@ function getHistoryInfo() {
                 $(".form-control.ignoredDomains").val(history.ignoredDomains);
                 $("#separator").val(history.separator);
 
-                if (history.noIndex === "true") {
-                    $('#switchNoindex').trigger('click')
-                }
+                changeSwitchState($('#switchNoindex'), history.noIndex)
 
-                if (history.hiddenText === "true") {
-                    $('#switchAltAndTitle').trigger('click')
-                }
+                changeSwitchState($('#switchAltAndTitle'), history.hiddenText)
 
-                if (history.conjunctionsPrepositionsPronouns === "true") {
-                    $('#switchConjunctionsPrepositionsPronouns').trigger('click')
-                }
+                changeSwitchState($('#switchConjunctionsPrepositionsPronouns'), history.conjunctionsPrepositionsPronouns)
 
-                if (history.switchMyListWords === "true") {
-                    $('#switchMyListWords').trigger('click')
-                    $('.listWords').show()
-                } else {
-                    $('.listWords').hide()
-                }
-                $('.listWords').val(history.listWords)
+                changeSwitchState($('#switchMyListWords'), history.switchMyListWords, history.listWords, '.listWords')
             },
         });
     });
+}
+
+function changeSwitchState(object, state, value = false, target = false) {
+    if (state === "true") {
+        if (!object.is(':checked')) {
+            object.trigger('click')
+        }
+    } else {
+        if (object.is(':checked')) {
+            object.trigger('click')
+        }
+    }
+
+    if (value !== false && target !== false) {
+        $(target).val(value)
+    }
 }
 
 function changeState(elem) {
