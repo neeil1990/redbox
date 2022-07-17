@@ -13,7 +13,6 @@ function getHistoryInfo() {
             url: "/get-history-info/" + id,
             success: function (response) {
                 let history = response.history
-                console.log(history)
                 if (history.type === 'list') {
                     $('#key-phrase').hide()
                     $('#site-list').show()
@@ -31,11 +30,11 @@ function getHistoryInfo() {
                 $(".form-control.ignoredDomains").val(history.ignoredDomains);
                 $("#separator").val(history.separator);
 
-                changeSwitchState($('#switchNoindex'), history.noIndex)
+                // changeSwitchState($('#switchNoindex'), history.noIndex)
 
-                changeSwitchState($('#switchAltAndTitle'), history.hiddenText)
+                // changeSwitchState($('#switchAltAndTitle'), history.hiddenText)
 
-                changeSwitchState($('#switchConjunctionsPrepositionsPronouns'), history.conjunctionsPrepositionsPronouns)
+                // changeSwitchState($('#switchConjunctionsPrepositionsPronouns'), history.conjunctionsPrepositionsPronouns)
 
                 changeSwitchState($('#switchMyListWords'), history.switchMyListWords, history.listWords, '.listWords')
             },
@@ -44,6 +43,9 @@ function getHistoryInfo() {
 }
 
 function changeSwitchState(object, state, value = '', target = '') {
+    console.log([
+        object, state, value, target
+    ])
     if (state === "true") {
         if (!object.is(':checked')) {
             object.trigger('click')
@@ -54,12 +56,10 @@ function changeSwitchState(object, state, value = '', target = '') {
         }
     }
 
-    if (value !== '' && target !== '') {
-        console.log(1)
+    if (value !== '') {
         $(target).val(value)
         $(target).show()
     } else {
-        console.log(2)
         $(target).hide()
     }
 }
