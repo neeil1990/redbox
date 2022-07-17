@@ -43,9 +43,6 @@ function getHistoryInfo() {
 }
 
 function changeSwitchState(object, state, value = '', target = '') {
-    console.log([
-        object, state, value, target
-    ])
     if (state === "true") {
         if (!object.is(':checked')) {
             object.trigger('click')
