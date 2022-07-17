@@ -91,7 +91,6 @@ class Relevance
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
 
-
         if ($queue) {
             $params = [
                 'user_id' => Auth::id(),

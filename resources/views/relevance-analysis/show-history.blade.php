@@ -799,11 +799,11 @@
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderClouds.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderUnigramTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderScannedSitesList.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderTextTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/test-scripts/renderPhrasesTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderUnigramTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderScannedSitesList.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderTextTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderPhrasesTable.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
