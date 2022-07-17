@@ -43,7 +43,7 @@ function getHistoryInfo() {
     });
 }
 
-function changeSwitchState(object, state, value = false, target = false) {
+function changeSwitchState(object, state, value = '', target = '') {
     if (state === "true") {
         if (!object.is(':checked')) {
             object.trigger('click')
@@ -54,7 +54,7 @@ function changeSwitchState(object, state, value = false, target = false) {
         }
     }
 
-    if (value !== false && target !== false) {
+    if (value !== '' && target !== '') {
         console.log(1)
         $(target).val(value)
         $(target).show()
