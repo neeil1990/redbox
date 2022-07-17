@@ -895,7 +895,7 @@
                             phrase: $('.form-control.phrase').val(),
                             count: $(".custom-select.rounded-0.count").val(),
                             region: $(".custom-select.rounded-0.region").val(),
-                            ignoredDomains: $(".form-control.ignoredDomains").html(),
+                            ignoredDomains: $(".form-control.ignoredDomains").val(),
                             separator: $("#separator").val(),
                             noIndex: $('#switchNoindex').is(':checked'),
                             hiddenText: $('#switchAltAndTitle').is(':checked'),

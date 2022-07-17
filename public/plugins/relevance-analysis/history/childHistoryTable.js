@@ -13,6 +13,7 @@ function getHistoryInfo() {
             url: "/get-history-info/" + id,
             success: function (response) {
                 let history = response.history
+                console.log(history)
                 if (history.type === 'list') {
                     $('#key-phrase').hide()
                     $('#site-list').show()
@@ -44,7 +45,11 @@ function getHistoryInfo() {
 
                 if (history.switchMyListWords === "true") {
                     $('#switchMyListWords').trigger('click')
+                    $('.listWords').show()
+                } else {
+                    $('.listWords').hide()
                 }
+                $('.listWords').val(history.listWords)
             },
         });
     });
