@@ -314,7 +314,8 @@
                                 <span>{{ __('Exclude') }}<span
                                         class="text-muted">{{ __('(your own list of words)') }}</span></span>
                             </div>
-                            <div class="form-group required list-words mt-1" style="display:none;">
+                            <div class="form-group required list-words mt-1"
+                                 @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
                                 {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
                             </div>
                         </div>
