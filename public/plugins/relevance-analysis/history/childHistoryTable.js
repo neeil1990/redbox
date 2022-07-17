@@ -30,11 +30,11 @@ function getHistoryInfo() {
                 $(".form-control.ignoredDomains").val(history.ignoredDomains);
                 $("#separator").val(history.separator);
 
-                // changeSwitchState($('#switchNoindex'), history.noIndex)
+                changeSwitchState($('#switchNoindex'), history.noIndex)
 
-                // changeSwitchState($('#switchAltAndTitle'), history.hiddenText)
+                changeSwitchState($('#switchAltAndTitle'), history.hiddenText)
 
-                // changeSwitchState($('#switchConjunctionsPrepositionsPronouns'), history.conjunctionsPrepositionsPronouns)
+                changeSwitchState($('#switchConjunctionsPrepositionsPronouns'), history.conjunctionsPrepositionsPronouns)
 
                 changeSwitchState($('#switchMyListWords'), history.switchMyListWords, history.listWords, '.listWords')
             },
