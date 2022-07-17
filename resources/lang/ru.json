@@ -885,5 +885,6 @@
     "View the results in a list": "Посмотреть результаты списком",
     "restart analyzed pages": "перезапустить проанализированные страницы",
     "unique pages, are you sure?": "уникальных страниц, вы уверены?",
-    "Are you going to restart the scan": "Вы собираетесь перезапустить сканирование"
+    "Are you going to restart the scan": "Вы собираетесь перезапустить сканирование",
+    "Repeated analysis added to the queue": "Повторный анализ добавлен в очередь"
 }

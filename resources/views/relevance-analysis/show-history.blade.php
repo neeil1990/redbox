@@ -17,7 +17,7 @@
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="toast-message"></div>
+            <div class="toast-message" id="toast-message">{{ __('Repeated analysis added to the queue') }}</div>
         </div>
     </div>
 
@@ -908,7 +908,6 @@
                             setInterval(function () {
                                 $('.toast-top-right.success-message').hide(300)
                             }, 3500)
-
 
                             $('#firstTab').trigger('click')
                             $('html, body').animate({
