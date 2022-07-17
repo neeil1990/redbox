@@ -55,9 +55,11 @@ function changeSwitchState(object, state, value = false, target = false) {
     }
 
     if (value !== false && target !== false) {
+        console.log(1)
         $(target).val(value)
         $(target).show()
     } else {
+        console.log(2)
         $(target).hide()
     }
 }
