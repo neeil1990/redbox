@@ -21,7 +21,7 @@
                 @csrf
 
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" placeholder="{{ __('Code') }}" autocomplete="email" autofocus>
+                    <input type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" placeholder="{{ __('Code') }}" autocomplete="email" autofocus required>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-key"></span>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">{{ __('Send') }}</button>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')">{{ __('Send') }}</button>
                     </div>
                     <!-- /.col -->
                 </div>
