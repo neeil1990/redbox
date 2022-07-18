@@ -17,13 +17,13 @@
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="toast-success-message"></div>
+            <div class="toast-message" id="message-info"></div>
         </div>
     </div>
 
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message" id="toast-message"></div>
+            <div class="toast-message error-message" id="message-error-info"></div>
         </div>
     </div>
 
@@ -46,7 +46,8 @@
                         <a href="{{ route('sharing.view') }}" class="nav-link">{{ __('Share your projects') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('access.project') }}" class="nav-link active">{{ __('Projects available to you') }}</a>
+                        <a href="{{ route('access.project') }}"
+                           class="nav-link active">{{ __('Projects available to you') }}</a>
                     </li>
                     @if($admin)
                         <li class="nav-item">
@@ -78,21 +79,266 @@
                         </thead>
                         <tbody>
                         @foreach($projects as $item)
+                            <div class="modal fade" id="removeModal{{ $item->item->id }}" tabindex="-1"
+                                 aria-labelledby="removeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="removeModalLabel">
+                                                {{ __('Deleting results from a project') }} {{ $item->item->name }}
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('All scan results that have no comment will be deleted.') }} <br>
+                                                        {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            <p>
+                                                <b>{{ __('You will not be able to recover the data.') }}</b>
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary remove-empty-results"
+                                                    data-target="{{ $item->item->id }}" data-dismiss="modal">
+                                                {{ __('Remove') }}
+                                            </button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                {{ __('Do not delete') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="removeWithFiltersModal{{ $item->item->id }}" tabindex="-1"
+                                 aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="removeWithFiltersModalLabel">
+                                                {{ __('Deleting results from a project') }} {{ $item->item->name }}
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="d-flex flex-row">
+                                                <div>
+                                                    <label>{{ __('Scans performed after (inclusive)') }}</label>
+                                                    <input class="form form-control" type="date"
+                                                           id="date-filter-after-{{ $item->item->id }}">
+                                                </div>
+
+                                                <div>
+                                                    <label>{{ __('Scans performed before (inclusive)') }}</label>
+                                                    <input class="form form-control" type="date"
+                                                           id="date-filter-before-{{ $item->item->id }}">
+                                                </div>
+                                            </div>
+
+                                            <label class="mt-3">{{ __('Comment') }}</label>
+                                            <input type="text" class="form form-control" name="comment-filter"
+                                                   id="comment-filter-{{ $item->item->id }}">
+
+                                            <label class="mt-3">{{ __('Phrase') }}</label>
+                                            <input type="text" class="form form-control" name="phrase-filter"
+                                                   id="phrase-filter-{{ $item->item->id }}">
+
+                                            <label class="mt-3">{{ __('Region') }}</label>
+                                            {!! Form::select('region', [
+                                                   'none' => __("Don't search for matches by region"),
+                                                   'all' => 'Любой регион',
+                                                   '213' => __('Moscow'),
+                                                   '1' => __('Moscow and the area'),
+                                                   '20' => __('Arkhangelsk'),
+                                                   '37' => __('Astrakhan'),
+                                                   '197' => __('Barnaul'),
+                                                   '4' => __('Belgorod'),
+                                                   '77' => __('Blagoveshchensk'),
+                                                   '191' => __('Bryansk'),
+                                                   '24' => __('Veliky Novgorod'),
+                                                   '75' => __('Vladivostok'),
+                                                   '33' => __('Vladikavkaz'),
+                                                   '192' => __('Vladimir'),
+                                                   '38' => __('Volgograd'),
+                                                   '21' => __('Vologda'),
+                                                   '193' => __('Voronezh'),
+                                                   '1106' => __('Grozny'),
+                                                   '54' => __('Ekaterinburg'),
+                                                   '5' => __('Ivanovo'),
+                                                   '63' => __('Irkutsk'),
+                                                   '41' => __('Yoshkar-ola'),
+                                                   '43' => __('Kazan'),
+                                                   '22' => __('Kaliningrad'),
+                                                   '64' => __('Kemerovo'),
+                                                   '7' => __('Kostroma'),
+                                                   '35' => __('Krasnodar'),
+                                                   '62' => __('Krasnoyarsk'),
+                                                   '53' => __('Kurgan'),
+                                                   '8' => __('Kursk'),
+                                                   '9' => __('Lipetsk'),
+                                                   '28' => __('Makhachkala'),
+                                                   '23' => __('Murmansk'),
+                                                   '1092' => __('Nazran'),
+                                                   '30' => __('Nalchik'),
+                                                   '47' => __('Nizhniy Novgorod'),
+                                                   '65' => __('Novosibirsk'),
+                                                   '66' => __('Omsk'),
+                                                   '10' => __('Eagle'),
+                                                   '48' => __('Orenburg'),
+                                                   '49' => __('Penza'),
+                                                   '50' => __('Perm'),
+                                                   '25' => __('Pskov'),
+                                                   '39' => __('Rostov-on-Don'),
+                                                   '11' => __('Ryazan'),
+                                                   '51' => __('Samara'),
+                                                   '42' => __('Saransk'),
+                                                   '2' => __('Saint-Petersburg'),
+                                                   '12' => __('Smolensk'),
+                                                   '239' => __('Sochi'),
+                                                   '36' => __('Stavropol'),
+                                                   '10649' => __('Stary Oskol'),
+                                                   '973' => __('Surgut'),
+                                                   '13' => __('Tambov'),
+                                                   '14' => __('Tver'),
+                                                   '67' => __('Tomsk'),
+                                                   '15' => __('Tula'),
+                                                   '195' => __('Ulyanovsk'),
+                                                   '172' => __('Ufa'),
+                                                   '76' => __('Khabarovsk'),
+                                                   '45' => __('Cheboksary'),
+                                                   '56' => __('Chelyabinsk'),
+                                                   '1104' => __('Cherkessk'),
+                                                   '16' => __('Yaroslavl'),
+                                                   ], null, ['class' => 'custom-select rounded-0 region', 'id' => 'region-filter-'. $item->id]) !!}
+
+                                            <label class="mt-3">{{ __('Link') }}</label>
+                                            <input type="text" class="form form-control"
+                                                   name="link-filter"
+                                                   id="link-filter-{{ $item->item->id }}">
+
+                                            <div class="d-flex flex-row mt-3 mb-3">
+                                                <div>
+                                                    <label>{{ __('Position from (inclusive)') }}</label>
+                                                    <input class="form form-control" type="number"
+                                                           id="position-filter-after-{{ $item->item->id }}"
+                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
+                                                </div>
+
+                                                <div>
+                                                    <label>{{ __('Position up to (inclusive)') }}</label>
+                                                    <input class="form form-control" type="number"
+                                                           id="position-filter-before-{{ $item->item->id }}"
+                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
+                                                </div>
+                                            </div>
+
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('According to your project') }} {{ $item->item->name }} {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>
+                                                        {{ __('All matches found will be deleted.') }} <br>
+                                                        {{ __("If you don't want to search by any parameter, then leave the field empty.") }}
+                                                    </span>
+                                                </span>
+                                            </span>
+
+                                            <div class="text-danger mt-3 mb-3">
+                                                {{ __('You can delete all the results associated with the project') }} {{ $item->item->name }}
+                                                , {{ __('if you leave all fields empty, be careful') }}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary remove-with-filters"
+                                                    data-dismiss="modal" data-target="{{ $item->item->id }}">
+                                                {{ __('Remove') }}
+                                            </button>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">{{ __('Do not delete') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="repeatUniqueScan{{ $item->item->id }}" tabindex="-1"
+                                 aria-labelledby="repeatUniqueScan{{ $item->item->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{{ __('restart analyzed pages') }} {{ $item->item->name }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ __('Are you going to restart the scan') }}
+                                            <b>{{ $item->project[0]->count_sites }}</b>
+                                            {{ __('unique pages, are you sure?') }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button data-target="{{ $item->item->id }}" type="button"
+                                                    class="btn btn-secondary repeat-scan-unique-sites"
+                                                    data-dismiss="modal">{{ __('Start') }}</button>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">{{ __('Close') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <tr>
                                 <td>
-                                    <a href="#history_table_{{ $item->project[0]->name }}"
+                                    <a href="#history_table_{{ $item->item->name }}"
                                        class="project_name" style="cursor:pointer;"
-                                       data-order="{{ $item->project[0]->id }}"
+                                       data-order="{{ $item->item->id }}"
                                        data-access="{{ $item->access }}">
-                                        {{ $item->project[0]->name }}
+                                        {{ $item->item->name }}
                                     </a>
+                                    <i class="fa fa-table project_name"
+                                       data-order="{{ $item->item->id }}"
+                                       style="opacity: 0.6; cursor:pointer;"></i>
+
+                                    <i class="fa fa-list project_name_v2"
+                                       data-order="{{ $item->item->id }}"
+                                       style="opacity: 0.6; cursor:pointer;"></i>
                                     <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
                                        aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
+                                                  data-order="{{ $item->item->id }}">
+                                                <i class="fa fa-table"></i>
                                                 {{ __('Show the results of the analysis') }}
+                                            </span>
+                                        <span class="dropdown-item project_name_v2"
+                                              style="cursor:pointer;"
+                                              data-order="{{ $item->item->id }}">
+                                                <i class="fa fa-list"></i>
+                                                {{ __('View the results in a list') }}
+                                            </span>
+                                        <span class="dropdown-item"
+                                              style="cursor:pointer;"
+                                              data-toggle="modal" data-target="#removeModal{{ $item->item->id }}">
+                                                <i class="fa fa-trash"></i>
+                                                {{ __('Delete results without comments') }}
+                                            </span>
+                                        <span class="dropdown-item"
+                                              style="cursor:pointer;"
+                                              data-toggle="modal"
+                                              data-target="#removeWithFiltersModal{{ $item->item->id }}">
+                                                <i class="fa fa-trash"></i>
+                                                {{ __('Delete using filters') }}
                                             </span>
                                     </div>
                                     <p>
@@ -103,14 +349,20 @@
                                         @endif
                                     </p>
                                 </td>
-                                <td id="project-{{ $item->project[0]->id }}">
+                                <td id="project-{{ $item->item->id }}">
                                     {{ $item->owner->email }}
                                     <span class="text-muted">
                                         {{ $item->owner->name }}
                                         {{ $item->owner->last_name }}
                                     </span>
                                 </td>
-                                <td class="col-2">{{ $item->project[0]->count_sites }}</td>
+                                <td class="col-2">
+                                    {{ $item->project[0]->count_sites }}
+                                    <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
+                                       data-target="#repeatUniqueScan{{ $item->item->id }}"
+                                       data-toggle="modal" data-placement="top"
+                                       title="{{ __('restart analyzed pages') }}"></i>
+                                </td>
                                 <td class="col-2">{{ $item->project[0]->count_checks }}</td>
                                 <td>{{ $item->project[0]->total_points }}</td>
                                 <td>{{ $item->project[0]->avg_position }}</td>
@@ -441,6 +693,103 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <h3 style="display: none" id="history-list-subject">{{ __('Scan history (list of phrases)') }}</h3>
+                    <table class="table table-bordered table-hover dtr-inline no-footer" id="list-history"
+                           style="display: none">
+                        <thead>
+                        <tr>
+                            <th style="position: inherit;"></th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control" type="date" name="dateMinList" id="dateMinList"
+                                       value="{{ Carbon\Carbon::parse('2022-03-01')->toDateString() }}">
+                                <input class="w-100 form form-control" type="date" name="dateMaxList" id="dateMaxList"
+                                       value="{{ Carbon\Carbon::now()->toDateString() }}">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="phraseSearchList" id="phraseSearchList" placeholder="phrase">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="regionSearchList" id="regionSearchList" placeholder="region">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="text"
+                                       name="mainPageSearchList" id="mainPageSearchList" placeholder="link">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minPositionList" id="minPositionList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxPositionList" id="maxPositionList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minPointsList" id="minPointsList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxPointsList" id="maxPointsList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minCoverageList" id="minCoverageList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxCoverageList" id="maxCoverageList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minCoverageTfList" id="minCoverageTfList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxCoverageTfList" id="maxCoverageTfList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number" name="minWidthList"
+                                       id="minWidthList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxWidthList" id="maxWidthList" placeholder="max">
+                            </th>
+                            <th style="position: inherit;">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="minDensityList" id="minDensityList" placeholder="min">
+                                <input class="w-100 form form-control search-input" type="number"
+                                       name="maxDensityList" id="maxDensityList" placeholder="max">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="table-header" style="position: inherit;"></th>
+                            <th class="table-header" style="position: inherit;">{{ __('Date of last check') }}</th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Phrase') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Region') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Landing page') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Position in the top') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Scores') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Coverage of important words') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('TF coverage') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Width') }}
+                            </th>
+                            <th class="table-header" style="position: inherit;">
+                                {{ __('Density') }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="list-history-body">
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
@@ -584,8 +933,10 @@
                 }
             }
         </script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -604,383 +955,30 @@
                     },
                     success: function (response) {
                         if (response.code === 201) {
-                            $('.toast-top-right.success-message').show(300)
-                            $('.toast-message').html(response.message)
-                            setTimeout(() => {
-                                $('.toast-top-right.success-message').hide(300)
-                            }, 3000)
+                            getSuccessMessage(response.message)
                             button.parent().parent().remove()
                         } else if (response.code === 415) {
-                            $('.toast-top-right.error-message').show(300)
-                            $('.toast-message.error-message').html(response.message)
-                            setTimeout(() => {
-                                $('.toast-top-right.error-message').hide(300)
-                            }, 3000)
+                            getErrorMessage(response.message)
                         }
                     },
                 });
             });
 
-            $('.project_name').click(function () {
+            function getSuccessMessage(message) {
+                $('.toast-top-right.success-message').show(300)
+                $('#message-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.success-message').hide(300)
+                }, 3000)
+            }
 
-                let elem = $(this)
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/get-stories",
-                    data: {
-                        history_id: $(this).attr('data-order'),
-                    },
-                    success: function (response) {
-                        $('#changeAllState').prop('checked', false);
-                        $('.search-input').val('')
-                        $('.history').show()
-                        $("#history_table").dataTable().fnDestroy();
-                        $('.render').remove()
-                        let tbody = $('#historyTbody')
-
-                        $.each(response.stories, function (key, val) {
-                            let state
-
-                            if (val.state === 1) {
-                                state =
-                                    '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
-                                    '   Повторить анализ' +
-                                    '</button>'
-                                    +
-                                    "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
-
-                            } else if (val.state === 0) {
-                                state =
-                                    '<p>Обрабатывается..</p>' +
-                                    '<div class="text-center" id="preloaderBlock">' +
-                                    '        <div class="three col">' +
-                                    '            <div class="loader" id="loader-1"></div>' +
-                                    '        </div>' +
-                                    '</div>'
-                            } else if (val.state === -1) {
-                                state =
-                                    '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
-                                    '   Повторить анализ' +
-                                    '</button>' +
-                                    "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
-                            }
-
-                            let position = val.position
-
-                            if (val.position == 0) {
-                                position = 'Не попал в топ 100'
-                            }
-
-                            let phrase = val.phrase
-
-                            if (phrase == null) {
-                                phrase = 'Был использван анализ без ключевой фразы'
-                            }
-
-                            let calculate
-                            if (val.calculate == 1) {
-                                calculate = 'Учитывается при рисчёте баллов'
-                            } else {
-                                calculate = 'Не учитывается'
-                            }
-
-                            tbody.append(
-                                "<tr class='render'>" +
-                                "<td>" + val.last_check + "</td>" +
-                                "<td>" +
-                                "   <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                                "</td>" +
-                                "<td>" + phrase + "</td>" +
-                                "<td>" + getRegionName(val.region) + "</td>" +
-                                "<td>" + val.main_link + "</td>" +
-                                "<td>" + position + "</td>" +
-                                "<td>" + val.points + "</td>" +
-                                "<td>" + val.coverage + "</td>" +
-                                "<td>" + val.coverage_tf + "</td>" +
-                                "<td>" + val.width + "</td>" +
-                                "<td>" + val.density + "</td>" +
-                                "<td>" +
-                                calculate +
-                                "</td>" +
-                                "<td id='history-state-" + val.id + "'>" +
-                                state +
-                                "</td>" +
-                                "</tr>"
-                            )
-                        })
-
-                        $(document).ready(function () {
-                            let table = $('#history_table').DataTable({
-                                "order": [[0, "desc"]],
-                                "pageLength": 25,
-                                "searching": true,
-                                dom: 'lBfrtip',
-                                buttons: [
-                                    'copy', 'csv', 'excel'
-                                ]
-                            });
-
-                            $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
-
-                            $(".dt-button").addClass('btn btn-secondary')
-
-                            $('#history_table_filter').hide()
-
-                            let href = '#history_table';
-                            $('html, body').animate({
-                                scrollTop: $(href).offset().top
-                            }, {
-                                duration: 370,
-                                easing: "linear"
-                            });
-
-                            $('.history-comment').change(function () {
-                                $.ajax({
-                                    type: "POST",
-                                    dataType: "json",
-                                    url: "/edit-history-comment",
-                                    data: {
-                                        id: $(this).attr('data-target'),
-                                        comment: $(this).val()
-                                    },
-                                    success: function () {
-                                        $('.toast-top-right.success-message').show(300)
-                                        $('#toast-success-message').html('Коментарий успешно сохранён')
-                                        setInterval(function () {
-                                            $('#toast-container').hide(300)
-                                        }, 3000)
-                                    },
-                                });
-                            });
-
-
-                            $('.get-history-info').unbind("click").click(function () {
-                                let id = $(this).attr('data-order')
-                                $.ajax({
-                                    type: "get",
-                                    dataType: "json",
-                                    url: "/get-history-info/" + id,
-                                    success: function (response) {
-                                        let history = response.history
-                                        if (history.type === 'list') {
-                                            $('#key-phrase').hide()
-                                            $('#site-list').show()
-                                            $('#siteList').val(history.siteList)
-                                        } else {
-                                            $('#key-phrase').show()
-                                            $('#site-list').hide()
-                                            $('.form-control.phrase').val(history.phrase)
-                                        }
-                                        $('#type').val(history.type)
-                                        $('#hiddenId').val(id)
-                                        $('.form-control.link').val(history.link)
-                                        $(".custom-select#count").val(history.count).change();
-                                        $(".custom-select.rounded-0.region").val(history.region).change();
-                                        $(".form-control.ignoredDomains").html(history.ignoredDomains);
-                                        $("#separator").val(history.separator);
-
-                                        if (history.noIndex === "true") {
-                                            $('#switchNoindex').trigger('click')
-                                        }
-
-                                        if (history.hiddenText === "true") {
-                                            $('#switchAltAndTitle').trigger('click')
-                                        }
-
-                                        if (history.conjunctionsPrepositionsPronouns === "true") {
-                                            $('#switchConjunctionsPrepositionsPronouns').trigger('click')
-                                        }
-
-                                        if (history.switchMyListWords === "true") {
-                                            $('#switchMyListWords').trigger('click')
-                                        }
-                                    },
-                                });
-                            });
-
-                            $('#relevance-repeat-scan').unbind("click").click(function () {
-                                let id = $('#hiddenId').val()
-                                $.ajax({
-                                    type: "POST",
-                                    dataType: "json",
-                                    url: "/repeat-scan",
-                                    data: {
-                                        id: id,
-                                        type: $('#type').val(),
-                                        siteList: $('#siteList').val(),
-                                        link: $('.form-control.link').val(),
-                                        phrase: $('.form-control.phrase').val(),
-                                        count: $(".custom-select#count").val(),
-                                        region: $(".custom-select.rounded-0.region").val(),
-                                        ignoredDomains: $(".form-control.ignoredDomains").html(),
-                                        separator: $("#separator").val(),
-                                        noIndex: $('#switchNoindex').is(':checked'),
-                                        hiddenText: $('#switchAltAndTitle').is(':checked'),
-                                        conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
-                                        switchMyListWords: $('#switchMyListWords').is(':checked'),
-                                        listWords: $('.form-control.listWords').val(),
-                                    },
-                                    success: function () {
-                                        $('#history-state-' + id).html('<p>Обрабатывается..</p>' +
-                                            '<div class="text-center" id="preloaderBlock">' +
-                                            '        <div class="three col">' +
-                                            '            <div class="loader" id="loader-1"></div>' +
-                                            '        </div>' +
-                                            '</div>')
-                                    },
-                                    error: function () {
-                                        $('#toast-container').show(300)
-                                        $('#message-info').html('Что-то пошло не так, повторите попытку позже.')
-                                        setInterval(function () {
-                                            $('#toast-container').hide(300)
-                                        }, 3500)
-                                    }
-                                });
-                            });
-
-                            if (elem.attr('data-access') === '1') {
-                                $('#historyTbody > tr > td:nth-child(13) > button:first-child').hide()
-                            } else if (elem.attr('data-access') === '2') {
-                                $('#historyTbody > tr > td:nth-child(13) > button:first-child').show()
-                            }
-
-                            //------------------------ CUSTOM FILTERS -----------------------
-
-                            function isValidate(min, max, target, settings) {
-                                return (isNaN(min) && isNaN(max)) ||
-                                    (isNaN(min) && target <= max) ||
-                                    (min <= target && isNaN(max)) ||
-                                    (min <= target && target <= max);
-                            }
-
-                            function isIncludes(target, search) {
-                                if (search.length > 0) {
-                                    return target.includes(search)
-                                } else {
-                                    return true;
-                                }
-                            }
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var projectComment = String($('#projectComment').val()).toLowerCase();
-                                var target = String(data[1]).toLowerCase();
-                                return isIncludes(target, projectComment)
-                            });
-                            $('#projectComment').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var phraseSearch = String($('#phraseSearch').val()).toLowerCase();
-                                var target = String(data[2]).toLowerCase();
-                                return isIncludes(target, phraseSearch)
-                            });
-                            $('#phraseSearch').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var regionSearch = String($('#regionSearch').val()).toLowerCase();
-                                var target = String(data[3]).toLowerCase();
-                                return isIncludes(target, regionSearch)
-                            });
-                            $('#regionSearch').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var mainPageSearch = String($('#mainPageSearch').val()).toLowerCase();
-                                var target = String(data[4]).toLowerCase();
-                                return isIncludes(target, mainPageSearch)
-                            });
-                            $('#mainPageSearch').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var maxPosition = parseFloat($('#maxPosition').val());
-                                var minPosition = parseFloat($('#minPosition').val());
-                                var target = parseFloat(data[5]);
-                                return isValidate(minPosition, maxPosition, target, settings)
-                            });
-                            $('#minPosition, #maxPosition').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var maxPoints = parseFloat($('#maxPoints').val());
-                                var minPoints = parseFloat($('#minPoints').val());
-                                var target = parseFloat(data[6]);
-                                return isValidate(minPoints, maxPoints, target, settings)
-                            });
-                            $('#minPoints, #maxPoints').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var maxCoverage = parseFloat($('#maxCoverage').val());
-                                var minCoverage = parseFloat($('#minCoverage').val());
-                                var target = parseFloat(data[7]);
-                                return isValidate(minCoverage, maxCoverage, target, settings)
-                            });
-                            $('#minCoverage, #maxCoverage').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var maxCoverageTf = parseFloat($('#maxCoverageTf').val());
-                                var minCoverageTf = parseFloat($('#minCoverageTf').val());
-                                var target = parseFloat(data[8]);
-                                return isValidate(minCoverageTf, maxCoverageTf, target, settings)
-                            });
-                            $('#minCoverageTf, #maxCoverageTf').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var maxWidth = parseFloat($('#maxWidth').val());
-                                var minWidth = parseFloat($('#minWidth').val());
-                                var target = parseFloat(data[9]);
-                                return isValidate(minWidth, maxWidth, target, settings)
-                            });
-                            $('#minWidth, #maxWidth').keyup(function () {
-                                table.draw();
-                            });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var maxDensity = parseFloat($('#maxDensity').val());
-                                var minDensity = parseFloat($('#minDensity').val());
-                                var target = parseFloat(data[10]);
-                                return isValidate(minDensity, maxDensity, target, settings)
-                            });
-                            $('#minDensity, #maxDensity').keyup(function () {
-                                table.draw();
-                            });
-
-                            function isDateValid(target) {
-                                let date = new Date(target)
-                                let dateMin = new Date($('#dateMin').val() + ' 00:00:00')
-                                let dateMax = new Date($('#dateMax').val() + ' 23:59:59')
-                                if (date >= dateMin && date <= dateMax) {
-                                    return true;
-                                }
-                            }
-
-                            $.fn.dataTable.ext.search.push(function (settings, data) {
-                                var target = String(data[0]);
-                                return isDateValid(target)
-                            });
-                            $('#dateMin').change(function () {
-                                table.draw();
-                            });
-                            $('#dateMax').change(function () {
-                                table.draw();
-                            });
-                        });
-                    },
-                });
-            });
+            function getErrorMessage(message) {
+                $('.toast-top-right.error-message').show(300)
+                $('#message-error-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.error-message').hide(300)
+                }, 3000)
+            }
         </script>
     @endslot
 @endcomponent

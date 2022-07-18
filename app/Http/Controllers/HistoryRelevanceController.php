@@ -45,6 +45,21 @@ class HistoryRelevanceController extends Controller
     public function getStories(Request $request): JsonResponse
     {
         $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $history->user_id)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($history->user_id != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
 
         return response()->json([
             'stories' => $history->stories
@@ -92,10 +107,6 @@ class HistoryRelevanceController extends Controller
         $admin = User::isUserAdmin();
         $object = RelevanceHistory::where('id', '=', $id)->first();
 
-        if (!isset($object)) {
-            return abort(404);
-        }
-
         $access = RelevanceSharing::where('user_id', '=', Auth::id())
             ->where('project_id', '=', $object->project_relevance_history_id)
             ->first();
@@ -121,7 +132,23 @@ class HistoryRelevanceController extends Controller
     {
         try {
             $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
-            if (!$history->compressed) {
+
+            $admin = User::isUserAdmin();
+            $ownerId = $history->mainHistory->mainHistory->user_id;
+            $userId = Auth::id();
+
+            $share = RelevanceSharing::where('user_id', '=', $userId)
+                ->where('owner_id', '=', $ownerId)
+                ->where('access', '=', 2)
+                ->first();
+
+            if ($ownerId != $userId && !isset($share) && !$admin) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __("You don't have access to this object"),
+                    'code' => 415
+                ]);
+            } elseif (!$history->compressed) {
                 foreach ($history->getOriginal() as $key => $item) {
                     if ($key != 'id' && $key != 'project_id' && $key != 'created_at' && $key != 'updated_at') {
                         $history[$key] = base64_encode(gzcompress($item, 9));
@@ -177,24 +204,30 @@ class HistoryRelevanceController extends Controller
 
         $share = RelevanceSharing::where('user_id', '=', $userId)
             ->where('owner_id', '=', $ownerId)
+            ->where('access', '=', 2)
             ->first();
 
-        if ($ownerId == $userId || isset($share) || $admin) {
-            if ($object->state == 1 || $object->state == -1) {
-                $object->state = 0;
-                $object->save();
+        if ($ownerId != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        } else if ($object->state == 1 || $object->state == -1) {
+            $object->state = 0;
+            $object->save();
 
-                RelevanceAnalysisQueue::dispatch(
-                    $ownerId,
-                    $request->all(),
-                    $request['id']
-                );
-
-                return response()->json([]);
-            }
+            RelevanceAnalysisQueue::dispatch(
+                $ownerId,
+                $request->all(),
+                $request['id']
+            );
         }
-
-        return response()->json([], 500);
+        return response()->json([
+            'success' => true,
+            'message' => __('Success'),
+            'code' => 200
+        ]);
     }
 
     /**
@@ -203,6 +236,22 @@ class HistoryRelevanceController extends Controller
      */
     public function getHistoryInfo(RelevanceHistory $object): JsonResponse
     {
+        $userId = Auth::id();
+        $ownerId = $object->mainHistory->user_id;
+        $admin = User::isUserAdmin();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $ownerId)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($ownerId != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+
         return response()->json([
             'history' => json_decode($object->request)
         ]);
@@ -215,6 +264,21 @@ class HistoryRelevanceController extends Controller
     public function getHistoryInfoV2(Request $request): JsonResponse
     {
         $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)->latest('id')->get();
+        $userId = Auth::id();
+        $ownerId = $projects[0]->user_id;
+        $admin = User::isUserAdmin();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $ownerId)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($ownerId != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
 
         $responseObject = [];
         foreach ($projects as $project) {
@@ -232,10 +296,15 @@ class HistoryRelevanceController extends Controller
      */
     public function removeEmptyResults(Request $request): JsonResponse
     {
+        $userId = Auth::id();
         $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
         $admin = User::isUserAdmin();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $main->user_id)
+            ->where('access', '=', 2)
+            ->first();
 
-        if ($main->user_id != Auth::id() && !$admin) {
+        if ($main->user_id != $userId && !isset($share) && !$admin) {
             return response()->json([
                 'success' => false,
                 'message' => __("You don't have access to this object"),
@@ -310,10 +379,15 @@ class HistoryRelevanceController extends Controller
      */
     public function removeEmptyResultsFilters(Request $request): JsonResponse
     {
+        $userId = Auth::id();
         $main = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
         $admin = User::isUserAdmin();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $main->user_id)
+            ->where('access', '=', 2)
+            ->first();
 
-        if ($main->user_id != Auth::id() && !$admin) {
+        if ($main->user_id != $userId && !isset($share) && !$admin) {
             return response()->json([
                 'success' => false,
                 'message' => __("You don't have access to this object"),
@@ -383,11 +457,16 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatScanUniqueSites(Request $request): JsonResponse
     {
+        $userId = Auth::id();
         $ids = [];
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
         $admin = User::isUserAdmin();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $project->user_id)
+            ->where('access', '=', 2)
+            ->first();
 
-        if ($project->user_id != Auth::id() && !$admin) {
+        if ($project->user_id != $userId && !isset($share) && !$admin) {
             return response()->json([
                 'success' => false,
                 'code' => 415,
