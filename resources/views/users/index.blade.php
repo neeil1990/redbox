@@ -101,7 +101,7 @@
                                 </i>
                                 {{ __('Edit') }}
                             </a>
-                            {!! Form::open(['class' => 'd-inline', 'method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
+                            {!! Form::open(['onSubmit' => 'agreeUser(event)', 'class' => 'd-inline', 'method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
                             {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) !!}
                             {!! Form::close() !!}
                         </td>
@@ -113,3 +113,17 @@
         <!-- /.card-body -->
     </div>
 @stop
+
+@section('js')
+    <script>
+
+        function agreeUser(event)
+        {
+            if (window.confirm("Do you really want to delete?")) {
+                return true;
+            }else{
+                event.preventDefault();
+            }
+        }
+    </script>
+@endsection
