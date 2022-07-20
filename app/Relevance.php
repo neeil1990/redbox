@@ -825,7 +825,7 @@ class Relevance
                 }
 
             } else {
-                if ($exp && $key < 50) {
+                if (filter_var($exp, FILTER_VALIDATE_BOOLEAN) && $key < 50) {
                     $this->domains[$key] = [
                         'exp' => true,
                         'ignored' => true,
