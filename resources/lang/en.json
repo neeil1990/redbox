@@ -1,9 +1,9 @@
 {
   "######################## Auth page ###############################": "",
-  "Login page": "Login page EN",
-  "Verify page": "Verify page EN",
-  "Register page": "Register page EN",
-  "Reset page": "Reset page EN",
+  "Login page": "Authorization page on the RedBox service",
+  "Verify page": "Verification page on the RedBox service",
+  "Register page": "Registration page on the RedBox service",
+  "Reset page": "Password recovery on the RedBox service",
 
   "The :attribute field is required.": "The :attribute field is required.",
   "Цифры": "Numbers"
