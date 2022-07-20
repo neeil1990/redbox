@@ -21,7 +21,9 @@ class SetLocaleToAuthUser
             if($user = Auth::user())
                 App::setLocale($user->lang);
         }else{
-            $lang = (substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) === "ru") ? "ru" : "en";
+            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+            $acceptLang = ['us', 'en'];
+            $lang = in_array($lang, $acceptLang) ? 'en' : 'ru';
             App::setLocale($lang);
         }
 
