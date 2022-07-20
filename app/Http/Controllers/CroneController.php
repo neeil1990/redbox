@@ -23,7 +23,6 @@ class CroneController extends Controller
      */
     public function checkLinkCrone($timing)
     {
-        Log::debug('start monitoring with timing', [$timing]);
         try {
             $projects = DomainMonitoring::where('timing', '=', $timing)->get();
             foreach ($projects as $project) {

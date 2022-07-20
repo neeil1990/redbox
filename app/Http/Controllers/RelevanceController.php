@@ -272,8 +272,6 @@ class RelevanceController extends Controller
         RelevanceAnalyseResults::where('user_id', '=', Auth::id())
             ->where('page_hash', '=', $request['pageHash'])
             ->delete();
-
-        Log::debug("У пользователя " . Auth::id() . " была отчищена история сканирования");
     }
 
 }
