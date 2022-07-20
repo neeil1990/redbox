@@ -492,7 +492,7 @@
                                     Общий балл
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
+                            <i class="fa fa-question-circle" style="color: grey"></i>
                             <span class="ui_tooltip __bottom">
                                 <span class="ui_tooltip_content" style="width: 300px">
                                     Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность<br>
@@ -507,7 +507,7 @@
                                 <th>{{ __('coverage for all important words') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
+                            <i class="fa fa-question-circle" style="color: grey"></i>
                             <span class="ui_tooltip __bottom">
                                 <span class="ui_tooltip_content" style="width: 300px">
                                     Из таблицы униграм берутся все слова (далее эти слова именуются "важные слова") <br>
@@ -522,7 +522,7 @@
                                 <th>{{ __('Coverage by tf') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                        <i class="fa fa-question-circle"></i>
+                        <i class="fa fa-question-circle" style="color: grey"></i>
                         <span class="ui_tooltip __bottom">
                             <span class="ui_tooltip_content" style="width: 300px">
                                 Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
@@ -537,7 +537,7 @@
                                 <th>{{ __('Width') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
+                            <i class="fa fa-question-circle" style="color: grey"></i>
                             <span class="ui_tooltip __bottom">
                                 <span class="ui_tooltip_content" style="width: 300px">
                                     Для вычисления  ширины, беруться первые 10 не игнорируемых сайтов (позиция в топе) <br>
@@ -552,7 +552,7 @@
                                     {{ __('Density') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
+                            <i class="fa fa-question-circle" style="color: grey"></i>
                             <span class="ui_tooltip __bottom">
                                 <span class="ui_tooltip_content" style="width: 300px">
                                     Плотность высчитывается от значения средней по ТОПу для КАЖДОЙ ОСНОВНОЙ ФРАЗЫ. <br>
@@ -791,7 +791,7 @@
                                     </button>
                                     <button type="button" class="btn btn-secondary col-2">
                                     <span class="__helper-link ui_tooltip_w">
-                                        <i class="fa fa-question-circle"></i>
+                                        <i class="fa fa-question-circle" style="color: grey"></i>
                                         <span class="ui_tooltip __right">
                                             <span class="ui_tooltip_content" style="width: 350px">
                                                 {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
@@ -808,7 +808,7 @@
                                     </button>
                                     <button type="button" class="btn btn-secondary col-2">
                                         <span class="__helper-link ui_tooltip_w">
-                                            <i class="fa fa-question-circle"></i>
+                                            <i class="fa fa-question-circle" style="color: grey"></i>
                                             <span class="ui_tooltip __right">
                                                 <span class="ui_tooltip_content" style="width: 350px">
                                                     {{ __('Updating the content of competitors that was received as a result of the last request') }}
@@ -824,7 +824,7 @@
                                     </button>
                                     <button type="button" class="btn btn-secondary col-2">
                                         <span class="__helper-link ui_tooltip_w">
-                                            <i class="fa fa-question-circle"></i>
+                                            <i class="fa fa-question-circle" style="color: grey"></i>
                                             <span class="ui_tooltip __right">
                                                 <span
                                                     class="ui_tooltip_content"

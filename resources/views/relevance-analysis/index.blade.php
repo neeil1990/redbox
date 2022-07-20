@@ -757,7 +757,7 @@
                                 <th>{{ __('Domain') }}</th>
                                 <th>
                                     {{ __('Total score') }}
-                                    @if($admin == 1)
+                                    @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
                                             <i class="fa fa-question-circle" style="color: grey"></i>
                                             <span class="ui_tooltip __bottom">
