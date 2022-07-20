@@ -245,7 +245,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function () {
-    $record = \App\RelevanceHistoryResult::oldest('id')->take(10)->get();
+    $record = \App\RelevanceHistoryResult::oldest('id')->take(1)->get();
 
     dd($record);
 });
