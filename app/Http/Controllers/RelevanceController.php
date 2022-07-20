@@ -36,6 +36,8 @@ class RelevanceController extends Controller
      */
     public function analysis(Request $request): JsonResponse
     {
+        Log::debug('r', [$request->exp]);
+        dd();
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
