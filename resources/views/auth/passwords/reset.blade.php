@@ -1,5 +1,7 @@
 @extends('layouts.auth')
 
+@section('title', __('Reset page'))
+
 @section('content')
 <div class="login-box">
         <div class="card card-outline card-primary">

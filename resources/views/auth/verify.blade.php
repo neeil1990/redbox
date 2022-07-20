@@ -1,5 +1,7 @@
 @extends('layouts.auth')
 
+@section('title', __('Verify page'))
+
 @section('content')
 <div class="login-box">
     @if (session('resent'))
