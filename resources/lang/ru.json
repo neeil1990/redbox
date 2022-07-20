@@ -1,4 +1,10 @@
 {
+    "######################## Auth page ###############################": "",
+    "Login page": "Login page RU",
+    "Verify page": "Verify page RU",
+    "Register page": "Register page RU",
+    "Reset page": "Reset page RU",
+
     "######################## Meta tags ###############################": "",
     "Your tariff: {TARIFF}. Limith: {VALUE}.": "Ваш тариф: {TARIFF}. Лимит: {VALUE}.",
     "Check URL": "Проверить ссылку",
