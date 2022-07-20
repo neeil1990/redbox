@@ -13,7 +13,15 @@ class RelevanceCleaningResults
 {
     public function __invoke()
     {
-        Log::debug('Запущена отчистка');
+        $this->compressedAndCleaning();
+        $this->compressed();
+    }
+
+    /**
+     * @return void
+     */
+    public function compressedAndCleaning()
+    {
         $total = 0;
         $config = RelevanceAnalysisConfig::first();
 
@@ -49,7 +57,41 @@ class RelevanceCleaningResults
                 ['cleaning', '=', 0]
             ])->take(5)->get();
         }
-        Log::debug('Отчистка завершена', [$total]);
+
+        Log::debug('Было отчищено и сжато', [$total]);
+    }
+
+    /**
+     * @return void
+     */
+    public function compressed()
+    {
+        $total = 0;
+        $config = RelevanceAnalysisConfig::first();
+
+        $results = RelevanceHistoryResult::where([
+            ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
+            ['cleaning', '=', 1],
+            ['compressed', '=', 0],
+        ])->take(5)->get();
+
+        while (count($results) != 0) {
+            foreach ($results as $result) {
+                $result->sites = base64_encode(gzcompress($result->sites, 9));
+                $result->avg_coverage_percent = base64_encode(gzcompress($result->avg_coverage_percent, 9));
+                $result->compressed = 1;
+                $result->save();
+            }
+
+            $total += count($results);
+            $results = RelevanceHistoryResult::where([
+                ['created_at', '<', Carbon::now()->subDays($config->cleaning_interval)],
+                ['cleaning', '=', 1],
+                ['compressed', '=', 0],
+            ])->take(5)->get();
+        }
+
+        Log::debug('Было сжато', [$total]);
     }
 
 }
