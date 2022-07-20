@@ -21,9 +21,11 @@ class RelevanceHistory extends Model
      * @param $mainHistory
      * @param $state
      * @param $historyId
+     * @param $html
+     * @param $sites
      * @return int
      */
-    public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId): int
+    public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId, $html = null, $sites = null): int
     {
         if ($historyId > 0) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
@@ -40,18 +42,19 @@ class RelevanceHistory extends Model
             'main_link' => $link,
             'region' => $request['region'],
             'state' => $state,
-            'request' => json_encode($request)
+            'request' => json_encode($request),
+            'last_check' => $time,
+            'points' => $site['mainPoints'],
+            'coverage' => $site['coverage'],
+            'coverage_tf' => $site['coverageTf'],
+            'width' => $site['width'],
+            'density' => $site['density'],
+            'position' => $site['position'],
+            'project_relevance_history_id' => $mainHistory->id,
+            'html_main_page' => $html,
+            'sites' => $sites
         ]);
 
-        $history->last_check = $time;
-        $history->points = $site['mainPoints'];
-        $history->coverage = $site['coverage'];
-        $history->coverage_tf = $site['coverageTf'];
-        $history->width = $site['width'];
-        $history->density = $site['density'];
-        $history->position = $site['position'];
-
-        $history->project_relevance_history_id = $mainHistory->id;
         $history->save();
 
         return $history->id;

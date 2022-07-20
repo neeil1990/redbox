@@ -225,7 +225,88 @@ class HistoryRelevanceController extends Controller
         }
         return response()->json([
             'success' => true,
-            'message' => __('Success'),
+            'code' => 200
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function repeatQueueCompetitorsScan(Request $request): JsonResponse
+    {
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+        $object = RelevanceHistory::where('id', '=', $request->id)->first();
+        $ownerId = $object->mainHistory->user_id;
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $ownerId)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($ownerId != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        } else if ($object->state == 1 || $object->state == -1) {
+            $object->state = 0;
+            $object->save();
+
+            RelevanceAnalysisQueue::dispatch(
+                $ownerId,
+                $request->all(),
+                $request['id'],
+                false,
+                false,
+                'competitors'
+            );
+        }
+        return response()->json([
+            'success' => true,
+            'code' => 200
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function repeatQueueMainPageScan(Request $request): JsonResponse
+    {
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+        $object = RelevanceHistory::where('id', '=', $request->id)->first();
+        $ownerId = $object->mainHistory->user_id;
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $ownerId)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($ownerId != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        } else if ($object->state == 1 || $object->state == -1) {
+            $object->state = 0;
+            $object->save();
+
+            RelevanceAnalysisQueue::dispatch(
+                $ownerId,
+                $request->all(),
+                $request['id'],
+                false,
+                false,
+                'mainPage'
+            );
+        }
+        return response()->json([
+            'success' => true,
             'code' => 200
         ]);
     }
@@ -325,17 +406,12 @@ class HistoryRelevanceController extends Controller
                 ->latest('last_check')
                 ->get();
             if (count($records) >= 1) {
-                $count = RelevanceHistory::where('comment', '=', '')
+                RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
                     ->where('phrase', '=', $link->phrase)
                     ->where('region', '=', $link->region)
                     ->where('project_relevance_history_id', '=', $request->id)
                     ->delete();
-                Log::debug('Чистка проектов без фильтров 1 сценарий', [
-                    'user' => Auth::id(),
-                    'count' => $count,
-                    'time' => Carbon::now()->toDateString()
-                ]);
             } else {
                 $records = RelevanceHistory::where('comment', '=', '')
                     ->where('main_link', '=', $link->main_link)
@@ -351,11 +427,6 @@ class HistoryRelevanceController extends Controller
                         $record->delete();
                     }
                 }
-                Log::debug('Чистка проектов без фильтров 2 сценарий', [
-                    'user' => Auth::id(),
-                    'count' => $iterator,
-                    'time' => Carbon::now()->toDateString()
-                ]);
             }
         }
 

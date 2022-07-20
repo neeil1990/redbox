@@ -296,95 +296,95 @@
                                     {{ __('Words') }}<span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right">
-                            <span class="ui_tooltip_content" style="text-align: right">{{ __('Words and their word forms that are present on competitors websites.') }}
+                                <span class="ui_tooltip_content" style="text-align: right">{{ __('Words and their word forms that are present on competitors websites.') }}
+                                </span>
                             </span>
                         </span>
-                    </span>
                                 </th>
                                 <th>Tf<span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>Idf<span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The weight of the phrase relative to others.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>
                                     {{ __('Intersection') }}<span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The number of sites in which the word is present.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The number of sites in which the word is present.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('Re - spam') }}<span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The maximum number of repetitions found on the competitors website.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The maximum number of repetitions found on the competitors website.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('Average number of repetitions in the text and links') }}<span
                                         class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text and links of your competitors.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('The total number of repetitions in the text and links') }}<span
                                         class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The total number of repetitions on your page in links and text.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('Average number of repetitions in the text') }}<span
                                         class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text of your competitors.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the text of your competitors.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('Number of repetitions in text') }}<span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('Average number of repetitions in links') }}<span
                                         class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the links of your competitors.') }}
+                                <span class="ui_tooltip __left">
+                                    <span class="ui_tooltip_content">{{ __('The average value of the number of repetitions in the links of your competitors.') }}
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                                 </th>
                                 <th>{{ __('Number of repetitions in links') }}<span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __left">
-                                <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                                <i class="fa fa-question-circle"></i>
+                                    <span class="ui_tooltip __left">
+                                        <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                                        </span>
+                                    </span>
                                 </span>
-                            </span>
-                        </span>
                                 </th>
                             </tr>
                             </thead>
@@ -784,9 +784,56 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-secondary" id="relevance-repeat-scan">
-                                {{ __('Repeat the analysis') }}
-                            </button>
+                            <div class="d-flex flex-column">
+                                <div class="btn-group w-50 mb-2">
+                                    <button class="btn btn-secondary" id="repeat-queue-scan">
+                                        {{ __('Repeat the analysis') }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary col-2">
+                                    <span class="__helper-link ui_tooltip_w">
+                                        <i class="fa fa-question-circle"></i>
+                                        <span class="ui_tooltip __right">
+                                            <span class="ui_tooltip_content" style="width: 350px">
+                                                {{ __('A survey of the xml service will be conducted in order to get the relevant top sites of competitors. The landing page will also be parsed.') }} <br>
+                                                {{ __('Based on all the data received, an analysis will be performed.') }} <br>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    </button>
+                                </div>
+                                <div class="btn-group w-50 mb-2">
+                                    <button type="button" class="btn btn-secondary" id="repeat-queue-competitors-scan"
+                                            @if($object['html_main_page'] == '') disabled @endif>
+                                        {{ __('Repeated analysis of competitor sites') }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary col-2">
+                                        <span class="__helper-link ui_tooltip_w">
+                                            <i class="fa fa-question-circle"></i>
+                                            <span class="ui_tooltip __right">
+                                                <span class="ui_tooltip_content" style="width: 350px">
+                                                    {{ __('Updating the content of competitors that was received as a result of the last request') }}
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="btn-group w-50 mb-2">
+                                    <button class="btn btn-secondary" id="repeat-queue-main-page-scan"
+                                            @if($object['html_main_page'] == '') disabled @endif>
+                                        {{ __('Repeated analysis of the landing page') }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary col-2">
+                                        <span class="__helper-link ui_tooltip_w">
+                                            <i class="fa fa-question-circle"></i>
+                                            <span class="ui_tooltip __right">
+                                                <span
+                                                    class="ui_tooltip_content"
+                                                    style="width: 350px">{{ __('We re-poll the landing page and take data from competitors websites that were received as a result of the last request') }}</span>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     @else
                         <h3>{{ __("You don't have access to this object") }}</h3>
@@ -881,49 +928,52 @@
                     },
                 });
 
-                $('#relevance-repeat-scan').click(function () {
-                    let id = $('#hiddenId').val()
+                $('#repeat-queue-scan').click(function () {
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "/repeat-scan",
-                        data: {
-                            id: id,
-                            type: $('#type').val(),
-                            siteList: $('#siteList').val(),
-                            link: $('.form-control.link').val(),
-                            phrase: $('.form-control.phrase').val(),
-                            count: $(".custom-select.rounded-0.count").val(),
-                            region: $(".custom-select.rounded-0.region").val(),
-                            ignoredDomains: $(".form-control.ignoredDomains").val(),
-                            separator: $("#separator").val(),
-                            noIndex: $('#switchNoindex').is(':checked'),
-                            hiddenText: $('#switchAltAndTitle').is(':checked'),
-                            conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
-                            switchMyListWords: $('#switchMyListWords').is(':checked'),
-                            listWords: $('.form-control.listWords').val(),
-                        },
+                        url: '/repeat-scan',
+                        data: getData(),
                         success: function () {
-                            $('.toast-top-right.success-message').show(300)
+                            successAjaxRequest()
+                        },
+
+                        error: function () {
+                            $('#toast-container').show(300)
                             setInterval(function () {
-                                $('.toast-top-right.success-message').hide(300)
+                                $('#toast-container').hide(300)
                             }, 3500)
+                        }
+                    });
+                });
 
-                            $('#firstTab').trigger('click')
-                            $('html, body').animate({
-                                scrollTop: $('#header-nav-bar').offset().top
-                            }, {
-                                duration: 370,
-                                easing: "linear"
-                            });
+                $('#repeat-queue-competitors-scan').click(function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: '/repeat-queue-competitors-scan',
+                        data: getData(),
+                        success: function () {
+                            successAjaxRequest()
+                        },
 
-                            $('#repeat-analyse-item').html(
-                                '<div class="three col d-flex align-items-center">{{ __('Standing in line for reanalysis') }}' +
-                                '   <div class="loader d-flex justify-content-center align-items-center" ' +
-                                '               id="loader-1" style="height: 35px; width: 35px">' +
-                                '   </div> ' +
-                                '</div>'
-                            )
+                        error: function () {
+                            $('#toast-container').show(300)
+                            setInterval(function () {
+                                $('#toast-container').hide(300)
+                            }, 3500)
+                        }
+                    });
+                });
+
+                $('#repeat-queue-main-page-scan').click(function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: '/repeat-queue-main-page-scan',
+                        data: getData(),
+                        success: function () {
+                            successAjaxRequest()
                         },
 
                         error: function () {
@@ -936,6 +986,49 @@
                 });
 
             });
+
+            function getData() {
+
+                return {
+                    id: $('#hiddenId').val(),
+                    type: $('#type').val(),
+                    siteList: $('#siteList').val(),
+                    link: $('.form-control.link').val(),
+                    phrase: $('.form-control.phrase').val(),
+                    count: $(".custom-select.rounded-0.count").val(),
+                    region: $(".custom-select.rounded-0.region").val(),
+                    ignoredDomains: $(".form-control.ignoredDomains").val(),
+                    separator: $("#separator").val(),
+                    noIndex: $('#switchNoindex').is(':checked'),
+                    hiddenText: $('#switchAltAndTitle').is(':checked'),
+                    conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
+                    switchMyListWords: $('#switchMyListWords').is(':checked'),
+                    listWords: $('.form-control.listWords').val(),
+                }
+            }
+
+            function successAjaxRequest() {
+                $('.toast-top-right.success-message').show(300)
+                setInterval(function () {
+                    $('.toast-top-right.success-message').hide(300)
+                }, 3500)
+
+                $('#firstTab').trigger('click')
+                $('html, body').animate({
+                    scrollTop: $('#header-nav-bar').offset().top
+                }, {
+                    duration: 370,
+                    easing: "linear"
+                });
+
+                $('#repeat-analyse-item').html(
+                    '<div class="three col d-flex align-items-center">{{ __('Standing in line for reanalysis') }}' +
+                    '   <div class="loader d-flex justify-content-center align-items-center" ' +
+                    '               id="loader-1" style="height: 35px; width: 35px">' +
+                    '   </div> ' +
+                    '</div>'
+                )
+            }
 
             function successRequest(history, config) {
                 if (!history.cleaning) {
