@@ -661,12 +661,14 @@
                                     </div>
                                 </td>
                                 <td id="project-{{ $item->id }}">
-                                    @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}">{{ $tag->name }}
-                                            <i class="fa fa-trash remove-project-relevance-link"
+                                    @foreach($item->relevanceTags as $key => $tag)
+                                        <div style="color: {{ $tag->color }}"
+                                             id="tag-{{ $tag->id }}-item-{{ $item->id }}">
+                                            {{ $tag->name }}
+                                            <i class="fa fa-trash"
                                                style="opacity: 0.5; cursor: pointer"
-                                               data-tag="{{ $tag->id }}"
-                                               data-history="{{ $item->id }}">
+                                               data-toggle="modal"
+                                               data-target="#removeTagModal{{ $key }}">
                                             </i>
                                         </div>
                                     @endforeach
@@ -686,6 +688,36 @@
                         @endforeach
                         </tbody>
                     </table>
+                    <div id="removeLinksModals">
+                        @foreach($item->relevanceTags as $key => $tag)
+                            <div class="modal fade" id="removeTagModal{{ $key }}"
+                                 aria-labelledby="removeTagModal{{ $key }}Label" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Вы собираетесь отвязать метку от проекта, вы уверены?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button"
+                                                    class="btn btn-secondary remove-project-relevance-link"
+                                                    data-tag="{{ $tag->id }}"
+                                                    data-history="{{ $item->id }}"
+                                                    data-dismiss="modal">Отвязать метку от проекта
+                                            </button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                     <div style="display:none;" class="history">
                         <h3>{{ __("Recent checks") }}</h3>
                         <table id="history_table" class="table table-bordered table-hover dataTable dtr-inline w-100">
@@ -1061,33 +1093,57 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
-            $('.create-new-link').on('click', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('create.link.project.with.tag') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        projectId: $('#project-id').val(),
-                        tagId: $('#tag-id').val()
-                    },
-                    success: function (response) {
-                        if (response.code === 200) {
-                            $('#project-' + response.project.id).append(
-                                '<div style="color: ' + response.tag.color + '">' + response.tag.name + '' +
-                                ' <i class="fa fa-trash remove-project-relevance-link" style="opacity: 0.5; cursor: pointer"' +
-                                ' data-tag="' + response.tag.id + '" data-history="' + response.project.id + '"></i>' +
-                                '</div>'
-                            )
-                            getSuccessMessage(response.message)
-                        } else if (response.code === 415) {
-                            getErrorMessage(response.message)
-                        }
-                    },
-                });
-            })
-
             function refreshMethods() {
+                $('.create-new-link').unbind().on('click', function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('create.link.project.with.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            projectId: $('#project-id').val(),
+                            tagId: $('#tag-id').val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                $('#project-' + response.project.id).append(
+                                    '<div style="color: ' + response.tag.color + '" id="tag-' + response.tag.id + '-item-' + response.project.id + '">' + response.tag.name + '' +
+                                    ' <i class="fa fa-trash" style="opacity: 0.5; cursor: pointer" data-toggle="modal"' +
+                                    ' data-target=#removeTagModal' + response.timestamps + '></i>' +
+                                    '</div>'
+                                )
+                                $('#removeLinksModals').append(
+                                    '<div class="modal fade" id="removeTagModal' + response.timestamps + '" aria-labelledby="removeTagModal' + response.timestamps + 'Label" aria-hidden="true"> ' +
+                                    '   <div class="modal-dialog"> ' +
+                                    '       <div class="modal-content"> ' +
+                                    '           <div class="modal-header"> ' +
+                                    '               <button type="button" class="close" data-dismiss="modal" ' +
+                                    '               aria-label="Close"> ' +
+                                    '               <span aria-hidden="true">&times;</span> ' +
+                                    '               </button> ' +
+                                    '           </div> ' +
+                                    '       <div class="modal-body"> Вы собираетесь отвязать метку от проекта, вы уверены? ' +
+                                    '   </div> ' +
+                                    '   <div class="modal-footer"> ' +
+                                    '           <button type="button"' +
+                                    '               class="btn btn-secondary remove-project-relevance-link"' +
+                                    '               data-tag="' + response.tag.id + '" ' +
+                                    '               data-history="' + response.project.id + '" data-dismiss="modal">Отвязать метку от проекта' +
+                                    '           </button> ' +
+                                    '           <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть' +
+                                    '           </button>' +
+                                    '           </div>' +
+                                    '       </div>' +
+                                    '   </div>' +
+                                    '</div>')
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+
                 $('#create-tag').unbind().on('click', function () {
                     if ($('#tag-name').val() !== '') {
                         $.ajax({
@@ -1216,7 +1272,9 @@
                         },
                         success: function (response) {
                             if (response.code === 200) {
-                                elem.parent().remove()
+                                let tId = elem.attr('data-tag')
+                                let iId = elem.attr('data-history')
+                                $("#tag-" + tId + "-item-" + iId).remove()
                                 getSuccessMessage(response.message)
                             } else if (response.code === 415) {
                                 getErrorMessage(response.message)

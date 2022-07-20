@@ -35,7 +35,8 @@ class ProjectRelevanceHistoryTagsController extends Controller
                     'code' => 200,
                     'message' => __('The label was successfully added to the project'),
                     'tag' => $tag,
-                    'project' => $project
+                    'project' => $project,
+                    'timestamps' => round(microtime(true))
                 ]);
             } else {
                 return response()->json([
