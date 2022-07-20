@@ -243,9 +243,3 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
-
-Route::get('/bla', function () {
-    $record = \App\RelevanceHistoryResult::oldest('id')->take(1)->get();
-
-    dd($record);
-});
