@@ -802,6 +802,7 @@ class Relevance
      */
     public function removeIgnoredDomains($request, $sites, $exp)
     {
+        Log::debug('sites', [$sites]);
         $ignoredDomains = str_replace("\r\n", "\n", $request['ignoredDomains']);
         $ignoredDomains = explode("\n", $ignoredDomains);
         $ignoredDomains = array_map("mb_strtolower", $ignoredDomains);
