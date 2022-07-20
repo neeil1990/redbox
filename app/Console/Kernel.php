@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new MetaTags(24))->cron('0 0 * * *');
 
         // Delete relevance histories > 30 days (see relevance_analysis_config table)
-        $schedule->call(new RelevanceCleaningResults())->dailyAt('01:30');
+        $schedule->call(new RelevanceCleaningResults())->dailyAt('00:00');
 
         // $schedule->command('inspire')
         //          ->hourly();
