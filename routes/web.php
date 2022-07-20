@@ -244,8 +244,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
 
-Route::get('/bla', function (){
-   $record = \App\RelevanceHistory::oldest('id')->take(10)->get();
+Route::get('/bla', function () {
+    $record = \App\RelevanceHistoryResult::oldest('id')->take(10)->get();
 
-   dd($record);
+    dd($record);
 });
