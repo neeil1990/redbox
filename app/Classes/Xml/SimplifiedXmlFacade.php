@@ -110,7 +110,6 @@ class SimplifiedXmlFacade extends XmlFacade
             }
         }
 
-        Log::debug('sites', [$sites]);
         return $sites;
     }
 
