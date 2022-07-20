@@ -1,5 +1,7 @@
 @extends('layouts.auth')
 
+@section('title', __('Register page'))
+
 @section('content')
 
 <div class="register-box">

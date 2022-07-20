@@ -1,5 +1,11 @@
 {
+  "######################## Auth page ###############################": "",
+  "Login page": "Login page EN",
+  "Verify page": "Verify page EN",
+  "Register page": "Register page EN",
+  "Reset page": "Reset page EN",
+
   "The :attribute field is required.": "The :attribute field is required.",
   "Цифры": "Numbers"
-    
+
 }

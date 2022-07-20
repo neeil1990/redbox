@@ -1,5 +1,7 @@
 @extends('layouts.auth')
 
+@section('title', __('Login page'))
+
 @section('content')
 <div class="login-box">
         <!-- /.login-logo -->
