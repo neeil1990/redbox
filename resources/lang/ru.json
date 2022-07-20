@@ -850,7 +850,7 @@
     "Confirm the action.": "Подтвердите действие.",
     "You will not be able to recover the data.": "У вас не будет возможности восстановить данные.",
     "Do not delete": "Не удалять",
-    "Show the results of the analysis": "Показать результаты анализа",
+    "Show the results of the analysis": "Показать результаты анализа по времени",
     "Delete results without comments": "Удалить результаты без комментариев",
     "Switch everything": "Переключить всё",
     "Scores": "Баллы",
@@ -882,9 +882,15 @@
     "Stary Oskol": "Старый Оскол",
     "Table size": "Размер таблицы",
     "Scan history (list of phrases)": "История сканирования(список фраз)",
-    "View the results in a list": "Посмотреть результаты списком",
+    "View the results in a list": "Посмотреть результаты списком по ключевым фразам",
     "restart analyzed pages": "перезапустить проанализированные страницы",
     "unique pages, are you sure?": "уникальных страниц, вы уверены?",
     "Are you going to restart the scan": "Вы собираетесь перезапустить сканирование",
-    "Repeated analysis added to the queue": "Повторный анализ добавлен в очередь"
+    "Repeated analysis added to the queue": "Повторный анализ добавлен в очередь",
+    "Experimental mode": "Экспериментальный режим",
+    "TLP Recommendations and Spam check": "Рекомендации TLP и проверка на спам",
+    "Top list of phrases (TLP)": "Топ лист фраз (TLP)",
+    "Top list of phrases (TLPs)": "Топ лист словосочетаний (TLPs)",
+    "The total score is calculated as follows: coverage by important words + coverage by tf + density": "Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность",
+    "Hide": "Скрыть"
 }

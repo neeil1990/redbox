@@ -241,10 +241,9 @@
                                  @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
                                 {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
                             </div>
-                            <div class="d-flex mt-3">
+                            <div class="d-flex mt-3" @if(!$admin) style="display: none" @endif>
                                 <div class="__helper-link ui_tooltip_w">
-                                    <div
-                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                id="exp"
@@ -252,7 +251,17 @@
                                         <label class="custom-control-label" for="exp"></label>
                                     </div>
                                 </div>
-                                <p>Эксперементальный режим</p>
+                                <p>{{ __('Experimental mode') }} </p>
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 300px">
+                                            Происходит опрос первых 50ти сайтов конкурентов<br>
+                                            <span class="text-danger">Работает только с <b>"Полным анализом"</b> <br>
+                                                и с типом проверки <b>"Клювевая фраза"</b></span>
+                                        </span>
+                                    </span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -435,8 +444,8 @@
                     </div>
 
                     <div id="rec" style="display: none" class="mb-3">
-                        <h2>Рекомендации TLP и проверка на спам</h2>
-                        <button class="btn btn-secondary" id="recButton">Показать</button>
+                        <h2>{{ __('TLP Recommendations and Spam check') }}</h2>
+                        <button class="btn btn-secondary" id="recButton">{{ __('Show') }}</button>
                     </div>
 
                     <div class="pb-3 recommendations" style="display:none;">
@@ -465,7 +474,7 @@
                     </div>
 
                     <div class="pb-3 unigram" style="display: none; margin-top: 50px">
-                        <h2>Топ лист фраз (TLP)</h2>
+                        <h2>{{ __('Top list of phrases (TLP)') }}</h2>
                         <table id="unigram" class="table table-bordered table-hover dataTable dtr-inline"
                                style="width: 100% !important;">
                             <thead>
@@ -652,7 +661,7 @@
                     </div>
 
                     <div class="phrases" style="display:none;">
-                        <h3>Топ лист словосочетаний (TLPs)</h3>
+                        <h3>{{ __('Top list of phrases (TLPs)') }}</h3>
                         <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline w-100">
                             <thead>
                             <tr>
@@ -721,17 +730,17 @@
                                 </th>
                             </tr>
                             <tr style="position: relative; z-index: 100;">
-                                <th>Фраза</th>
+                                <th>{{ __('Phrase') }}</th>
                                 <th>tf</th>
                                 <th>idf</th>
-                                <th>Пересечение</th>
-                                <th>Переспам</th>
-                                <th>Среднее количество повторений в тексте и ссылках</th>
-                                <th>Общее колиество повторений в тексте и ссылках</th>
-                                <th>Среднее количество повторений в тексте</th>
-                                <th>Количество повторений в тексте</th>
-                                <th>Среднее количество поторений в ссылках</th>
-                                <th>Количество поторений в ссылках</th>
+                                <th>{{ __('Intersection') }}</th>
+                                <th>{{ __('Re - spam') }}</th>
+                                <th>{{ __('Average number of repetitions in the text and links') }}</th>
+                                <th>{{ __('The total number of repetitions in the text and links') }}</th>
+                                <th>{{ __('Average number of repetitions in the text and links') }}</th>
+                                <th>{{ __('The number of repetitions in the text on your page.') }}</th>
+                                <th>{{ __('Average number of repetitions in links') }}</th>
+                                <th>{{ __('Number of repetitions in links') }}</th>
                             </tr>
                             </thead>
                             <tbody id="phrasesTBody">
@@ -747,40 +756,40 @@
                                 <th>{{ __('Position in the top') }}</th>
                                 <th>{{ __('Domain') }}</th>
                                 <th>
-                                    Общий балл
-                                    @if($admin)
+                                    {{ __('Total score') }}
+                                    @if($admin == 1)
                                         <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __bottom">
-                                <span class="ui_tooltip_content" style="width: 300px">
-                                    Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность<br>
-                                    Полученная сумма сначала делится на 3, затем умножается на 2<br>
-                                    - <br>
-                                    Если полученное кол-во баллов больше 100, то мы приравниваем его к 100.<br>
-                                </span>
-                            </span>
-                        </span>
+                                            <i class="fa fa-question-circle" style="color: grey"></i>
+                                            <span class="ui_tooltip __bottom">
+                                                <span class="ui_tooltip_content" style="width: 300px">
+                                                    Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность<br>
+                                                    Полученная сумма сначала делится на 3, затем умножается на 2<br>
+                                                    - <br>
+                                                    Если полученное кол-во баллов больше 100, то мы приравниваем его к 100.<br>
+                                                </span>
+                                            </span>
+                                        </span>
                                     @endif
                                 </th>
                                 <th>{{ __('coverage for all important words') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle"></i>
-                            <span class="ui_tooltip __bottom">
-                                <span class="ui_tooltip_content" style="width: 300px">
-                                    Из таблицы униграм берутся все слова (далее эти слова именуются "важные слова") <br>
-                                    Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
-                                    Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
-                                    Полученый процент равен сумме полученых баллов делённой на 600
-                                </span>
-                            </span>
-                        </span>
+                                        <i class="fa fa-question-circle" style="color: grey"></i>
+                                        <span class="ui_tooltip __bottom">
+                                            <span class="ui_tooltip_content" style="width: 300px">
+                                                Из таблицы униграм берутся все слова (далее эти слова именуются "важные слова") <br>
+                                                Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
+                                                Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
+                                                Полученый процент равен сумме полученых баллов делённой на 600
+                                            </span>
+                                        </span>
+                                    </span>
                                     @endif
                                 </th>
                                 <th>{{ __('Coverage by tf') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                                        <i class="fa fa-question-circle"></i>
+                                        <i class="fa fa-question-circle" style="color: grey"></i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content" style="width: 300px">
                                                 Из таблицы униграм берутся все слова и их значения tf(далее эти слова именуются "важные слова") <br>
@@ -795,7 +804,7 @@
                                 <th>{{ __('Width') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                                            <i class="fa fa-question-circle"></i>
+                                            <i class="fa fa-question-circle" style="color: grey"></i>
                                             <span class="ui_tooltip __bottom">
                                                 <span class="ui_tooltip_content" style="width: 300px">
                                                     Для вычисления  ширины, беруться первые 10 не игнорируемых сайтов (позиция в топе) <br>
@@ -810,7 +819,7 @@
                                     {{ __('Density') }}
                                     @if($admin)
                                         <span class="__helper-link ui_tooltip_w">
-                                            <i class="fa fa-question-circle"></i>
+                                            <i class="fa fa-question-circle" style="color: grey"></i>
                                             <span class="ui_tooltip __bottom">
                                                 <span class="ui_tooltip_content" style="width: 300px">
                                                     Плотность высчитывается от значения средней по ТОПу для КАЖДОЙ ОСНОВНОЙ ФРАЗЫ. <br>
@@ -877,10 +886,10 @@
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
-                    $('#recButton').html('Показать')
+                    $('#recButton').html("{{ __('Show') }}")
                 } else {
                     $('.pb-3.recommendations').show()
-                    $('#recButton').html('Скрыть')
+                    $('#recButton').html("{{ __('Hide') }}")
                 }
             });
 
@@ -1250,7 +1259,8 @@
                     _token: $('meta[name="csrf-token"]').attr('content'),
                     ignoredDomains: $('.form-control.ignoredDomains').val(),
                     switchMyListWords: $('#switchMyListWords').is(':checked'),
-                    conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
+                    conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
+                    exp: $('#exp').is(':checked')
                 }
             }
         </script>

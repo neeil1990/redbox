@@ -1168,23 +1168,22 @@ class Relevance
      */
     public function saveResults()
     {
-        if (!$this->queue) {
-            $saveObject = [];
-            //кодируем и сжимаем html, удаляем не нужную информацию для экономии ресурсов бд
-            foreach ($this->sites as $key => $site) {
-                if (!array_key_exists('exp', $this->sites[$key])) {
-                    unset($this->sites[$key]['html']);
-                    unset($this->sites[$key]['linkText']);
-                    unset($this->sites[$key]['hiddenText']);
-                    $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
+        $saveObject = [];
+        //сжимаем html и удаляем не нужную информацию для экономии ресурсов бд
+        foreach ($this->sites as $key => $site) {
+            if (!array_key_exists('exp', $this->sites[$key])) {
+                unset($this->sites[$key]['html']);
+                unset($this->sites[$key]['linkText']);
+                unset($this->sites[$key]['hiddenText']);
+                $this->sites[$key]['defaultHtml'] = base64_encode(gzcompress($this->sites[$key]['defaultHtml'], 9));
 
-                    $saveObject[$key] = $this->sites[$key];
-                }
-
+                $saveObject[$key] = $this->sites[$key];
             }
 
+        }
+
+        if (!$this->queue) {
             $this->params['sites'] = json_encode($saveObject);
-            $this->params['page_hash'] = $this->request['pageHash'];
             $this->params->save();
         }
     }
@@ -1206,7 +1205,7 @@ class Relevance
 
         foreach ($this->sites as $site) {
             if ($site['mainPage']) {
-                $site = [
+                $stat = [
                     'mainPoints' => $site['mainPoints'],
                     'coverage' => $site['coverage'],
                     'coverageTf' => $site['coverageTf'],
@@ -1219,11 +1218,13 @@ class Relevance
                     $this->phrase,
                     $this->params['main_page_link'],
                     $this->request,
-                    $site,
+                    $stat,
                     $time,
                     $main,
                     true,
-                    $historyId
+                    $historyId,
+                    base64_encode(gzcompress($this->params['html_main_page'], 9)),
+                    json_encode($this->sites)
                 );
 
                 ProjectRelevanceHistory::calculateInfo($main);
@@ -1286,9 +1287,10 @@ class Relevance
 
     /**
      * @param $request
+     * @param $exp
      * @return void
      */
-    public function analysisByPhrase($request)
+    public function analysisByPhrase($request, $exp)
     {
         RelevanceProgress::editProgress(10, $request);
         $xml = new SimplifiedXmlFacade($request['region']);
@@ -1298,7 +1300,7 @@ class Relevance
         $this->removeIgnoredDomains(
             $request,
             $xmlResponse,
-            false
+            $exp
         );
         RelevanceProgress::editProgress(15, $request);
 
