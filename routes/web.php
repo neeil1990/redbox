@@ -245,7 +245,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function () {
-    $before = memory_get_usage();
-    $record = \App\RelevanceHistoryResult::first();
-    dd(memory_get_usage() - $before);
+    $record = \App\RelevanceHistoryResult::where('compressed', '=', 0)->where('cleaning', '=', 0)->first();
+    dd($record);
 });
