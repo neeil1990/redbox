@@ -247,5 +247,5 @@ Route::middleware(['verified'])->group(function () {
 Route::get('/bla', function () {
     $record = \App\RelevanceHistoryResult::where('compressed', '=', 1)
         ->where('cleaning', '=', 1)->first();
-    dd($record->sites);
+    dd(gzuncompress(base64_decode($record->sites)));
 });
