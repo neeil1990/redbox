@@ -245,6 +245,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function (){
-   $count = \App\RelevanceHistoryResult::count();
-   dd($count);
+    $before = memory_get_usage();
+   $record = \App\RelevanceHistoryResult::first();
+   dd($before - memory_get_usage());
 });
