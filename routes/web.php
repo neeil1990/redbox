@@ -245,6 +245,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function (){
-   $count = \App\ProjectRelevanceHistory::count();
+   $count = \App\RelevanceHistoryResult::count();
    dd($count);
 });
