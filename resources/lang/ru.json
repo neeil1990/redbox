@@ -5,6 +5,13 @@
     "Register page": "Страница регистрации на сервисе RedBox",
     "Reset page": "Восстановление пароля на сервисе RedBox",
 
+    "I give my consent to the processing": "Я даю свое согласие на обработку",
+    "personal data": "персональных данных",
+    "and agree to the terms": "и соглашаюсь с условиями",
+    "privacy policy": "политики конфиденциальности",
+    "rule agree link one": "/rules/ru/personal.pdf",
+    "rule agree link two": "/rules/ru/user_yes.pdf",
+
     "######################## Meta tags ###############################": "",
     "Your tariff: {TARIFF}. Limith: {VALUE}.": "Ваш тариф: {TARIFF}. Лимит: {VALUE}.",
     "Check URL": "Проверить ссылку",
