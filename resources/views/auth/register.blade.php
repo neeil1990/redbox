@@ -95,17 +95,20 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-7">
+                        <div class="col-12">
                             <div class="icheck-primary">
                                 <input type="checkbox" id="agreeTerms" name="terms" value="agree" required>
                                 <label for="agreeTerms">
-                                    {{ __('I agree to the') }} <a href="#">{{ __('terms') }}</a>
+                                    {{ __('I give my consent to the processing') }} <a href="{{ __('rule agree link one') }}" target="_blank">{{ __('personal data') }}</a> {{ __('and agree to the terms') }}
+                                    <a href="{{ __('rule agree link two') }}" target="_blank">{{ __('privacy policy') }}</a>
                                 </label>
                             </div>
                         </div>
                         <!-- /.col -->
-                        <div class="col-5">
-                            <button type="submit" class="btn btn-primary btn-block" onclick="ym(89500732,'reachGoal','novaja_registracija_1231')">{{ __('Register') }}</button>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-block" onclick="ym(89500732,'reachGoal','novaja_registracija_1231')">
+                                <i class="fas fa-user-plus"></i> {{ __('Register') }}
+                            </button>
                         </div>
                         <!-- /.col -->
                     </div>

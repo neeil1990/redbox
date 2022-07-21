@@ -5,6 +5,13 @@
   "Register page": "Registration page on the RedBox service",
   "Reset page": "Password recovery on the RedBox service",
 
+  "I give my consent to the processing": "I give my consent to the processing",
+  "personal data": "personal data",
+  "and agree to the terms": "and agree to the terms",
+  "privacy policy": "privacy policy",
+  "rule agree link one": "/rules/en/personal.pdf",
+  "rule agree link two": "/rules/en/user_yes.pdf",
+
   "The :attribute field is required.": "The :attribute field is required.",
   "Цифры": "Numbers"
 
