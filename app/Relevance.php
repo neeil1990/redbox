@@ -544,7 +544,6 @@ class Relevance
 
     /**
      * Удаляем полученного текста слова
-     * @param $request
      * @return void
      */
     public function removeListWords()
