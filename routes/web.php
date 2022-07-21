@@ -245,6 +245,11 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function () {
-    $record = \App\RelevanceHistoryResult::where('compressed', '=', 0)->where('cleaning', '=', 0)->first();
-    dd($record);
+    $relHi = \App\RelevanceHistory::count();
+    $res = \App\RelevanceHistoryResult::count();
+
+    dd([
+        'relevance' => $relHi,
+        'results' => $res,
+    ]);
 });
