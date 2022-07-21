@@ -21,11 +21,13 @@ class SetLocaleToAuthUser
             if($user = Auth::user())
                 App::setLocale($user->lang);
         }else{
-            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-            if($lang){
-                $acceptLang = ['ru'];
-                $lang = in_array($lang, $acceptLang) ? $lang : 'en';
-                App::setLocale($lang);
+            if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
+                $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+                if($lang){
+                    $acceptLang = ['ru'];
+                    $lang = in_array($lang, $acceptLang) ? $lang : 'en';
+                    App::setLocale($lang);
+                }
             }
         }
 
