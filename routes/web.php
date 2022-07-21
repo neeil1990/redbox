@@ -243,3 +243,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
+
+Route::get('/bla', function () {
+    $before = memory_get_usage();
+    $record = \App\RelevanceHistoryResult::first();
+    dd(memory_get_usage() - $before);
+});
