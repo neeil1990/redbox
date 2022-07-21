@@ -22,9 +22,11 @@ class SetLocaleToAuthUser
                 App::setLocale($user->lang);
         }else{
             $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-            $acceptLang = ['ru'];
-            $lang = in_array($lang, $acceptLang) ? $lang : 'en';
-            App::setLocale($lang);
+            if($lang){
+                $acceptLang = ['ru'];
+                $lang = in_array($lang, $acceptLang) ? $lang : 'en';
+                App::setLocale($lang);
+            }
         }
 
         return $next($request);
