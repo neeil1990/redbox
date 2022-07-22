@@ -529,7 +529,6 @@ class HistoryRelevanceController extends Controller
     public function repeatScanUniqueSites(Request $request): JsonResponse
     {
         $userId = Auth::id();
-        $ids = [];
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
         $admin = User::isUserAdmin();
         $share = RelevanceSharing::where('user_id', '=', $userId)
@@ -548,6 +547,7 @@ class HistoryRelevanceController extends Controller
             ->distinct(['main_link', 'phrase', 'region'])
             ->get(['main_link', 'phrase', 'region']);
 
+        $ids = [];
         foreach ($items as $item) {
             $record = RelevanceHistory::where('main_link', '=', $item->main_link)
                 ->where('project_relevance_history_id', '=', $request->id)

@@ -53,6 +53,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function handle()
     {
         if ($this->type == 'full') {
+
             $relevance = new Relevance($this->request, true);
             $relevance->getMainPageHtml();
 
@@ -66,6 +67,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->analysis($this->userId, $this->historyId);
 
         } elseif ($this->type == 'mainPage') {
+
             $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
             $relevance = new Relevance($this->request, true);
@@ -74,6 +76,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->analysis($this->userId, $this->historyId);
 
         } elseif ($this->type == 'competitors') {
+
             $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
             $relevance = new Relevance($this->request, true);

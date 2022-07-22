@@ -44,7 +44,7 @@ class RelevanceController extends Controller
 
         $request->validate([
             'link' => 'required|website',
-            'phrase' => 'required_without:siteList|not_website',
+            'phrase' => 'required|not_website',
             'siteList' => 'required_without:link',
         ], $messages);
 

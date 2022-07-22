@@ -125,7 +125,7 @@ class Relevance
      * @param bool|array $xmlResponse
      * @return void
      */
-    public function parseSites($xmlResponse = false)
+    public function parseSites($xmlResponse = false, $searchPosition = false)
     {
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
@@ -170,6 +170,8 @@ class Relevance
             $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
             if ($xmlResponse) {
                 $this->sites[$this->params['main_page_link']]['position'] = array_search(Str::lower($this->params['main_page_link']), $xmlResponse);
+            } elseif ($searchPosition) {
+                $this->sites[$this->params['main_page_link']]['position'] = SimplifiedXmlFacade::getPosition($this->request);
             } else {
                 $this->sites[$this->params['main_page_link']]['position'] = count($this->domains) + 1;
             }
@@ -1314,7 +1316,7 @@ class Relevance
     {
         RelevanceProgress::editProgress(10, $request);
         $this->prepareDomains($request['siteList']);
-        $this->parseSites();
+        $this->parseSites(false, true);
     }
 
     /**

@@ -89,17 +89,16 @@ class SimplifiedXmlFacade extends XmlFacade
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
 
-        $arrContextOptions = [
+        $response = file_get_contents($url, false, stream_context_create([
             "ssl" => [
                 "verify_peer" => false,
                 "verify_peer_name" => false,
             ],
-        ];
-        $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        ]));
         $xml = $this->load($response);
 
         $json = json_encode($xml);
-        $responseArray = json_decode($json, TRUE);
+        $responseArray = json_decode($json, true);
 
         $sites = [];
         foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
@@ -111,6 +110,19 @@ class SimplifiedXmlFacade extends XmlFacade
         }
 
         return $sites;
+    }
+
+    /**
+     * @param $request
+     * @return bool|int
+     */
+    public static function getPosition($request)
+    {
+        $xml = new SimplifiedXmlFacade($request['region']);
+        $xml->setQuery($request['phrase']);
+        $xmlResponse = $xml->getXMLResponse();
+
+        return array_search(Str::lower($request['link']), $xmlResponse);
     }
 
 }
