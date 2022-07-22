@@ -139,6 +139,7 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
         return DomainMonitoring::tryConnect($curl);
