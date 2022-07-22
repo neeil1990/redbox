@@ -139,7 +139,6 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
-        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
         return DomainMonitoring::tryConnect($curl);
@@ -169,6 +168,9 @@ class DomainMonitoring extends Model
             curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
+            if (curl_error($curl) == "transfer closed with outstanding read data remaining") {
+                curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+            }
             Log::debug('domain monitoring curl error', [curl_error($curl)]);
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
