@@ -8,6 +8,7 @@ use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
 use App\RelevanceAllUniquePages;
 use App\RelevanceAnalysisConfig;
+use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use App\RelevanceStatistics;
 use App\RelevanceUniqueDomains;
@@ -47,6 +48,8 @@ class AdminController extends Controller
             'statistics' => [
                 'toDay' => $statistics,
                 'month' => $month,
+                'countProjects' => ProjectRelevanceHistory::count(),
+                'countSavedResults' => RelevanceHistory::count(),
                 'pages' => RelevanceUniquePages::count(),
                 'domains' => RelevanceUniqueDomains::count(),
                 'allDomains' => RelevanceAllUniqueDomains::count(),

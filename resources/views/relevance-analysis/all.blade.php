@@ -92,6 +92,14 @@
                             <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
                         </tr>
                         <tr>
+                            <th class="col-10">{{ __('Number of projects') }}</th>
+                            <td> {{ $statistics['countProjects']}} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of saved scan results') }}</th>
+                            <td> {{ $statistics['countSavedResults']}} </td>
+                        </tr>
+                        <tr>
                             <th class="col-10">{{ __('Number of unique landing pages') }}</th>
                             <td> {{ $statistics['pages'] }} </td>
                         </tr>
