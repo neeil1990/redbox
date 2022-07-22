@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class DomainMonitoring extends Model
 {
@@ -167,9 +168,10 @@ class DomainMonitoring extends Model
             curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
+            Log::debug('domain monitoring curl error', curl_error($curl));
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
-                break 1;
+                break;
             }
         }
         curl_close($curl);
