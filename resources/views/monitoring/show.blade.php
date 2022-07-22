@@ -133,14 +133,23 @@
                 let title = `[${region.lr}] ${region.engine.toUpperCase()} ${region.location.name}`;
 
                 let columns = [];
+                let columns_hide = [];
 
                 $.each(response.data.columns, function (i, item) {
+
                     columns.push({
                         'title': item,
                         'name': i,
                         'data': i,
                     });
+
+                    let col = i.split("_");
+                    if(col.length > 1)
+                        columns_hide.push(i);
                 });
+
+                columns_hide.shift();
+                columns_hide.pop();
 
                 let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
@@ -279,6 +288,13 @@
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
                     },
                     drawCallback: function(){
+                        let api = this.api();
+
+                        if(MODE === 'dates'){
+                            $.each(columns_hide, function(i, item){
+                                api.column(item + ':name').visible(false);
+                            });
+                        }
 
                         $('.table tr').each(function (i, item) {
                             let target = $(item).find('.target').text();
