@@ -92,6 +92,14 @@
                             <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
                         </tr>
                         <tr>
+                            <th class="col-10">{{ __('Number of projects') }}</th>
+                            <td> {{ $statistics['countProjects']}} </td>
+                        </tr>
+                        <tr>
+                            <th class="col-10">{{ __('Number of saved scan results') }}</th>
+                            <td> {{ $statistics['countSavedResults']}} </td>
+                        </tr>
+                        <tr>
                             <th class="col-10">{{ __('Number of unique landing pages') }}</th>
                             <td> {{ $statistics['pages'] }} </td>
                         </tr>
@@ -130,224 +138,6 @@
                         </thead>
                         <tbody>
                         @foreach($projects as $item)
-                            <div class="modal fade" id="removeModal{{ $item->id }}" tabindex="-1"
-                                 aria-labelledby="removeModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="removeModalLabel">
-                                                {{ __('Deleting results from a project') }} {{ $item->name }}
-                                            </h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <span class="__helper-link ui_tooltip_w">
-                                                {{ __('How it works') }}
-                                                <i class="fa fa-question-circle" style="color: grey"></i>
-                                                <span class="ui_tooltip __right" style="width: 350px">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('All scan results that have no comment will be deleted.') }} <br>
-                                                        {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}
-                                                    </span>
-                                                </span>
-                                            </span>
-                                            <p>
-                                                <b>{{ __('You will not be able to recover the data.') }}</b>
-                                            </p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary remove-empty-results"
-                                                    data-target="{{ $item->id }}" data-dismiss="modal">
-                                                {{ __('Remove') }}
-                                            </button>
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">
-                                                {{ __('Do not delete') }}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal fade" id="removeWithFiltersModal{{ $item->id }}" tabindex="-1"
-                                 aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"
-                                                id="removeWithFiltersModalLabel">
-                                                {{ __('Deleting results from a project') }} {{ $item->name }}
-                                            </h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-
-                                            <div class="d-flex flex-row">
-                                                <div>
-                                                    <label>{{ __('Scans performed after (inclusive)') }}</label>
-                                                    <input class="form form-control" type="date"
-                                                           id="date-filter-after-{{ $item->id }}">
-                                                </div>
-
-                                                <div>
-                                                    <label>{{ __('Scans performed before (inclusive)') }}</label>
-                                                    <input class="form form-control" type="date"
-                                                           id="date-filter-before-{{ $item->id }}">
-                                                </div>
-                                            </div>
-
-                                            <label class="mt-3">{{ __('Comment') }}</label>
-                                            <input type="text" class="form form-control" name="comment-filter"
-                                                   id="comment-filter-{{ $item->id }}">
-
-                                            <label class="mt-3">{{ __('Phrase') }}</label>
-                                            <input type="text" class="form form-control" name="phrase-filter"
-                                                   id="phrase-filter-{{ $item->id }}">
-
-                                            <label class="mt-3">{{ __('Region') }}</label>
-                                            {!! Form::select('region', [
-                                                   'none' => __("Don't search for matches by region"),
-                                                   'all' => 'Любой регион',
-                                                   '213' => __('Moscow'),
-                                                   '1' => __('Moscow and the area'),
-                                                   '20' => __('Arkhangelsk'),
-                                                   '37' => __('Astrakhan'),
-                                                   '197' => __('Barnaul'),
-                                                   '4' => __('Belgorod'),
-                                                   '77' => __('Blagoveshchensk'),
-                                                   '191' => __('Bryansk'),
-                                                   '24' => __('Veliky Novgorod'),
-                                                   '75' => __('Vladivostok'),
-                                                   '33' => __('Vladikavkaz'),
-                                                   '192' => __('Vladimir'),
-                                                   '38' => __('Volgograd'),
-                                                   '21' => __('Vologda'),
-                                                   '193' => __('Voronezh'),
-                                                   '1106' => __('Grozny'),
-                                                   '54' => __('Ekaterinburg'),
-                                                   '5' => __('Ivanovo'),
-                                                   '63' => __('Irkutsk'),
-                                                   '41' => __('Yoshkar-ola'),
-                                                   '43' => __('Kazan'),
-                                                   '22' => __('Kaliningrad'),
-                                                   '64' => __('Kemerovo'),
-                                                   '7' => __('Kostroma'),
-                                                   '35' => __('Krasnodar'),
-                                                   '62' => __('Krasnoyarsk'),
-                                                   '53' => __('Kurgan'),
-                                                   '8' => __('Kursk'),
-                                                   '9' => __('Lipetsk'),
-                                                   '28' => __('Makhachkala'),
-                                                   '23' => __('Murmansk'),
-                                                   '1092' => __('Nazran'),
-                                                   '30' => __('Nalchik'),
-                                                   '47' => __('Nizhniy Novgorod'),
-                                                   '65' => __('Novosibirsk'),
-                                                   '66' => __('Omsk'),
-                                                   '10' => __('Eagle'),
-                                                   '48' => __('Orenburg'),
-                                                   '49' => __('Penza'),
-                                                   '50' => __('Perm'),
-                                                   '25' => __('Pskov'),
-                                                   '39' => __('Rostov-on-Don'),
-                                                   '11' => __('Ryazan'),
-                                                   '51' => __('Samara'),
-                                                   '42' => __('Saransk'),
-                                                   '2' => __('Saint-Petersburg'),
-                                                   '12' => __('Smolensk'),
-                                                   '239' => __('Sochi'),
-                                                   '36' => __('Stavropol'),
-                                                   '10649' => __('Stary Oskol'),
-                                                   '973' => __('Surgut'),
-                                                   '13' => __('Tambov'),
-                                                   '14' => __('Tver'),
-                                                   '67' => __('Tomsk'),
-                                                   '15' => __('Tula'),
-                                                   '195' => __('Ulyanovsk'),
-                                                   '172' => __('Ufa'),
-                                                   '76' => __('Khabarovsk'),
-                                                   '45' => __('Cheboksary'),
-                                                   '56' => __('Chelyabinsk'),
-                                                   '1104' => __('Cherkessk'),
-                                                   '16' => __('Yaroslavl'),
-                                                   ], null, ['class' => 'custom-select rounded-0 region', 'id' => 'region-filter-'. $item->id]) !!}
-
-                                            <label class="mt-3">{{ __('Link') }}</label>
-                                            <input type="text" class="form form-control"
-                                                   name="link-filter"
-                                                   id="link-filter-{{ $item->id }}">
-
-                                            <div class="d-flex flex-row mt-3 mb-3">
-                                                <div>
-                                                    <label>{{ __('Position from (inclusive)') }}</label>
-                                                    <input class="form form-control" type="number"
-                                                           id="position-filter-after-{{ $item->id }}"
-                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
-                                                </div>
-
-                                                <div>
-                                                    <label>{{ __('Position up to (inclusive)') }}</label>
-                                                    <input class="form form-control" type="number"
-                                                           id="position-filter-before-{{ $item->id }}"
-                                                           placeholder="{{ __('0 - did not get into the top 100') }}">
-                                                </div>
-                                            </div>
-
-                                            <span class="__helper-link ui_tooltip_w">
-                                                {{ __('How it works') }}
-                                                <i class="fa fa-question-circle" style="color: grey"></i>
-                                                <span class="ui_tooltip __right" style="width: 350px">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('According to your project') }} {{ $item->name }} {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>
-                                                        {{ __('All matches found will be deleted.') }} <br>
-                                                        {{ __("If you don't want to search by any parameter, then leave the field empty.") }}
-                                                    </span>
-                                                </span>
-                                            </span>
-
-                                            <div class="text-danger mt-3 mb-3">
-                                                {{ __('You can delete all the results associated with the project') }} {{ $item->name }}
-                                                , {{ __('if you leave all fields empty, be careful') }}
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary remove-with-filters"
-                                                    data-dismiss="modal" data-target="{{ $item->id }}">
-                                                {{ __('Remove') }}
-                                            </button>
-                                            <button type="button" class="btn btn-default"
-                                                    data-dismiss="modal">{{ __('Do not delete') }}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal fade" id="repeatUniqueScan{{ $item->id }}" tabindex="-1"
-                                 aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">{{ __('restart analyzed pages') }} {{ $item->name }}</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            {{ __('Are you going to restart the scan') }}
-                                            <b>{{ $item->count_sites }}</b>
-                                            {{ __('unique pages, are you sure?') }}
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button data-target="{{ $item->id }}" type="button"
-                                                    class="btn btn-secondary repeat-scan-unique-sites"
-                                                    data-dismiss="modal">{{ __('Start') }}</button>
-                                            <button type="button" class="btn btn-default"
-                                                    data-dismiss="modal">{{ __('Close') }}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <tr>
                                 <td>
                                     <a href="#history_table_{{ $item->name }}"
@@ -429,6 +219,227 @@
                         @endforeach
                         </tbody>
                     </table>
+
+                    @foreach($projects as $item)
+                        <div class="modal fade" id="removeModal{{ $item->id }}" tabindex="-1"
+                             aria-labelledby="removeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="removeModalLabel">
+                                            {{ __('Deleting results from a project') }} {{ $item->name }}
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                            <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('All scan results that have no comment will be deleted.') }} <br>
+                                                        {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        <p>
+                                            <b>{{ __('You will not be able to recover the data.') }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary remove-empty-results"
+                                                data-target="{{ $item->id }}" data-dismiss="modal">
+                                            {{ __('Remove') }}
+                                        </button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            {{ __('Do not delete') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="removeWithFiltersModal{{ $item->id }}" tabindex="-1"
+                             aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"
+                                            id="removeWithFiltersModalLabel">
+                                            {{ __('Deleting results from a project') }} {{ $item->name }}
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <div class="d-flex flex-row">
+                                            <div>
+                                                <label>{{ __('Scans performed after (inclusive)') }}</label>
+                                                <input class="form form-control" type="date"
+                                                       id="date-filter-after-{{ $item->id }}">
+                                            </div>
+
+                                            <div>
+                                                <label>{{ __('Scans performed before (inclusive)') }}</label>
+                                                <input class="form form-control" type="date"
+                                                       id="date-filter-before-{{ $item->id }}">
+                                            </div>
+                                        </div>
+
+                                        <label class="mt-3">{{ __('Comment') }}</label>
+                                        <input type="text" class="form form-control" name="comment-filter"
+                                               id="comment-filter-{{ $item->id }}">
+
+                                        <label class="mt-3">{{ __('Phrase') }}</label>
+                                        <input type="text" class="form form-control" name="phrase-filter"
+                                               id="phrase-filter-{{ $item->id }}">
+
+                                        <label class="mt-3">{{ __('Region') }}</label>
+                                        {!! Form::select('region', [
+                                               'none' => __("Don't search for matches by region"),
+                                               'all' => 'Любой регион',
+                                               '213' => __('Moscow'),
+                                               '1' => __('Moscow and the area'),
+                                               '20' => __('Arkhangelsk'),
+                                               '37' => __('Astrakhan'),
+                                               '197' => __('Barnaul'),
+                                               '4' => __('Belgorod'),
+                                               '77' => __('Blagoveshchensk'),
+                                               '191' => __('Bryansk'),
+                                               '24' => __('Veliky Novgorod'),
+                                               '75' => __('Vladivostok'),
+                                               '33' => __('Vladikavkaz'),
+                                               '192' => __('Vladimir'),
+                                               '38' => __('Volgograd'),
+                                               '21' => __('Vologda'),
+                                               '193' => __('Voronezh'),
+                                               '1106' => __('Grozny'),
+                                               '54' => __('Ekaterinburg'),
+                                               '5' => __('Ivanovo'),
+                                               '63' => __('Irkutsk'),
+                                               '41' => __('Yoshkar-ola'),
+                                               '43' => __('Kazan'),
+                                               '22' => __('Kaliningrad'),
+                                               '64' => __('Kemerovo'),
+                                               '7' => __('Kostroma'),
+                                               '35' => __('Krasnodar'),
+                                               '62' => __('Krasnoyarsk'),
+                                               '53' => __('Kurgan'),
+                                               '8' => __('Kursk'),
+                                               '9' => __('Lipetsk'),
+                                               '28' => __('Makhachkala'),
+                                               '23' => __('Murmansk'),
+                                               '1092' => __('Nazran'),
+                                               '30' => __('Nalchik'),
+                                               '47' => __('Nizhniy Novgorod'),
+                                               '65' => __('Novosibirsk'),
+                                               '66' => __('Omsk'),
+                                               '10' => __('Eagle'),
+                                               '48' => __('Orenburg'),
+                                               '49' => __('Penza'),
+                                               '50' => __('Perm'),
+                                               '25' => __('Pskov'),
+                                               '39' => __('Rostov-on-Don'),
+                                               '11' => __('Ryazan'),
+                                               '51' => __('Samara'),
+                                               '42' => __('Saransk'),
+                                               '2' => __('Saint-Petersburg'),
+                                               '12' => __('Smolensk'),
+                                               '239' => __('Sochi'),
+                                               '36' => __('Stavropol'),
+                                               '10649' => __('Stary Oskol'),
+                                               '973' => __('Surgut'),
+                                               '13' => __('Tambov'),
+                                               '14' => __('Tver'),
+                                               '67' => __('Tomsk'),
+                                               '15' => __('Tula'),
+                                               '195' => __('Ulyanovsk'),
+                                               '172' => __('Ufa'),
+                                               '76' => __('Khabarovsk'),
+                                               '45' => __('Cheboksary'),
+                                               '56' => __('Chelyabinsk'),
+                                               '1104' => __('Cherkessk'),
+                                               '16' => __('Yaroslavl'),
+                                               ], null, ['class' => 'custom-select rounded-0 region', 'id' => 'region-filter-'. $item->id]) !!}
+
+                                        <label class="mt-3">{{ __('Link') }}</label>
+                                        <input type="text" class="form form-control"
+                                               name="link-filter"
+                                               id="link-filter-{{ $item->id }}">
+
+                                        <div class="d-flex flex-row mt-3 mb-3">
+                                            <div>
+                                                <label>{{ __('Position from (inclusive)') }}</label>
+                                                <input class="form form-control" type="number"
+                                                       id="position-filter-after-{{ $item->id }}"
+                                                       placeholder="{{ __('0 - did not get into the top 100') }}">
+                                            </div>
+
+                                            <div>
+                                                <label>{{ __('Position up to (inclusive)') }}</label>
+                                                <input class="form form-control" type="number"
+                                                       id="position-filter-before-{{ $item->id }}"
+                                                       placeholder="{{ __('0 - did not get into the top 100') }}">
+                                            </div>
+                                        </div>
+
+                                        <span class="__helper-link ui_tooltip_w">
+                                                {{ __('How it works') }}
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right" style="width: 350px">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('According to your project') }} {{ $item->name }} {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>
+                                                        {{ __('All matches found will be deleted.') }} <br>
+                                                        {{ __("If you don't want to search by any parameter, then leave the field empty.") }}
+                                                    </span>
+                                                </span>
+                                            </span>
+
+                                        <div class="text-danger mt-3 mb-3">
+                                            {{ __('You can delete all the results associated with the project') }} {{ $item->name }}
+                                            , {{ __('if you leave all fields empty, be careful') }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary remove-with-filters"
+                                                data-dismiss="modal" data-target="{{ $item->id }}">
+                                            {{ __('Remove') }}
+                                        </button>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Do not delete') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="repeatUniqueScan{{ $item->id }}" tabindex="-1"
+                             aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ __('restart analyzed pages') }} {{ $item->name }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ __('Are you going to restart the scan') }}
+                                        <b>{{ $item->count_sites }}</b>
+                                        {{ __('unique pages, are you sure?') }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button data-target="{{ $item->id }}" type="button"
+                                                class="btn btn-secondary repeat-scan-unique-sites"
+                                                data-dismiss="modal">{{ __('Start') }}</button>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Close') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                     <div style="display:none;" class="history">
                         <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
                              aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -455,11 +466,81 @@
                                                 </div>
                                             </div>
 
+                                            <div class="form-group required">
+                                                <label>{{ __('Keyword') }}</label>
+                                                {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
+                                            </div>
+
+                                            <div class="form-group required">
+                                                <label>{{ __('Region') }}</label>
+                                                {!! Form::select('region', array_unique([
+                                                       $config->region => $config->region,
+                                                       '213' => __('Moscow'),
+                                                       '1' => __('Moscow and the area'),
+                                                       '20' => __('Arkhangelsk'),
+                                                       '37' => __('Astrakhan'),
+                                                       '197' => __('Barnaul'),
+                                                       '4' => __('Belgorod'),
+                                                       '77' => __('Blagoveshchensk'),
+                                                       '191' => __('Bryansk'),
+                                                       '24' => __('Veliky Novgorod'),
+                                                       '75' => __('Vladivostok'),
+                                                       '33' => __('Vladikavkaz'),
+                                                       '192' => __('Vladimir'),
+                                                       '38' => __('Volgograd'),
+                                                       '21' => __('Vologda'),
+                                                       '193' => __('Voronezh'),
+                                                       '1106' => __('Grozny'),
+                                                       '54' => __('Ekaterinburg'),
+                                                       '5' => __('Ivanovo'),
+                                                       '63' => __('Irkutsk'),
+                                                       '41' => __('Yoshkar-ola'),
+                                                       '43' => __('Kazan'),
+                                                       '22' => __('Kaliningrad'),
+                                                       '64' => __('Kemerovo'),
+                                                       '7' => __('Kostroma'),
+                                                       '35' => __('Krasnodar'),
+                                                       '62' => __('Krasnoyarsk'),
+                                                       '53' => __('Kurgan'),
+                                                       '8' => __('Kursk'),
+                                                       '9' => __('Lipetsk'),
+                                                       '28' => __('Makhachkala'),
+                                                       '23' => __('Murmansk'),
+                                                       '1092' => __('Nazran'),
+                                                       '30' => __('Nalchik'),
+                                                       '47' => __('Nizhniy Novgorod'),
+                                                       '65' => __('Novosibirsk'),
+                                                       '66' => __('Omsk'),
+                                                       '10' => __('Eagle'),
+                                                       '48' => __('Orenburg'),
+                                                       '49' => __('Penza'),
+                                                       '50' => __('Perm'),
+                                                       '25' => __('Pskov'),
+                                                       '39' => __('Rostov-on-Don'),
+                                                       '11' => __('Ryazan'),
+                                                       '51' => __('Samara'),
+                                                       '42' => __('Saransk'),
+                                                       '2' => __('Saint-Petersburg'),
+                                                       '12' => __('Smolensk'),
+                                                       '239' => __('Sochi'),
+                                                       '36' => __('Stavropol'),
+                                                       '10649' => __('Stary Oskol'),
+                                                       '973' => __('Surgut'),
+                                                       '13' => __('Tambov'),
+                                                       '14' => __('Tver'),
+                                                       '67' => __('Tomsk'),
+                                                       '15' => __('Tula'),
+                                                       '195' => __('Ulyanovsk'),
+                                                       '172' => __('Ufa'),
+                                                       '76' => __('Khabarovsk'),
+                                                       '45' => __('Cheboksary'),
+                                                       '56' => __('Chelyabinsk'),
+                                                       '1104' => __('Cherkessk'),
+                                                       '16' => __('Yaroslavl'),
+                                                       ]), null, ['class' => 'custom-select rounded-0 region']) !!}
+                                            </div>
+
                                             <div id="key-phrase">
-                                                <div class="form-group required">
-                                                    <label>{{ __('Keyword') }}</label>
-                                                    {!! Form::text("phrase", null ,["class" => "form-control phrase", "required"]) !!}
-                                                </div>
 
                                                 <div class="form-group required">
                                                     <label>{{ __('Top 10/20') }}</label>
@@ -469,75 +550,6 @@
                                                         <option value="20">20</option>
                                                     </select>
 
-                                                </div>
-
-                                                <div class="form-group required">
-                                                    <label>{{ __('Region') }}</label>
-                                                    {!! Form::select('region', array_unique([
-                                                           $config->region => $config->region,
-                                                           '213' => __('Moscow'),
-                                                           '1' => __('Moscow and the area'),
-                                                           '20' => __('Arkhangelsk'),
-                                                           '37' => __('Astrakhan'),
-                                                           '197' => __('Barnaul'),
-                                                           '4' => __('Belgorod'),
-                                                           '77' => __('Blagoveshchensk'),
-                                                           '191' => __('Bryansk'),
-                                                           '24' => __('Veliky Novgorod'),
-                                                           '75' => __('Vladivostok'),
-                                                           '33' => __('Vladikavkaz'),
-                                                           '192' => __('Vladimir'),
-                                                           '38' => __('Volgograd'),
-                                                           '21' => __('Vologda'),
-                                                           '193' => __('Voronezh'),
-                                                           '1106' => __('Grozny'),
-                                                           '54' => __('Ekaterinburg'),
-                                                           '5' => __('Ivanovo'),
-                                                           '63' => __('Irkutsk'),
-                                                           '41' => __('Yoshkar-ola'),
-                                                           '43' => __('Kazan'),
-                                                           '22' => __('Kaliningrad'),
-                                                           '64' => __('Kemerovo'),
-                                                           '7' => __('Kostroma'),
-                                                           '35' => __('Krasnodar'),
-                                                           '62' => __('Krasnoyarsk'),
-                                                           '53' => __('Kurgan'),
-                                                           '8' => __('Kursk'),
-                                                           '9' => __('Lipetsk'),
-                                                           '28' => __('Makhachkala'),
-                                                           '23' => __('Murmansk'),
-                                                           '1092' => __('Nazran'),
-                                                           '30' => __('Nalchik'),
-                                                           '47' => __('Nizhniy Novgorod'),
-                                                           '65' => __('Novosibirsk'),
-                                                           '66' => __('Omsk'),
-                                                           '10' => __('Eagle'),
-                                                           '48' => __('Orenburg'),
-                                                           '49' => __('Penza'),
-                                                           '50' => __('Perm'),
-                                                           '25' => __('Pskov'),
-                                                           '39' => __('Rostov-on-Don'),
-                                                           '11' => __('Ryazan'),
-                                                           '51' => __('Samara'),
-                                                           '42' => __('Saransk'),
-                                                           '2' => __('Saint-Petersburg'),
-                                                           '12' => __('Smolensk'),
-                                                           '239' => __('Sochi'),
-                                                           '36' => __('Stavropol'),
-                                                           '10649' => __('Stary Oskol'),
-                                                           '973' => __('Surgut'),
-                                                           '13' => __('Tambov'),
-                                                           '14' => __('Tver'),
-                                                           '67' => __('Tomsk'),
-                                                           '15' => __('Tula'),
-                                                           '195' => __('Ulyanovsk'),
-                                                           '172' => __('Ufa'),
-                                                           '76' => __('Khabarovsk'),
-                                                           '45' => __('Cheboksary'),
-                                                           '56' => __('Chelyabinsk'),
-                                                           '1104' => __('Cherkessk'),
-                                                           '16' => __('Yaroslavl'),
-                                                           ]), null, ['class' => 'custom-select rounded-0 region']) !!}
                                                 </div>
 
                                                 <div class="form-group required" id="ignoredDomainsBlock">

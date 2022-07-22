@@ -20,11 +20,12 @@ function getHistoryInfo() {
                 } else {
                     $('#key-phrase').show()
                     $('#site-list').hide()
-                    $('.form-control.phrase').val(history.phrase)
                 }
+
+                $('.form-control.link').val(history.link)
+                $('.form-control.phrase').val(history.phrase)
                 $('#type').val(history.type)
                 $('#hiddenId').val(id)
-                $('.form-control.link').val(history.link)
                 $(".custom-select#count").val(history.count).change();
                 $(".custom-select.rounded-0.region").val(history.region).change();
                 $(".form-control.ignoredDomains").val(history.ignoredDomains);
@@ -498,7 +499,6 @@ $(document).ready(function () {
         });
 
         $('.project_name').unbind().click(function () {
-            console.log(1)
             hideListHistory()
             hideTableHistory()
 
