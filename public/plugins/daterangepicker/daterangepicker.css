@@ -397,11 +397,11 @@
   }
 
   .daterangepicker .ranges {
-    float: left;
+    float: right;
   }
 
   .daterangepicker.rtl .ranges {
-    float: right;
+    float: left;
   }
 
   .daterangepicker .drp-calendar.left {
