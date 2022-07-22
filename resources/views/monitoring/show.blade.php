@@ -112,6 +112,7 @@
             const PROJECT_ID = '{{ $project->id }}';
             const REGION_ID = '{{ request('region', null) }}';
             const DATES = '{{ request('dates', null) }}';
+            const MODE = '{{ request('mode', null) }}';
             const PAGE_LENGTH = 5;
 
             let table = $('.table');
@@ -125,6 +126,7 @@
                 length: PAGE_LENGTH,
                 region_id: REGION_ID,
                 dates_range: DATES,
+                mode_range: MODE,
             }).then(function (response) {
 
                 let region = response.data.region;
@@ -166,6 +168,7 @@
                         data: {
                             region_id: REGION_ID,
                             dates_range: DATES,
+                            mode_range: MODE,
                         },
                     },
                     columns: columns,
@@ -512,16 +515,17 @@
                 endDate = moment(dates[1]);
             }
 
-            $('#date-range').daterangepicker({
+            let range = $('#date-range');
+            range.daterangepicker({
                 opens: 'left',
                 startDate: startDate ?? moment().subtract(30, 'days'),
                 endDate  : endDate ?? moment(),
-                minDate: moment().subtract(90, 'days'),
+                //minDate: moment().subtract(90, 'days'),
                 ranges   : {
                     'Последние 7 дней' : [moment().subtract(6, 'days'), moment()],
                     'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
                     'Прошлый месяц'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Все дни'  : [moment().subtract(89, 'days'), moment()],
+                    //'Все дни'  : [moment().subtract(89, 'days'), moment()],
                 },
                 alwaysShowCalendars: true,
                 showCustomRangeLabel: false,
@@ -534,17 +538,58 @@
                 locale: {
                     format: 'DD-MM-YYYY'
                 }
-            },
-            function (start, end) {
+            });
 
-                let dates = start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD');
+            range.on('apply.daterangepicker', function(ev, picker) {
+
+                let dates = picker.startDate.format('YYYY-MM-DD')+ ' - ' + picker.endDate.format('YYYY-MM-DD');
 
                 let url = new URL(window.location.href);
                 let params = new URLSearchParams(url.search);
 
                 params.set('dates', dates);
 
+                let mode = picker.container.find('input[name="mode"]:checked', '.mode').val();
+
+                params.set('mode', mode);
+
                 window.location.search = params.toString();
+            });
+
+            range.on('show.daterangepicker', function(ev, picker) {
+                //do something, like clearing an input
+                let container = picker.container;
+
+                if(container.find('.ranges').length < 2){
+
+                    let ranges = $('<div />', {
+                        class: "ranges mode"
+                    });
+                    let ul = $('<ul />');
+
+                    let settings = [
+                        {id: 'range', name: 'Все дни', value: 'range', checked: true},
+                        {id: 'dates', name: 'Две даты', value: 'dates', checked: false},
+                    ];
+
+                    $.each(settings, function (i, item) {
+
+                        let label = $('<label />', {class: "form-check-label", for: item.id}).text(item.name);
+                        let radio = $('<input />', {class: "form-check-input",id: item.id, type: "radio", name: "mode", value: item.value, checked: item.checked}).css('margin-top', 'auto');
+                        let formCheck = $('<div />', {
+                            class: "form-check"
+                        });
+
+                        ul.append($('<li />').html(formCheck.prepend(radio, label)));
+                    });
+
+                    if(MODE){
+                        ul.find('input[name="mode"]').prop('checked', false);
+                        ul.find('input[value="'+ MODE +'"]').prop('checked', true);
+                    }
+
+                    container.prepend(ranges.html(ul));
+                }
             });
 
             $('.table').on('click', '.delete-keyword' ,function () {
