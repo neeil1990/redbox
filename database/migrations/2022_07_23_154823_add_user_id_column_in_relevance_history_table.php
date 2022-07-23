@@ -16,7 +16,7 @@ class AddUserIdColumnInRelevanceHistoryTable extends Migration
     public function up()
     {
         Schema::table('relevance_history', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->default(1);
+            $table->unsignedBigInteger('user_id')->default(4);
 
             $table->foreign('user_id')
                 ->references('id')
