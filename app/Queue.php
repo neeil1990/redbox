@@ -76,7 +76,6 @@ class Queue extends Model
             $mainHistory,
             false,
             0,
-            $userId
         );
     }
 }

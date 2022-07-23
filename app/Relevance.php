@@ -1224,7 +1224,6 @@ class Relevance
                     $main,
                     true,
                     $historyId,
-                    $userId,
                     base64_encode(gzcompress($this->params['html_main_page'], 9)),
                     json_encode($this->sites)
                 );
