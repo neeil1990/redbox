@@ -197,7 +197,6 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatScan(Request $request): JsonResponse
     {
-        Log::debug('Запущен скан');
         $admin = User::isUserAdmin();
         $userId = Auth::id();
         $object = RelevanceHistory::where('id', '=', $request->id)->first();
@@ -218,7 +217,6 @@ class HistoryRelevanceController extends Controller
             $object->state = 0;
             $object->save();
 
-            Log::debug('Проект прошёл проверки и добален в очередь');
             RelevanceAnalysisQueue::dispatch(
                 $ownerId,
                 $request->all(),

@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Show details') ])
+@component('component.card', ['title' =>  __('Detailed analysis') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -23,7 +23,7 @@
 
     <div class="card">
         <div class="alert alert-primary pb-3" role="alert" id="primaryAlert" style="display: none"></div>
-        <div class="card-header d-flex p-0">
+        <div class="border-bottom d-flex p-0 justify-content-between w-100">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
                     <a class="nav-link active" href="#tab_1" data-toggle="tab"
@@ -44,6 +44,24 @@
                     </div>
                 </li>
             </ul>
+            <ul class="nav nav-pills p-2">
+                <li class="nav-item" style="cursor:pointer;">
+                    <span class="nav-link">
+                        {{ $object->last_check }}
+                    </span>
+                </li>
+                <li class="nav-item" style="cursor:pointer;">
+                    <span class="nav-link">
+                        {{ $object->phrase }}
+                    </span>
+                </li>
+                <li class="nav-item" style="cursor:pointer;" id="copyInBuffer">
+                    <span class="nav-link">
+                        {{ $object->main_link }}
+                        <i class="fa fa-copy"></i>
+                    </span>
+                </li>
+            </ul>
         </div>
         <div class="card-body">
             <div class="tab-content">
@@ -60,8 +78,8 @@
                             <thead>
                             <tr>
                                 <th class="col-3"></th>
-                                <th>{{ __('Average values of competitors') }}</th>
-                                <th>{{ __('Landing Page Values') }}</th>
+                                <th class="col-3">{{ __('Average values of competitors') }}</th>
+                                <th class="col-3">{{ __('Landing Page Values') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -182,7 +200,7 @@
 
                     <div id="rec" style="display: none" class="mb-3">
                         <h2>{{ __('TLP Recommendations and Spam check') }}</h2>
-                        <button class="btn btn-secondary" id="recButton">{{ __('Show') }}</button>
+                        <button class="btn btn-secondary" id="recButton">Показать</button>
                     </div>
 
                     <div class="pb-3 recommendations" style="display:none;">
@@ -865,7 +883,7 @@
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
-                    $(this).html("{{ __('Show') }}")
+                    $(this).html("Показать")
                 } else {
                     $('.pb-3.recommendations').show()
                     $(this).html("{{ __('Hide') }}")
@@ -1077,7 +1095,7 @@
                     });
                 } else {
                     $('.toast-top-right.success-message').show(300)
-                    $('#toast-message').html('Ваша история успешно загружена, но её данные были частично удалены.')
+                    $('#toast-message').html("{{ __('Your history has been uploaded successfully, but its data has been partially deleted.') }}")
                     setTimeout(() => {
                         $('.toast-top-right.success-message').hide(300)
                     }, 10000)
@@ -1088,6 +1106,23 @@
                     $('#preloaderBlock').hide(300)
                 }, 1500)
             }
+
+            $('#copyInBuffer').click(function () {
+                let area = document.createElement('textarea');
+                area.style.opasity = 0
+                document.body.appendChild(area);
+                area.value = "{{ $object->main_link }}";
+                area.select();
+                document.execCommand("copy");
+                document.body.removeChild(area);
+
+                $('.toast-top-right.success-message').show(300)
+                $('#toast-message').html("{{ __('The link was successfully copied to the clipboard') }}")
+                setTimeout(() => {
+                    $('.toast-top-right.success-message').hide(300)
+                }, 5000)
+            })
+
         </script>
     @endslot
 @endcomponent

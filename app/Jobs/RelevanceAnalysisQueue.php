@@ -52,7 +52,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug('тип проверки', [$this->type]);
         $relevance = new Relevance($this->request, true);
 
         if ($this->type == 'full') {
@@ -81,7 +80,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
             $relevance->parseSites();
         }
 
-        Log::debug('Подготовка завершена, запускаем анализ', [$this->type]);
         $relevance->analysis($this->userId, $this->historyId);
     }
 
