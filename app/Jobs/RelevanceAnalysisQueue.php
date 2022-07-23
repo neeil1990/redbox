@@ -52,9 +52,10 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->type == 'full') {
+        Log::debug('тип проверки', [$this->type]);
+        $relevance = new Relevance($this->request, true);
 
-            $relevance = new Relevance($this->request, true);
+        if ($this->type == 'full') {
             $relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
@@ -64,29 +65,24 @@ class RelevanceAnalysisQueue implements ShouldQueue
                 $relevance->analysisByList($this->request);
             }
 
-            $relevance->analysis($this->userId, $this->historyId);
-
         } elseif ($this->type == 'mainPage') {
 
             $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
-            $relevance = new Relevance($this->request, true);
             $relevance->getMainPageHtml();
             $relevance->setSites($info->sites);
-            $relevance->analysis($this->userId, $this->historyId);
 
         } elseif ($this->type == 'competitors') {
 
             $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
-            $relevance = new Relevance($this->request, true);
             $relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
             $relevance->setDomains($info->sites);
             $relevance->parseSites();
-            $relevance->analysis($this->userId, $this->historyId);
-
         }
 
+        Log::debug('Подготовка завершена, запускаем анализ', [$this->type]);
+        $relevance->analysis($this->userId, $this->historyId);
     }
 
     /**
