@@ -3,22 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Jobs;
-use App\News;
 use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
 use App\RelevanceAllUniquePages;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
-use App\RelevanceHistoryResult;
 use App\RelevanceStatistics;
 use App\RelevanceUniqueDomains;
 use App\RelevanceUniquePages;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
