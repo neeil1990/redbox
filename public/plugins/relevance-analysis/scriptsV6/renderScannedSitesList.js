@@ -75,16 +75,16 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
         tbody.append(
             "<tr class='render" + ignorClass + "'>" +
             position +
-            "<td data-order='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
+            "<td data-target='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
             "   <span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
             + noTop + btnGroup
             + "</td>" +
-            "<td data-order='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +
-            "<td data-order='" + value['coverage'] + "'>" + value['coverage'] + "% </td>" +
-            "<td data-order='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
-            "<td data-order='" + width + "'>" + width + "</td>" +
-            "<td data-order='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>" +
-            "<td data-order='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>" +
+            "<td data-target='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +
+            "<td data-target='" + value['coverage'] + "'>" + value['coverage'] + "% </td>" +
+            "<td data-target='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
+            "<td data-target='" + width + "'>" + width + "</td>" +
+            "<td data-target='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>" +
+            "<td data-target='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>" +
             warning +
             "</tr>"
         )

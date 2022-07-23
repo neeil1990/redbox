@@ -22,25 +22,26 @@
     </div>
 
     <div class="card">
+        <div class="alert alert-primary pb-3" role="alert" id="primaryAlert" style="display: none"></div>
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
                     <a class="nav-link active" href="#tab_1" data-toggle="tab"
                        id="firstTab">{{ __('Show details') }}</a>
                 </li>
-                <li class="nav-item" id="repeat-analyse-item">
-                    @if($object->state == 1)
-                        <a class="nav-link" href="#tab_2" data-toggle="tab">
-                            {{ __('Repeat the analysis') }}
-                        </a>
-                    @else
-                        <div class="three col d-flex align-items-center">
-                            {{ __('Standing in line for reanalysis') }}
-                            <div class="loader d-flex justify-content-center align-items-center" id="loader-1"
-                                 style="height: 35px; width: 35px">
-                            </div>
+                <li class="nav-item" id="repeat-analyse-item"
+                    @if($object->state == 0) style="display:none;"@endif>
+                    <a class="nav-link" href="#tab_2" data-toggle="tab">
+                        {{ __('Repeat the analysis') }}
+                    </a>
+                </li>
+                <li @if($object->state == 1) style="display:none;" @endif id="circleTab">
+                    <div class="three col d-flex align-items-center">
+                        {{ __('Standing in line for reanalysis') }}
+                        <div class="loader d-flex justify-content-center align-items-center" id="loader-1"
+                             style="height: 35px; width: 35px">
                         </div>
-                    @endif
+                    </div>
                 </li>
             </ul>
         </div>
@@ -72,7 +73,9 @@
                                 <td id="mainPageCountWords"></td>
                             </tr>
                             <tr>
-                                <td><b>{{ __('Number of characters') }}</b></td>
+                                <td>
+                                    <b>{{ __('Number of characters') }}</b>
+                                </td>
                                 <td id="avgCountSymbols"></td>
                                 <td id="mainPageCountSymbols"></td>
                             </tr>
@@ -1007,7 +1010,39 @@
                 }
             }
 
+            function checkQueueScanState(timeOut) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '/check-queue-scan-state',
+                    data: {
+                        id: $('#hiddenId').val()
+                    },
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#repeat-analyse-item').show();
+                            $('#circleTab').hide();
+                            clearInterval(timeOut)
+                            $('#primaryAlert').html(
+                                'Ваши результаты готовы и размещены по ссылке ' +
+                                '<a style="color: white; font-weight: bolder" target="_blank" href="/show-history/' + response.newProject.id + '">Здесь</a>'
+                            )
+                            $('#primaryAlert').show()
+                        } else if (response.message === 'wait') {
+                        }
+                    },
+
+                    error: function () {
+                        $('#toast-container').show(300)
+                        setInterval(function () {
+                            $('#toast-container').hide(300)
+                        }, 3500)
+                    }
+                });
+            }
+
             function successAjaxRequest() {
+                $('#primaryAlert').hide()
                 $('.toast-top-right.success-message').show(300)
                 setInterval(function () {
                     $('.toast-top-right.success-message').hide(300)
@@ -1021,13 +1056,12 @@
                     easing: "linear"
                 });
 
-                $('#repeat-analyse-item').html(
-                    '<div class="three col d-flex align-items-center">{{ __('Standing in line for reanalysis') }}' +
-                    '   <div class="loader d-flex justify-content-center align-items-center" ' +
-                    '               id="loader-1" style="height: 35px; width: 35px">' +
-                    '   </div> ' +
-                    '</div>'
-                )
+                $('#repeat-analyse-item').hide();
+                $('#circleTab').show();
+
+                let timeOut = setInterval(() => {
+                    checkQueueScanState(timeOut)
+                }, 2000)
             }
 
             function successRequest(history, config) {

@@ -526,6 +526,31 @@ class HistoryRelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    function checkQueueScanState(Request $request): JsonResponse
+    {
+        $project = RelevanceHistory::where('id', '=', $request->id)->first();
+
+        if ($project->state == 1) {
+            $newProject = RelevanceHistory::where('id', '!=', $request->id)
+                ->where('id', '>', $request->id)
+                ->where('user_id', '=', Auth::id())
+                ->latest('id')
+                ->first();
+            return response()->json([
+                'message' => 'success',
+                'newProject' => $newProject
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'wait',
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function repeatScanUniqueSites(Request $request): JsonResponse
     {
         $userId = Auth::id();
