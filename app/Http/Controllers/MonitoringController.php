@@ -247,11 +247,19 @@ class MonitoringController extends Controller
             $query->where('monitoring_searchengine_id', $region->id)->dateRange($dates);
         }]);
 
-        $keywords->transform(function($item){
+        $mode = $request->input('mode_range', 'range');
+
+        $keywords->transform(function($item) use ($mode){
 
             $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
                 return $item->created_at->format('d.m.Y');
             });
+
+            switch ($mode) {
+                case "dates":
+                    $unique = collect([$unique->first(), $unique->last()]);
+                    break;
+            }
 
             $item->last_positions = $unique;
 
