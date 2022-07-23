@@ -1016,6 +1016,7 @@
                     dataType: "json",
                     url: '/check-queue-scan-state',
                     data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
                         id: $('#hiddenId').val()
                     },
                     success: function (response) {
