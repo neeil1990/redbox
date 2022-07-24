@@ -708,17 +708,18 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                Вы собираетесь отвязать метку от проекта, вы уверены?
+                                                {{ __('Are you going to untie the label from the project, are you sure?') }}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button"
                                                         class="btn btn-secondary remove-project-relevance-link"
                                                         data-tag="{{ $tag->id }}"
                                                         data-history="{{ $item->id }}"
-                                                        data-dismiss="modal">Отвязать метку от проекта
+                                                        data-dismiss="modal">
+                                                    {{ __('Untie the label from the project') }}
                                                 </button>
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">
-                                                    Закрыть
+                                                    {{ __('Close') }}
                                                 </button>
                                             </div>
                                         </div>
