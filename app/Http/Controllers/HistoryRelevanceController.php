@@ -30,7 +30,6 @@ class HistoryRelevanceController extends Controller
         $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
         $admin = User::isUserAdmin();
 
-        dd($projects);
         return view('relevance-analysis.history', [
             'main' => $projects,
             'admin' => $admin,
