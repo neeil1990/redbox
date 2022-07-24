@@ -7,6 +7,20 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            .project-info {
+                padding-right: 0.5rem;
+                padding-left: 0.5rem;
+            }
+
+            .project-info:hover {
+                color: #007bff;
+            }
+
+            .nav-link {
+                padding: .5rem .8rem !important;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right error-message" style="display:none;">
@@ -26,13 +40,37 @@
         <div class="border-bottom d-flex p-0 justify-content-between w-100">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('relevance-analysis') }}">{{ __('Analyzer') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('create.queue.view') }}">
+                        {{ __('Create page analysis tasks') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('relevance.history') }}">{{ __('History') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('sharing.view') }}" class="nav-link">{{ __('Share your projects') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('access.project') }}" class="nav-link">{{ __('Projects available to you') }}</a>
+                </li>
+                @if($admin)
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                    </li>
+                @endif
+                <li class="nav-item">
                     <a class="nav-link active" href="#tab_1" data-toggle="tab"
                        id="firstTab">{{ __('Show details') }}</a>
                 </li>
                 <li class="nav-item" id="repeat-analyse-item"
                     @if($object->state == 0) style="display:none;"@endif>
-                    <a class="nav-link" href="#tab_2" data-toggle="tab">
-                        {{ __('Repeat the analysis') }}
+                    <a class="nav-link" href="#tab_2" data-toggle="tab">{{ __('Repeat the analysis') }}
                     </a>
                 </li>
                 <li @if($object->state == 1) style="display:none;" @endif id="circleTab">
@@ -44,26 +82,26 @@
                     </div>
                 </li>
             </ul>
-            <ul class="nav nav-pills p-2">
-                <li class="nav-item" style="cursor:pointer;">
-                    <span class="nav-link">
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-end">
+                <div class="nav-item" style="cursor:pointer;">
+                    <span class="nav-link project-info">
                         {{ $object->last_check }}
                     </span>
-                </li>
-                <li class="nav-item" style="cursor:pointer;">
-                    <span class="nav-link">
+                </div>
+                <div class="nav-item" style="cursor:pointer;">
+                    <span class="nav-link project-info">
                         {{ $object->phrase }}
                     </span>
-                </li>
-                <li class="nav-item" style="cursor:pointer;" id="copyInBuffer">
-                    <span class="nav-link">
+                </div>
+                <div class="nav-item" style="cursor:pointer;" id="copyInBuffer">
+                    <span class="nav-link project-info">
                         {{ $object->main_link }}
                         <i class="fa fa-copy"></i>
                     </span>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body">
+                </div>
+            </div>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
 

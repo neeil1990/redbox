@@ -503,12 +503,12 @@ class HistoryRelevanceController extends Controller
         }
 
         $count = $query->delete();
-        Log::debug('Чистка проектов c фильтрами', [
-            'user' => Auth::id(),
-            'count' => $count,
-            'time' => Carbon::now()->toDateString()
-        ]);
+
         $info = ProjectRelevanceHistory::calculateInfo($main);
+        $removed = ProjectRelevanceHistory::where('id', '=', $request->id)
+            ->where('count_sites', '=', 0)->delete();
+
+        Log::info($removed);
 
         return response()->json([
             'success' => true,
@@ -518,6 +518,7 @@ class HistoryRelevanceController extends Controller
             'countChecks' => $info['countChecks'],
             'avgPosition' => $info['avgPosition'],
             'objectId' => $request->id,
+            'removed' => $removed,
             'code' => 200
         ]);
     }

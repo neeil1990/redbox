@@ -11,7 +11,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.code === 200) {
                     getSuccessMessage(response.message)
-                    triggerClick(response)
+                    setValues(response)
                 } else if (response.code === 415) {
                     getErrorMessage(response.message)
                 }
@@ -22,7 +22,6 @@ $(document).ready(function () {
     $('.remove-with-filters').on('click', function () {
         let id = $(this).attr('data-target');
 
-        console.log($('#comment-filter-' + id).val())
         if ($('#comment-filter-' + id).val() == '' &&
             $('#phrase-filter-' + id).val() == '' &&
             $('#region-filter-' + id).val() == 'none' &&
@@ -56,9 +55,10 @@ $(document).ready(function () {
                 positionBefore: $('#position-filter-before-' + id).val()
             },
             success: function (response) {
+                console.log(response)
                 if (response.code === 200) {
                     getSuccessMessage(response.message)
-                    triggerClick(response)
+                    setValues(response)
                 } else if (response.code === 415) {
                     getErrorMessage(response.message)
                 }
@@ -82,11 +82,15 @@ $(document).ready(function () {
         }, 3000)
     }
 
-    function triggerClick(response) {
+    function setValues(response) {
         $('.count-sites-' + response.objectId).html(response.countSites)
         $('.total-points-' + response.objectId).html(response.points)
         $('.count-checks-' + response.objectId).html(response.countChecks)
         $('.total-positions-' + response.objectId).html(response.avgPosition)
-        $('a[data-order="' + response.objectId + '"]').trigger('click')
+        if (response.removed == 1) {
+            $('#story-id-' + response.objectId).remove()
+        } else {
+            $('a[data-order="' + response.objectId + '"]').trigger('click')
+        }
     }
 });
