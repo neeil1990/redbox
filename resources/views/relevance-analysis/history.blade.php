@@ -695,38 +695,38 @@
                                 </div>
                             </div>
                         @endforeach
-                    @endif
-
-                    <div id="removeLinksModals">
-                        @foreach($item->relevanceTags as $key => $tag)
-                            <div class="modal fade" id="removeTagModal{{ $key }}"
-                                 aria-labelledby="removeTagModal{{ $key }}Label" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            Вы собираетесь отвязать метку от проекта, вы уверены?
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button"
-                                                    class="btn btn-secondary remove-project-relevance-link"
-                                                    data-tag="{{ $tag->id }}"
-                                                    data-history="{{ $item->id }}"
-                                                    data-dismiss="modal">Отвязать метку от проекта
-                                            </button>
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть
-                                            </button>
+                        <div id="removeLinksModals">
+                            @foreach($item->relevanceTags as $key => $tag)
+                                <div class="modal fade" id="removeTagModal{{ $key }}"
+                                     aria-labelledby="removeTagModal{{ $key }}Label" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Вы собираетесь отвязать метку от проекта, вы уверены?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button"
+                                                        class="btn btn-secondary remove-project-relevance-link"
+                                                        data-tag="{{ $tag->id }}"
+                                                        data-history="{{ $item->id }}"
+                                                        data-dismiss="modal">Отвязать метку от проекта
+                                                </button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                    Закрыть
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
+                    @endif
                     <div style="display:none;" class="history">
                         <h3>{{ __("Recent checks") }}</h3>
                         <table id="history_table" class="table table-bordered table-hover dataTable dtr-inline w-100">
