@@ -62,14 +62,14 @@
                         <thead>
                         <tr>
                             <th>{{ __('Project name') }}</th>
-                             <th class="table-header">{{ __('Tags') }}</th>
+                            <th class="table-header">{{ __('Tags') }}</th>
                             <th>{{ __('Users who have access to the project') }}</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($projects as $item)
-                            <tr>
+                            <tr id="story-id-{{ $item->id }}">
                                 <td class="project_name" style="cursor:pointer;"
                                     data-order="{{ $item->id }}">
                                     <a href="#history_table_{{ $item->name }}">
@@ -219,7 +219,8 @@
                     </div>
                     <div class="modal-body">
                         <div>
-                            <label for="email">{{ __('The mail of the user from whom you want to take access') }}</label>
+                            <label
+                                for="email">{{ __('The mail of the user from whom you want to take access') }}</label>
                             <input type="email" class="form form-control" id="off-email" name="off-email">
                         </div>
                         <div>

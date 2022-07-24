@@ -138,7 +138,7 @@
                         </thead>
                         <tbody>
                         @foreach($projects as $item)
-                            <tr>
+                            <tr id="story-id-{{ $item->id }}">
                                 <td>
                                     <a href="#history_table_{{ $item->name }}"
                                        class="project_name"
