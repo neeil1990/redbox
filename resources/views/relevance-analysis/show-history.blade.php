@@ -58,10 +58,10 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                        <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
                 <li class="nav-item">
@@ -84,26 +84,26 @@
             </ul>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-end">
-                <div class="nav-item" style="cursor:pointer;">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <div class="d-flex justify-content-end">
+                        <div class="nav-item" style="cursor:pointer;">
                     <span class="nav-link project-info">
                         {{ $object->last_check }}
                     </span>
-                </div>
-                <div class="nav-item" style="cursor:pointer;">
+                        </div>
+                        <div class="nav-item" style="cursor:pointer;">
                     <span class="nav-link project-info">
                         {{ $object->phrase }}
                     </span>
-                </div>
-                <div class="nav-item" style="cursor:pointer;" id="copyInBuffer">
+                        </div>
+                        <div class="nav-item" style="cursor:pointer;" id="copyInBuffer">
                     <span class="nav-link project-info">
                         {{ $object->main_link }}
                         <i class="fa fa-copy"></i>
                     </span>
-                </div>
-            </div>
-            <div class="tab-content">
-                <div class="tab-pane active" id="tab_1">
+                        </div>
+                    </div>
 
                     <div class="text-center" id="preloaderBlock">
                         <img src="/img/1485.gif" alt="preloader_gif">
@@ -558,6 +558,8 @@
                                                     Полученная сумма сначала делится на 3, затем умножается на 2<br>
                                                     - <br>
                                                     Если полученное кол-во баллов больше 100, то мы приравниваем его к 100.<br>
+                                                    <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
@@ -573,6 +575,8 @@
                                                     Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
                                                     Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
                                                     Полученый процент равен сумме полученых баллов делённой на 600
+                                                    <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
@@ -588,6 +592,8 @@
                                                     Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
                                                     Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
                                                     Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
+                                                    <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
@@ -602,6 +608,8 @@
                                                     Для вычисления  ширины, беруться первые 10 не игнорируемых сайтов (позиция в топе) <br>
                                                     Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
                                                     В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно
+                                                    <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
@@ -619,12 +627,14 @@
                                                     Дальше все баллы для всех фраз складываются и делятся на общее количество слов. <br>
                                                     - <br>
                                                     Если мы переспамили, то пока в этом варианте мы никак не учитываем этот момент, фраза просто получает 100 баллов по плотности. <br>
+                                                    <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
                                     @endif
                                 </th>
-                                <th>Количество символов</th>
+                                <th>{{ __('Characters') }}</th>
                                 <th>{{ __('Result') }}</th>
                             </tr>
                             </thead>

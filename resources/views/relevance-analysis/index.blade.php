@@ -49,10 +49,10 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                        <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -245,7 +245,8 @@
                             </div>
                             <div class="d-flex mt-3" @if(!$admin) style="display: none" @endif>
                                 <div class="__helper-link ui_tooltip_w">
-                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                    <div
+                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                id="exp"
@@ -259,8 +260,12 @@
                                     <span class="ui_tooltip __bottom">
                                         <span class="ui_tooltip_content" style="width: 300px">
                                             Происходит опрос первых 50ти сайтов конкурентов<br>
-                                            <span class="text-danger">Работает только с <b>"Полным анализом"</b> <br>
-                                                и с типом проверки <b>"Клювевая фраза"</b></span>
+                                            <span class="text-primary">Работает только с
+                                                <b>"Полным анализом"</b> <br>
+                                                и с типом проверки <b>"Клювевая фраза"</b>
+                                            </span>
+                                            <br>
+                                            <span class="text-primary">Этот модуль доступен только админам</span>
                                         </span>
                                     </span>
                                 </span>
@@ -768,6 +773,7 @@
                                                     Полученная сумма сначала делится на 3, затем умножается на 2<br>
                                                     - <br>
                                                     Если полученное кол-во баллов больше 100, то мы приравниваем его к 100.<br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
@@ -783,6 +789,8 @@
                                                 Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
                                                 Если важное слово присутсвует в проверяемом сайте, то он получает за него 1 балл<br>
                                                 Полученый процент равен сумме полученых баллов делённой на 600
+                                                <br>
+                                                <span class="text-primary">Эта подсказка видна только админам</span>
                                             </span>
                                         </span>
                                     </span>
@@ -798,6 +806,8 @@
                                                 Для каждого отдельно взятого сайта происходит проверка наличия в нём слов, которые считаются важными <br>
                                                 Если важное слово присутсвует в проверяемом сайте, то он получает за него балл равный tf из таблицы униграм <br>
                                                 Общая сумма баллов каждого конкретного сайта делиться на общую сумму tf из таблицы униграм, таким образом мы получаем % охвата
+                                                <br>
+                                                <span class="text-primary">Эта подсказка видна только админам</span>
                                             </span>
                                         </span>
                                     </span>
@@ -811,7 +821,8 @@
                                                 <span class="ui_tooltip_content" style="width: 300px">
                                                     Для вычисления  ширины, беруться первые 10 не игнорируемых сайтов (позиция в топе) <br>
                                                     Их охват по всем словам(%) плюсуется и делиться на 10, для того чтобы выявить 100% ширину <br>
-                                                    В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно
+                                                    В соответствии с этими 100% для каждого сайта ширина просчитывается  отдельно <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>
@@ -829,6 +840,8 @@
                                                     Дальше все баллы для всех фраз складываются и делятся на общее количество слов. <br>
                                                     - <br>
                                                     Если мы переспамили, то пока в этом варианте мы никак не учитываем этот момент, фраза просто получает 100 баллов по плотности. <br>
+                                                    <br>
+                                                    <span class="text-primary">Эта подсказка видна только админам</span>
                                                 </span>
                                             </span>
                                         </span>

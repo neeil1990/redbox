@@ -1436,4 +1436,5 @@ class Relevance
 
         return $data;
     }
+
 }
