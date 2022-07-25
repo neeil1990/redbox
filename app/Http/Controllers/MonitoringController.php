@@ -368,8 +368,8 @@ class MonitoringController extends Controller
     {
         $columns = collect([
             'id' => 'ID',
-            'checkbox' => 'ID',
-            'btn' => 'ID',
+            'checkbox' => '',
+            'btn' => '',
             'query' => view('monitoring.partials.show.header.query')->render(),
             'url' => __('URL'),
             'group' => __('Group'),
