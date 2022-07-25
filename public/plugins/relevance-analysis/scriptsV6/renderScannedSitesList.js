@@ -1,4 +1,4 @@
-function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent) {
+function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent, avg = null) {
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
@@ -262,4 +262,12 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
         });
     }
 
+    if (avg !== null) {
+        $('#avgPoints').html(Number(avg.points).toFixed(2))
+        $('#avgCoverageText').html(Number(avg.coverage).toFixed(2))
+        $('#avgCoverageTf').html(Number(avg.coverageTf).toFixed(2))
+        $('#avgWidth').html(Number(avg.width).toFixed(2))
+        $('#avgDensity').html(Number(avg.densityPercent).toFixed(2))
+        $('#avgCountSymbols-2').html(Number(avg.countSymbols).toFixed(0))
+    }
 }

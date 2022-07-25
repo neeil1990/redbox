@@ -201,6 +201,7 @@ class RelevanceController extends Controller
             ],
             'unigramTable' => $relevance->wordForms,
             'sites' => $relevance->sites,
+            'sitesAVG' => $relevance->avg,
             'tfCompClouds' => $relevance->tfCompClouds,
             'phrases' => $relevance->phrases,
             'avgCoveragePercent' => $relevance->avgCoveragePercent ?? null,

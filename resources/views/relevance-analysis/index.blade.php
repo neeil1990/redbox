@@ -49,10 +49,12 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -759,7 +761,7 @@
                         <h3>{{ __('Analyzed sites') }}</h3>
                         <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
                             <thead>
-                            <tr role="row" style="position: relative; z-index: 100">
+                            <tr style="position: relative; z-index: 100">
                                 <th>{{ __('Position in the top') }}</th>
                                 <th>{{ __('Domain') }}</th>
                                 <th>
@@ -850,6 +852,19 @@
                                 <th>{{ __('Total number of characters') }}</th>
                                 <th>{{ __('Result') }}</th>
                             </tr>
+                            @if($admin)
+                                <tr>
+                                    <th>-</th>
+                                    <th>-</th>
+                                    <th id="avgPoints">-</th>
+                                    <th id="avgCoverageText"></th>
+                                    <th id="avgCoverageTf"></th>
+                                    <th id="avgWidth"></th>
+                                    <th id="avgDensity"></th>
+                                    <th id="avgCountSymbols-2"></th>
+                                    <th>-</th>
+                                </tr>
+                            @endif
                             </thead>
                             <tbody id="scanned-sites-tbody">
                             </tbody>
@@ -1172,7 +1187,14 @@
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
                 renderUnigramTable(response.unigramTable, response.ltp_count);
                 renderPhrasesTable(response.phrases, response.ltps_count)
-                renderScannedSitesList(response.sites, response.avgCoveragePercent, response.scanned_sites_count, response.hide_ignored_domains, response.boostPercent);
+                renderScannedSitesList(
+                    response.sites,
+                    response.avgCoveragePercent,
+                    response.scanned_sites_count,
+                    response.hide_ignored_domains,
+                    response.boostPercent,
+                    response.sitesAVG,
+                );
                 renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds, response.hide_ignored_domains);
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);

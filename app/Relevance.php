@@ -11,63 +11,65 @@ use Illuminate\Support\Str;
 
 class Relevance
 {
-    public $competitorsTextAndLinksCloud;
+    public $countWords = 0;
 
-    public $mainPageIsRelevance = false;
-
-    public $competitorsTextAndLinks;
-
-    public $competitorsLinksCloud;
-
-    public $competitorsCloud = [];
-
-    public $competitorsTextCloud;
-
-    public $tfCompClouds = [];
-
-    public $competitorsLinks;
-
-    public $competitorsText;
-
-    public $maxWordLength;
-
-    public $avgCoveragePercent;
-
-    public $ignoredWords;
-
-    public $coverageInfo;
-
-    public $wordForms;
-
-    public $mainPage;
-
-    public $domains;
-
-    public $phrases;
-
-    public $countSymbols;
-
-    public $countSymbolsInMyPage;
-
-    public $countWords;
-
-    public $countWordsInMyPage;
-
-    public $params;
-
-    public $pages;
-
-    public $sites;
+    public $countSymbols = 0;
 
     public $countNotIgnoredSites = 0;
 
+    public $mainPageIsRelevance = false;
+
+    public $competitorsTextAndLinks = '';
+
+    public $competitorsLinks = '';
+
+    public $competitorsText = '';
+
+    public $competitorsCloud = [];
+
     public $recommendations = [];
+
+    public $ignoredWords = [];
+
+    public $tfCompClouds = [];
+
+    public $wordForms = [];
+
+    public $mainPage = [];
+
+    public $domains = [];
+
+    public $pages = [];
+
+    public $avg = [];
+
+    public $competitorsTextAndLinksCloud;
+
+    public $competitorsLinksCloud;
+
+    public $competitorsTextCloud;
+
+    public $countSymbolsInMyPage;
+
+    public $countWordsInMyPage;
+
+    public $avgCoveragePercent;
+
+    public $maxWordLength;
+
+    public $coverageInfo;
+
+    public $phrases;
+
+    public $request;
 
     public $phrase;
 
-    public $queue;
+    public $params;
 
-    public $request;
+    public $sites;
+
+    public $queue;
 
     /**
      * @param $request
@@ -75,16 +77,6 @@ class Relevance
      */
     public function __construct($request, bool $queue = false)
     {
-        $this->pages = [];
-        $this->domains = [];
-        $this->mainPage = [];
-        $this->wordForms = [];
-        $this->ignoredWords = [];
-        $this->competitorsText = '';
-        $this->competitorsLinks = '';
-        $this->competitorsTextAndLinks = '';
-        $this->countSymbols = 0;
-        $this->countWords = 0;
         $this->queue = $queue;
         $this->request = $request;
 
@@ -485,6 +477,7 @@ class Relevance
         $this->calculateWidthPoints();
         $this->calculateTotalPoints();
         $this->calculateTextInfo();
+        $this->calculateAvg();
     }
 
     /**
@@ -1360,6 +1353,39 @@ class Relevance
 
             $link = parse_url($url);
             RelevanceAllUniqueDomains::firstOrCreate(['name' => Str::lower($link['host'])]);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function calculateAvg()
+    {
+        $iterator = 1;
+        foreach ($this->sites as $site) {
+            if (!$site['ignored']) {
+                $this->calculate('coverage', $site['coverage'] / 5);
+                $this->calculate('coverageTf', $site['coverageTf'] / 5);
+                $this->calculate('densityPercent', $site['density']['densityMainPercent'] / 5);
+                $this->calculate('width', $site['width'] / 5);
+                $this->calculate('points', $site['mainPoints'] / 5);
+                $this->calculate('countSymbols', $site['countSymbols'] / 5);
+
+                if ($iterator == 5) {
+                    return;
+                } else {
+                    $iterator++;
+                }
+            }
+        }
+    }
+
+    public function calculate($key, $elem)
+    {
+        if (isset($this->avg[$key])) {
+            $this->avg[$key] += $elem;
+        } else {
+            $this->avg[$key] = $elem;
         }
     }
 
