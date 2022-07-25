@@ -586,6 +586,8 @@
                     let settings = [
                         {id: 'range', name: 'Все дни', value: 'range', checked: true},
                         {id: 'dates', name: 'Две даты', value: 'dates', checked: false},
+                        {id: 'randWeek', name: 'Случайная дата 1 за неделю', value: 'randWeek', checked: false},
+                        {id: 'randMonth', name: 'Случайная дата 1 за месяц', value: 'randMonth', checked: false},
                     ];
 
                     $.each(settings, function (i, item) {
