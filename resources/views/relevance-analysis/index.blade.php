@@ -759,7 +759,7 @@
 
                     <div class="sites" style="display:none; margin-top:50px;">
                         <h3>{{ __('Analyzed sites') }}</h3>
-                        <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
+                        <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline w-100">
                             <thead>
                             <tr style="position: relative; z-index: 100">
                                 <th>{{ __('Position in the top') }}</th>
@@ -852,19 +852,17 @@
                                 <th>{{ __('Total number of characters') }}</th>
                                 <th>{{ __('Result') }}</th>
                             </tr>
-                            @if($admin)
-                                <tr>
-                                    <th>-</th>
-                                    <th>-</th>
-                                    <th id="avgPoints">-</th>
-                                    <th id="avgCoverageText"></th>
-                                    <th id="avgCoverageTf"></th>
-                                    <th id="avgWidth"></th>
-                                    <th id="avgDensity"></th>
-                                    <th id="avgCountSymbols-2"></th>
-                                    <th>-</th>
-                                </tr>
-                            @endif
+                            <tr>
+                                <th>-</th>
+                                <th>{{ __('Recommendations for your landing page') }}</th>
+                                <th id="avgPoints">-</th>
+                                <th id="avgCoverageText">-</th>
+                                <th id="avgCoverageTf">-</th>
+                                <th id="avgWidth">-</th>
+                                <th id="avgDensity">-</th>
+                                <th id="avgCountSymbols-2">-</th>
+                                <th>-</th>
+                            </tr>
                             </thead>
                             <tbody id="scanned-sites-tbody">
                             </tbody>

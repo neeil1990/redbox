@@ -1268,6 +1268,7 @@ class Relevance
             'countSymbols' => $this->countSymbolsInMyPage,
         ]), 9));
 
+        $result->average_values = json_encode($this->avg);
         $result->unigram_table = base64_encode(gzcompress(json_encode($this->wordForms), 9));
         $result->sites = base64_encode(gzcompress(json_encode($this->sites), 9));
         $result->tf_comp_clouds = base64_encode(gzcompress(json_encode($this->tfCompClouds), 9));
@@ -1361,22 +1362,30 @@ class Relevance
      */
     public function calculateAvg()
     {
-        $iterator = 1;
+        $coverage = $coverageTf = $density = $width = $points = $countSymbols = [];
         foreach ($this->sites as $site) {
-            if (!$site['ignored']) {
-                $this->calculate('coverage', $site['coverage'] / 5);
-                $this->calculate('coverageTf', $site['coverageTf'] / 5);
-                $this->calculate('densityPercent', $site['density']['densityMainPercent'] / 5);
-                $this->calculate('width', $site['width'] / 5);
-                $this->calculate('points', $site['mainPoints'] / 5);
-                $this->calculate('countSymbols', $site['countSymbols'] / 5);
+            $coverage[] = $site['coverage'];
+            $coverageTf[] = $site['coverageTf'];
+            $density[] = $site['density']['densityMainPercent'];
+            $width[] = $site['width'];
+            $points[] = $site['mainPoints'];
+            $countSymbols[] = $site['countSymbols'];
+        }
 
-                if ($iterator == 5) {
-                    return;
-                } else {
-                    $iterator++;
-                }
-            }
+        rsort($coverage);
+        rsort($coverageTf);
+        rsort($density);
+        rsort($width);
+        rsort($points);
+        rsort($countSymbols);
+
+        for ($i = 0; $i <= 4; $i++) {
+            $this->calculate('coverage', $coverage[$i] / 5);
+            $this->calculate('coverageTf', $coverageTf[$i] / 5);
+            $this->calculate('densityPercent', $density[$i] / 5);
+            $this->calculate('width', $width[$i] / 5);
+            $this->calculate('points', $points[$i] / 5);
+            $this->calculate('countSymbols', $countSymbols[$i] / 5);
         }
     }
 
@@ -1454,11 +1463,13 @@ class Relevance
             ];
         } else {
             $data = [
+
                 'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
                 'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
                 'cleaning' => true
             ];
         }
+        $data['average_values'] = json_decode($history['average_values'], true);
 
         return $data;
     }

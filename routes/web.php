@@ -244,3 +244,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
+Route::get('/bla', function () {
+   $item = \App\RelevanceHistoryResult::where('id', '=', 105)->first();
+   dd(json_decode($item->average_values, true));
+});

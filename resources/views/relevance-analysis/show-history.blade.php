@@ -20,6 +20,17 @@
             .nav-link {
                 padding: .5rem .8rem !important;
             }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+
+            .card-header::after {
+                display: none;
+                content: none !important;
+            }
         </style>
     @endslot
 
@@ -58,10 +69,12 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
                 <li class="nav-item">
@@ -86,27 +99,29 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <div class="d-flex justify-content-end">
-                        <div class="nav-item" style="cursor:pointer;">
-                    <span class="nav-link project-info">
-                        {{ $object->last_check }}
+                    <span id="project-info" class="d-flex">
+                        <span style="cursor:pointer;" class="pl-5 pr-5">
+                            {{ __('Date') }}:
+                            <span class="project-info">
+                                {{ $object->last_check }}
+                            </span>
+                        </span>
+                        <span style="cursor:pointer;" class="pl-5 pr-5">
+                            {{ __('Phrase') }}:
+                            <span class="project-info">
+                                {{ $object->phrase }}
+                            </span>
+                        </span>
+                        <span style="cursor:pointer;" class="pl-5 pr-5">
+                            {{ __('Landing page') }}: <span id="copyInBuffer" class="project-info">
+                                {{ $object->main_link }}
+                            <i class="fa fa-copy"></i>
+                            </span>
+                        </span>
                     </span>
-                        </div>
-                        <div class="nav-item" style="cursor:pointer;">
-                    <span class="nav-link project-info">
-                        {{ $object->phrase }}
-                    </span>
-                        </div>
-                        <div class="nav-item" style="cursor:pointer;" id="copyInBuffer">
-                    <span class="nav-link project-info">
-                        {{ $object->main_link }}
-                        <i class="fa fa-copy"></i>
-                    </span>
-                        </div>
-                    </div>
 
                     <div class="text-center" id="preloaderBlock">
-                        <img src="/img/1485.gif" alt="preloader_gif">
+                        <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
                         <p>{{ __("Load..") }}</p>
                     </div>
 
@@ -637,6 +652,17 @@
                                 <th>{{ __('Characters') }}</th>
                                 <th>{{ __('Result') }}</th>
                             </tr>
+                            <tr>
+                                <th>-</th>
+                                <th>{{ __('Recommendations for your landing page') }}</th>
+                                <th id="avgPoints">-</th>
+                                <th id="avgCoverageText">-</th>
+                                <th id="avgCoverageTf">-</th>
+                                <th id="avgWidth">-</th>
+                                <th id="avgDensity">-</th>
+                                <th id="avgCountSymbols-2">-</th>
+                                <th>-</th>
+                            </tr>
                             </thead>
                             <tbody id="scanned-sites-tbody">
                             </tbody>
@@ -928,6 +954,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            $(document).ready(function () {
+                $('#project-info').insertAfter('.card-title')
+            })
+        </script>
+        <script>
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
@@ -1148,7 +1179,7 @@
                         $('.toast-top-right.success-message').hide(300)
                     }, 10000)
                 }
-                renderScannedSitesList(history.sites, history.avg_coverage_percent, config.scanned_sites_count, false, config.boostPercent, true);
+                renderScannedSitesList(history.sites, history.avg_coverage_percent, config.scanned_sites_count, false, config.boostPercent, history.average_values);
                 setTimeout(function () {
                     $('.dt-button').addClass('btn btn-secondary')
                     $('#preloaderBlock').hide(300)
