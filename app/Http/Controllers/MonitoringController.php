@@ -321,7 +321,10 @@ class MonitoringController extends Controller
                     default:
                         if($mode === "dates"){
                             $model = $keyword->last_positions;
-                            $table[$id]->put($i, view('monitoring.partials.show.position_with_date', ['model' => $model->shift()])->render());
+                            if($model)
+                                $table[$id]->put($i, view('monitoring.partials.show.position_with_date', ['model' => $model->shift()])->render());
+                            else
+                                $table[$id]->put($i, '-');
 
                         }else{
                             $model = $keyword->last_positions->firstWhere('date', $v);
