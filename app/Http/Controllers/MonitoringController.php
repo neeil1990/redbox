@@ -263,7 +263,8 @@ class MonitoringController extends Controller
                         return $item->created_at->format('d.m.Y');
                     });
 
-                    $item->last_positions = collect([$unique->first(), $unique->last()]);
+                    if($unique->count())
+                        $item->last_positions = collect([$unique->first(), $unique->last()]);
 
                     return $item;
                 });
@@ -321,7 +322,7 @@ class MonitoringController extends Controller
                     default:
                         if($mode === "dates"){
                             $model = $keyword->last_positions;
-                            if($model->count())
+                            if($model)
                                 $table[$id]->put($i, view('monitoring.partials.show.position_with_date', ['model' => $model->shift()])->render());
                             else
                                 $table[$id]->put($i, '-');
