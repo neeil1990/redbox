@@ -28,6 +28,13 @@
             .table tr:first-child td:nth-child(4) {
                 box-shadow: none;
             }
+            .dataTables_processing {
+                margin: 10px auto;
+                z-index: 4;
+            }
+            .dTable {
+                display: none;
+            }
         </style>
     @endslot
 
@@ -50,8 +57,11 @@
     @include('monitoring.partials.show.filter')
 
     <div class="row">
-        <div class="col-12">
-            <div class="card">
+        <div class="col-12 card-table">
+            <div class="card processing">
+                <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
+            </div>
+            <div class="card dTable">
                 <table class="table table-responsive table-bordered table-hover text-center"></table>
             </div>
             <!-- /.card -->
@@ -130,10 +140,7 @@
             }).then(function (response) {
 
                 let region = response.data.region;
-                let title = `[${region.lr}] ${region.engine.toUpperCase()} ${region.location.name}`;
-
                 let columns = [];
-                let columns_hide = [];
 
                 $.each(response.data.columns, function (i, item) {
 
@@ -142,14 +149,7 @@
                         'name': i,
                         'data': i,
                     });
-
-                    let col = i.split("_");
-                    if(col.length > 1)
-                        columns_hide.push(i);
                 });
-
-                columns_hide.shift();
-                columns_hide.pop();
 
                 let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
@@ -168,8 +168,9 @@
                             "next":       "»",
                             "previous":   "«"
                         },
+                        processing: '<img src="/img/1485.gif" style="width: 50px; height: 50px;">',
                     },
-                    processing: false,
+                    processing: true,
                     serverSide: true,
                     ajax: {
                         url: `/monitoring/${PROJECT_ID}/table`,
@@ -290,11 +291,9 @@
                     drawCallback: function(){
                         let api = this.api();
 
-                        if(MODE === 'dates'){
-                            $.each(columns_hide, function(i, item){
-                                api.column(item + ':name').visible(false);
-                            });
-                        }
+                        let card = table.closest('.card-table');
+                        card.find('.processing').remove();
+                        card.find('.dTable').css('display', 'block');
 
                         $('.table tr').each(function (i, item) {
                             let target = $(item).find('.target').text();
