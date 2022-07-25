@@ -100,19 +100,19 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
                     <span id="project-info" class="d-flex">
-                        <span style="cursor:pointer;" class="pl-5 pr-5">
+                        <span style="cursor:pointer;" class="pl-1 pr-1">
                             {{ __('Date') }}:
                             <span class="project-info">
                                 {{ $object->last_check }}
                             </span>
                         </span>
-                        <span style="cursor:pointer;" class="pl-5 pr-5">
+                        <span style="cursor:pointer;" class="pl-1 pr-1">
                             {{ __('Phrase') }}:
                             <span class="project-info">
                                 {{ $object->phrase }}
                             </span>
                         </span>
-                        <span style="cursor:pointer;" class="pl-5 pr-5">
+                        <span style="cursor:pointer;" class="pl-1 pr-1">
                             {{ __('Landing page') }}: <span id="copyInBuffer" class="project-info">
                                 {{ $object->main_link }}
                             <i class="fa fa-copy"></i>
