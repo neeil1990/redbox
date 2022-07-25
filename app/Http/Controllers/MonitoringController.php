@@ -216,8 +216,6 @@ class MonitoringController extends Controller
 
     public function getTableKeywords(Request $request, $id)
     {
-        $carbon = Carbon::now();
-
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
@@ -243,32 +241,53 @@ class MonitoringController extends Controller
         }
 
         $keywords->load(['positions' => function($query) use ($region, $dates){
-
             $query->where('monitoring_searchengine_id', $region->id)->dateRange($dates);
         }]);
 
+        $columns = $this->getMainColumns();
+
         $mode = $request->input('mode_range', 'range');
 
-        $keywords->transform(function($item) use ($mode){
+        switch ($mode){
+            case "dates":
+                $dateColumns = collect([
+                    'data_0' => __('First of find'),
+                    'data_1' => __('Last of find'),
+                ]);
 
-            $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
-                return $item->created_at->format('d.m.Y');
-            });
+                $columns = $columns->merge($dateColumns);
 
-            switch ($mode) {
-                case "dates":
-                    $unique = collect([$unique->first(), $unique->last()]);
-                    break;
-            }
+                $keywords->transform(function($item) use ($mode){
 
-            $item->last_positions = $unique;
+                    $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
+                        return $item->created_at->format('d.m.Y');
+                    });
 
-            return $item;
-        });
+                    if($unique->count())
+                        $item->last_positions = collect([$unique->first(), $unique->last()]);
+
+                    return $item;
+                });
+                break;
+
+            default;
+                $dateRangeColumns = $this->getDateRangeForColumns($region, $dates);
+
+                $columns = $columns->merge($dateRangeColumns);
+
+                $keywords->transform(function($item) use ($mode){
+
+                    $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
+                        return $item->created_at->format('d.m.Y');
+                    });
+
+                    $item->last_positions = $unique;
+
+                    return $item;
+                });
+        }
 
         $table = [];
-
-        $headers = $this->getHeaderKeywordsTable($region, $dates);
 
         foreach ($keywords as $keyword){
 
@@ -276,7 +295,7 @@ class MonitoringController extends Controller
 
             $table[$id] = collect([]);
 
-            foreach ($headers as $i => $v){
+            foreach ($columns as $i => $v){
 
                 switch ($i) {
                     case 'id':
@@ -301,18 +320,27 @@ class MonitoringController extends Controller
                         $table[$id]->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
                         break;
                     default:
-                        $model = $keyword->last_positions->firstWhere('date', $v);
-                        if($model && $model->position)
-                            $table[$id]->put($i, view('monitoring.partials.show.position', ['model' => $model])->render());
-                        else
-                            $table[$id]->put($i, '-');
+                        if($mode === "dates"){
+                            $model = $keyword->last_positions;
+                            if($model)
+                                $table[$id]->put($i, view('monitoring.partials.show.position_with_date', ['model' => $model->shift()])->render());
+                            else
+                                $table[$id]->put($i, '-');
+
+                        }else{
+                            $model = $keyword->last_positions->firstWhere('date', $v);
+                            if($model && $model->position)
+                                $table[$id]->put($i, view('monitoring.partials.show.position', ['model' => $model])->render());
+                            else
+                                $table[$id]->put($i, '-');
+                        }
                 }
             }
         }
 
         $data = collect([
             'region' => $region,
-            'columns' => $headers,
+            'columns' => $columns,
             'data' => collect($table)->values(),
             'draw' => $request->input('draw'),
             'recordsFiltered' => $keywords->total(),
@@ -322,33 +350,38 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    protected function getHeaderKeywordsTable($region, $dates)
+    private function getDateRangeForColumns($region, $dates)
     {
         $model = $region->positions()
             ->select(DB::raw('*, DATE(created_at) as date'))
             ->dateRange($dates)
             ->groupBy('date')->orderBy('date', 'desc')->get();
 
-        $header = collect([]);
+        $columns = collect([]);
         foreach ($model as $i => $m)
-            $header->put('data_' . $i, $m->date);
+            $columns->put('data_' . $i, $m->date);
 
-        $header->prepend(__('Target'), 'target')
-            ->prepend(__('Group'), 'group')
-            ->prepend(__('URL'), 'url')
-            ->prepend(view('monitoring.partials.show.header.query')->render(), 'query')
-            ->prepend('', 'btn')
-            ->prepend('', 'checkbox')
-            ->prepend('ID', 'id');
+        return $columns;
+    }
 
-        return $header;
+    private function getMainColumns()
+    {
+        $columns = collect([
+            'id' => 'ID',
+            'checkbox' => '',
+            'btn' => '',
+            'query' => view('monitoring.partials.show.header.query')->render(),
+            'url' => __('URL'),
+            'group' => __('Group'),
+            'target' => __('Target'),
+        ]);
+
+        return $columns;
     }
 
     protected function filter(&$model, Request $request)
     {
         $columns = $request->input('columns', []);
-
-        //dd($columns);
 
         foreach ($columns as $column){
 
