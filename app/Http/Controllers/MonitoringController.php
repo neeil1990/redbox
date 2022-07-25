@@ -321,7 +321,7 @@ class MonitoringController extends Controller
                     default:
                         if($mode === "dates"){
                             $model = $keyword->last_positions;
-                            if($model)
+                            if($model->count())
                                 $table[$id]->put($i, view('monitoring.partials.show.position_with_date', ['model' => $model->shift()])->render());
                             else
                                 $table[$id]->put($i, '-');
