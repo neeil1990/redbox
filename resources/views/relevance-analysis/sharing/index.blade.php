@@ -45,11 +45,11 @@
                     <a href="{{ route('access.project') }}" class="nav-link">{{ __('Projects available to you') }}</a>
                 </li>
                 @if($admin)
-                    <li class="nav-item admin-link">
-                        <a class="nav-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                    <li class="nav-item">
+                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
-                    <li class="nav-item admin-link">
-                        <a class="nav-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                    <li class="nav-item">
+                        <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
