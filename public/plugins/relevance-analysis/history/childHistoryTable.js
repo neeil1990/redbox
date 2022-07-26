@@ -119,14 +119,14 @@ function scrollTo(elemPath) {
     });
 }
 
-function hideListHistory() {
-    $('#history-list-subject').hide()
-    $('#list-history').hide()
+async function hideListHistory() {
     $('.list-children').dataTable().fnDestroy();
     $('#list-history').dataTable().fnDestroy();
+    $('#history-list-subject').hide()
+    $('#list-history').hide()
 }
 
-function hideTableHistory() {
+async function hideTableHistory() {
     $("#history_table").dataTable().fnDestroy();
     $('.render').remove()
     $('.history').hide()
@@ -499,8 +499,10 @@ $(document).ready(function () {
         });
 
         $('.project_name').unbind().click(function () {
-            hideListHistory()
-            hideTableHistory()
+            hideListHistory().then(r => () => {
+            })
+            hideTableHistory().then(r => () => {
+            })
 
             $.ajax({
                 type: "POST",
@@ -509,6 +511,7 @@ $(document).ready(function () {
                 data: {
                     history_id: $(this).attr('data-order'),
                 },
+                async: true,
                 success: function (response) {
                     if (response.code === 415) {
                         getErrorMessage(response.message)
@@ -627,6 +630,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: "json",
                 url: "/get-stories-v2",
+                async: true,
                 data: {
                     historyId: $(this).attr('data-order'),
                 },
