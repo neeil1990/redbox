@@ -240,13 +240,19 @@ class MonitoringController extends Controller
             $dates = explode(' - ', $request->input('dates_range'), 2);
         }
 
-        $keywords->load(['positions' => function($query) use ($region, $dates){
-            $query->where('monitoring_searchengine_id', $region->id)->dateRange($dates);
+        $mode = $request->input('mode_range', 'range');
+
+        $keywords->load(['positions' => function($query) use ($region, $dates, $mode){
+
+            $query->where('monitoring_searchengine_id', $region->id);
+
+            if($mode === "datesFind")
+                $query->dateFind($dates);
+            else
+                $query->dateRange($dates);
         }]);
 
         $columns = $this->getMainColumns();
-
-        $mode = $request->input('mode_range', 'range');
 
         switch ($mode){
             case "dates":
@@ -271,7 +277,7 @@ class MonitoringController extends Controller
                 break;
 
             default;
-                $dateRangeColumns = $this->getDateRangeForColumns($region, $dates);
+                $dateRangeColumns = $this->getDateRangeForColumns($region, $dates, $mode);
 
                 $columns = $columns->merge($dateRangeColumns);
 
@@ -350,12 +356,17 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    private function getDateRangeForColumns($region, $dates)
+    private function getDateRangeForColumns($region, $dates, $mode)
     {
-        $model = $region->positions()
-            ->select(DB::raw('*, DATE(created_at) as date'))
-            ->dateRange($dates)
-            ->groupBy('date')->orderBy('date', 'desc')->get();
+
+        $model = $region->positions()->select(DB::raw('*, DATE(created_at) as date'));
+
+        if($mode === "datesFind")
+            $model->dateFind($dates);
+        else
+            $model->dateRange($dates);
+
+        $model = $model->groupBy('date')->orderBy('date', 'desc')->get();
 
         $columns = collect([]);
         foreach ($model as $i => $m)
