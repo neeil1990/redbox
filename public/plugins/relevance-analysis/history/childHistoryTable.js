@@ -593,9 +593,9 @@ $(document).ready(function () {
                         })
 
                         $(document).ready(function () {
-                            // if($.fn.DataTable.fnIsDataTable($('#history_table'))) {
-                            //     $('#history_table').dataTable().fnDestroy();
-                            // }
+                            if($.fn.DataTable.fnIsDataTable($('#history_table'))) {
+                                $('#history_table').dataTable().fnDestroy();
+                            }
 
                             let historyTable = $('#history_table').DataTable({
                                 "order": [[0, "desc"]],
@@ -671,9 +671,9 @@ $(document).ready(function () {
 
                             $('#list-history-body > tr.render > td.col-1').append('<i class="fa fa-eye"></i>')
 
-                            // if($.fn.DataTable.fnIsDataTable($('#list-history'))) {
-                            //     $('#list-history').dataTable().fnDestroy();
-                            // }
+                            if($.fn.DataTable.fnIsDataTable($('#list-history'))) {
+                                $('#list-history').dataTable().fnDestroy();
+                            }
 
                             let listTable = $('#list-history').DataTable({
                                 columns: [
