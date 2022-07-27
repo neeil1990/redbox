@@ -55,6 +55,10 @@
                 content: "{{ __(' Exclude from ignored domains') }}";
                 font-weight: normal;
             }
+
+            #scaned-sites {
+                width: 100% !important;
+            }
         </style>
     @endslot
 
