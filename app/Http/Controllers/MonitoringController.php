@@ -375,6 +375,31 @@ class MonitoringController extends Controller
         return $columns;
     }
 
+    public function getPositionsForCalendars(Request $request)
+    {
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->where('id', $request->input('projectId'))->first();
+        $region = $project->searchengines();
+
+        if($request->input('regionId'))
+            $region->where('id', $request->input('regionId'));
+
+        $region = $region->orderBy('id', 'asc')->first();
+        $keywordsId = $project->keywords->pluck('id');
+
+        $dates = collect($request->input('dates'))->pluck('date');
+
+        $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateDB'))
+            ->where('monitoring_searchengine_id', $region->id)
+            ->whereIn('monitoring_keyword_id', $keywordsId)
+            ->whereIn(DB::raw('DATE(created_at)'), $dates)
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->get();
+
+        return $positions;
+    }
+
     private function getMainColumns()
     {
         $columns = collect([
