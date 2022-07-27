@@ -39,4 +39,13 @@ class MonitoringPosition extends Model
         return $query->where(DB::raw('DATE(created_at)'), '>=', $start)
             ->where(DB::raw('DATE(created_at)'), '<=', $end);
     }
+
+    public function scopeDateFind($query, array $dates = null)
+    {
+        $start = Carbon::create($dates[0]);
+        $end = Carbon::create($dates[1]);
+
+        return $query->where(DB::raw('DATE(created_at)'), '=', $start)
+            ->orWhere(DB::raw('DATE(created_at)'), '=', $end);
+    }
 }
