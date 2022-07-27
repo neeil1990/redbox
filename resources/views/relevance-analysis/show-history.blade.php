@@ -31,6 +31,30 @@
                 display: none;
                 content: none !important;
             }
+
+            .first-action::after {
+                display: inline;
+                content: "{{ __(' Go to the landing page') }}";
+                font-weight: normal;
+            }
+
+            .second-action::after {
+                display: inline;
+                content: "{{ __(' Go to the text analyzer') }}";
+                font-weight: normal;
+            }
+
+            .third-action::after {
+                display: inline;
+                content: "{{ __(' Add to Ignored Domains') }}";
+                font-weight: normal;
+            }
+
+            .fourth-action::after {
+                display: inline;
+                content: "{{ __(' Exclude from ignored domains') }}";
+                font-weight: normal;
+            }
         </style>
     @endslot
 

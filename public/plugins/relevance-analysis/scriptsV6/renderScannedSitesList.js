@@ -12,20 +12,20 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             "        </button> " +
             "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" +
             "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt'></i> Перейти на посадочную страницу" +
+            "                <i class='fas fa-external-link-alt first-action'></i>" +
             "           </a>" +
             "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" +
-            "                <i class='fas fa-external-link-alt'></i> Перейти в текстовый анализатор" +
+            "                <i class='fas fa-external-link-alt second-action'></i>" +
             "           </a>" +
             "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" +
             "                  data-target='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt'></i>" +
-            "                Добавить в игнорируемые домены" +
+            "                <i class='fas fa-external-link-alt third-action'></i>" +
+            "                " +
             "            </span>" +
             "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
             "                 data-target='" + value['site'] + "'>" +
-            "               <i class='fas fa-external-link-alt'></i>" +
-            "               Исключить из игнорируемых доменов" +
+            "               <i class='fas fa-external-link-alt fourth-action'></i>" +
+            "               " +
             "           </span>" +
             "        </div>" +
             "</div>";
