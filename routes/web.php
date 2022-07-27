@@ -246,44 +246,29 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
-Route::get('/bla', function () {
+Route::get('/get-passages/{link}', function ($link) {
+    $link = str_replace('-', '/', $link);
+    $results = [];
     $passages = 0;
     $countWords = 0;
-    $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://almamed.su/category/laringoskopy/'));
+    $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($link));
 
     $html = preg_replace('| +|', ' ', $html);
     $html = str_replace("\n", " ", $html);
-    preg_match_all('(<ul.*?>(.*?)</ul>)', $html, $matches, PREG_SET_ORDER);
-    dump($matches);
-    foreach ($matches as $match) {
-        preg_match_all('(<li.*?>(.*?)</li>)', $match[1], $li, PREG_SET_ORDER);
-        foreach ($li as $item) {
-            $ul = str_replace('>', '> ', $item[1]);
-            $ul = \App\Relevance::clearHTMLFromLinks($ul);
-            $text = trim(strip_tags($ul));
-            $text = preg_replace('| +|', ' ', $text);
-            if (mb_strlen($text < 200) && $text != "") {
-                dump($text);
-                $passages++;
-                $countWords += count(explode(' ', $text));
-            }
-
-//            dump($item);
-//            dump($item[1]);
-//            dump(strip_tags($item[1]));
-//            dump(mb_strlen(strip_tags($item[1])));
-//            dump(count(explode(' ', strip_tags($item[1]))));
-//            if (mb_strlen(strip_tags($item[1])) < 200) {
-//                $passages++;
-//                $countWords += count(explode(' ', $item[1]));
-//            }
-//            dump($item[1]);
-//            dump(strip_tags($item[1]));
-//            dump(mb_strlen(strip_tags($item[1])));
-//            dd();
+    preg_match_all('(<li.*?>(.*?)</li>)', $html, $li, PREG_SET_ORDER);
+    dump(['список всех li' => $li]);
+    foreach ($li as $item) {
+        $ul = str_replace('>', '> ', $item[1]);
+        $ul = \App\Relevance::clearHTMLFromLinks($ul);
+        $text = trim(strip_tags($ul));
+        $text = preg_replace('| +|', ' ', $text);
+        if (mb_strlen($text) < 200 && $text != "") {
+            $results[] = $text;
+            $passages++;
+            $countWords += count(explode(' ', $text));
         }
     }
-
-    dump($passages);
-    dump($countWords);
+    dump(['Массив пассажей ' => $results]);
+    dump(['Количество пассажей' => $passages]);
+    dd(['Количество слов' => $countWords]);
 });
