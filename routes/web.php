@@ -222,6 +222,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
     Route::post('/monitoring/{project_id}/table', 'MonitoringController@getTableKeywords')->name('monitoring.get.table.keywords');
+    Route::post('/monitoring/projects/get-positions-for-calendars', 'MonitoringController@getPositionsForCalendars')->name('monitoring.projects.get.positions.for.calendars');
 
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
     Route::get('/monitoring/keywords/{project_id}/create', 'MonitoringKeywordsController@create');

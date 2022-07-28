@@ -35,6 +35,10 @@
             .dTable {
                 display: none;
             }
+            .exist-position {
+                color: #28a745!important;
+                font-weight: bold;
+            }
         </style>
     @endslot
 
@@ -548,10 +552,34 @@
 
                     let date = data.format('YYYY-MM-DD');
 
-                  return ['position'];
+                    return ['position'];
                 },
                 locale: {
-                    format: 'DD-MM-YYYY'
+                    format: 'DD-MM-YYYY',
+                    daysOfWeek: [
+                        "Вс",
+                        "Пн",
+                        "Вт",
+                        "Ср",
+                        "Чт",
+                        "Пт",
+                        "Сб"
+                    ],
+                    monthNames: [
+                        "Январь",
+                        "Февраль",
+                        "Март",
+                        "Апрель",
+                        "Май",
+                        "Июнь",
+                        "Июль",
+                        "Август",
+                        "Сентябрь",
+                        "Октябрь",
+                        "Ноябрь",
+                        "Декабрь"
+                    ],
+                    firstDay: 1,
                 }
             });
 
@@ -608,6 +636,64 @@
 
                     container.prepend(ranges.html(ul));
                 }
+            });
+
+            range.on('showCalendar.daterangepicker', function(ev, picker) {
+
+                let container = picker.container;
+
+                let leftCalendarEl = container.find('.drp-calendar.left tbody tr');
+                let rightCalendarEl = container.find('.drp-calendar.right tbody tr');
+
+                let leftCalendarData = picker.leftCalendar.calendar;
+                let rightCalendarData = picker.rightCalendar.calendar;
+
+                let showDates= [];
+
+                for(let rows = 0; rows < leftCalendarData.length; rows++){
+
+                    let leftCalendarRowEl = $(leftCalendarEl[rows]);
+                    $.each(leftCalendarData[rows], function(i, item){
+
+                        let leftCalendarDaysEl = leftCalendarRowEl.find('td').get(i);
+                        showDates.push({
+                            date: item.format('YYYY-MM-DD'),
+                            el: $(leftCalendarDaysEl)
+                        });
+                    });
+
+                    let rightCalendarRowEl = $(rightCalendarEl[rows]);
+                    $.each(rightCalendarData[rows], function(i, item){
+
+                        let rightCalendarDaysEl = rightCalendarRowEl.find('td').get(i);
+                        showDates.push({
+                            date: item.format('YYYY-MM-DD'),
+                            el: $(rightCalendarDaysEl)
+                        });
+                    });
+                }
+
+                axios.post('/monitoring/projects/get-positions-for-calendars', {
+                    projectId: PROJECT_ID,
+                    regionId: REGION_ID,
+                    dates: showDates,
+                }).then(function (response) {
+
+                    $.each(response.data, function(i, item){
+
+                        let found = showDates.find(function (elem) {
+                            if(elem.date == item.dateDB)
+                                return true;
+                        });
+
+                        if(!found.el.hasClass('exist-position')){
+                            found.el.addClass('exist-position');
+                        }
+                    });
+                }).catch(function (error) {
+
+                    toastr.error('Something is going wrong');
+                });
             });
 
             $('.table').on('click', '.delete-keyword' ,function () {
