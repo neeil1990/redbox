@@ -248,10 +248,13 @@ Route::middleware(['verified'])->group(function () {
 });
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
+
     $results = [];
     $passages = 0;
     $countWords = 0;
+    $passagesLength = 0;
     $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($link));
+    $totalWords = count(explode(' ', $html));
 
     $html = preg_replace('| +|', ' ', $html);
     $html = str_replace("\n", " ", $html);
@@ -260,15 +263,29 @@ Route::get('/get-passages/{link}', function ($link) {
     foreach ($li as $item) {
         $ul = str_replace('>', '> ', $item[1]);
         $ul = \App\Relevance::clearHTMLFromLinks($ul);
+
         $text = trim(strip_tags($ul));
         $text = preg_replace('| +|', ' ', $text);
+        $text = preg_replace("/&#?[a-z0-9]+;/i", "", $text);
         if (mb_strlen($text) < 200 && $text != "") {
             $results[] = $text;
             $passages++;
+            $passagesLength += mb_strlen($text);
             $countWords += count(explode(' ', $text));
         }
     }
-    dump(['Массив пассажей ' => $results]);
-    dump(['Количество пассажей' => $passages]);
-    dd(['Количество слов' => $countWords]);
+
+    dump([
+        'Текст пассажей' => implode("\n\r", $results),
+        'Весь текст страницы(включая пассажи)' => TextAnalyzer::deleteEverythingExceptCharacters($html)
+    ]);
+    dump([
+        'Количество пассажей' => $passages,
+        'Общее кол-во символов в пассажах' => $passagesLength,
+        'Среднее количство символов в пассаже' => $passagesLength / $passages
+    ]);
+    dd([
+        'Количество слов в пассажах' => $countWords,
+        'Общее количество слов' => $totalWords
+    ]);
 });

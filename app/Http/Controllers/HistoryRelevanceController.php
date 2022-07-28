@@ -16,7 +16,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Throwable;
 
 class HistoryRelevanceController extends Controller
 {
@@ -162,7 +164,7 @@ class HistoryRelevanceController extends Controller
             }
             $history = Relevance::uncompressed($history);
 
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             return response()->json([
                 'code' => 415,
                 'message' => __('The data was lost')
@@ -194,9 +196,15 @@ class HistoryRelevanceController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws ValidationException
      */
     public function repeatScan(Request $request): JsonResponse
     {
+        $this->validate($request, [
+            'phrase' => 'required',
+            'link' => 'required',
+        ]);
+
         $admin = User::isUserAdmin();
         $userId = Auth::id();
         $object = RelevanceHistory::where('id', '=', $request->id)->first();
