@@ -276,6 +276,37 @@ class MonitoringController extends Controller
                 });
                 break;
 
+            case "randWeek":
+
+                $keywords->transform(function($item) use ($mode){
+
+                    $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
+                        return $item->created_at->format('d.m.Y');
+                    });
+
+                    $WeeksWithPositions = collect([]);
+                    foreach ($unique as $p)
+                        $WeeksWithPositions->put($p->created_at->week(), $p);
+
+                    $item->last_positions = $WeeksWithPositions;
+
+                    return $item;
+                });
+
+                $getDateForColumns = collect([]);
+                foreach ($keywords as $keyword)
+                    $getDateForColumns = $getDateForColumns->merge($keyword->last_positions->pluck('created_at'));
+
+                $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique();
+
+                $dateOfColumns = collect([]);
+                foreach ($getDateForColumns as $i => $m)
+                    $dateOfColumns->put('data_' . $i, $m->format('d.m.Y'));
+
+                $columns = $columns->merge($dateOfColumns);
+
+                break;
+
             default;
                 $dateRangeColumns = $this->getDateRangeForColumns($region, $dates, $mode);
 
@@ -390,7 +421,7 @@ class MonitoringController extends Controller
 
         $dates = collect($request->input('dates'))->pluck('date');
 
-        $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateDB'))
+        $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
             ->where('monitoring_searchengine_id', $region->id)
             ->whereIn('monitoring_keyword_id', $keywordsId)
             ->whereIn(DB::raw('DATE(created_at)'), $dates)

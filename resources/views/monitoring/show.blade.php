@@ -548,12 +548,6 @@
                 },
                 alwaysShowCalendars: true,
                 showCustomRangeLabel: false,
-                isCustomDate: function(data){
-
-                    let date = data.format('YYYY-MM-DD');
-
-                    return ['position'];
-                },
                 locale: {
                     format: 'DD-MM-YYYY',
                     daysOfWeek: [
@@ -580,7 +574,7 @@
                         "Декабрь"
                     ],
                     firstDay: 1,
-                }
+                },
             });
 
             range.on('apply.daterangepicker', function(ev, picker) {
@@ -682,13 +676,12 @@
                     $.each(response.data, function(i, item){
 
                         let found = showDates.find(function (elem) {
-                            if(elem.date == item.dateDB)
+                            if(elem.date === item.dateOnly)
                                 return true;
                         });
 
-                        if(!found.el.hasClass('exist-position')){
+                        if(!found.el.hasClass('exist-position'))
                             found.el.addClass('exist-position');
-                        }
                     });
                 }).catch(function (error) {
 
