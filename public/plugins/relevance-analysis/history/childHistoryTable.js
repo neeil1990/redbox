@@ -340,9 +340,9 @@ function repeatScan() {
                     '        </div>' +
                     '</div>')
             },
-            error: function () {
+            error: function (response) {
                 $('#toast-container').show(300)
-                $('#message-info').html('Что-то пошло не так, повторите попытку позже.')
+                $('#message-info').html(response.responseJSON.message)
                 setInterval(function () {
                     $('#toast-container').hide(300)
                 }, 3500)
@@ -593,7 +593,7 @@ $(document).ready(function () {
                         })
 
                         $(document).ready(function () {
-                            if($.fn.DataTable.fnIsDataTable($('#history_table'))) {
+                            if ($.fn.DataTable.fnIsDataTable($('#history_table'))) {
                                 $('#history_table').dataTable().fnDestroy();
                             }
 
@@ -671,7 +671,7 @@ $(document).ready(function () {
 
                             $('#list-history-body > tr.render > td.col-1').append('<i class="fa fa-eye"></i>')
 
-                            if($.fn.DataTable.fnIsDataTable($('#list-history'))) {
+                            if ($.fn.DataTable.fnIsDataTable($('#list-history'))) {
                                 $('#list-history').dataTable().fnDestroy();
                             }
 
