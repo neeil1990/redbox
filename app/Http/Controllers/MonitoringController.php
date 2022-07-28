@@ -297,7 +297,9 @@ class MonitoringController extends Controller
                 foreach ($keywords as $keyword)
                     $getDateForColumns = $getDateForColumns->merge($keyword->last_positions->pluck('created_at'));
 
-                $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique();
+                $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique(function($item){
+                    return $item->created_at->format('d.m.Y');
+                });
 
                 $dateOfColumns = collect([]);
                 foreach ($getDateForColumns as $i => $m)
