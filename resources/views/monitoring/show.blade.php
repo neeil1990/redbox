@@ -548,12 +548,6 @@
                 },
                 alwaysShowCalendars: true,
                 showCustomRangeLabel: false,
-                isCustomDate: function(data){
-
-                    let date = data.format('YYYY-MM-DD');
-
-                    return ['position'];
-                },
                 locale: {
                     format: 'DD-MM-YYYY',
                     daysOfWeek: [
@@ -580,7 +574,7 @@
                         "Декабрь"
                     ],
                     firstDay: 1,
-                }
+                },
             });
 
             range.on('apply.daterangepicker', function(ev, picker) {
@@ -655,21 +649,27 @@
                     let leftCalendarRowEl = $(leftCalendarEl[rows]);
                     $.each(leftCalendarData[rows], function(i, item){
 
-                        let leftCalendarDaysEl = leftCalendarRowEl.find('td').get(i);
-                        showDates.push({
-                            date: item.format('YYYY-MM-DD'),
-                            el: $(leftCalendarDaysEl)
-                        });
+                        let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
+                        if(!leftCalendarDaysEl.hasClass('off')){
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: leftCalendarDaysEl,
+                            });
+                        }
                     });
 
                     let rightCalendarRowEl = $(rightCalendarEl[rows]);
                     $.each(rightCalendarData[rows], function(i, item){
 
-                        let rightCalendarDaysEl = rightCalendarRowEl.find('td').get(i);
-                        showDates.push({
-                            date: item.format('YYYY-MM-DD'),
-                            el: $(rightCalendarDaysEl)
-                        });
+                        let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
+                        if(!rightCalendarDaysEl.hasClass('off')){
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: rightCalendarDaysEl,
+                            });
+                        }
                     });
                 }
 
@@ -682,13 +682,12 @@
                     $.each(response.data, function(i, item){
 
                         let found = showDates.find(function (elem) {
-                            if(elem.date == item.dateDB)
+                            if(elem.date === item.dateOnly)
                                 return true;
                         });
 
-                        if(!found.el.hasClass('exist-position')){
+                        if(!found.el.hasClass('exist-position'))
                             found.el.addClass('exist-position');
-                        }
                     });
                 }).catch(function (error) {
 

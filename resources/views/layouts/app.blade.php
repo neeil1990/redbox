@@ -217,6 +217,7 @@
 </script>
 @include('flash::message')
 
+@if(!env('APP_DEBUG'))
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function (m, e, t, r, i, k, a) {
@@ -239,5 +240,6 @@
     <div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
+@endif
 </body>
 </html>
