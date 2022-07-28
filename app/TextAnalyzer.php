@@ -167,11 +167,12 @@ class TextAnalyzer
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
         $text = preg_replace("/&#?[a-z]+;/i","",$text);
         $text = str_replace([
-            "\n", "\t", "\r",
+            "\n", "\t", "\r", "nbsp", "quot", "mdash",
             "»", "«", ".", ",", "!", "?",
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"
         ], ' ', $text);
+        $text = preg_replace("/[0-9]/", "", $text);
 
         return preg_replace('| +|', ' ', $text);
     }
