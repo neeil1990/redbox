@@ -29,7 +29,7 @@ class TextAnalyzer
         curl_setopt($curl, CURLOPT_TIMEOUT, 4);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-        curl_setopt($curl, CURLOPT_HEADER, true);
+        curl_setopt($curl, CURLOPT_HEADER, false);
 
         return TextAnalyzer::curlConnect($curl);
     }
@@ -153,25 +153,25 @@ class TextAnalyzer
      */
     public static function deleteEverythingExceptCharacters($html)
     {
-        $html = preg_replace([
+        $text = preg_replace([
             "'<style[^>]*?>.*?</style>'si",
             "'<script[^>]*?>.*?</script>'si",
+            "'<i [^>]*?>.*?</i>'si",
             "'array\n\(\n.*?\n\)\n'si",
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
 
-        $html = str_replace(">", "> ", $html);
-
-        $text = trim(strip_tags($html));
+        $text = str_replace(">", "> ", $text);
+        $text = trim(strip_tags($text));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
+        $text = preg_replace("/&#?[a-z]+;/i","",$text);
         $text = str_replace([
-            "\n", "\t", "\r", "nbsp", "quot", "mdash",
+            "\n", "\t", "\r",
             "»", "«", ".", ",", "!", "?",
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"
         ], ' ', $text);
-        $text = preg_replace("/[0-9]/", "", $text);
 
         return preg_replace('| +|', ' ', $text);
     }
