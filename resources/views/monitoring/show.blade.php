@@ -649,21 +649,27 @@
                     let leftCalendarRowEl = $(leftCalendarEl[rows]);
                     $.each(leftCalendarData[rows], function(i, item){
 
-                        let leftCalendarDaysEl = leftCalendarRowEl.find('td').get(i);
-                        showDates.push({
-                            date: item.format('YYYY-MM-DD'),
-                            el: $(leftCalendarDaysEl)
-                        });
+                        let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
+                        if(!leftCalendarDaysEl.hasClass('off')){
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: leftCalendarDaysEl,
+                            });
+                        }
                     });
 
                     let rightCalendarRowEl = $(rightCalendarEl[rows]);
                     $.each(rightCalendarData[rows], function(i, item){
 
-                        let rightCalendarDaysEl = rightCalendarRowEl.find('td').get(i);
-                        showDates.push({
-                            date: item.format('YYYY-MM-DD'),
-                            el: $(rightCalendarDaysEl)
-                        });
+                        let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
+                        if(!rightCalendarDaysEl.hasClass('off')){
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: rightCalendarDaysEl,
+                            });
+                        }
                     });
                 }
 
