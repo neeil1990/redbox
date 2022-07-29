@@ -277,6 +277,7 @@ class MonitoringController extends Controller
                 break;
 
             case "randWeek":
+            case "randMonth":
 
                 $keywords->transform(function($item) use ($mode){
 
@@ -284,11 +285,15 @@ class MonitoringController extends Controller
                         return $item->created_at->format('d.m.Y');
                     });
 
-                    $WeeksWithPositions = collect([]);
-                    foreach ($unique as $p)
-                        $WeeksWithPositions->put($p->created_at->week(), $p);
+                    $positionsRange = collect([]);
+                    foreach ($unique as $p){
+                        if($mode === "randWeek")
+                            $positionsRange->put($p->created_at->week(), $p);
+                        else
+                            $positionsRange->put($p->created_at->month, $p);
+                    }
 
-                    $item->last_positions = $WeeksWithPositions;
+                    $item->last_positions = $positionsRange;
 
                     return $item;
                 });
