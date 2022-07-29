@@ -13,10 +13,10 @@ use Illuminate\View\View;
 class TextAnalyzerController extends Controller
 {
 
-    public function __construct()
-    {
-        $this->middleware(['permission:Text analyzer']);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware(['permission:Text analyzer']);
+//    }
 
     /**
      * @return array|false|Application|Factory|View|mixed
