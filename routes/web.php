@@ -11,6 +11,7 @@
 |
 */
 
+use App\RelevanceAnalysisConfig;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
@@ -310,4 +311,19 @@ Route::get('/get-passages/{link}', function ($link) {
         'Общее количество символов(без пассажей)' => mb_strlen($text)
 
     ]);
+});
+
+Route::get('/get-table-size', function (){
+    $host = env('DB_HOST', '127.0.0.1');
+    $db_name = env('DB_DATABASE', 'lk_redbox_su_db');
+    $user = env('DB_USERNAME', 'lk_redbox_su_usr');
+    $password = env('DB_PASSWORD', '0066FJVQ16Muz63j');
+    $connection = mysqli_connect($host, $user, $password, $db_name);
+
+    $query = 'SELECT table_name AS `Table`,
+                        round(((data_length + index_length) / 1024 / 1024), 2)
+                    FROM information_schema.TABLES
+                    WHERE table_name = "relevance_history_result";';
+    $result = mysqli_query($connection, $query);
+    dd($result['data_length + index_length']);
 });
