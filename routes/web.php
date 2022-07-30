@@ -321,7 +321,7 @@ Route::get('/get-table-size', function (){
     $connection = mysqli_connect($host, $user, $password, $db_name);
 
     $query = 'SELECT table_name AS `Table`,
-                        round(((data_length + index_length) / 1024 / 1024), 2)
+                        data_length + index_length
                     FROM information_schema.TABLES
                     WHERE table_name = "relevance_history_result";';
     $result = mysqli_query($connection, $query);
