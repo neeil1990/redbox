@@ -72,6 +72,145 @@ class HistoryRelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    public function getStoriesX2(Request $request): JsonResponse
+    {
+        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $history->user_id)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($history->user_id != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+        $resp = [];
+        foreach ($history->stories as $key => $story) {
+            $resp[] = $story;
+            $resp[] = $story;
+        }
+
+        return response()->json([
+            'stories' => $resp
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getStoriesX3(Request $request): JsonResponse
+    {
+        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $history->user_id)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($history->user_id != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+        $resp = [];
+        foreach ($history->stories as $key => $story) {
+            $resp[] = $story;
+            $resp[] = $story;
+            $resp[] = $story;
+        }
+
+        return response()->json([
+            'stories' => $resp
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getStoriesX4(Request $request): JsonResponse
+    {
+        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $history->user_id)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($history->user_id != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+        $resp = [];
+        foreach ($history->stories as $key => $story) {
+            $resp[] = $story;
+            $resp[] = $story;
+            $resp[] = $story;
+            $resp[] = $story;
+        }
+
+        return response()->json([
+            'stories' => $resp
+        ]);
+    }
+
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getStoriesX5(Request $request): JsonResponse
+    {
+        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $history->user_id)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($history->user_id != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => __("You don't have access to this object"),
+                'code' => 415
+            ]);
+        }
+        $resp = [];
+        foreach ($history->stories as $key => $story) {
+            $resp[] = $story;
+            $resp[] = $story;
+            $resp[] = $story;
+            $resp[] = $story;
+            $resp[] = $story;
+        }
+
+        return response()->json([
+            'stories' => $resp
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function editGroupName(Request $request): JsonResponse
     {
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
@@ -326,7 +465,7 @@ class HistoryRelevanceController extends Controller
     public function getHistoryInfo(RelevanceHistory $object): JsonResponse
     {
         $userId = Auth::id();
-        $ownerId = $object->mainHistory->user_id;
+        $ownerId = $object->user_id;
         $admin = User::isUserAdmin();
         $share = RelevanceSharing::where('user_id', '=', $userId)
             ->where('owner_id', '=', $ownerId)

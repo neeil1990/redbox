@@ -56,7 +56,7 @@
                 font-weight: normal;
             }
 
-            #scaned-sites {
+            #scanned-sites {
                 width: 100% !important;
             }
         </style>
@@ -585,9 +585,9 @@
 
                     <div class="sites" style="display:none;">
                         <h3>{{ __('Analyzed sites') }}</h3>
-                        <table id="scaned-sites" class="table table-bordered table-hover dataTable dtr-inline">
+                        <table id="scanned-sites" class="table table-bordered table-hover dataTable dtr-inline">
                             <thead>
-                            <tr role="row" style="position: relative; z-index: 100">
+                            <tr style="position: relative; z-index: 100" id="scanned-sites-row">
                                 <th>{{ __('Position in the top') }}</th>
                                 <th>{{ __('Domain') }}</th>
                                 <th>
@@ -679,17 +679,6 @@
                                 </th>
                                 <th>{{ __('Characters') }}</th>
                                 <th>{{ __('Result') }}</th>
-                            </tr>
-                            <tr>
-                                <th>-</th>
-                                <th>{{ __('Recommendations for your landing page') }}</th>
-                                <th id="avgPoints">-</th>
-                                <th id="avgCoverageText">-</th>
-                                <th id="avgCoverageTf">-</th>
-                                <th id="avgWidth">-</th>
-                                <th id="avgDensity">-</th>
-                                <th id="avgCountSymbols-2">-</th>
-                                <th>-</th>
                             </tr>
                             </thead>
                             <tbody id="scanned-sites-tbody">

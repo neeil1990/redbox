@@ -92,7 +92,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
     });
 
     $(document).ready(function () {
-        $('#scaned-sites').DataTable({
+        $('#scanned-sites').DataTable({
             "order": [[0, "asc"]],
             "pageLength": count,
             "searching": true,
@@ -104,9 +104,9 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
     });
 
     setTimeout(() => {
-        $('#scaned-sites').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+        $('#scanned-sites').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
 
-        $('#scaned-sites_length').before(
+        $('#scanned-sites_length').before(
             "    <div class='d-flex'>" +
             "        <div class='__helper-link ui_tooltip_w'>" +
             "            <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
@@ -133,7 +133,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             $('#showOrHideIgnoredSites').trigger('click');
         }
 
-        $('#scaned-sites_wrapper > .dt-buttons').after(
+        $('#scanned-sites_wrapper > .dt-buttons').after(
             "    <button class='btn btn-secondary ml-1' id='copySites' style='cursor: pointer'>" +
             "        Скопировать ссылки сайтов" +
             "    </button>"
@@ -161,6 +161,24 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
                 toastr.hide(300)
             }, 3000)
         })
+
+
+        if (avg !== null) {
+            $('#scanned-sites-row').after(
+                '<tr>' +
+                '    <th>-</th>' +
+                '    <th>Рекомендации для вашей страницы</th>' +
+                '    <th>' + Number(avg.points).toFixed(2) + '</th>' +
+                '    <th>' + Number(avg.coverage).toFixed(2) + '</th>' +
+                '    <th>' + Number(avg.coverageTf).toFixed(2) + '</th>' +
+                '    <th>' + Number(avg.width).toFixed(2) + '</th>' +
+                '    <th>' + Number(avg.densityPercent).toFixed(2) + '</th>' +
+                '    <th>' + Number(avg.countSymbols).toFixed(0) + '</th>' +
+                '    <th>-</th>' +
+                '</tr>'
+            )
+        }
+
     }, 2000)
 
     $('.add-in-ignored-domains').click(function () {
@@ -213,6 +231,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
     });
 
     $('#avgCoveragePercent').html(avgCoveragePercent.toFixed(3))
+
     $("#avgCoveragePercentInput").change(function () {
         let number = $('#avgCoveragePercent').html()
         if ($("#avgCoveragePercentInput").val() !== '') {
@@ -260,14 +279,5 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
                 }
             });
         });
-    }
-
-    if (avg !== null) {
-        $('#avgPoints').html(Number(avg.points).toFixed(2))
-        $('#avgCoverageText').html(Number(avg.coverage).toFixed(2))
-        $('#avgCoverageTf').html(Number(avg.coverageTf).toFixed(2))
-        $('#avgWidth').html(Number(avg.width).toFixed(2))
-        $('#avgDensity').html(Number(avg.densityPercent).toFixed(2))
-        $('#avgCountSymbols-2').html(Number(avg.countSymbols).toFixed(0))
     }
 }
