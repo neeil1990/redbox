@@ -325,5 +325,5 @@ Route::get('/get-table-size', function (){
                     FROM information_schema.TABLES
                     WHERE table_name = "relevance_history_result";';
     $result = mysqli_query($connection, $query);
-    dd($result['data_length + index_length']);
+    dd($result['round(((data_length + index_length) / 1024 / 1024), 2)']);
 });
