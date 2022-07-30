@@ -320,9 +320,10 @@ Route::get('/get-table-size', function () {
     $password = env('DB_PASSWORD', '0066FJVQ16Muz63j');
     $connection = mysqli_connect($host, $user, $password, $db_name);
 
-    $query = 'SELECT SUM(TABLE_ROWS)
-     FROM INFORMATION_SCHEMA.TABLES
-     WHERE TABLE_SCHEMA =' . "relevance_history_result";
+    $query = 'SELECT table_name AS `Table`,
+                        ROUND((data_length + index_length) / 1024, 2) AS "Total Size Kb"
+                    FROM information_schema.TABLES
+                    WHERE table_name = "relevance_history_result";';
     $result = mysqli_query($connection, $query);
     $result = $result->fetch_assoc();
     dd($result);
