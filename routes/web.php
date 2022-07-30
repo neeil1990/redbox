@@ -313,7 +313,7 @@ Route::get('/get-passages/{link}', function ($link) {
     ]);
 });
 
-Route::get('/get-table-size', function (){
+Route::get('/get-table-size', function () {
     $host = env('DB_HOST', '127.0.0.1');
     $db_name = env('DB_DATABASE', 'lk_redbox_su_db');
     $user = env('DB_USERNAME', 'lk_redbox_su_usr');
@@ -321,7 +321,7 @@ Route::get('/get-table-size', function (){
     $connection = mysqli_connect($host, $user, $password, $db_name);
 
     $query = 'SELECT table_name AS `Table`,
-                        data_length + index_length
+                        SUM(data_length + index_length)
                     FROM information_schema.TABLES
                     WHERE table_name = "relevance_history_result";';
     $result = mysqli_query($connection, $query);
