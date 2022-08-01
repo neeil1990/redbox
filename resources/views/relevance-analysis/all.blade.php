@@ -498,7 +498,42 @@
                         </div>
                     @endforeach
 
-                    <div id="removeLinksModals"></div>
+                    <div id="removeLinksModals">
+                        @foreach($projects as $item)
+                            @foreach($item->relevanceTags as $tag)
+                                <div class="modal fade" id="removeTagModal{{ $tag->id }}{{ $item->id }}"
+                                     aria-labelledby="removeTagModal{{ $tag->id }}{{ $item->id }}Label"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                {{ $item->name }}
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ __('Are you going to untie the label from the project, are you sure?') }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button"
+                                                        class="btn btn-secondary remove-project-relevance-link"
+                                                        data-tag="{{ $tag->id }}"
+                                                        data-history="{{ $item->id }}"
+                                                        data-dismiss="modal">
+                                                    {{ __('Untie the label from the project') }}
+                                                </button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                    {{ __('Close') }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endforeach
+                    </div>
                     <div style="display:none;" class="history">
                         <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
                              aria-labelledby="staticBackdropLabel" aria-hidden="true">
