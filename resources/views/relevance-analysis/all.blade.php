@@ -215,12 +215,42 @@
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}">{{ $tag->name }}
-                                            <i class="fa fa-trash remove-project-relevance-link"
+                                        <div style="color: {{ $tag->color }}" id="tag-{{ $tag->id }}-item-{{ $item->id }}">
+                                            {{ $tag->name }}
+                                            <i class="fa fa-trash"
                                                style="opacity: 0.5; cursor: pointer"
-                                               data-tag="{{ $tag->id }}"
-                                               data-history="{{ $item->id }}">
+                                               data-toggle="modal"
+                                               data-target="#removeTagModal{{ $tag->id }}{{ $item->id }}">
                                             </i>
+                                        </div>
+                                        <div class="modal fade" id="removeTagModal{{ $tag->id }}{{ $item->id }}"
+                                             aria-labelledby="removeTagModal{{ $tag->id }}{{ $item->id }}Label" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        {{ $item->name }}
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {{ __('Are you going to untie the label from the project, are you sure?') }}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button"
+                                                                class="btn btn-secondary remove-project-relevance-link"
+                                                                data-tag="{{ $tag->id }}"
+                                                                data-history="{{ $item->id }}"
+                                                                data-dismiss="modal">
+                                                            {{ __('Untie the label from the project') }}
+                                                        </button>
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                            {{ __('Close') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </td>
@@ -467,6 +497,8 @@
                             </div>
                         </div>
                     @endforeach
+
+                    <div id="removeLinksModals"></div>
                     <div style="display:none;" class="history">
                         <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
                              aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -1054,6 +1086,30 @@
                 ]
             });
 
+            $('.remove-project-relevance-link').unbind().on('click', function () {
+                let elem = $(this)
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('destroy.link.project.with.tag') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        tagId: $(this).attr('data-tag'),
+                        projectId: $(this).attr('data-history')
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            let tId = elem.attr('data-tag')
+                            let iId = elem.attr('data-history')
+                            $("#tag-" + tId + "-item-" + iId).remove()
+                            getSuccessMessage(response.message)
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message)
+                        }
+                    },
+                });
+            })
+
             $(".dt-button").addClass('btn btn-secondary')
 
             function refreshMethods() {
@@ -1070,6 +1126,7 @@
 
                     $(this).attr('class', 'fa fa-plus show-stories')
                 });
+
             }
 
             setInterval(() => {
