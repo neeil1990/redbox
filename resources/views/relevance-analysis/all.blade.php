@@ -1087,6 +1087,7 @@
             });
 
             $('.remove-project-relevance-link').unbind().on('click', function () {
+                console.log('4toto delay')
                 let elem = $(this)
                 $.ajax({
                     type: "POST",
