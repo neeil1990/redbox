@@ -55,11 +55,8 @@ $('.start-through-analyse').on('click', function () {
             if (response.code === 200) {
                 getSuccessMessage(response.message)
                 $.each(JSON.parse(response.object), function (key, value) {
-                    console.log(value)
                     let thoughLinks = ''
                     $.each(value['throughLinks'], function (tkey, tvalue) {
-                        console.log(tkey)
-                        console.log(tvalue)
                         thoughLinks += '<div><a href="' + tkey + '" target="_blank"> ' + tkey + ' </a>: ' + tvalue + '</div>'
                     })
                     $('#though-table-body').append(
