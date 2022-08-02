@@ -558,7 +558,7 @@ class Relevance
     }
 
     /**
-     * Преобразование слова
+     * Преобразование слова в нужную кодировку
      *
      * @param $search
      * @param $replace
@@ -571,7 +571,7 @@ class Relevance
 
         $unicodeString = iconv($charset, "UTF-8", $string);
 
-        return str_replace(" $search ", $replace, $unicodeString);
+        return str_replace($search, $replace, $unicodeString);
     }
 
     /**
