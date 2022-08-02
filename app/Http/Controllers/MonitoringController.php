@@ -10,6 +10,8 @@ use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
+use App\MonitoringProjectColumnsSetting;
+use App\MonitoringProjectSetting;
 use App\User;
 use Carbon\Carbon;
 use function foo\func;
@@ -214,6 +216,19 @@ class MonitoringController extends Controller
         return view('monitoring.show', compact('navigations', 'project'));
     }
 
+    public function setColumnSettingsForProject(Request $request)
+    {
+        MonitoringProjectColumnsSetting::updateOrCreate(
+            ['monitoring_project_id' => $request->input('monitoring_project_id'), 'name' => $request->input('name')],
+            ['state' => $request->input('state')]
+        );
+    }
+
+    public function getColumnSettingsForProject(Request $request)
+    {
+        return MonitoringProjectColumnsSetting::where(['monitoring_project_id' => $request->input('monitoring_project_id')])->get();
+    }
+
     public function getTableKeywords(Request $request, $id)
     {
         /** @var User $user */
@@ -363,6 +378,14 @@ class MonitoringController extends Controller
                     case 'target':
                         $table[$id]->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
                         break;
+                    case 'dynamics':
+                        $dynamics = 0;
+                        $positions = $keyword->last_positions;
+                        if($positions && $positions->count() > 1)
+                            $dynamics = ($positions->last()->position - $positions->first()->position);
+
+                        $table[$id]->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
+                        break;
                     default:
                         if($mode === "dates"){
                             $model = $keyword->last_positions;
@@ -448,6 +471,7 @@ class MonitoringController extends Controller
             'url' => __('URL'),
             'group' => __('Group'),
             'target' => __('Target'),
+            'dynamics' => __('Dynamics'),
         ]);
 
         return $columns;
