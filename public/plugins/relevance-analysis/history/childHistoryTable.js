@@ -623,7 +623,6 @@ $(document).ready(function () {
                 },
             });
         });
-
         $('.project_name_x2').unbind().click(function () {
             hideListHistory()
             hideTableHistory()
@@ -1124,7 +1123,6 @@ $(document).ready(function () {
                 },
             });
         });
-
 
         $('.project_name_v2').unbind().click(function () {
             hideListHistory()

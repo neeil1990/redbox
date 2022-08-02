@@ -12,6 +12,8 @@
 */
 
 use App\RelevanceAnalysisConfig;
+use App\RelevanceHistory;
+use App\RelevanceHistoryResult;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
@@ -206,6 +208,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/remove-scan-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
     Route::post('/remove-scan-results-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
     Route::post('/repeat-scan-unique-sites', 'HistoryRelevanceController@repeatScanUniqueSites')->name('repeat.scan.unique.sites');
+    Route::post('/start-through-analyse', 'HistoryRelevanceController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/check-queue-scan-state', 'HistoryRelevanceController@checkQueueScanState')->name('check.queue.scan.state');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
@@ -311,20 +314,4 @@ Route::get('/get-passages/{link}', function ($link) {
         'Общее количество символов(без пассажей)' => mb_strlen($text)
 
     ]);
-});
-
-Route::get('/get-table-size', function () {
-    $host = env('DB_HOST', '127.0.0.1');
-    $db_name = env('DB_DATABASE', 'lk_redbox_su_db');
-    $user = env('DB_USERNAME', 'lk_redbox_su_usr');
-    $password = env('DB_PASSWORD', '0066FJVQ16Muz63j');
-    $connection = mysqli_connect($host, $user, $password, $db_name);
-
-    $query = 'SELECT table_name AS `Table`,
-                        ROUND((data_length + index_length) / 1024, 2) AS "Total Size Kb"
-                    FROM information_schema.TABLES
-                    WHERE table_name = "relevance_history_result";';
-    $result = mysqli_query($connection, $query);
-    $result = $result->fetch_assoc();
-    dd($result);
 });

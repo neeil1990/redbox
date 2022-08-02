@@ -12,6 +12,8 @@ use App\RelevanceSharing;
 use App\RelevanceTags;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -540,9 +542,7 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        $items = RelevanceHistory::where('project_relevance_history_id', '=', $request->id)
-            ->distinct(['main_link', 'phrase', 'region'])
-            ->get(['main_link', 'phrase', 'region']);
+        $items = $this->getUniqueScanned($request->id);
 
         foreach ($items as $link) {
             $records = RelevanceHistory::where('comment', '!=', '')
@@ -701,24 +701,8 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatScanUniqueSites(Request $request): JsonResponse
     {
-        $userId = Auth::id();
-        $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
-        $admin = User::isUserAdmin();
-        $share = RelevanceSharing::where('user_id', '=', $userId)
-            ->where('owner_id', '=', $project->user_id)
-            ->where('access', '=', 2)
-            ->first();
-
-        if ($project->user_id != $userId && !isset($share) && !$admin) {
-            return response()->json([
-                'success' => false,
-                'code' => 415,
-                'message' => __("You don't have access to this object")
-            ]);
-        }
-        $items = RelevanceHistory::where('project_relevance_history_id', '=', $request->id)
-            ->distinct(['main_link', 'phrase', 'region'])
-            ->get(['main_link', 'phrase', 'region']);
+        $ownerId = $this->checkAccess($request);
+        $items = $this->getUniqueScanned($request->id);
 
         $ids = [];
         foreach ($items as $item) {
@@ -732,7 +716,7 @@ class HistoryRelevanceController extends Controller
 
             if ($record->state != 0) {
                 RelevanceAnalysisQueue::dispatch(
-                    $project->user_id,
+                    $ownerId,
                     json_decode($record->request, true),
                     $record->id
                 );
@@ -751,5 +735,103 @@ class HistoryRelevanceController extends Controller
             'message' => __('Your tasks have been successfully added to the queue'),
             'object' => $ids,
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function startThroughAnalyse(Request $request): JsonResponse
+    {
+        $this->checkAccess($request);
+        $items = $this->getUniqueScanned($request->id);
+
+        $tlp = [];
+        foreach ($items as $item) {
+            $record = RelevanceHistory::where('main_link', '=', $item->main_link)
+                ->where('project_relevance_history_id', '=', $request->id)
+                ->where('phrase', '=', $item->phrase)
+                ->where('region', '=', $item->region)
+                ->where('calculate', '=', 1)
+                ->latest('last_check')
+                ->first();
+
+            $result = RelevanceHistoryResult::where('project_id', '=', $record->id)->oldest()->first();
+
+            $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
+        }
+
+        $words = [];
+        foreach ($tlp as $wordWorm) {
+            foreach ($wordWorm as $word) {
+                foreach ($word as $key => $item) {
+                    if ($key != 'total') {
+                        $words[$key][] = $item;
+                    }
+                }
+            }
+        }
+
+        foreach ($words as $key => $word) {
+            foreach ($word as $item) {
+                foreach ($item['occurrences'] as $link => $count) {
+                    $words[$key]['total'][$link] = $count;
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($words as $key => $word) {
+            $result[$key] = [
+                'throughLinks' => $word['total'],
+                'throughCount' => count($word) - 1,
+                'total' => count($items)
+            ];
+        }
+
+        $result = array_slice($result, 0, 3500);
+
+        return response()->json([
+            'success' => false,
+            'code' => 200,
+            'message' => "Результаты сквозного анализа успешно загружены",
+            'object' => json_encode($result)
+        ]);
+    }
+
+    /**
+     * @param $request
+     * @return JsonResponse|int
+     */
+    private function checkAccess($request)
+    {
+        $userId = Auth::id();
+        $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
+        $admin = User::isUserAdmin();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $project->user_id)
+            ->where('access', '=', 2)
+            ->first();
+
+        if ($project->user_id != $userId && !isset($share) && !$admin) {
+            return response()->json([
+                'success' => false,
+                'code' => 415,
+                'message' => __("You don't have access to this object")
+            ]);
+        }
+
+        return $project->user_id;
+    }
+
+    /**
+     * @param $id
+     * @return Collection
+     */
+    public static function getUniqueScanned($id): Collection
+    {
+        return RelevanceHistory::where('project_relevance_history_id', '=', $id)
+            ->distinct(['main_link', 'phrase', 'region'])
+            ->get(['main_link', 'phrase', 'region']);
     }
 }
