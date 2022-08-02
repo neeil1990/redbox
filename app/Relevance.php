@@ -538,7 +538,7 @@ class Relevance
     }
 
     /**
-     * Удаляем полученного текста слова
+     * Исключаем слова
      * @return void
      */
     public function removeListWords()
@@ -571,7 +571,7 @@ class Relevance
 
         $unicodeString = iconv($charset, "UTF-8", $string);
 
-        return str_replace($search, $replace, $unicodeString);
+        return str_replace(" $search ", $replace, $unicodeString);
     }
 
     /**
@@ -608,7 +608,6 @@ class Relevance
                 break;
             }
         }
-
     }
 
     /**

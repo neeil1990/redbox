@@ -11,6 +11,7 @@
 |
 */
 
+use App\LinguaStem;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
@@ -254,6 +255,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
+
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 
