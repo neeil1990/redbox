@@ -121,13 +121,15 @@ class TextAnalyzer
         }
 
         $total = trim($text . ' ' . $alt . ' ' . $title . ' ' . $data);
-        $length = Str::length(trim($total . ' ' . $link));
+
         $countSpaces = substr_count(trim($total . ' ' . $link), ' ');
+        $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($string);
+        $length = mb_strlen($totalWords);
         $response['general'] = [
             'textLength' => $length,
             'countSpaces' => $countSpaces,
             'lengthWithOutSpaces' => $length - $countSpaces,
-            'countWords' => count(explode(' ', $text)),
+            'countWords' => count(explode(' ', $totalWords)),
         ];
 
         $textWithoutLinks = TextAnalyzer::prepareCloud($total);
@@ -165,7 +167,7 @@ class TextAnalyzer
         $text = str_replace(">", "> ", $text);
         $text = trim(strip_tags($text));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
-        $text = preg_replace("/&#?[a-z]+;/i","",$text);
+        $text = preg_replace("/&#?[a-z]+;/i", "", $text);
         $text = str_replace([
             "\n", "\t", "\r", "nbsp", "quot", "mdash",
             "»", "«", ".", ",", "!", "?",

@@ -11,6 +11,10 @@
 |
 */
 
+use App\LinguaStem;
+use App\RelevanceAnalysisConfig;
+use App\RelevanceHistory;
+use App\RelevanceHistoryResult;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
@@ -194,6 +198,10 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::post('/get-stories-v2', 'HistoryRelevanceController@getHistoryInfoV2')->name('get.stories.v2');
+    Route::post('/get-stories-x2', 'HistoryRelevanceController@getStoriesX2')->name('get.stories.x2');
+    Route::post('/get-stories-x3', 'HistoryRelevanceController@getStoriesX3')->name('get.stories.x3');
+    Route::post('/get-stories-x4', 'HistoryRelevanceController@getStoriesX4')->name('get.stories.x4');
+    Route::post('/get-stories-x5', 'HistoryRelevanceController@getStoriesX5')->name('get.stories.x5');
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
     Route::post('/repeat-queue-competitors-scan', 'HistoryRelevanceController@repeatQueueCompetitorsScan')->name('repeat.queue.competitors.scan');
@@ -201,6 +209,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/remove-scan-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
     Route::post('/remove-scan-results-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
     Route::post('/repeat-scan-unique-sites', 'HistoryRelevanceController@repeatScanUniqueSites')->name('repeat.scan.unique.sites');
+    Route::post('/start-through-analyse', 'HistoryRelevanceController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/check-queue-scan-state', 'HistoryRelevanceController@checkQueueScanState')->name('check.queue.scan.state');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
@@ -248,6 +257,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
+
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 

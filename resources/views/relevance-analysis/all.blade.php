@@ -185,15 +185,67 @@
                                             </span>
                                         </div>
                                     </div>
+
+                                    <div>
+                                        <a href="#history_table_{{ $item->name }}"
+                                           class="project_name_x2"
+                                           style="cursor:pointer;"
+                                           data-order="{{ $item->id }}">
+                                            x2
+                                        </a>
+                                        <a href="#history_table_{{ $item->name }}"
+                                           class="project_name_x3"
+                                           style="cursor:pointer;"
+                                           data-order="{{ $item->id }}">
+                                            x3
+                                        </a>
+                                        <a href="#history_table_{{ $item->name }}"
+                                           class="project_name_x4"
+                                           style="cursor:pointer;"
+                                           data-order="{{ $item->id }}">
+                                            x4
+                                        </a>
+                                        <a href="#history_table_{{ $item->name }}"
+                                           class="project_name_x5"
+                                           style="cursor:pointer;"
+                                           data-order="{{ $item->id }}">
+                                            x5
+                                        </a>
+                                    </div>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}">{{ $tag->name }}
-                                            <i class="fa fa-trash remove-project-relevance-link"
-                                               style="opacity: 0.5; cursor: pointer"
-                                               data-tag="{{ $tag->id }}"
-                                               data-history="{{ $item->id }}">
-                                            </i>
+                                        <div style="color: {{ $tag->color }}" id="tag-{{ $tag->id }}-item-{{ $item->id }}">
+                                            {{ $tag->name }}
+                                        </div>
+                                        <div class="modal fade" id="removeTagModal{{ $tag->id }}{{ $item->id }}"
+                                             aria-labelledby="removeTagModal{{ $tag->id }}{{ $item->id }}Label" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        {{ $item->name }}
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {{ __('Are you going to untie the label from the project, are you sure?') }}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button"
+                                                                class="btn btn-secondary remove-project-relevance-link"
+                                                                data-tag="{{ $tag->id }}"
+                                                                data-history="{{ $item->id }}"
+                                                                data-dismiss="modal">
+                                                            {{ __('Untie the label from the project') }}
+                                                        </button>
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                            {{ __('Close') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </td>
@@ -1043,6 +1095,7 @@
 
                     $(this).attr('class', 'fa fa-plus show-stories')
                 });
+
             }
 
             setInterval(() => {

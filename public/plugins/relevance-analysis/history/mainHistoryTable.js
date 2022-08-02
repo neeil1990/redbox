@@ -38,3 +38,53 @@ $('.repeat-scan-unique-sites').on('click', function () {
         },
     });
 })
+
+$('.start-through-analyse').on('click', function () {
+    $('.though-render').remove()
+    let thoughTable = $('#though-table')
+    thoughTable.dataTable().fnDestroy();
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "/start-through-analyse",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            id: $(this).attr('data-target'),
+        },
+        success: function (response) {
+            if (response.code === 200) {
+                getSuccessMessage(response.message)
+                $.each(JSON.parse(response.object), function (key, value) {
+                    let thoughLinks = ''
+                    $.each(value['throughLinks'], function (tkey, tvalue) {
+                        thoughLinks += '<div><a href="' + tkey + '" target="_blank"> ' + tkey + ' </a>: ' + tvalue + '</div>'
+                    })
+                    $('#though-table-body').append(
+                        '<tr class="though-render">' +
+                        '   <td class="col-3">' + key + '</td>' +
+                        '   <td class="col-7">' + thoughLinks + '</td>' +
+                        '   <td  class="col-2" data-target="' + value['throughCount'] + '">' + value['throughCount'] + '/' + value['total'] + '</td>' +
+                        '</tr>'
+                    )
+                });
+
+                thoughTable.DataTable({
+                    "order": [[0, "desc"]],
+                    "pageLength": 50,
+                    "searching": true,
+                    dom: 'lBfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ]
+                });
+
+                $(".dt-button").addClass('btn btn-secondary')
+
+                thoughTable.show()
+
+            } else if (response.code === 415) {
+                getErrorMessage(response.message)
+            }
+        },
+    });
+})

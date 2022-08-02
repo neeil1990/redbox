@@ -538,7 +538,7 @@ class Relevance
     }
 
     /**
-     * Удаляем полученного текста слова
+     * Исключаем слова
      * @return void
      */
     public function removeListWords()
@@ -546,6 +546,11 @@ class Relevance
         if ($this->request['switchMyListWords'] == 'true') {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $this->request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
+
+            foreach ($this->ignoredWords as $key => $word) {
+                $this->ignoredWords[$key] = " $word ";
+            }
+
             $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
             $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
             $this->mainPage['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
@@ -558,7 +563,7 @@ class Relevance
     }
 
     /**
-     * Преобразование слова
+     * Преобразование слова в нужную кодировку
      *
      * @param $search
      * @param $replace
@@ -608,7 +613,6 @@ class Relevance
                 break;
             }
         }
-
     }
 
     /**

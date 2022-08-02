@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -74,6 +75,7 @@ class AdminController extends Controller
                     WHERE table_name = "relevance_history_result";';
         $result = mysqli_query($connection, $query);
         $result = $result->fetch_assoc();
+        Log::debug('res', [$result]);
 
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
