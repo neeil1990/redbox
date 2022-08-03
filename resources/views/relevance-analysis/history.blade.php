@@ -383,7 +383,7 @@
                         </div>
                     </div>
 
-                    <table id="main_history_table" class="table table-bordered dataTable dtr-inline mb-3">
+                    <table id="main_history_table" class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
                         <thead>
                         <tr>
                             <th class="table-header">{{ __('Project name') }}</th>
