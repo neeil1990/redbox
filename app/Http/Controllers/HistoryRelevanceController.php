@@ -816,6 +816,7 @@ class HistoryRelevanceController extends Controller
 
         $result = [];
         foreach ($words as $key => $word) {
+            arsort($word['total']);
             $result[$key] = [
                 'tf' => $word['tf'],
                 'idf' => $word['idf'],
