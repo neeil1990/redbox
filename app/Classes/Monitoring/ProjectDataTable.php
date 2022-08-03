@@ -94,6 +94,8 @@ class ProjectDataTable
         $positions = $this->getLastPositionsByKeywords($keywords, $model);
         $pre_positions = $this->getPreLastPositionsByKeywords($keywords, $model);
 
+        dd($positions);
+
         $percents = [
             'top_three' => 3,
             'top_fifth' => 5,
