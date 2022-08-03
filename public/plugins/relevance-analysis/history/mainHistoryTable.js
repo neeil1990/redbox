@@ -61,13 +61,13 @@ $('.start-through-analyse').on('click', function () {
                     })
                     $('#though-table-body').append(
                         '<tr class="though-render">' +
-                        '   <td>' + key + '</td>' +
-                        '   <td style="max-width: 350px">' + thoughLinks + '</td>' +
-                        '   <td>' + value['tf'] + '</td>' +
-                        '   <td>' + value['idf'] + '</td>' +
-                        '   <td>' + value['repeatInTextMainPage'] + '</td>' +
-                        '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
-                        '   <td data-target="' + value['throughCount'] + '">' + value['throughCount'] + '/' + value['total'] + '</td>' +
+                        '   <td class="col-3">' + key + '</td>' +
+                        '   <td class="col-1">' + thoughLinks + '</td>' +
+                        '   <td class="col-2">' + value['tf'] + '</td>' +
+                        '   <td class="col-2">' + value['idf'] + '</td>' +
+                        '   <td class="col-1">' + value['repeatInTextMainPage'] + '</td>' +
+                        '   <td class="col-1">' + value['repeatInLinkMainPage'] + '</td>' +
+                        '   <td class="col-2" data-target="' + value['throughCount'] + '">' + value['throughCount'] + '/' + value['total'] + '</td>' +
                         '</tr>'
                     )
                 });
