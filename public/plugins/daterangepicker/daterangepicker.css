@@ -302,34 +302,46 @@
   border-left: 1px solid #ddd;
 }
 
-.daterangepicker .ranges {
+.daterangepicker .ranges,
+.daterangepicker .mode
+{
   float: none;
   text-align: left;
   margin: 0;
 }
 
-.daterangepicker.show-calendar .ranges {
+.daterangepicker.show-calendar .ranges,
+.daterangepicker.show-calendar .mode
+{
   margin-top: 8px;
 }
 
-.daterangepicker .ranges ul {
+.daterangepicker .ranges ul,
+.daterangepicker .mode ul
+{
   list-style: none;
   margin: 0 auto;
   padding: 0;
   width: 100%;
 }
 
-.daterangepicker .ranges li {
+.daterangepicker .ranges li,
+.daterangepicker .mode li
+{
   font-size: 12px;
   padding: 8px 12px;
   cursor: pointer;
 }
 
-.daterangepicker .ranges li:hover {
+.daterangepicker .ranges li:hover,
+.daterangepicker .mode li:hover
+{
   background-color: #eee;
 }
 
-.daterangepicker .ranges li.active {
+.daterangepicker .ranges li.active,
+.daterangepicker .mode li.active
+{
   background-color: #08c;
   color: #fff;
 }
@@ -340,11 +352,15 @@
     width: auto;
   }
 
-  .daterangepicker .ranges ul {
+  .daterangepicker .ranges ul,
+  .daterangepicker .mode ul
+  {
     width: 140px;
   }
 
-  .daterangepicker.single .ranges ul {
+  .daterangepicker.single .ranges ul,
+  .daterangepicker.single .mode ul
+  {
     width: 100%;
   }
 
@@ -352,7 +368,10 @@
     clear: none;
   }
 
-  .daterangepicker.single .ranges, .daterangepicker.single .drp-calendar {
+  .daterangepicker.single .ranges,
+  .daterangepicker.single .mode,
+  .daterangepicker.single .drp-calendar
+  {
     float: left;
   }
 
@@ -386,7 +405,9 @@
     padding-right: 8px;
   }
 
-  .daterangepicker .ranges, .daterangepicker .drp-calendar {
+  .daterangepicker .ranges,
+  .daterangepicker .mode,
+  .daterangepicker .drp-calendar {
     float: left;
   }
 }
@@ -396,11 +417,14 @@
     width: auto;
   }
 
-  .daterangepicker .ranges {
+  .daterangepicker .ranges,
+  .daterangepicker .mode {
     float: right;
   }
 
-  .daterangepicker.rtl .ranges {
+  .daterangepicker.rtl .ranges,
+  .daterangepicker.rtl .mode
+  {
     float: left;
   }
 

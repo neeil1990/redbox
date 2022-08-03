@@ -14,6 +14,10 @@
         <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
 
         <style>
+            .table tbody tr td div {
+                width: 100%;
+            }
+
             .table tr td:nth-child(4) {
                text-align: left;
             }
@@ -131,7 +135,8 @@
             const REGION_ID = '{{ request('region', null) }}';
             const DATES = '{{ request('dates', null) }}';
             const MODE = '{{ request('mode', null) }}';
-            const PAGE_LENGTH = 5;
+            const PAGE_LENGTH = '{{ $length }}';
+            const MAIN_COLUMNS_COUNT = 8;
 
             let table = $('.table');
 
@@ -147,17 +152,16 @@
                 mode_range: MODE,
             }).then(function (response) {
 
-                let Tablewidth = Object.keys(response.data.columns).length;
+                let tableWidth = Object.keys(response.data.columns).length;
 
-                if(Tablewidth <= 7){
+                if(tableWidth <= MAIN_COLUMNS_COUNT){
+
                     $('.alert-data').append($('<div />', {
                         class: "callout callout-danger"
                     }).html($('<h5 />', { class: "mb-0" }).text('За данный период позиций нет')));
                 }
 
-                let region = response.data.region;
                 let columns = [];
-
                 $.each(response.data.columns, function (i, item) {
 
                     columns.push({
@@ -172,7 +176,7 @@
                     "ordering": false,
                     scrollX: true,
                     lengthMenu: [5, 20, 30, 50, 100],
-                    pageLength: 5,
+                    pageLength: PAGE_LENGTH,
                     pagingType: "simple_numbers",
                     language: {
                         lengthMenu: "_MENU_",
@@ -300,7 +304,65 @@
                             });
                         });
 
-                        this.closest('.card').find('.card-header .card-title').html("");
+                        let btnGroup = $('<div />', {
+                            class: "btn-group"
+                        });
+
+                        for(let i = 0; i < MAIN_COLUMNS_COUNT; i++){
+
+                            let column = columns[i];
+
+                            if($(column.title).length)
+                                column.title = $(column.title).text();
+
+                            if(column.title){
+
+                                let button = $('<button />', {
+                                    class: "btn btn-default",
+                                    type: "type",
+                                    "data-column": column.name + ":name",
+                                });
+                                btnGroup.append(button.text(column.title));
+                            }
+                        }
+
+                        btnGroup.find('.btn').click(function(){
+                            let self = $(this);
+
+                            let name = self.attr('data-column');
+
+                            let column = api.column(name);
+
+                            axios.post('/monitoring/project/set/column/settings', {
+                                monitoring_project_id: PROJECT_ID,
+                                name: name,
+                                state: !column.visible(),
+                            });
+
+                            self.toggleClass('hover', column.visible());
+                            column.visible(!column.visible());
+                        });
+
+                        axios.post('/monitoring/project/get/column/settings', {
+                            monitoring_project_id: PROJECT_ID
+                        }).then(function(response){
+                            if(response.data.length){
+
+                                $.each(response.data, function(i, item){
+
+                                    if(item.state)
+                                        return true;
+
+                                    let column = api.column(item.name);
+
+                                    btnGroup.find(`.btn[data-column="${item.name}"]`).toggleClass('hover', !item.state);
+                                    column.visible(item.state);
+                                });
+                            }
+                        });
+
+                        this.closest('.card').find('.card-header .card-title').html(btnGroup);
+
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
                     },
@@ -551,12 +613,10 @@
                 opens: 'left',
                 startDate: startDate ?? moment().subtract(30, 'days'),
                 endDate  : endDate ?? moment(),
-                //minDate: moment().subtract(90, 'days'),
                 ranges   : {
                     'Последние 7 дней' : [moment().subtract(6, 'days'), moment()],
                     'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
                     'Прошлый месяц'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    //'Все дни'  : [moment().subtract(89, 'days'), moment()],
                 },
                 alwaysShowCalendars: true,
                 showCustomRangeLabel: false,
@@ -586,7 +646,7 @@
                         "Декабрь"
                     ],
                     firstDay: 1,
-                },
+                }
             });
 
             range.on('apply.daterangepicker', function(ev, picker) {
@@ -609,10 +669,10 @@
                 //do something, like clearing an input
                 let container = picker.container;
 
-                if(container.find('.ranges').length < 2){
+                if(container.find('.mode').length === 0){
 
                     let ranges = $('<div />', {
-                        class: "ranges mode"
+                        class: "mode"
                     });
                     let ul = $('<ul />');
 
@@ -644,7 +704,7 @@
                 }
             });
 
-            range.on('showCalendar.daterangepicker', function(ev, picker) {
+            range.on('updateCalendar.daterangepicker', function(ev, picker) {
 
                 let container = picker.container;
 

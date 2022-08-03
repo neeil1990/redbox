@@ -10,6 +10,8 @@ use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
+use App\MonitoringProjectColumnsSetting;
+use App\MonitoringProjectSettings;
 use App\User;
 use Carbon\Carbon;
 use function foo\func;
@@ -211,7 +213,46 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        return view('monitoring.show', compact('navigations', 'project'));
+        $length = $this->getLengthFromSettings($project->id);
+
+        return view('monitoring.show', compact('navigations', 'project', 'length'));
+    }
+
+    public function getLengthFromSettings(int $projectId)
+    {
+        $lengthDefault = 100;
+
+        $length = $this->getSetting($projectId, 'length');
+        if($length)
+            $lengthDefault = $length->value;
+
+        return $lengthDefault;
+    }
+
+    public function setColumnSettingsForProject(Request $request)
+    {
+        MonitoringProjectColumnsSetting::updateOrCreate(
+            ['monitoring_project_id' => $request->input('monitoring_project_id'), 'name' => $request->input('name')],
+            ['state' => $request->input('state')]
+        );
+    }
+
+    public function getColumnSettingsForProject(Request $request)
+    {
+        return MonitoringProjectColumnsSetting::where(['monitoring_project_id' => $request->input('monitoring_project_id')])->get();
+    }
+
+    public function getSetting(int $idProject, string $name)
+    {
+        return MonitoringProjectSettings::where(['monitoring_project_id' => $idProject, 'name' => $name])->first();
+    }
+
+    public function setSetting(int $idProject, string $name, string $value)
+    {
+        MonitoringProjectSettings::updateOrCreate(
+            ['monitoring_project_id' => $idProject, 'name' => $name],
+            ['value' => $value]
+        );
     }
 
     public function getTableKeywords(Request $request, $id)
@@ -226,6 +267,8 @@ class MonitoringController extends Controller
 
         $page = ($request->input('start') / $request->input('length')) + 1;
         $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
+
+        $this->setSetting($project->id, 'length', $request->input('length'));
 
         $region = $project->searchengines();
 
@@ -363,6 +406,14 @@ class MonitoringController extends Controller
                     case 'target':
                         $table[$id]->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
                         break;
+                    case 'dynamics':
+                        $dynamics = 0;
+                        $positions = $keyword->last_positions;
+                        if($positions && $positions->count() > 1)
+                            $dynamics = ($positions->last()->position - $positions->first()->position);
+
+                        $table[$id]->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
+                        break;
                     default:
                         if($mode === "dates"){
                             $model = $keyword->last_positions;
@@ -448,6 +499,7 @@ class MonitoringController extends Controller
             'url' => __('URL'),
             'group' => __('Group'),
             'target' => __('Target'),
+            'dynamics' => __('Dynamics'),
         ]);
 
         return $columns;
