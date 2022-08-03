@@ -11,7 +11,7 @@ use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
-use App\MonitoringProjectSetting;
+use App\MonitoringProjectSettings;
 use App\User;
 use Carbon\Carbon;
 use function foo\func;
@@ -213,7 +213,20 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        return view('monitoring.show', compact('navigations', 'project'));
+        $length = $this->getLengthFromSettings($project->id);
+
+        return view('monitoring.show', compact('navigations', 'project', 'length'));
+    }
+
+    public function getLengthFromSettings(int $projectId)
+    {
+        $lengthDefault = 100;
+
+        $length = $this->getSetting($projectId, 'length');
+        if($length)
+            $lengthDefault = $length->value;
+
+        return $lengthDefault;
     }
 
     public function setColumnSettingsForProject(Request $request)
@@ -229,6 +242,19 @@ class MonitoringController extends Controller
         return MonitoringProjectColumnsSetting::where(['monitoring_project_id' => $request->input('monitoring_project_id')])->get();
     }
 
+    public function getSetting(int $idProject, string $name)
+    {
+        return MonitoringProjectSettings::where(['monitoring_project_id' => $idProject, 'name' => $name])->first();
+    }
+
+    public function setSetting(int $idProject, string $name, string $value)
+    {
+        MonitoringProjectSettings::updateOrCreate(
+            ['monitoring_project_id' => $idProject, 'name' => $name],
+            ['value' => $value]
+        );
+    }
+
     public function getTableKeywords(Request $request, $id)
     {
         /** @var User $user */
@@ -241,6 +267,8 @@ class MonitoringController extends Controller
 
         $page = ($request->input('start') / $request->input('length')) + 1;
         $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
+
+        $this->setSetting($project->id, 'length', $request->input('length'));
 
         $region = $project->searchengines();
 

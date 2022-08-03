@@ -135,7 +135,7 @@
             const REGION_ID = '{{ request('region', null) }}';
             const DATES = '{{ request('dates', null) }}';
             const MODE = '{{ request('mode', null) }}';
-            const PAGE_LENGTH = 5;
+            const PAGE_LENGTH = '{{ $length }}';
             const MAIN_COLUMNS_COUNT = 8;
 
             let table = $('.table');
@@ -176,7 +176,7 @@
                     "ordering": false,
                     scrollX: true,
                     lengthMenu: [5, 20, 30, 50, 100],
-                    pageLength: 5,
+                    pageLength: PAGE_LENGTH,
                     pagingType: "simple_numbers",
                     language: {
                         lengthMenu: "_MENU_",
