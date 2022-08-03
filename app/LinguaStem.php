@@ -20,14 +20,25 @@ class LinguaStem
         mb_internal_encoding('UTF-8');
     }
 
-    public function s(&$s, $re, $to)
+    /**
+     * @param $s
+     * @param $re
+     * @param $to
+     * @return bool
+     */
+    public function search(&$s, $re, $to): bool
     {
         $orig = $s;
         $s = preg_replace($re, $to, $s);
         return $orig !== $s;
     }
 
-    public function m($s, $re)
+    /**
+     * @param $s
+     * @param $re
+     * @return false|int
+     */
+    public function though($re, $s)
     {
         return preg_match($re, $s);
     }
@@ -48,34 +59,41 @@ class LinguaStem
         }
         $stem = $word;
         do {
-            if (!preg_match($this->rare, $word, $p)) break;
+            if (!preg_match($this->rare, $word, $p)) {
+                break;
+            }
             $start = $p[1];
             $RV = $p[2];
-            if (!$RV) break;
 
-            if (!$this->s($RV, $this->perspectiveGround, '')) {
-                $this->s($RV, $this->reflexive, '');
+            if (!$RV || mb_strlen($RV) <= 3) {
+                break;
+            }
 
-                if ($this->s($RV, $this->adjective, '')) {
-                    $this->s($RV, $this->participle, '');
+            if (!$this->search($RV, $this->perspectiveGround, '')) {
+                $this->search($RV, $this->reflexive, '');
+
+                if ($this->search($RV, $this->adjective, '')) {
+                    $this->search($RV, $this->participle, '');
                 } else {
-                    if (!$this->s($RV, $this->verb, ''))
-                        $this->s($RV, $this->noun, '');
+                    if (!$this->search($RV, $this->verb, ''))
+                        $this->search($RV, $this->noun, '');
                 }
             }
-            $this->s($RV, '/и$/', '');
+            $this->search($RV, '/и$/', '');
 
-            if ($this->m($RV, $this->derivation))
-                $this->s($RV, '/ость?$/', '');
+            if ($this->though($this->derivation, $RV))
+                $this->search($RV, '/ость?$/', '');
 
-            if (!$this->s($RV, '/ь$/', '')) {
-                $this->s($RV, '/ейше?/', '');
-                $this->s($RV, '/нн$/', 'н');
+            if (!$this->search($RV, '/ь$/', '')) {
+                $this->search($RV, '/ейше?/', '');
+                $this->search($RV, '/нн$/', 'н');
             }
 
             $stem = $start . $RV;
         } while (false);
-        if ($this->Stem_Caching) $this->Stem_Cache[$word] = $stem;
+        if ($this->Stem_Caching) {
+            $this->Stem_Cache[$word] = $stem;
+        }
         return $stem;
     }
 }

@@ -57,13 +57,17 @@ $('.start-through-analyse').on('click', function () {
                 $.each(JSON.parse(response.object), function (key, value) {
                     let thoughLinks = ''
                     $.each(value['throughLinks'], function (tkey, tvalue) {
-                        thoughLinks += '<div><a href="' + tkey + '" target="_blank"> ' + tkey + ' </a>: ' + tvalue + '</div>'
+                        thoughLinks += '<div><a href="' + tkey + '" target="_blank" title="'+ tkey +'"> ' + tvalue + ' </a></div>'
                     })
                     $('#though-table-body').append(
                         '<tr class="though-render">' +
-                        '   <td class="col-3">' + key + '</td>' +
-                        '   <td class="col-7">' + thoughLinks + '</td>' +
-                        '   <td  class="col-2" data-target="' + value['throughCount'] + '">' + value['throughCount'] + '/' + value['total'] + '</td>' +
+                        '   <td>' + key + '</td>' +
+                        '   <td style="max-width: 350px">' + thoughLinks + '</td>' +
+                        '   <td>' + value['tf'] + '</td>' +
+                        '   <td>' + value['idf'] + '</td>' +
+                        '   <td>' + value['repeatInTextMainPage'] + '</td>' +
+                        '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
+                        '   <td data-target="' + value['throughCount'] + '">' + value['throughCount'] + '/' + value['total'] + '</td>' +
                         '</tr>'
                     )
                 });
@@ -83,7 +87,7 @@ $('.start-through-analyse').on('click', function () {
                 thoughTable.show()
 
             } else if (response.code === 415) {
-                getErrorMessage(response.message)
+                getErrorMessage(response.message, 15000)
             }
         },
     });

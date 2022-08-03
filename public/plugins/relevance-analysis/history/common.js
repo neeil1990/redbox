@@ -55,7 +55,6 @@ $(document).ready(function () {
                 positionBefore: $('#position-filter-before-' + id).val()
             },
             success: function (response) {
-                console.log(response)
                 if (response.code === 200) {
                     getSuccessMessage(response.message)
                     setValues(response)
@@ -66,20 +65,20 @@ $(document).ready(function () {
         });
     })
 
-    function getSuccessMessage(message) {
+    function getSuccessMessage(message, time = 3000) {
         $('.toast-top-right.success-message').show(300)
         $('#message-info').html(message)
         setTimeout(() => {
             $('.toast-top-right.success-message').hide(300)
-        }, 3000)
+        }, time)
     }
 
-    function getErrorMessage(message) {
+    function getErrorMessage(message, time = 3000) {
         $('.toast-top-right.error-message').show(300)
         $('#message-error-info').html(message)
         setTimeout(() => {
             $('.toast-top-right.error-message').hide(300)
-        }, 3000)
+        }, time)
     }
 
     function setValues(response) {

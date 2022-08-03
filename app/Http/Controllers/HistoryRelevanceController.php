@@ -754,10 +754,20 @@ class HistoryRelevanceController extends Controller
                 ->where('region', '=', $item->region)
                 ->where('calculate', '=', 1)
                 ->latest('last_check')
+                ->with('mainHistory')
                 ->first();
 
-            $result = RelevanceHistoryResult::where('project_id', '=', $record->id)->oldest()->first();
+            $result = RelevanceHistoryResult::where([
+                ['project_id', '=', $record->id],
+                ['cleaning', '=', 0]
+            ])->oldest()->first();
 
+            if (!isset($result)) {
+                return response()->json([
+                    'code' => 415,
+                    'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
+                ]);
+            }
             $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
         }
 
@@ -776,6 +786,29 @@ class HistoryRelevanceController extends Controller
             foreach ($word as $item) {
                 foreach ($item['occurrences'] as $link => $count) {
                     $words[$key]['total'][$link] = $count;
+                    if (isset($words[$key]['tf'])) {
+                        $words[$key]['tf'] += $item['tf'];
+                    } else {
+                        $words[$key]['tf'] = $item['tf'];
+                    }
+
+                    if (isset($words[$key]['idf'])) {
+                        $words[$key]['idf'] += $item['idf'];
+                    } else {
+                        $words[$key]['idf'] = $item['idf'];
+                    }
+
+                    if (isset($words[$key]['repeatInLinkMainPage'])) {
+                        $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
+                    } else {
+                        $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
+                    }
+
+                    if (isset($words[$key]['repeatInTextMainPage'])) {
+                        $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
+                    } else {
+                        $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
+                    }
                 }
             }
         }
@@ -783,9 +816,13 @@ class HistoryRelevanceController extends Controller
         $result = [];
         foreach ($words as $key => $word) {
             $result[$key] = [
+                'tf' => $word['tf'],
+                'idf' => $word['idf'],
+                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
                 'throughLinks' => $word['total'],
-                'throughCount' => count($word) - 1,
-                'total' => count($items)
+                'throughCount' => count($word) - 5,
+                'total' => count($items),
             ];
         }
 

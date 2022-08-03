@@ -991,6 +991,10 @@
                         <tr>
                             <th class="col-3">Слово</th>
                             <th class="col-7">Пересечения</th>
+                            <th class="col-7">Сумма tf</th>
+                            <th class="col-7">Сумма idf</th>
+                            <th class="col-7">Сумма повторений в тексте посадочной страницы</th>
+                            <th class="col-7">Сумма повторений в ссылах посадочной страницы</th>
                             <th class="col-2">Кол-во вхождений</th>
                         </tr>
                         </thead>
@@ -1346,20 +1350,20 @@
                 refreshMethods()
             }, 200)
 
-            function getSuccessMessage(message) {
+            function getSuccessMessage(message, time = 3000) {
                 $('.toast-top-right.success-message').show(300)
                 $('#message-info').html(message)
                 setTimeout(() => {
                     $('.toast-top-right.success-message').hide(300)
-                }, 3000)
+                }, time)
             }
 
-            function getErrorMessage(message) {
+            function getErrorMessage(message, time = 3000) {
                 $('.toast-top-right.error-message').show(300)
                 $('#message-error-info').html(message)
                 setTimeout(() => {
                     $('.toast-top-right.error-message').hide(300)
-                }, 3000)
+                }, time)
             }
         </script>
     @endslot

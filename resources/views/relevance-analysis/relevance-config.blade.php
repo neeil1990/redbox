@@ -315,12 +315,12 @@
                 });
             })
 
-            function getSuccessMessage(message) {
+            function getSuccessMessage(message, time = 3000) {
                 $('.toast-top-right.success-message').show(300)
                 $('#message-info').html(message)
                 setTimeout(() => {
                     $('.toast-top-right.success-message').hide(300)
-                }, 3000)
+                }, time)
             }
         </script>
     @endslot
