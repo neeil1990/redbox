@@ -61,8 +61,8 @@ $('.start-through-analyse').on('click', function () {
                     })
                     $('#though-table-body').append(
                         '<tr class="though-render">' +
-                        '   <td class="col-3">' + key + '</td>' +
-                        '   <td class="col-1">' + thoughLinks + '</td>' +
+                        '   <td class="col-2">' + key + '</td>' +
+                        '   <td class="col-2">' + thoughLinks + '</td>' +
                         '   <td class="col-2">' + value['tf'] + '</td>' +
                         '   <td class="col-2">' + value['idf'] + '</td>' +
                         '   <td class="col-1">' + value['repeatInTextMainPage'] + '</td>' +
