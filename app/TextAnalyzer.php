@@ -175,6 +175,7 @@ class TextAnalyzer
             "₽", "$", "/", "[", "]", "“"
         ], ' ', $text);
         $text = preg_replace("/[0-9]/", "", $text);
+        $text = str_replace("ё", "е", $text);
 
         return preg_replace('| +|', ' ', $text);
     }
