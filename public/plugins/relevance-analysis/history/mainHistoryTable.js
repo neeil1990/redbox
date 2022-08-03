@@ -84,7 +84,7 @@ $('.start-through-analyse').on('click', function () {
 
                 $(".dt-button").addClass('btn btn-secondary')
 
-                thoughTable.show()
+                $('#though-block').show()
 
             } else if (response.code === 415) {
                 getErrorMessage(response.message, 15000)
