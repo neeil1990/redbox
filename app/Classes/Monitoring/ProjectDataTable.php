@@ -83,7 +83,7 @@ class ProjectDataTable
 
             $this->calculateTopPercent($keywords, $model);
 
-            $positions = $this->getLastPositionsByKeywords($keywords);
+            $positions = $this->getLastPositionsByKeywords($keywords, $model);
 
             $model->middle_position = ($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
         }
@@ -91,8 +91,8 @@ class ProjectDataTable
 
     private function calculateTopPercent(Collection $keywords, &$model)
     {
-        $positions = $this->getLastPositionsByKeywords($keywords);
-        $pre_positions = $this->getPreLastPositionsByKeywords($keywords);
+        $positions = $this->getLastPositionsByKeywords($keywords, $model);
+        $pre_positions = $this->getPreLastPositionsByKeywords($keywords, $model);
 
         $percents = [
             'top_three' => 3,
@@ -110,7 +110,7 @@ class ProjectDataTable
         }
     }
 
-    private function getLastPositionsByKeywords(Collection $keywords)
+    private function getLastPositionsByKeywords(Collection $keywords, $model)
     {
         $positions = collect([]);
 
@@ -119,16 +119,39 @@ class ProjectDataTable
 
         foreach($keywords as $keyword){
 
-            $position = $keyword->positions()->whereNotNull('position')->get();
-            $lastPositionsForKeyword = $position->sortByDesc('id')->unique('monitoring_searchengine_id')->pluck('position');
+            $regions = $model->searchengines()->get();
 
-            $positions = $positions->merge($lastPositionsForKeyword);
+            $lastPositions = $this->getLastPositionOfRegionsByKeyword($regions, $keyword);
+
+            $positions = $positions->merge($lastPositions);
         }
 
         return $positions;
     }
 
-    private function getPreLastPositionsByKeywords(Collection $keywords)
+    private function getLastPositionOfRegionsByKeyword($regions, $keyword)
+    {
+        $positions = collect([]);
+
+        foreach ($regions as $region){
+            $positionModel = $this->getLastPositionOfRegionByKeyword($region, $keyword);
+            if($positionModel)
+                $positions->push($positionModel->position);
+        }
+
+        return $positions;
+    }
+
+    public function getLastPositionOfRegionByKeyword($region, $keyword)
+    {
+        return $region->positions()
+            ->whereNotNull('position')
+            ->where('monitoring_keyword_id', $keyword->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+    }
+
+    private function getPreLastPositionsByKeywords(Collection $keywords, $model)
     {
         $pre_positions = collect([]);
 
@@ -137,19 +160,32 @@ class ProjectDataTable
 
         foreach($keywords as $keyword){
 
-            $positions = $keyword->positions()->get();
+            $regions = $model->searchengines()->get();
 
-            $engines = [];
-            foreach ($positions as $position)
-                $engines[$position->monitoring_searchengine_id][] = $position;
-
-            foreach ($engines as $engine){
-
-                if((isset($engine[count($engine) - 2])))
-                    $pre_positions = $pre_positions->merge($engine[count($engine) - 2]->position);
+            $positions = collect([]);
+            foreach ($regions as $region){
+                $positionModel = $this->getPenultimatePositionOfRegionByKeyword($region, $keyword);
+                if($positionModel)
+                    $positions->push($positionModel->position);
             }
+
+            $pre_positions = $pre_positions->merge($positions);
         }
 
         return $pre_positions;
+    }
+
+    public function getPenultimatePositionOfRegionByKeyword($region, $keyword)
+    {
+        $lastPosition = $this->getLastPositionOfRegionByKeyword($region, $keyword);
+
+        if(!$lastPosition)
+            return null;
+
+        return $region->positions()
+            ->where('monitoring_keyword_id', $keyword->id)
+            ->where(DB::raw('DATE(created_at)'), '<', $lastPosition->created_at->format('Y-m-d'))
+            ->orderBy('created_at', 'desc')
+            ->first();
     }
 }
