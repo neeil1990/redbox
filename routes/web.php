@@ -299,29 +299,29 @@ Route::get('/bla', function () {
         foreach ($word as $item) {
             foreach ($item['occurrences'] as $link => $count) {
                 $words[$key]['total'][$link] = $count;
-                if (isset($words[$key]['tf'])) {
-                    $words[$key]['tf'] += $item['tf'];
-                } else {
-                    $words[$key]['tf'] = $item['tf'];
-                }
+            }
+            if (isset($words[$key]['tf'])) {
+                $words[$key]['tf'] += $item['tf'];
+            } else {
+                $words[$key]['tf'] = $item['tf'];
+            }
 
-                if(isset($words[$key]['idf'])){
-                    $words[$key]['idf'] += $item['idf'];
-                } else {
-                    $words[$key]['idf'] = $item['idf'];
-                }
+            if(isset($words[$key]['idf'])){
+                $words[$key]['idf'] += $item['idf'];
+            } else {
+                $words[$key]['idf'] = $item['idf'];
+            }
 
-                if(isset( $words[$key]['repeatInLinkMainPage'])){
-                     $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
-                } else {
-                     $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
-                }
+            if(isset( $words[$key]['repeatInLinkMainPage'])){
+                $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
+            } else {
+                $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
+            }
 
-                if(isset( $words[$key]['repeatInTextMainPage'])){
-                     $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
-                } else {
-                     $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
-                }
+            if(isset( $words[$key]['repeatInTextMainPage'])){
+                $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
+            } else {
+                $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
             }
         }
     }
@@ -337,7 +337,7 @@ Route::get('/bla', function () {
             'throughCount' => count($word) - 5,
             'total' => count($items),
         ];
-        dump($word);
+        dump($key);
         dd($result[$key]);
     }
 
