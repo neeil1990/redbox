@@ -769,65 +769,74 @@ class HistoryRelevanceController extends Controller
             }
             $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
         }
+        try {
 
-        $words = [];
-        foreach ($tlp as $wordWorm) {
-            foreach ($wordWorm as $word) {
-                foreach ($word as $key => $item) {
-                    if ($key != 'total') {
-                        $words[$key][] = $item;
+            $words = [];
+            foreach ($tlp as $wordWorm) {
+                foreach ($wordWorm as $word) {
+                    foreach ($word as $key => $item) {
+                        if ($key != 'total') {
+                            $words[$key][] = $item;
+                        }
                     }
                 }
             }
-        }
 
-        foreach ($words as $key => $word) {
-            foreach ($word as $item) {
-                foreach ($item['occurrences'] as $link => $count) {
-                    $words[$key]['total'][$link] = $count;
-                }
+            foreach ($words as $key => $word) {
+                foreach ($word as $item) {
+                    foreach ($item['occurrences'] as $link => $count) {
+                        $words[$key]['total'][$link] = $count;
+                    }
 
-                if (isset($words[$key]['tf'])) {
-                    $words[$key]['tf'] += $item['tf'];
-                } else {
-                    $words[$key]['tf'] = $item['tf'];
-                }
+                    if (isset($words[$key]['tf'])) {
+                        $words[$key]['tf'] += $item['tf'];
+                    } else {
+                        $words[$key]['tf'] = $item['tf'];
+                    }
 
-                if (isset($words[$key]['idf'])) {
-                    $words[$key]['idf'] += $item['idf'];
-                } else {
-                    $words[$key]['idf'] = $item['idf'];
-                }
+                    if (isset($words[$key]['idf'])) {
+                        $words[$key]['idf'] += $item['idf'];
+                    } else {
+                        $words[$key]['idf'] = $item['idf'];
+                    }
 
-                if (isset($words[$key]['repeatInLinkMainPage'])) {
-                    $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
-                } else {
-                    $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
-                }
+                    if (isset($words[$key]['repeatInLinkMainPage'])) {
+                        $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
+                    } else {
+                        $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
+                    }
 
-                if (isset($words[$key]['repeatInTextMainPage'])) {
-                    $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
-                } else {
-                    $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
+                    if (isset($words[$key]['repeatInTextMainPage'])) {
+                        $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
+                    } else {
+                        $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
+                    }
                 }
             }
-        }
 
-        $result = [];
-        foreach ($words as $key => $word) {
-            arsort($word['total']);
-            $result[$key] = [
-                'tf' => $word['tf'],
-                'idf' => $word['idf'],
-                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-                'throughLinks' => $word['total'],
-                'throughCount' => count($word) - 5,
-                'total' => count($items),
-            ];
-        }
+            $result = [];
+            foreach ($words as $key => $word) {
+                arsort($word['total']);
+                $result[$key] = [
+                    'tf' => $word['tf'],
+                    'idf' => $word['idf'],
+                    'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                    'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+                    'throughLinks' => $word['total'],
+                    'throughCount' => count($word) - 5,
+                    'total' => count($items),
+                ];
+            }
 
-        $result = array_slice($result, 0, 600);
+            $result = array_slice($result, 0, 1500);
+        } catch (\Exception $exception){
+            return response()->json([
+                'success' => false,
+                'code' => 200,
+                'message' => "Результаты сквозного анализа успешно загружены",
+                'object' => json_encode($result)
+            ]);
+        }
 
         return response()->json([
             'success' => false,
