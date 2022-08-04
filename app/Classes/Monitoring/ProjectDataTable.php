@@ -9,14 +9,17 @@ use App\MonitoringProject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use \Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectDataTable
 {
     protected $model;
+    protected $topPositionsCache;
 
-    public function __construct(Collection $project)
+    public function __construct(Collection $project, $positionCacheKey)
     {
         $this->model = $project;
+        $this->topPositionsCache = $positionCacheKey;
     }
 
     public function handle()
@@ -91,8 +94,12 @@ class ProjectDataTable
 
     private function calculateTopPercent(Collection $keywords, &$model)
     {
-        $positions = $this->getLastPositionsByKeywords($keywords, $model);
-        $pre_positions = $this->getPreLastPositionsByKeywords($keywords, $model);
+        $positionsCache = Cache::rememberForever($this->topPositionsCache, function () use ($keywords, $model) {
+            return collect([
+                'positions' => $this->getLastPositionsByKeywords($keywords, $model),
+                'pre_positions' => $this->getPreLastPositionsByKeywords($keywords, $model),
+            ]);
+        });
 
         $percents = [
             'top_three' => 3,
@@ -104,8 +111,8 @@ class ProjectDataTable
 
         foreach ($percents as $name => $percent){
 
-            $last = Helper::calculateTopPercentByPositions($positions, $percent);
-            $preLast = Helper::calculateTopPercentByPositions($pre_positions, $percent);
+            $last = Helper::calculateTopPercentByPositions($positionsCache['positions'], $percent);
+            $preLast = Helper::calculateTopPercentByPositions($positionsCache['pre_positions'], $percent);
             $model->$name = $last . Helper::differentTopPercent($last, $preLast);
         }
     }

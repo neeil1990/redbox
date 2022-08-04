@@ -234,6 +234,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/get-positions-for-calendars', 'MonitoringController@getPositionsForCalendars')->name('monitoring.projects.get.positions.for.calendars');
     Route::post('/monitoring/project/set/column/settings', 'MonitoringController@setColumnSettingsForProject');
     Route::post('/monitoring/project/get/column/settings', 'MonitoringController@getColumnSettingsForProject');
+    Route::post('/monitoring/project/remove/cache', 'MonitoringController@removeCache')->name('monitoring.projects.remove.cache');
 
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
     Route::get('/monitoring/keywords/{project_id}/create', 'MonitoringKeywordsController@create');

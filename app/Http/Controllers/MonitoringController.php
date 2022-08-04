@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\CacheDataBase;
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
@@ -19,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class MonitoringController extends Controller
 {
@@ -58,16 +60,30 @@ class MonitoringController extends Controller
         $page = $request->input('start', 0) + 1;
         /** @var User $user */
         $user = $this->user;
+        $positionCacheKey = "topPositionsCacheForUser" . $user->id;
         $projects = $user->monitoringProjects()->paginate($request->input('length', 1), ['*'], 'page', $page);
 
+        $cacheDataTime = Carbon::now()->format('d.m.Y H:i:s');
+        $cache = CacheDataBase::find($positionCacheKey);
+        if($cache)
+            $cacheDataTime = $cache->created_at->format('d.m.Y H:i:s');
+
         $data = collect([
-            'data' => (new ProjectDataTable(collect($projects->items())))->handle(),
+            'data' => (new ProjectDataTable(collect($projects->items()), $positionCacheKey))->handle(),
+            'cacheData' => collect(['key' => $positionCacheKey, 'date' => $cacheDataTime]),
             'draw' => $request->input('draw'),
             'recordsFiltered' => $projects->total(),
             'recordsTotal' => $projects->total(),
         ]);
 
         return $data;
+    }
+
+    public function removeCache(Request $request)
+    {
+        Cache::forget($request->input('key'));
+
+        return redirect()->back();
     }
 
     public function getChildRowsPageByProject(int $project_id)

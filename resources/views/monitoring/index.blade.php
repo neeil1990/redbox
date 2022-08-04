@@ -16,9 +16,26 @@
                 color: #212529;
                 background-color: rgba(0,0,0,.075);
             }
+            .dataTables_processing {
+                margin: 10px auto;
+                z-index: 4;
+            }
 
         </style>
     @endslot
+
+    <div class="row">
+        <div class="col-6">
+            <div class="callout callout-info actual-data">
+                <h5>{{ __('Actual data for') }}:</h5>
+                <p></p>
+                {!! Form::open(['method' => 'POST', 'route' => 'monitoring.projects.remove.cache', 'class' => 'remove-cache']) !!}
+                    {!! Form::hidden('key', ''); !!}
+                    {!! Form::submit(__('Update'), ['class' => 'btn btn-secondary']) !!}
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
 
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
@@ -82,7 +99,9 @@
                         "next":       "»",
                         "previous":   "«"
                     },
+                    processing: '<img src="/img/1485.gif" style="width: 50px; height: 50px;">',
                 },
+                processing: true,
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
@@ -159,6 +178,8 @@
                 initComplete: function () {
                     let api = this.api();
 
+                    let json = api.ajax.json();
+
                     this.find('tbody').on('click', 'tr.main', function(){
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
 
@@ -197,6 +218,10 @@
 
                         return false;
                     });
+
+                    $('.actual-data').find('p').text(json.cacheData.date);
+
+                    $('.remove-cache').find('input[name="key"]').val(json.cacheData.key);
 
                     this.closest('.card').find('.card-header .card-title').html("Управление проектами");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
