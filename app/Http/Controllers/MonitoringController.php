@@ -15,12 +15,16 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\User;
 use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
 use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MonitoringController extends Controller
 {
@@ -55,6 +59,13 @@ class MonitoringController extends Controller
         return view('monitoring.index');
     }
 
+    protected function cachePath($key)
+    {
+        $parts = array_slice(str_split($hash = sha1($key), 2), 0, 2);
+
+        return storage_path('framework/cache/data').'/'.implode('/', $parts).'/'.$hash;
+    }
+
     public function getProjects(Request $request)
     {
         $page = $request->input('start', 0) + 1;
@@ -64,9 +75,8 @@ class MonitoringController extends Controller
         $projects = $user->monitoringProjects()->paginate($request->input('length', 1), ['*'], 'page', $page);
 
         $cacheDataTime = Carbon::now()->format('d.m.Y H:i:s');
-        $cache = CacheDataBase::find($positionCacheKey);
-        if($cache)
-            $cacheDataTime = $cache->created_at->format('d.m.Y H:i:s');
+        if(File::exists($this->cachePath($positionCacheKey)))
+            $cacheDataTime = Carbon::parse(File::lastModified($this->cachePath($positionCacheKey)))->timezone('Europe/Moscow')->format('d.m.Y H:i:s');
 
         $data = collect([
             'data' => (new ProjectDataTable(collect($projects->items()), $positionCacheKey))->handle(),
