@@ -142,6 +142,7 @@ class ProjectDataTable
 
         foreach ($regions as $region){
             $positionModel = $this->getLastPositionOfRegionByKeyword($region, $keyword);
+            dump($positionModel);
             if($positionModel)
                 $positions->push($positionModel->position);
         }
