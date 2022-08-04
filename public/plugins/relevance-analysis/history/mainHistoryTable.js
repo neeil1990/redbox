@@ -32,6 +32,7 @@ $('.repeat-scan-unique-sites').on('click', function () {
                         '</div>'
                     )
                 })
+
             } else if (response.code === 415) {
                 getErrorMessage(response.message)
             }
@@ -104,7 +105,7 @@ $('.start-through-analyse').on('click', function () {
                     $(".dt-button").addClass('btn btn-secondary')
 
                     $('#though-block').show()
-
+                    scrollTo('#though-block')
                 } else if (response.code === 415) {
                     getErrorMessage(response.message, 15000)
                 }
