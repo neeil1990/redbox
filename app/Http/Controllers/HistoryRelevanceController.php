@@ -827,7 +827,7 @@ class HistoryRelevanceController extends Controller
             ];
         }
 
-        $result = array_slice($result, 0, 3500);
+        $result = array_slice($result, 0, 600);
 
         return response()->json([
             'success' => false,
