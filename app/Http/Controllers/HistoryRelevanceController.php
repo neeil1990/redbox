@@ -172,7 +172,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-
     /**
      * @param Request $request
      * @return JsonResponse

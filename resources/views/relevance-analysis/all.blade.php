@@ -262,6 +262,10 @@
                                        data-target="#repeatUniqueScan{{ $item->id }}"
                                        data-toggle="modal" data-placement="top"
                                        title="{{ __('restart analyzed pages') }}"></i>
+                                    <i class="fa fa-strikethrough" style="opacity: .6; cursor: pointer"
+                                       title="Запустить анализ сквозных слов"
+                                       data-target="#startThroughScan{{ $item->id }}"
+                                       data-toggle="modal" data-placement="top"></i>
                                 </td>
                                 <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
@@ -484,6 +488,32 @@
                                     <div class="modal-footer">
                                         <button data-target="{{ $item->id }}" type="button"
                                                 class="btn btn-secondary repeat-scan-unique-sites"
+                                                data-dismiss="modal">{{ __('Start') }}</button>
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">{{ __('Close') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="startThroughScan{{ $item->id }}" tabindex="-1"
+                             aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Запустить анализ сквозных слов у
+                                            проекта {{ $item->name }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Будет произведён анализ сквозных слов у
+                                        <b>{{ $item->count_sites }}</b>
+                                        {{ __('unique pages, are you sure?') }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button data-target="{{ $item->id }}" type="button"
+                                                class="btn btn-secondary start-through-analyse"
                                                 data-dismiss="modal">{{ __('Start') }}</button>
                                         <button type="button" class="btn btn-default"
                                                 data-dismiss="modal">{{ __('Close') }}</button>
@@ -819,6 +849,25 @@
                             <tbody id="historyTbody">
                             </tbody>
                         </table>
+
+                        <div style="display: none" id="though-block">
+                            <h3>Результат сквозного анализа</h3>
+                            <table id="though-table" class="table table-bordered table-hover dtr-inline">
+                                <thead>
+                                <tr>
+                                    <th class="col-3">Слово</th>
+                                    <th class="col-7">Пересечения</th>
+                                    <th class="col-7">Сумма tf</th>
+                                    <th class="col-7">Сумма idf</th>
+                                    <th class="col-7">Сумма повторений в тексте посадочной страницы</th>
+                                    <th class="col-7">Сумма повторений в ссылах посадочной страницы</th>
+                                    <th class="col-2">Кол-во вхождений</th>
+                                </tr>
+                                </thead>
+                                <tbody id="though-table-body">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <h3 style="display: none" id="history-list-subject">{{ __('Scan history (list of phrases)') }}</h3>
