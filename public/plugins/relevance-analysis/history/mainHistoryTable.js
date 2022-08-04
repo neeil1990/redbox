@@ -105,7 +105,9 @@ $('.start-through-analyse').on('click', function () {
                     $(".dt-button").addClass('btn btn-secondary')
 
                     $('#though-block').show()
-                    scrollTo('#though-block')
+                    setTimeout(() => {
+                        scrollTo('#though-block')
+                    }, 500)
                 } else if (response.code === 415) {
                     getErrorMessage(response.message, 15000)
                 }
