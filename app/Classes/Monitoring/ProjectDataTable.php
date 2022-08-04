@@ -101,6 +101,8 @@ class ProjectDataTable
             ]);
         });
 
+        dd($positionsCache);
+
         $percents = [
             'top_three' => 3,
             'top_fifth' => 5,
