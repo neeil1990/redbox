@@ -94,12 +94,17 @@ class ProjectDataTable
 
     private function calculateTopPercent(Collection $keywords, &$model)
     {
-        $positionsCache = Cache::rememberForever($this->topPositionsCache, function () use ($keywords, $model) {
+        /*$positionsCache = Cache::rememberForever($this->topPositionsCache, function () use ($keywords, $model) {
             return collect([
                 'positions' => $this->getLastPositionsByKeywords($keywords, $model),
                 'pre_positions' => $this->getPreLastPositionsByKeywords($keywords, $model),
             ]);
-        });
+        });*/
+
+        $positionsCache = collect([
+            'positions' => [],
+            'pre_positions' => [],
+        ]);
 
         $percents = [
             'top_three' => 3,
