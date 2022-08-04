@@ -744,7 +744,7 @@ class HistoryRelevanceController extends Controller
     {
         $this->checkAccess($request);
         $items = $this->getUniqueScanned($request->id);
-        Log::debug(count($items));
+        Log::debug(1);
 
         $tlp = [];
         foreach ($items as $item) {
@@ -771,6 +771,7 @@ class HistoryRelevanceController extends Controller
             $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
         }
 
+        Log::debug(2);
         $words = [];
         foreach ($tlp as $wordWorm) {
             foreach ($wordWorm as $word) {
@@ -781,7 +782,7 @@ class HistoryRelevanceController extends Controller
                 }
             }
         }
-
+        Log::debug(3);
         foreach ($words as $key => $word) {
             foreach ($word as $item) {
                 foreach ($item['occurrences'] as $link => $count) {
@@ -814,6 +815,7 @@ class HistoryRelevanceController extends Controller
             }
         }
 
+        Log::debug(4);
         $result = [];
         foreach ($words as $key => $word) {
             arsort($word['total']);
@@ -827,6 +829,8 @@ class HistoryRelevanceController extends Controller
                 'total' => count($items),
             ];
         }
+
+        Log::debug(5);
 
         $result = array_slice($result, 0, 1500);
 
