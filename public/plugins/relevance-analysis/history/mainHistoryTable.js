@@ -53,7 +53,7 @@ $('.start-through-analyse').on('click', function () {
         },
         success: function (response) {
             if (response.code === 200) {
-                getSuccessMessage(response.message)
+                getSuccessMessage(response.message, 5000)
                 $.each(JSON.parse(response.object), function (key, value) {
                     let thoughLinks = ''
                     $.each(value['throughLinks'], function (tkey, tvalue) {
