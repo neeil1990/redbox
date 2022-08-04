@@ -762,13 +762,16 @@ class HistoryRelevanceController extends Controller
                 ['cleaning', '=', 0]
             ])->oldest()->first();
 
-            if (!isset($result)) {
-                return response()->json([
-                    'code' => 415,
-                    'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
-                ]);
+            if (isset($result)) {
+                $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
+
             }
-            $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
+        }
+        if (count($tlp) == 0) {
+            return response()->json([
+                'code' => 415,
+                'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
+            ]);
         }
 
         Log::debug(2);
