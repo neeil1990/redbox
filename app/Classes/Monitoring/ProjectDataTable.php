@@ -102,8 +102,8 @@ class ProjectDataTable
         });*/
 
         $positionsCache = collect([
-            'positions' => [],
-            'pre_positions' => [],
+            'positions' => collect([]),
+            'pre_positions' => collect([]),
         ]);
 
 
