@@ -86,9 +86,9 @@ class ProjectDataTable
 
             $this->calculateTopPercent($keywords, $model);
 
-            $positions = $this->getLastPositionsByKeywords($keywords, $model);
+            //$positions = $this->getLastPositionsByKeywords($keywords, $model);
 
-            $model->middle_position = ($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
+            $model->middle_position = 0;//($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
         }
     }
 
