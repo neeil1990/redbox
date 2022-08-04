@@ -405,15 +405,14 @@ class Relevance
     {
         foreach ($this->sites as $key => $site) {
             $this->countNotIgnoredSites++;
-            $countSymbols = Str::length($site['html']) + Str::length($site['linkText']) + Str::length($site['hiddenText']);
-            $countWords = TextLengthController::countingWord($site['html'] . ' ' . $site['linkText'] . ' ' . $site['hiddenText']);
+            $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($site['defaultHtml']);
+            $countSymbols = Str::length($totalWords);
+            $countWords = count(explode(' ', $totalWords));
 
             if ($this->sites[$key]['mainPage']) {
                 $this->countSymbolsInMyPage = $countSymbols;
                 $this->countWordsInMyPage = $countWords;
-            }
-
-            if (!$site['ignored']) {
+            } else if (!$site['ignored']) {
                 $this->countSymbols += $countSymbols;
                 $this->countWords += $countWords;
             }
