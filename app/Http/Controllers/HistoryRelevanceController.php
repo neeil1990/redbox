@@ -763,7 +763,7 @@ class HistoryRelevanceController extends Controller
             ])->oldest()->first();
 
             if (isset($historyResult->unigram_table)) {
-                foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
+                foreach (json_decode(gzuncompress(base64_decode($historyResult->unigram_table)), true) as $word) {
                     foreach ($word as $key => $item) {
                         if ($key != 'total') {
                             $words[$key] = $item;
