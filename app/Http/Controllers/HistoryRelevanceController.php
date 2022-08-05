@@ -757,12 +757,12 @@ class HistoryRelevanceController extends Controller
                 ->with('mainHistory')
                 ->first();
 
-            $result = RelevanceHistoryResult::where([
+            $historyResult = RelevanceHistoryResult::where([
                 ['project_id', '=', $record->id],
                 ['cleaning', '=', 0]
             ])->oldest()->first();
 
-            if (isset($result->unigram_table)) {
+            if (isset($historyResult->unigram_table)) {
                 foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
                     foreach ($word as $key => $item) {
                         if ($key != 'total') {
