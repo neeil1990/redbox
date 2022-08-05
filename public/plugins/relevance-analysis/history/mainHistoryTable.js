@@ -104,8 +104,8 @@ $('.start-through-analyse').on('click', function () {
 
                     $(".dt-button").addClass('btn btn-secondary')
 
-                    $('#though-block').show()
                     setTimeout(() => {
+                        $('#though-block').show()
                         scrollTo('#though-block')
                     }, 500)
                 } else if (response.code === 415) {
