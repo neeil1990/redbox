@@ -158,8 +158,7 @@ class Relevance
             $this->sites[$this->params['main_page_link']]['ignored'] = false;
             $this->sites[$this->params['main_page_link']]['site'] = $this->params['main_page_link'];
             $this->sites[$this->params['main_page_link']]['mainPage'] = true;
-            $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->mainPage['html'];
-            $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
+            $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
             if ($xmlResponse) {
                 $this->sites[$this->params['main_page_link']]['position'] = array_search(Str::lower($this->params['main_page_link']), $xmlResponse);
             } elseif ($searchPosition) {
@@ -235,17 +234,6 @@ class Relevance
     }
 
     /**
-     * @return void
-     */
-    public function deleteEverythingExceptCharacters()
-    {
-        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->mainPage['html']);
-        foreach ($this->sites as $key => $page) {
-            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters($this->sites[$key]['html']);
-        }
-    }
-
-    /**
      * Удалить текст, который помечен <noindex>
      * @return void
      */
@@ -266,10 +254,10 @@ class Relevance
     public function separateLinksFromText()
     {
         $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(Relevance::clearHTMLFromLinks($this->mainPage['html']));
+        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']));
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
-            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(Relevance::clearHTMLFromLinks($this->sites[$key]['html']));
+            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
         }
     }
 
@@ -629,11 +617,12 @@ class Relevance
         }
 
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
+        Log::debug('text', [$myText]);
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
 
-        $myLink = $this->mainPage['linkText'];
-        $myLink = explode(" ", $myLink);
+        Log::debug('links', [$this->mainPage['linkText']]);
+        $myLink = explode(" ", $this->mainPage['linkText']);
         $myLink = array_count_values($myLink);
 
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
@@ -983,20 +972,6 @@ class Relevance
         return $collection->sortByDesc('weight')->toArray();
     }
 
-    /**
-     * @param $html
-     * @return string
-     */
-    public static function clearHTMLFromLinks($html): string
-    {
-        $html = preg_replace('| +|', ' ', $html);
-        $html = str_replace("\n", " ", $html);
-        preg_match_all('(<a.*?href=["\']?(.*?)([\'"].*?>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
-        foreach ($matches as $items) {
-            $html = str_replace($items[0], "", $html);
-        }
-        return $html;
-    }
 
     /**
      * Обрезать все слова короче N символов
