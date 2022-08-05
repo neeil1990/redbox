@@ -753,7 +753,6 @@ class HistoryRelevanceController extends Controller
                 'message' => 'Не удалось получить требуемые данные'
             ]);
         }
-        Log::debug('$items', [$items]);
 
         foreach ($items as $item) {
             $record = RelevanceHistory::where('main_link', '=', $item->main_link)
