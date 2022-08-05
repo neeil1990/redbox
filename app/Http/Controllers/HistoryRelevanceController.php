@@ -577,6 +577,8 @@ class HistoryRelevanceController extends Controller
         }
 
         $info = ProjectRelevanceHistory::calculateInfo($main);
+        $removed = ProjectRelevanceHistory::where('id', '=', $request->id)
+            ->where('count_sites', '=', 0)->delete();
 
         return response()->json([
             'success' => true,
@@ -586,6 +588,7 @@ class HistoryRelevanceController extends Controller
             'countChecks' => $info['countChecks'],
             'avgPosition' => $info['avgPosition'],
             'objectId' => $request->id,
+            'removed' => $removed,
             'code' => 200
         ]);
     }
@@ -653,7 +656,6 @@ class HistoryRelevanceController extends Controller
         $info = ProjectRelevanceHistory::calculateInfo($main);
         $removed = ProjectRelevanceHistory::where('id', '=', $request->id)
             ->where('count_sites', '=', 0)->delete();
-
 
         return response()->json([
             'success' => true,
