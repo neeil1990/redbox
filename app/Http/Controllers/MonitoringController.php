@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-use App\CacheDataBase;
+use App\Classes\Monitoring\CacheOfUserForPosition;
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
@@ -15,16 +15,11 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\User;
 use Carbon\Carbon;
-use Carbon\CarbonTimeZone;
-use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 class MonitoringController extends Controller
 {
@@ -59,28 +54,20 @@ class MonitoringController extends Controller
         return view('monitoring.index');
     }
 
-    protected function cachePath($key)
-    {
-        $parts = array_slice(str_split($hash = sha1($key), 2), 0, 2);
-
-        return storage_path('framework/cache/data').'/'.implode('/', $parts).'/'.$hash;
-    }
-
     public function getProjects(Request $request)
     {
         $page = $request->input('start', 0) + 1;
         /** @var User $user */
         $user = $this->user;
-        $positionCacheKey = "topPositionsCacheForUser" . $user->id;
         $projects = $user->monitoringProjects()->paginate($request->input('length', 1), ['*'], 'page', $page);
 
         $cacheDataTime = Carbon::now()->format('d.m.Y H:i:s');
-        if(File::exists($this->cachePath($positionCacheKey)))
-            $cacheDataTime = Carbon::parse(File::lastModified($this->cachePath($positionCacheKey)))->timezone('Europe/Moscow')->format('d.m.Y H:i:s');
+        if($projects->total())
+            $cacheDataTime = (new CacheOfUserForPosition($projects->first()))->getLastModified() ?? $cacheDataTime;
 
         $data = collect([
-            'data' => (new ProjectDataTable(collect($projects->items()), $positionCacheKey))->handle(),
-            'cacheData' => collect(['key' => $positionCacheKey, 'date' => $cacheDataTime]),
+            'data' => (new ProjectDataTable(collect($projects->items())))->handle(),
+            'cache' => collect(['date' => $cacheDataTime]),
             'draw' => $request->input('draw'),
             'recordsFiltered' => $projects->total(),
             'recordsTotal' => $projects->total(),
@@ -89,9 +76,13 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    public function removeCache(Request $request)
+    public function removeCache()
     {
-        Cache::forget($request->input('key'));
+        /** @var User $user */
+        $user = $this->user;
+        $projects = $user->monitoringProjects()->get();
+        foreach ($projects as $project)
+            (new CacheOfUserForPosition($project))->deleteCache();
 
         return redirect()->back();
     }

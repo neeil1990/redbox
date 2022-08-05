@@ -29,9 +29,8 @@
             <div class="callout callout-info actual-data">
                 <h5>{{ __('Actual data for') }}:</h5>
                 <p></p>
-                {!! Form::open(['method' => 'POST', 'route' => 'monitoring.projects.remove.cache', 'class' => 'remove-cache']) !!}
-                    {!! Form::hidden('key', ''); !!}
-                    {!! Form::submit(__('Update'), ['class' => 'btn btn-secondary']) !!}
+                {!! Form::open(['method' => 'GET', 'route' => 'monitoring.projects.remove.cache', 'class' => 'remove-cache']) !!}
+                    {{--{!! Form::submit(__('Update'), ['class' => 'btn btn-secondary']) !!}--}}
                 {!! Form::close() !!}
             </div>
         </div>
@@ -219,9 +218,7 @@
                         return false;
                     });
 
-                    $('.actual-data').find('p').text(json.cacheData.date);
-
-                    $('.remove-cache').find('input[name="key"]').val(json.cacheData.key);
+                    $('.actual-data').find('p').text(json.cache.date);
 
                     this.closest('.card').find('.card-header .card-title').html("Управление проектами");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
