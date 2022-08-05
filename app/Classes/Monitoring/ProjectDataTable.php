@@ -85,10 +85,6 @@ class ProjectDataTable
             $keywords = $model->keywords()->get();
 
             $this->calculateTopPercent($keywords, $model);
-
-            //$positions = $this->getLastPositionsByKeywords($keywords, $model);
-
-            $model->middle_position = 0;//($positions->isNotEmpty()) ? round($positions->sum() / $positions->count()) : 0;
         }
     }
 
@@ -102,10 +98,9 @@ class ProjectDataTable
         });*/
 
         $positionsCache = collect([
-            'positions' => collect([]),
-            'pre_positions' => collect([]),
+            'positions' => $this->getLastPositionsByKeywords($keywords, $model),
+            'pre_positions' => $this->getPreLastPositionsByKeywords($keywords, $model),
         ]);
-
 
         $percents = [
             'top_three' => 3,
@@ -121,6 +116,8 @@ class ProjectDataTable
             $preLast = Helper::calculateTopPercentByPositions($positionsCache['pre_positions'], $percent);
             $model->$name = $last . Helper::differentTopPercent($last, $preLast);
         }
+
+        $model->middle_position = ($positionsCache['positions']->isNotEmpty()) ? round($positionsCache['positions']->sum() / $positionsCache['positions']->count()) : 0;
     }
 
     private function getLastPositionsByKeywords(Collection $keywords, $model)
