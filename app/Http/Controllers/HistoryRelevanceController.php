@@ -762,57 +762,61 @@ class HistoryRelevanceController extends Controller
                 ['cleaning', '=', 0]
             ])->oldest()->first();
 
-            foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
-                foreach ($word as $key => $item) {
-                    if ($key != 'total') {
-                        $words[$key] = $item;
+            if (isset($result->unigram_table)) {
+                foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
+                    foreach ($word as $key => $item) {
+                        if ($key != 'total') {
+                            $words[$key] = $item;
+                        }
                     }
                 }
+
+                foreach ($words as $key => $word) {
+                    foreach ($word['occurrences'] as $link => $count) {
+                        $words[$key]['total'][$link] = $count;
+                    }
+
+                    if (isset($words[$key]['tf'])) {
+                        $words[$key]['tf'] += $word['tf'];
+                    } else {
+                        $words[$key]['tf'] = $word['tf'];
+                    }
+
+                    if (isset($words[$key]['idf'])) {
+                        $words[$key]['idf'] += $word['idf'];
+                    } else {
+                        $words[$key]['idf'] = $word['idf'];
+                    }
+
+                    if (isset($words[$key]['repeatInLinkMainPage'])) {
+                        $words[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+                    } else {
+                        $words[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
+                    }
+
+                    if (isset($words[$key]['repeatInTextMainPage'])) {
+                        $words[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
+                    } else {
+                        $words[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
+                    }
+                }
+
+                foreach ($words as $key => $word) {
+                    arsort($word['total']);
+                    $result[$key] = [
+                        'tf' => $word['tf'],
+                        'idf' => $word['idf'],
+                        'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                        'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+                        'throughLinks' => $word['total'],
+                        'throughCount' => count($word) - 5,
+                        'total' => count($items),
+                    ];
+                }
             }
 
-            foreach ($words as $key => $word) {
-                foreach ($word['occurrences'] as $link => $count) {
-                    $words[$key]['total'][$link] = $count;
-                }
-
-                if (isset($words[$key]['tf'])) {
-                    $words[$key]['tf'] += $word['tf'];
-                } else {
-                    $words[$key]['tf'] = $word['tf'];
-                }
-
-                if (isset($words[$key]['idf'])) {
-                    $words[$key]['idf'] += $word['idf'];
-                } else {
-                    $words[$key]['idf'] = $word['idf'];
-                }
-
-                if (isset($words[$key]['repeatInLinkMainPage'])) {
-                    $words[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
-                } else {
-                    $words[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
-                }
-
-                if (isset($words[$key]['repeatInTextMainPage'])) {
-                    $words[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
-                } else {
-                    $words[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
-                }
-            }
-
-            foreach ($words as $key => $word) {
-                arsort($word['total']);
-                $result[$key] = [
-                    'tf' => $word['tf'],
-                    'idf' => $word['idf'],
-                    'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-                    'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-                    'throughLinks' => $word['total'],
-                    'throughCount' => count($word) - 5,
-                    'total' => count($items),
-                ];
-            }
         }
+
         if (count($result) == 0) {
             return response()->json([
                 'code' => 415,
