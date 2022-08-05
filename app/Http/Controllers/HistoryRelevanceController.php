@@ -742,82 +742,56 @@ class HistoryRelevanceController extends Controller
      */
     public function startThroughAnalyse(Request $request): JsonResponse
     {
-        $result = [];
         $this->checkAccess($request);
         $items = $this->getUniqueScanned($request->id);
-        Log::debug(1);
+        $countRecords = count($items);
+        $resultArray = [];
 
         foreach ($items as $item) {
             $record = RelevanceHistory::where('main_link', '=', $item->main_link)
                 ->where('project_relevance_history_id', '=', $request->id)
                 ->where('phrase', '=', $item->phrase)
                 ->where('region', '=', $item->region)
-                ->where('calculate', '=', 1)
+                ->where('calculate', '=', $request->id)
                 ->latest('last_check')
-                ->with('mainHistory')
+                ->with('results')
                 ->first();
 
-            $historyResult = RelevanceHistoryResult::where([
-                ['project_id', '=', $record->id],
-                ['cleaning', '=', 0]
-            ])->oldest()->first();
+            $result = $record->results;
 
-            if (isset($historyResult->unigram_table)) {
-                foreach (json_decode(gzuncompress(base64_decode($historyResult->unigram_table)), true) as $word) {
-                    foreach ($word as $key => $item) {
-                        if ($key != 'total') {
-                            $words[$key] = $item;
-                        }
+            foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
+                foreach ($word as $key => $item) {
+                    if ($key != 'total') {
+                        $words[$key] = $item;
                     }
                 }
+            }
 
-                foreach ($words as $key => $word) {
-                    foreach ($word['occurrences'] as $link => $count) {
-                        $words[$key]['total'][$link] = $count;
-                    }
+            foreach ($words as $key => $word) {
+                arsort($word['occurrences']);
 
-                    if (isset($words[$key]['tf'])) {
-                        $words[$key]['tf'] += $word['tf'];
-                    } else {
-                        $words[$key]['tf'] = $word['tf'];
-                    }
-
-                    if (isset($words[$key]['idf'])) {
-                        $words[$key]['idf'] += $word['idf'];
-                    } else {
-                        $words[$key]['idf'] = $word['idf'];
-                    }
-
-                    if (isset($words[$key]['repeatInLinkMainPage'])) {
-                        $words[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
-                    } else {
-                        $words[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
-                    }
-
-                    if (isset($words[$key]['repeatInTextMainPage'])) {
-                        $words[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
-                    } else {
-                        $words[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
-                    }
+                if (isset($resultArray[$key])) {
+                    $resultArray[$key]['tf'] += $word['tf'];
+                    $resultArray[$key]['idf'] += $word['idf'];
+                    $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+                    $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
+                    $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
+                    $resultArray[$key]['throughCount'] = count($resultArray[$key]['throughLinks']);
+                } else {
+                    $resultArray[$key]['tf'] = $word['tf'];
+                    $resultArray[$key]['idf'] = $word['idf'];
+                    $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
+                    $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
+                    $resultArray[$key]['throughLinks'] = $word['occurrences'];
+                    $resultArray[$key]['throughCount'] = count($word['occurrences']);
                 }
 
-                foreach ($words as $key => $word) {
-                    arsort($word['total']);
-                    $result[$key] = [
-                        'tf' => $word['tf'],
-                        'idf' => $word['idf'],
-                        'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-                        'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-                        'throughLinks' => $word['total'],
-                        'throughCount' => count($word) - 5,
-                        'total' => count($items),
-                    ];
-                }
+                $resultArray[$key]['total'] = $countRecords;
             }
 
         }
 
-        if (count($result) == 0) {
+        if (count($resultArray) == 0) {
             return response()->json([
                 'code' => 415,
                 'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
@@ -829,13 +803,11 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        $result = array_slice($result, 0, 1500);
-
         return response()->json([
             'success' => false,
             'code' => 200,
             'message' => "Результаты сквозного анализа успешно загружены",
-            'object' => json_encode($result)
+            'object' => json_encode(array_slice($resultArray, 0, 1500))
         ]);
     }
 

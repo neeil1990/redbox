@@ -259,79 +259,59 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
-//Route::get('/bla', function () {
-//    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
-//
-//    foreach ($items as $item) {
-//        $record = RelevanceHistory::where('main_link', '=', $item->main_link)
-//            ->where('project_relevance_history_id', '=', 1)
-//            ->where('phrase', '=', $item->phrase)
-//            ->where('region', '=', $item->region)
-//            ->where('calculate', '=', 1)
-//            ->latest('last_check')
-//            ->with('mainHistory')
-//            ->first();
-//
-//        $result = RelevanceHistoryResult::where([
-//            ['project_id', '=', $record->id],
-//            ['cleaning', '=', 0]
-//        ])->oldest()->first();
-//
-//        foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
-//            foreach ($word as $key => $item) {
-//                if ($key != 'total') {
-//                    $words[$key] = $item;
-//                }
-//            }
-//        }
-//
-//        foreach ($words as $key => $word) {
-//            foreach ($word['occurrences'] as $link => $count) {
-//                $words[$key]['total'][$link] = $count;
-//            }
-//
-//            if (isset($words[$key]['tf'])) {
-//                $words[$key]['tf'] += $word['tf'];
-//            } else {
-//                $words[$key]['tf'] = $word['tf'];
-//            }
-//
-//            if (isset($words[$key]['idf'])) {
-//                $words[$key]['idf'] += $word['idf'];
-//            } else {
-//                $words[$key]['idf'] = $word['idf'];
-//            }
-//
-//            if (isset($words[$key]['repeatInLinkMainPage'])) {
-//                $words[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
-//            } else {
-//                $words[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
-//            }
-//
-//            if (isset($words[$key]['repeatInTextMainPage'])) {
-//                $words[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
-//            } else {
-//                $words[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
-//            }
-//        }
-//
-//        $result = [];
-//        foreach ($words as $key => $word) {
-//            arsort($word['total']);
-//            $result[$key] = [
-//                'tf' => $word['tf'],
-//                'idf' => $word['idf'],
-//                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-//                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-//                'throughLinks' => $word['total'],
-//                'throughCount' => count($word) - 5,
-//                'total' => count($items),
-//            ];
-//        }
-//    }
-//
-//    $result = array_slice($result, 0, 1500);
-//});
+Route::get('/bla', function () {
+
+    $resultArray = [];
+    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
+    $countRecords = count($items);
+
+    foreach ($items as $item) {
+        $record = RelevanceHistory::where('main_link', '=', $item->main_link)
+            ->where('project_relevance_history_id', '=', 1)
+            ->where('phrase', '=', $item->phrase)
+            ->where('region', '=', $item->region)
+            ->where('calculate', '=', 1)
+            ->latest('last_check')
+            ->with('results')
+            ->first();
+
+        $result = $record->results;
+
+        foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
+            foreach ($word as $key => $item) {
+                if ($key != 'total') {
+                    $words[$key] = $item;
+                }
+            }
+        }
+
+        foreach ($words as $key => $word) {
+            arsort($word['occurrences']);
+
+            if (isset($resultArray[$key])) {
+                $resultArray[$key]['tf'] += $word['tf'];
+                $resultArray[$key]['idf'] += $word['idf'];
+                $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+                $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
+                $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
+                $resultArray[$key]['throughCount'] = count($resultArray[$key]['throughLinks']);
+            } else {
+                $resultArray[$key]['tf'] = $word['tf'];
+                $resultArray[$key]['idf'] = $word['idf'];
+                $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
+                $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
+                $resultArray[$key]['throughLinks'] = $word['occurrences'];
+                $resultArray[$key]['throughCount'] = count($word['occurrences']);
+            }
+
+            $resultArray[$key]['total'] = $countRecords;
+        }
+
+    }
+
+    dd($resultArray);
+    $resultArray = array_slice($resultArray, 0, 1500);
+});
 
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
