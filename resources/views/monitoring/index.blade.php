@@ -30,7 +30,7 @@
                 <h5>{{ __('Actual data for') }}:</h5>
                 <p></p>
                 {!! Form::open(['method' => 'GET', 'route' => 'monitoring.projects.remove.cache', 'class' => 'remove-cache']) !!}
-                    {!! Form::submit(__('Update'), ['class' => 'btn btn-secondary']) !!}
+                    {{--{!! Form::submit(__('Update'), ['class' => 'btn btn-secondary']) !!}--}}
                 {!! Form::close() !!}
             </div>
         </div>

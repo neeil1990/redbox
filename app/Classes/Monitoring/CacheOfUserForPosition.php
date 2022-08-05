@@ -7,6 +7,7 @@ namespace App\Classes\Monitoring;
 use App\MonitoringProject;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Cache;
 
 class CacheOfUserForPosition
 {
@@ -45,9 +46,13 @@ class CacheOfUserForPosition
         return null;
     }
 
+    public function deleteCache()
+    {
+        Cache::forget($this->getCacheKey());
+    }
+
     private function generateCacheKey()
     {
         $this->cacheKeyForPosition = "topPositionsCacheForUser" . $this->userId . "Project" . $this->project->id;
     }
-
 }

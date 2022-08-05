@@ -78,7 +78,11 @@ class MonitoringController extends Controller
 
     public function removeCache()
     {
-        Cache::flush();
+        /** @var User $user */
+        $user = $this->user;
+        $projects = $user->monitoringProjects()->get();
+        foreach ($projects as $project)
+            (new CacheOfUserForPosition($project))->deleteCache();
 
         return redirect()->back();
     }

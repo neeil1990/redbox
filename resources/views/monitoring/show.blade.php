@@ -362,6 +362,7 @@
                         });
 
                         this.closest('.card').find('.card-header .card-title').html(btnGroup);
+                        this.closest('.card').find('.card-header .card-title').prepend($('<h3 />', {class: "card-title"}).css({"line-height": '38px', "margin-right": '10px'}).text("Скрыть колонки:"));
 
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
