@@ -747,6 +747,14 @@ class HistoryRelevanceController extends Controller
         $countRecords = count($items);
         $resultArray = [];
 
+        if (count($items) == 0) {
+            return response()->json([
+                'code' => 415,
+                'message' => 'Не удалось получить требуемые данные'
+            ]);
+        }
+        Log::debug('$items', [$items]);
+
         foreach ($items as $item) {
             $record = RelevanceHistory::where('main_link', '=', $item->main_link)
                 ->where('project_relevance_history_id', '=', $request->id)
@@ -757,7 +765,6 @@ class HistoryRelevanceController extends Controller
                 ->with('results')
                 ->first();
 
-            Log::debug('res', [$record]);
             $result = $record->results;
 
             foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
@@ -796,11 +803,6 @@ class HistoryRelevanceController extends Controller
             return response()->json([
                 'code' => 415,
                 'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
-            ]);
-        } elseif (count($items) == 0) {
-            return response()->json([
-                'code' => 415,
-                'message' => 'Не удалось получить требуемые данные'
             ]);
         }
 
