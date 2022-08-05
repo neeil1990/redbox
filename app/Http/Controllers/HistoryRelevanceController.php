@@ -760,7 +760,7 @@ class HistoryRelevanceController extends Controller
                 ->where('project_relevance_history_id', '=', $request->id)
                 ->where('phrase', '=', $item->phrase)
                 ->where('region', '=', $item->region)
-                ->where('calculate', '=', $request->id)
+                ->where('calculate', '=', 1)
                 ->latest('last_check')
                 ->with('results')
                 ->first();

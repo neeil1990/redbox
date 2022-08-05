@@ -260,17 +260,25 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
 Route::get('/bla', function () {
-
-    $resultArray = [];
-    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
+    $this->checkAccess($request);
+    $items = $this->getUniqueScanned($request->id);
     $countRecords = count($items);
+    $resultArray = [];
+
+    if (count($items) == 0) {
+        return response()->json([
+            'code' => 415,
+            'message' => 'Не удалось получить требуемые данные'
+        ]);
+    }
+    Log::debug('$items', [$items]);
 
     foreach ($items as $item) {
         $record = RelevanceHistory::where('main_link', '=', $item->main_link)
-            ->where('project_relevance_history_id', '=', 1)
+            ->where('project_relevance_history_id', '=', $request->id)
             ->where('phrase', '=', $item->phrase)
             ->where('region', '=', $item->region)
-            ->where('calculate', '=', 1)
+            ->where('calculate', '=', $request->id)
             ->latest('last_check')
             ->with('results')
             ->first();
@@ -294,14 +302,14 @@ Route::get('/bla', function () {
                 $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
                 $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
                 $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
-                $resultArray[$key]['throughCount'] = count($resultArray[$key]['throughLinks']);
+                $resultArray[$key]['throughCount'] += 1;
             } else {
                 $resultArray[$key]['tf'] = $word['tf'];
                 $resultArray[$key]['idf'] = $word['idf'];
                 $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
                 $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
                 $resultArray[$key]['throughLinks'] = $word['occurrences'];
-                $resultArray[$key]['throughCount'] = count($word['occurrences']);
+                $resultArray[$key]['throughCount'] = 1;
             }
 
             $resultArray[$key]['total'] = $countRecords;
@@ -309,8 +317,19 @@ Route::get('/bla', function () {
 
     }
 
-    dd($resultArray);
-    $resultArray = array_slice($resultArray, 0, 1500);
+    if (count($resultArray) == 0) {
+        return response()->json([
+            'code' => 415,
+            'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
+        ]);
+    }
+
+    return response()->json([
+        'success' => false,
+        'code' => 200,
+        'message' => "Результаты сквозного анализа успешно загружены",
+        'object' => json_encode(array_slice($resultArray, 0, 1500))
+    ]);
 });
 
 Route::get('/get-passages/{link}', function ($link) {
