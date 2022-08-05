@@ -158,6 +158,7 @@ class TextAnalyzer
         $text = preg_replace([
             "'<style[^>]*?>.*?</style>'si",
             "'<script[^>]*?>.*?</script>'si",
+            "'<head[^>]*?>.*?</head>'si",
             "'<i [^>]*?>.*?</i>'si",
             "'array\n\(\n.*?\n\)\n'si",
             "'array.*?\(.*?\)'si",
@@ -174,7 +175,7 @@ class TextAnalyzer
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"
         ], ' ', $text);
-        $text = preg_replace("/[0-9]/", "", $text);
+        $text = preg_replace("/\d/", "", $text);
         $text = str_replace("ё", "е", $text);
 
         return preg_replace('| +|', ' ', $text);
@@ -186,17 +187,17 @@ class TextAnalyzer
      */
     public static function removeStylesAndScripts($html): string
     {
-        preg_match_all('#<style(.*?)>(.*?)</style>#is', $html, $matches, PREG_SET_ORDER);
-        foreach ($matches as $item) {
-            $html = str_replace($item[0], "", $html);
-        }
+        $text = preg_replace([
+            "'<style[^>]*?>.*?</style>'si",
+            "'<script[^>]*?>.*?</script>'si",
+            "'<head[^>]*?>.*?</head>'si",
+            "'<i [^>]*?>.*?</i>'si",
+            "'array\n\(\n.*?\n\)\n'si",
+            "'array.*?\(.*?\)'si",
+            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+        ], "", $html);
 
-        preg_match_all('#<script(.*?)>(.*?)</script>#is', $html, $matches, PREG_SET_ORDER);
-        foreach ($matches as $item) {
-            $html = str_replace($item[0], "", $html);
-        }
-
-        return mb_strtolower($html);
+        return mb_strtolower($text);
     }
 
 
@@ -511,19 +512,22 @@ class TextAnalyzer
      */
     public static function clearHTMLFromLinks($html): string
     {
-        preg_match_all('(<a *href=["\']?(.*?)([\'"]+[^<>]*>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
+        $html = str_replace(["\n", "\r", "\t"], " ", $html);
+        $html = preg_replace("| +|", ' ', $html);
+
+        preg_match_all('(<a.*?>.*?</a>)', $html, $matches, PREG_SET_ORDER);
         foreach ($matches as $items) {
             $html = str_replace($items[0], "", $html);
         }
 
-        return TextAnalyzer::deleteEverythingExceptCharacters($html);
+        return trim(TextAnalyzer::deleteEverythingExceptCharacters($html));
     }
 
     /**
      * @param $text
      * @return array
      */
-    public static function countWordsInText($text)
+    public static function countWordsInText($text): array
     {
         $wordForms = TextAnalyzer::searchWordForms($text);
         $textAr = array_count_values($text);

@@ -12,6 +12,7 @@
 */
 
 use App\LinguaStem;
+use App\Relevance;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
@@ -258,78 +259,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
-});
-Route::get('/bla', function () {
-    $this->checkAccess($request);
-    $items = $this->getUniqueScanned($request->id);
-    $countRecords = count($items);
-    $resultArray = [];
-
-    if (count($items) == 0) {
-        return response()->json([
-            'code' => 415,
-            'message' => 'Не удалось получить требуемые данные'
-        ]);
-    }
-    Log::debug('$items', [$items]);
-
-    foreach ($items as $item) {
-        $record = RelevanceHistory::where('main_link', '=', $item->main_link)
-            ->where('project_relevance_history_id', '=', $request->id)
-            ->where('phrase', '=', $item->phrase)
-            ->where('region', '=', $item->region)
-            ->where('calculate', '=', $request->id)
-            ->latest('last_check')
-            ->with('results')
-            ->first();
-
-        $result = $record->results;
-
-        foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
-            foreach ($word as $key => $item) {
-                if ($key != 'total') {
-                    $words[$key] = $item;
-                }
-            }
-        }
-
-        foreach ($words as $key => $word) {
-            arsort($word['occurrences']);
-
-            if (isset($resultArray[$key])) {
-                $resultArray[$key]['tf'] += $word['tf'];
-                $resultArray[$key]['idf'] += $word['idf'];
-                $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
-                $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
-                $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
-                $resultArray[$key]['throughCount'] += 1;
-            } else {
-                $resultArray[$key]['tf'] = $word['tf'];
-                $resultArray[$key]['idf'] = $word['idf'];
-                $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
-                $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
-                $resultArray[$key]['throughLinks'] = $word['occurrences'];
-                $resultArray[$key]['throughCount'] = 1;
-            }
-
-            $resultArray[$key]['total'] = $countRecords;
-        }
-
-    }
-
-    if (count($resultArray) == 0) {
-        return response()->json([
-            'code' => 415,
-            'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
-        ]);
-    }
-
-    return response()->json([
-        'success' => false,
-        'code' => 200,
-        'message' => "Результаты сквозного анализа успешно загружены",
-        'object' => json_encode(array_slice($resultArray, 0, 1500))
-    ]);
 });
 
 Route::get('/get-passages/{link}', function ($link) {
