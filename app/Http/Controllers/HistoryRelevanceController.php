@@ -767,7 +767,7 @@ class HistoryRelevanceController extends Controller
                 ->first();
 
             $result = $record->results;
-            if(isset($result->unigram_table)){
+            if ($result->unigram_table != "") {
                 foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
                     foreach ($word as $key => $item) {
                         if ($key != 'total') {
