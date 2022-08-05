@@ -41,10 +41,10 @@ $('.repeat-scan-unique-sites').on('click', function () {
 })
 
 $('.start-through-analyse').on('click', function () {
+    let thoughTable = $('#though-table')
+    thoughTable.dataTable().fnDestroy();
+    $('.though-render').remove()
     setTimeout(() => {
-        $('.though-render').remove()
-        let thoughTable = $('#though-table')
-        thoughTable.dataTable().fnDestroy();
         $.ajax({
             type: "POST",
             dataType: "json",
