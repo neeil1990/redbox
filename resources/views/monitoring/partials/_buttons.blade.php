@@ -16,11 +16,9 @@
         </button>
     </div>
 
-    {!! Form::open(['method' => 'GET', 'route' => 'monitoring.projects.remove.cache', 'style' => 'display: contents;']) !!}
-        <button type="submit" class="btn btn-default btn-sm" data-toggle="tooltip" title="{{ __('Update actual data') }}">
-            <i class="fas fa-sync-alt"></i>
-        </button>
-    {!! Form::close() !!}
+    <button type="submit" class="btn btn-default btn-sm" data-toggle="tooltip" title="{{ __('Update') }}">
+        <i class="fas fa-sync-alt"></i>
+    </button>
 </div>
 
 

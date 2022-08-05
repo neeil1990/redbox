@@ -209,7 +209,15 @@
                     this.closest('.card').find('.card-header .card-title').html("Управление проектами.");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
 
-                    let updateCacheText = $('<div />', {class: "card-title"}).css("margin-left", "10px").text("{{ __('Actual data for') }}: " + json.cache.date);
+                    let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
+                    let updateCacheButton = $('<a />', {
+                        class: "text-muted",
+                        href: "/monitoring/project/remove/cache"
+                    }).html(updateCacheIcon);
+
+                    let updateCacheText = $('<div />', {class: "card-title ml-2"})
+                        .html("{{ __('Actual data for') }}: " + json.cache.date + " ");
+                    updateCacheText.append(updateCacheButton);
                     let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
                     this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
                 },
