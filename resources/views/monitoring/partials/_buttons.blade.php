@@ -16,10 +16,9 @@
         </button>
     </div>
 
-    <button type="button" class="btn btn-default btn-sm" onclick="window.location.reload()" data-toggle="tooltip" title="{{ __('Reload') }}">
+    <button type="submit" class="btn btn-default btn-sm" data-toggle="tooltip" title="{{ __('Update') }}">
         <i class="fas fa-sync-alt"></i>
     </button>
-
 </div>
 
 
