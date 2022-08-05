@@ -742,11 +742,11 @@ class HistoryRelevanceController extends Controller
      */
     public function startThroughAnalyse(Request $request): JsonResponse
     {
+        $result = [];
         $this->checkAccess($request);
         $items = $this->getUniqueScanned($request->id);
         Log::debug(1);
 
-        $tlp = [];
         foreach ($items as $item) {
             $record = RelevanceHistory::where('main_link', '=', $item->main_link)
                 ->where('project_relevance_history_id', '=', $request->id)
@@ -762,78 +762,68 @@ class HistoryRelevanceController extends Controller
                 ['cleaning', '=', 0]
             ])->oldest()->first();
 
-            if (isset($result)) {
-                $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
-
-            }
-        }
-        if (count($tlp) == 0) {
-            return response()->json([
-                'code' => 415,
-                'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
-            ]);
-        }
-
-        Log::debug(2);
-        $words = [];
-        foreach ($tlp as $wordWorm) {
-            foreach ($wordWorm as $word) {
+            foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
                 foreach ($word as $key => $item) {
                     if ($key != 'total') {
-                        $words[$key][] = $item;
+                        $words[$key] = $item;
                     }
                 }
             }
-        }
-        Log::debug(3);
-        foreach ($words as $key => $word) {
-            foreach ($word as $item) {
-                foreach ($item['occurrences'] as $link => $count) {
+
+            foreach ($words as $key => $word) {
+                foreach ($word['occurrences'] as $link => $count) {
                     $words[$key]['total'][$link] = $count;
                 }
 
                 if (isset($words[$key]['tf'])) {
-                    $words[$key]['tf'] += $item['tf'];
+                    $words[$key]['tf'] += $word['tf'];
                 } else {
-                    $words[$key]['tf'] = $item['tf'];
+                    $words[$key]['tf'] = $word['tf'];
                 }
 
                 if (isset($words[$key]['idf'])) {
-                    $words[$key]['idf'] += $item['idf'];
+                    $words[$key]['idf'] += $word['idf'];
                 } else {
-                    $words[$key]['idf'] = $item['idf'];
+                    $words[$key]['idf'] = $word['idf'];
                 }
 
                 if (isset($words[$key]['repeatInLinkMainPage'])) {
-                    $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
+                    $words[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
                 } else {
-                    $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
+                    $words[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
                 }
 
                 if (isset($words[$key]['repeatInTextMainPage'])) {
-                    $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
+                    $words[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
                 } else {
-                    $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
+                    $words[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
                 }
             }
-        }
 
-        Log::debug(4);
-        $result = [];
-        foreach ($words as $key => $word) {
-            arsort($word['total']);
-            $result[$key] = [
-                'tf' => $word['tf'],
-                'idf' => $word['idf'],
-                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-                'throughLinks' => $word['total'],
-                'throughCount' => count($word) - 5,
-                'total' => count($items),
-            ];
+            foreach ($words as $key => $word) {
+                arsort($word['total']);
+                $result[$key] = [
+                    'tf' => $word['tf'],
+                    'idf' => $word['idf'],
+                    'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                    'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+                    'throughLinks' => $word['total'],
+                    'throughCount' => count($word) - 5,
+                    'total' => count($items),
+                ];
+            }
         }
-
-        Log::debug(5);
+        if (count($result) == 0) {
+            return response()->json([
+                'code' => 415,
+                'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
+            ]);
+        } elseif (count($items) == 0) {
+            return response()->json([
+                'code' => 415,
+                'message' => 'Не удалось получить требуемые данные'
+            ]);
+        }
 
         $result = array_slice($result, 0, 1500);
 

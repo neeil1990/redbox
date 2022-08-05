@@ -17,6 +17,7 @@ use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -258,99 +259,79 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 });
-Route::get('/bla', function () {
-    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(8);
-
-    $tlp = [];
-    foreach ($items as $item) {
-        $record = RelevanceHistory::where('main_link', '=', $item->main_link)
-            ->where('project_relevance_history_id', '=', 8)
-            ->where('phrase', '=', $item->phrase)
-            ->where('region', '=', $item->region)
-            ->where('calculate', '=', 1)
-            ->latest('last_check')
-            ->first();
-
-        $result = RelevanceHistoryResult::where([
-            ['project_id', '=', $record->id],
-            ['cleaning', '=', 0]
-        ])->oldest()->first();
-
-        if (!isset($result)) {
-            return response()->json([
-                'code' => 415,
-                'message' => 'Данные были удалены. Для того чтобы воспользоваться анализом запустите повторный анализ уникальных проанализированных страниц.'
-            ]);
-        }
-        $tlp[] = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
-    }
-
-    $words = [];
-    foreach ($tlp as $wordWorm) {
-        foreach ($wordWorm as $word) {
-            foreach ($word as $key => $item) {
-                if ($key != 'total') {
-                    $words[$key][] = $item;
-                }
-            }
-        }
-    }
-
-    foreach ($words as $key => $word) {
-        foreach ($word as $item) {
-            foreach ($item['occurrences'] as $link => $count) {
-                $words[$key]['total'][$link] = $count;
-            }
-            if (isset($words[$key]['tf'])) {
-                $words[$key]['tf'] += $item['tf'];
-            } else {
-                $words[$key]['tf'] = $item['tf'];
-            }
-
-            if(isset($words[$key]['idf'])){
-                $words[$key]['idf'] += $item['idf'];
-            } else {
-                $words[$key]['idf'] = $item['idf'];
-            }
-
-            if(isset( $words[$key]['repeatInLinkMainPage'])){
-                $words[$key]['repeatInLinkMainPage'] += $item['repeatInLinkMainPage'];
-            } else {
-                $words[$key]['repeatInLinkMainPage'] = $item['repeatInLinkMainPage'];
-            }
-
-            if(isset( $words[$key]['repeatInTextMainPage'])){
-                $words[$key]['repeatInTextMainPage'] += $item['repeatInTextMainPage'];
-            } else {
-                $words[$key]['repeatInTextMainPage'] = $item['repeatInTextMainPage'];
-            }
-        }
-    }
-
-    $result = [];
-    foreach ($words as $key => $word) {
-        $result[$key] = [
-            'tf' => $word['tf'],
-            'idf' => $word['idf'],
-            'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-            'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-            'throughLinks' => $word['total'],
-            'throughCount' => count($word) - 5,
-            'total' => count($items),
-        ];
-        dump($key);
-        dd($result[$key]);
-    }
-
-    $result = array_slice($result, 0, 3500);
-
-    return response()->json([
-        'success' => false,
-        'code' => 200,
-        'message' => "Результаты сквозного анализа успешно загружены",
-        'object' => json_encode($result)
-    ]);
-});
+//Route::get('/bla', function () {
+//    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
+//
+//    foreach ($items as $item) {
+//        $record = RelevanceHistory::where('main_link', '=', $item->main_link)
+//            ->where('project_relevance_history_id', '=', 1)
+//            ->where('phrase', '=', $item->phrase)
+//            ->where('region', '=', $item->region)
+//            ->where('calculate', '=', 1)
+//            ->latest('last_check')
+//            ->with('mainHistory')
+//            ->first();
+//
+//        $result = RelevanceHistoryResult::where([
+//            ['project_id', '=', $record->id],
+//            ['cleaning', '=', 0]
+//        ])->oldest()->first();
+//
+//        foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
+//            foreach ($word as $key => $item) {
+//                if ($key != 'total') {
+//                    $words[$key] = $item;
+//                }
+//            }
+//        }
+//
+//        foreach ($words as $key => $word) {
+//            foreach ($word['occurrences'] as $link => $count) {
+//                $words[$key]['total'][$link] = $count;
+//            }
+//
+//            if (isset($words[$key]['tf'])) {
+//                $words[$key]['tf'] += $word['tf'];
+//            } else {
+//                $words[$key]['tf'] = $word['tf'];
+//            }
+//
+//            if (isset($words[$key]['idf'])) {
+//                $words[$key]['idf'] += $word['idf'];
+//            } else {
+//                $words[$key]['idf'] = $word['idf'];
+//            }
+//
+//            if (isset($words[$key]['repeatInLinkMainPage'])) {
+//                $words[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+//            } else {
+//                $words[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
+//            }
+//
+//            if (isset($words[$key]['repeatInTextMainPage'])) {
+//                $words[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
+//            } else {
+//                $words[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
+//            }
+//        }
+//
+//        $result = [];
+//        foreach ($words as $key => $word) {
+//            arsort($word['total']);
+//            $result[$key] = [
+//                'tf' => $word['tf'],
+//                'idf' => $word['idf'],
+//                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+//                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+//                'throughLinks' => $word['total'],
+//                'throughCount' => count($word) - 5,
+//                'total' => count($items),
+//            ];
+//        }
+//    }
+//
+//    $result = array_slice($result, 0, 1500);
+//});
 
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
