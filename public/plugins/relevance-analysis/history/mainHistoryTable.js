@@ -41,6 +41,7 @@ $('.repeat-scan-unique-sites').on('click', function () {
 })
 
 $('.start-through-analyse').on('click', function () {
+    $('#though-block').hide()
     $('.though-render').remove()
     let thoughTable = $('#though-table')
     thoughTable.dataTable().fnDestroy();
