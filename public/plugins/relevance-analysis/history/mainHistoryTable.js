@@ -41,10 +41,11 @@ $('.repeat-scan-unique-sites').on('click', function () {
 })
 
 $('.start-through-analyse').on('click', function () {
-    let thoughTable = $('#though-table')
-    thoughTable.dataTable().fnDestroy();
+    $('#though-block').hide()
     $('.though-render').remove()
     setTimeout(() => {
+        let thoughTable = $('#though-table')
+        thoughTable.dataTable().fnDestroy();
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -62,16 +63,16 @@ $('.start-through-analyse').on('click', function () {
                             let url = new URL(tkey)
                             thoughLinks +=
                                 '<tr>' +
-                                '   <td>' + tvalue + '</td>' +
                                 '   <td><a href="' + tkey + '" target="_blank" title="' + tkey + '"> ' + url.origin + ' </a></td>' +
+                                '   <td>' + tvalue + '</td>' +
                                 '</tr>'
                         })
                         let newTable =
                             '<table>' +
                             '   <thead>' +
                             '       <tr>' +
-                            '           <td>Количество повторений</td>' +
                             '           <td>Ссылка на сайт</td>' +
+                            '           <td>Количество повторений</td>' +
                             '       </tr>' +
                             '   </thead>' +
                             '   <tbody>' +
@@ -113,5 +114,5 @@ $('.start-through-analyse').on('click', function () {
                 }
             },
         });
-    }, 300)
+    }, 500)
 })
