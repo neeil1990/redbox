@@ -1003,17 +1003,17 @@ class Relevance
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
-                        $htmlCount = preg_match_all("/($phrase)/", ' ' . $page['html'] . ' ');
+                        $htmlCount = preg_match_all("/ ($phrase) /", ' ' . $page['html'] . ' ');
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
                         }
 
-                        $hiddenTextCount = preg_match_all("/($phrase)/", ' ' . $page['hiddenText'] . ' ');
+                        $hiddenTextCount = preg_match_all("/ ($phrase) /", ' ' . $page['hiddenText'] . ' ');
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
                         }
 
-                        $linkTextCount = preg_match_all("/($phrase)/", ' ' . $page['linkText'] . ' ');
+                        $linkTextCount = preg_match_all("/ ($phrase) /", ' ' . $page['linkText'] . ' ');
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
                         }

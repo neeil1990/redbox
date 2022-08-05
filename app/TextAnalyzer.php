@@ -164,13 +164,14 @@ class TextAnalyzer
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
+        $html = html_entity_decode($html);
 
-        $text = str_replace(">", "> ", $text);
-        $text = trim(strip_tags($text));
+        $html = str_replace(">", "> ", $html);
+        $text = trim(strip_tags($html));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
         $text = preg_replace("/&#?[a-z]+;/i", "", $text);
         $text = str_replace([
-            "\n", "\t", "\r", "nbsp", "quot", "mdash",
+            "\n", "\t", "\r",
             "»", "«", ".", ",", "!", "?",
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"
