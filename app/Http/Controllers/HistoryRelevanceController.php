@@ -757,6 +757,7 @@ class HistoryRelevanceController extends Controller
                 ->with('results')
                 ->first();
 
+            Log::debug('res', [$record]);
             $result = $record->results;
 
             foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
