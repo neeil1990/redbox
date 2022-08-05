@@ -767,7 +767,7 @@ class HistoryRelevanceController extends Controller
                 ->first();
 
             $result = $record->results;
-            if ($result->unigram_table != "") {
+            try {
                 foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
                     foreach ($word as $key => $item) {
                         if ($key != 'total') {
@@ -775,7 +775,6 @@ class HistoryRelevanceController extends Controller
                         }
                     }
                 }
-
                 foreach ($words as $key => $word) {
                     arsort($word['occurrences']);
 
@@ -797,6 +796,8 @@ class HistoryRelevanceController extends Controller
 
                     $resultArray[$key]['total'] = $countRecords;
                 }
+            } catch (\Exception $e) {
+                Log::debug('unigram', [$result->unigram_table]);
             }
 
         }
