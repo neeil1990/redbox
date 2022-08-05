@@ -776,14 +776,14 @@ class HistoryRelevanceController extends Controller
                     $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
                     $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
                     $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
-                    $resultArray[$key]['throughCount'] = count($resultArray[$key]['throughLinks']);
+                    $resultArray[$key]['throughCount'] += 1;
                 } else {
                     $resultArray[$key]['tf'] = $word['tf'];
                     $resultArray[$key]['idf'] = $word['idf'];
                     $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
                     $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
                     $resultArray[$key]['throughLinks'] = $word['occurrences'];
-                    $resultArray[$key]['throughCount'] = count($word['occurrences']);
+                    $resultArray[$key]['throughCount'] = 1;
                 }
 
                 $resultArray[$key]['total'] = $countRecords;
