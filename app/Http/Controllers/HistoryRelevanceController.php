@@ -797,7 +797,7 @@ class HistoryRelevanceController extends Controller
                     $resultArray[$key]['total'] = $countRecords;
                 }
             } catch (\Exception $e) {
-                Log::debug('unigram', [$result]);
+
             }
 
         }
