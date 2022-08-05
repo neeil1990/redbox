@@ -61,7 +61,7 @@ class MonitoringController extends Controller
         $user = $this->user;
         $projects = $user->monitoringProjects()->paginate($request->input('length', 1), ['*'], 'page', $page);
 
-        $cacheDataTime = Carbon::now()->format('d.m.Y H:i:s');
+        $cacheDataTime = Carbon::now()->format('d.m.Y H:i');
         if($projects->total())
             $cacheDataTime = (new CacheOfUserForPosition($projects->first()))->getLastModified() ?? $cacheDataTime;
 

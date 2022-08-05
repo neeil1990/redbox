@@ -41,7 +41,7 @@ class CacheOfUserForPosition
     public function getLastModified()
     {
         if(File::exists($this->getPath()))
-            return Carbon::parse(File::lastModified($this->getPath()))->timezone('Europe/Moscow')->format('d.m.Y H:i:s');
+            return Carbon::parse(File::lastModified($this->getPath()))->timezone('Europe/Moscow')->format('d.m.Y H:i');
 
         return null;
     }

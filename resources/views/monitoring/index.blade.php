@@ -24,18 +24,6 @@
         </style>
     @endslot
 
-    <div class="row">
-        <div class="col-6">
-            <div class="callout callout-info actual-data">
-                <h5>{{ __('Actual data for') }}:</h5>
-                <p></p>
-                {!! Form::open(['method' => 'GET', 'route' => 'monitoring.projects.remove.cache', 'class' => 'remove-cache']) !!}
-                    {{--{!! Form::submit(__('Update'), ['class' => 'btn btn-secondary']) !!}--}}
-                {!! Form::close() !!}
-            </div>
-        </div>
-    </div>
-
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
     </div>
@@ -218,10 +206,12 @@
                         return false;
                     });
 
-                    $('.actual-data').find('p').text(json.cache.date);
-
-                    this.closest('.card').find('.card-header .card-title').html("Управление проектами");
+                    this.closest('.card').find('.card-header .card-title').html("Управление проектами.");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
+
+                    let updateCacheText = $('<div />', {class: "card-title"}).css("margin-left", "10px").text("{{ __('Actual data for') }}: " + json.cache.date);
+                    let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
+                    this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
                 },
                 drawCallback: function(){
                     this.find('tbody tr').addClass('main');
