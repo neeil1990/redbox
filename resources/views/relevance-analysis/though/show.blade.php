@@ -31,7 +31,7 @@
         <tr>
             <th class="sticky"></th>
             <th class="sticky">{{ __('Word') }}</th>
-            <th class="sticky" style="z-index: 1003 !important;">Пересечения</th>
+            <th class="sticky" style="z-index: 1003 !important; max-width: 350px">Пересечения</th>
             <th class="sticky">Сумма tf</th>
             <th class="sticky">Сумма idf</th>
             <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
@@ -122,8 +122,8 @@
                     $.each(value['throughLinks'], function (key2, value2) {
                         childRows +=
                             '<tr>' +
-                            '   <td>'+ key2 +'</td>' +
-                            '   <td>'+ value2 +'</td>' +
+                            '   <td>' + key2 + '</td>' +
+                            '   <td>' + value2 + '</td>' +
                             '</tr>'
                     })
 
