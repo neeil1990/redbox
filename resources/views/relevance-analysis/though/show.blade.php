@@ -46,7 +46,7 @@
                     <i class="fa fa-plus"></i>
                 </th>
                 <td>{{ $key }}</td>
-                <td>
+                <td style="max-width: 350px !important;">
                     <table style="z-index: 100 !important;">
                         <thead>
                         <tr>
