@@ -56,7 +56,7 @@ $('.start-through-analyse').on('click', function () {
             if (response.code === 200) {
                 getSuccessMessage(response.message, 5000)
                 $('#though' + id).html(
-                    '<a href="/show-though/' + id + '" target="_blank">Результаты сквозного анализа</a>'
+                    '<a href="/show-though/' + response.object + '" target="_blank">Результаты сквозного анализа</a>'
                 )
             } else if (response.code === 415) {
                 getErrorMessage(response.message, 15000)
