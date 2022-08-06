@@ -392,6 +392,7 @@
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
+                            <th class="table-header">Сквозной анализ</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -465,14 +466,26 @@
                                        data-target="#repeatUniqueScan{{ $item->id }}"
                                        data-toggle="modal" data-placement="top"
                                        title="{{ __('restart analyzed pages') }}"></i>
-                                    <i class="fa fa-strikethrough" style="opacity: .6; cursor: pointer"
-                                       title="Запустить анализ сквозных слов"
-                                       data-target="#startThroughScan{{ $item->id }}"
-                                       data-toggle="modal" data-placement="top"></i>
                                 </td>
                                 <td class="col-2 count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="col-2 total-points-{{ $item->id }}">{{ $item->total_points }}</td>
                                 <td class="col-2 total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
+                                <td>
+                                    @isset($item->though)
+                                        <div id="though{{ $item->id }}">
+                                            <a href="{{ route('show-though', $item->though->id) }}">
+                                                Результаты сквозного анализа
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div id="though{{ $item->id }}"></div>
+                                    @endisset
+                                    <button class="btn btn-secondary"
+                                            data-target="#startThroughScan{{ $item->id }}"
+                                            data-toggle="modal" data-placement="top">
+                                        Анализ сквозных слов
+                                    </button>
+                                </td>
                                 <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach

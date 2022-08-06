@@ -136,14 +136,16 @@
                         </span>
                         <span style="cursor:pointer;" class="pl-1 pr-1">
                             {{ __('Phrase') }}:
-                            <span class="project-info">
+                            <span class="project-info copyInBuffer" data-target="{{ $object->phrase }}">
                                 {{ $object->phrase }}
+                                <i class="fa fa-copy"></i>
                             </span>
                         </span>
                         <span style="cursor:pointer;" class="pl-1 pr-1">
-                            {{ __('Landing page') }}: <span id="copyInBuffer" class="project-info">
+                            {{ __('Landing page') }}:
+                            <span class="project-info copyInBuffer" data-target="{{ $object->main_link }}">
                                 {{ $object->main_link }}
-                            <i class="fa fa-copy"></i>
+                                <i class="fa fa-copy"></i>
                             </span>
                         </span>
                     </span>
@@ -1203,17 +1205,17 @@
                 }, 1500)
             }
 
-            $('#copyInBuffer').click(function () {
+            $('.copyInBuffer').click(function () {
                 let area = document.createElement('textarea');
                 area.style.opasity = 0
                 document.body.appendChild(area);
-                area.value = "{{ $object->main_link }}";
+                area.value = $(this).attr('data-target');
                 area.select();
                 document.execCommand("copy");
                 document.body.removeChild(area);
 
                 $('.toast-top-right.success-message').show(300)
-                $('#toast-message').html("{{ __('The link was successfully copied to the clipboard') }}")
+                $('#toast-message').html("{{ __('Success') }}")
                 setTimeout(() => {
                     $('.toast-top-right.success-message').hide(300)
                 }, 5000)
