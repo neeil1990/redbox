@@ -39,13 +39,12 @@ class ProjectRelevanceThough extends Model
                 ->where('phrase', '=', $item->phrase)
                 ->where('region', '=', $item->region)
                 ->where('calculate', '=', 1)
-                ->where('cleaning', '=', 0)
                 ->latest('last_check')
                 ->with('results')
                 ->with('mainHistory')
                 ->first();
 
-            if (isset($record)) {
+            if (isset($record) && $record->results->cleaning == 0) {
                 foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
                     foreach ($word as $key => $item) {
                         if ($key != 'total') {
