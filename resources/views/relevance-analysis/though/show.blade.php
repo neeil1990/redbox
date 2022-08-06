@@ -46,8 +46,8 @@
                     <i class="fa fa-plus"></i>
                 </th>
                 <td>{{ $key }}</td>
-                <td style="max-width: 350px !important;">
-                    <table style="z-index: 100 !important;">
+                <td>
+                    <table style="z-index: 100 !important; width: 400px">
                         <thead>
                         <tr>
                             <th class="col-8">Ссылка</th>
