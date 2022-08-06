@@ -42,6 +42,7 @@ $('.repeat-scan-unique-sites').on('click', function () {
 
 $('.start-through-analyse').on('click', function () {
     let id = $(this).attr('data-target')
+    console.log(id)
     $.ajax({
         type: "POST",
         dataType: "json",
@@ -51,10 +52,11 @@ $('.start-through-analyse').on('click', function () {
             id: $(this).attr('data-target'),
         },
         success: function (response) {
+            console.log(response)
             if (response.code === 200) {
                 getSuccessMessage(response.message, 5000)
                 $('#though' + id).html(
-                    '<a href="/show-though/' + id + '">Результаты сквозного анализа</a>'
+                    '<a href="/show-though/' + id + '" target="_blank">Результаты сквозного анализа</a>'
                 )
             } else if (response.code === 415) {
                 getErrorMessage(response.message, 15000)
