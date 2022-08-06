@@ -39,6 +39,7 @@ class ProjectRelevanceThough extends Model
                 ->where('phrase', '=', $item->phrase)
                 ->where('region', '=', $item->region)
                 ->where('calculate', '=', 1)
+                ->where('cleaning', '=', 0)
                 ->latest('last_check')
                 ->with('results')
                 ->with('mainHistory')
