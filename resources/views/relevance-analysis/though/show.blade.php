@@ -26,58 +26,60 @@
         </style>
     @endslot
 
-    <table class="table table-bordered table-striped dtr-inline" id="though-table">
-        <thead>
-        <tr>
-            <th class="sticky"></th>
-            <th class="sticky">{{ __('Word') }}</th>
-            <th class="sticky" style="z-index: 1003 !important; max-width: 350px">Пересечения</th>
-            <th class="sticky">Сумма tf</th>
-            <th class="sticky">Сумма idf</th>
-            <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
-            <th class="sticky">Сумма повторений в ссылке посадочной страницы</th>
-            <th class="sticky">кол-во вхождений</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach(json_decode($though->result, true) as $key => $item)
+    <div style='width: 100%; overflow-x: scroll; max-height:90vh;'>
+        <table class="table table-bordered table-striped dtr-inline" id="though-table">
+            <thead>
             <tr>
-                <th class="show-more" data-target="{{ $key }}">
-                    <i class="fa fa-plus"></i>
-                </th>
-                <td>{{ $key }}</td>
-                <td>
-                    <table style="z-index: 100 !important; width: 400px">
-                        <thead>
-                        <tr>
-                            <th class="col-8">Ссылка</th>
-                            <th class="col-4">Кол-во вхождений</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($item['total']['throughLinks'] as $keyLink => $link)
-                            <tr>
-                                <td>
-                                    <a href="{{ $keyLink }}" target="_blank">
-                                        {{ $keyLink }}
-                                    </a>
-                                </td>
-                                <td>{{ $link }}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </td>
-                <td>{{ $item['total']['tf'] }}</td>
-                <td>{{ $item['total']['idf'] }}</td>
-                <td>{{ $item['total']['repeatInTextMainPage'] }}</td>
-                <td>{{ $item['total']['repeatInLinkMainPage'] }}</td>
-                <td data-target="{{ $item['total']['throughCount'] }}">{{ $item['total']['throughCount'] }}
-                    / {{ $item['total']['repeat'] }}</td>
+                <th class="sticky"></th>
+                <th class="sticky">{{ __('Word') }}</th>
+                <th class="sticky" style="z-index: 1003 !important; max-width: 350px">Пересечения</th>
+                <th class="sticky">Сумма tf</th>
+                <th class="sticky">Сумма idf</th>
+                <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
+                <th class="sticky">Сумма повторений в ссылке посадочной страницы</th>
+                <th class="sticky">кол-во вхождений</th>
             </tr>
-        @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach(json_decode($though->result, true) as $key => $item)
+                <tr>
+                    <th class="show-more" data-target="{{ $key }}">
+                        <i class="fa fa-plus"></i>
+                    </th>
+                    <td>{{ $key }}</td>
+                    <td>
+                        <table style="z-index: 100 !important; width: 400px">
+                            <thead>
+                            <tr>
+                                <th class="col-8">Ссылка</th>
+                                <th class="col-4">Кол-во вхождений</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($item['total']['throughLinks'] as $keyLink => $link)
+                                <tr>
+                                    <td>
+                                        <a href="{{ $keyLink }}" target="_blank">
+                                            {{ $keyLink }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $link }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>{{ $item['total']['tf'] }}</td>
+                    <td>{{ $item['total']['idf'] }}</td>
+                    <td>{{ $item['total']['repeatInTextMainPage'] }}</td>
+                    <td>{{ $item['total']['repeatInLinkMainPage'] }}</td>
+                    <td data-target="{{ $item['total']['throughCount'] }}">{{ $item['total']['throughCount'] }}
+                        / {{ $item['total']['repeat'] }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
