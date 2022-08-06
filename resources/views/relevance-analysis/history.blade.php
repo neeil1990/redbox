@@ -985,25 +985,6 @@
                         <tbody id="list-history-body">
                         </tbody>
                     </table>
-
-                    <div style="display: none" id="though-block">
-                        <h3>Результат сквозного анализа</h3>
-                        <table id="though-table" class="table table-bordered table-hover dtr-inline">
-                            <thead>
-                            <tr>
-                                <th class="col-3">Слово</th>
-                                <th class="col-7">Пересечения</th>
-                                <th class="col-7">Сумма tf</th>
-                                <th class="col-7">Сумма idf</th>
-                                <th class="col-7">Сумма повторений в тексте посадочной страницы</th>
-                                <th class="col-7">Сумма повторений в ссылах посадочной страницы</th>
-                                <th class="col-2">Кол-во вхождений</th>
-                            </tr>
-                            </thead>
-                            <tbody id="though-table-body">
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>

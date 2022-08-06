@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\RelevanceAnalysisQueue;
+use App\LinguaStem;
 use App\ProjectRelevanceHistory;
+use App\ProjectRelevanceThough;
 use App\Relevance;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
@@ -746,9 +748,6 @@ class HistoryRelevanceController extends Controller
     {
         $this->checkAccess($request);
         $items = $this->getUniqueScanned($request->id);
-        $countRecords = count($items);
-        $resultArray = [];
-
         if (count($items) == 0) {
             return response()->json([
                 'code' => 415,
@@ -756,66 +755,32 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        foreach ($items as $item) {
-            $record = RelevanceHistory::where('main_link', '=', $item->main_link)
-                ->where('project_relevance_history_id', '=', $request->id)
-                ->where('phrase', '=', $item->phrase)
-                ->where('region', '=', $item->region)
-                ->where('calculate', '=', 1)
-                ->latest('last_check')
-                ->with('results')
-                ->first();
+        $countRecords = count($items);
 
-            if (isset($record)) {
-                try {
-                    $result = $record->results;
-                    foreach (json_decode(gzuncompress(base64_decode($result->unigram_table)), true) as $word) {
-                        foreach ($word as $key => $item) {
-                            if ($key != 'total') {
-                                $words[$key] = $item;
-                            }
-                        }
-                    }
-                    foreach ($words as $key => $word) {
-                        arsort($word['occurrences']);
+        $though = ProjectRelevanceThough::thoughAnalyse($items, $request->id, $countRecords);
+        $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+        $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
 
-                        if (isset($resultArray[$key])) {
-                            $resultArray[$key]['tf'] += $word['tf'];
-                            $resultArray[$key]['idf'] += $word['idf'];
-                            $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
-                            $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
-                            $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
-                            $resultArray[$key]['throughCount'] += 1;
-                        } else {
-                            $resultArray[$key]['tf'] = $word['tf'];
-                            $resultArray[$key]['idf'] = $word['idf'];
-                            $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
-                            $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
-                            $resultArray[$key]['throughLinks'] = $word['occurrences'];
-                            $resultArray[$key]['throughCount'] = 1;
-                        }
+        $thoughResult = ProjectRelevanceThough::firstOrNew([
+//            'result' => base64_encode(gzcompress(json_encode($resultArray), 9)),
+            'project_relevance_history_id' => $request->id
+        ]);
 
-                        $resultArray[$key]['total'] = $countRecords;
-                    }
-                } catch (\Exception $e) {
-
-                }
-            }
-
-        }
+        $thoughResult->result = base64_encode(gzcompress(json_encode($resultArray), 9));
+        $thoughResult->save();
 
         if (count($resultArray) == 0) {
             return response()->json([
                 'code' => 415,
-                'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование у проекта ' . $record->mainHistory->name
+                'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование'
             ]);
         }
 
         return response()->json([
             'success' => false,
             'code' => 200,
-            'message' => "Результаты сквозного анализа успешно загружены",
-            'object' => json_encode(array_slice($resultArray, 0, 1500))
+            'message' => "Сквозной анализ успешно выполнен",
+            'object' => $thoughResult->id
         ]);
     }
 

@@ -11,14 +11,9 @@
 |
 */
 
-use App\LinguaStem;
-use App\Relevance;
-use App\RelevanceAnalysisConfig;
-use App\RelevanceHistory;
-use App\RelevanceHistoryResult;
+use App\ProjectRelevanceThough;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -259,6 +254,27 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
+
+    Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
+});
+
+Route::get('/bla', function () {
+    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
+    $countRecords = count($items);
+
+    if (count($items) == 0) {
+        return response()->json([
+            'code' => 415,
+            'message' => 'Не удалось получить требуемые данные'
+        ]);
+    }
+
+    $though = ProjectRelevanceThough::thoughAnalyse($items, 1, $countRecords);
+    $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+    $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
+
+    dd($resultArray);
+
 });
 
 Route::get('/get-passages/{link}', function ($link) {

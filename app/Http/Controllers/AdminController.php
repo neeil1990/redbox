@@ -36,7 +36,11 @@ class AdminController extends Controller
 
         $month = RelevanceStatistics::where('created_at', '>=', $firstDay->toDateString())->sum('count_checks');
         $statistics = RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first();
-        $projects = ProjectRelevanceHistory::all();
+        $projects = ProjectRelevanceHistory::with('though')->get();
+
+//        foreach ($projects as $project) {
+//            dd($project->though);
+//        }
 
         return view('relevance-analysis.all', [
             'projects' => $projects,

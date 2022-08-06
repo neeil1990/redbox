@@ -66,7 +66,8 @@
                                href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                            <a class="nav-link admin-link"
+                               href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                         </li>
                     @endif
                 </ul>
@@ -133,6 +134,7 @@
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
+                            <th class="table-header">Сквозной анализ</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -215,11 +217,13 @@
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}" id="tag-{{ $tag->id }}-item-{{ $item->id }}">
+                                        <div style="color: {{ $tag->color }}"
+                                             id="tag-{{ $tag->id }}-item-{{ $item->id }}">
                                             {{ $tag->name }}
                                         </div>
                                         <div class="modal fade" id="removeTagModal{{ $tag->id }}{{ $item->id }}"
-                                             aria-labelledby="removeTagModal{{ $tag->id }}{{ $item->id }}Label" aria-hidden="true">
+                                             aria-labelledby="removeTagModal{{ $tag->id }}{{ $item->id }}Label"
+                                             aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -240,7 +244,8 @@
                                                                 data-dismiss="modal">
                                                             {{ __('Untie the label from the project') }}
                                                         </button>
-                                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                        <button type="button" class="btn btn-default"
+                                                                data-dismiss="modal">
                                                             {{ __('Close') }}
                                                         </button>
                                                     </div>
@@ -262,14 +267,26 @@
                                        data-target="#repeatUniqueScan{{ $item->id }}"
                                        data-toggle="modal" data-placement="top"
                                        title="{{ __('restart analyzed pages') }}"></i>
-                                    <i class="fa fa-strikethrough" style="opacity: .6; cursor: pointer"
-                                       title="Запустить анализ сквозных слов"
-                                       data-target="#startThroughScan{{ $item->id }}"
-                                       data-toggle="modal" data-placement="top"></i>
                                 </td>
                                 <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
                                 <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
                                 <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
+                                <td>
+                                    @isset($item->though)
+                                        <div id="though{{ $item->id }}">
+                                            <a href="{{ route('show-though', $item->though->id) }}">
+                                                Результаты сквозного анализа
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div id="though{{ $item->id }}"></div>
+                                    @endisset
+                                    <button class="btn btn-secondary"
+                                            data-target="#startThroughScan{{ $item->id }}"
+                                            data-toggle="modal" data-placement="top">
+                                        Анализ сквозных слов
+                                    </button>
+                                </td>
                                 <td>{{ $item->last_check }}</td>
                             </tr>
                         @endforeach
@@ -947,25 +964,6 @@
                         <tbody id="list-history-body">
                         </tbody>
                     </table>
-
-                    <div style="display: none" id="though-block">
-                        <h3>Результат сквозного анализа</h3>
-                        <table id="though-table" class="table table-bordered table-hover dtr-inline">
-                            <thead>
-                            <tr>
-                                <th class="col-3">Слово</th>
-                                <th class="col-7">Пересечения</th>
-                                <th class="col-7">Сумма tf</th>
-                                <th class="col-7">Сумма idf</th>
-                                <th class="col-7">Сумма повторений в тексте посадочной страницы</th>
-                                <th class="col-7">Сумма повторений в ссылах посадочной страницы</th>
-                                <th class="col-2">Кол-во вхождений</th>
-                            </tr>
-                            </thead>
-                            <tbody id="though-table-body">
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
