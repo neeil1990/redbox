@@ -26,7 +26,11 @@
         </style>
     @endslot
 
-    <div style='width: 100%; overflow-x: scroll; max-height:90vh;'>
+    <div class="text-center" id="preloaderBlock">
+        <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
+        <p>{{ __("Load..") }}</p>
+    </div>
+    <div style='width: 100%; overflow-x: scroll; max-height:90vh; display: none' id="though-block">
         <table class="table table-bordered table-striped dtr-inline" id="though-table">
             <thead>
             <tr>
@@ -47,27 +51,33 @@
                         <i class="fa fa-plus"></i>
                     </th>
                     <td>{{ $key }}</td>
-                    <td>
-                        <table style="z-index: 100 !important; width: 400px">
-                            <thead>
-                            <tr>
-                                <th class="col-8">Ссылка</th>
-                                <th class="col-4">Кол-во вхождений</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($item['total']['throughLinks'] as $keyLink => $link)
+                    <td style="min-width: 450px !important; max-width: 450px !important;">
+                        <a data-toggle="collapse" href="#collapseExample{{ $key }}"
+                           role="button" aria-expanded="false" aria-controls="collapseExample{{ $key }}">
+                            Посмотреть таблицу
+                        </a>
+                        <div class="collapse" id="collapseExample{{ $key }}">
+                            <table style="z-index: 100 !important; width: 400px">
+                                <thead>
                                 <tr>
-                                    <td>
-                                        <a href="{{ $keyLink }}" target="_blank">
-                                            {{ $keyLink }}
-                                        </a>
-                                    </td>
-                                    <td>{{ $link }}</td>
+                                    <th class="col-8">Ссылка</th>
+                                    <th class="col-4">Кол-во вхождений</th>
                                 </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                @foreach($item['total']['throughLinks'] as $keyLink => $link)
+                                    <tr>
+                                        <td>
+                                            <a href="{{ $keyLink }}" target="_blank">
+                                                {{ $keyLink }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $link }}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </td>
                     <td>{{ $item['total']['tf'] }}</td>
                     <td>{{ $item['total']['idf'] }}</td>
@@ -109,10 +119,14 @@
                 });
 
                 $('.dt-button').addClass('btn btn-secondary')
+
+                setTimeout(() => {
+                    $('#preloaderBlock').hide(300);
+                    $('#though-block').show()
+                }, 500)
             });
 
             $('.show-more').click(function () {
-
                 let tr = $(this).parent()
                 let words = JSON.parse(localStorage.getItem({{ $microtime }}).replace(/&quot;/g, '"'));
                 let target = $(this).attr('data-target')
@@ -145,7 +159,13 @@
                             '<tr class="render-child" data-target="' + target + '">' +
                             '   <td class="remove-child" data-target="' + target + '"> <i class="fa fa-minus" ></i></td>' +
                             '   <td>' + key + '</td>' +
-                            '   <td>' + childTable + '</td>' +
+                            '   <td>' +
+                            '       <a data-toggle="collapse" href="#collapseExample' + key + '" role="button" aria-expanded="false" aria-controls="collapseExample' + key + '">' +
+                            '           Посмотреть таблицу </a>' +
+                            '       <div class="collapse" id="collapseExample' + key + '">' +
+                            childTable +
+                            '       </div>' +
+                            '   </td>' +
                             '   <td>' + value['tf'] + '</td>' +
                             '   <td>' + value['idf'] + '</td>' +
                             '   <td>' + value['repeatInTextMainPage'] + '</td>' +
