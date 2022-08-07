@@ -24,7 +24,7 @@
                 background: #f5f7ff !important;
             }
 
-            * {
+            table > tr > td > table {
                 word-break: break-word
             }
         </style>
