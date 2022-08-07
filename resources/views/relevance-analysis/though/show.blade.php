@@ -23,6 +23,10 @@
             .render-child {
                 background: #f5f7ff !important;
             }
+
+            * {
+                word-break: break-word
+            }
         </style>
     @endslot
 
@@ -30,13 +34,16 @@
         <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
         <p>{{ __("Load..") }}</p>
     </div>
-    <div style='width: 100%; overflow-x: scroll; max-height:90vh; display: none' id="though-block">
+    <div style="display: none" id="though-block">
         <table class="table table-bordered table-striped dtr-inline" id="though-table">
             <thead>
             <tr>
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
-                <th  class="sticky" style="z-index: 1003 !important; min-width: 450px !important; max-width: 450px !important;">Пересечения</th>
+                <th class="sticky"
+                    style="z-index: 1003 !important; min-width: 450px !important; max-width: 450px !important;">
+                    Пересечения
+                </th>
                 <th class="sticky">Сумма tf</th>
                 <th class="sticky">Сумма idf</th>
                 <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
