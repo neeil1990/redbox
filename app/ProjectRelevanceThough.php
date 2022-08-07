@@ -80,7 +80,7 @@ class ProjectRelevanceThough extends Model
             } catch (\Exception $e) {
                 Log::debug('though error', [
                     'record' => $record,
-                    'cleaning' => $record->results->cleaning,
+                    'cleaning' => $record->results ?? null,
                     'message' => $e->getMessage(),
                     'file' => $e->getFile(),
                     'line' => $e->getLine()
