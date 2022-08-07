@@ -26,8 +26,6 @@
 
             .child-table {
                 z-index: 100 !important;
-                min-width: 450px !important;
-                max-width: 450px !important;
                 word-break: break-word
             }
         </style>
@@ -44,7 +42,7 @@
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
                 <th class="sticky"
-                    style="z-index: 1003 !important; min-width: 450px !important; max-width: 450px !important;">
+                    style="z-index: 1003 !important; min-width: 400px !important; max-width: 400px !important;">
                     Пересечения
                 </th>
                 <th class="sticky">Сумма tf</th>
