@@ -128,7 +128,7 @@ class ProjectRelevanceThough extends Model
             $tf = $idf = $link = $text = $thoughCount = 0;
             $thoughLinks = [];
             foreach ($wordWorm as $items) {
-                $thoughCount = max($items['total'], 0);
+                $thoughCount += $items['total'];
                 $tf += $items['tf'];
                 $idf += $items['idf'];
                 $link += $items['repeatInLinkMainPage'];

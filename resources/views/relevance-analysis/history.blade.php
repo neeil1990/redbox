@@ -473,7 +473,7 @@
                                 <td>
                                     @isset($item->though)
                                         <div id="though{{ $item->id }}">
-                                            <a href="{{ route('show-though', $item->though->id) }}">
+                                            <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
                                                 Результаты сквозного анализа
                                             </a>
                                         </div>
