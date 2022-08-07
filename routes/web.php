@@ -11,9 +11,12 @@
 |
 */
 
+use App\LinguaStem;
 use App\ProjectRelevanceThough;
 use App\TextAnalyzer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -258,6 +261,24 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
 });
 
+Route::get('/bla', function () {
+    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
+    if (count($items) == 0) {
+        return response()->json([
+            'code' => 415,
+            'message' => 'Не удалось получить требуемые данные'
+        ]);
+    }
+
+    $countRecords = count($items);
+
+    $though = ProjectRelevanceThough::thoughAnalyse($items, 1, $countRecords);
+    Log::debug('thoughAnalyse', [Carbon::now()->toTimeString()]);
+    $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+
+    dd($wordWorms);
+});
+
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 
@@ -273,7 +294,7 @@ Route::get('/get-passages/{link}', function ($link) {
 //    dump(['список всех li' => $li]);
     foreach ($li as $item) {
         $ul = str_replace('>', '> ', $item[1]);
-        $ul = \App\Relevance::clearHTMLFromLinks($ul);
+        $ul = \App\TextAnalyzer::clearHTMLFromLinks($ul);
 
         $text = trim(strip_tags($ul));
         $text = preg_replace('| +|', ' ', $text);

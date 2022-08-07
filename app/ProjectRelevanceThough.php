@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class ProjectRelevanceThough extends Model
 {
@@ -85,7 +87,6 @@ class ProjectRelevanceThough extends Model
      */
     public static function searchWordWorms($array): array
     {
-        $stemmer = new LinguaStem();
         $ignoredWords = [];
         $wordWorms = [];
 
@@ -94,12 +95,9 @@ class ProjectRelevanceThough extends Model
                 foreach ($array as $key2 => $elem2) {
                     if (!in_array($key2, $ignoredWords)) {
                         similar_text($key1, $key2, $percent);
-                        if (
-                            preg_match("/[А-я]/", $key1) &&
-                            $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1) ||
-                            preg_match("/[A-Za-z]/", $key1) &&
-                            $percent >= 82
-                        ) {
+                        if ($percent < 82) {
+                            continue 2;
+                        } else {
                             $wordWorms[$key1][$key2] = $elem2;
                             $ignoredWords[] = $key2;
                             $ignoredWords[] = $key1;

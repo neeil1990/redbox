@@ -91,7 +91,7 @@
             //  храним дочерние элементы в локалсторадже
             localStorage.setItem("{{ $microtime }}", "{{ $though->result }}")
 
-            //  удаляем дочерние элементы из хранилища
+            //  удаляем дочерние элементы из хранилища когда пользователь закрывает сайт/влкадку
             window.onbeforeunload = function () {
                 localStorage.removeItem("{{ $microtime }}")
             };
@@ -117,7 +117,6 @@
                 let words = JSON.parse(localStorage.getItem({{ $microtime }}).replace(/&quot;/g, '"'));
                 let target = $(this).attr('data-target')
                 $("tr[data-target='" + target + "']").remove();
-                console.log(words[target])
                 $.each(words[target], function (key, value) {
                     let childRows = ''
 

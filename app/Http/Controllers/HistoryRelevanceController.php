@@ -746,6 +746,7 @@ class HistoryRelevanceController extends Controller
      */
     public function startThroughAnalyse(Request $request): JsonResponse
     {
+        Log::debug('start', [Carbon::now()->toTimeString()]);
         $this->checkAccess($request);
         $items = $this->getUniqueScanned($request->id);
         if (count($items) == 0) {
@@ -758,8 +759,11 @@ class HistoryRelevanceController extends Controller
         $countRecords = count($items);
 
         $though = ProjectRelevanceThough::thoughAnalyse($items, $request->id, $countRecords);
+        Log::debug('thoughAnalyse', [Carbon::now()->toTimeString()]);
         $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+        Log::debug('searchWordWorms', [Carbon::now()->toTimeString()]);
         $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
+        Log::debug('calculateFinalResult', [Carbon::now()->toTimeString()]);
 
         $thoughResult = ProjectRelevanceThough::firstOrNew([
 //            'result' => base64_encode(gzcompress(json_encode($resultArray), 9)),
