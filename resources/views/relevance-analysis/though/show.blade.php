@@ -36,7 +36,7 @@
             <tr>
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
-                <th class="sticky" style="z-index: 1003 !important; max-width: 350px">Пересечения</th>
+                <th  class="sticky" style="z-index: 1003 !important; min-width: 450px !important; max-width: 450px !important;">Пересечения</th>
                 <th class="sticky">Сумма tf</th>
                 <th class="sticky">Сумма idf</th>
                 <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
@@ -51,13 +51,14 @@
                         <i class="fa fa-plus"></i>
                     </th>
                     <td>{{ $key }}</td>
-                    <td style="min-width: 450px !important; max-width: 450px !important;">
+                    <td>
                         <a data-toggle="collapse" href="#collapseExample{{ $key }}"
                            role="button" aria-expanded="false" aria-controls="collapseExample{{ $key }}">
                             Посмотреть таблицу
                         </a>
                         <div class="collapse" id="collapseExample{{ $key }}">
-                            <table style="z-index: 100 !important; width: 400px">
+                            <table
+                                style="z-index: 100 !important; min-width: 450px !important; max-width: 450px !important;">
                                 <thead>
                                 <tr>
                                     <th class="col-8">Ссылка</th>
@@ -138,7 +139,7 @@
                     })
 
                     let childTable =
-                        '<table>' +
+                        '<table style="z-index: 100 !important; min-width: 450px !important; max-width: 450px !important;">' +
                         '   <thead>' +
                         '       <tr>' +
                         '           <th>Ссылка</th>' +
