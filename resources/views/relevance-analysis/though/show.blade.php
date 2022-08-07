@@ -98,15 +98,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            //  храним дочерние элементы в локалсторадже
-            localStorage.setItem("{{ $microtime }}", "{{ $though->result }}")
+            let totalResults = "{{ $though->result }}";
+            totalResults = totalResults.replace(/&quot;/g, '"')
+            totalResults = JSON.parse(totalResults)
 
-            //  удаляем дочерние элементы из хранилища когда пользователь закрывает сайт/влкадку
-            window.onbeforeunload = function () {
-                localStorage.removeItem("{{ $microtime }}")
-            };
-        </script>
-        <script>
+
             $(document).ready(function () {
                 $('#though-table').DataTable({
                     "order": [[3, "desc"]],
@@ -128,10 +124,9 @@
 
             $('.show-more').click(function () {
                 let tr = $(this).parent()
-                let words = JSON.parse(localStorage.getItem({{ $microtime }}).replace(/&quot;/g, '"'));
                 let target = $(this).attr('data-target')
                 $("tr[data-target='" + target + "']").remove();
-                $.each(words[target], function (key, value) {
+                $.each(totalResults[target], function (key, value) {
                     let childRows = ''
 
                     $.each(value['throughLinks'], function (key2, value2) {
