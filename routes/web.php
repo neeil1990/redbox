@@ -261,22 +261,17 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
 });
 
-Route::get('/bla', function () {
-    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned(1);
-    if (count($items) == 0) {
-        return response()->json([
-            'code' => 415,
-            'message' => 'Не удалось получить требуемые данные'
-        ]);
-    }
-
+Route::get('/bla/{id}', function ($id) {
+    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned($id);
     $countRecords = count($items);
 
-    $though = ProjectRelevanceThough::thoughAnalyse($items, 1, $countRecords);
+    $though = ProjectRelevanceThough::thoughAnalyse($items, $id, $countRecords);
     Log::debug('thoughAnalyse', [Carbon::now()->toTimeString()]);
     $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
-
     dd($wordWorms);
+    Log::debug('searchWordWorms', [Carbon::now()->toTimeString()]);
+    $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
+    Log::debug('calculateFinalResult', [Carbon::now()->toTimeString()]);
 });
 
 Route::get('/get-passages/{link}', function ($link) {
