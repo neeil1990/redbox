@@ -24,7 +24,10 @@
                 background: #f5f7ff !important;
             }
 
-            table > tr > td > table {
+            .child-table {
+                z-index: 100 !important;
+                min-width: 450px !important;
+                max-width: 450px !important;
                 word-break: break-word
             }
         </style>
@@ -64,8 +67,7 @@
                             Посмотреть таблицу
                         </a>
                         <div class="collapse" id="collapseExample{{ $key }}">
-                            <table
-                                style="z-index: 100 !important; min-width: 450px !important; max-width: 450px !important;">
+                            <table class="child-table">
                                 <thead>
                                 <tr>
                                     <th class="col-8">Ссылка</th>
@@ -146,7 +148,7 @@
                     })
 
                     let childTable =
-                        '<table style="z-index: 100 !important; min-width: 450px !important; max-width: 450px !important;">' +
+                        '<table class="child-table">' +
                         '   <thead>' +
                         '       <tr>' +
                         '           <th>Ссылка</th>' +
