@@ -28,6 +28,11 @@
                 z-index: 100 !important;
                 word-break: break-word
             }
+
+            .dt-buttons {
+                margin-left: 20px;
+                float: left;
+            }
         </style>
     @endslot
 
