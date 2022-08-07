@@ -68,8 +68,8 @@
                             <table class="child-table">
                                 <thead>
                                 <tr>
-                                    <th class="col-8">Ссылка</th>
-                                    <th class="col-4">Кол-во вхождений</th>
+                                    <th class="col-11">Ссылка</th>
+                                    <th class="col-1">Кол-во вхождений</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -149,8 +149,8 @@
                         '<table class="child-table">' +
                         '   <thead>' +
                         '       <tr>' +
-                        '           <th>Ссылка</th>' +
-                        '           <th>Кол-во вхождений</th>' +
+                        '           <th class="col-11">Ссылка</th>' +
+                        '           <th class="col-1">Кол-во вхождений</th>' +
                         '       </tr>' +
                         '   </thead>' +
                         '   <tbody>' +
