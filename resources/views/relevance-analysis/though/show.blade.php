@@ -163,9 +163,9 @@
                             '   <td class="remove-child" data-target="' + target + '"> <i class="fa fa-minus" ></i></td>' +
                             '   <td>' + key + '</td>' +
                             '   <td>' +
-                            '       <a data-toggle="collapse" href="#collapseExample' + key + '" role="button" aria-expanded="false" aria-controls="collapseExample' + key + '">' +
+                            '       <a data-toggle="collapse" href="#collapseExample' + key + 'child" role="button" aria-expanded="false" aria-controls="collapseExample' + key + 'child">' +
                             '           Посмотреть таблицу </a>' +
-                            '       <div class="collapse" id="collapseExample' + key + '">' +
+                            '       <div class="collapse" id="collapseExample' + key + 'child>' +
                             childTable +
                             '       </div>' +
                             '   </td>' +
