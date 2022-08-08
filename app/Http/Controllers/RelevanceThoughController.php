@@ -48,7 +48,7 @@ class RelevanceThoughController extends Controller
         return response()->json([
             'success' => false,
             'code' => 200,
-            'message' => "Сквозной анализ успешно добавлен в очередь запущен",
+            'message' => "Сквозной анализ успешно добавлен в очередь",
         ]);
     }
 }
