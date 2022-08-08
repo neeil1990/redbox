@@ -37,7 +37,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug('start', [Carbon::now()->toTimeString()]);
+        Log::debug('start though', [Carbon::now()->toTimeString()]);
         $countRecords = count($this->items);
 
         $though = ProjectRelevanceThough::thoughAnalyse($this->items, $this->id, $countRecords);
@@ -51,7 +51,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 
         $thoughResult->result = base64_encode(gzcompress(json_encode($resultArray), 9));
         $thoughResult->save();
-        Log::debug('end', [Carbon::now()->toTimeString()]);
+        Log::debug('end though', [Carbon::now()->toTimeString()]);
     }
 
     /**
