@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class RelevanceThoughAnalysisQueue implements ShouldQueue
@@ -36,11 +37,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug('this', [
-            'id' => $this->id,
-            'items' => $this->items,
-            'count' => count($this->items),
-        ]);
+        Log::debug('start', [Carbon::now()->toTimeString()]);
         $countRecords = count($this->items);
 
         $though = ProjectRelevanceThough::thoughAnalyse($this->items, $this->id, $countRecords);
@@ -54,6 +51,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 
         $thoughResult->result = base64_encode(gzcompress(json_encode($resultArray), 9));
         $thoughResult->save();
+        Log::debug('end', [Carbon::now()->toTimeString()])
     }
 
     /**
