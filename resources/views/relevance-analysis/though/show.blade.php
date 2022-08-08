@@ -115,7 +115,6 @@
             totalResults = totalResults.replace(/&quot;/g, '"')
             totalResults = JSON.parse(totalResults)
 
-
             $(document).ready(function () {
                 $('#though-table').DataTable({
                     "order": [[3, "desc"]],

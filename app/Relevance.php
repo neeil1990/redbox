@@ -617,7 +617,6 @@ class Relevance
         }
 
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
-        Log::debug('text', [$myText]);
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
 

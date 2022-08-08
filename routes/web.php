@@ -261,16 +261,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
 });
 
-Route::get('/bla/{id}', function ($id) {
-    $items = \App\Http\Controllers\HistoryRelevanceController::getUniqueScanned($id);
-    $countRecords = count($items);
-
-    $though = ProjectRelevanceThough::thoughAnalyse($items, $id, $countRecords);
-    dd($though);
-    $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
-    $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
-});
-
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 

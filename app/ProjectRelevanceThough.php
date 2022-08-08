@@ -49,8 +49,10 @@ class ProjectRelevanceThough extends Model
             try {
                 if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
                     foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
+                        unset($word['total']);
                         foreach ($word as $key => $item) {
-                            if ($key != 'total') {
+                            $key = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($key)));
+                            if ($key != '') {
                                 $words[$key] = $item;
                             }
                         }
