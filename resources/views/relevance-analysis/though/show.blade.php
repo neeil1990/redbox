@@ -96,7 +96,7 @@
                     <td>{{ $item['total']['idf'] }}</td>
                     <td>{{ $item['total']['repeatInTextMainPage'] }}</td>
                     <td>{{ $item['total']['repeatInLinkMainPage'] }}</td>
-                    <td data-target="{{ $item['total']['throughCount'] }}">{{ $item['total']['throughCount'] }}
+                    <td data-order="{{ $item['total']['throughCount'] }}">{{ $item['total']['throughCount'] }}
                         / {{ $item['total']['repeat'] }}</td>
                 </tr>
             @endforeach
