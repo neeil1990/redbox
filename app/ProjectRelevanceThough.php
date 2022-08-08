@@ -47,7 +47,7 @@ class ProjectRelevanceThough extends Model
                 ->first();
 
             try {
-                if (isset($record) && $record->results->cleaning == 0) {
+                if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
                     foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
                         foreach ($word as $key => $item) {
                             if ($key != 'total') {
@@ -55,23 +55,26 @@ class ProjectRelevanceThough extends Model
                             }
                         }
                     }
+
                     foreach ($words as $key => $word) {
                         arsort($word['occurrences']);
 
                         if (isset($resultArray[$key])) {
-                            $resultArray[$key]['tf'] += $word['tf'];
-                            $resultArray[$key]['idf'] += $word['idf'];
+                            $resultArray[$key]['tf'] += round($word['tf'], 6);
+                            $resultArray[$key]['idf'] += round($word['idf'], 6);
                             $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
                             $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
                             $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
                             $resultArray[$key]['throughCount'] += 1;
                         } else {
-                            $resultArray[$key]['tf'] = $word['tf'];
-                            $resultArray[$key]['idf'] = $word['idf'];
-                            $resultArray[$key]['repeatInLinkMainPage'] = $word['repeatInLinkMainPage'];
-                            $resultArray[$key]['repeatInTextMainPage'] = $word['repeatInTextMainPage'];
-                            $resultArray[$key]['throughLinks'] = $word['occurrences'];
-                            $resultArray[$key]['throughCount'] = 1;
+                            $resultArray[$key] = [
+                                'tf' => round($word['tf'], 6),
+                                'idf' => round($word['idf'], 6),
+                                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+                                'throughLinks' => $word['occurrences'],
+                                'throughCount' => 1,
+                            ];
                         }
 
                         $resultArray[$key]['total'] = $countRecords;
@@ -128,7 +131,7 @@ class ProjectRelevanceThough extends Model
             $tf = $idf = $link = $text = $thoughCount = 0;
             $thoughLinks = [];
             foreach ($wordWorm as $items) {
-                $thoughCount += $items['total'];
+                $thoughCount += 1;
                 $tf += $items['tf'];
                 $idf += $items['idf'];
                 $link += $items['repeatInLinkMainPage'];
