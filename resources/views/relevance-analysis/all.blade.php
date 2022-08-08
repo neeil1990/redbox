@@ -272,20 +272,24 @@
                                 <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
                                 <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
                                 <td>
-                                    @isset($item->though)
-                                        <div id="though{{ $item->id }}">
-                                            <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
-                                                Результаты сквозного анализа
-                                            </a>
-                                        </div>
-                                    @else
-                                        <div id="though{{ $item->id }}"></div>
-                                    @endisset
                                     <button class="btn btn-secondary"
                                             data-target="#startThroughScan{{ $item->id }}"
                                             data-toggle="modal" data-placement="top">
                                         Анализ сквозных слов
                                     </button>
+
+                                    @isset($item->though)
+                                        <div id="though{{ $item->id }}" class="mt-2 mb-2">
+                                            <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
+                                                Результаты сквозного анализа
+                                            </a>
+                                            <div class="text-muted">
+                                                Последний анализ {{ $item->though->updated_at }}
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div id="though{{ $item->id }}"></div>
+                                    @endisset
                                 </td>
                                 <td>{{ $item->last_check }}</td>
                             </tr>
