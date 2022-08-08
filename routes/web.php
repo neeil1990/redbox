@@ -209,7 +209,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/remove-scan-results', 'HistoryRelevanceController@removeEmptyResults')->name('remove.empty.results');
     Route::post('/remove-scan-results-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
     Route::post('/repeat-scan-unique-sites', 'HistoryRelevanceController@repeatScanUniqueSites')->name('repeat.scan.unique.sites');
-    Route::post('/start-through-analyse', 'HistoryRelevanceController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/check-queue-scan-state', 'HistoryRelevanceController@checkQueueScanState')->name('check.queue.scan.state');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
@@ -259,6 +258,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
 
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
+    Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
+
 });
 
 Route::get('/get-passages/{link}', function ($link) {

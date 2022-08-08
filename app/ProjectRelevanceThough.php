@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
@@ -11,19 +10,6 @@ class ProjectRelevanceThough extends Model
     protected $table = 'project_relevance_though';
 
     protected $guarded = [];
-
-    /**
-     * @param $result
-     * @param $mainId
-     * @return mixed
-     */
-    public static function saveNewRecord($result, $mainId)
-    {
-        return ProjectRelevanceThough::firstOrCreate([
-            'result' => base64_encode(gzcompress($result, 9)),
-            'project_relevance_history_id' => $mainId
-        ]);
-    }
 
     /**
      * @param $items
@@ -36,10 +22,10 @@ class ProjectRelevanceThough extends Model
         $resultArray = [];
 
         foreach ($items as $item) {
-            $record = RelevanceHistory::where('main_link', '=', $item->main_link)
+            $record = RelevanceHistory::where('main_link', '=', $item['main_link'])
                 ->where('project_relevance_history_id', '=', $id)
-                ->where('phrase', '=', $item->phrase)
-                ->where('region', '=', $item->region)
+                ->where('phrase', '=', $item['phrase'])
+                ->where('region', '=', $item['region'])
                 ->where('calculate', '=', 1)
                 ->latest('last_check')
                 ->with('results')
@@ -85,7 +71,8 @@ class ProjectRelevanceThough extends Model
             } catch (\Exception $e) {
                 Log::debug('though error', [
                     'record' => $record,
-                    'cleaning' => $record->results ?? null,
+                    'cleaning' => $record->results->clening ?? null,
+                    'message' => $e->getMessage()
                 ]);
             }
         }

@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class Queue extends Model
 {
@@ -75,7 +74,7 @@ class Queue extends Model
             $time,
             $mainHistory,
             false,
-            0,
+            0
         );
     }
 }

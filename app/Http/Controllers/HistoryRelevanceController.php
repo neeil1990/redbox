@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\RelevanceAnalysisQueue;
-use App\LinguaStem;
+use App\Jobs\RelevanceThoughAnalysisQueue;
 use App\ProjectRelevanceHistory;
-use App\ProjectRelevanceThough;
 use App\Relevance;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
@@ -13,9 +12,7 @@ use App\RelevanceHistoryResult;
 use App\RelevanceSharing;
 use App\RelevanceTags;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -741,58 +738,10 @@ class HistoryRelevanceController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function startThroughAnalyse(Request $request): JsonResponse
-    {
-        Log::debug('start', [Carbon::now()->toTimeString()]);
-        $this->checkAccess($request);
-        $items = $this->getUniqueScanned($request->id);
-        if (count($items) == 0) {
-            return response()->json([
-                'code' => 415,
-                'message' => 'Не удалось получить требуемые данные'
-            ]);
-        }
-
-        $countRecords = count($items);
-
-        $though = ProjectRelevanceThough::thoughAnalyse($items, $request->id, $countRecords);
-        Log::debug('thoughAnalyse', [Carbon::now()->toTimeString()]);
-        $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
-        Log::debug('searchWordWorms', [Carbon::now()->toTimeString()]);
-        $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
-        Log::debug('calculateFinalResult', [Carbon::now()->toTimeString()]);
-
-        $thoughResult = ProjectRelevanceThough::firstOrNew([
-//            'result' => base64_encode(gzcompress(json_encode($resultArray), 9)),
-            'project_relevance_history_id' => $request->id
-        ]);
-
-        $thoughResult->result = base64_encode(gzcompress(json_encode($resultArray), 9));
-        $thoughResult->save();
-
-        if (count($resultArray) == 0) {
-            return response()->json([
-                'code' => 415,
-                'message' => 'Сохранённые данные могут быть не актуальны, запустите повторное сканирование'
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'code' => 200,
-            'message' => "Сквозной анализ успешно выполнен",
-            'object' => $thoughResult->id
-        ]);
-    }
-
-    /**
      * @param $request
      * @return JsonResponse|int
      */
-    private function checkAccess($request)
+    public static function checkAccess($request)
     {
         $userId = Auth::id();
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();

@@ -620,7 +620,6 @@ class Relevance
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
 
-        Log::debug('links', [$this->mainPage['linkText']]);
         $myLink = explode(" ", $this->mainPage['linkText']);
         $myLink = array_count_values($myLink);
 

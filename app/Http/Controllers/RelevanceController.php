@@ -9,12 +9,10 @@ use App\RelevanceAnalysisConfig;
 use App\RelevanceProgress;
 use App\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class RelevanceController extends Controller
