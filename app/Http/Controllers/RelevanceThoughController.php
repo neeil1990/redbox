@@ -33,6 +33,7 @@ class RelevanceThoughController extends Controller
     {
         HistoryRelevanceController::checkAccess($request);
         $items = HistoryRelevanceController::getUniqueScanned($request->id);
+        Log::debug('unique items', [count($items)]);
         if (count($items) == 0) {
             return response()->json([
                 'code' => 415,
