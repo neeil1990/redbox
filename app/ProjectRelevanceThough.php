@@ -131,7 +131,7 @@ class ProjectRelevanceThough extends Model
             $tf = $idf = $link = $text = $thoughCount = 0;
             $thoughLinks = [];
             foreach ($wordWorm as $items) {
-                $thoughCount += 1;
+                $thoughCount += $items['throughCount'];
                 $tf += $items['tf'];
                 $idf += $items['idf'];
                 $link += $items['repeatInLinkMainPage'];
@@ -139,13 +139,13 @@ class ProjectRelevanceThough extends Model
                 $thoughLinks = array_merge($items['throughLinks'], $thoughLinks);
             }
             $wordWorms[$key]['total'] = [
+                'throughCount' => $thoughCount,
                 'repeat' => $countRecords,
                 'tf' => $tf,
                 'idf' => $idf,
                 'repeatInLinkMainPage' => $link,
                 'repeatInTextMainPage' => $text,
                 'throughLinks' => $thoughLinks,
-                'throughCount' => $thoughCount,
             ];
         }
 
