@@ -51,7 +51,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 
         $thoughResult->result = base64_encode(gzcompress(json_encode($resultArray), 9));
         $thoughResult->save();
-        Log::debug('end', [Carbon::now()->toTimeString()])
+        Log::debug('end', [Carbon::now()->toTimeString()]);
     }
 
     /**
