@@ -41,8 +41,11 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
         $countRecords = count($this->items);
 
         $though = ProjectRelevanceThough::thoughAnalyse($this->items, $this->id, $countRecords);
+        Log::debug('thoughAnalyse', [Carbon::now()->toTimeString()]);
         $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+        Log::debug('searchWordWorms', [Carbon::now()->toTimeString()]);
         $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
+        Log::debug('calculateFinalResult', [Carbon::now()->toTimeString()]);
 
         $thoughResult = ProjectRelevanceThough::firstOrNew([
 //            'result' => base64_encode(gzcompress(json_encode($resultArray), 9)),
