@@ -77,7 +77,7 @@ class ProjectRelevanceThough extends Model
             }
         }
 
-        return $resultArray;
+        return array_slice($resultArray, 0, 3500);
     }
 
     /**
@@ -138,6 +138,6 @@ class ProjectRelevanceThough extends Model
             ];
         }
 
-        return array_slice($wordWorms, 0, 2000);
+        return $wordWorms;
     }
 }
