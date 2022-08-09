@@ -32,6 +32,7 @@ class ProjectRelevanceThough extends Model
                 ->with('mainHistory')
                 ->first();
 
+            dump($record->id);
             try {
                 if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
                     dump($record->results);
