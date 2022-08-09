@@ -22,7 +22,7 @@ class ProjectRelevanceThough extends Model
         $resultArray = [];
 
         foreach ($items as $item) {
-            dd([
+            dump([
                 $item['main_link'],
                 $item['phrase'],
                 $item['region'],
@@ -39,6 +39,7 @@ class ProjectRelevanceThough extends Model
 
             try {
                 if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
+                    dump($record->results);
                     foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
                         unset($word['total']);
                         foreach ($word as $key => $item) {
@@ -49,6 +50,7 @@ class ProjectRelevanceThough extends Model
                         }
                     }
 
+                    dd($words);
                     foreach ($words as $key => $word) {
                         arsort($word['occurrences']);
 

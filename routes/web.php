@@ -331,11 +331,8 @@ Route::get('/bla/{id}', function ($id) {
     $countRecords = count($items);
 
     $though = ProjectRelevanceThough::thoughAnalyse($items, $id, $countRecords);
-    dump($though);
 
     $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
-    dump($wordWorms);
 
     $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
-    dd($resultArray);
 });
