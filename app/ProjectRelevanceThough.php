@@ -21,8 +21,12 @@ class ProjectRelevanceThough extends Model
     {
         $resultArray = [];
 
-        dd($items);
         foreach ($items as $item) {
+            dd([
+                $item['main_link'],
+                $item['phrase'],
+                $item['region'],
+            ]);
             $record = RelevanceHistory::where('main_link', '=', $item['main_link'])
                 ->where('project_relevance_history_id', '=', $id)
                 ->where('phrase', '=', $item['phrase'])
