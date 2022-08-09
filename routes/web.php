@@ -330,9 +330,15 @@ Route::get('/bla/{id}', function ($id) {
 
     $countRecords = count($items);
 
+    Log::debug('thoughAnalyse');
     $though = ProjectRelevanceThough::thoughAnalyse($items, $id, $countRecords);
+    dump($though);
 
+    Log::debug('searchWordWorms');
     $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+    dump($wordWorms);
 
+    Log::debug('calculateFinalResult');
     $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
+    dd($resultArray);
 });
