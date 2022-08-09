@@ -328,9 +328,9 @@ Route::get('/bla/{id}', function ($id) {
     $items = HistoryRelevanceController::getUniqueScanned($id);
     dump(count($items));
 
-    $countRecords = count($this->items);
+    $countRecords = count($items);
 
-    $though = ProjectRelevanceThough::thoughAnalyse($this->items, $this->id, $countRecords);
+    $though = ProjectRelevanceThough::thoughAnalyse($items, $id, $countRecords);
     dump($though);
 
     $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
