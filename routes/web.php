@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\HistoryRelevanceController;
 use App\LinguaStem;
 use App\ProjectRelevanceThough;
 use App\TextAnalyzer;
@@ -321,4 +322,20 @@ Route::get('/get-passages/{link}', function ($link) {
         'Общее количество символов(без пассажей)' => mb_strlen($text)
 
     ]);
+});
+
+Route::get('/bla/{id}', function ($id) {
+    $items = HistoryRelevanceController::getUniqueScanned($id);
+    dump(count($items));
+
+    $countRecords = count($this->items);
+
+    $though = ProjectRelevanceThough::thoughAnalyse($this->items, $this->id, $countRecords);
+    dump($though);
+
+    $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
+    dump($wordWorms);
+
+    $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
+    dd($resultArray);
 });
