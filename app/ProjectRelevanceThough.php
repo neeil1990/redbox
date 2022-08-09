@@ -77,7 +77,7 @@ class ProjectRelevanceThough extends Model
             }
         }
 
-        return array_slice($resultArray, 0, 3500);
+        return array_slice($resultArray, 0, 1500);
     }
 
     /**
