@@ -132,7 +132,6 @@ class ProjectRelevanceThough extends Model
      */
     public static function calculateFinalResult($wordWorms, $countRecords, $mainId)
     {
-        Log::debug($wordWorms);
         foreach ($wordWorms as $key => $wordWorm) {
             $tf = $idf = $link = $text = $thoughCount = 0;
             $thoughLinks = [];
