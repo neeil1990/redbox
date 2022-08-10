@@ -32,48 +32,40 @@ class ProjectRelevanceThough extends Model
                 ->with('mainHistory')
                 ->first();
 
-            try {
-                if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
-                    foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
-                        unset($word['total']);
-                        foreach ($word as $key => $item) {
-                            $key = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($key)));
-                            if ($key != '') {
-                                $words[$key] = $item;
-                            }
+            if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
+                foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
+                    unset($word['total']);
+                    foreach ($word as $key => $item) {
+                        $key = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($key)));
+                        if ($key != '') {
+                            $words[$key] = $item;
                         }
-                    }
-
-                    foreach ($words as $key => $word) {
-                        arsort($word['occurrences']);
-
-                        if (isset($resultArray[$key])) {
-                            $resultArray[$key]['tf'] += round($word['tf'], 6);
-                            $resultArray[$key]['idf'] += round($word['idf'], 6);
-                            $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
-                            $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
-                            $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
-                            $resultArray[$key]['throughCount'] += 1;
-                        } else {
-                            $resultArray[$key] = [
-                                'tf' => round($word['tf'], 6),
-                                'idf' => round($word['idf'], 6),
-                                'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
-                                'repeatInTextMainPage' => $word['repeatInTextMainPage'],
-                                'throughLinks' => $word['occurrences'],
-                                'throughCount' => 1,
-                            ];
-                        }
-
-                        $resultArray[$key]['total'] = $countRecords;
                     }
                 }
-            } catch (\Exception $e) {
-                Log::debug('though error', [
-                    'record' => $record,
-                    'cleaning' => $record->results->clening ?? null,
-                    'message' => $e->getMessage()
-                ]);
+
+                foreach ($words as $key => $word) {
+                    arsort($word['occurrences']);
+
+                    if (isset($resultArray[$key])) {
+                        $resultArray[$key]['tf'] += round($word['tf'], 6);
+                        $resultArray[$key]['idf'] += round($word['idf'], 6);
+                        $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+                        $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
+                        $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
+                        $resultArray[$key]['throughCount'] += 1;
+                    } else {
+                        $resultArray[$key] = [
+                            'tf' => round($word['tf'], 6),
+                            'idf' => round($word['idf'], 6),
+                            'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                            'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+                            'throughLinks' => $word['occurrences'],
+                            'throughCount' => 1,
+                        ];
+                    }
+
+                    $resultArray[$key]['total'] = $countRecords;
+                }
             }
         }
 
