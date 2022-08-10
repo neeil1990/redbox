@@ -21,7 +21,6 @@ class RelevanceThoughController extends Controller
 
         return view('relevance-analysis.though.show', [
             'though' => $though,
-            'microtime' => microtime(true),
         ]);
     }
 
@@ -33,7 +32,6 @@ class RelevanceThoughController extends Controller
     {
         HistoryRelevanceController::checkAccess($request);
         $items = HistoryRelevanceController::getUniqueScanned($request->id);
-        Log::debug('unique items', [count($items)]);
         if (count($items) == 0) {
             return response()->json([
                 'code' => 415,
@@ -41,7 +39,21 @@ class RelevanceThoughController extends Controller
             ]);
         }
 
-        dispatch(new RelevanceThoughAnalysisQueue($items, $request->id));
+        $though = ProjectRelevanceThough::firstOrNew([
+            'project_relevance_history_id' => $request->id,
+        ]);
+
+        $though->state = 0;
+
+        $though->save();
+
+        dispatch(new RelevanceThoughAnalysisQueue([
+            'items' => $items->toArray(),
+            'mainId' => $request->id,
+            'thoughId' => $though->id,
+            'countRecords' => count($items),
+            'stage' => 1,
+        ]));
 
         return response()->json([
             'success' => false,

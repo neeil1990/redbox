@@ -18,16 +18,35 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 
     public $items;
 
-    public $id;
+    public $mainId;
+
+    public $thoughId;
+
+    public $stage;
+
+    public $state;
+
+    public $config;
+
+    public $object;
+
+    public $countRecords;
 
     /**
-     * @param Collection $items
-     * @param int $id
+     * @param array $config
      */
-    public function __construct(Collection $items, int $id)
+    public function __construct(array $config)
     {
-        $this->items = $items->toArray();
-        $this->id = $id;
+        $this->config = $config;
+        $this->countRecords = $config['countRecords'];
+        $this->thoughId = $config['thoughId'];
+        $this->mainId = $config['mainId'];
+        $this->stage = $config['stage'];
+
+        if ($this->stage == 1) {
+            $this->items = $config['items'];
+        }
+
     }
 
     /**
@@ -37,24 +56,41 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug('start though', [Carbon::now()->toTimeString()]);
-        $countRecords = count($this->items);
 
-        $though = ProjectRelevanceThough::thoughAnalyse($this->items, $this->id, $countRecords);
-        Log::debug('thoughAnalyse', [Carbon::now()->toTimeString()]);
-        $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
-        Log::debug('searchWordWorms', [Carbon::now()->toTimeString()]);
-        $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
-        Log::debug('calculateFinalResult', [Carbon::now()->toTimeString()]);
+        if ($this->stage == 1) {
 
-        $thoughResult = ProjectRelevanceThough::firstOrNew([
-//            'result' => base64_encode(gzcompress(json_encode($resultArray), 9)),
-            'project_relevance_history_id' => $this->id
-        ]);
+            ProjectRelevanceThough::thoughAnalyse($this->items, $this->mainId, $this->countRecords);
 
-        $thoughResult->result = base64_encode(gzcompress(json_encode($resultArray), 9));
-        $thoughResult->save();
-        Log::debug('end though', [Carbon::now()->toTimeString()]);
+            dispatch(new RelevanceThoughAnalysisQueue([
+                'stage' => 2,
+                'countRecords' => $this->countRecords,
+                'mainId' => $this->mainId,
+                'thoughId' => $this->thoughId,
+            ]));
+
+        } elseif ($this->stage == 2) {
+
+            $though = ProjectRelevanceThough::where('project_relevance_history_id', '=', $this->mainId)->first();
+            $thoughWords = json_decode(gzuncompress(base64_decode($though->though_words)), true);
+
+            ProjectRelevanceThough::searchWordWorms($thoughWords, $this->mainId);
+
+            dispatch(new RelevanceThoughAnalysisQueue([
+                'stage' => 3,
+                'countRecords' => $this->countRecords,
+                'mainId' => $this->mainId,
+                'thoughId' => $this->thoughId,
+            ]));
+
+        } elseif ($this->stage == 3) {
+
+            $though = ProjectRelevanceThough::where('project_relevance_history_id', '=', $this->mainId)->first();
+            $wordWorms = json_decode(gzuncompress(base64_decode($though->word_worms)), true);
+            Log::debug($wordWorms);
+            ProjectRelevanceThough::calculateFinalResult($wordWorms, $this->countRecords, $this->mainId);
+
+        }
+
     }
 
     /**

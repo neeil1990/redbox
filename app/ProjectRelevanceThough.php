@@ -15,9 +15,9 @@ class ProjectRelevanceThough extends Model
      * @param $items
      * @param $id
      * @param $countRecords
-     * @return array
+     * @return void
      */
-    public static function thoughAnalyse($items, $id, $countRecords): array
+    public static function thoughAnalyse($items, $id, $countRecords)
     {
         $resultArray = [];
 
@@ -77,14 +77,22 @@ class ProjectRelevanceThough extends Model
             }
         }
 
-        return array_slice($resultArray, 0, 1500);
+        $though = ProjectRelevanceThough::firstOrNew([
+            'project_relevance_history_id' => $id,
+        ]);
+
+        $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 2500)), 9));
+        $though->state = 0;
+        $though->stage = 2;
+        $though->save();
     }
 
     /**
      * @param $array
-     * @return array
+     * @param $mainId
+     * @return void
      */
-    public static function searchWordWorms($array): array
+    public static function searchWordWorms($array, $mainId)
     {
         $ignoredWords = [];
         $wordWorms = [];
@@ -106,19 +114,29 @@ class ProjectRelevanceThough extends Model
             }
         }
 
-        return $wordWorms;
+        $though = ProjectRelevanceThough::firstOrNew([
+            'project_relevance_history_id' => $mainId,
+        ]);
+
+        $though->though_words = '';
+        $though->word_worms = base64_encode(gzcompress(json_encode($wordWorms), 9));
+        $though->stage = 3;
+        $though->save();
     }
 
     /**
      * @param $wordWorms
      * @param $countRecords
-     * @return array
+     * @param $mainId
+     * @return void
      */
-    public static function calculateFinalResult($wordWorms, $countRecords): array
+    public static function calculateFinalResult($wordWorms, $countRecords, $mainId)
     {
+        Log::debug($wordWorms);
         foreach ($wordWorms as $key => $wordWorm) {
             $tf = $idf = $link = $text = $thoughCount = 0;
             $thoughLinks = [];
+
             foreach ($wordWorm as $items) {
                 $thoughCount += $items['throughCount'];
                 $tf += $items['tf'];
@@ -127,6 +145,7 @@ class ProjectRelevanceThough extends Model
                 $text += $items['repeatInTextMainPage'];
                 $thoughLinks = array_merge($items['throughLinks'], $thoughLinks);
             }
+
             $wordWorms[$key]['total'] = [
                 'throughCount' => $thoughCount,
                 'repeat' => $countRecords,
@@ -138,6 +157,14 @@ class ProjectRelevanceThough extends Model
             ];
         }
 
-        return $wordWorms;
+
+        $though = ProjectRelevanceThough::firstOrNew([
+            'project_relevance_history_id' => $mainId,
+        ]);
+
+        $though->result = base64_encode(gzcompress(json_encode($wordWorms), 9));
+        $though->word_worms = '';
+        $though->state = 1;
+        $though->save();
     }
 }
