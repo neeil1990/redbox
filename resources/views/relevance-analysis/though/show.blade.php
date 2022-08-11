@@ -134,7 +134,7 @@
                 $('.dt-button').addClass('btn btn-secondary')
 
                 for (let i = 0; i < 5; i++) {
-                    getNextItems(recordId, count, thoughTable)
+                    await getNextItems(recordId, count, thoughTable)
                     count += iterator
                 }
 
@@ -155,7 +155,7 @@
                 })
             }
 
-            function getNextItems(recordId, count, table) {
+            async function getNextItems(recordId, count, table) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
