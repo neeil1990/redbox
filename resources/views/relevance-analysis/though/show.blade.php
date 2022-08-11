@@ -44,7 +44,7 @@
 
     <div class="text-center" id="preloaderBlock">
         <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
-        <p>{{ __("Load..") }}</p>
+        <p>Получено <b id="getCount"> {{ $count }} </b> из <b>{{ $allCount }}</b></p>
     </div>
     <div style="display: none" id="though-block">
         <table class="table table-bordered table-striped dtr-inline" id="though-table">
@@ -52,7 +52,7 @@
             <tr>
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
-                <th class="sticky width">Пересечения</th>
+                <th class="sticky fixed-width">Пересечения</th>
                 <th class="sticky">Сумма tf</th>
                 <th class="sticky">Сумма idf</th>
                 <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
@@ -135,15 +135,6 @@
                 $('.dt-button').addClass('btn btn-secondary')
 
                 getNextItems(recordId, thoughTable, count, iterator, allCount)
-
-                setTimeout(() => {
-                    $('#preloaderBlock').hide(300);
-                    $('#though-block').show()
-
-                    $('.sticky').click(function () {
-                        $('.render-child').remove()
-                    });
-                }, 500)
             });
 
             function removeElems() {
@@ -154,7 +145,6 @@
             }
 
             function getNextItems(recordId, table, count, iterator, allCount) {
-                console.log('nextItems')
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -206,11 +196,21 @@
                                 7: value['total']['repeat']
                             }).draw(false).node();
                         })
+                        $('#getCount').html(count)
                         count += iterator
                         if (count < allCount) {
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 getNextItems(recordId, table, count, iterator, allCount)
-                            }, 3000)
+                            }, 1000)
+                        } else {
+                            setTimeout(() => {
+                                $('#preloaderBlock').hide(300);
+                                $('#though-block').show()
+
+                                $('.sticky').click(function () {
+                                    $('.render-child').remove()
+                                });
+                            }, 500)
                         }
                     },
                 });
