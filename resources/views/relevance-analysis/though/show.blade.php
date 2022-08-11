@@ -195,7 +195,7 @@
                                 5: value['total']['repeatInTextMainPage'],
                                 6: value['total']['repeatInLinkMainPage'],
                                 7: value['total']['repeat']
-                            }).draw(false).node();
+                            });
                         })
                         $('#getCount').html(count)
                         count += iterator
@@ -207,6 +207,7 @@
                             })
                         } else {
                             $(document).ready(function () {
+                                table.draw()
                                 $('#preloaderBlock').hide(300);
                                 $('#though-block').show()
 
