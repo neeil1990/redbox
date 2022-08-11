@@ -204,14 +204,14 @@
                                 getNextItems(recordId, table, count, iterator, allCount)
                             })
                         } else {
-                            setTimeout(() => {
+                            $(document).ready(function () {
                                 $('#preloaderBlock').hide(300);
                                 $('#though-block').show()
 
                                 $('.sticky').click(function () {
                                     $('.render-child').remove()
                                 });
-                            }, 500)
+                            })
                         }
                     },
                 });
