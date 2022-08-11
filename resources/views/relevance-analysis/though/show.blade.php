@@ -260,8 +260,8 @@
                                 childTable +
                                 '       </div>' +
                                 '   </td>' +
-                                '   <td>' + value['tf'] + '</td>' +
-                                '   <td>' + value['idf'] + '</td>' +
+                                '   <td>' + (value['tf']).toFixed(6) + '</td>' +
+                                '   <td>' + (value['idf']).toFixed(6) + '</td>' +
                                 '   <td>' + value['repeatInTextMainPage'] + '</td>' +
                                 '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
                                 '   <td>' + value['throughCount'] + ' / ' + value['total'] + '</td>' +

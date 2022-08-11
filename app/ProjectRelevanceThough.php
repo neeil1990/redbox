@@ -73,7 +73,7 @@ class ProjectRelevanceThough extends Model
             'project_relevance_history_id' => $id,
         ]);
 
-        $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 10000)), 9));
+        $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 7000)), 9));
         $though->state = 0;
         $though->stage = 2;
         $though->save();
