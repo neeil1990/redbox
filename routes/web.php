@@ -14,6 +14,7 @@
 use App\Http\Controllers\HistoryRelevanceController;
 use App\LinguaStem;
 use App\ProjectRelevanceThough;
+use App\RelevanceHistory;
 use App\TextAnalyzer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;

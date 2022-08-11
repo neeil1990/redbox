@@ -164,7 +164,7 @@ class TextAnalyzer
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
-        $html = html_entity_decode($text);
+        $html = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($text)));
 
         $html = str_replace(">", "> ", $html);
         $text = trim(strip_tags($html));
