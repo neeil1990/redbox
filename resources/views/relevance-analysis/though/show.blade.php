@@ -122,21 +122,20 @@
             let recordId = "{{ $though->id }}";
 
             $(document).ready(function () {
+                let thoughTable = $('#though-table').DataTable({
+                    "order": [[3, "desc"]],
+                    "pageLength": 50,
+                    "searching": true,
+                    dom: 'lBfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ],
+                });
+                $('.dt-button').addClass('btn btn-secondary')
+
                 setTimeout(() => {
-                    let thoughTable = $('#though-table').DataTable({
-                        "order": [[3, "desc"]],
-                        "pageLength": 50,
-                        "searching": true,
-                        dom: 'lBfrtip',
-                        buttons: [
-                            'copy', 'csv', 'excel'
-                        ],
-                    });
-
-                    $('.dt-button').addClass('btn btn-secondary')
-
                     getNextItems(recordId, thoughTable, count, iterator, allCount)
-                }, 1000)
+                }, 3000)
             });
 
             function removeElems() {
