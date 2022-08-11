@@ -200,9 +200,9 @@
                         $('#getCount').html(count)
                         count += iterator
                         if (count < allCount) {
-                            setTimeout(() => {
+                            $(document).ready(function () {
                                 getNextItems(recordId, table, count, iterator, allCount)
-                            }, 1000)
+                            })
                         } else {
                             setTimeout(() => {
                                 $('#preloaderBlock').hide(300);
@@ -215,8 +215,6 @@
                         }
                     },
                 });
-
-                return count;
             }
 
             setInterval(() => {
