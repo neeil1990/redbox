@@ -208,7 +208,9 @@
                         })
                         count += iterator
                         if (count < allCount) {
-                            getNextItems(recordId, table, count, iterator, allCount)
+                            setTimeout(()=>{
+                                getNextItems(recordId, table, count, iterator, allCount)
+                            }, 3000)
                         }
                     },
                 });
