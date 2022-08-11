@@ -73,7 +73,7 @@ class ProjectRelevanceThough extends Model
             'project_relevance_history_id' => $id,
         ]);
 
-        $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 7000)), 9));
+        $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 10000)), 9));
         $though->state = 0;
         $though->stage = 2;
         $though->save();
@@ -148,12 +148,12 @@ class ProjectRelevanceThough extends Model
             ];
         }
 
-
+        Log::debug('wf', $wordWorms);
         $though = ProjectRelevanceThough::firstOrNew([
             'project_relevance_history_id' => $mainId,
         ]);
 
-        $though->result = base64_encode(gzcompress(json_encode($wordWorms), 9));
+        $though->result = base64_encode(gzcompress(json_encode(array_slice($wordWorms, 0, 3500)), 9));
         $though->word_worms = '';
         $though->state = 1;
         $though->save();

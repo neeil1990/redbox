@@ -6,11 +6,12 @@ use App\Jobs\RelevanceThoughAnalysisQueue;
 use App\ProjectRelevanceThough;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class RelevanceThoughController extends Controller
 {
+    public $slice = 10;
+
     /**
      * @param ProjectRelevanceThough $though
      * @return View
@@ -19,7 +20,7 @@ class RelevanceThoughController extends Controller
     {
         $though->result = json_decode(gzuncompress(base64_decode($though->result)), true);
         $allResult = $though->result;
-        $though->result = array_slice($though->result, 0, count($though->result) / 20);
+        $though->result = array_slice($though->result, 0, count($though->result) / $this->slice);
         $count = count($though->result);
 
         return view('relevance-analysis.though.show', [
@@ -39,7 +40,7 @@ class RelevanceThoughController extends Controller
         $record = ProjectRelevanceThough::where('id', '=', $request->id)->first();
 
         $array = json_decode(gzuncompress(base64_decode($record->result)), true);
-        $sliceArray = array_slice($array, $request->count, count($array) / 20);
+        $sliceArray = array_slice($array, $request->count, count($array) / $this->slice);
 
         return response()->json([
             'elems' => $sliceArray,

@@ -194,7 +194,7 @@
                                 4: (value['total']['idf']).toFixed(5),
                                 5: value['total']['repeatInTextMainPage'],
                                 6: value['total']['repeatInLinkMainPage'],
-                                7: value['total']['repeat']
+                                7: value['total']['throughCount']
                             });
                         })
                         $('#getCount').html(count)
