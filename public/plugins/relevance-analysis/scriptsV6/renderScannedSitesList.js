@@ -165,7 +165,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
 
         if (avg !== null) {
             $('#scanned-sites-row').after(
-                '<tr>' +
+                '<tr class="render">' +
                 '    <th>-</th>' +
                 '    <th>Рекомендации для вашей страницы</th>' +
                 '    <th>' + Number(avg.points).toFixed(2) + '</th>' +
