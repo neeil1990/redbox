@@ -33,6 +33,12 @@
                 margin-left: 20px;
                 float: left;
             }
+
+            .fixed-width {
+                z-index: 1003 !important;
+                min-width: 400px !important;
+                max-width: 400px !important;
+            }
         </style>
     @endslot
 
@@ -46,10 +52,7 @@
             <tr>
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
-                <th class="sticky"
-                    style="z-index: 1003 !important; min-width: 400px !important; max-width: 400px !important;">
-                    Пересечения
-                </th>
+                <th class="sticky width">Пересечения</th>
                 <th class="sticky">Сумма tf</th>
                 <th class="sticky">Сумма idf</th>
                 <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
@@ -58,11 +61,11 @@
             </tr>
             </thead>
             <tbody>
-            @foreach(json_decode($though->result, true) as $key => $item)
+            @foreach($though->result as $key => $item)
                 <tr>
-                    <th class="show-more" data-target="{{ $key }}">
-                        <i class="fa fa-plus"></i>
-                    </th>
+                    <td>
+                        <i class="fa fa-plus show-more" data-target="{{ $key }}"></i>
+                    </td>
                     <td>{{ $key }}</td>
                     <td>
                         <a data-toggle="collapse" href="#collapseExample{{ $key }}"
@@ -96,8 +99,7 @@
                     <td>{{ $item['total']['idf'] }}</td>
                     <td>{{ $item['total']['repeatInTextMainPage'] }}</td>
                     <td>{{ $item['total']['repeatInLinkMainPage'] }}</td>
-                    <td data-order="{{ $item['total']['throughCount'] }}">{{ $item['total']['throughCount'] }}
-                        / {{ $item['total']['repeat'] }}</td>
+                    <td>{{ $item['total']['throughCount'] }}</td>
                 </tr>
             @endforeach
             </tbody>
@@ -111,82 +113,39 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            let totalResults = "{{ $though->result }}";
+            let totalResults = "{{ json_encode($allElems) }}";
             totalResults = totalResults.replace(/&quot;/g, '"')
             totalResults = JSON.parse(totalResults)
+            let count = {{ $count }};
+            let iterator = count
+            let recordId = "{{ $though->id }}";
 
             $(document).ready(function () {
-                $('#though-table').DataTable({
+                let thoughTable = $('#though-table').DataTable({
                     "order": [[3, "desc"]],
                     "pageLength": 50,
                     "searching": true,
                     dom: 'lBfrtip',
                     buttons: [
                         'copy', 'csv', 'excel'
-                    ]
+                    ],
                 });
 
                 $('.dt-button').addClass('btn btn-secondary')
 
+                for (let i = 0; i < 5; i++) {
+                    getNextItems(recordId, count, thoughTable)
+                    count += iterator
+                }
+
                 setTimeout(() => {
                     $('#preloaderBlock').hide(300);
                     $('#though-block').show()
+
+                    $('.sticky').click(function () {
+                        $('.render-child').remove()
+                    });
                 }, 500)
-            });
-
-            $('.show-more').click(function () {
-                let tr = $(this).parent()
-                let target = $(this).attr('data-target')
-                $("tr[data-target='" + target + "']").remove();
-                $.each(totalResults[target], function (key, value) {
-                    let childRows = ''
-
-                    $.each(value['throughLinks'], function (key2, value2) {
-                        childRows +=
-                            '<tr>' +
-                            '   <td>' + key2 + '</td>' +
-                            '   <td>' + value2 + '</td>' +
-                            '</tr>'
-                    })
-
-                    let childTable =
-                        '<table class="child-table">' +
-                        '   <thead>' +
-                        '       <tr>' +
-                        '           <th class="col-9">Ссылка</th>' +
-                        '           <th class="col-3">Кол-во вхождений</th>' +
-                        '       </tr>' +
-                        '   </thead>' +
-                        '   <tbody>' +
-                        childRows +
-                        '   </tbody>' +
-                        '</table>'
-                    if (key !== 'total') {
-                        tr.after(
-                            '<tr class="render-child" data-target="' + target + '">' +
-                            '   <td class="remove-child" data-target="' + target + '"> <i class="fa fa-minus" ></i></td>' +
-                            '   <td>' + key + '</td>' +
-                            '   <td>' +
-                            '       <a data-toggle="collapse" href="#childTable' + key + '" role="button" aria-expanded="false" aria-controls="childTable' + key + '">' +
-                            '           Посмотреть таблицу </a>' +
-                            '       <div class="collapse" id="childTable' + key + '">' +
-                            childTable +
-                            '       </div>' +
-                            '   </td>' +
-                            '   <td>' + value['tf'] + '</td>' +
-                            '   <td>' + value['idf'] + '</td>' +
-                            '   <td>' + value['repeatInTextMainPage'] + '</td>' +
-                            '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
-                            '   <td>' + value['throughCount'] + ' / ' + value['total'] + '</td>' +
-                            '</tr>'
-                        )
-                    }
-                })
-                removeElems()
-            })
-
-            $('.sticky').click(function () {
-                $('.render-child').remove()
             });
 
             function removeElems() {
@@ -195,6 +154,115 @@
                     $("tr[data-target='" + target + "']").remove();
                 })
             }
+
+            function getNextItems(recordId, count, table) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('get.slice.result') }}",
+                    data: {
+                        id: recordId,
+                        count: count
+                    },
+                    success: function (response) {
+                        $.each(response.elems, function (key, value) {
+                            let tbody = ''
+
+                            $.each(value['total']['throughLinks'], function (keyLink, link) {
+                                tbody +=
+                                    '<tr> ' +
+                                    '   <td> ' +
+                                    '       <a href="' + keyLink + '" target="_blank"> ' + keyLink + '</a> ' +
+                                    '   </td>' +
+                                    '   <td>' + link + '</td>' +
+                                    '</tr>'
+                            })
+
+                            let ChildTable = '<td> ' +
+                                '<a data-toggle="collapse" href="#collapseExample' + key + '" role="button" aria-expanded="false" aria-controls="collapseExample' + key + '">' +
+                                'Посмотреть таблицу </a> ' +
+                                '<div class="collapse" id="collapseExample' + key + '"> ' +
+                                '<table class="child-table"> ' +
+                                '   <thead> ' +
+                                '       <tr> ' +
+                                '           <th class="col-9">Ссылка</th> ' +
+                                '           <th class="col-3">Кол-во вхождений</th> ' +
+                                '       </tr> ' +
+                                '   </thead> ' +
+                                '<tbody> ' +
+                                '</tbody> ' +
+                                tbody +
+                                '</table> ' +
+                                '</div> ' +
+                                '</td>'
+
+                            table.row.add({
+                                0: '<i class="fa fa-plus show-more" data-target="' + key + '"></i> ',
+                                1: key,
+                                2: ChildTable,
+                                3: (value['total']['tf']).toFixed(5),
+                                4: (value['total']['idf']).toFixed(5),
+                                5: value['total']['repeatInTextMainPage'],
+                                6: value['total']['repeatInLinkMainPage'],
+                                7: value['total']['repeat']
+                            }).draw(false).node();
+                        })
+                    },
+                });
+            }
+
+            setInterval(() => {
+                $('.show-more').unbind().on('click', function () {
+                    let tr = $(this).parent().parent()
+                    let target = $(this).attr('data-target')
+                    $("tr[data-target='" + target + "']").remove();
+                    $.each(totalResults[target], function (key, value) {
+                        let childRows = ''
+
+                        $.each(value['throughLinks'], function (key2, value2) {
+                            childRows +=
+                                '<tr>' +
+                                '   <td>' + key2 + '</td>' +
+                                '   <td>' + value2 + '</td>' +
+                                '</tr>'
+                        })
+
+                        let childTable =
+                            '<table class="child-table">' +
+                            '   <thead>' +
+                            '       <tr>' +
+                            '           <th class="col-9">Ссылка</th>' +
+                            '           <th class="col-3">Кол-во вхождений</th>' +
+                            '       </tr>' +
+                            '   </thead>' +
+                            '   <tbody>' +
+                            childRows +
+                            '   </tbody>' +
+                            '</table>'
+                        if (key !== 'total') {
+                            tr.after(
+                                '<tr class="render-child" data-target="' + target + '">' +
+                                '   <td class="remove-child" data-target="' + target + '"> <i class="fa fa-minus" ></i></td>' +
+                                '   <td>' + key + '</td>' +
+                                '   <td>' +
+                                '       <a data-toggle="collapse" href="#childTable' + key + '" role="button" aria-expanded="false" aria-controls="childTable' + key + '">' +
+                                '           Посмотреть таблицу </a>' +
+                                '       <div class="collapse" id="childTable' + key + '">' +
+                                childTable +
+                                '       </div>' +
+                                '   </td>' +
+                                '   <td>' + value['tf'] + '</td>' +
+                                '   <td>' + value['idf'] + '</td>' +
+                                '   <td>' + value['repeatInTextMainPage'] + '</td>' +
+                                '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
+                                '   <td>' + value['throughCount'] + ' / ' + value['total'] + '</td>' +
+                                '</tr>'
+                            )
+                        }
+                    })
+                    removeElems()
+                })
+            }, 100)
         </script>
     @endslot
 @endcomponent

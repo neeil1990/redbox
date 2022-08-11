@@ -260,6 +260,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
+    Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
 });
 
@@ -322,23 +323,4 @@ Route::get('/get-passages/{link}', function ($link) {
         'Общее количество символов(без пассажей)' => mb_strlen($text)
 
     ]);
-});
-
-Route::get('/bla/{id}', function ($id) {
-    $items = HistoryRelevanceController::getUniqueScanned($id);
-    dump(count($items));
-
-    $countRecords = count($items);
-
-    Log::debug('thoughAnalyse');
-    $though = ProjectRelevanceThough::thoughAnalyse($items, $id, $countRecords);
-    dump($though);
-
-    Log::debug('searchWordWorms');
-    $wordWorms = ProjectRelevanceThough::searchWordWorms($though);
-    dump($wordWorms);
-
-    Log::debug('calculateFinalResult');
-    $resultArray = ProjectRelevanceThough::calculateFinalResult($wordWorms, $countRecords);
-    dd($resultArray);
 });

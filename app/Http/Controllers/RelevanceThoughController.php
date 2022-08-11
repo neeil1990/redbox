@@ -17,10 +17,32 @@ class RelevanceThoughController extends Controller
      */
     public function show(ProjectRelevanceThough $though): View
     {
-        $though->result = gzuncompress(base64_decode($though->result));
+        $though->result = json_decode(gzuncompress(base64_decode($though->result)), true);
+        $allResult = $though->result;
+        $though->result = array_slice($though->result, 0, count($though->result) / 5);
+        $count = count($though->result);
 
         return view('relevance-analysis.though.show', [
             'though' => $though,
+            'allElems' => $allResult,
+            'count' => $count
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getSliceResult(Request $request): JsonResponse
+    {
+        Log::debug('req', $request->all());
+        $record = ProjectRelevanceThough::where('id', '=', $request->id)->first();
+
+        $array = json_decode(gzuncompress(base64_decode($record->result)), true);
+        $sliceArray = array_slice($array, $request->count, count($array) / 5);
+
+        return response()->json([
+            'elems' => $sliceArray,
         ]);
     }
 

@@ -4,12 +4,10 @@ namespace App\Jobs;
 
 use App\ProjectRelevanceThough;
 use Illuminate\Bus\Queueable;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class RelevanceThoughAnalysisQueue implements ShouldQueue
