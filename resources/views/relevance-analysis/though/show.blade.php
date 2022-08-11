@@ -117,6 +117,7 @@
             totalResults = totalResults.replace(/&quot;/g, '"')
             totalResults = JSON.parse(totalResults)
             let count = {{ $count }};
+            let allCount = {{ $allCount }};
             let iterator = count
             let recordId = "{{ $though->id }}";
 
@@ -133,10 +134,7 @@
 
                 $('.dt-button').addClass('btn btn-secondary')
 
-                for (let i = 0; i < 5; i++) {
-                    await getNextItems(recordId, count, thoughTable)
-                    count += iterator
-                }
+                getNextItems(recordId, thoughTable, count, iterator, allCount)
 
                 setTimeout(() => {
                     $('#preloaderBlock').hide(300);
@@ -155,7 +153,8 @@
                 })
             }
 
-            async function getNextItems(recordId, count, table) {
+            function getNextItems(recordId, table, count, iterator, allCount) {
+                console.log('nextItems')
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -207,8 +206,14 @@
                                 7: value['total']['repeat']
                             }).draw(false).node();
                         })
+                        count += iterator
+                        if (count < allCount) {
+                            getNextItems(recordId, table, count, iterator, allCount)
+                        }
                     },
                 });
+
+                return count;
             }
 
             setInterval(() => {

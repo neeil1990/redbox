@@ -25,6 +25,7 @@ class RelevanceThoughController extends Controller
         return view('relevance-analysis.though.show', [
             'though' => $though,
             'allElems' => $allResult,
+            'allCount' => count($allResult),
             'count' => $count
         ]);
     }
