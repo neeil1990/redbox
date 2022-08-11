@@ -19,7 +19,7 @@ class RelevanceThoughController extends Controller
     {
         $though->result = json_decode(gzuncompress(base64_decode($though->result)), true);
         $allResult = $though->result;
-        $though->result = array_slice($though->result, 0, count($though->result) / 10);
+        $though->result = array_slice($though->result, 0, count($though->result) / 20);
         $count = count($though->result);
 
         return view('relevance-analysis.though.show', [
@@ -39,7 +39,7 @@ class RelevanceThoughController extends Controller
         $record = ProjectRelevanceThough::where('id', '=', $request->id)->first();
 
         $array = json_decode(gzuncompress(base64_decode($record->result)), true);
-        $sliceArray = array_slice($array, $request->count, count($array) / 10);
+        $sliceArray = array_slice($array, $request->count, count($array) / 20);
 
         return response()->json([
             'elems' => $sliceArray,

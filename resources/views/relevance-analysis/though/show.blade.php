@@ -201,7 +201,9 @@
                         count += iterator
                         if (count < allCount) {
                             $(document).ready(function () {
-                                getNextItems(recordId, table, count, iterator, allCount)
+                                setTimeout(()=>{
+                                    getNextItems(recordId, table, count, iterator, allCount)
+                                }, 1000)
                             })
                         } else {
                             $(document).ready(function () {
