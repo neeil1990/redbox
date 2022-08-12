@@ -22,13 +22,18 @@ class RelevanceThoughController extends Controller
         $allResult = $though->result;
         $though->result = array_slice($though->result, 0, count($though->result) / $this->slice);
         $count = count($though->result);
+        if (isset($though->result)) {
+            $countScanned = $though->result[array_key_first($though->result)][array_key_first($though->result)]['total'];
+        } else {
+            $countScanned = 0;
+        }
 
         return view('relevance-analysis.though.show', [
             'though' => $though,
             'allElems' => $allResult,
             'allCount' => count($allResult),
             'count' => $count,
-            'countUniqueScanned' => $though->result[array_key_first($though->result)][array_key_first($though->result)]['total']
+            'countUniqueScanned' => $countScanned
         ]);
     }
 
