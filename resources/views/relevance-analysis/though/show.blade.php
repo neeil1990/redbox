@@ -39,6 +39,10 @@
                 min-width: 400px !important;
                 max-width: 400px !important;
             }
+
+            #though-table > tbody > tr > td:nth-child(8)::after {
+                content: " / {{ $countUniqueScanned }}";
+            }
         </style>
     @endslot
 
@@ -57,7 +61,7 @@
                 <th class="sticky">Сумма idf</th>
                 <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
                 <th class="sticky">Сумма повторений в ссылке посадочной страницы</th>
-                <th class="sticky">кол-во вхождений</th>
+                <th class="sticky">Сумма количества вхождений</th>
             </tr>
             </thead>
             <tbody>
@@ -201,7 +205,7 @@
                         count += iterator
                         if (count < allCount) {
                             $(document).ready(function () {
-                                setTimeout(()=>{
+                                setTimeout(() => {
                                     getNextItems(recordId, table, count, iterator, allCount)
                                 }, 1000)
                             })
@@ -264,7 +268,7 @@
                                 '   <td>' + (value['idf']).toFixed(6) + '</td>' +
                                 '   <td>' + value['repeatInTextMainPage'] + '</td>' +
                                 '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
-                                '   <td>' + value['throughCount'] + ' / ' + value['total'] + '</td>' +
+                                '   <td>' + value['throughCount'] + '</td>' +
                                 '</tr>'
                             )
                         }

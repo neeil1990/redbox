@@ -151,7 +151,6 @@ class ProjectRelevanceThough extends Model
             ];
         }
 
-        Log::debug('wf', $wordWorms);
         $though = ProjectRelevanceThough::firstOrNew([
             'project_relevance_history_id' => $mainId,
         ]);

@@ -27,7 +27,8 @@ class RelevanceThoughController extends Controller
             'though' => $though,
             'allElems' => $allResult,
             'allCount' => count($allResult),
-            'count' => $count
+            'count' => $count,
+            'countUniqueScanned' => $though->result[array_key_first($though->result)][array_key_first($though->result)]['total']
         ]);
     }
 
