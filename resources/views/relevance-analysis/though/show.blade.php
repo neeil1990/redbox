@@ -211,7 +211,6 @@
                             })
                         } else {
                             $(document).ready(function () {
-                                table.draw()
                                 $('#preloaderBlock').hide(300);
                                 $('#though-block').show()
 
