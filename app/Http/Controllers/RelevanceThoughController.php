@@ -22,7 +22,7 @@ class RelevanceThoughController extends Controller
         $allResult = $though->result;
         $though->result = array_slice($though->result, 0, count($though->result) / $this->slice);
         $count = count($though->result);
-        if (isset($though->result)) {
+        if (count($though->result) > 0) {
             $countScanned = $though->result[array_key_first($though->result)][array_key_first($though->result)]['total'];
         } else {
             $countScanned = 0;
