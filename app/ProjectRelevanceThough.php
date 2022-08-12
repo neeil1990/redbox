@@ -33,6 +33,8 @@ class ProjectRelevanceThough extends Model
                 ->first();
 
             if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
+                $words = [];
+
                 foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
                     unset($word['total']);
                     foreach ($word as $key => $item) {
@@ -66,6 +68,7 @@ class ProjectRelevanceThough extends Model
 
                     $resultArray[$key]['total'] = $countRecords;
                 }
+
             }
         }
 
