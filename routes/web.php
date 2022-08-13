@@ -11,14 +11,8 @@
 |
 */
 
-use App\Http\Controllers\HistoryRelevanceController;
-use App\LinguaStem;
-use App\ProjectRelevanceThough;
-use App\RelevanceHistory;
 use App\TextAnalyzer;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -212,6 +206,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/remove-scan-results-with-filters', 'HistoryRelevanceController@removeEmptyResultsFilters')->name('remove.with.filters');
     Route::post('/repeat-scan-unique-sites', 'HistoryRelevanceController@repeatScanUniqueSites')->name('repeat.scan.unique.sites');
     Route::post('/check-queue-scan-state', 'HistoryRelevanceController@checkQueueScanState')->name('check.queue.scan.state');
+    Route::post('/rescan-projects', 'HistoryRelevanceController@rescanProjects')->name('rescan.projects');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');

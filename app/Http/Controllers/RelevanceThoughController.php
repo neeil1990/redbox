@@ -72,7 +72,16 @@ class RelevanceThoughController extends Controller
             'project_relevance_history_id' => $request->id,
         ]);
 
+        if (isset($though->id) && $though->state == 0) {
+            return response()->json([
+                'success' => false,
+                'code' => 415,
+                'message' => 'Сквозной анализ уже запущен',
+            ]);
+        }
+
         $though->state = 0;
+        $though->stage = 1;
 
         $though->save();
 
@@ -89,5 +98,6 @@ class RelevanceThoughController extends Controller
             'code' => 200,
             'message' => "Сквозной анализ успешно добавлен в очередь",
         ]);
+
     }
 }

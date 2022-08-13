@@ -51,9 +51,49 @@
         </style>
     @endslot
 
+    @if(count(json_decode($though->cleaning_projects)) > 0 && $though->cleaning_state == 0)
+        <div class="card" id="rescanBlock">
+            <div class="card-body">
+                У вас есть проекты информация о которых была отчищена. <br>
+                Для того чтобы получить более подробную информацию вы можете переснять их, а затем повторно запустить
+                сквозной анализ
+                <br>
+                <button type="button" class="btn btn-secondary mt-3" data-toggle="modal" data-target="#rescanModal">
+                    Переснять все отчищенные проекты
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="rescanModal" tabindex="-1" aria-labelledby="rescanModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rescanModalLabel">Переснять все отчищенные проекты</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Вы собираетесь переснять все отчищенные проекты, вы уверены?
+                                <div id="targetIds" data-target="{{ $though->cleaning_projects }}"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                        id="rescanProjects">Переснять
+                                </button>
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">{{ __('Close') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="text-center" id="preloaderBlock">
         <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
-        <p>Получено <b id="getCount"> {{ $count }} </b> из <b>{{ $allCount }}</b></p>
+        <p>Получено <b id="getCount">{{ $count }}</b> из <b>{{ $allCount }}</b></p>
     </div>
     <div style="display: none" id="though-block">
         <table class="table table-bordered table-striped dtr-inline" id="though-table">
@@ -288,6 +328,22 @@
                     $("tr[data-target='" + target + "']").remove();
                 })
             }
+
+            $('#rescanProjects').click(function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('rescan.projects') }}",
+                    data: {
+                        ids: $('#targetIds').attr('data-target'),
+                    },
+                    success: function (response) {
+                        $('#rescanBlock').remove()
+                        console.log(response)
+                    },
+                });
+            })
+
         </script>
     @endslot
 @endcomponent

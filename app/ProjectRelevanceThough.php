@@ -20,6 +20,7 @@ class ProjectRelevanceThough extends Model
     public static function thoughAnalyse($items, $id, $countRecords)
     {
         $resultArray = [];
+        $cleaningProjects = [];
 
         foreach ($items as $item) {
             $record = RelevanceHistory::where('main_link', '=', $item['main_link'])
@@ -72,6 +73,7 @@ class ProjectRelevanceThough extends Model
                 }
 
             } else {
+                $cleaningProjects[] = $record->project_id;
                 $countRecords--;
             }
 
@@ -85,8 +87,8 @@ class ProjectRelevanceThough extends Model
         ]);
 
         $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 5000)), 9));
-        $though->state = 0;
         $though->stage = 2;
+        $though->cleaning_projects = json_encode($cleaningProjects);
         $though->save();
     }
 

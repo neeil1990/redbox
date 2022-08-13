@@ -405,7 +405,7 @@ class HistoryRelevanceController extends Controller
             RelevanceAnalysisQueue::dispatch(
                 $ownerId,
                 $request->all(),
-                $request['id'],
+                $request->id,
                 false,
                 false,
                 'competitors'
@@ -770,5 +770,48 @@ class HistoryRelevanceController extends Controller
         return RelevanceHistory::where('project_relevance_history_id', '=', $id)
             ->distinct(['main_link', 'phrase', 'region'])
             ->get(['main_link', 'phrase', 'region']);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function rescanProjects(Request $request): JsonResponse
+    {
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
+        foreach (json_decode($request->ids, true) as $id) {
+            $object = RelevanceHistory::where('id', '=', $id)->first();
+            $ownerId = $object->mainHistory->user_id;
+
+            $share = RelevanceSharing::where('user_id', '=', $userId)
+                ->where('owner_id', '=', $ownerId)
+                ->where('access', '=', 2)
+                ->first();
+
+            if ($ownerId != $userId && !isset($share) && !$admin) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __("You don't have access to this object"),
+                    'code' => 415
+                ]);
+            } else if ($object->state == 1 || $object->state == -1) {
+                $object->state = 0;
+                $object->save();
+
+                RelevanceAnalysisQueue::dispatch(
+                    $ownerId,
+                    json_decode($object->request, true),
+                    $id
+                );
+            }
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Проекты успешно добавлены в очередь на повторный анализ',
+            'code' => 200
+        ]);
     }
 }
