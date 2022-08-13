@@ -64,10 +64,10 @@
                 <th class="sticky fixed-width">Пересечения</th>
                 <th class="sticky">tf</th>
                 <th class="sticky">idf</th>
-                <th class="sticky">Сумма среднего количества повторений в тексте конкурентов</th>
-                <th class="sticky">Сумма среднего количества повторений в ссылках конкурентов</th>
-                <th class="sticky">Количество повторений в тексте посадочной страницы</th>
-                <th class="sticky">Количество повторений в ссылке посадочной страницы</th>
+                <th class="sticky">Сколько раз слово входило в текстовой части конкуретов в анализе</th>
+                <th class="sticky">Скольво раз слово встретилось в текстовой части посадочной страницы</th>
+                <th class="sticky">Сколько раз слово входило в ссылочной часть конкуретов в анализе</th>
+                <th class="sticky">Скольво раз слово встретилось в ссылочной части посадочной страницы</th>
                 <th class="sticky">Сумма количества вхождений</th>
             </tr>
             </thead>
@@ -199,8 +199,8 @@
                                 3: (value[key]['tf']).toFixed(5),
                                 4: (value[key]['idf']).toFixed(5),
                                 5: value[key]['repeatInText'],
-                                6: value[key]['repeatInLink'],
-                                7: value[key]['repeatInTextMainPage'],
+                                6: value[key]['repeatInTextMainPage'],
+                                7: value[key]['repeatInLink'],
                                 8: value[key]['repeatInLinkMainPage'],
                                 9: value[key]['throughCount']
                             });
@@ -270,8 +270,8 @@
                                 '   <td>' + (value['tf']).toFixed(6) + '</td>' +
                                 '   <td>' + (value['idf']).toFixed(6) + '</td>' +
                                 '   <td>' + value['repeatInText'] + '</td>' +
-                                '   <td>' + value['repeatInLink'] + '</td>' +
                                 '   <td>' + value['repeatInTextMainPage'] + '</td>' +
+                                '   <td>' + value['repeatInLink'] + '</td>' +
                                 '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
                                 '   <td>' + value['throughCount'] + '</td>' +
                                 '</tr>'
