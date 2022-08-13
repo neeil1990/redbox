@@ -40,7 +40,7 @@
                 max-width: 400px !important;
             }
 
-            #though-table > tbody > tr > td:nth-child(8),
+            #though-table > tbody > tr > td:nth-child(7),
             #though-table > tbody > tr > td:nth-child(9) {
                 background: #ebf0f5;
             }

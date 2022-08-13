@@ -51,21 +51,21 @@ class ProjectRelevanceThough extends Model
                     if (isset($resultArray[$key])) {
                         $resultArray[$key]['tf'] += round($word['tf'], 6);
                         $resultArray[$key]['idf'] += round($word['idf'], 6);
-                        $resultArray[$key]['repeatInLinkMainPage'] += 1;
-                        $resultArray[$key]['repeatInTextMainPage'] += 1;
+                        $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+                        $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
                         $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
-                        $resultArray[$key]['repeatInLink'] += 1;
-                        $resultArray[$key]['repeatInText'] += 1;
+                        $resultArray[$key]['repeatInLink'] += $word['avgInLink'];
+                        $resultArray[$key]['repeatInText'] += $word['avgInText'];
                         $resultArray[$key]['throughCount'] += 1;
                     } else {
                         $resultArray[$key] = [
                             'tf' => round($word['tf'], 6),
                             'idf' => round($word['idf'], 6),
-                            'repeatInLinkMainPage' => 1,
-                            'repeatInTextMainPage' => 1,
+                            'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                            'repeatInTextMainPage' => $word['repeatInTextMainPage'],
                             'throughLinks' => $word['occurrences'],
-                            'repeatInLink' => 1,
-                            'repeatInText' => 1,
+                            'repeatInLink' => $word['avgInLink'],
+                            'repeatInText' => $word['avgInText'],
                             'throughCount' => 1,
                         ];
                     }
