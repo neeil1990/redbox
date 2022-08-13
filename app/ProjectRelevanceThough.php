@@ -54,6 +54,8 @@ class ProjectRelevanceThough extends Model
                         $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
                         $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
                         $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
+                        $resultArray[$key]['repeatInLink'] += $word['avgInLink'];
+                        $resultArray[$key]['repeatInText'] += $word['avgInText'];
                         $resultArray[$key]['throughCount'] += 1;
                     } else {
                         $resultArray[$key] = [
@@ -62,6 +64,8 @@ class ProjectRelevanceThough extends Model
                             'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
                             'repeatInTextMainPage' => $word['repeatInTextMainPage'],
                             'throughLinks' => $word['occurrences'],
+                            'repeatInLink' => $word['avgInLink'],
+                            'repeatInText' => $word['avgInText'],
                             'throughCount' => 1,
                         ];
                     }
@@ -127,29 +131,7 @@ class ProjectRelevanceThough extends Model
      */
     public static function calculateFinalResult($wordWorms, $countRecords, $mainId)
     {
-        foreach ($wordWorms as $key => $wordWorm) {
-            $tf = $idf = $link = $text = $thoughCount = 0;
-            $thoughLinks = [];
-
-            foreach ($wordWorm as $items) {
-                $thoughCount += $items['throughCount'];
-                $tf += $items['tf'];
-                $idf += $items['idf'];
-                $link += $items['repeatInLinkMainPage'];
-                $text += $items['repeatInTextMainPage'];
-                $thoughLinks = array_merge($items['throughLinks'], $thoughLinks);
-            }
-
-            $wordWorms[$key]['total'] = [
-                'throughCount' => $thoughCount,
-                'repeat' => $countRecords,
-                'tf' => $tf,
-                'idf' => $idf,
-                'repeatInLinkMainPage' => $link,
-                'repeatInTextMainPage' => $text,
-                'throughLinks' => $thoughLinks,
-            ];
-        }
+        $wordWorms = collect($wordWorms)->sortBy('tf')->toArray();
 
         $though = ProjectRelevanceThough::firstOrNew([
             'project_relevance_history_id' => $mainId,

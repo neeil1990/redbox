@@ -40,7 +40,12 @@
                 max-width: 400px !important;
             }
 
-            #though-table > tbody > tr > td:nth-child(8)::after {
+            #though-table > tbody > tr > td:nth-child(8),
+            #though-table > tbody > tr > td:nth-child(9) {
+                background: #ebf0f5;
+            }
+
+            #though-table > tbody > tr > td:nth-child(10)::after {
                 content: " / {{ $countUniqueScanned }}";
             }
         </style>
@@ -57,10 +62,12 @@
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
                 <th class="sticky fixed-width">Пересечения</th>
-                <th class="sticky">Сумма tf</th>
-                <th class="sticky">Сумма idf</th>
-                <th class="sticky">Сумма повторений в тексте посадочной страницы</th>
-                <th class="sticky">Сумма повторений в ссылке посадочной страницы</th>
+                <th class="sticky">tf</th>
+                <th class="sticky">idf</th>
+                <th class="sticky">Сумма среднего количества повторений в тексте конкурентов</th>
+                <th class="sticky">Сумма среднего количества повторений в ссылках конкурентов</th>
+                <th class="sticky">Количество повторений в тексте посадочной страницы</th>
+                <th class="sticky">Количество повторений в ссылке посадочной страницы</th>
                 <th class="sticky">Сумма количества вхождений</th>
             </tr>
             </thead>
@@ -85,7 +92,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($item['total']['throughLinks'] as $keyLink => $link)
+                                @foreach($item[$key]['throughLinks'] as $keyLink => $link)
                                     <tr>
                                         <td>
                                             <a href="{{ $keyLink }}" target="_blank">
@@ -99,11 +106,13 @@
                             </table>
                         </div>
                     </td>
-                    <td>{{ $item['total']['tf'] }}</td>
-                    <td>{{ $item['total']['idf'] }}</td>
-                    <td>{{ $item['total']['repeatInTextMainPage'] }}</td>
-                    <td>{{ $item['total']['repeatInLinkMainPage'] }}</td>
-                    <td>{{ $item['total']['throughCount'] }}</td>
+                    <td>{{ $item[$key]['tf'] }}</td>
+                    <td>{{ $item[$key]['idf'] }}</td>
+                    <td>{{ $item[$key]['repeatInText'] }}</td>
+                    <td>{{ $item[$key]['repeatInLink'] }}</td>
+                    <td>{{ $item[$key]['repeatInTextMainPage'] }}</td>
+                    <td>{{ $item[$key]['repeatInLinkMainPage'] }}</td>
+                    <td>{{ $item[$key]['throughCount'] }}</td>
                 </tr>
             @endforeach
             </tbody>
@@ -142,13 +151,6 @@
                 }, 3000)
             });
 
-            function removeElems() {
-                $('.remove-child').click(function () {
-                    let target = $(this).attr('data-target')
-                    $("tr[data-target='" + target + "']").remove();
-                })
-            }
-
             function getNextItems(recordId, table, count, iterator, allCount) {
                 $.ajax({
                     type: "POST",
@@ -162,7 +164,7 @@
                         $.each(response.elems, function (key, value) {
                             let tbody = ''
 
-                            $.each(value['total']['throughLinks'], function (keyLink, link) {
+                            $.each(value[key]['throughLinks'], function (keyLink, link) {
                                 tbody +=
                                     '<tr> ' +
                                     '   <td> ' +
@@ -194,11 +196,13 @@
                                 0: '<i class="fa fa-plus show-more" data-target="' + key + '"></i> ',
                                 1: key,
                                 2: ChildTable,
-                                3: (value['total']['tf']).toFixed(5),
-                                4: (value['total']['idf']).toFixed(5),
-                                5: value['total']['repeatInTextMainPage'],
-                                6: value['total']['repeatInLinkMainPage'],
-                                7: value['total']['throughCount']
+                                3: (value[key]['tf']).toFixed(5),
+                                4: (value[key]['idf']).toFixed(5),
+                                5: value[key]['repeatInText'],
+                                6: value[key]['repeatInLink'],
+                                7: value[key]['repeatInTextMainPage'],
+                                8: value[key]['repeatInLinkMainPage'],
+                                9: value[key]['throughCount']
                             });
                         })
                         $('#getCount').html(count)
@@ -229,29 +233,29 @@
                     let target = $(this).attr('data-target')
                     $("tr[data-target='" + target + "']").remove();
                     $.each(totalResults[target], function (key, value) {
-                        let childRows = ''
+                        if (key !== target) {
+                            let childRows = ''
 
-                        $.each(value['throughLinks'], function (key2, value2) {
-                            childRows +=
-                                '<tr>' +
-                                '   <td>' + key2 + '</td>' +
-                                '   <td>' + value2 + '</td>' +
-                                '</tr>'
-                        })
+                            $.each(value['throughLinks'], function (key2, value2) {
+                                childRows +=
+                                    '<tr>' +
+                                    '   <td>' + key2 + '</td>' +
+                                    '   <td>' + value2 + '</td>' +
+                                    '</tr>'
+                            })
 
-                        let childTable =
-                            '<table class="child-table">' +
-                            '   <thead>' +
-                            '       <tr>' +
-                            '           <th class="col-9">Ссылка</th>' +
-                            '           <th class="col-3">Кол-во вхождений</th>' +
-                            '       </tr>' +
-                            '   </thead>' +
-                            '   <tbody>' +
-                            childRows +
-                            '   </tbody>' +
-                            '</table>'
-                        if (key !== 'total') {
+                            let childTable =
+                                '<table class="child-table">' +
+                                '   <thead>' +
+                                '       <tr>' +
+                                '           <th class="col-9">Ссылка</th>' +
+                                '           <th class="col-3">Кол-во вхождений</th>' +
+                                '       </tr>' +
+                                '   </thead>' +
+                                '   <tbody>' +
+                                childRows +
+                                '   </tbody>' +
+                                '</table>'
                             tr.after(
                                 '<tr class="render-child" data-target="' + target + '">' +
                                 '   <td class="remove-child" data-target="' + target + '"> <i class="fa fa-minus" ></i></td>' +
@@ -265,6 +269,8 @@
                                 '   </td>' +
                                 '   <td>' + (value['tf']).toFixed(6) + '</td>' +
                                 '   <td>' + (value['idf']).toFixed(6) + '</td>' +
+                                '   <td>' + value['repeatInText'] + '</td>' +
+                                '   <td>' + value['repeatInLink'] + '</td>' +
                                 '   <td>' + value['repeatInTextMainPage'] + '</td>' +
                                 '   <td>' + value['repeatInLinkMainPage'] + '</td>' +
                                 '   <td>' + value['throughCount'] + '</td>' +
@@ -275,6 +281,13 @@
                     removeElems()
                 })
             }, 100)
+
+            function removeElems() {
+                $('.remove-child').click(function () {
+                    let target = $(this).attr('data-target')
+                    $("tr[data-target='" + target + "']").remove();
+                })
+            }
         </script>
     @endslot
 @endcomponent
