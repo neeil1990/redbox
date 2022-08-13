@@ -38,10 +38,6 @@ class AdminController extends Controller
         $statistics = RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first();
         $projects = ProjectRelevanceHistory::with('though')->get();
 
-//        foreach ($projects as $project) {
-//            dd($project->though);
-//        }
-
         return view('relevance-analysis.all', [
             'projects' => $projects,
             'config' => $config,
@@ -59,7 +55,6 @@ class AdminController extends Controller
             ]
         ]);
     }
-
 
     /**
      * @return View
@@ -142,6 +137,16 @@ class AdminController extends Controller
             'success' => true,
             'message' => __('Cleaning parameters have been successfully changed'),
             'code' => 200
+        ]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getCountQueue(): JsonResponse
+    {
+        return response()->json([
+            'count' => Jobs::count()
         ]);
     }
 }

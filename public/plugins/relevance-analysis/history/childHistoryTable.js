@@ -339,6 +339,7 @@ function repeatScan() {
                     '            <div class="loader" id="loader-1"></div>' +
                     '        </div>' +
                     '</div>')
+                checkAnalyseProgress(id)
             },
             error: function (response) {
                 $('#toast-container').show(300)
@@ -348,6 +349,43 @@ function repeatScan() {
                 }, 3500)
             }
         });
+    });
+}
+
+function checkAnalyseProgress(id) {
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "/check-state",
+        data: {
+            id: id,
+        },
+        success: function (response) {
+            if (response.message === 'wait') {
+                setTimeout(() => {
+                    checkAnalyseProgress(id)
+                }, 10000)
+            } else if (response.message === 'error') {
+                $('#history-state-' + id).html(
+                    '<button type="button" class="btn btn-secondary get-history-info" data-order="' + id + '"' +
+                    '        data-toggle="modal" data-target="#staticBackdrop"> Повторить анализ' +
+                    '</button>' +
+                    '<span class="text-muted">Произошла ошибка, повторите попытку или обратитесь к администратору</span>'
+                );
+            } else if (response.message === 'success') {
+                $('#history-state-' + id).html(
+                    '<button type="button" class="btn btn-secondary get-history-info" data-order="' + id + '"' +
+                    '   data-toggle="modal" data-target="#staticBackdrop"> Повторить анализ' +
+                    '</button>' +
+                    '<a href="/show-history/' + id + '" target="_blank" class="btn btn-secondary mt-3"> Подробная ' +
+                    'информация</a>'
+                );
+            }
+
+        },
+        error: function (response) {
+            console.log(response)
+        }
     });
 }
 

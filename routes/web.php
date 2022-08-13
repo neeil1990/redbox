@@ -207,6 +207,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/repeat-scan-unique-sites', 'HistoryRelevanceController@repeatScanUniqueSites')->name('repeat.scan.unique.sites');
     Route::post('/check-queue-scan-state', 'HistoryRelevanceController@checkQueueScanState')->name('check.queue.scan.state');
     Route::post('/rescan-projects', 'HistoryRelevanceController@rescanProjects')->name('rescan.projects');
+    Route::post('/check-state', 'HistoryRelevanceController@checkAnalyseProgress')->name('check.state');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
@@ -253,6 +254,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-access-to-my-project', 'SharingController@changeAccess')->name('change.access.to.my.project');
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
+    Route::get('/get-queue-count', 'AdminController@getCountQueue')->name('get.queue.count');
 
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');

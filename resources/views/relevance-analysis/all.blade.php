@@ -118,7 +118,7 @@
                         </tr>
                         <tr>
                             <th class="col-10">{{ __('Number of tasks in the queue') }}</th>
-                            <td> {{ $statistics['countJobs'] }} </td>
+                            <td id="countJobs"> {{ $statistics['countJobs'] }} </td>
                         </tr>
                         </tbody>
                     </table>
@@ -1120,6 +1120,17 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
+            setInterval(() => {
+                $.ajax({
+                    type: "get",
+                    dataType: "json",
+                    url: "{{ route('get.queue.count') }}",
+                    success: function (response) {
+                        $('#countJobs').html(response.count)
+                    },
+                });
+            }, 10000)
+
             let usersProjects = $('#users_projects').DataTable({
                 order: [[0, "desc"]],
                 pageLength: 10,
