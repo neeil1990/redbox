@@ -52,6 +52,12 @@
     @endslot
 
     @if(count(json_decode($though->cleaning_projects)) > 0 && $though->cleaning_state == 0)
+        <div id="toast-container" class="toast-top-right success-message" style="display:none;">
+            <div class="toast toast-success" aria-live="polite">
+                <div class="toast-message" id="message-info">Проекты успешно добавлены в очередь на повторный анализ</div>
+            </div>
+        </div>
+
         <div class="card" id="rescanBlock">
             <div class="card-body">
                 У вас есть проекты информация о которых была отчищена. <br>
@@ -338,8 +344,10 @@
                         ids: $('#targetIds').attr('data-target'),
                     },
                     success: function (response) {
-                        $('#rescanBlock').remove()
-                        console.log(response)
+                        $('#toast-container').show()
+                        setTimeout(() => {
+                            $('#rescanBlock').remove()
+                        }, 5000)
                     },
                 });
             })
