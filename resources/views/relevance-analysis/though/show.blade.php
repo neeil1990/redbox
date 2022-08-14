@@ -54,10 +54,12 @@
     @if(count(json_decode($though->cleaning_projects)) > 0 && $though->cleaning_state == 0)
         <div id="toast-container" class="toast-top-right success-message" style="display:none;">
             <div class="toast toast-success" aria-live="polite">
-                <div class="toast-message" id="message-info">Проекты успешно добавлены в очередь на повторный анализ</div>
+                <div class="toast-message" id="message-info">Проекты успешно добавлены в очередь на повторный анализ
+                </div>
             </div>
         </div>
 
+        <div id="thoughId" data-target="{{ $though->id }}"></div>
         <div class="card" id="rescanBlock">
             <div class="card-body">
                 У вас есть проекты информация о которых была отчищена. <br>
@@ -342,8 +344,9 @@
                     url: "{{ route('rescan.projects') }}",
                     data: {
                         ids: $('#targetIds').attr('data-target'),
+                        thoughId: $('#thoughId').attr('data-target')
                     },
-                    success: function (response) {
+                    success: function () {
                         $('#toast-container').show()
                         setTimeout(() => {
                             $('#rescanBlock').remove()

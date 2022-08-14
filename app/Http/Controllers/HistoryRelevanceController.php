@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\RelevanceAnalysisQueue;
 use App\ProjectRelevanceHistory;
+use App\ProjectRelevanceThough;
 use App\Relevance;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
@@ -805,6 +806,9 @@ class HistoryRelevanceController extends Controller
                     $id
                 );
             }
+
+            ProjectRelevanceThough::where('id','=', $request->thoughId)
+            ->update(['cleaning_state' => 1]);
         }
 
         return response()->json([
