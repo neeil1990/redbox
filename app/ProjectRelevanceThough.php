@@ -73,6 +73,7 @@ class ProjectRelevanceThough extends Model
                 }
 
             } else {
+                Log::debug('record', [$record]);
                 $cleaningProjects[] = $record->results->project_id;
                 $countRecords--;
             }
