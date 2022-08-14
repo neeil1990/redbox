@@ -822,24 +822,28 @@ class HistoryRelevanceController extends Controller
      */
     function checkAnalyseProgress(Request $request): JsonResponse
     {
-        $object = RelevanceHistory::where('id', '=', $request->id)->first();
+        try {
+            $object = RelevanceHistory::where('id', '=', $request->id)->first();
 
-        if ($object->state == 0) {
+            if ($object->state == 0) {
+                return response()->json([
+                    'message' => 'wait',
+                    'code' => 200
+                ]);
+            } else if ($object->state == -1) {
+                return response()->json([
+                    'message' => 'error',
+                    'code' => 200
+                ]);
+            }
+
             return response()->json([
-                'message' => 'wait',
+                'message' => 'success',
+                'object' => $object->results->id,
                 'code' => 200
             ]);
-        } else if ($object->state == -1) {
-            return response()->json([
-                'message' => 'error',
-                'code' => 200
-            ]);
+        } catch (Throwable $exception){
         }
 
-        return response()->json([
-            'message' => 'success',
-            'object' => $object->results->id,
-            'code' => 200
-        ]);
     }
 }
