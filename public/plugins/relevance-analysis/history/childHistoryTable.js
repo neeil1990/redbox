@@ -154,6 +154,7 @@ function format(data) {
                 '            <div class="loader" id="loader-1"></div>' +
                 '        </div>' +
                 '</div>'
+            checkAnalyseProgress(value['id'])
         } else if (value['state'] === -1) {
             state =
                 '<button type="button" class="btn btn-secondary get-history-info" data-order="' + value['id'] + '" data-toggle="modal" data-target="#staticBackdrop">' +
@@ -575,6 +576,7 @@ $(document).ready(function () {
                                     '            <div class="loader" id="loader-1"></div>' +
                                     '        </div>' +
                                     '</div>'
+                                checkAnalyseProgress(val.id)
                             } else if (val.state === -1) {
                                 state =
                                     '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
@@ -700,6 +702,7 @@ $(document).ready(function () {
                                     '            <div class="loader" id="loader-1"></div>' +
                                     '        </div>' +
                                     '</div>'
+                                checkAnalyseProgress(val.id)
                             } else if (val.state === -1) {
                                 state =
                                     '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
@@ -825,6 +828,7 @@ $(document).ready(function () {
                                     '            <div class="loader" id="loader-1"></div>' +
                                     '        </div>' +
                                     '</div>'
+                                checkAnalyseProgress(val.id)
                             } else if (val.state === -1) {
                                 state =
                                     '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
@@ -950,6 +954,7 @@ $(document).ready(function () {
                                     '            <div class="loader" id="loader-1"></div>' +
                                     '        </div>' +
                                     '</div>'
+                                checkAnalyseProgress(val.id)
                             } else if (val.state === -1) {
                                 state =
                                     '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
@@ -1075,6 +1080,7 @@ $(document).ready(function () {
                                     '            <div class="loader" id="loader-1"></div>' +
                                     '        </div>' +
                                     '</div>'
+                                checkAnalyseProgress(val.id)
                             } else if (val.state === -1) {
                                 state =
                                     '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
@@ -1090,10 +1096,6 @@ $(document).ready(function () {
                             }
 
                             let phrase = val.phrase
-
-                            if (phrase == null) {
-                                phrase = 'Был использван анализ без ключевой фразы'
-                            }
 
                             tbody.append(
                                 "<tr class='render'>" +
