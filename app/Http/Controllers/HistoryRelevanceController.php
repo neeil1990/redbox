@@ -822,7 +822,6 @@ class HistoryRelevanceController extends Controller
      */
     function checkAnalyseProgress(Request $request): JsonResponse
     {
-        try {
             $object = RelevanceHistory::where('id', '=', $request->id)->first();
 
             if ($object->state == 0) {
@@ -842,8 +841,5 @@ class HistoryRelevanceController extends Controller
                 'object' => $object->results->id,
                 'code' => 200
             ]);
-        } catch (Throwable $exception){
-        }
-
     }
 }
