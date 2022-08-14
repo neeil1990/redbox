@@ -265,7 +265,7 @@ Route::middleware(['verified'])->group(function () {
 
 Route::get('/bla', function () {
     $counter = 0;
-    $items = \App\RelevanceHistory::get();
+    $items = \App\RelevanceHistory::get(['main_link']);
 
     foreach ($items as $item) {
         if ($item->main_link[-1] !== '/') {
