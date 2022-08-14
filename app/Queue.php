@@ -77,4 +77,5 @@ class Queue extends Model
             0
         );
     }
+
 }
