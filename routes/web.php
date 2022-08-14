@@ -263,22 +263,6 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
-Route::get('/bla', function () {
-    $counter = 0;
-    $items = \App\RelevanceHistory::get(['main_link']);
-
-    foreach ($items as $item) {
-        if ($item->main_link[-1] !== '/') {
-            dump($item);
-            $item->main_link = $item->main_link . '/';
-            $item->save();
-            dd($item);
-            $counter++;
-        }
-    }
-    dd($counter);
-});
-
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 
