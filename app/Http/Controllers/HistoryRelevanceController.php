@@ -699,10 +699,8 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatScanUniqueSites(Request $request): JsonResponse
     {
-//        $ownerId = $this->checkAccess($request);
+        $ownerId = $this->checkAccess($request);
         $items = $this->getUniqueScanned($request->id);
-        Log::debug('count items', [count($items)]);
-        die();
 
         $ids = [];
         foreach ($items as $item) {
