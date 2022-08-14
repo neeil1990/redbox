@@ -264,14 +264,17 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function () {
+    $counter = 0;
     $items = \App\RelevanceHistory::get('main_link');
 
     foreach ($items as $item) {
         if ($item->main_link[-1] !== '/') {
             $item->main_link = $item->main_link . '/';
             $item->save();
+            $counter++;
         }
     }
+    dd($counter);
 });
 
 Route::get('/get-passages/{link}', function ($link) {
