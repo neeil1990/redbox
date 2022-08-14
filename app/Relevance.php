@@ -1273,7 +1273,6 @@ class Relevance
             $xmlResponse,
             $exp
         );
-        RelevanceProgress::editProgress(15, $request);
 
         $this->parseSites($xmlResponse);
     }

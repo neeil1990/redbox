@@ -966,6 +966,7 @@
                 }
             };
             window.addEventListener('storage', onStorage);
+            console.log(window.session)
 
             var generatedTfIdf = false
             var generatedText = false

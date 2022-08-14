@@ -59,6 +59,11 @@ class TextAnalyzer
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
                 break;
+            } else {
+                Log::debug('curl relevance error', [
+                    curl_error($curl),
+                    curl_getinfo($curl, CURLINFO_EFFECTIVE_URL)
+                ]);
             }
         }
 
