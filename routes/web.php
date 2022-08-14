@@ -269,9 +269,10 @@ Route::get('/bla', function () {
 
     foreach ($items as $item) {
         if ($item->main_link[-1] !== '/') {
-            dd($item);
+            dump($item);
             $item->main_link = $item->main_link . '/';
             $item->save();
+            dd($item);
             $counter++;
         }
     }
