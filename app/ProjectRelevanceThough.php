@@ -73,7 +73,7 @@ class ProjectRelevanceThough extends Model
                 }
 
             } else {
-                $cleaningProjects[] = $record->project_id;
+                $cleaningProjects[] = $record->results->project_id;
                 $countRecords--;
             }
 
