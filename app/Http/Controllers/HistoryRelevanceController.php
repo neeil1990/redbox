@@ -807,8 +807,7 @@ class HistoryRelevanceController extends Controller
                 );
             }
 
-            ProjectRelevanceThough::where('id','=', $request->thoughId)
-            ->update(['cleaning_state' => 1]);
+            ProjectRelevanceThough::where('id','=', $request->thoughId)->update(['cleaning_state' => 1]);
         }
 
         return response()->json([

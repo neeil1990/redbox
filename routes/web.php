@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\HistoryRelevanceController;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
@@ -260,6 +261,17 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
+});
+
+Route::get('/bla', function () {
+    $items = \App\RelevanceHistory::get('main_link');
+
+    foreach ($items as $item) {
+        if ($item->main_link[-1] !== '/') {
+            $item->main_link = $item->main_link . '/';
+            $item->save();
+        }
+    }
 });
 
 Route::get('/get-passages/{link}', function ($link) {

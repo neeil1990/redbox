@@ -93,6 +93,7 @@ class ProjectRelevanceThough extends Model
         $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 5000)), 9));
         $though->stage = 2;
         $though->cleaning_projects = json_encode($cleaningProjects);
+        $though->cleaning_state = 0;
         $though->save();
     }
 
@@ -135,11 +136,10 @@ class ProjectRelevanceThough extends Model
 
     /**
      * @param $wordWorms
-     * @param $countRecords
      * @param $mainId
      * @return void
      */
-    public static function calculateFinalResult($wordWorms, $countRecords, $mainId)
+    public static function calculateFinalResult($wordWorms, $mainId)
     {
         $wordWorms = collect($wordWorms)->sortBy('tf')->toArray();
 
