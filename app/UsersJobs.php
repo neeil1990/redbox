@@ -27,7 +27,7 @@ class UsersJobs extends Model
             } elseif ($job->count_jobs <= 20) {
                 $priority = 'medium';
             } else {
-                $priority = 'low';
+                $priority = 'default';
             }
         } else {
             $priority = 'high';
