@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class UsersJobs extends Model
 {
@@ -18,7 +19,9 @@ class UsersJobs extends Model
     {
         $job = UsersJobs::firstOrNew(['user_id' => $userId]);
 
-        if ($job->count_jobs == 0) {
+        Log::debug('job', [$job]);
+
+        if (!isset($job) || $job->count_jobs == 0) {
             $priority = 'high';
         } else {
             $priority = 'default';
