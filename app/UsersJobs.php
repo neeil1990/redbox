@@ -21,10 +21,16 @@ class UsersJobs extends Model
 
         Log::debug('job', [$job]);
 
-        if (!isset($job) || $job->count_jobs == 0) {
-            $priority = 'high';
+        if (isset($job)) {
+            if ($job->count_jobs <= 10) {
+                $priority = 'high';
+            } elseif ($job->count_jobs <= 20) {
+                $priority = 'medium';
+            } else {
+                $priority = 'low';
+            }
         } else {
-            $priority = 'default';
+            $priority = 'high';
         }
 
         $job->count_jobs++;
