@@ -966,7 +966,6 @@
                 }
             };
             window.addEventListener('storage', onStorage);
-            console.log(window.session)
 
             var generatedTfIdf = false
             var generatedText = false
@@ -1075,7 +1074,9 @@
                                 message += value + "<br>"
                             });
 
-                            if (message === '') {
+                            if(messages['message']){
+                                message = messages['message']
+                            } else if (message === '') {
                                 message = "{{ __('An error has occurred, repeat the request.') }}"
                             }
 

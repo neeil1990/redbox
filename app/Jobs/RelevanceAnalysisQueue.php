@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Relevance;
 use App\RelevanceHistory;
+use App\UsersJobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -52,6 +53,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
         $relevance = new Relevance($this->request, true);
 
         if ($this->type == 'full') {
+
             $relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
@@ -78,6 +80,8 @@ class RelevanceAnalysisQueue implements ShouldQueue
         }
 
         $relevance->analysis($this->userId, $this->historyId);
+
+        UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
     }
 
     /**
