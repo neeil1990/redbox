@@ -273,21 +273,25 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla', function () {
+    $stemmer = new LinguaStem();
     $html = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://almamed.su/')));
+    dump($html);
     $ignoredWords = [];
     $wordForms = [];
-
     $array = explode(' ', $html);
-
     sort($array, SORT_STRING);
     $array = array_count_values($array);
 
     foreach ($array as $key1 => $elem1) {
+        $rootWord = $stemmer->getRootWord($key1);
         if (!in_array($key1, $ignoredWords)) {
             foreach ($array as $key2 => $elem2) {
                 if (!in_array($key2, $ignoredWords)) {
                     similar_text($key1, $key2, $percent);
-                    if ($percent < 82) {
+                    if (
+                        $percent < 82 &&
+                        $rootWord !== $stemmer->getRootWord($key2)
+                    ) {
                         continue 2;
                     } else {
                         $wordForms[$key1][$key2] = $elem2;
@@ -296,6 +300,9 @@ Route::get('/bla', function () {
                     }
                 }
             }
+        }
+        if (count($wordForms) >= 600) {
+            break;
         }
     }
 

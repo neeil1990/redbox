@@ -600,6 +600,41 @@ class Relevance
                 break;
             }
         }
+
+//        $array = explode(' ', $this->competitorsTextAndLinks);
+//        $stemmer = new LinguaStem();
+//
+//        sort($array, SORT_STRING);
+//        $array = array_count_values($array);
+//        if (isset($array[""])) {
+//            unset($array[""]);
+//        }
+//
+//        foreach ($array as $key1 => $elem1) {
+//            $rootWord = $stemmer->getRootWord($key1);
+//            if (!in_array($key1, $this->ignoredWords)) {
+//                foreach ($array as $key2 => $elem2) {
+//                    if (!in_array($key2, $this->ignoredWords)) {
+//                        similar_text($key1, $key2, $percent);
+//                        $rootWord2 = $stemmer->getRootWord($key2);
+//                        if (
+//                            $percent < 82 &&
+//                            $rootWord !== $stemmer->getRootWord($key2) &&
+//                            $rootWord !== $rootWord2
+//                        ) {
+//                            continue 2;
+//                        } else {
+//                            $this->wordForms[$key1][$key2] = $elem2;
+//                            $this->ignoredWords[] = $key2;
+//                            $this->ignoredWords[] = $key1;
+//                        }
+//                    }
+//                }
+//            }
+//            if (count($this->wordForms) >= 600) {
+//                break;
+//            }
+//        }
     }
 
     /**

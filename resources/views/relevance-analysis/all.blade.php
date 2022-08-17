@@ -1186,7 +1186,7 @@
                                     0: '<td class="sorting_1">' +
                                         value['user']['email'] +
                                         '   <div class="text-muted">' +
-                                        value['user']['name'] +
+                                        value['user']['name'] +' ' +
                                         value['user']['last_name'] +
                                         '   </div>' +
                                         '</td>',

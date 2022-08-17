@@ -52,11 +52,6 @@ class LinguaStem
      */
     public function getRootWord($word)
     {
-        $word = mb_strtolower($word);
-        $word = str_replace('ё', 'е', $word);
-        if ($this->Stem_Caching && isset($this->Stem_Cache[$word])) {
-            return $this->Stem_Cache[$word];
-        }
         $stem = $word;
         do {
             if (!preg_match($this->rare, $word, $p)) {
@@ -91,9 +86,7 @@ class LinguaStem
 
             $stem = $start . $RV;
         } while (false);
-        if ($this->Stem_Caching) {
-            $this->Stem_Cache[$word] = $stem;
-        }
+
         return $stem;
     }
 }
