@@ -100,7 +100,7 @@ class MonitoringController extends Controller
         $project->load('keywords');
 
         foreach ($project->keywords as $keyword)
-            dispatch((new PositionQueue($keyword))->onQueue('position'));
+            dispatch((new PositionQueue($keyword))->onQueue('medium'));
     }
 
     public function getProjects(Request $request)
