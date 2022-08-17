@@ -16,7 +16,7 @@
         </button>
     </div>
 
-    <button type="submit" class="btn btn-default btn-sm" data-toggle="tooltip" title="{{ __('Update') }}">
+    <button type="submit" class="btn btn-default btn-sm parse-positions" data-toggle="tooltip" title="{{ __('Update') }}">
         <i class="fas fa-sync-alt"></i>
     </button>
 </div>

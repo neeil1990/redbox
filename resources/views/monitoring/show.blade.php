@@ -142,7 +142,7 @@
 
             toastr.options = {
                 "preventDuplicates": true,
-                "timeOut": "1500"
+                "timeOut": "5000"
             };
 
             axios.post(`/monitoring/${PROJECT_ID}/table`, {
@@ -255,6 +255,16 @@
                                 }else{
                                     toastr.error('Выберите хотя бы один элемент.');
                                 }
+                            });
+
+                            let parsePositions = container.find('.parse-positions');
+                            parsePositions.click(function () {
+
+                                axios.post('/monitoring/parse/positions/project', {
+                                    projectId: PROJECT_ID,
+                                }).then(function () {
+                                    toastr.success('Задание добавленно в очередь.');
+                                });
                             });
                         });
 
