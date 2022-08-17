@@ -399,7 +399,7 @@ function checkAnalyseProgress(id) {
                     11: '<div class="d-flex justify-content-center">' +
                         '    <div class="__helper-link ui_tooltip_w">' +
                         '        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">' +
-                        '            <input onClick="changeState(' + $(this) + ')" type="checkbox"' +
+                        '            <input checked onclick="changeState(' + $(this) + ')" type="checkbox"' +
                         '                   class="custom-control-input switch" id="calculate-project-' + newObject['id'] + '" name="noIndex"' +
                         '                   data-target="' + newObject['id'] + '"> ' +
                         '               <label class="custom-control-label" for="calculate-project-' + newObject['id'] + '"></label></div>' +
