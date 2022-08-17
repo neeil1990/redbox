@@ -1179,7 +1179,7 @@
 
                 let timeOut = setInterval(() => {
                     checkQueueScanState(timeOut)
-                }, 2000)
+                }, 10000)
             }
 
             function successRequest(history, config) {
