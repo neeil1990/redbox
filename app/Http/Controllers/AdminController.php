@@ -11,6 +11,7 @@ use App\RelevanceHistory;
 use App\RelevanceStatistics;
 use App\RelevanceUniqueDomains;
 use App\RelevanceUniquePages;
+use App\UsersJobs;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -32,26 +33,22 @@ class AdminController extends Controller
     public function relevanceHistoryProjects(): View
     {
         $firstDay = new Carbon('first day of this month');
-        $config = RelevanceAnalysisConfig::first();
-
-        $month = RelevanceStatistics::where('created_at', '>=', $firstDay->toDateString())->sum('count_checks');
-        $statistics = RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first();
-        $projects = ProjectRelevanceHistory::with('though')->get();
 
         return view('relevance-analysis.all', [
-            'projects' => $projects,
-            'config' => $config,
             'admin' => true,
+            'projects' => ProjectRelevanceHistory::with('though')->get(),
+            'config' => RelevanceAnalysisConfig::first(),
+            'usersJobs' => UsersJobs::where('count_jobs', '>', 0)->with('user')->get(),
             'statistics' => [
-                'toDay' => $statistics,
-                'month' => $month,
+                'toDay' => RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first(),
+                'month' => RelevanceStatistics::where('created_at', '>=', $firstDay->toDateString())->sum('count_checks'),
                 'countProjects' => ProjectRelevanceHistory::count(),
                 'countSavedResults' => RelevanceHistory::count(),
                 'pages' => RelevanceUniquePages::count(),
                 'domains' => RelevanceUniqueDomains::count(),
                 'allDomains' => RelevanceAllUniqueDomains::count(),
                 'allPages' => RelevanceAllUniquePages::count(),
-                'countJobs' => Jobs::count(),
+                'countJobs' => UsersJobs::where('count_jobs', '>', 0)->count(),
             ]
         ]);
     }
@@ -74,7 +71,6 @@ class AdminController extends Controller
                     WHERE table_name = "relevance_history_result";';
         $result = mysqli_query($connection, $query);
         $result = $result->fetch_assoc();
-        Log::debug('res', [$result]);
 
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
@@ -146,7 +142,17 @@ class AdminController extends Controller
     public function getCountQueue(): JsonResponse
     {
         return response()->json([
-            'count' => Jobs::count()
+            'count' => UsersJobs::where('count_jobs', '>', 0)->count()
+        ]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getUserJobs(): JsonResponse
+    {
+        return response()->json([
+            'jobs' => UsersJobs::where('count_jobs', '>', 0)->with('user')->get()
         ]);
     }
 }

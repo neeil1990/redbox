@@ -263,22 +263,12 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/access-projects', 'SharingController@accessProject')->name('access.project');
     Route::get('/all-projects', 'AdminController@relevanceHistoryProjects')->name('all.relevance.projects');
     Route::get('/get-queue-count', 'AdminController@getCountQueue')->name('get.queue.count');
+    Route::get('/get-user-jobs', 'AdminController@getUserJobs')->name('get.user.jobs');
 
     Route::get('/show-though/{though}', 'RelevanceThoughController@show')->name('show-though');
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
-});
-
-Route::get('bla', function () {
-    $items = ProjectRelevanceHistory::get(['id', 'count_sites', 'count_checks']);
-    foreach ($items as $item) {
-        $item->count_sites = count(HistoryRelevanceController::getUniqueScanned($item->id));
-        $item->count_checks = RelevanceHistory::where('project_relevance_history_id', '=', $item->id)
-            ->count();
-
-        $item->save();
-    }
 });
 
 Route::get('/get-passages/{link}', function ($link) {

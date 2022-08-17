@@ -76,52 +76,88 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <h3>{{ __('General statistics of the module') }}</h3>
-                    <table style="margin: 0 0 35px 0 !important; width: 35%" id="statistics_table"
-                           class="table table-bordered table-hover dataTable dtr-inline mb-5">
-                        <tbody>
-                        <tr>
-                            <th class="col-10">{{ __('Number of checks for the current day') }}</th>
-                            <td> {{ $statistics['toDay']['count_checks'] ?? 0 }} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of checks for the current month') }}</th>
-                            <td> {{ $statistics['month']}} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of errors for the current day') }}</th>
-                            <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of projects') }}</th>
-                            <td> {{ $statistics['countProjects']}} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of saved scan results') }}</th>
-                            <td> {{ $statistics['countSavedResults']}} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of unique landing pages') }}</th>
-                            <td> {{ $statistics['pages'] }} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of unique landing domains') }}</th>
-                            <td> {{ $statistics['domains'] }} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Total number of unique analyzed domains') }}</th>
-                            <td> {{ $statistics['allDomains'] }} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Total number of unique analyzed sites') }}</th>
-                            <td> {{ $statistics['allPages'] }} </td>
-                        </tr>
-                        <tr>
-                            <th class="col-10">{{ __('Number of tasks in the queue') }}</th>
-                            <td id="countJobs"> {{ $statistics['countJobs'] }} </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div class="d-flex w-100">
+                        <div class="w-50 p-3">
+                            <h3>{{ __('General statistics of the module') }}</h3>
+                            <table style="margin: 0 0 35px 0 !important;" id="statistics_table"
+                                   class="table table-bordered table-hover dataTable dtr-inline mb-5">
+                                <tbody>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of checks for the current day') }}</th>
+                                    <td> {{ $statistics['toDay']['count_checks'] ?? 0 }} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of checks for the current month') }}</th>
+                                    <td> {{ $statistics['month']}} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of errors for the current day') }}</th>
+                                    <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of projects') }}</th>
+                                    <td> {{ $statistics['countProjects']}} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of saved scan results') }}</th>
+                                    <td> {{ $statistics['countSavedResults']}} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of unique landing pages') }}</th>
+                                    <td> {{ $statistics['pages'] }} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of unique landing domains') }}</th>
+                                    <td> {{ $statistics['domains'] }} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Total number of unique analyzed domains') }}</th>
+                                    <td> {{ $statistics['allDomains'] }} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Total number of unique analyzed sites') }}</th>
+                                    <td> {{ $statistics['allPages'] }} </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-10">{{ __('Number of tasks in the queue') }}</th>
+                                    <td id="countJobs"> {{ $statistics['countJobs'] }} </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="w-50 p-3">
+                            <h3>{{ __('Users and their tasks') }}</h3>
+                            <table style="margin: 0 0 35px 0 !important;" id="user_jobs_table"
+                                   class="table table-bordered table-hover dataTable dtr-inline mb-5">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        {{ __('user') }}
+                                    </th>
+                                    <th>
+                                        {{ __('Number of tasks in the queue') }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody id="user_jobs_table_body">
+                                @foreach($usersJobs as $job)
+                                    <tr class="job-row">
+                                        <td>
+                                            {{ $job->user->email }}
+                                            <div class="text-muted">
+                                                {{ $job->user->name }}
+                                                {{ $job->user->last_name }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{ $job->count_jobs }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     <h3>{{ __('All user projects') }}</h3>
                     <table id="users_projects" class="table table-bordered table-hover dataTable dtr-inline mb-3">
@@ -134,7 +170,7 @@
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
-                            <th class="table-header">Сквозной анализ</th>
+                            <th class="table-header">{{ __('End-to-end analysis') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -261,8 +297,10 @@
                                         {{ $item->user->last_name }}
                                     </span>
                                 </td>
-                                <td class="col-2 count-sites-{{ $item->id }}">
-                                    {{ $item->count_sites }}
+                                <td class="col-2">
+                                    <div class="count-sites-{{ $item->id }}">
+                                        {{ $item->count_sites }}
+                                    </div>
                                     <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
                                        data-target="#repeatUniqueScan{{ $item->id }}"
                                        data-toggle="modal" data-placement="top"
@@ -1129,6 +1167,32 @@
                         $('#countJobs').html(response.count)
                     },
                 });
+
+                $.ajax({
+                    type: "get",
+                    dataType: "json",
+                    url: "{{ route('get.user.jobs') }}",
+                    success: function (response) {
+                        $('.job-row').remove()
+                        $.each(response.jobs, function (key, value) {
+                            $('#user_jobs_table_body').append(
+                                '<tr class="job-row">' +
+                                '   <td> ' +
+                                        value['user']['email'] +
+                                '       <div class="text-muted">' +
+                                            value['user']['name'] + ' ' +
+                                            value['user']['last_name'] +
+                                '       </div>' +
+                                '   </td>' +
+                                '   <td>' +
+                                value['count_jobs'] +
+                                '</td>' +
+                                '</tr>'
+                            )
+                        });
+                    },
+                });
+
             }, 10000)
 
             let usersProjects = $('#users_projects').DataTable({

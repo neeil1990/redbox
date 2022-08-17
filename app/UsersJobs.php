@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class UsersJobs extends Model
 {
@@ -35,5 +36,13 @@ class UsersJobs extends Model
         $job->save();
 
         return $priority;
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class,  'id', 'user_id');
     }
 }
