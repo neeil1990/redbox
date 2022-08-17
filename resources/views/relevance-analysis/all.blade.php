@@ -1173,6 +1173,7 @@
                     dataType: "json",
                     url: "{{ route('get.user.jobs') }}",
                     success: function (response) {
+                        $('#user_jobs_table').dataTable().fnDestroy()
                         $('.job-row').remove()
                         $.each(response.jobs, function (key, value) {
                             $('#user_jobs_table_body').append(
@@ -1192,6 +1193,7 @@
                         });
                     },
                 });
+                $('#user_jobs_table').dataTable()
 
             }, 10000)
 
