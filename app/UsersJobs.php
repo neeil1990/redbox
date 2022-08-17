@@ -19,8 +19,6 @@ class UsersJobs extends Model
     {
         $job = UsersJobs::firstOrNew(['user_id' => $userId]);
 
-        Log::debug('job', [$job]);
-
         if (isset($job)) {
             if ($job->count_jobs <= 10) {
                 $priority = 'high';
@@ -29,11 +27,12 @@ class UsersJobs extends Model
             } else {
                 $priority = 'default';
             }
+            $job->count_jobs++;
         } else {
             $priority = 'high';
+            $job->count_jobs = 1;
         }
 
-        $job->count_jobs++;
         $job->save();
 
         return $priority;
