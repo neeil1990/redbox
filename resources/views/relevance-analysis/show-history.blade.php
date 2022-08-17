@@ -1136,6 +1136,7 @@
                         id: $('#hiddenId').val()
                     },
                     success: function (response) {
+                        console.log(response)
                         if (response.message === 'success') {
                             $('#repeat-analyse-item').show();
                             $('#circleTab').hide();

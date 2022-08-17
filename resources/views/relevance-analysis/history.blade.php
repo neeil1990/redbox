@@ -383,7 +383,8 @@
                         </div>
                     </div>
 
-                    <table id="main_history_table" class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
+                    <table id="main_history_table"
+                           class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
                         <thead>
                         <tr>
                             <th class="table-header">{{ __('Project name') }}</th>
@@ -460,8 +461,10 @@
                                         </div>
                                     @endforeach
                                 </td>
-                                <td class="col-2 count-sites-{{ $item->id }}">
-                                    {{ $item->count_sites }}
+                                <td class="col-2">
+                                    <span class="count-sites-{{ $item->id }}">
+                                        {{ $item->count_sites }}
+                                    </span>
                                     <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
                                        data-target="#repeatUniqueScan{{ $item->id }}"
                                        data-toggle="modal" data-placement="top"

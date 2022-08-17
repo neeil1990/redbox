@@ -298,9 +298,9 @@
                                     </span>
                                 </td>
                                 <td class="col-2">
-                                    <div class="count-sites-{{ $item->id }}">
+                                    <span class="count-sites-{{ $item->id }}">
                                         {{ $item->count_sites }}
-                                    </div>
+                                    </span>
                                     <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
                                        data-target="#repeatUniqueScan{{ $item->id }}"
                                        data-toggle="modal" data-placement="top"

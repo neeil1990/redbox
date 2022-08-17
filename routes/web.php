@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\HistoryRelevanceController;
+use App\LinguaStem;
 use App\ProjectRelevanceHistory;
 use App\ProjectRelevanceThough;
 use App\RelevanceHistory;
@@ -269,6 +270,36 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
+});
+
+Route::get('/bla', function () {
+    $html = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://almamed.su/')));
+    $ignoredWords = [];
+    $wordForms = [];
+
+    $array = explode(' ', $html);
+
+    sort($array, SORT_STRING);
+    $array = array_count_values($array);
+
+    foreach ($array as $key1 => $elem1) {
+        if (!in_array($key1, $ignoredWords)) {
+            foreach ($array as $key2 => $elem2) {
+                if (!in_array($key2, $ignoredWords)) {
+                    similar_text($key1, $key2, $percent);
+                    if ($percent < 82) {
+                        continue 2;
+                    } else {
+                        $wordForms[$key1][$key2] = $elem2;
+                        $ignoredWords[] = $key2;
+                        $ignoredWords[] = $key1;
+                    }
+                }
+            }
+        }
+    }
+
+    dd($wordForms);
 });
 
 Route::get('/get-passages/{link}', function ($link) {
