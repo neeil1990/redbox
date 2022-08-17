@@ -71,7 +71,7 @@ class MonitoringController extends Controller
         $keywords = $project->keywords()->whereIn('id', $request->input('keys'))->get();
 
         foreach ($keywords as $keyword)
-            dispatch((new PositionQueue($keyword))->onQueue('position'));
+            dispatch((new PositionQueue($keyword))->onQueue('high'));
 
         return collect([
             'status' => true
