@@ -12,6 +12,8 @@
 */
 
 use App\Http\Controllers\HistoryRelevanceController;
+use App\ProjectRelevanceThough;
+use App\RelevanceHistory;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -267,61 +269,82 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
-Route::get('/get-site', function () {
-    echo TextAnalyzer::curlInit('https://td-kvartal.ru/products/sayding/');
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
-    curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
-    curl_setopt($curl, CURLOPT_COOKIE, 'realauth=SvBD85dINu3; expires=Sat, 25 Feb 2030 02:16:43 GMT; path=/; SameSite=Lax');
-    curl_setopt($curl, CURLOPT_URL, 'https://td-kvartal.ru/products/sayding/');
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 4);
-    curl_setopt($curl, CURLOPT_FAILONERROR, true);
-    curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-    curl_setopt($curl, CURLOPT_HEADER, false);
+Route::get('bla', function () {
+    $items = HistoryRelevanceController::getUniqueScanned(19);
+    $resultArray = [];
+    $cleaningProjects = [];
+    $countRecords = count($items);
 
-    $userAgents = [
-        //Mozilla Firefox
-        'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0',
-        'Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0',
-        //opera
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/79.0.4143.72',
-        'Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/79.0.4143.72',
-        // chrome
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
-    ];
+    foreach ($items as $item) {
+        $record = RelevanceHistory::where('main_link', '=', $item['main_link'])
+            ->where('project_relevance_history_id', '=', 19)
+            ->where('phrase', '=', $item['phrase'])
+            ->where('region', '=', $item['region'])
+            ->where('calculate', '=', 1)
+            ->latest('last_check')
+            ->with('results')
+            ->with('mainHistory')
+            ->first();
 
-    foreach ($userAgents as $agent) {
-        curl_setopt($curl, CURLOPT_USERAGENT, $agent);
-        $html = curl_exec($curl);
-        $headers = curl_getinfo($curl);
-        if ($headers['http_code'] == 200 && $html != false) {
-            $html = preg_replace('//i', '', $html);
-            break;
+        if (isset($record) && isset($record->results) && $record->results->cleaning == 0) {
+            $words = [];
+
+            foreach (json_decode(gzuncompress(base64_decode($record->results->unigram_table)), true) as $word) {
+                unset($word['total']);
+                foreach ($word as $key => $item) {
+                    $key = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($key)));
+                    if ($key != '') {
+                        $words[$key] = $item;
+                    }
+                }
+            }
+
+            foreach ($words as $key => $word) {
+                arsort($word['occurrences']);
+
+                if (isset($resultArray[$key])) {
+                    $resultArray[$key]['tf'] += round($word['tf'], 6);
+                    $resultArray[$key]['idf'] += round($word['idf'], 6);
+                    $resultArray[$key]['repeatInLinkMainPage'] += $word['repeatInLinkMainPage'];
+                    $resultArray[$key]['repeatInTextMainPage'] += $word['repeatInTextMainPage'];
+                    $resultArray[$key]['throughLinks'] = array_merge($resultArray[$key]['throughLinks'], $word['occurrences']);
+                    $resultArray[$key]['repeatInLink'] += $word['avgInLink'];
+                    $resultArray[$key]['repeatInText'] += $word['avgInText'];
+                    $resultArray[$key]['throughCount'] += 1;
+                } else {
+                    $resultArray[$key] = [
+                        'tf' => round($word['tf'], 6),
+                        'idf' => round($word['idf'], 6),
+                        'repeatInLinkMainPage' => $word['repeatInLinkMainPage'],
+                        'repeatInTextMainPage' => $word['repeatInTextMainPage'],
+                        'throughLinks' => $word['occurrences'],
+                        'repeatInLink' => $word['avgInLink'],
+                        'repeatInText' => $word['avgInText'],
+                        'throughCount' => 1,
+                    ];
+                }
+            }
+
         } else {
-            dd('curl relevance error', [
-                curl_error($curl),
-                curl_getinfo($curl, CURLINFO_EFFECTIVE_URL)
-            ]);
+            $countRecords--;
+        }
+
+        foreach ($resultArray as $key => $word) {
+            $resultArray[$key]['total'] = $countRecords;
         }
     }
+    dd(base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 5000)), 9)));
+    dd($resultArray);
 
-    curl_close($curl);
-    try {
-        $contentType = trim(str_replace('text/html;', '', $headers['content_type']));
-        $contentType = trim(str_replace('charset=', '', $contentType));
-        $html = mb_convert_encoding($html, "utf-8", $contentType);
-    } catch (\Exception $exception) {
+    $though = ProjectRelevanceThough::firstOrNew([
+        'project_relevance_history_id' => 19,
+    ]);
 
-    }
-
-    dd($html);
+//    $though->though_words = base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 5000)), 9));
+//    $though->stage = 2;
+//    $though->cleaning_projects = json_encode($cleaningProjects);
+//    $though->cleaning_state = 0;
+//    $though->save();
 });
 
 Route::get('/get-passages/{link}', function ($link) {
