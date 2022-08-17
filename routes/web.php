@@ -332,6 +332,7 @@ Route::get('bla', function () {
             $resultArray[$key]['total'] = $countRecords;
         }
     }
+    dump(base64_encode(gzcompress(json_encode(array_slice($resultArray, 0, 5000)), 9)));
     dd($resultArray);
 
     $though = ProjectRelevanceThough::firstOrNew([
