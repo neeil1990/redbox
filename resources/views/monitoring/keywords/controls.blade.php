@@ -17,7 +17,7 @@
     </button>
 </div>
 <!-- /.btn-group -->
-<button type="button" class="btn btn-default btn-sm" onclick="window.location.reload()">
+<button type="button" class="btn btn-default btn-sm parse-positions">
     <i class="fas fa-sync-alt"></i>
 </button>
 

@@ -197,17 +197,6 @@ class MonitoringKeywordsController extends Controller
             return redirect()->back();
     }
 
-    public function addingQueue(Request $request)
-    {
-        $id = $request->input('id', null);
-        $model = new MonitoringKeyword();
-        $query = $model->where('id', $id)->first();
-
-        dispatch((new PositionQueue($query))->onQueue('position'));
-
-        return $query;
-    }
-
     /**
      * Remove the specified resource from storage.
      *

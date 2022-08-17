@@ -14,7 +14,7 @@ class AddColumnV2InProjectRelevanceThoughTable extends Migration
     public function up()
     {
         Schema::table('project_relevance_though', function (Blueprint $table) {
-            $table->longText('cleaning_projects')->default('[]');
+            $table->longText('cleaning_projects')->nullable();
             $table->boolean('cleaning_state')->default(0);
         });
     }

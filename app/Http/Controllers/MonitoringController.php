@@ -54,6 +54,40 @@ class MonitoringController extends Controller
         return view('monitoring.index');
     }
 
+    public function parsePositionsInProject(Request $request)
+    {
+        $this->parsePositionsOfKeywordsByProjectQueue($request->input('projectId'));
+
+        return collect([
+            'status' => true
+        ]);
+    }
+
+    public function parsePositionsAllProject()
+    {
+        /** @var User $user */
+        $user = $this->user;
+        $projects = $user->monitoringProjects()->get();
+
+        foreach ($projects as $project)
+            $this->parsePositionsOfKeywordsByProjectQueue($project->id);
+
+        return collect([
+            'status' => true
+        ]);
+    }
+
+    public function parsePositionsOfKeywordsByProjectQueue(int $projectId): void
+    {
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->where('id', $projectId)->first();
+        $project->load('keywords');
+
+        foreach ($project->keywords as $keyword)
+            dispatch((new PositionQueue($keyword))->onQueue('position'));
+    }
+
     public function getProjects(Request $request)
     {
         $page = $request->input('start', 0) + 1;

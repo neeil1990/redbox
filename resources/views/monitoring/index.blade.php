@@ -48,7 +48,7 @@
         <script>
             toastr.options = {
                 "preventDuplicates": true,
-                "timeOut": "1500"
+                "timeOut": "5000"
             };
 
             const HIGHLIGHT_TR_CLASS = "table-success";
@@ -71,6 +71,12 @@
             });
 
             $('[data-toggle="tooltip"]').tooltip();
+
+            $('.parse-positions').click(function () {
+                axios.post('/monitoring/parse/positions/all/projects').then(function () {
+                    toastr.success('Задание добавленно в очередь.');
+                });
+            });
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
