@@ -266,6 +266,24 @@
                                     toastr.success('Задание добавленно в очередь.');
                                 });
                             });
+
+                            let parsePositionsKeys = container.find('.parse-positions-keys');
+                            parsePositionsKeys.click(function () {
+
+                                let arrKeys = [];
+                                let keys = $('.table tbody tr').find('input[type="checkbox"]:checked');
+
+                                $.each(keys, function (i, item) {
+                                    arrKeys.push($(item).val())
+                                });
+
+                                axios.post('/monitoring/parse/positions/project/keys', {
+                                    projectId: PROJECT_ID,
+                                    keys: arrKeys,
+                                }).then(function (response) {
+                                    toastr.success('Задание добавленно в очередь.');
+                                });
+                            });
                         });
 
                         $('.search-button').click(function () {

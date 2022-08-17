@@ -21,5 +21,9 @@
     <i class="fas fa-sync-alt"></i>
 </button>
 
+<button type="button" class="btn btn-default btn-sm parse-positions-keys">
+    <i class="fas fa-key"></i>
+</button>
+
 <div class="float-right"></div>
 <!-- /.float-right -->
