@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\HistoryRelevanceController;
+use App\ProjectRelevanceHistory;
 use App\ProjectRelevanceThough;
 use App\RelevanceHistory;
 use App\TextAnalyzer;
@@ -65,7 +66,7 @@ Route::middleware(['verified'])->group(function () {
     Route::put('/meta-tags/histories/ideal/{id}', 'MetaTagsController@updateHistoriesIdeal');
     Route::patch('/meta-tags/histories/{id}', 'MetaTagsController@storeHistories');
     Route::get('/meta-tags/histories/{id}', 'MetaTagsController@showHistories');
-    Route::get('/meta-tags/history/{id}/compare/{id_compare}', 'MetaTagsController@showHistoryCompare')->name('meta.history.compare');;
+    Route::get('/meta-tags/history/{id}/compare/{id_compare}', 'MetaTagsController@showHistoryCompare')->name('meta.history.compare');
     Route::get('/meta-tags/history/{id}', 'MetaTagsController@showHistory');
     Route::get('/meta-tags/getTariffMetaTagsPages', 'MetaTagsController@getTariffMetaTagsPages');
     Route::resource('meta-tags', 'MetaTagsController');
@@ -270,7 +271,14 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('bla', function () {
+    $items = ProjectRelevanceHistory::get(['id', 'count_sites', 'count_checks']);
+    foreach ($items as $item) {
+        $item->count_sites = count(HistoryRelevanceController::getUniqueScanned($item->id));
+        $item->count_checks = RelevanceHistory::where('project_relevance_history_id', '=', $item->id)
+            ->count();
 
+        $item->save();
+    }
 });
 
 Route::get('/get-passages/{link}', function ($link) {
@@ -288,7 +296,7 @@ Route::get('/get-passages/{link}', function ($link) {
 //    dump(['список всех li' => $li]);
     foreach ($li as $item) {
         $ul = str_replace('>', '> ', $item[1]);
-        $ul = \App\TextAnalyzer::clearHTMLFromLinks($ul);
+        $ul = TextAnalyzer::clearHTMLFromLinks($ul);
 
         $text = trim(strip_tags($ul));
         $text = preg_replace('| +|', ' ', $text);
