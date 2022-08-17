@@ -142,7 +142,7 @@ class AdminController extends Controller
     public function getCountQueue(): JsonResponse
     {
         return response()->json([
-            'count' => UsersJobs::where('count_jobs', '>', 0)->count()
+            'count' => UsersJobs::where('count_jobs', '>', 0)->sum('count_jobs')
         ]);
     }
 
