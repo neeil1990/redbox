@@ -1156,67 +1156,50 @@
                         return "{{ __('Yaroslavl') }}";
                 }
             }
-
+        </script>
+        <script>
             $(document).ready(function () {
                 $('#user_jobs_table').dataTable({
                     "order": [[0, "desc"]],
                     "pageLength": 10,
                     "searching": true,
-                    dom: 'lBfrtip',
-                    buttons: [
-                        'copy', 'csv', 'excel'
-                    ]
                 })
+
+                setInterval(() => {
+                    $.ajax({
+                        type: "get",
+                        dataType: "json",
+                        url: "{{ route('get.queue.count') }}",
+                        success: function (response) {
+                            $('#countJobs').html(response.count)
+                        },
+                    });
+
+                    $.ajax({
+                        type: "get",
+                        dataType: "json",
+                        url: "{{ route('get.user.jobs') }}",
+                        success: function (response) {
+                            $('#user_jobs_table').DataTable().rows().remove();
+                            $.each(response.jobs, function (key, value) {
+                                $('#user_jobs_table').DataTable().row.add({
+                                    0: '<td class="sorting_1">' +
+                                        value['user']['email'] +
+                                        '   <div class="text-muted">' +
+                                        value['user']['name'] +
+                                        value['user']['last_name'] +
+                                        '   </div>' +
+                                        '</td>',
+                                    1: value['count_jobs'],
+                                });
+                            });
+
+                            $('#user_jobs_table').DataTable().draw()
+                        },
+                    });
+
+                }, 10000)
             });
-        </script>
-        <script>
-            setInterval(() => {
-                $.ajax({
-                    type: "get",
-                    dataType: "json",
-                    url: "{{ route('get.queue.count') }}",
-                    success: function (response) {
-                        $('#countJobs').html(response.count)
-                    },
-                });
-
-                $.ajax({
-                    type: "get",
-                    dataType: "json",
-                    url: "{{ route('get.user.jobs') }}",
-                    success: function (response) {
-                        $('#user_jobs_table').dataTable().fnDestroy()
-                        $('.job-row').remove()
-                        $.each(response.jobs, function (key, value) {
-                            $('#user_jobs_table_body').append(
-                                '<tr class="job-row">' +
-                                '   <td> ' +
-                                value['user']['email'] +
-                                '       <div class="text-muted">' +
-                                value['user']['name'] + ' ' +
-                                value['user']['last_name'] +
-                                '       </div>' +
-                                '   </td>' +
-                                '   <td>' +
-                                value['count_jobs'] +
-                                '</td>' +
-                                '</tr>'
-                            )
-                        });
-                    },
-                });
-
-                $('#user_jobs_table').dataTable({
-                    "order": [[0, "desc"]],
-                    "pageLength": 10,
-                    "searching": true,
-                    dom: 'lBfrtip',
-                    buttons: [
-                        'copy', 'csv', 'excel'
-                    ]
-                })
-
-            }, 10000)
 
             let usersProjects = $('#users_projects').DataTable({
                 order: [[0, "desc"]],
