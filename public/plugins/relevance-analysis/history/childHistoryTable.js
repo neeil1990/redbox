@@ -378,9 +378,40 @@ function checkAnalyseProgress(id) {
                     '<button type="button" class="btn btn-secondary get-history-info" data-order="' + id + '"' +
                     '   data-toggle="modal" data-target="#staticBackdrop"> Повторить анализ' +
                     '</button>' +
-                    '<a href="/show-history/' + id + '" target="_blank" class="btn btn-secondary mt-3"> Подробная ' +
-                    'информация</a>'
+                    '<a href="/show-history/' + id + '" target="_blank" class="btn btn-secondary mt-3"> Подробная информация</a>'
                 );
+
+                let table = $('#history_table').DataTable();
+                let newObject = response.newObject
+
+                table.row.add({
+                    0: newObject['last_check'],
+                    1: '<textarea style="height: 160px;" data-target="' + newObject['id'] + '" class="history-comment form form-control"></textarea>',
+                    2: newObject['phrase'],
+                    3: newObject['region'],
+                    4: newObject['main_link'],
+                    5: newObject['position'] === 0 ? 'Не попал в топ 100' : newObject['position'],
+                    6: newObject['points'],
+                    7: newObject['coverage'],
+                    8: newObject['coverage_tf'],
+                    9: newObject['width'],
+                    10: newObject['density'],
+                    11: '<div class="d-flex justify-content-center">' +
+                        '    <div class="__helper-link ui_tooltip_w">' +
+                        '        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">' +
+                        '            <input onClick="changeState(' + $(this) + ')" type="checkbox"' +
+                        '                   class="custom-control-input switch" id="calculate-project-' + newObject['id'] + '" name="noIndex"' +
+                        '                   data-target="' + newObject['id'] + '"> ' +
+                        '               <label class="custom-control-label" for="calculate-project-' + newObject['id'] + '"></label></div>' +
+                        '    </div>' +
+                        '</div>',
+                    12: '<div id="history-state-' + newObject['id'] + '">' +
+                        '       <button type="button" class="btn btn-secondary get-history-info" data-order="' + newObject['id'] + '" data-toggle="modal" data-target="#staticBackdrop"> Повторить анализ </button>' +
+                        '       <a href="/show-history/' + newObject['id'] + '" target="_blank" class="btn btn-secondary mt-3"> Подробная информация</a>' +
+                        '</div>'
+                });
+
+                table.draw()
             }
 
         },
