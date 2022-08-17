@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
@@ -683,6 +684,8 @@ class HistoryRelevanceController extends Controller
                 ->where('user_id', '=', Auth::id())
                 ->latest('id')
                 ->first();
+
+            Log::debug('user-check-id', [Auth::id()]);
             return response()->json([
                 'message' => 'success',
                 'newProject' => $newProject
@@ -842,7 +845,7 @@ class HistoryRelevanceController extends Controller
             'object' => $object->results->id,
             'code' => 200,
             'newObject' => RelevanceHistory::where('project_relevance_history_id', '=', $object->project_relevance_history_id)
-                    ->latest()->first(),
-            ]);
+                ->latest()->first(),
+        ]);
     }
 }
