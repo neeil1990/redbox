@@ -681,7 +681,7 @@ class HistoryRelevanceController extends Controller
         if ($project->state == 1) {
             $newProject = RelevanceHistory::where('id', '!=', $request->id)
                 ->where('id', '>', $request->id)
-                ->where('user_id', '=', Auth::id())
+                ->where('user_id', '=', $project->user_id)
                 ->latest('id')
                 ->first();
 
