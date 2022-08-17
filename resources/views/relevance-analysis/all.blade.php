@@ -1156,6 +1156,18 @@
                         return "{{ __('Yaroslavl') }}";
                 }
             }
+
+            $(document).ready(function () {
+                $('#user_jobs_table').dataTable({
+                    "order": [[0, "desc"]],
+                    "pageLength": 10,
+                    "searching": true,
+                    dom: 'lBfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ]
+                })
+            });
         </script>
         <script>
             setInterval(() => {
@@ -1179,10 +1191,10 @@
                             $('#user_jobs_table_body').append(
                                 '<tr class="job-row">' +
                                 '   <td> ' +
-                                        value['user']['email'] +
+                                value['user']['email'] +
                                 '       <div class="text-muted">' +
-                                            value['user']['name'] + ' ' +
-                                            value['user']['last_name'] +
+                                value['user']['name'] + ' ' +
+                                value['user']['last_name'] +
                                 '       </div>' +
                                 '   </td>' +
                                 '   <td>' +
@@ -1193,7 +1205,16 @@
                         });
                     },
                 });
-                $('#user_jobs_table').dataTable()
+
+                $('#user_jobs_table').dataTable({
+                    "order": [[0, "desc"]],
+                    "pageLength": 10,
+                    "searching": true,
+                    dom: 'lBfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ]
+                })
 
             }, 10000)
 
