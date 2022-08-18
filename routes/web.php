@@ -272,8 +272,9 @@ Route::middleware(['verified'])->group(function () {
 Route::get('/get-information/', function () {
     $history = ProjectRelevanceHistory::where('id', '=', 57)->with('stories')->first();
 
-    dump($history);
-    dd($history->stories);
+    return response()->json([
+        'story' => $history->stories
+    ]);
 });
 
 Route::get('/get-passages/{link}', function ($link) {
