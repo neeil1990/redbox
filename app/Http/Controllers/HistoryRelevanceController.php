@@ -48,6 +48,7 @@ class HistoryRelevanceController extends Controller
      */
     public function getStories(Request $request): JsonResponse
     {
+        Log::debug('id', [$request->history_id]);
         $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->with('stories')->first();
         $admin = User::isUserAdmin();
         $userId = Auth::id();
@@ -65,9 +66,8 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        $stories = $history->stories->toArray();
         return response()->json([
-            'stories' => array_slice($stories, 0, count($stories) / 2)
+            'stories' => $history->stories
         ]);
     }
 
