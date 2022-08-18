@@ -270,10 +270,10 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/get-information/', function () {
-    $history = ProjectRelevanceHistory::where('id', '=', 57)->with('storiesTest')->first();
+    $history = ProjectRelevanceHistory::where('id', '=', 57)->with('stories')->first();
 
     return response()->json([
-        'story' => $history->storiesTest()->except(['html_main_page'])
+        'story' => $history->stories
     ]);
 });
 
