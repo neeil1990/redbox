@@ -67,7 +67,14 @@ class HistoryRelevanceController extends Controller
         }
 
         return response()->json([
-            'stories' => $history->stories
+            'stories' => $history->stories()->get([
+                'phrase', 'main_link', 'region',
+                'last_check', 'points', 'position',
+                'coverage', 'coverage', 'density',
+                'width', 'density', 'calculate',
+                'created_at', 'updated_at', 'project_relevance_history_id',
+                'comment', 'user_id'
+            ])
         ]);
     }
 
