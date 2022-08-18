@@ -273,7 +273,7 @@ Route::get('/get-information/', function () {
     $history = ProjectRelevanceHistory::where('id', '=', 57)->with('storiesTest')->first();
 
     return response()->json([
-        'story' => $history->storiesTest()->get(['id', 'phrase'])
+        'story' => $history->storiesTest()->except(['html_main_page'])
     ]);
 });
 
