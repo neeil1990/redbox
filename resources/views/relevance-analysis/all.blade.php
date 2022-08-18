@@ -224,32 +224,6 @@
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <a href="#history_table_{{ $item->name }}"
-                                           class="project_name_x2"
-                                           style="cursor:pointer;"
-                                           data-order="{{ $item->id }}">
-                                            x2
-                                        </a>
-                                        <a href="#history_table_{{ $item->name }}"
-                                           class="project_name_x3"
-                                           style="cursor:pointer;"
-                                           data-order="{{ $item->id }}">
-                                            x3
-                                        </a>
-                                        <a href="#history_table_{{ $item->name }}"
-                                           class="project_name_x4"
-                                           style="cursor:pointer;"
-                                           data-order="{{ $item->id }}">
-                                            x4
-                                        </a>
-                                        <a href="#history_table_{{ $item->name }}"
-                                           class="project_name_x5"
-                                           style="cursor:pointer;"
-                                           data-order="{{ $item->id }}">
-                                            x5
-                                        </a>
-                                    </div>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
