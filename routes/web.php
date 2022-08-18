@@ -276,10 +276,10 @@ Route::get('/get-information/', function () {
         'story' => $history->stories()->get([
             'phrase', 'main_link', 'region',
             'last_check', 'points', 'position',
-            'coverage', 'coverage', 'density',
+            'coverage', 'coverage_tf', 'density',
             'width', 'density', 'calculate',
             'created_at', 'updated_at', 'project_relevance_history_id',
-            'comment', 'user_id'
+            'comment', 'user_id', 'state'
         ])
     ]);
 });
