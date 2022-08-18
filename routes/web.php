@@ -275,7 +275,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/bla/{$id}', function ($id) {
-    $history = ProjectRelevanceHistory::where('id', '=', $id)->with('stories')->first();
+    $history = ProjectRelevanceHistory::where('id', '=', $id)->first();
 
     dump($history);
     dd($history->stories);
