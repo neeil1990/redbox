@@ -72,7 +72,7 @@ class HistoryRelevanceController extends Controller
                 'last_check', 'points', 'position',
                 'coverage', 'coverage_tf', 'density',
                 'width', 'density', 'calculate',
-                'created_at', 'updated_at', 'project_relevance_history_id',
+                'id', 'project_relevance_history_id',
                 'comment', 'user_id', 'state'
             ])
         ]);
