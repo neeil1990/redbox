@@ -65,7 +65,7 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        $stories = $history->stories;
+        $stories = $history->stories->toArray();
         return response()->json([
             'stories' => array_slice($stories, 0, count($stories) / 2)
         ]);
