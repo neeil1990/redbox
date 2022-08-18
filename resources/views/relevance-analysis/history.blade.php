@@ -461,7 +461,7 @@
                                         </div>
                                     @endforeach
                                 </td>
-                                <td class="col-2">
+                                <td class="col-2" data-order="{{ $item->count_sites }}">
                                     <span class="count-sites-{{ $item->id }}">
                                         {{ $item->count_sites }}
                                     </span>

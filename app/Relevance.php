@@ -182,10 +182,9 @@ class Relevance
             $this->getHiddenData();
             $this->separateLinksFromText();
             $this->removePartsOfSpeech();
-            RelevanceProgress::editProgress(50, $this->request);
             $this->removeListWords();
             $this->getTextFromCompetitors();
-            RelevanceProgress::editProgress(70, $this->request);
+            RelevanceProgress::editProgress(40, $this->request);
             $this->separateAllText();
             $this->preparePhrasesTable();
             $this->searchWordForms();
@@ -207,7 +206,7 @@ class Relevance
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
                     'message' => $exception->getMessage(),
-                    'userId' => Auth::id(),
+                    'userId' => $userId,
                 ]);
 
                 $object = RelevanceHistory::where('id', '=', $historyId)->first();
