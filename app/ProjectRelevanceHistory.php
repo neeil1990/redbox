@@ -23,6 +23,14 @@ class ProjectRelevanceHistory extends Model
     }
 
     /**
+     * @return HasMany
+     */
+    public function storiesTest(): HasMany
+    {
+        return $this->hasMany(RelevanceHistory::class)->orderByDesc('last_check');
+    }
+
+    /**
      * @return BelongsToMany
      */
     public function users(): BelongsToMany
