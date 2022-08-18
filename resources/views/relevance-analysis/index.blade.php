@@ -84,6 +84,7 @@
                         <div class="form-group required">
                             <label>{{ __('Region') }}</label>
                             {!! Form::select('region', array_unique([
+                                    $config->region => $config->region,
                                   '213' => __('Moscow'),
                                    '1' => __('Moscow and the area'),
                                    '20' => __('Arkhangelsk'),
@@ -1074,7 +1075,7 @@
                                 message += value + "<br>"
                             });
 
-                            if(messages['message']){
+                            if (messages['message']) {
                                 message = messages['message']
                             } else if (message === '') {
                                 message = "{{ __('An error has occurred, repeat the request.') }}"
