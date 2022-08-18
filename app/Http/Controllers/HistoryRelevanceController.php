@@ -65,9 +65,9 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        Log::debug('stories count', [count($history->stories)]);
+        $stories = $history->stories;
         return response()->json([
-            'stories' => $history->stories
+            'stories' => array_slice($stories, 0, count($stories) / 2)
         ]);
     }
 
