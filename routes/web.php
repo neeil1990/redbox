@@ -274,9 +274,10 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
-Route::get('/bla/{$id}', function ($id) {
+Route::get('/get-information/{$id}', function ($id) {
     $history = ProjectRelevanceHistory::where('id', '=', $id)->first();
 
+    dump($id);
     dump($history);
     dd($history->stories);
 });
