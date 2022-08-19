@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
@@ -48,7 +47,6 @@ class HistoryRelevanceController extends Controller
      */
     public function getStories(Request $request): JsonResponse
     {
-        Log::debug('id', [$request->history_id]);
         $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->with('stories')->first();
         $admin = User::isUserAdmin();
         $userId = Auth::id();
@@ -217,7 +215,7 @@ class HistoryRelevanceController extends Controller
 
         $admin = User::isUserAdmin();
         $userId = Auth::id();
-        $object = RelevanceHistory::where('id', '=', $request->id)->first();
+        $object = RelevanceHistory::where('id', '=', $request->id)->with('mainHistory')->first();
         $ownerId = $object->mainHistory->user_id;
 
         $share = RelevanceSharing::where('user_id', '=', $userId)
@@ -555,7 +553,6 @@ class HistoryRelevanceController extends Controller
                 ->latest('id')
                 ->first();
 
-            Log::debug('user-check-id', [Auth::id()]);
             return response()->json([
                 'message' => 'success',
                 'newProject' => $newProject
@@ -655,7 +652,7 @@ class HistoryRelevanceController extends Controller
         $userId = Auth::id();
 
         foreach (json_decode($request->ids, true) as $id) {
-            $object = RelevanceHistory::where('id', '=', $id)->first();
+            $object = RelevanceHistory::where('id', '=', $id)->with('mainHistory')->first();
             $ownerId = $object->mainHistory->user_id;
 
             $share = RelevanceSharing::where('user_id', '=', $userId)
