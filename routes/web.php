@@ -11,16 +11,9 @@
 |
 */
 
-use App\Http\Controllers\HistoryRelevanceController;
-use App\LinguaStem;
 use App\ProjectRelevanceHistory;
-use App\ProjectRelevanceThough;
-use App\RelevanceHistory;
-use App\RelevanceSharing;
 use App\TextAnalyzer;
-use App\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
