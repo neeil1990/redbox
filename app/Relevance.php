@@ -176,47 +176,47 @@ class Relevance
      */
     public function analysis($userId, $historyId = false)
     {
-        try {
-            $this->removeNoIndex();
-            RelevanceProgress::editProgress(20, $this->request);
-            $this->getHiddenData();
-            $this->separateLinksFromText();
-            $this->removePartsOfSpeech();
-            $this->removeListWords();
-            $this->getTextFromCompetitors();
-            RelevanceProgress::editProgress(40, $this->request);
-            $this->separateAllText();
-            $this->preparePhrasesTable();
-            $this->searchWordForms();
-            RelevanceProgress::editProgress(80, $this->request);
-            $this->processingOfGeneralInformation();
-            $this->prepareUnigramTable();
-            $this->analyzeRecommendations();
-            $this->prepareAnalysedSitesTable();
-            RelevanceProgress::editProgress(90, $this->request);
-            $this->prepareClouds();
-            $this->saveHistory($userId, $historyId);
-        } catch (\Throwable $exception) {
-            //  игнорируем ошибку: "packets out of order" и другие ошибки бд
-            if (
-                strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
-                $exception->getLine() != 664
-            ) {
-                Log::debug('Relevance Error', [
-                    'file' => $exception->getFile(),
-                    'line' => $exception->getLine(),
-                    'message' => $exception->getMessage(),
-                    'userId' => $userId,
-                ]);
-
-                $object = RelevanceHistory::where('id', '=', $historyId)->first();
-                $object->state = -1;
-                $object->save();
-
-                $this->saveError();
-            }
-
-        }
+//        try {
+        $this->removeNoIndex();
+        RelevanceProgress::editProgress(20, $this->request);
+        $this->getHiddenData();
+        $this->separateLinksFromText();
+        $this->removePartsOfSpeech();
+        $this->removeListWords();
+        $this->getTextFromCompetitors();
+        RelevanceProgress::editProgress(40, $this->request);
+        $this->separateAllText();
+        $this->preparePhrasesTable();
+        $this->searchWordForms();
+        RelevanceProgress::editProgress(80, $this->request);
+        $this->processingOfGeneralInformation();
+        $this->prepareUnigramTable();
+        $this->analyzeRecommendations();
+        $this->prepareAnalysedSitesTable();
+        RelevanceProgress::editProgress(90, $this->request);
+        $this->prepareClouds();
+        $this->saveHistory($userId, $historyId);
+//        } catch (\Throwable $exception) {
+//        игнорируем ошибку: "packets out of order" и другие ошибки бд
+//            if (
+//                strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
+//                $exception->getLine() != 664
+//            ) {
+//                Log::debug('Relevance Error', [
+//                    'file' => $exception->getFile(),
+//                    'line' => $exception->getLine(),
+//                    'message' => $exception->getMessage(),
+//                    'userId' => $userId,
+//                ]);
+//
+//                $object = RelevanceHistory::where('id', '=', $historyId)->first();
+//                $object->state = -1;
+//                $object->save();
+//
+//                $this->saveError();
+//            }
+//
+//        }
     }
 
     /**
