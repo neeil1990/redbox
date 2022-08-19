@@ -64,6 +64,7 @@ class RelevanceController extends Controller
             $relevance->analysisByList($request->all());
         }
 
+        Log::debug('analyse start');
         $relevance->analysis(Auth::id());
 
         return RelevanceController::successResponse($relevance);
