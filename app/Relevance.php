@@ -197,18 +197,24 @@ class Relevance
             $this->prepareClouds();
             $this->saveHistory($userId, $historyId);
         } catch (\Throwable $exception) {
-            Log::debug('Relevance Error', [
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'message' => $exception->getMessage(),
-                'userId' => $userId,
-            ]);
+//            игнорируем ошибку: "packets out of order" и другие ошибки бд
+            if (
+                strpos($exception->getFile(), '/vendor/laravel/framework/src/Illuminate/Database/Connection.php') === false &&
+                $exception->getLine() != 664
+            ) {
+                Log::debug('Relevance Error', [
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'message' => $exception->getMessage(),
+                    'userId' => $userId,
+                ]);
 
-            $object = RelevanceHistory::where('id', '=', $historyId)->first();
-            $object->state = -1;
-            $object->save();
+                $object = RelevanceHistory::where('id', '=', $historyId)->first();
+                $object->state = -1;
+                $object->save();
 
-            $this->saveError();
+                $this->saveError();
+            }
         }
     }
 
