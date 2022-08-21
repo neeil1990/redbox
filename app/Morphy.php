@@ -5,6 +5,8 @@ namespace App;
 use phpMorphy;
 use phpMorphy_FilesBundle;
 
+require_once __DIR__ . '\..\public\plugins\phpmorphy\src\common.php';
+
 class Morphy
 {
 
