@@ -5,8 +5,7 @@ namespace App;
 use phpMorphy;
 use phpMorphy_FilesBundle;
 
-dd($_SERVER['DOCUMENT_ROOT'] . '/plugins/phpmorphy/src/common.php');
-require_once $_SERVER['DOCUMENT_ROOT'] . '/plugins/phpmorphy/src/common.php';
+require_once 'www/lk.redbox.su/plugins/phpmorphy/src/common.php';
 
 class Morphy
 {

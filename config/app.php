@@ -247,7 +247,7 @@ return [
         'Htmldom' => Yangqi\Htmldom\Htmldom::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'PhpMorphy' => $_SERVER['DOCUMENT_ROOT'] . '/plugins/phpmorphy/src/common.php',
+        'PhpMorphy' => 'www/lk.redbox.su/plugins/phpmorphy/src/common.php',
     ],
 
 ];
