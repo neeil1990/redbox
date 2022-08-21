@@ -204,7 +204,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
@@ -248,6 +247,7 @@ return [
         'Htmldom' => Yangqi\Htmldom\Htmldom::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'PhpMorphy' => $_SERVER['DOCUMENT_ROOT'] . '/plugins/phpmorphy/src/common.php',
     ],
 
 ];

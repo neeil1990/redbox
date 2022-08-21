@@ -11,8 +11,8 @@
 |
 */
 
-use App\TextAnalyzer;
 use App\Morphy;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
