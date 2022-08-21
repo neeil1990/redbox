@@ -294,7 +294,7 @@ Route::get('/morphy-test/', function () {
 });
 
 Route::get('/test-morphy', function () {
-    dd(__DIR__ . env('MORPHY_PATH'));
+    dd(env('MORPHY_PATH'));
 });
 
 Route::get('/get-passages/{link}', function ($link) {
