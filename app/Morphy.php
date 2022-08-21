@@ -5,7 +5,7 @@ namespace App;
 use phpMorphy;
 use phpMorphy_FilesBundle;
 
-require_once '/var/www/redbox.su/data/www/lk.redbox.su/public/plugins/phpMorphy/src/common.php';
+require_once env('MORPHY_PATH');
 
 class Morphy
 {
