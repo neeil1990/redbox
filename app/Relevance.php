@@ -187,7 +187,9 @@ class Relevance
             RelevanceProgress::editProgress(40, $this->request);
             $this->separateAllText();
             $this->preparePhrasesTable();
-            $this->searchWordForms();
+            $this->searchWordForms(
+                $this->request['version'] ?? 'stemmer'
+            );
             RelevanceProgress::editProgress(80, $this->request);
             $this->processingOfGeneralInformation();
             $this->prepareUnigramTable();
@@ -204,9 +206,9 @@ class Relevance
                 'userId' => $userId,
             ]);
 
-            $object = RelevanceHistory::where('id', '=', $historyId)->first();
-            $object->state = -1;
-            $object->save();
+            RelevanceHistory::where('id', '=', $historyId)->update([
+                'state' => '-1'
+            ]);
 
             $this->saveError();
         }
@@ -559,10 +561,14 @@ class Relevance
     }
 
     /**
+     * stemmer or morphy
+     * @param string $version
      * @return void
      */
-    public function searchWordForms()
+    public function searchWordForms(string $version = 'stemmer')
     {
+        Log::debug('scan version', [$version]);
+        $wordWorms = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
 
@@ -570,63 +576,49 @@ class Relevance
         asort($array);
         $array = array_reverse($array);
 
-        foreach ($array as $key1 => $item1) {
-            if (!in_array($key1, $this->ignoredWords)) {
-                foreach ($array as $key2 => $item2) {
-                    if (!in_array($key2, $this->ignoredWords)) {
-                        similar_text($key1, $key2, $percent);
-                        if (
-                            preg_match("/[А-Яа-я]/", $key1) &&
-                            $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1) ||
-                            preg_match("/[A-Za-z]/", $key1) &&
-                            $percent >= 82
-                        ) {
-                            $this->wordForms[$key1][$key2] = $item2;
-                            $this->ignoredWords[] = $key2;
-                            $this->ignoredWords[] = $key1;
+        if ($version == 'stemmer') {
+            foreach ($array as $key1 => $item1) {
+                if (!in_array($key1, $this->ignoredWords)) {
+                    foreach ($array as $key2 => $item2) {
+                        if (!in_array($key2, $this->ignoredWords)) {
+                            similar_text($key1, $key2, $percent);
+                            if (
+                                preg_match("/[А-Яа-я]/", $key1) &&
+                                $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1) ||
+                                preg_match("/[A-Za-z]/", $key1) &&
+                                $percent >= 82
+                            ) {
+                                $this->wordForms[$key1][$key2] = $item2;
+                                $this->ignoredWords[] = $key2;
+                                $this->ignoredWords[] = $key1;
+                            }
                         }
                     }
                 }
+                if (count($this->wordForms) >= 600) {
+                    break;
+                }
             }
-            if (count($this->wordForms) >= 600) {
-                break;
+        } else {
+            $morphy = new Morphy();
+
+            foreach ($array as $key => $item) {
+                if (!in_array($key, $this->ignoredWords)) {
+                    $this->ignoredWords[] = $key;
+                    $root = $morphy->base($key);
+                    if ($root == null) {
+                        continue;
+                    }
+
+                    $wordWorms[$root][$key] = $item;
+                }
+            }
+
+            foreach ($wordWorms as $wordWorm) {
+                $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
             }
         }
 
-//        $array = explode(' ', $this->competitorsTextAndLinks);
-//        $stemmer = new LinguaStem();
-//
-//        sort($array, SORT_STRING);
-//        $array = array_count_values($array);
-//        if (isset($array[""])) {
-//            unset($array[""]);
-//        }
-//
-//        foreach ($array as $key1 => $elem1) {
-//            $rootWord = $stemmer->getRootWord($key1);
-//            if (!in_array($key1, $this->ignoredWords)) {
-//                foreach ($array as $key2 => $elem2) {
-//                    if (!in_array($key2, $this->ignoredWords)) {
-//                        similar_text($key1, $key2, $percent);
-//                        $rootWord2 = $stemmer->getRootWord($key2);
-//                        if (
-//                            $percent < 82 &&
-//                            $rootWord !== $stemmer->getRootWord($key2) &&
-//                            $rootWord !== $rootWord2
-//                        ) {
-//                            continue 2;
-//                        } else {
-//                            $this->wordForms[$key1][$key2] = $elem2;
-//                            $this->ignoredWords[] = $key2;
-//                            $this->ignoredWords[] = $key1;
-//                        }
-//                    }
-//                }
-//            }
-//            if (count($this->wordForms) >= 600) {
-//                break;
-//            }
-//        }
     }
 
     /**

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fae5f50d0fdafdbcef98330db16edc60",
+    "content-hash": "cda3c5a31ab5550aea264d3912f5751d",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -3090,6 +3090,37 @@
                 "source": "https://github.com/php-parallel-lint/PHP-Console-Highlighter/tree/master"
             },
             "time": "2020-05-13T07:37:49+00:00"
+        },
+        {
+            "name": "php74/phpmorphy74",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Brontoz554/phpmorphy74.git",
+                "reference": "c93abb197ff2421617e4b1d4de68efd74c63750a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Brontoz554/phpmorphy74/zipball/c93abb197ff2421617e4b1d4de68efd74c63750a",
+                "reference": "c93abb197ff2421617e4b1d4de68efd74c63750a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "phpMorphy/src/common.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "https://mac-blog.org.ua/php-stemmer-morphy ported on php 7.4(beta)",
+            "support": {
+                "issues": "https://github.com/Brontoz554/phpmorphy74/issues",
+                "source": "https://github.com/Brontoz554/phpmorphy74/tree/1.0.3"
+            },
+            "time": "2022-08-19T20:37:01+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -8530,5 +8561,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
