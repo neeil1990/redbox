@@ -5,6 +5,7 @@ namespace App;
 use phpMorphy;
 use phpMorphy_FilesBundle;
 
+dd(env('MORPHY_PATH'));
 require_once env('MORPHY_PATH');
 
 class Morphy
