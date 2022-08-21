@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Support\Facades\Log;
 use phpMorphy;
 use phpMorphy_FilesBundle;
 
