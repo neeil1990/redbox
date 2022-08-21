@@ -567,9 +567,6 @@ class Relevance
      */
     public function searchWordForms(string $version = 'stemmer')
     {
-        Log::debug('scan version', [$version]);
-        Log::debug(__DIR__ . env('MORPHY_PATH'));
-
         $wordWorms = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();

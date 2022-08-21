@@ -14,6 +14,7 @@
 use App\Morphy;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -290,6 +291,10 @@ Route::get('/morphy-test/', function () {
     }
 
     dd($result);
+});
+
+Route::get('/test-morphy', function () {
+    dd(__DIR__ . env('MORPHY_PATH'));
 });
 
 Route::get('/get-passages/{link}', function ($link) {
