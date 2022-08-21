@@ -568,6 +568,8 @@ class Relevance
     public function searchWordForms(string $version = 'stemmer')
     {
         Log::debug('scan version', [$version]);
+        Log::debug(__DIR__ . env('MORPHY_PATH'));
+
         $wordWorms = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
@@ -577,26 +579,19 @@ class Relevance
         $array = array_reverse($array);
 
         if ($version == 'stemmer') {
-            foreach ($array as $key1 => $item1) {
-                if (!in_array($key1, $this->ignoredWords)) {
-                    foreach ($array as $key2 => $item2) {
-                        if (!in_array($key2, $this->ignoredWords)) {
-                            similar_text($key1, $key2, $percent);
-                            if (
-                                preg_match("/[А-Яа-я]/", $key1) &&
-                                $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1) ||
-                                preg_match("/[A-Za-z]/", $key1) &&
-                                $percent >= 82
-                            ) {
-                                $this->wordForms[$key1][$key2] = $item2;
-                                $this->ignoredWords[] = $key2;
-                                $this->ignoredWords[] = $key1;
-                            }
-                        }
+            foreach ($array as $key => $item) {
+                if (!in_array($key, $this->ignoredWords)) {
+                    $this->ignoredWords[] = $key;
+                    $root = $stemmer->getRootWord($key);
+                    if ($root == null) {
+                        continue;
                     }
-                }
-                if (count($this->wordForms) >= 600) {
-                    break;
+
+                    $wordWorms[$root][$key] = $item;
+
+                    if (count($wordWorms) >= 1000) {
+                        break;
+                    }
                 }
             }
         } else {
@@ -611,12 +606,16 @@ class Relevance
                     }
 
                     $wordWorms[$root][$key] = $item;
+
+                    if (count($wordWorms) >= 1000) {
+                        break;
+                    }
                 }
             }
+        }
 
-            foreach ($wordWorms as $wordWorm) {
-                $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
-            }
+        foreach ($wordWorms as $wordWorm) {
+            $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
         }
 
     }
@@ -1148,7 +1147,7 @@ class Relevance
         }
 
         $result['densityMain'] = round($densityMain);
-        $result['densityMainPercent'] = round($densityMain / 600);
+        $result['densityMainPercent'] = round($densityMain / 1000);
         return $result;
     }
 

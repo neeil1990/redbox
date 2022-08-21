@@ -898,6 +898,17 @@
                                 </div>
                             </div>
 
+                            @if($admin)
+                                <div class="form-group required">
+                                    <label>Способ подбора корней</label>
+                                    {!! Form::select('version', array_unique([
+                                            $object['request']['version'] => $object['request']['version'],
+                                            'stemmer' => 'stemmer (старая версия)',
+                                            'phpmorphy' => 'phpMorphy (новая версия)',
+                                    ]), null, ['class' => 'custom-select rounded-0 version']) !!}
+                                </div>
+                            @endif
+
                             <div class="d-flex flex-column">
                                 <div class="btn-group w-50 mb-2">
                                     <button class="btn btn-secondary" id="repeat-queue-scan">
@@ -1123,6 +1134,7 @@
                     conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
                     switchMyListWords: $('#switchMyListWords').is(':checked'),
                     listWords: $('.form-control.listWords').val(),
+                    version: $('.version').val(),
                 }
             }
 
