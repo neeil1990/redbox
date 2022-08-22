@@ -900,13 +900,22 @@
 
                             @if($admin)
                                 <div class="form-group required">
-                                    <label>Способ подбора корней</label>
-                                    {!! Form::select('version', array_unique([
-                                            $object['request']['version'] => $object['request']['version'],
-                                            'stemmer' => 'stemmer (старая версия)',
-                                            'phpmorphy' => 'phpMorphy (новая версия)',
-                                    ]), null, ['class' => 'custom-select rounded-0 version']) !!}
+                                    @if(isset($object['request']['version']))
+                                        <label>Способ подбора корней</label>
+                                        {!! Form::select('version', array_unique([
+                                                $object['request']['version'] => $object['request']['version'],
+                                                'stemmer' => 'stemmer (старая версия)',
+                                                'phpmorphy' => 'phpMorphy (новая версия)',
+                                        ]), null, ['class' => 'custom-select rounded-0 version']) !!}
+                                    @else
+                                        <label>Способ подбора корней</label>
+                                        {!! Form::select('version', array_unique([
+                                                'stemmer' => 'stemmer (старая версия)',
+                                                'phpmorphy' => 'phpMorphy (новая версия)',
+                                        ]), null, ['class' => 'custom-select rounded-0 version']) !!}
+                                    @endif
                                 </div>
+
                             @endif
 
                             <div class="d-flex flex-column">
