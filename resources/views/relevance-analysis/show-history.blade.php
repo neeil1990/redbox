@@ -1207,7 +1207,7 @@
                 if (!history.cleaning) {
                     renderTextTable(history.avg, history.main_page)
                     renderRecommendationsTable(history.recommendations, config.recommendations_count)
-                    renderUnigramTable(history.unigram_table, config.ltp_count, true);
+                    renderUnigramTable(history.unigram_table, config.ltp_count, history.history_id);
                     renderPhrasesTable(history.phrases, config.ltps_count)
                     renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false, true);
                     $('.sites').css({

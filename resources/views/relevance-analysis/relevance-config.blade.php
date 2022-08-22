@@ -44,10 +44,12 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                        <a class="nav-link active"
+                           href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -267,6 +269,16 @@
                                                        value="{{ $config->boostPercent }}">
                                             </div>
                                         </div>
+
+                                        <div class="mt-3 mb-3">
+                                            Способ подбора корней по умолчанию
+                                            {!! Form::select('word_worms', array_unique([
+                                                $config->word_worms => $config->word_worms,
+                                                'stemmer' => 'stemmer (старая версия)',
+                                                'phpmorphy' => 'phpMorphy (новая версия)',
+                                            ]), null, ['class' => 'custom-select rounded-0 version']) !!}
+                                        </div>
+
                                         <input type="submit" value="Изменить стартовую конфигурацию"
                                                class="btn btn-secondary">
                                     </div>

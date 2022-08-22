@@ -1,4 +1,5 @@
-function renderUnigramTable(unigramTable, count) {
+function renderUnigramTable(unigramTable, count, resultId = 0) {
+    console.log('resultId: ' + resultId)
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
@@ -21,6 +22,9 @@ function renderUnigramTable(unigramTable, count) {
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {
                 $(this).append("<button class='btn btn-secondary' id='showChildrenRows'>Child</button>");
+                if (resultId !== 0) {
+                    $(this).append("<a class='btn btn-secondary mr-1 ml-1' href='/show-missing-words/" + resultId + "' target='_blank'>Missing Words</a>");
+                }
             }
         });
 

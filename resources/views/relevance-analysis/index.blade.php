@@ -150,7 +150,6 @@
                                    ]), null, ['class' => 'custom-select rounded-0 region']) !!}
                         </div>
 
-
                         <div id="site-list" style="display: none">
                             <div class="form-group required">
                                 <label>{{ __('List of scanned sites') }}</label>
@@ -277,6 +276,7 @@
                                 <div class="form-group required">
                                     <label>Способ подбора корней</label>
                                     {!! Form::select('version', array_unique([
+                                            $config->word_worms => $config->word_worms,
                                             'stemmer' => 'stemmer (старая версия)',
                                             'phpmorphy' => 'phpMorphy (новая версия)',
                                             ]), null, ['class' => 'custom-select rounded-0 version']) !!}
@@ -1177,14 +1177,12 @@
                 });
             }
 
-            // ----------------------------
-
             function successRequest(response) {
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar()
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
-                renderUnigramTable(response.unigramTable, response.ltp_count);
+                renderUnigramTable(response.unigramTable, response.ltp_count, response.history_id);
                 renderPhrasesTable(response.phrases, response.ltps_count)
                 renderScannedSitesList(
                     response.sites,

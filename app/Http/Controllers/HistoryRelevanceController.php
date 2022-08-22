@@ -140,7 +140,7 @@ class HistoryRelevanceController extends Controller
      */
     public function getDetailsInfo(Request $request): JsonResponse
     {
-        try {
+//        try {
             $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
 
             $admin = User::isUserAdmin();
@@ -172,12 +172,12 @@ class HistoryRelevanceController extends Controller
             }
             $history = Relevance::uncompressed($history);
 
-        } catch (Throwable $exception) {
-            return response()->json([
-                'code' => 415,
-                'message' => __('The data was lost')
-            ]);
-        }
+//        } catch (Throwable $exception) {
+//            return response()->json([
+//                'code' => 415,
+//                'message' => __('The data was lost')
+//            ]);
+//        }
 
         return response()->json([
             'code' => 200,
@@ -713,6 +713,30 @@ class HistoryRelevanceController extends Controller
             'code' => 200,
             'newObject' => RelevanceHistory::where('project_relevance_history_id', '=', $object->project_relevance_history_id)
                 ->latest()->first(),
+        ]);
+    }
+
+    /**
+     * @return void
+     */
+    public function showMissingWords(RelevanceHistoryResult $result)
+    {
+        $admin = User::isUserAdmin();
+        $wordForms = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
+
+        $result = [];
+        foreach ($wordForms as $wordForm) {
+            $key = array_key_first($wordForm);
+            $elem = $wordForm[$key];
+
+            if ($elem['repeatInLinkMainPage'] == 0 && $elem['repeatInTextMainPage'] == 0) {
+                $result[$key] = $elem;
+            }
+        }
+
+        return view('relevance-analysis.missing-words', [
+            'result' => $result,
+            'admin' => $admin
         ]);
     }
 }

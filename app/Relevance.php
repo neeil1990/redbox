@@ -327,6 +327,7 @@ class Relevance
                 }
             }
         }
+
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word != 'total') {
@@ -1154,7 +1155,6 @@ class Relevance
     public function saveResults()
     {
         $saveObject = [];
-        //сжимаем html и удаляем не нужную информацию для экономии ресурсов бд
         foreach ($this->sites as $key => $site) {
             if (!array_key_exists('exp', $this->sites[$key])) {
                 unset($this->sites[$key]['html']);
@@ -1214,7 +1214,7 @@ class Relevance
 
                 ProjectRelevanceHistory::calculateInfo($main);
 
-                $this->saveHistoryResult($id);
+                $this->params['result_id'] = $this->saveHistoryResult($id);
                 return;
             }
         }
@@ -1223,9 +1223,9 @@ class Relevance
 
     /**
      * @param $id
-     * @return void
+     * @return int
      */
-    public function saveHistoryResult($id)
+    public function saveHistoryResult($id): int
     {
         $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
 
@@ -1269,6 +1269,8 @@ class Relevance
 
         $result->compressed = true;
         $result->save();
+
+        return $result->id;
     }
 
     /**
@@ -1379,6 +1381,11 @@ class Relevance
         }
     }
 
+    /**
+     * @param $key
+     * @param $elem
+     * @return void
+     */
     public function calculate($key, $elem)
     {
         if (isset($this->avg[$key])) {
@@ -1444,6 +1451,7 @@ class Relevance
                 ],
 
                 'unigram_table' => json_decode(gzuncompress(base64_decode($history['unigram_table'])), true),
+                'history_id' => $history['id'],
                 'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
                 'tf_comp_clouds' => json_decode(gzuncompress(base64_decode($history['tf_comp_clouds'])), true),
                 'phrases' => json_decode(gzuncompress(base64_decode($history['phrases'])), true),
