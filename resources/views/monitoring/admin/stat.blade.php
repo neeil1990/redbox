@@ -105,7 +105,7 @@
             };
 
             let table = $('#queues').DataTable({
-                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 "ordering": false,
                 lengthMenu: [30, 50, 100],
                 pageLength: 50,

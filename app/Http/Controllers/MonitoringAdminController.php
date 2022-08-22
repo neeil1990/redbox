@@ -94,7 +94,7 @@ class MonitoringAdminController extends Controller
         $dataTable = collect([]);
 
         $page = ($request->input('start') / $request->input('length')) + 1;
-        $queues = $this->getQueues($request->input('length', 1), $page);
+        $queues = $this->getQueuesOnPage($request->input('length', 1), $page);
 
         foreach ($queues->getCollection() as $item){
 
@@ -120,7 +120,7 @@ class MonitoringAdminController extends Controller
         ]);
     }
 
-    protected function getQueues($length, $page)
+    protected function getQueuesOnPage($length, $page)
     {
 
         $jobs = $this->jobs->paginate($length, ['*'], 'page', $page);
