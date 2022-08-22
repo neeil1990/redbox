@@ -9,6 +9,12 @@
             .dt-button {
                 margin-left: 5px;
             }
+
+            #unigram > tbody > tr > td:nth-child(7),
+            #unigram > tbody > tr > td:nth-child(9),
+            #unigram > tbody > tr > td:nth-child(11) {
+                background: #ebf0f5;;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
@@ -162,16 +168,16 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            $(document).ready(function (){
-               $('#unigram').DataTable({
-                   "order": [[1, "desc"]],
-                   "pageLength": 25,
-                   "searching": true,
-                   dom: 'lBfrtip',
-                   buttons: [
-                       'copy', 'csv', 'excel'
-                   ]
-               })
+            $(document).ready(function () {
+                $('#unigram').DataTable({
+                    "order": [[1, "desc"]],
+                    "pageLength": 25,
+                    "searching": true,
+                    dom: 'lBfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ]
+                })
                 $('.dt-button').addClass('btn btn-secondary')
             })
         </script>
