@@ -45,7 +45,9 @@ class MonitoringAdminController extends Controller
     public function deleteQueues(Request $request)
     {
         if($request->has('delete_queues')){
+
             $this->jobs->delete();
+            flash()->overlay(__('Delete successfully'), __('Delete queues'))->success();
         }else{
 
             $queues = collect([]);
@@ -78,8 +80,10 @@ class MonitoringAdminController extends Controller
                 }
             }
 
-            if($queues->isNotEmpty())
+            if($queues->isNotEmpty()){
                 $this->jobs->whereIn('id', $queues->pluck('id'))->delete();
+                flash()->overlay('Удалено ' . $queues->count(), __('Delete queues'))->success();
+            }
         }
 
         return redirect()->back();
