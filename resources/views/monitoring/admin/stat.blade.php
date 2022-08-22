@@ -13,6 +13,47 @@
     <div class="row">
         <div class="col-6">
             @include('monitoring.admin._btn')
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Удаление очередей</h3>
+                </div>
+
+                {!! Form::open(['route' => 'monitoring.stat.deleteQueues']) !!}
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" name="delete_queues" class="custom-control-input" id="deleteQueues">
+                                    <label class="custom-control-label" for="deleteQueues">Удалить всю очередь этого модуля</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                {!! Form::label('user', __('User')) !!}
+                                {!! Form::select('user', $users, null, ['class' => 'custom-select', 'placeholder' => 'Выберите пользователя']) !!}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                {!! Form::label('project', __('Project')) !!}
+                                {!! Form::select('project', $sites, null, ['class' => 'custom-select', 'placeholder' => 'Выберите проект']) !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                </div>
+
+                {!! Form::close() !!}
+            </div>
         </div>
 
         <div class="col-6">
@@ -33,7 +74,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -98,6 +138,10 @@
                     {
                         title: 'Пользователь',
                         data: 'user'
+                    },
+                    {
+                        title: 'Email',
+                        data: 'email'
                     },
                     {
                         title: 'Сайт',
