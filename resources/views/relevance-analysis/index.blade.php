@@ -1177,14 +1177,12 @@
                 });
             }
 
-            // ----------------------------
-
             function successRequest(response) {
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar()
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count)
-                renderUnigramTable(response.unigramTable, response.ltp_count);
+                renderUnigramTable(response.unigramTable, response.ltp_count, response.history_id);
                 renderPhrasesTable(response.phrases, response.ltps_count)
                 renderScannedSitesList(
                     response.sites,

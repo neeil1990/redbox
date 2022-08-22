@@ -206,6 +206,7 @@ class RelevanceController extends Controller
                 'countSymbols' => $relevance->countSymbolsInMyPage,
             ],
             'unigramTable' => $relevance->wordForms,
+            'history_id' => $relevance->params['result_id'],
             'sites' => $relevance->sites,
             'sitesAVG' => $relevance->avg,
             'tfCompClouds' => $relevance->tfCompClouds,
