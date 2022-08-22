@@ -109,6 +109,7 @@ class AdminController extends Controller
         $config->recommendations_count = $request->recommendations_count;
 
         $config->boostPercent = $request->boostPercent;
+        $config->word_worms = $request->word_worms;
 
         $config->save();
 

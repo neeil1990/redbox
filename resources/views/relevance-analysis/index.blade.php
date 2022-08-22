@@ -150,7 +150,6 @@
                                    ]), null, ['class' => 'custom-select rounded-0 region']) !!}
                         </div>
 
-
                         <div id="site-list" style="display: none">
                             <div class="form-group required">
                                 <label>{{ __('List of scanned sites') }}</label>
@@ -277,6 +276,7 @@
                                 <div class="form-group required">
                                     <label>Способ подбора корней</label>
                                     {!! Form::select('version', array_unique([
+                                            $config->word_worms => $config->word_worms,
                                             'stemmer' => 'stemmer (старая версия)',
                                             'phpmorphy' => 'phpMorphy (новая версия)',
                                             ]), null, ['class' => 'custom-select rounded-0 version']) !!}
