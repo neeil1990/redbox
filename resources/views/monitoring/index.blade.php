@@ -24,6 +24,14 @@
         </style>
     @endslot
 
+    @hasanyrole('Super Admin|admin')
+    <div class="row mb-2">
+        <div class="col-6">
+            @include('monitoring.admin._btn')
+        </div>
+    </div>
+    @endhasanyrole
+
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
     </div>

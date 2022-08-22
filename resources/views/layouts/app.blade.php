@@ -217,7 +217,7 @@
 </script>
 @include('flash::message')
 
-@if(!env('APP_DEBUG'))
+@if(!config('app.debug'))
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function (m, e, t, r, i, k, a) {

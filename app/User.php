@@ -221,4 +221,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(ProjectRelevanceHistory::class);
     }
+
+    /**
+     * Get the user's full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return "{$this->name} {$this->last_name}";
+    }
 }
