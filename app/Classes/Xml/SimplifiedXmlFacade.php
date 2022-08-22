@@ -34,6 +34,7 @@ class SimplifiedXmlFacade extends XmlFacade
     {
         $response = $this->sendRequest($boolean);
         if (isset($response['response']['error'])) {
+            Log::debug('xml error', [$response['response']['error']]);
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser('sv@prime-ltd.su');
             $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
@@ -77,7 +78,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
         $json = json_encode($xml);
 
-        return json_decode($json, TRUE);
+        return json_decode($json, true);
     }
 
     /**
@@ -107,6 +108,10 @@ class SimplifiedXmlFacade extends XmlFacade
             } else {
                 $sites[] = Str::lower($item['doc']['url']);
             }
+        }
+
+        if (count($sites) == 0) {
+            Log::debug('error xml request', [$responseArray]);
         }
 
         return $sites;

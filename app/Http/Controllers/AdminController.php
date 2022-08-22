@@ -48,7 +48,7 @@ class AdminController extends Controller
                 'domains' => RelevanceUniqueDomains::count(),
                 'allDomains' => RelevanceAllUniqueDomains::count(),
                 'allPages' => RelevanceAllUniquePages::count(),
-                'countJobs' => UsersJobs::where('count_jobs', '>', 0)->count(),
+                'countJobs' => UsersJobs::where('count_jobs', '>', 0)->sum('count_jobs'),
             ]
         ]);
     }

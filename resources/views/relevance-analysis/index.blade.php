@@ -246,19 +246,20 @@
                                  @if($config->remove_my_list_words == 'no') style="display:none;" @endif >
                                 {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
                             </div>
-                            <div class="d-flex mt-3" @if(!$admin) style="display: none" @endif>
-                                <div class="__helper-link ui_tooltip_w">
-                                    <div
-                                        class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                        <input type="checkbox"
-                                               class="custom-control-input"
-                                               id="exp"
-                                               name="exp">
-                                        <label class="custom-control-label" for="exp"></label>
+                            @if($admin)
+                                <div class="d-flex mt-3">
+                                    <div class="__helper-link ui_tooltip_w">
+                                        <div
+                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="exp"
+                                                   name="exp">
+                                            <label class="custom-control-label" for="exp"></label>
+                                        </div>
                                     </div>
-                                </div>
-                                <p>{{ __('Experimental mode') }} </p>
-                                <span class="__helper-link ui_tooltip_w">
+                                    <p>{{ __('Experimental mode') }} </p>
+                                    <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-question-circle" style="color: grey"></i>
                                     <span class="ui_tooltip __bottom">
                                         <span class="ui_tooltip_content" style="width: 300px">
@@ -272,7 +273,15 @@
                                         </span>
                                     </span>
                                 </span>
-                            </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label>Способ подбора корней</label>
+                                    {!! Form::select('version', array_unique([
+                                            'stemmer' => 'stemmer (старая версия)',
+                                            'phpmorphy' => 'phpMorphy (новая версия)',
+                                            ]), null, ['class' => 'custom-select rounded-0 version']) !!}
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -1271,6 +1280,7 @@
 
             function getData() {
                 return {
+                    version: $('.version').val(),
                     pageHash: window.session,
                     type: $('#check-type').val(),
                     hash: $('#hiddenHash').val(),

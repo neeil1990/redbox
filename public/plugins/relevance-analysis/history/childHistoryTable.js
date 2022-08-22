@@ -22,6 +22,12 @@ function getHistoryInfo() {
                     $('#site-list').hide()
                 }
 
+                if (history.version) {
+                    $(".version").val(history.version).change();
+                } else {
+                    $(".version").val('stemmer').change();
+                }
+
                 $('.form-control.link').val(history.link)
                 $('.form-control.phrase').val(history.phrase)
                 $('#type').val(history.type)
@@ -332,6 +338,7 @@ function repeatScan() {
                 conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
                 switchMyListWords: $('#switchMyListWords').is(':checked'),
                 listWords: $('.form-control.listWords').val(),
+                version: $('.version').val(),
             },
             success: function () {
                 $('#history-state-' + id).html('<p>Обрабатывается..</p>' +
@@ -388,7 +395,7 @@ function checkAnalyseProgress(id) {
                     0: newObject['last_check'],
                     1: '<textarea style="height: 160px;" data-target="' + newObject['id'] + '" class="history-comment form form-control"></textarea>',
                     2: newObject['phrase'],
-                    3: newObject['region'],
+                    3: getRegionName(newObject['region']),
                     4: newObject['main_link'],
                     5: newObject['position'] === 0 ? 'Не попал в топ 100' : newObject['position'],
                     6: newObject['points'],
