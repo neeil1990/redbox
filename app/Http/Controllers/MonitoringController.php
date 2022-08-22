@@ -45,11 +45,9 @@ class MonitoringController extends Controller
     public function index()
     {
         //$model = new MonitoringKeyword();
-        //$query = $model->where('id', 9)->first();
+        //$query = $model->where('id', 47)->first();
 
-        //$store = (new PositionStore($query, false))->save();
-        //dispatch((new PositionQueue($query))->onQueue('position'));
-
+        //dispatch((new PositionQueue($query))->onQueue('position_high'));
 
         return view('monitoring.index');
     }
@@ -71,7 +69,7 @@ class MonitoringController extends Controller
         $keywords = $project->keywords()->whereIn('id', $request->input('keys'))->get();
 
         foreach ($keywords as $keyword)
-            dispatch((new PositionQueue($keyword))->onQueue('high'));
+            dispatch((new PositionQueue($keyword))->onQueue('position_high'));
 
         return collect([
             'status' => true
@@ -100,7 +98,7 @@ class MonitoringController extends Controller
         $project->load('keywords');
 
         foreach ($project->keywords as $keyword)
-            dispatch((new PositionQueue($keyword))->onQueue('medium'));
+            dispatch((new PositionQueue($keyword))->onQueue('position_low'));
     }
 
     public function getProjects(Request $request)

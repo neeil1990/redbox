@@ -80,6 +80,7 @@
         </div>
     </div>
 
+    @hasanyrole('Super Admin|admin')
     <h5 class="mb-2 mt-4">Testing</h5>
 
     {!! Form::open(['route' => ['keywords.set.test.positions', $project->id], 'method' => 'patch']) !!}
@@ -104,6 +105,7 @@
         <!-- /.input group -->
     </div>
     {!! Form::close() !!}
+    @endhasanyrole
 
     @include('monitoring.keywords.modal.main')
 
