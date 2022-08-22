@@ -271,7 +271,7 @@
                                         </div>
 
                                         <div class="mt-3 mb-3">
-                                            Система поиска корней по умолчанию
+                                            Способ подбора корней по умолчанию
                                             {!! Form::select('word_worms', array_unique([
                                                 $config->word_worms => $config->word_worms,
                                                 'stemmer' => 'stemmer (старая версия)',

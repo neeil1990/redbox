@@ -327,6 +327,7 @@ class Relevance
                 }
             }
         }
+
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($word != 'total') {
@@ -1379,6 +1380,11 @@ class Relevance
         }
     }
 
+    /**
+     * @param $key
+     * @param $elem
+     * @return void
+     */
     public function calculate($key, $elem)
     {
         if (isset($this->avg[$key])) {
