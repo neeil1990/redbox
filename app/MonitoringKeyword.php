@@ -22,4 +22,9 @@ class MonitoringKeyword extends Model
     {
         return $this->hasMany(MonitoringPosition::class);
     }
+
+    public function urls()
+    {
+        return $this->hasMany(MonitoringKeywordsUrl::class);
+    }
 }

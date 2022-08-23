@@ -43,6 +43,10 @@
                 color: #28a745!important;
                 font-weight: bold;
             }
+
+            .popover {
+                max-width: none;
+            }
         </style>
     @endslot
 
