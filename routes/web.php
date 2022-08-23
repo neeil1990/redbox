@@ -222,6 +222,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/tariff/total', 'TariffPayController@total')->name('tariff.total');
     Route::resource('tariff', 'TariffPayController');
 
+    Route::post('/monitoring/stat/delete-queues', 'MonitoringAdminController@deleteQueues')->name('monitoring.stat.deleteQueues');
     Route::get('/monitoring/stat', 'MonitoringAdminController@statPage')->name('monitoring.stat');
     Route::get('/monitoring/admin', 'MonitoringAdminController@adminPage')->name('monitoring.admin');
 
