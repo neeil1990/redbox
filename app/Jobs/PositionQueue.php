@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\MonitoringKeywordsUrl;
 use Exception;
 use App\Classes\Position\PositionStore;
 use App\MonitoringKeyword;
@@ -11,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class PositionQueue implements ShouldQueue
 {
@@ -49,6 +51,11 @@ class PositionQueue implements ShouldQueue
     {
         $store = new PositionStore($this->model, false);
         $store->save();
+
+        MonitoringKeywordsUrl::firstOrCreate(
+            ['monitoring_keyword_id' => $this->model->id, 'url' => $this->model->page],
+            ['url' => $this->model->page]
+        );
 
         MonitoringStat::create([
             'queue' => $this->job->getQueue(),

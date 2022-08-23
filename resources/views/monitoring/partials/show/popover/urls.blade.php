@@ -1,5 +1,4 @@
-<a href="#">http://some-urls.com</a><br />
-<a href="#">http://some-urls.com</a><br />
-<a href="#">http://some-urls.com</a><br />
-<a href="#">http://some-urls.com</a><br />
-<a href="#">http://some-urls.com</a><br />
+@foreach($urls as $u)
+    <span class="text-nowrap">{{ $u->created_at->format('d M Y H:i:s') }} <a href="{{ $u->url }}">{{ $u->url ?? 'Удалён' }}</a></span><br />
+@endforeach
+

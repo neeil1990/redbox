@@ -9,6 +9,7 @@ use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
+use App\MonitoringKeywordsUrl;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
@@ -20,6 +21,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -462,7 +464,15 @@ class MonitoringController extends Controller
                         $table[$id]->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
                         break;
                     case 'url':
-                        $table[$id]->put('url', view('monitoring.partials.show.url')->render());
+                        $textClass = 'text-bold';
+                        if($keyword->page && $keyword->urls->count()){
+                            $lastUrl = $keyword->urls->last();
+                            if($lastUrl->url != $keyword->page)
+                                $textClass = 'text-danger';
+                            else
+                                $textClass = 'text-success';
+                        }
+                        $table[$id]->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $keyword->urls])->render());
                         break;
                     case 'group':
                         $table[$id]->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());

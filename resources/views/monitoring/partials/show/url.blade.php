@@ -1,5 +1,6 @@
-<a href="#" data-toggle="popover" title="URL" data-content="{{ view('monitoring.partials.show.popover.urls') }}">
+<a href="#" @if($urls->count()) data-toggle="popover" @endif title="URL" data-content="{{ view('monitoring.partials.show.popover.urls', ['urls' => $urls->sortByDesc('created_at')]) }}">
     <span class="badge badge-light">
-        <i class="fas fa-link"></i> <span class="text-danger text-sm text-bold">15</span>
+        <i class="fas fa-link"></i>
+        <span class="{{ $textClass }} text-sm text-bold">{{ $urls->count() }}</span>
     </span>
 </a>
