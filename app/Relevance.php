@@ -566,7 +566,7 @@ class Relevance
      * @param string $version
      * @return void
      */
-    public function searchWordForms(string $version = 'stemmer')
+    public function searchWordForms(string $version = 'phpmorphy')
     {
         $wordWorms = [];
         $array = explode(' ', $this->competitorsTextAndLinks);

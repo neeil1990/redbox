@@ -13,7 +13,7 @@
             #unigram > tbody > tr > td:nth-child(7),
             #unigram > tbody > tr > td:nth-child(9),
             #unigram > tbody > tr > td:nth-child(11) {
-                background: #ebf0f5;;
+                background: #ebf0f5;
             }
         </style>
     @endslot
