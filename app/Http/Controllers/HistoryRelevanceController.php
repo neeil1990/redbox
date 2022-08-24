@@ -140,7 +140,7 @@ class HistoryRelevanceController extends Controller
      */
     public function getDetailsInfo(Request $request): JsonResponse
     {
-//        try {
+        try {
             $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
 
             $admin = User::isUserAdmin();
@@ -172,12 +172,12 @@ class HistoryRelevanceController extends Controller
             }
             $history = Relevance::uncompressed($history);
 
-//        } catch (Throwable $exception) {
-//            return response()->json([
-//                'code' => 415,
-//                'message' => __('The data was lost')
-//            ]);
-//        }
+        } catch (Throwable $exception) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('The data was lost')
+            ]);
+        }
 
         return response()->json([
             'code' => 200,
@@ -734,7 +734,31 @@ class HistoryRelevanceController extends Controller
             }
         }
 
-        return view('relevance-analysis.missing-words', [
+        return view('relevance-analysis.scan-result.missing-words', [
+            'result' => $result,
+            'admin' => $admin
+        ]);
+    }
+
+    /**
+     * @param RelevanceHistoryResult $result
+     * @return View
+     */
+    public function showChildrenRows(RelevanceHistoryResult $result): View
+    {
+        $admin = User::isUserAdmin();
+        $wordForms = json_decode(gzuncompress(base64_decode($result->unigram_table)), true);
+
+        $result = [];
+        foreach ($wordForms as $wordForm) {
+            foreach ($wordForm as $keyword => $word) {
+                if ($keyword != 'total') {
+                    $result[$keyword] = $word;
+                }
+            }
+        }
+
+        return view('relevance-analysis.scan-result.child-words', [
             'result' => $result,
             'admin' => $admin
         ]);
