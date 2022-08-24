@@ -21,29 +21,11 @@ function renderUnigramTable(unigramTable, count, resultId = 0) {
         //Добавляем только в ниграм
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {
-                $(this).append("<button class='btn btn-secondary' id='showChildrenRows'>Child</button>");
+                $(this).append("<a class='btn btn-secondary mr-1 ml-1' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");
                 if (resultId !== 0) {
                     $(this).append("<a class='btn btn-secondary mr-1 ml-1' href='/show-missing-words/" + resultId + "' target='_blank'>Missing Words</a>");
                 }
             }
-        });
-
-        $('#showChildrenRows').click(function () {
-            let object = sessionStorage.getItem('childTableRows')
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/configure-children-rows",
-                data: {
-                    sessionStorage: object,
-                },
-                success: function (response) {
-                    window.open('/show-children-rows/' + response.filename, '_blank');
-                },
-                error: function (response) {
-                    console.log(response.message)
-                }
-            });
         });
 
         function isUnigram(min, max, target, settings) {

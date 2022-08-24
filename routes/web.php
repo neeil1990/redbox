@@ -185,8 +185,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
-    Route::post('/configure-children-rows', 'RelevanceController@configureChildrenRows')->name('configure.children.rows');
-    Route::get('/show-children-rows/{filePath}', 'RelevanceController@showChildrenRows')->name('show.children.rows');
+    Route::get('/show-child-words', 'RelevanceController@showChildWords')->name('show.child.words');
 
     Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
     Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
@@ -206,6 +205,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/rescan-projects', 'HistoryRelevanceController@rescanProjects')->name('rescan.projects');
     Route::post('/check-state', 'HistoryRelevanceController@checkAnalyseProgress')->name('check.state');
     Route::get('/show-missing-words/{result}', 'HistoryRelevanceController@showMissingWords')->name('show.missing.words');
+    Route::get('/show-child-words/{result}', 'HistoryRelevanceController@showChildrenRows')->name('show.children.rows');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');

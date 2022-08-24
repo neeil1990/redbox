@@ -6,6 +6,7 @@ use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
+use App\RelevanceHistoryResult;
 use App\RelevanceProgress;
 use App\User;
 use Illuminate\Http\JsonResponse;
@@ -123,50 +124,6 @@ class RelevanceController extends Controller
         $relevance->analysis(Auth::id());
 
         return RelevanceController::successResponse($relevance);
-    }
-
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function configureChildrenRows(Request $request): JsonResponse
-    {
-        $filename = md5(microtime(true));
-        $filePath = public_path('children/' . $filename . '.json');
-        $wordForms = json_decode($request->sessionStorage, true);
-
-        $result = [];
-        foreach ($wordForms as $wordForm) {
-            foreach ($wordForm as $keyword => $word) {
-                if ($keyword != 'total') {
-                    $result[$keyword] = $word;
-                }
-            }
-        }
-        if (File::put($filePath, json_encode($result, JSON_UNESCAPED_UNICODE))) {
-            return response()->json([
-                'filename' => $filename
-            ], 201);
-        } else {
-            return response()->json([
-                'message' => 'Файл не создан'
-            ], 500);
-        }
-    }
-
-    /**
-     * @param $fileName
-     * @return View
-     */
-    public function showChildrenRows($fileName): View
-    {
-        $filePath = public_path('children/' . $fileName . '.json');
-
-        $file = File::get($filePath);
-        $array = json_decode($file, true);
-
-        return view('relevance-analysis.children', ['array' => $array]);
     }
 
     /**
