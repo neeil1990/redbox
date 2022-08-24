@@ -9,7 +9,6 @@ use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
-use App\MonitoringKeywordsUrl;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
@@ -49,6 +48,7 @@ class MonitoringController extends Controller
         //$model = new MonitoringKeyword();
         //$query = $model->where('id', 47)->first();
 
+        //(new PositionStore($query, false))->save();
         //dispatch((new PositionQueue($query))->onQueue('position_high'));
 
         return view('monitoring.index');
@@ -464,15 +464,24 @@ class MonitoringController extends Controller
                         $table[$id]->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
                         break;
                     case 'url':
+
+                        $urls = $keyword->positions()
+                            ->where('monitoring_searchengine_id', $region->id)
+                            ->whereNotNull('url')
+                            ->groupBy('url')
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
                         $textClass = 'text-bold';
-                        if($keyword->page && $keyword->urls->count()){
-                            $lastUrl = $keyword->urls->last();
+                        if($keyword->page && $urls->count()){
+                            $lastUrl = $urls->first();
                             if($lastUrl->url != $keyword->page)
                                 $textClass = 'text-danger';
                             else
                                 $textClass = 'text-success';
                         }
-                        $table[$id]->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $keyword->urls])->render());
+
+                        $table[$id]->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
                         break;
                     case 'group':
                         $table[$id]->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
