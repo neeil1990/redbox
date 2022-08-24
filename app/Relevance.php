@@ -187,9 +187,7 @@ class Relevance
             RelevanceProgress::editProgress(40, $this->request);
             $this->separateAllText();
             $this->preparePhrasesTable();
-            $this->searchWordForms(
-                $this->request['version'] ?? 'phpmorphy'
-            );
+            $this->searchWordForms();
             RelevanceProgress::editProgress(80, $this->request);
             $this->processingOfGeneralInformation();
             $this->prepareUnigramTable();
@@ -562,52 +560,39 @@ class Relevance
     }
 
     /**
-     * stemmer or morphy
-     * @param string $version
+     * search word root stemmer or phpmorphy engine
      * @return void
      */
-    public function searchWordForms(string $version = 'phpmorphy')
+    public function searchWordForms()
     {
-        $wordWorms = [];
-        $array = explode(' ', $this->competitorsTextAndLinks);
         $stemmer = new LinguaStem();
+        $morphy = new Morphy();
+        $wordWorms = [];
 
+        $array = explode(' ', $this->competitorsTextAndLinks);
         $array = array_count_values($array);
         asort($array);
         $array = array_reverse($array);
 
-        if ($version == 'stemmer') {
-            foreach ($array as $key => $item) {
-                if (!in_array($key, $this->ignoredWords)) {
-                    $this->ignoredWords[] = $key;
+        $version = $this->request['version'] ?? 'phpmorphy';
+
+        foreach ($array as $key => $item) {
+            if (!in_array($key, $this->ignoredWords)) {
+                $this->ignoredWords[] = $key;
+
+                if ($version == 'stemmer') {
                     $root = $stemmer->getRootWord($key);
-                    if ($root == null) {
-                        continue;
-                    }
-
-                    $wordWorms[$root][$key] = $item;
-
-                    if (count($wordWorms) >= 1000) {
-                        break;
-                    }
-                }
-            }
-        } else {
-            $morphy = new Morphy();
-
-            foreach ($array as $key => $item) {
-                if (!in_array($key, $this->ignoredWords)) {
-                    $this->ignoredWords[] = $key;
+                } else {
                     $root = $morphy->base($key);
-                    if ($root == null) {
-                        continue;
-                    }
+                }
+                if ($root == null) {
+                    continue;
+                }
 
-                    $wordWorms[$root][$key] = $item;
+                $wordWorms[$root][$key] = $item;
 
-                    if (count($wordWorms) >= 1000) {
-                        break;
-                    }
+                if (count($wordWorms) >= 1000) {
+                    break;
                 }
             }
         }
