@@ -268,6 +268,11 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
+Route::get('/test-morphy', function () {
+    $morphy = new Morphy();
+    dd($morphy->base('конспиратор'));
+});
+
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 
