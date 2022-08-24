@@ -188,7 +188,7 @@ class Relevance
             $this->separateAllText();
             $this->preparePhrasesTable();
             $this->searchWordForms(
-                $this->request['version'] ?? 'stemmer'
+                $this->request['version'] ?? 'phpmorphy'
             );
             RelevanceProgress::editProgress(80, $this->request);
             $this->processingOfGeneralInformation();
