@@ -51,6 +51,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -64,6 +66,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -77,6 +81,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -90,6 +96,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -103,6 +111,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -116,6 +126,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -129,6 +141,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -142,6 +156,8 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -155,6 +171,38 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minAVGPassages = parseFloat($('#minAVGPassages').val());
+            var maxAVGPassages = parseFloat($('#maxAVGPassages').val());
+            var count = parseFloat(data[12])
+            return isUnigram(minAVGPassages, maxAVGPassages, count, settings)
+        });
+        $('#minAVGPassages, #maxAVGPassages').keyup(function () {
+            table.draw();
+            $.each($('[generated-child=true]'), function () {
+                $(this).attr('generated-child', false)
+            })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+        });
+
+        $.fn.dataTable.ext.search.push(function (settings, data) {
+            var minPassages = parseFloat($('#minPassages').val());
+            var maxPassages = parseFloat($('#maxPassages').val());
+            var count = parseFloat(data[13])
+            return isUnigram(minPassages, maxPassages, count, settings)
+        });
+        $('#minPassages, #maxPassages').keyup(function () {
+            table.draw();
+            $.each($('[generated-child=true]'), function () {
+                $(this).attr('generated-child', false)
+            })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -168,12 +216,10 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
+
+            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
         });
-        if (searchPassages) {
-            $('.passages-elem').show()
-        } else {
-            $('.passages-elem').hide()
-        }
+        hideOrShowPassagesElem(searchPassages)
     });
 }
 
@@ -326,11 +372,7 @@ function showWordWorms(elem) {
             renderChildTr(parent, target, word, stats)
         })
         elem.addClass('show-children')
-        if (sessionStorage.getItem('searchPassages') === 'true') {
-            $('.passages-elem').show()
-        } else {
-            $('.passages-elem').hide()
-        }
+        hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
     }
 }
 
@@ -433,4 +475,12 @@ function removeWordFromIgnored(elem) {
     }, 3000)
     elem.hide()
     elem.parent().children().eq(0).show()
+}
+
+function hideOrShowPassagesElem(searchPassages) {
+    if (searchPassages) {
+        $('.passages-elem').show()
+    } else {
+        $('.passages-elem').hide()
+    }
 }
