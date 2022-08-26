@@ -82,6 +82,7 @@ class Relevance
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
+        $this->request['searchPassages'] = filter_var($this->request['searchPassages'], FILTER_VALIDATE_BOOLEAN) ?? false;
 
         if ($queue) {
             $params = [
@@ -178,22 +179,18 @@ class Relevance
     {
         try {
             $this->removeNoIndex();
-            RelevanceProgress::editProgress(20, $this->request);
             $this->getHiddenData();
             $this->separateLinksFromText();
             $this->removePartsOfSpeech();
             $this->removeListWords();
             $this->getTextFromCompetitors();
-            RelevanceProgress::editProgress(40, $this->request);
             $this->separateAllText();
             $this->preparePhrasesTable();
             $this->searchWordForms();
-            RelevanceProgress::editProgress(80, $this->request);
             $this->processingOfGeneralInformation();
             $this->prepareUnigramTable();
             $this->analyzeRecommendations();
             $this->prepareAnalysedSitesTable();
-            RelevanceProgress::editProgress(90, $this->request);
             $this->prepareClouds();
             $this->saveHistory($userId, $historyId);
         } catch (\Throwable $exception) {
@@ -245,12 +242,60 @@ class Relevance
      */
     public function separateLinksFromText()
     {
-        $this->mainPage['linkText'] = TextAnalyzer::getLinkText($this->mainPage['html']);
-        $this->mainPage['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->mainPage['html']));
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
-            $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
+            $this->sites[$key]['html'] = TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']);
+
+            if ($this->request['searchPassages']) {
+
+                $this->sites[$key]['passages'] = Relevance::searchPassages($this->sites[$key]['defaultHtml']);
+
+                $passagesArray = explode(' ', $this->sites[$key]['passages']);
+                $html = ' ' . $this->sites[$key]['html'] . ' ';
+                foreach ($passagesArray as $item) {
+                    $search = " $item ";
+                    $pos = strpos($html, $search);
+                    if ($pos !== false) {
+                        $html = substr_replace($html, " ", $pos, strlen($search));
+                    }
+                }
+
+                $this->sites[$key]['html'] = trim($html);
+
+            } else {
+                $this->sites[$key]['passages'] = '';
+            }
+
+            if ($this->sites[$key]['mainPage']) {
+                $this->mainPage['linkText'] = $this->sites[$key]['linkText'];
+                $this->mainPage['html'] = $this->sites[$key]['html'];
+                $this->mainPage['passages'] = $this->sites[$key]['passages'];
+            }
         }
+    }
+
+    /**
+     * @param $html
+     * @return string
+     */
+    public static function searchPassages($html): string
+    {
+        $passages = '';
+        preg_match_all('(<li.*?>(.*?)</li>)', $html, $li, PREG_SET_ORDER);
+
+        foreach ($li as $item) {
+            $ul = str_replace('>', '> ', $item[1]);
+            $ul = TextAnalyzer::clearHTMLFromLinks($ul);
+
+            $text = trim(strip_tags($ul));
+            $text = preg_replace('| +|', ' ', $text);
+            $text = trim(TextAnalyzer::deleteEverythingExceptCharacters($text));
+            if (mb_strlen($text) < 200 && $text != "") {
+                $passages .= ' ' . $text;
+            }
+        }
+
+        return trim($passages);
     }
 
     /**
@@ -258,6 +303,7 @@ class Relevance
      */
     public function getHiddenData()
     {
+        RelevanceProgress::editProgress(20, $this->request);
         if ($this->request['hiddenText'] == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
@@ -277,6 +323,7 @@ class Relevance
      */
     public function getTextFromCompetitors()
     {
+        RelevanceProgress::editProgress(40, $this->request);
         foreach ($this->sites as $key => $page) {
             if (!$this->sites[$key]['ignored']) {
                 $this->competitorsLinks .= ' ' . $this->sites[$key]['linkText'] . ' ';
@@ -609,6 +656,7 @@ class Relevance
      */
     public function processingOfGeneralInformation()
     {
+        RelevanceProgress::editProgress(80, $this->request);
         $countSites = 0;
         // считаем количество сайтов, которые не в списке игнорируемых
         foreach ($this->sites as $site) {
@@ -624,10 +672,13 @@ class Relevance
         $myLink = explode(" ", $this->mainPage['linkText']);
         $myLink = array_count_values($myLink);
 
+        $myPassages = explode(" ", $this->mainPage['passages']);
+        $myPassages = array_count_values($myPassages);
+
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
-                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
+                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
@@ -646,6 +697,11 @@ class Relevance
                             $numberLinkOccurrences += $linkTextCount;
                         }
 
+                        $passagesCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['passages'] . ' ');
+                        if ($passagesCount > 0) {
+                            $numberPassageOccurrences += $passagesCount;
+                        }
+
                         if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
                             $countRepeat = $htmlCount + $hiddenTextCount + $linkTextCount;
                             $numberOccurrences++;
@@ -660,6 +716,7 @@ class Relevance
                 arsort($occurrences);
                 $repeatInTextMainPage = $myText[$word] ?? 0;
                 $repeatLinkInMainPage = $myLink[$word] ?? 0;
+                $repeatInPassagesMainPage = $myPassages[$word] ?? 0;
 
                 $tf = round($item / $wordCount, 5);
                 $idf = round(log10($wordCount / $item), 5);
@@ -672,10 +729,12 @@ class Relevance
                     'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
                     'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
                     'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
+                    'avgInPassages' => (int)ceil($numberPassageOccurrences / $countSites),
                     'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
-                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
-                    'occurrences' => $occurrences
+                    'repeatInPassagesMainPage' => $repeatInPassagesMainPage,
+                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage + $repeatInPassagesMainPage,
+                    'occurrences' => $occurrences,
                 ];
             }
         }
@@ -689,20 +748,28 @@ class Relevance
         $this->coverageInfo['sum'] = 0;
 
         foreach ($this->wordForms as $key => $wordForm) {
-            $tf = $idf = $reSpam = $numberOccurrences = $repeatInText = $repeatInLink = $avgInText = 0;
+            $tf = $idf = $reSpam = $numberOccurrences = $repeatInPassages = $repeatInText = $repeatInLink = $avgInText = $avgInPassages = 0;
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
             $occurrences = [];
 
             foreach ($wordForm as $word) {
                 $danger = $word['repeatInTextMainPage'] == 0 || $word['repeatInLinkMainPage'] == 0;
+
                 $tf += $word['tf'];
                 $idf += $word['idf'];
+
                 $avgInTotalCompetitors += $word['avgInTotalCompetitors'];
                 $totalRepeatMainPage += $word['totalRepeatMainPage'];
+
                 $avgInText += $word['avgInText'];
                 $avgInLink += $word['avgInLink'];
+
                 $repeatInText += $word['repeatInTextMainPage'];
                 $repeatInLink += $word['repeatInLinkMainPage'];
+
+                $avgInPassages += $word['avgInPassages'];
+                $repeatInPassages += $word['repeatInPassagesMainPage'];
+
                 if ($reSpam < $word['reSpam']) {
                     $reSpam = $word['reSpam'];
                 }
@@ -718,6 +785,7 @@ class Relevance
                         $occurrences[$key2] = $value;
                     }
                 }
+
             }
             arsort($occurrences);
 
@@ -735,6 +803,11 @@ class Relevance
                 'danger' => $danger,
                 'occurrences' => $occurrences,
             ];
+
+            if ($this->request['searchPassages']) {
+                $this->wordForms[$key]['total']['avgInPassages'] = $avgInPassages;
+                $this->wordForms[$key]['total']['repeatInPassagesMainPage'] = $repeatInPassages;
+            }
         }
 
         $collection = collect($this->wordForms);
@@ -749,6 +822,7 @@ class Relevance
      */
     public function prepareClouds()
     {
+        RelevanceProgress::editProgress(90, $this->request);
         $mainPage = Relevance::concatenation([
             $this->mainPage['html'],
             $this->mainPage['hiddenText'],

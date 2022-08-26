@@ -393,6 +393,22 @@
                                                placeholder="max">
                                     </div>
                                 </th>
+                                <th class='passages-elem'>
+                                    <div>
+                                        <input class="w-100" type="number" name="minAVGPassages" id="minAVGPassages"
+                                               placeholder="min">
+                                        <input class="w-100" type="number" name="maxAVGPassages" id="maxAVGPassages"
+                                               placeholder="max">
+                                    </div>
+                                </th>
+                                <th class='passages-elem'>
+                                    <div>
+                                        <input class="w-100" type="number" name="minPassages" id="minPassages"
+                                               placeholder="min">
+                                        <input class="w-100" type="number" name="maxPassages" id="maxPassages"
+                                               placeholder="max">
+                                    </div>
+                                </th>
                             </tr>
                             <tr style="position: relative; z-index: 100">
                                 <th></th>
@@ -482,14 +498,17 @@
                                 </span>
                             </span>
                                 </th>
-                                <th>{{ __('Number of repetitions in links') }}<span class="__helper-link ui_tooltip_w">
-                                <i class="fa fa-question-circle"></i>
-                                    <span class="ui_tooltip __left">
-                                        <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                                <th>{{ __('Number of repetitions in links') }}
+                                    <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-question-circle"></i>
+                                        <span class="ui_tooltip __left">
+                                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the links on your page.') }}
+                                            </span>
                                         </span>
                                     </span>
-                                </span>
                                 </th>
+                                <th class='passages-elem'>Среднее кол-во повторений в пассажах</th>
+                                <th class='passages-elem'>Количество повторений в пассажах</th>
                             </tr>
                             </thead>
                             <tbody id="unigramTBody">
@@ -899,7 +918,22 @@
                             </div>
 
                             @if($admin)
-                                <div class="form-group required">
+                                <div class="d-flex mt-3">
+                                    <div class="__helper-link ui_tooltip_w">
+                                        <div
+                                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="searchPassages"
+                                                   name="searchPassages"
+                                                   @if(isset($object['request']['searchPassages']) ? $object['request']['searchPassages'] : false) checked @endif>
+                                            <label class="custom-control-label" for="searchPassages"></label>
+                                        </div>
+                                    </div>
+                                    <span>Поиск пассажей</span>
+                                </div>
+
+                                <div class="form-group required mt-3">
                                     @if(isset($object['request']['version']))
                                         <label>Способ подбора корней</label>
                                         {!! Form::select('version', array_unique([
@@ -1144,6 +1178,7 @@
                     switchMyListWords: $('#switchMyListWords').is(':checked'),
                     listWords: $('.form-control.listWords').val(),
                     version: $('.version').val(),
+                    searchPassages: $('#searchPassages').is(':checked'),
                 }
             }
 
@@ -1207,7 +1242,7 @@
                 if (!history.cleaning) {
                     renderTextTable(history.avg, history.main_page)
                     renderRecommendationsTable(history.recommendations, config.recommendations_count)
-                    renderUnigramTable(history.unigram_table, config.ltp_count, history.history_id);
+                    renderUnigramTable(history.unigram_table, config.ltp_count, history.history_id, {{ isset($object['request']['searchPassages']) ? $object['request']['searchPassages'] : false }});
                     renderPhrasesTable(history.phrases, config.ltps_count)
                     renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false, true);
                     $('.sites').css({

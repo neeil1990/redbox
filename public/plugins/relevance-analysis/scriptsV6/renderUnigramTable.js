@@ -1,5 +1,6 @@
-function renderUnigramTable(unigramTable, count, resultId = 0) {
-    console.log('resultId: ' + resultId)
+function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = false) {
+    console.log(searchPassages)
+    sessionStorage.setItem('searchPassages', (searchPassages).toString())
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
@@ -168,6 +169,11 @@ function renderUnigramTable(unigramTable, count, resultId = 0) {
                 $(this).attr('generated-child', false)
             })
         });
+        if (searchPassages) {
+            $('.passages-elem').show()
+        } else {
+            $('.passages-elem').hide()
+        }
     });
 }
 
@@ -188,16 +194,19 @@ function renderMainTr(tBody, key, wordWorm) {
     let repeatInTextMainPage = wordWorm['total']['repeatInTextMainPage']
     let avgInLink = wordWorm['total']['avgInLink']
     let repeatInLinkMainPage = wordWorm['total']['repeatInLinkMainPage']
+    let repeatInPassagesMainPage = wordWorm['total']['repeatInPassagesMainPage'] === undefined ? 0 : wordWorm['total']['repeatInPassagesMainPage']
+    let avgInPassages = wordWorm['total']['avgInPassages'] === undefined ? 0 : wordWorm['total']['avgInPassages']
     let repeatInTextMainPageWarning = repeatInTextMainPage == 0 ? "class='bg-warning-elem'" : ""
     let repeatInLinkMainPageWarning = repeatInLinkMainPage == 0 ? " class='bg-warning-elem'" : ""
-    let totalInMainPage = repeatInLinkMainPage == 0 && repeatInTextMainPage == 0 ? " class='bg-warning-elem'" : ""
+    let myPassagesWarning = repeatInPassagesMainPage == 0 ? "bg-warning-elem" : ""
+    let totalInMainPage = repeatInPassagesMainPage == 0 && repeatInLinkMainPage == 0 && repeatInTextMainPage == 0 ? " class='bg-warning-elem'" : ""
     let lockBlock =
         "    <span class='lock-block'>" +
         "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + key + "' onclick='addWordInIgnore($(this))'></i>" +
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
-    tBody.append(
-        "<tr class='render'>" +
+
+    let newRow = "<tr class='render'>" +
         "   <td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
         "      <i class='fa fa-plus'></i>" +
         "   </td>" +
@@ -205,25 +214,26 @@ function renderMainTr(tBody, key, wordWorm) {
         "   <td>" + tf + "</td>" +
         "   <td>" + idf + "</td>" +
         "   <td>" + numberOccurrences + "" +
-        "   <span class='__helper-link ui_tooltip_w'>" +
-        "       <i class='fa fa-paperclip'></i>" +
-        "       <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
-        "           <span class='ui_tooltip_content'>" + links + "</span>" +
+        "       <span class='__helper-link ui_tooltip_w'>" +
+        "           <i class='fa fa-paperclip'></i>" +
+        "           <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
+        "               <span class='ui_tooltip_content'>" + links + "</span>" +
+        "           </span>" +
         "       </span>" +
-        "   </span>" +
-
-        "</td>" +
-        "<td>" + reSpam + "</td>" +
-
-        "<td>" + avgInTotalCompetitors + "</td>" +
-        "<td " + totalInMainPage + ">" + totalRepeatMainPage + "</td>" +
-
-        "<td>" + avgInText + "</td>" +
-        "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
-
-        "<td>" + avgInLink + "</td>" +
-        "<td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
+        "   </td>" +
+        "   <td>" + reSpam + "</td>" +
+        "   <td>" + avgInTotalCompetitors + "</td>" +
+        "   <td " + totalInMainPage + ">" + totalRepeatMainPage + "</td>" +
+        "   <td>" + avgInText + "</td>" +
+        "   <td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
+        "   <td>" + avgInLink + "</td>" +
+        "   <td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
+        "   <td class='passages-elem'>" + avgInPassages + "</td>" +
+        "   <td class='passages-elem " + myPassagesWarning + "'>" + repeatInPassagesMainPage + "</td> " +
         "</tr>"
+
+    tBody.append(
+        newRow
     )
 }
 
@@ -246,46 +256,60 @@ function renderChildTr(elem, key, word, stats) {
     let repeatInTextMainPage = stats['repeatInTextMainPage']
     let avgInLink = stats['avgInLink']
     let repeatInLinkMainPage = stats['repeatInLinkMainPage']
+
     if (repeatInTextMainPage == 0) {
         var textWarn = "class='bg-warning-elem'"
         var bgWarn = "class='bg-warning-elem'"
     }
+
     if (repeatInLinkMainPage == 0) {
         var linkWarn = "class='bg-warning-elem'"
         var bgWarn = "class='bg-warning-elem'"
     }
+
     if (repeatInLinkMainPage == 0 && repeatInTextMainPage == 0) {
         var bgTotalWarn = "class='bg-warning-elem'"
     }
+
+    var avgPassages = stats['avgInPassages'] === undefined ? 0 : stats['avgInPassages'];
+
+    var repeatInPassagesMainPage = stats['repeatInPassagesMainPage'] === undefined ? 0 : stats['repeatInPassagesMainPage'];
+    var repeatInPassagesMainPageWarning = ''
+    if (stats['repeatInPassagesMainPage'] == undefined || stats['repeatInPassagesMainPage'] == 0) {
+        repeatInPassagesMainPageWarning = 'bg-warning-elem'
+    }
+
     let lockBlock =
         "    <span class='lock-block'>" +
         "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
+
     elem.after(
         "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
-        "<td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +
-        "<i class='fa fa-minus'></i>" +
-        "</td>" +
-        "<td>" + word + lockBlock + "</td>" +
-        "<td>" + tf + "</td>" +
-        "<td>" + idf + "</td>" +
-        "<td>" + numberOccurrences + "" +
-        "<span class='__helper-link ui_tooltip_w'>" +
-        "    <i class='fa fa-paperclip'></i>" +
-        "    <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
-        "        <span class='ui_tooltip_content'>" + links + "</span>" +
-        "    </span>" +
-        "</span>" +
-
-        "</td>" +
-        "<td>" + reSpam + "</td>" +
-        "<td>" + avgInTotalCompetitors + "</td>" +
-        "<td " + bgTotalWarn + ">" + totalRepeatMainPage + "</td>" +
-        "<td>" + avgInText + "</td>" +
-        "<td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
-        "<td>" + avgInLink + "</td>" +
-        "<td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
+        "   <td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +
+        "   <i class='fa fa-minus'></i>" +
+        "   </td>" +
+        "   <td>" + word + lockBlock + "</td>" +
+        "   <td>" + tf + "</td>" +
+        "   <td>" + idf + "</td>" +
+        "   <td>" + numberOccurrences + "" +
+        "       <span class='__helper-link ui_tooltip_w'>" +
+        "           <i class='fa fa-paperclip'></i>" +
+        "           <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
+        "               <span class='ui_tooltip_content'>" + links + "</span>" +
+        "           </span>" +
+        "       </span>" +
+        "   </td>" +
+        "   <td>" + reSpam + "</td>" +
+        "   <td>" + avgInTotalCompetitors + "</td>" +
+        "   <td " + bgTotalWarn + ">" + totalRepeatMainPage + "</td>" +
+        "   <td>" + avgInText + "</td>" +
+        "   <td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
+        "   <td>" + avgInLink + "</td>" +
+        "   <td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
+        "   <td class='passages-elem'>" + avgPassages + "</td>" +
+        "   <td class='passages-elem " + repeatInPassagesMainPageWarning + "'>" + repeatInPassagesMainPage + "</td>" +
         "</tr>"
     )
 }
@@ -302,6 +326,11 @@ function showWordWorms(elem) {
             renderChildTr(parent, target, word, stats)
         })
         elem.addClass('show-children')
+        if (sessionStorage.getItem('searchPassages') === 'true') {
+            $('.passages-elem').show()
+        } else {
+            $('.passages-elem').hide()
+        }
     }
 }
 

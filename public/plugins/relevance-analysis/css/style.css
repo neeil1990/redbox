@@ -28,6 +28,10 @@ th {
     color: white;
 }
 
+#unigram > thead > tr > th > span > i {
+    color: grey;
+}
+
 #tab_1 > div.col-6.pt-3.pb-3 > span > span > i {
     color: gray !important;
 }
@@ -35,6 +39,7 @@ th {
 #unigramTBody > tr > td:nth-child(8),
 #unigramTBody > tr > td:nth-child(10),
 #unigramTBody > tr > td:nth-child(12),
+#unigramTBody > tr > td:nth-child(14),
 #phrasesTBody > tr > td:nth-child(7),
 #phrasesTBody > tr > td:nth-child(9),
 #phrasesTBody > tr > td:nth-child(11),

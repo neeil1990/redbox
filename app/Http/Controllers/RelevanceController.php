@@ -6,13 +6,11 @@ use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
-use App\RelevanceHistoryResult;
 use App\RelevanceProgress;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -176,6 +174,7 @@ class RelevanceController extends Controller
             'scanned_sites_count' => $config->scanned_sites_count,
             'hide_ignored_domains' => $config->hide_ignored_domains,
             'boostPercent' => $config->boostPercent,
+            'searchPassages' => $relevance->request['searchPassages'] ?? false
         ];
 
         return response()->json($result);
