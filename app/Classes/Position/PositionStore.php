@@ -28,17 +28,21 @@ class PositionStore
 
         foreach ($engines as $engine){
 
-            $position = null;
+            $response = null;
             if($engine->engine == 'yandex')
-                $position = (new Yandex($project->url, $query, $engine->lr, $save))->handle();
+                $response = (new Yandex($project->url, $query, $engine->lr, $save))->handle();
 
             if($engine->engine == 'google')
-                $position = (new Google($project->url, $query, $engine->lr, $save))->handle();
+                $response = (new Google($project->url, $query, $engine->lr, $save))->handle();
 
-            $this->model->positions()->create([
-                'monitoring_searchengine_id' => $engine->id,
-                'position' => $position
-            ]);
+            if($response){
+
+                $this->model->positions()->create([
+                    'monitoring_searchengine_id' => $engine->id,
+                    'position' => $response["position"],
+                    'url' => strtolower($response["url"]),
+                ]);
+            }
         }
 
         return true;

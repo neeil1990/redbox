@@ -60,8 +60,10 @@ abstract class Positions
             });
 
             if(count($position) > 0){
-                $position = key($position) + 1;
-                return $position;
+                $posKey = key($position);
+                $position[$posKey]["doc"]["position"] = ($posKey + 1);
+
+                return $position[$posKey]["doc"];
             }else
                 return null;
 
