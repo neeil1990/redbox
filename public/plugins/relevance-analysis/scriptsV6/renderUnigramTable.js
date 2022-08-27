@@ -221,9 +221,14 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
 
         if (searchPassages) {
             $('#unigram_filter > label > input[type=search]').keyup(function () {
-                $('.passages-elem').hide()
+                hideOrShowPassagesElem(searchPassages)
+            })
+
+            $('#unigram_length > label > select').on('change', function () {
+                hideOrShowPassagesElem(searchPassages)
             })
         }
+
 
         hideOrShowPassagesElem(searchPassages)
     });
