@@ -161,7 +161,7 @@ class TextAnalyzer
      */
     public static function deleteEverythingExceptCharacters($html)
     {
-        $text = preg_replace([
+        $html = preg_replace([
             "'<style[^>]*?>.*?</style>'si",
             "'<script[^>]*?>.*?</script>'si",
             "'<head[^>]*?>.*?</head>'si",
@@ -170,10 +170,10 @@ class TextAnalyzer
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
-        $html = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($text)));
 
-        $html = str_replace(">", "> ", $html);
         $text = trim(strip_tags($html));
+
+        $text = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($text)));
         $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
         $text = preg_replace("/&#?[a-z]+;/i", "", $text);
         $text = str_replace([
@@ -527,7 +527,7 @@ class TextAnalyzer
             $html = str_replace($items[0], "", $html);
         }
 
-        return trim(TextAnalyzer::deleteEverythingExceptCharacters($html));
+        return trim($html);
     }
 
     /**
