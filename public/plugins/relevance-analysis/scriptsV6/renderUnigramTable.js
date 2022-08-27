@@ -1,5 +1,4 @@
 function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = false) {
-    console.log(searchPassages)
     sessionStorage.setItem('searchPassages', (searchPassages).toString())
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
     $('.pb-3.unigram').show()
@@ -52,7 +51,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -67,7 +66,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -82,7 +81,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -97,7 +96,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -112,7 +111,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -127,7 +126,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -142,7 +141,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -157,7 +156,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -172,7 +171,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -187,7 +186,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -202,7 +201,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -217,8 +216,15 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
+            hideOrShowPassagesElem(searchPassages)
         });
+
+        if (searchPassages) {
+            $('#unigram_filter > label > input[type=search]').keyup(function () {
+                $('.passages-elem').hide()
+            })
+        }
+
         hideOrShowPassagesElem(searchPassages)
     });
 }
@@ -331,8 +337,7 @@ function renderChildTr(elem, key, word, stats) {
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
 
-    elem.after(
-        "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
+    let newChildRow = "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
         "   <td " + bgWarn + " onclick='hideWordWorms($(this))' data-target='" + key + "'>" +
         "   <i class='fa fa-minus'></i>" +
         "   </td>" +
@@ -357,6 +362,17 @@ function renderChildTr(elem, key, word, stats) {
         "   <td class='passages-elem'>" + avgPassages + "</td>" +
         "   <td class='passages-elem " + repeatInPassagesMainPageWarning + "'>" + repeatInPassagesMainPage + "</td>" +
         "</tr>"
+
+    if (sessionStorage.getItem('searchPassages') === 'true') {
+        newChildRow +=
+            "   <td class='passages-elem'>" + avgPassages + "</td>" +
+            "   <td class='passages-elem " + repeatInPassagesMainPageWarning + "'>" + repeatInPassagesMainPage + "</td>"
+    }
+
+    newChildRow += "</tr>"
+
+    elem.after(
+        newChildRow
     )
 }
 
