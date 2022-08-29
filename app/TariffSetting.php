@@ -24,9 +24,9 @@ class TariffSetting extends Model
     /**
      * @param User $user
      * @param int $countNewRecords
-     * @return RedirectResponse|void
+     * @return bool
      */
-    public static function checkDomainInformationLimits(User $user, int $countNewRecords = 0)
+    public static function checkDomainInformationLimits(User $user, int $countNewRecords = 0): bool
     {
         if ($tariff = $user->tariff()) {
 
@@ -41,10 +41,12 @@ class TariffSetting extends Model
                         flash()->overlay($tariff['settings']['DomainInformation']['message'], __('Error'))->error();
                     }
 
-                    return redirect()->route('domain.information');
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
 }

@@ -58,7 +58,9 @@ class DomainInformationController extends Controller
             }
 
         } else {
-            TariffSetting::checkDomainInformationLimits($user);
+            if (TariffSetting::checkDomainInformationLimits($user)) {
+                redirect()->route('domain.information');
+            }
             $domain = DomainInformation::getDomain($request->domain);
 
             if (DomainInformation::isValidDomain($domain)) {
