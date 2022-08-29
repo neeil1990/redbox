@@ -55,7 +55,7 @@ class DomainInformationController extends Controller
         }
 
         if (TariffSetting::checkDomainInformationLimits($user, $count)) {
-            flash()->overlay(__('Your limits are exhausted'), ' ')->success();
+            flash()->overlay(__('Your limits are exhausted'), ' ')->error();
 
             return redirect()->route('domain.information');
         }
