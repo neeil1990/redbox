@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DomainInformation;
+use App\TariffSetting;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -44,25 +46,31 @@ class DomainInformationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $userId = Auth::id();
+        $user = User::find(Auth::id());
         if (isset($request->domains)) {
-            if (DomainInformationController::multipleCreation($request->domains, $userId)) {
+
+            if (DomainInformationController::multipleCreation($request->domains, $user->id)) {
                 flash()->overlay(__('Domains added successfully'), ' ')->success();
             } else {
                 flash()->overlay(__('All domains are not valid'), ' ')->error();
+
                 return Redirect::back();
             }
+
         } else {
+            TariffSetting::checkDomainInformationLimits($user);
             $domain = DomainInformation::getDomain($request->domain);
+
             if (DomainInformation::isValidDomain($domain)) {
                 $monitoring = new DomainInformation($request->all());
                 $monitoring->domain = $domain;
-                $monitoring->user_id = $userId;
+                $monitoring->user_id = $user->id;
                 $monitoring->save();
                 flash()->overlay(__('Domain added successfully'), ' ')->success();
             } else {
                 flash()->overlay(__('There is no such domain'), ' ')->error();
                 return Redirect::back();
+
             }
         }
 
@@ -72,9 +80,9 @@ class DomainInformationController extends Controller
     /**
      * @param $domains
      * @param $userId
-     * @return bool|null
+     * @return bool
      */
-    public static function multipleCreation($domains, $userId): ?bool
+    public static function multipleCreation($domains, $userId): bool
     {
         $newRecord = [];
         $domains = explode("\r\n", $domains);
@@ -94,11 +102,12 @@ class DomainInformationController extends Controller
             }
         }
         if (count($newRecord) >= 1) {
+            TariffSetting::checkDomainInformationLimits(User::get($userId), count($newRecord));
             DomainInformation::insert($newRecord);
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

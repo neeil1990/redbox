@@ -11,6 +11,7 @@
 |
 */
 
+use App\DomainInformation;
 use App\Morphy;
 use App\Relevance;
 use App\TextAnalyzer;
@@ -267,19 +268,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
-});
-
-Route::get('/test', function () {
-    $site = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://gnkmed.ru/catalog/fetalnye-monitory/'));
-//    dd($site);
-
-//    $links = TextAnalyzer::getLinkText($site);
-    $text = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($site));
-//    $hidden = Relevance::getHiddenText($site);
-
-//    dump($links);
-    dump($text);
-//    dd($hidden);
 });
 
 Route::get('/get-passages/{link}', function ($link) {

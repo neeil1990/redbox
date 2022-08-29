@@ -101,9 +101,11 @@ class DomainInformation extends Model
      */
     public static function isValidDomain($domain): bool
     {
-        return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check
-            && preg_match("/^.{1,253}$/", $domain) //overall length check
-            && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain)); //length of each label
+        return (
+            preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) &&
+            preg_match("/^.{1,253}$/", $domain) &&
+            preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain)
+        );
     }
 
     /**
@@ -112,11 +114,7 @@ class DomainInformation extends Model
      */
     public static function getDomain($link): string
     {
-        $domain = preg_replace("#^[^:/.]*[:/]+#i", '', $link);
-        $domain = preg_replace('/www./', '', $domain);
-        $domain = explode(':', $domain);
-        $domain = explode('/', $domain[0]);
-        return $domain[0];
+        return parse_url($link)['host'];
     }
 
 }

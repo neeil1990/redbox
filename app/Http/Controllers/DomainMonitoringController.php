@@ -53,18 +53,17 @@ class DomainMonitoringController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        // Проверка тарифа
-        if($tariff = $user->tariff()){
+        if ($tariff = $user->tariff()) {
 
             $tariff = $tariff->getAsArray();
             $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
 
             if (array_key_exists('domainMonitoringProject', $tariff['settings'])) {
 
-                if($count >= $tariff['settings']['domainMonitoringProject']['value']){
+                if ($count >= $tariff['settings']['domainMonitoringProject']['value']) {
 
                     //abort(403, $tariff['settings']['domainMonitoringProject']['message']);
-                    if($tariff['settings']['domainMonitoringProject']['message'])
+                    if ($tariff['settings']['domainMonitoringProject']['message'])
                         flash()->overlay($tariff['settings']['domainMonitoringProject']['message'], __('Error'))->error();
 
                     return redirect()->route('domain.monitoring');
@@ -78,6 +77,7 @@ class DomainMonitoringController extends Controller
         $monitoring->save();
 
         flash()->overlay(__('Monitoring was successfully created'), ' ')->success();
+
         return Redirect::route('domain.monitoring');
     }
 
