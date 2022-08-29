@@ -340,5 +340,5 @@ Route::get('/my-relevance-limits', function () {
         ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
         ->count();
 
-    dd($countRecordInThisMonth);
+    dd("В этом месяце вы использовали " . $countRecordInThisMonth . " сканирований");
 });
