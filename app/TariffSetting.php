@@ -41,7 +41,7 @@ class TariffSetting extends Model
                         flash()->overlay($tariff['settings']['DomainInformation']['message'], __('Error'))->error();
                     }
 
-                    return redirect()->route('domain-information.index');
+                    return redirect()->route('domain.information');
                 }
             }
         }
