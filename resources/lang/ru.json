@@ -383,7 +383,7 @@
     "Show information about the registration date": "Показывать информацию о дате регистрации",
     "Invalid domains (domain.com/my-page, exmpl.com/check/time.php) will not be saved": "Недопустимые домены (domain.com/my-page, exmpl.com/check/time.php) не будут сохранены",
     "etc..": "и т.д..",
-    "Your limits are exhausted the number of monitored domains is exhausted": "Ваши лимиты исчерпаны количества отслеживаемых доменов исчерпаны",
+    "Your limits on the number of monitored domains have been exhausted": "Ваши лимиты количества отслеживаемых доменов исчерпаны",
     "All domains are not valid": "Все домены не валидные",
     "Domains added successfully": "Домены успешно добавлены",
     "Domain added successfully": "Домен успешно добавлен",
