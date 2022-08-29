@@ -208,6 +208,13 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatScan(Request $request): JsonResponse
     {
+        if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         $this->validate($request, [
             'phrase' => 'required',
             'link' => 'required',
@@ -251,6 +258,13 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatQueueCompetitorsScan(Request $request): JsonResponse
     {
+        if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         $admin = User::isUserAdmin();
         $userId = Auth::id();
         $object = RelevanceHistory::where('id', '=', $request->id)->first();
@@ -292,6 +306,13 @@ class HistoryRelevanceController extends Controller
      */
     public function repeatQueueMainPageScan(Request $request): JsonResponse
     {
+        if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         $admin = User::isUserAdmin();
         $userId = Auth::id();
         $object = RelevanceHistory::where('id', '=', $request->id)->first();

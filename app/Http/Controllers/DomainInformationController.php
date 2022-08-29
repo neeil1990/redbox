@@ -48,13 +48,7 @@ class DomainInformationController extends Controller
     {
         $user = User::find(Auth::id());
 
-        if (isset($request->domains)) {
-            $count = count(explode("\r\n", $request->domains));
-        } else {
-            $count = 0;
-        }
-
-        if (TariffSetting::checkDomainInformationLimits($user, $count)) {
+        if (TariffSetting::checkDomainInformationLimits($user)) {
             flash()->overlay(__('Your limits are exhausted the number of monitored domains is exhausted'), ' ')->error();
 
             return redirect()->route('domain.information');

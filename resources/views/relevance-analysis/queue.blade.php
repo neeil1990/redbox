@@ -10,15 +10,13 @@
     @endslot
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message"
-                 id="toast-message">{{ __('Your tasks have been successfully added to the queue') }}</div>
+            <div class="toast-message" id="toast-success-message"></div>
         </div>
     </div>
 
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message"
-                 id="toast-message">{{ __('Something went wrong, try again later.') }}</div>
+            <div class="toast-message error-message" id="toast-error-message"></div>
         </div>
     </div>
 
@@ -44,10 +42,12 @@
                 </li>
                 @if($admin)
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                        <a class="nav-link admin-link"
+                           href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                     </li>
                 @endif
             </ul>
@@ -272,22 +272,40 @@
                         switchMyListWords: $('#switchMyListWords').is(':checked'),
                         conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked')
                     },
-                    success: function () {
+                    success: function (response) {
                         $('#params').val('')
-                        $('.toast-top-right.success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.success-message').hide(300)
-                        }, 3500)
+
+                        if (response.code === 415) {
+                            errorMessage(response.message)
+                        }
+
+                        if (response.code === 200) {
+                            $('.toast-top-right.success-message').show(300)
+                            $('#toast-success-message').html("{{ __('Your tasks have been successfully added to the queue') }}")
+                            setTimeout(() => {
+                                $('.toast-top-right.success-message').hide(300)
+                            }, 3500)
+                        }
+
                     },
                     error: function () {
                         $('#params').val('')
-                        $('.toast-top-right.error-message.empty').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message.empty').hide(300)
-                        }, 3500)
+                        errorMessage()
                     }
                 });
             })
+
+            function errorMessage(message = false) {
+                $('.toast-top-right.error-message.empty').show(300)
+                if (!message) {
+                    $('#toast-error-message').html("{{ __('Something went wrong, try again later.') }}")
+                } else {
+                    $('#toast-error-message').html(message)
+                }
+                setTimeout(() => {
+                    $('.toast-top-right.error-message.empty').hide(300)
+                }, 3500)
+            }
         </script>
     @endslot
 @endcomponent

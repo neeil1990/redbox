@@ -1216,6 +1216,11 @@
             }
 
             function successRequest(response) {
+                if (response.code === 415) {
+                    $("#full-analyse").prop("disabled", false);
+                    limitMessage()
+                    return;
+                }
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar()
                 renderTextTable(response.avg, response.mainPage)
@@ -1312,6 +1317,14 @@
                 } else {
                     $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
                 }
+            }
+
+            function limitMessage() {
+                $('.toast-message.error-message').html("{{ __('Your limits are exhausted this month') }}")
+                $('.toast-top-right.error-message.empty').show(300)
+                setTimeout(() => {
+                    $('.toast-top-right.error-message.empty').hide(300)
+                }, 5000)
             }
 
             function getData() {

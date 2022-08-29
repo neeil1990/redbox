@@ -1107,10 +1107,9 @@
                         dataType: "json",
                         url: '/repeat-scan',
                         data: getData(),
-                        success: function () {
-                            successAjaxRequest()
+                        success: function (response) {
+                            successAjaxRequest(response)
                         },
-
                         error: function () {
                             $('#toast-container').show(300)
                             setInterval(function () {
@@ -1126,10 +1125,9 @@
                         dataType: "json",
                         url: '/repeat-queue-competitors-scan',
                         data: getData(),
-                        success: function () {
-                            successAjaxRequest()
+                        success: function (response) {
+                            successAjaxRequest(response)
                         },
-
                         error: function () {
                             $('#toast-container').show(300)
                             setInterval(function () {
@@ -1145,10 +1143,9 @@
                         dataType: "json",
                         url: '/repeat-queue-main-page-scan',
                         data: getData(),
-                        success: function () {
-                            successAjaxRequest()
+                        success: function (response) {
+                            successAjaxRequest(response)
                         },
-
                         error: function () {
                             $('#toast-container').show(300)
                             setInterval(function () {
@@ -1215,27 +1212,38 @@
                 });
             }
 
-            function successAjaxRequest() {
-                $('#primaryAlert').hide()
-                $('.toast-top-right.success-message').show(300)
-                setInterval(function () {
-                    $('.toast-top-right.success-message').hide(300)
-                }, 3500)
+            function successAjaxRequest(response) {
+                if (response.code === 415) {
+                    console.log(response.message)
 
-                $('#firstTab').trigger('click')
-                $('html, body').animate({
-                    scrollTop: $('#header-nav-bar').offset().top
-                }, {
-                    duration: 370,
-                    easing: "linear"
-                });
+                    $('.toast-top-right.error-message').show()
+                    $('#message-error-info').html(response.message)
+                    setInterval(function () {
+                        $('.toast-top-right.error-message').hide(300)
+                    }, 3500)
+                } else {
+                    $('#primaryAlert').hide()
+                    $('.toast-top-right.success-message').show(300)
+                    setInterval(function () {
+                        $('.toast-top-right.success-message').hide(300)
+                    }, 3500)
 
-                $('#repeat-analyse-item').hide();
-                $('#circleTab').show();
+                    $('#firstTab').trigger('click')
+                    $('html, body').animate({
+                        scrollTop: $('#header-nav-bar').offset().top
+                    }, {
+                        duration: 370,
+                        easing: "linear"
+                    });
 
-                let timeOut = setInterval(() => {
-                    checkQueueScanState(timeOut)
-                }, 10000)
+                    $('#repeat-analyse-item').hide();
+                    $('#circleTab').show();
+
+                    let timeOut = setInterval(() => {
+                        checkQueueScanState(timeOut)
+                    }, 10000)
+                }
+
             }
 
             function successRequest(history, config) {

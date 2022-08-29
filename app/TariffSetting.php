@@ -23,11 +23,16 @@ class TariffSetting extends Model
 
     /**
      * @param User $user
-     * @param int $countNewRecords
      * @return bool
      */
-    public static function checkDomainInformationLimits(User $user, int $countNewRecords): bool
+    public static function checkDomainInformationLimits(User $user): bool
     {
+        if (isset($request->domains)) {
+            $countNewRecords = count(explode("\r\n", $request->domains));
+        } else {
+            $countNewRecords = 0;
+        }
+
         if ($tariff = $user->tariff()) {
 
             $tariff = $tariff->getAsArray();

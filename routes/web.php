@@ -14,7 +14,9 @@
 use App\DomainInformation;
 use App\Morphy;
 use App\Relevance;
+use App\RelevanceHistory;
 use App\TextAnalyzer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -328,4 +330,15 @@ Route::get('/get-passages/{link}', function ($link) {
         'Общее количество слов (без пассажей)' => count(explode(' ', str_replace('| +|', ' ', $text))),
         'Общее количество символов(без пассажей)' => mb_strlen($text)
     ]);
+});
+
+Route::get('/my-relevance-limits', function () {
+    $now = Carbon::now();
+    $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
+
+    $countRecordInThisMonth = RelevanceHistory::where('user_id', '=', Auth::id())
+        ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
+        ->count();
+
+    dd($countRecordInThisMonth);
 });

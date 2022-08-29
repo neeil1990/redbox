@@ -6,6 +6,7 @@ use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
+use App\RelevanceHistory;
 use App\RelevanceProgress;
 use App\User;
 use Illuminate\Http\JsonResponse;
@@ -33,6 +34,13 @@ class RelevanceController extends Controller
      */
     public function analysis(Request $request): JsonResponse
     {
+        if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
@@ -75,7 +83,13 @@ class RelevanceController extends Controller
      */
     public function repeatRelevanceAnalysis(Request $request): JsonResponse
     {
-        RelevanceProgress::editProgress(10, $request);
+        if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
         ];
@@ -84,6 +98,7 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
+        RelevanceProgress::editProgress(10, $request);
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
             ->where('page_hash', '=', $request['pageHash'])
             ->first();
@@ -103,7 +118,13 @@ class RelevanceController extends Controller
      */
     public function repeatMainPageAnalysis(Request $request): JsonResponse
     {
-        RelevanceProgress::editProgress(10, $request);
+        if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         $messages = [
             'link.required' => __('A link to the landing page is required.'),
         ];
@@ -112,6 +133,7 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
+        RelevanceProgress::editProgress(10, $request);
         $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
             ->where('page_hash', '=', $request['pageHash'])
             ->first();
@@ -201,11 +223,20 @@ class RelevanceController extends Controller
     public function createTaskQueue(Request $request): JsonResponse
     {
         $rows = explode("\n", $request->params);
+        if (RelevanceHistory::checkRelevanceAnalysisLimits(count($rows))) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
+
         foreach ($rows as $row) {
             Queue::addInQueue($row, $request);
         }
 
-        return response()->json([]);
+        return response()->json([
+            'code' => 200
+        ]);
     }
 
     /**

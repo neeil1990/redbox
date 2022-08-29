@@ -340,14 +340,26 @@ function repeatScan() {
                 listWords: $('.form-control.listWords').val(),
                 version: $('.version').val(),
             },
-            success: function () {
-                $('#history-state-' + id).html('<p>Обрабатывается..</p>' +
-                    '<div class="text-center" id="preloaderBlock">' +
-                    '        <div class="three col">' +
-                    '            <div class="loader" id="loader-1"></div>' +
-                    '        </div>' +
-                    '</div>')
-                checkAnalyseProgress(id)
+            success: function (response) {
+                if (response.code === 415) {
+                    $('#message-error-info').html(response.message)
+                    $('.toast-top-right.error-message').show(300)
+
+                    setTimeout(() => {
+                        $('.toast-top-right.error-message').show(300)
+                    }, 5000)
+                }
+
+                if (response.code === 200) {
+                    $('#history-state-' + id).html('<p>Обрабатывается..</p>' +
+                        '<div class="text-center" id="preloaderBlock">' +
+                        '        <div class="three col">' +
+                        '            <div class="loader" id="loader-1"></div>' +
+                        '        </div>' +
+                        '</div>')
+                    checkAnalyseProgress(id)
+                }
+
             },
             error: function (response) {
                 $('#toast-container').show(300)

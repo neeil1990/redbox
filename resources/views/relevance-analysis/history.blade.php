@@ -1167,8 +1167,11 @@
                         return "{{ __('Yaroslavl') }}";
                 }
             }
-        </script>
-        <script>
+
+            setInterval(() => {
+                refreshMethods()
+            }, 200)
+
             function refreshMethods() {
                 $('.create-new-link').unbind().on('click', function () {
                     $.ajax({
@@ -1359,10 +1362,6 @@
                     });
                 })
             }
-
-            setInterval(() => {
-                refreshMethods()
-            }, 200)
 
             function getSuccessMessage(message, time = 3000) {
                 $('.toast-top-right.success-message').show(300)
