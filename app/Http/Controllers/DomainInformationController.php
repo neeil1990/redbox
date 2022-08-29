@@ -49,7 +49,7 @@ class DomainInformationController extends Controller
         $user = User::find(Auth::id());
         if (isset($request->domains)) {
 
-            if (DomainInformationController::multipleCreation($request->domains, $user->id)) {
+            if (DomainInformationController::multipleCreation($request->domains, $user)) {
                 flash()->overlay(__('Domains added successfully'), ' ')->success();
             } else {
                 flash()->overlay(__('All domains are not valid or your limits are exhausted'), ' ')->error();
@@ -81,10 +81,10 @@ class DomainInformationController extends Controller
 
     /**
      * @param $domains
-     * @param $userId
+     * @param $user
      * @return bool
      */
-    public static function multipleCreation($domains, $userId): bool
+    public static function multipleCreation($domains, $user): bool
     {
         $newRecord = [];
         $domains = explode("\r\n", $domains);
@@ -96,7 +96,7 @@ class DomainInformationController extends Controller
             $checkRegistrationDate = explode('/', $obj[$counter - 1]);
             if (count($obj) == 4 || count($obj) == 3 && DomainInformation::isValidDomain($domain)) {
                 $newRecord[] = [
-                    'user_id' => $userId,
+                    'user_id' => $user->id,
                     'domain' => $domain,
                     'check_dns' => (boolean)$obj[$counter - 2],
                     'check_registration_date' => (boolean)$checkRegistrationDate[0],
@@ -104,7 +104,7 @@ class DomainInformationController extends Controller
             }
         }
         if (count($newRecord) >= 1) {
-            if (TariffSetting::checkDomainInformationLimits(User::get($userId), count($newRecord))) {
+            if (TariffSetting::checkDomainInformationLimits($user, count($newRecord))) {
                 return false;
             } else {
                 DomainInformation::insert($newRecord);
