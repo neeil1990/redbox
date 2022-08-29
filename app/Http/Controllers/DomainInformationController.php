@@ -52,7 +52,7 @@ class DomainInformationController extends Controller
             if (DomainInformationController::multipleCreation($request->domains, $user->id)) {
                 flash()->overlay(__('Domains added successfully'), ' ')->success();
             } else {
-                flash()->overlay(__('All domains are not valid'), ' ')->error();
+                flash()->overlay(__('All domains are not valid or your limits are exhausted'), ' ')->error();
 
                 return Redirect::back();
             }
@@ -104,12 +104,14 @@ class DomainInformationController extends Controller
             }
         }
         if (count($newRecord) >= 1) {
-            TariffSetting::checkDomainInformationLimits(User::get($userId), count($newRecord));
-            DomainInformation::insert($newRecord);
-            return true;
+            if (TariffSetting::checkDomainInformationLimits(User::get($userId), count($newRecord))) {
+                return false;
+            } else {
+                DomainInformation::insert($newRecord);
+            }
         }
 
-        return false;
+        return true;
     }
 
     /**
