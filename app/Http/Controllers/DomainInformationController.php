@@ -47,20 +47,23 @@ class DomainInformationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = User::find(Auth::id());
+
         if (isset($request->domains)) {
-
-            if (DomainInformationController::multipleCreation($request->domains, $user)) {
-                flash()->overlay(__('Domains added successfully'), ' ')->success();
-            } else {
-                flash()->overlay(__('All domains are not valid or your limits are exhausted'), ' ')->error();
-
-                return Redirect::back();
-            }
-
+            $count = count(explode("\r\n", $request->domains));
         } else {
-            if (TariffSetting::checkDomainInformationLimits($user)) {
-                return redirect()->route('domain.information');
-            }
+            $count = 0;
+        }
+
+        if (TariffSetting::checkDomainInformationLimits($user, $count)) {
+            flash()->overlay(__('Your limits are exhausted'), ' ')->success();
+
+            return redirect()->route('domain.information');
+        }
+
+        if (isset($request->domains)) {
+            DomainInformationController::multipleCreation($request->domains, $user);
+        } else {
+
             $domain = DomainInformation::getDomain($request->domain);
 
             if (DomainInformation::isValidDomain($domain)) {
@@ -82,18 +85,20 @@ class DomainInformationController extends Controller
     /**
      * @param $domains
      * @param $user
-     * @return bool
+     * @return void
      */
-    public static function multipleCreation($domains, $user): bool
+    public static function multipleCreation($domains, $user)
     {
         $newRecord = [];
         $domains = explode("\r\n", $domains);
         $domains = array_diff($domains, array(''));
         foreach ($domains as $item) {
+
             $domain = DomainInformation::getDomain($item);
             $obj = explode(':', $item);
             $counter = count($obj);
             $checkRegistrationDate = explode('/', $obj[$counter - 1]);
+
             if (count($obj) == 4 || count($obj) == 3 && DomainInformation::isValidDomain($domain)) {
                 $newRecord[] = [
                     'user_id' => $user->id,
@@ -103,16 +108,12 @@ class DomainInformationController extends Controller
                 ];
             }
         }
-        if (count($newRecord) >= 1) {
-            if (TariffSetting::checkDomainInformationLimits($user, count($newRecord))) {
-                return false;
-            } else {
-                DomainInformation::insert($newRecord);
-            }
-        }
 
-        return true;
+        if (count($newRecord) >= 1) {
+            DomainInformation::insert($newRecord);
+        }
     }
+
 
     /**
      * @param $id

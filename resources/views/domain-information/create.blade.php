@@ -80,6 +80,7 @@ domain2.com:0:1 '. __('etc..')]) !!}
                 $('.single').hide(300)
             });
             $('.multi').click(function () {
+                $('#app > div > div > div.card-body > div.much.col-md-6 > form > div.form-group.required > textarea').val('')
                 $('.much').hide(300)
                 $('.single').show(300)
             });

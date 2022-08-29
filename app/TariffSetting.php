@@ -26,7 +26,7 @@ class TariffSetting extends Model
      * @param int $countNewRecords
      * @return bool
      */
-    public static function checkDomainInformationLimits(User $user, int $countNewRecords = 0): bool
+    public static function checkDomainInformationLimits(User $user, int $countNewRecords): bool
     {
         if ($tariff = $user->tariff()) {
 
@@ -36,10 +36,6 @@ class TariffSetting extends Model
             if (array_key_exists('DomainInformation', $tariff['settings'])) {
 
                 if ($count + $countNewRecords >= $tariff['settings']['DomainInformation']['value']) {
-
-                    if ($tariff['settings']['DomainInformation']['message']) {
-                        flash()->overlay($tariff['settings']['DomainInformation']['message'], __('Error'))->error();
-                    }
 
                     return true;
                 }
