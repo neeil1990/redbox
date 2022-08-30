@@ -86,9 +86,9 @@ class TariffSetting extends Model
                 ->where('month', '=', $now->year . '-' . $now->month)
                 ->sum('counter');
 
-            if (array_key_exists('TextAnalyser', $tariff['settings'])) {
+            if (array_key_exists('TextAnalyzer', $tariff['settings'])) {
 
-                if ((int)$count >= $tariff['settings']['TextAnalyser']['value']) {
+                if ((int)$count >= $tariff['settings']['TextAnalyzer']['value']) {
 
                     return true;
                 }
