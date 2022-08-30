@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\TariffSetting;
 use App\TextAnalyzer;
+use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -32,25 +35,37 @@ class TextAnalyzerController extends Controller
      */
     public function analyze(Request $request)
     {
+        if (TariffSetting::checkTextAnalyserLimits()) {
+            flash()->overlay(__('Your limits are exhausted this month'), ' ')->error();
+            return Redirect::back();
+        }
+
+        //отвратительный код нужно полностью переписать логику
         if ($request->type === 'url') {
+
             $html = TextAnalyzer::curlInit($request->text);
-            if ($html == false) {
+            if (!$html) {
                 flash()->overlay(__('connection attempt failed'), ' ')->error();
+
                 return Redirect::back();
             } else {
                 $html = TextAnalyzer::removeStylesAndScripts($html);
                 $response = TextAnalyzer::analyze($html, $request);
             }
+
         } else {
+
             if (strlen($request->text) > 200 && strlen($request->text) < 100000) {
                 $response = TextAnalyzer::analyze($request->text, $request);
             } else {
                 flash()->overlay(__('The volume of the text should be from 200 to 100,000 characters'), ' ')->error();
                 return Redirect::back();
             }
+
         }
         $response['text'] = $request->text;
         $response['type'] = $request->type;
+
         return view('text-analyzer.index', compact('response'));
     }
 
@@ -58,7 +73,8 @@ class TextAnalyzerController extends Controller
      * @param $url
      * @return array|false|Application|Factory|View|mixed
      */
-    public function redirectToAnalyse($url)
+    public
+    function redirectToAnalyse($url)
     {
         $url = str_replace('abc', '/', $url);
 

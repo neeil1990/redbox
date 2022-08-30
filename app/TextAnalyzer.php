@@ -2,13 +2,17 @@
 
 namespace App;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use JavaScript;
 
-class TextAnalyzer
+class TextAnalyzer extends Model
 {
+    protected $guarded = [];
+
+    protected $table = 'text_analyser_count_checks';
+
     /**
      * @param $link
      * @return array|null
@@ -152,6 +156,8 @@ class TextAnalyzer
             'graph' => TextAnalyzer::prepareDataGraph($response['totalWords']),
         ]);
 
+        TextAnalyzer::saveStatistics();
+
         return $response;
     }
 
@@ -206,7 +212,6 @@ class TextAnalyzer
 
         return mb_strtolower($text);
     }
-
 
     /**
      * @param $html
@@ -399,7 +404,7 @@ class TextAnalyzer
 
     /**
      * @param $string
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     public static function searchPhrases($string)
     {
@@ -431,26 +436,6 @@ class TextAnalyzer
         $collection = $collection->sortByDesc('count')->toArray();
 
         return array_slice($collection, 0, 26);
-    }
-
-    /**
-     * @param $html
-     * @return string
-     */
-    public static function getAltText($html): string
-    {
-        $altText = '';
-        preg_match_all("<img.*?alt=\"(.*?)\".*?>",
-            $html,
-            $matches,
-            PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            if ($match[1] != "") {
-                $altText .= $match[1] . ' ';
-            }
-        }
-
-        return TextAnalyzer::deleteEverythingExceptCharacters($altText);
     }
 
     /**
@@ -538,8 +523,7 @@ class TextAnalyzer
     {
         $wordForms = TextAnalyzer::searchWordForms($text);
         $textAr = array_count_values($text);
-        asort($textAr);
-        $textAr = array_reverse($textAr);
+        arsort($textAr);
         $result = [];
 
         foreach ($wordForms as $key => $wordForm) {
@@ -569,31 +553,32 @@ class TextAnalyzer
      */
     public static function searchWordForms($array): array
     {
-        $stemmer = new LinguaStem();
-        $wordForms = [];
         $will = [];
         $array = array_count_values($array);
         asort($array);
         $array = array_reverse($array);
+        $morphy = new Morphy();
+        $result = [];
+        $wordForms = [];
 
-        foreach ($array as $key1 => $item1) {
-            if (!in_array($key1, $will)) {
-                foreach ($array as $key2 => $item2) {
-                    if (!in_array($key2, $will)) {
-                        similar_text($key1, $key2, $percent);
-                        if (
-                            preg_match("/[А-Яа-я]/", $key1)
-                            && $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1)
-                            || preg_match("/[A-Za-z]/", $key1)
-                            && $percent >= 82
-                        ) {
-                            $wordForms[$key1][] = [$key2 => $item2];
-                            $will[] = $key2;
-                            $will[] = $key1;
-                        }
-                    }
+        foreach ($array as $key => $item) {
+            if (!in_array($key, $will)) {
+                $will[] = $key;
+
+                $root = $morphy->base($key);
+
+                if ($root == null) {
+                    continue;
                 }
+
+                $result[$root][] = [
+                    $key => $item
+                ];
             }
+        }
+
+        foreach ($result as $wordForm) {
+            $wordForms[array_key_first($wordForm[0])] = $wordForm;
         }
 
         return $wordForms;
@@ -704,4 +689,22 @@ class TextAnalyzer
 
         return $array;
     }
+
+    /**
+     * @return void
+     */
+    public static function saveStatistics()
+    {
+        $now = Carbon::now();
+
+        $record = TextAnalyzer::firstOrNew(
+            ['month' => $now->year . '-' . $now->month],
+            ['user_id' => Auth::id()]
+        );
+
+        $record->counter++;
+
+        $record->save();
+    }
+
 }

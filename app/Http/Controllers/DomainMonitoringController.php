@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\DomainMonitoring;
+use App\TariffSetting;
 use App\User;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -51,29 +52,14 @@ class DomainMonitoringController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        /** @var User $user */
-        $user = Auth::user();
-        if ($tariff = $user->tariff()) {
+        if (TariffSetting::checkDomainMonitoringLimits()) {
+            flash()->overlay(__('Your limits are exhausted this month'), ' ')->error();
 
-            $tariff = $tariff->getAsArray();
-            $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
-
-            if (array_key_exists('domainMonitoringProject', $tariff['settings'])) {
-
-                if ($count >= $tariff['settings']['domainMonitoringProject']['value']) {
-
-                    //abort(403, $tariff['settings']['domainMonitoringProject']['message']);
-                    if ($tariff['settings']['domainMonitoringProject']['message'])
-                        flash()->overlay($tariff['settings']['domainMonitoringProject']['message'], __('Error'))->error();
-
-                    return redirect()->route('domain.monitoring');
-                }
-            }
+            return redirect()->route('domain.monitoring');
         }
 
-        $userId = Auth::id();
         $monitoring = new DomainMonitoring($request->all());
-        $monitoring->user_id = $userId;
+        $monitoring->user_id = Auth::id();
         $monitoring->save();
 
         flash()->overlay(__('Monitoring was successfully created'), ' ')->success();

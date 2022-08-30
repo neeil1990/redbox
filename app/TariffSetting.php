@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class TariffSetting extends Model
@@ -41,6 +40,55 @@ class TariffSetting extends Model
             if (array_key_exists('DomainInformation', $tariff['settings'])) {
 
                 if ($count + $countNewRecords >= $tariff['settings']['DomainInformation']['value']) {
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function checkDomainMonitoringLimits(): bool
+    {
+        $user = Auth::user();
+        if ($tariff = $user->tariff()) {
+
+            $tariff = $tariff->getAsArray();
+            $count = DomainMonitoring::where('user_id', '=', Auth::id())->count();
+
+            if (array_key_exists('domainMonitoringProject', $tariff['settings'])) {
+
+                if ($count >= $tariff['settings']['domainMonitoringProject']['value']) {
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function checkTextAnalyserLimits(): bool
+    {
+        $now = Carbon::now();
+        $user = Auth::user();
+        if ($tariff = $user->tariff()) {
+
+            $tariff = $tariff->getAsArray();
+            $count = TextAnalyzer::where('user_id', '=', Auth::id())
+                ->where('month', '=', $now->year . '-' . $now->month)
+                ->sum('counter');
+
+            if (array_key_exists('TextAnalyser', $tariff['settings'])) {
+
+                if ((int)$count >= $tariff['settings']['TextAnalyser']['value']) {
 
                     return true;
                 }

@@ -72,7 +72,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
             $though = ProjectRelevanceThough::where('project_relevance_history_id', '=', $this->mainId)->first();
             $thoughWords = json_decode(gzuncompress(base64_decode($though->though_words)), true);
 
-            ProjectRelevanceThough::searchWordWorms($thoughWords, $this->mainId);
+            ProjectRelevanceThough::searchWordForms($thoughWords, $this->mainId);
 
             dispatch(new RelevanceThoughAnalysisQueue([
                 'stage' => 3,
