@@ -82,7 +82,11 @@ class Relevance
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
-        $this->request['searchPassages'] = filter_var($this->request['searchPassages'], FILTER_VALIDATE_BOOLEAN) ?? false;
+        if (isset($this->request['searchPassages'])) {
+            $this->request['searchPassages'] = filter_var($this->request['searchPassages'], FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $this->request['searchPassages'] = false;
+        }
 
         if ($queue) {
             $params = [
