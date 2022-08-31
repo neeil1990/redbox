@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TariffSetting extends Model
 {
@@ -119,6 +120,7 @@ class TariffSetting extends Model
         }
 
         if (isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0) {
+            Log::debug('c', [$tariff['settings']]);
 
             if ($newRequest + $count > $tariff['settings']['CompetitorAnalysisPhrases']) {
                 return true;
