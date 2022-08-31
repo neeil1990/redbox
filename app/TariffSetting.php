@@ -90,7 +90,6 @@ class TariffSetting extends Model
             if (array_key_exists('TextAnalyzer', $tariff['settings'])) {
 
                 if ((int)$count >= $tariff['settings']['TextAnalyzer']['value']) {
-
                     return true;
                 }
             }
