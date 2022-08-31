@@ -54,7 +54,7 @@
                             <div class="form-group">
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input" id="notValidateUrl" name="url" value="true">
-                                    <label for="notValidateUrl" class="custom-control-label">Показать невалидные URL</label>
+                                    <label for="notValidateUrl" class="custom-control-label">Показать нецелевые URL</label>
                                 </div>
                             </div>
                         </div>
