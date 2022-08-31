@@ -652,7 +652,6 @@ class Relevance
         foreach ($wordWorms as $wordWorm) {
             $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
         }
-
     }
 
     /**

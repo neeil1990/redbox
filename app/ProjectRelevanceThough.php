@@ -99,7 +99,7 @@ class ProjectRelevanceThough extends Model
      * @param $mainId
      * @return void
      */
-    public static function searchWordWorms($array, $mainId)
+    public static function searchWordForms($array, $mainId)
     {
         $ignoredWords = [];
         $wordWorms = [];

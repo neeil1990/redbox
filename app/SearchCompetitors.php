@@ -3,9 +3,14 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use Illuminate\Database\Eloquent\Model;
 
-class SearchCompetitors
+class SearchCompetitors extends Model
 {
+    protected $guarded = [];
+
+    protected $table = 'competitor_analysis_count_checks';
+
     /**
      * @param $request
      * @return array
@@ -75,6 +80,8 @@ class SearchCompetitors
                 ];
             }
         }
+
+        TariffSetting::saveStatistics(SearchCompetitors::class);
 
         return [
             'sites' => $result,
