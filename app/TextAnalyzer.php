@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use JavaScript;
 
 class TextAnalyzer extends Model
@@ -156,7 +154,7 @@ class TextAnalyzer extends Model
             'graph' => TextAnalyzer::prepareDataGraph($response['totalWords']),
         ]);
 
-        TextAnalyzer::saveStatistics();
+        TariffSetting::saveStatistics(TextAnalyzer::class);
 
         return $response;
     }
@@ -689,22 +687,4 @@ class TextAnalyzer extends Model
 
         return $array;
     }
-
-    /**
-     * @return void
-     */
-    public static function saveStatistics()
-    {
-        $now = Carbon::now();
-
-        $record = TextAnalyzer::firstOrNew(
-            ['month' => $now->year . '-' . $now->month],
-            ['user_id' => Auth::id()]
-        );
-
-        $record->counter++;
-
-        $record->save();
-    }
-
 }

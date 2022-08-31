@@ -171,7 +171,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
 
     Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
-    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyzeSites')->name('analysis.sites');
+    Route::post('/competitor-analysis', 'SearchCompetitorsController@analyseSites')->name('analysis.sites');
     Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analysis.nesting');
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
@@ -330,15 +330,4 @@ Route::get('/get-passages/{link}', function ($link) {
         'Общее количество слов (без пассажей)' => count(explode(' ', str_replace('| +|', ' ', $text))),
         'Общее количество символов(без пассажей)' => mb_strlen($text)
     ]);
-});
-
-Route::get('/my-relevance-limits', function () {
-    $now = Carbon::now();
-    $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
-
-    $countRecordInThisMonth = RelevanceHistory::where('user_id', '=', Auth::id())
-        ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
-        ->count();
-
-    dd("В этом месяце вы использовали " . $countRecordInThisMonth . " сканирований");
 });

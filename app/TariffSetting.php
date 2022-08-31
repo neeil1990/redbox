@@ -98,4 +98,54 @@ class TariffSetting extends Model
         return false;
     }
 
+
+    /**
+     * @param string $phrases
+     * @return bool
+     */
+    public static function checkSearchCompetitorsLimits(string $phrases): bool
+    {
+        $newRequest = count(explode("\n", $phrases));
+        $now = Carbon::now();
+
+        $count = SearchCompetitors::where('user_id', '=', Auth::id())
+            ->where('month', '=', $now->year . '-' . $now->month)
+            ->sum('counter');
+
+        /** @var User $user */
+        $user = Auth::user();
+        if ($tariff = $user->tariff()) {
+            $tariff = $tariff->getAsArray();
+        }
+
+        if (isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0) {
+
+            if ($newRequest + $count > $tariff['settings']['CompetitorAnalysisPhrases']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return void
+     */
+    public static function saveStatistics(string $class)
+    {
+        $now = Carbon::now();
+
+        /**
+         * унаследовано от Model, но не является экземпляром Model @var $class Model
+         */
+        $record = $class::firstOrNew(
+            ['month' => $now->year . '-' . $now->month],
+            ['user_id' => Auth::id()]
+        );
+
+        $record->counter++;
+
+        $record->save();
+    }
+
 }

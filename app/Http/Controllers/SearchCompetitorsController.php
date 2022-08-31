@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\SearchCompetitors;
+use App\TariffSetting;
+use App\TextAnalyzer;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class SearchCompetitorsController extends Controller
@@ -34,9 +38,14 @@ class SearchCompetitorsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analyzeSites(Request $request): JsonResponse
+    public function analyseSites(Request $request): JsonResponse
     {
-        $this->checkTariff($request);
+        if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
+            return response()->json([
+                'code' => 415,
+                'message' => __('Your limits are exhausted this month')
+            ]);
+        }
 
         $xmlResult = SearchCompetitors::analyzeList($request->all());
         $sites = SearchCompetitors::scanSites($xmlResult);
@@ -44,27 +53,9 @@ class SearchCompetitorsController extends Controller
         return response()->json([
             'sites' => $sites['sites'],
             'metaTags' => $sites['metaTags'],
-            'scanResult' => $xmlResult
+            'scanResult' => $xmlResult,
+            'code' => 200,
         ]);
-    }
-
-    protected function checkTariff(Request $request)
-    {
-        $phrases = explode("\n", $request->input('phrases'));
-        $count = count($phrases);
-
-        /** @var User $user */
-        $user = Auth::user();
-        // Проверка тарифа
-        if($tariff = $user->tariff())
-            $tariff = $tariff->getAsArray();
-
-        if(isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0){
-
-            if($count > $tariff['settings']['CompetitorAnalysisPhrases']){
-                abort(403, 'Для тарифа: ' . $tariff['name'] . ' лимит ' . $tariff['settings']['CompetitorAnalysisPhrases'] . ' фраз`ы.');
-            }
-        }
     }
 
     /**
