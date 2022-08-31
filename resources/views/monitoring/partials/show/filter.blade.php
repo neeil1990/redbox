@@ -43,11 +43,19 @@
                         </div>
                     </div>
 
-                    <form action="" id="filter" style="display: contents;">
+                    <form action="" id="filter" style="display: contents;" onchange='$("#filter").trigger("filtered")'>
+                        <input type="hidden" name="url" value="">
+
                         <div class="col-4">
                             <div class="form-group">
                                 <label>{{ __('Groups') }}:</label>
-                                {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), null, ['class' => 'custom-select', 'onchange' => '$("#filter").trigger("filtered")']) }}
+                                {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), null, ['class' => 'custom-select']) }}
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="notValidateUrl" name="url" value="true">
+                                    <label for="notValidateUrl" class="custom-control-label">Показать нецелевые URL</label>
+                                </div>
                             </div>
                         </div>
                     </form>

@@ -15,6 +15,7 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\User;
 use Carbon\Carbon;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -321,6 +322,31 @@ class MonitoringController extends Controller
         );
     }
 
+    protected function getKeywordIdsWithNotValidateUrl(int $projectId, int $regionId)
+    {
+        $lastDateUrlPosition = DB::table('monitoring_positions')
+            ->select('monitoring_keyword_id', 'monitoring_searchengine_id', DB::raw('MAX(created_at) created_max'))
+            ->whereNotNull('url')
+            ->where('monitoring_searchengine_id', $regionId)
+            ->groupBy('monitoring_keyword_id');
+
+        $lastUrlPosition = DB::table('monitoring_positions')
+            ->joinSub($lastDateUrlPosition, 'latest_url', function($join){
+                $join->on('monitoring_positions.monitoring_keyword_id', '=', 'latest_url.monitoring_keyword_id')
+                    ->on('monitoring_positions.created_at', '=', 'latest_url.created_max');
+            })
+            ->join('monitoring_keywords', function ($join) {
+                $join->on('monitoring_positions.monitoring_keyword_id', '=', 'monitoring_keywords.id')
+                    ->on('monitoring_positions.url', '!=', 'monitoring_keywords.page');
+            })
+            ->where('monitoring_keywords.monitoring_project_id', $projectId)
+            ->where('monitoring_positions.monitoring_searchengine_id', $regionId)
+            ->get()
+            ->pluck('id');
+
+        return $lastUrlPosition;
+    }
+
     public function getTableKeywords(Request $request, $id)
     {
         /** @var User $user */
@@ -329,13 +355,6 @@ class MonitoringController extends Controller
 
         $keywords = $project->keywords();
 
-        $this->filter($keywords, $request);
-
-        $page = ($request->input('start') / $request->input('length')) + 1;
-        $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
-
-        $this->setSetting($project->id, 'length', $request->input('length'));
-
         $region = $project->searchengines();
 
         if($request->input('region_id'))
@@ -343,6 +362,13 @@ class MonitoringController extends Controller
 
         $region = $region->orderBy('id', 'asc')->first();
         $region->load('location');
+
+        $this->filter($project, $keywords, $region, $request);
+
+        $page = ($request->input('start') / $request->input('length')) + 1;
+        $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
+
+        $this->setSetting($project->id, 'length', $request->input('length'));
 
         $dates = null;
         if($request->input('dates_range', null)){
@@ -588,7 +614,7 @@ class MonitoringController extends Controller
         return $columns;
     }
 
-    protected function filter(&$model, Request $request)
+    protected function filter($project, &$model, $region, Request $request)
     {
         $columns = $request->input('columns', []);
 
@@ -602,6 +628,10 @@ class MonitoringController extends Controller
                 case 'group':
                     if($column['search']['value'])
                         $model->where('monitoring_group_id', '=', $column['search']['value']);
+                    break;
+                case 'url':
+                    if($column['search']['value'])
+                        $model->whereIn('id', $this->getKeywordIdsWithNotValidateUrl($project->id, $region->id));
                     break;
             }
         }
