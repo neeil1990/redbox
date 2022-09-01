@@ -808,41 +808,45 @@ $(document).ready(function () {
                             if (phrase == null) {
                                 phrase = 'Был использван анализ без ключевой фразы'
                             }
+                            try {
+                                let newRow = "<tr class='render'>" +
+                                    "   <td>" + val.last_check + "</td>" +
+                                    "   <td>" +
+                                    "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                    "   </td>" +
+                                    "   <td>" + phrase + "</td>" +
+                                    "   <td>" + getRegionName(val.region) + "</td>" +
+                                    "   <td>" + val.main_link + "</td>" +
+                                    "   <td>" + position + "</td>" +
+                                    "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + val.points + "</td>" +
+                                    "   <td >" + Math.round(val.average_values.points) + "</td>" +
+                                    "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + val.coverage + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.coverage) + "</td>" +
+                                    "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + val.coverage_tf + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.coverageTf) + "</td>" +
+                                    "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + val.width + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.width) + "</td>" +
+                                    "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + val.density + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.densityPercent) + "</td>" +
+                                    "   <td>" +
+                                    "      <div class='d-flex justify-content-center'> " +
+                                    "          <div class='__helper-link ui_tooltip_w'> " +
+                                    "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                    "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                    "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                    "              </div>" +
+                                    "          </div>" +
+                                    "      </div>" +
+                                    "   </td>" +
+                                    "   <td id='history-state-" + val.id + "'>" +
+                                    state +
+                                    "   </td>" +
+                                    "</tr>"
+                                tbody.append(newRow)
+                            } catch (e) {
+                                console.log(val)
+                            }
 
-                            let newRow = "<tr class='render'>" +
-                                "   <td>" + val.last_check + "</td>" +
-                                "   <td>" +
-                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                                "   </td>" +
-                                "   <td>" + phrase + "</td>" +
-                                "   <td>" + getRegionName(val.region) + "</td>" +
-                                "   <td>" + val.main_link + "</td>" +
-                                "   <td>" + position + "</td>" +
-                                "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + val.points + "</td>" +
-                                "   <td >" + Math.round(val.average_values.points) + "</td>" +
-                                "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + val.coverage + "</td>" +
-                                "   <td>" + Math.round(val.average_values.coverage) + "</td>" +
-                                "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + val.coverage_tf + "</td>" +
-                                "   <td>" + Math.round(val.average_values.coverageTf) + "</td>" +
-                                "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + val.width + "</td>" +
-                                "   <td>" + Math.round(val.average_values.width) + "</td>" +
-                                "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + val.density + "</td>" +
-                                "   <td>" + Math.round(val.average_values.densityPercent) + "</td>" +
-                                "   <td>" +
-                                "      <div class='d-flex justify-content-center'> " +
-                                "          <div class='__helper-link ui_tooltip_w'> " +
-                                "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
-                                "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
-                                "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
-                                "              </div>" +
-                                "          </div>" +
-                                "      </div>" +
-                                "   </td>" +
-                                "   <td id='history-state-" + val.id + "'>" +
-                                state +
-                                "   </td>" +
-                                "</tr>"
-                            tbody.append(newRow)
                         })
 
                         $(document).ready(function () {
