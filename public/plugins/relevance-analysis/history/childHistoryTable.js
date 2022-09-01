@@ -1093,8 +1093,6 @@ function customFiltersWithoutComment(tableID, table, prefix = '', index = 0) {
 }
 
 function getColor(result, ideal) {
-    console.log(ideal)
-    console.log(result)
     let percent = ideal / 100
 
     let difference = 100 - (result / percent)
