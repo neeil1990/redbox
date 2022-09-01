@@ -90,7 +90,7 @@ class MonitoringChartsController extends Controller
 
     public function calculatePercentPositionsInTop(Collection $positions, $top)
     {
-        $items = $positions->count();
+        $items = $this->keywords->count();
         $count = $positions->filter(function ($val) use ($top){
             return $val <= $top;
         })->count();
