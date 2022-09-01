@@ -88,7 +88,7 @@ class Relevance
             $this->request['searchPassages'] = false;
         }
 
-        if ($queue) {
+        if ($this->queue) {
             $params = [
                 'user_id' => Auth::id(),
             ];
@@ -205,9 +205,17 @@ class Relevance
                 'userId' => $userId,
             ]);
 
-            RelevanceHistory::where('id', '=', $historyId)->update([
-                'state' => '-1'
-            ]);
+            if ($historyId !== false) {
+                RelevanceHistory::where('id', '=', $historyId)->update([
+                    'state' => '-1'
+                ]);
+            }
+
+            if ($this->queue) {
+                UsersJobs::where('user_id', '=', $userId)->update([
+                    'count_jobs' => '-1'
+                ]);
+            }
 
             $this->saveError();
         }

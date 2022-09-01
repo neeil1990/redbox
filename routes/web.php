@@ -11,15 +11,8 @@
 |
 */
 
-use App\DomainInformation;
-use App\Morphy;
-use App\ProjectRelevanceHistory;
-use App\Relevance;
-use App\RelevanceHistory;
 use App\TextAnalyzer;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();

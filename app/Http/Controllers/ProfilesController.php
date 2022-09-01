@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Tariff;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,7 @@ class ProfilesController extends Controller
      */
     public function index()
     {
-        $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val){
+        $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val) {
             $str = Str::before($val, '.');
             return [$str => __($str)];
         });
@@ -46,6 +47,7 @@ class ProfilesController extends Controller
         $user = $this->user;
         $tariff = $user->tariff();
         $name = ($tariff) ? $tariff->name() : null;
+        self::checkTelegramToken($user);
 
         return view('profile.index', compact('user', 'lang', 'name'));
     }
@@ -63,7 +65,7 @@ class ProfilesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -74,7 +76,7 @@ class ProfilesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Profile  $profile
+     * @param \App\Profile $profile
      * @return \Illuminate\Http\Response
      */
     public function show(Profile $profile)
@@ -85,7 +87,7 @@ class ProfilesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Profile  $profile
+     * @param \App\Profile $profile
      * @return \Illuminate\Http\Response
      */
     public function edit(Profile $profile)
@@ -96,8 +98,8 @@ class ProfilesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Profile  $profile
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Profile $profile
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
@@ -114,14 +116,14 @@ class ProfilesController extends Controller
         $user->last_name = $request->input('last_name');
         $user->lang = $request->input('lang');
 
-        if($user->email !== $request->input('email')){
+        if ($user->email !== $request->input('email')) {
             $user->email = $request->input('email');
             $user->email_verified_at = null;
         }
 
         if ($request->hasFile('image')) {
 
-            if($user->image)
+            if ($user->image)
                 Storage::delete($user->image);
 
             $path = $request->file('image')->store('avatar');
@@ -155,8 +157,8 @@ class ProfilesController extends Controller
     /**
      * Reset the given user's password.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
-     * @param  string  $password
+     * @param \Illuminate\Contracts\Auth\CanResetPassword $user
+     * @param string $password
      * @return void
      */
     protected function resetPassword($user, $password)
@@ -185,11 +187,23 @@ class ProfilesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Profile  $profile
+     * @param \App\Profile $profile
      * @return \Illuminate\Http\Response
      */
     public function destroy(Profile $profile)
     {
         //
+    }
+
+    /**
+     * @param $user
+     * @return void
+     */
+    public function checkTelegramToken($user)
+    {
+        if (empty($user->telegram_token)) {
+            $user->telegram_token = str_shuffle(Str::random(50) . Carbon::now());
+            $user->save();
+        }
     }
 }

@@ -11,7 +11,6 @@
             </div>
 
             <div class="card-body">
-
                 <form action="{{ route('register') }}" method="POST">
                     <p class="login-box-msg">{{ __('Select your language') }}</p>
 
