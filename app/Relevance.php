@@ -1524,12 +1524,12 @@ class Relevance
             ];
         } else {
             $data = [
-
                 'sites' => json_decode(gzuncompress(base64_decode($history['sites'])), true),
                 'avg_coverage_percent' => json_decode(gzuncompress(base64_decode($history['avg_coverage_percent'])), true),
                 'cleaning' => true
             ];
         }
+
         $data['average_values'] = json_decode($history['average_values'], true);
 
         return $data;

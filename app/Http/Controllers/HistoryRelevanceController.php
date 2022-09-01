@@ -47,7 +47,7 @@ class HistoryRelevanceController extends Controller
      */
     public function getStories(Request $request): JsonResponse
     {
-        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->with('stories')->first();
+        $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
         $admin = User::isUserAdmin();
         $userId = Auth::id();
 
@@ -64,15 +64,22 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
+        $results = $history->stories()->get([
+            'phrase', 'main_link', 'region',
+            'last_check', 'points', 'position',
+            'coverage', 'coverage_tf', 'density',
+            'width', 'density', 'calculate',
+            'id', 'project_relevance_history_id',
+            'comment', 'user_id', 'state',
+        ]);
+
+        foreach ($results as $result) {
+            $result['average_values'] = json_decode($result->results['average_values']);
+            unset($result->results);
+        }
+
         return response()->json([
-            'stories' => $history->stories()->get([
-                'phrase', 'main_link', 'region',
-                'last_check', 'points', 'position',
-                'coverage', 'coverage_tf', 'density',
-                'width', 'density', 'calculate',
-                'id', 'project_relevance_history_id',
-                'comment', 'user_id', 'state'
-            ])
+            'stories' => $results
         ]);
     }
 

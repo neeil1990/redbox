@@ -8,7 +8,7 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
         <style>
-            td:hover i {
+            td i:hover {
                 opacity: 1 !important;
                 transition: .3s;
             }
@@ -621,9 +621,21 @@
                                 </th>
                                 <th>
                                     <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGPoints" id="minAVGPoints" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGPoints" id="maxAVGPoints" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
                                            name="minCoverage" id="minCoverage" placeholder="min">
                                     <input class="w-100 form form-control search-input" type="number"
                                            name="maxCoverage" id="maxCoverage" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGCoverage" id="minAVGCoverage" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGCoverage" id="maxAVGCoverage" placeholder="max">
                                 </th>
                                 <th>
                                     <input class="w-100 form form-control search-input" type="number"
@@ -632,10 +644,22 @@
                                            name="maxCoverageTf" id="maxCoverageTf" placeholder="max">
                                 </th>
                                 <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGCoverageTf" id="minAVGCoverageTf" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGCoverageTf" id="maxAVGCoverageTf" placeholder="max">
+                                </th>
+                                <th>
                                     <input class="w-100 form form-control search-input" type="number" name="minWidth"
                                            id="minWidth" placeholder="min">
                                     <input class="w-100 form form-control search-input" type="number"
                                            name="maxWidth" id="maxWidth" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number" name="minAVGWidth"
+                                           id="minAVGWidth" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGWidth" id="maxAVGWidth" placeholder="max">
                                 </th>
                                 <th>
                                     <input class="w-100 form form-control search-input" type="number"
@@ -644,47 +668,78 @@
                                            name="maxDensity" id="maxDensity" placeholder="max">
                                 </th>
                                 <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGDensity" id="minAVGDensity" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGDensity" id="maxAVGDensity" placeholder="max">
+                                </th>
+                                <th>
+                                    <div>
+                                        {{ __('Switch everything') }}
+                                        <div class='d-flex w-100'>
+                                            <div class='__helper-link ui_tooltip_w'>
+                                                <div
+                                                    class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success changeAllState'>
+                                                    <input type='checkbox' class='custom-control-input'
+                                                           id='changeAllState'>
+                                                    <label class='custom-control-label' for='changeAllState'></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th class="table-header">Дата последней проверки</th>
+                                <th class="table-header">{{ __('Date of last check') }}</th>
                                 <th class="table-header" style="min-width: 200px">
-                                    Комментарий
+                                    {{ __('Comment') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
-                                    Фраза
+                                    {{ __('Phrase') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; height: 83px">
-                                    Регион
+                                    {{ __('Region') }}
                                 </th>
                                 <th class="table-header" style="min-width: 160px; max-width:160px; height: 83px">
-                                    Посадочная страница
+                                    {{ __('Landing page') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Позиция в топе
+                                    {{ __('Position in the top') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Баллы
+                                    {{ __('Scores') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Охват важных
-                                    слова
+                                    Рекомендуемые баллы
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Охват tf
+                                    {{ __('Coverage of important words') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Ширина
+                                    Рекомендуемый охват
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Плотность
+                                    {{ __('TF coverage') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
-                                    Учитывать в
-                                    расчёте общего
-                                    балла
+                                    Рекомендуемый охват tf
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    {{ __('Width') }}
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемая ширина
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    {{ __('Density') }}
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемая плотность
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    {{ __('Take into account when calculating the total score') }}
                                 </th>
                                 <th class="table-header"></th>
                             </tr>
@@ -797,6 +852,15 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
@@ -933,15 +997,6 @@
                 }
             }
         </script>
-        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-        <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
             $('.remove-access').on('click', function () {
                 let button = $(this)

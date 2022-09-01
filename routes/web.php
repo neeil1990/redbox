@@ -13,6 +13,7 @@
 
 use App\DomainInformation;
 use App\Morphy;
+use App\ProjectRelevanceHistory;
 use App\Relevance;
 use App\RelevanceHistory;
 use App\TextAnalyzer;

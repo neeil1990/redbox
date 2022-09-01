@@ -835,9 +835,21 @@
                                 </th>
                                 <th>
                                     <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGPoints" id="minAVGPoints" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGPoints" id="maxAVGPoints" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
                                            name="minCoverage" id="minCoverage" placeholder="min">
                                     <input class="w-100 form form-control search-input" type="number"
                                            name="maxCoverage" id="maxCoverage" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGCoverage" id="minAVGCoverage" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGCoverage" id="maxAVGCoverage" placeholder="max">
                                 </th>
                                 <th>
                                     <input class="w-100 form form-control search-input" type="number"
@@ -846,16 +858,34 @@
                                            name="maxCoverageTf" id="maxCoverageTf" placeholder="max">
                                 </th>
                                 <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGCoverageTf" id="minAVGCoverageTf" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGCoverageTf" id="maxAVGCoverageTf" placeholder="max">
+                                </th>
+                                <th>
                                     <input class="w-100 form form-control search-input" type="number" name="minWidth"
                                            id="minWidth" placeholder="min">
                                     <input class="w-100 form form-control search-input" type="number"
                                            name="maxWidth" id="maxWidth" placeholder="max">
                                 </th>
                                 <th>
+                                    <input class="w-100 form form-control search-input" type="number" name="minAVGWidth"
+                                           id="minAVGWidth" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGWidth" id="maxAVGWidth" placeholder="max">
+                                </th>
+                                <th>
                                     <input class="w-100 form form-control search-input" type="number"
                                            name="minDensity" id="minDensity" placeholder="min">
                                     <input class="w-100 form form-control search-input" type="number"
                                            name="maxDensity" id="maxDensity" placeholder="max">
+                                </th>
+                                <th>
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="minAVGDensity" id="minAVGDensity" placeholder="min">
+                                    <input class="w-100 form form-control search-input" type="number"
+                                           name="maxAVGDensity" id="maxAVGDensity" placeholder="max">
                                 </th>
                                 <th>
                                     <div>
@@ -896,16 +926,31 @@
                                     {{ __('Scores') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемые баллы
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
                                     {{ __('Coverage of important words') }}
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемый охват
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
                                     {{ __('TF coverage') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемый охват tf
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
                                     {{ __('Width') }}
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемая ширина
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
                                     {{ __('Density') }}
+                                </th>
+                                <th class="table-header" style="height: 83px; min-width: 69px">
+                                    Рекомендуемая плотность
                                 </th>
                                 <th class="table-header" style="height: 83px; min-width: 69px">
                                     {{ __('Take into account when calculating the total score') }}
