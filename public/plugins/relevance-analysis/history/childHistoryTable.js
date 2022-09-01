@@ -808,8 +808,45 @@ $(document).ready(function () {
                             if (phrase == null) {
                                 phrase = 'Был использван анализ без ключевой фразы'
                             }
-                            try {
-                                let newRow = "<tr class='render'>" +
+
+                            let newRow
+
+                            if (val.average_values == null) {
+                                newRow = "<tr class='render'>" +
+                                    "   <td>" + val.last_check + "</td>" +
+                                    "   <td>" +
+                                    "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                    "   </td>" +
+                                    "   <td>" + phrase + "</td>" +
+                                    "   <td>" + getRegionName(val.region) + "</td>" +
+                                    "   <td>" + val.main_link + "</td>" +
+                                    "   <td>" + position + "</td>" +
+                                    "   <td>" + val.points + "</td>" +
+                                    "   <td>нет данных</td>" +
+                                    "   <td>" + val.coverage + "</td>" +
+                                    "   <td>нет данных</td>" +
+                                    "   <td>" + val.coverage_tf + "</td>" +
+                                    "   <td>нет данных</td>" +
+                                    "   <td>" + val.width + "</td>" +
+                                    "   <td>нет данных</td>" +
+                                    "   <td>" + val.density + "</td>" +
+                                    "   <td>нет данных</td>" +
+                                    "   <td>" +
+                                    "      <div class='d-flex justify-content-center'> " +
+                                    "          <div class='__helper-link ui_tooltip_w'> " +
+                                    "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                    "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                    "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                    "              </div>" +
+                                    "          </div>" +
+                                    "      </div>" +
+                                    "   </td>" +
+                                    "   <td id='history-state-" + val.id + "'>" +
+                                    state +
+                                    "   </td>" +
+                                    "</tr>"
+                            } else {
+                                newRow = "<tr class='render'>" +
                                     "   <td>" + val.last_check + "</td>" +
                                     "   <td>" +
                                     "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
@@ -842,12 +879,9 @@ $(document).ready(function () {
                                     state +
                                     "   </td>" +
                                     "</tr>"
-                                tbody.append(newRow)
-                            } catch (e) {
-                                console.log(val)
-                                console.log(val.points)
                             }
 
+                            tbody.append(newRow)
                         })
 
                         $(document).ready(function () {
