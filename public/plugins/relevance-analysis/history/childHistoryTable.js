@@ -458,7 +458,6 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         table.draw();
     });
 
-
     $.fn.dataTable.ext.search.push(function (settings, data) {
         let phraseSearch = String($('#phraseSearch' + prefix).val()).toLowerCase();
         let target = String(data[index + 2]).toLowerCase();
@@ -492,8 +491,7 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         let target = parseFloat(data[index + 5]);
         return isValidate(minPosition, maxPosition, target, settings, tableID)
     });
-    let pos = '#minPosition' + prefix + ', #maxPosition' + prefix
-    $(pos).keyup(function () {
+    $('#minPosition' + prefix + ', #maxPosition' + prefix).keyup(function () {
         table.draw();
     });
 
@@ -503,8 +501,17 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         let target = parseFloat(data[index + 6]);
         return isValidate(minPoints, maxPoints, target, settings, tableID)
     });
-    let points = '#minPoints' + prefix + ', #maxPoints' + prefix
-    $(points).keyup(function () {
+    $('#minPoints' + prefix + ', #maxPoints' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxAVGPoints = parseFloat($('#maxAVGPoints' + prefix).val());
+        let minAvgPoints = parseFloat($('#minAVGPoints' + prefix).val());
+        let target = parseFloat(data[index + 1 + 6]);
+        return isValidate(minAvgPoints, maxAVGPoints, target, settings, tableID)
+    });
+    $('#minAVGPoints' + prefix + ', #maxAVGPoints' + prefix).keyup(function () {
         table.draw();
     });
 
@@ -514,8 +521,7 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         let target = parseFloat(data[index + 7]);
         return isValidate(minCoverage, maxCoverage, target, settings, tableID)
     });
-    let coverage = '#minCoverage' + prefix + ', #maxCoverage' + prefix
-    $(coverage).keyup(function () {
+    $('#minCoverage' + prefix + ', #maxCoverage' + prefix).keyup(function () {
         table.draw();
     });
 
@@ -525,8 +531,7 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         let target = parseFloat(data[index + 8]);
         return isValidate(minCoverageTf, maxCoverageTf, target, settings, tableID)
     });
-    let covTf = '#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix
-    $(covTf).keyup(function () {
+    $('#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix).keyup(function () {
         table.draw();
     });
 
@@ -536,8 +541,7 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         let target = parseFloat(data[index + 9]);
         return isValidate(minWidth, maxWidth, target, settings, tableID)
     });
-    let width = '#minWidth' + prefix + ', #maxWidth' + prefix
-    $(width).keyup(function () {
+    $('#minWidth' + prefix + ', #maxWidth' + prefix).keyup(function () {
         table.draw();
     });
 
@@ -547,8 +551,166 @@ function customFilters(tableID, table, prefix = '', index = 0) {
         let target = parseFloat(data[index + 10]);
         return isValidate(minDensity, maxDensity, target, settings, tableID)
     });
-    let density = '#minDensity' + prefix + ', #maxDensity' + prefix
-    $(density).keyup(function () {
+    $('#minDensity' + prefix + ', #maxDensity' + prefix).keyup(function () {
+        table.draw();
+    });
+}
+
+function customHistoryFilters(tableID, table, prefix = '') {
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let target = String(data[0]);
+        return isDateValid(target, settings, tableID, prefix)
+    });
+    $('#dateMin' + prefix).change(function () {
+        table.draw();
+    });
+    $('#dateMax' + prefix).change(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let phraseSearch = String($('#projectComment' + prefix).val()).toLowerCase();
+        let target = String(data[1]).toLowerCase();
+        return isIncludes(target, phraseSearch, settings, tableID)
+    });
+    $('#projectComment' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let phraseSearch = String($('#phraseSearch' + prefix).val()).toLowerCase();
+        let target = String(data[2]).toLowerCase();
+        return isIncludes(target, phraseSearch, settings, tableID)
+    });
+    $('#phraseSearch' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let regionSearch = String($('#regionSearch' + prefix).val()).toLowerCase();
+        let target = String(data[3]).toLowerCase();
+        return isIncludes(target, regionSearch, settings, tableID)
+    });
+    $('#regionSearch' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let mainPageSearch = String($('#mainPageSearch' + prefix).val()).toLowerCase();
+        let target = String(data[4]).toLowerCase();
+        return isIncludes(target, mainPageSearch, settings, tableID)
+    });
+    $('#mainPageSearch' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxPosition = parseFloat($('#maxPosition' + prefix).val());
+        let minPosition = parseFloat($('#minPosition' + prefix).val());
+        let target = parseFloat(data[5]);
+        return isValidate(minPosition, maxPosition, target, settings, tableID)
+    });
+    $('#minPosition' + prefix + ', #maxPosition' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxPoints = parseFloat($('#maxPoints' + prefix).val());
+        let minPoints = parseFloat($('#minPoints' + prefix).val());
+        let target = parseFloat(data[6]);
+        return isValidate(minPoints, maxPoints, target, settings, tableID)
+    });
+    $('#minPoints' + prefix + ', #maxPoints' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxAVGPoints = parseFloat($('#maxAVGPoints' + prefix).val());
+        let minAvgPoints = parseFloat($('#minAVGPoints' + prefix).val());
+        let target = parseFloat(data[7]);
+        return isValidate(minAvgPoints, maxAVGPoints, target, settings, tableID)
+    });
+    $('#minAVGPoints' + prefix + ', #maxAVGPoints' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxCoverage = parseFloat($('#maxCoverage' + prefix).val());
+        let minCoverage = parseFloat($('#minCoverage' + prefix).val());
+        let target = parseFloat(data[8]);
+        return isValidate(minCoverage, maxCoverage, target, settings, tableID)
+    });
+    $('#minCoverage' + prefix + ', #maxCoverage' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxAVGCoverage = parseFloat($('#maxAVGCoverage' + prefix).val());
+        let minAVGCoverage = parseFloat($('#minAVGCoverage' + prefix).val());
+        let target = parseFloat(data[9]);
+        return isValidate(minAVGCoverage, maxAVGCoverage, target, settings, tableID)
+    });
+    $('#minAVGCoverage' + prefix + ', #maxAVGCoverage' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxCoverageTf = parseFloat($('#maxCoverageTf' + prefix).val());
+        let minCoverageTf = parseFloat($('#minCoverageTf' + prefix).val());
+        let target = parseFloat(data[10]);
+        return isValidate(minCoverageTf, maxCoverageTf, target, settings, tableID)
+    });
+    $('#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxAVGCoverageTf = parseFloat($('#maxAVGCoverageTf' + prefix).val());
+        let minAVGCoverageTf = parseFloat($('#minAVGCoverageTf' + prefix).val());
+        let target = parseFloat(data[11]);
+        return isValidate(minAVGCoverageTf, maxAVGCoverageTf, target, settings, tableID)
+    });
+    $('#minAVGCoverageTf' + prefix + ', #maxAVGCoverageTf' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxWidth = parseFloat($('#maxWidth' + prefix).val());
+        let minWidth = parseFloat($('#minWidth' + prefix).val());
+        let target = parseFloat(data[12]);
+        return isValidate(minWidth, maxWidth, target, settings, tableID)
+    });
+    $('#minWidth' + prefix + ', #maxWidth' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxAVGWidth = parseFloat($('#maxAVGWidth' + prefix).val());
+        let minAVGWidth = parseFloat($('#minAVGWidth' + prefix).val());
+        let target = parseFloat(data[13]);
+        return isValidate(minAVGWidth, maxAVGWidth, target, settings, tableID)
+    });
+    $('#minAVGWidth' + prefix + ', #maxAVGWidth' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxDensity = parseFloat($('#maxDensity' + prefix).val());
+        let minDensity = parseFloat($('#minDensity' + prefix).val());
+        let target = parseFloat(data[14]);
+        return isValidate(minDensity, maxDensity, target, settings, tableID)
+    });
+    $('#minDensity' + prefix + ', #maxDensity' + prefix).keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(function (settings, data) {
+        let maxAVGDensity = parseFloat($('#maxAVGDensity' + prefix).val());
+        let minAVGDensity = parseFloat($('#minAVGDensity' + prefix).val());
+        let target = parseFloat(data[15]);
+        return isValidate(minAVGDensity, maxAVGDensity, target, settings, tableID)
+    });
+    $('#minAVGDensity' + prefix + ', #maxAVGDensity' + prefix).keyup(function () {
         table.draw();
     });
 }
@@ -646,41 +808,51 @@ $(document).ready(function () {
                             if (phrase == null) {
                                 phrase = 'Был использван анализ без ключевой фразы'
                             }
+                            try {
+                                let newRow = "<tr class='render'>" +
+                                    "   <td>" + val.last_check + "</td>" +
+                                    "   <td>" +
+                                    "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                    "   </td>" +
+                                    "   <td>" + phrase + "</td>" +
+                                    "   <td>" + getRegionName(val.region) + "</td>" +
+                                    "   <td>" + val.main_link + "</td>" +
+                                    "   <td>" + position + "</td>" +
+                                    "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + val.points + "</td>" +
+                                    "   <td >" + Math.round(val.average_values.points) + "</td>" +
+                                    "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + val.coverage + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.coverage) + "</td>" +
+                                    "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + val.coverage_tf + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.coverageTf) + "</td>" +
+                                    "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + val.width + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.width) + "</td>" +
+                                    "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + val.density + "</td>" +
+                                    "   <td>" + Math.round(val.average_values.densityPercent) + "</td>" +
+                                    "   <td>" +
+                                    "      <div class='d-flex justify-content-center'> " +
+                                    "          <div class='__helper-link ui_tooltip_w'> " +
+                                    "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                    "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                    "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                    "              </div>" +
+                                    "          </div>" +
+                                    "      </div>" +
+                                    "   </td>" +
+                                    "   <td id='history-state-" + val.id + "'>" +
+                                    state +
+                                    "   </td>" +
+                                    "</tr>"
+                                tbody.append(newRow)
+                            } catch (e) {
+                                console.log(val)
+                                console.log(val.points)
+                            }
 
-                            tbody.append(
-                                "<tr class='render'>" +
-                                "   <td>" + val.last_check + "</td>" +
-                                "   <td>" +
-                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                                "   </td>" +
-                                "   <td>" + phrase + "</td>" +
-                                "   <td>" + getRegionName(val.region) + "</td>" +
-                                "   <td>" + val.main_link + "</td>" +
-                                "   <td>" + position + "</td>" +
-                                "   <td>" + val.points + "</td>" +
-                                "   <td>" + val.coverage + "</td>" +
-                                "   <td>" + val.coverage_tf + "</td>" +
-                                "   <td>" + val.width + "</td>" +
-                                "   <td>" + val.density + "</td>" +
-                                "   <td>" +
-                                "      <div class='d-flex justify-content-center'> " +
-                                "          <div class='__helper-link ui_tooltip_w'> " +
-                                "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
-                                "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
-                                "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
-                                "              </div>" +
-                                "          </div>" +
-                                "      </div>" +
-                                "   </td>" +
-                                "   <td id='history-state-" + val.id + "'>" +
-                                state +
-                                "   </td>" +
-                                "</tr>"
-                            )
                         })
 
                         $(document).ready(function () {
                             if ($.fn.DataTable.fnIsDataTable($('#history_table'))) {
+                                console.log('крашу таблицу')
                                 $('#history_table').dataTable().fnDestroy();
                             }
 
@@ -704,7 +876,7 @@ $(document).ready(function () {
 
                             repeatScan()
 
-                            customFilters('history_table', historyTable)
+                            customHistoryFilters('history_table', historyTable)
                         });
                     }
                 },
@@ -923,4 +1095,21 @@ function customFiltersWithoutComment(tableID, table, prefix = '', index = 0) {
     $(density).keyup(function () {
         table.draw();
     });
+}
+
+function getColor(result, ideal) {
+    let percent = ideal / 100
+
+    let difference = 100 - (result / percent)
+
+    if (difference >= 0 && difference < 15 || difference < 0) {
+        return 'rgba(78,183,103,0.5)';
+    }
+
+    if (difference >= 15 && difference <= 20) {
+        return 'rgba(245,226,170,0.5)';
+    }
+
+    return 'rgba(220,53,69,0.5)';
+
 }
