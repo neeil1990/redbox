@@ -845,6 +845,7 @@ $(document).ready(function () {
                                 tbody.append(newRow)
                             } catch (e) {
                                 console.log(val)
+                                console.log(val.points)
                             }
 
                         })
