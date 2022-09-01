@@ -69,6 +69,12 @@
     @include('monitoring.partials.show.filter')
 
     <div class="row">
+        <div class="col-12">
+            @include('monitoring.partials.show.charts')
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-12 alert-data"></div>
     </div>
 
@@ -812,6 +818,49 @@
 
                     item.closest('tr').remove();
                 }
+            });
+
+            let topPercent = $('#topPercent').get(0).getContext('2d');
+
+            let areaChartOptions = {
+                title: {
+                    display: false,
+                    text: 'Chart'
+                },
+                maintainAspectRatio : false,
+                legend: {
+                    display: true
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines : {
+                            display : false,
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            stepSize: 10
+                        }
+                    }]
+                }
+            };
+
+            areaChartOptions.title.text = "% ключей в ТОП-10";
+
+            axios.get('/monitoring/charts', {
+                params: {
+                    projectId: PROJECT_ID,
+                }
+            }).then(function (response) {
+
+                new Chart(topPercent, {
+                    type: 'line',
+                    data: response.data,
+                    options: areaChartOptions
+                });
+            }).catch(function () {
+
+                toastr.error('Something is going wrong');
             });
         </script>
     @endslot

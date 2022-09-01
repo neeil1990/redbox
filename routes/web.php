@@ -229,6 +229,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/stat/delete-queues', 'MonitoringAdminController@deleteQueues')->name('monitoring.stat.deleteQueues');
     Route::get('/monitoring/stat', 'MonitoringAdminController@statPage')->name('monitoring.stat');
     Route::get('/monitoring/admin', 'MonitoringAdminController@adminPage')->name('monitoring.admin');
+    Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
 
     Route::resource('monitoring', 'MonitoringController');
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
