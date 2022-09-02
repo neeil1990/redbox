@@ -17,31 +17,23 @@
         Ваши лимиты
     </span>
 
-    <div class="dropdown-menu p-0 m-0">
+    <div class="dropdown-menu p-0 m-0" style="width: 410px">
         <table class="table table-bordered p-0 m-0">
             <thead>
             <tr>
-                <th>Task</th>
-                <th style="width: 40px">Label</th>
+                <th>Модуль</th>
+                <th>Лимиты</th>
+                <th>Исчерпано</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Update software</td>
-                <td><span class="badge bg-danger">55%</span></td>
-            </tr>
-            <tr>
-                <td>Clean database</td>
-                <td><span class="badge bg-warning">70%</span></td>
-            </tr>
-            <tr>
-                <td>Cron job running</td>
-                <td><span class="badge bg-primary">30%</span></td>
-            </tr>
-            <tr>
-                <td>Fix and squish bugs</td>
-                <td><span class="badge bg-success">90%</span></td>
-            </tr>
+            @foreach($tariffs as $key => $tariff)
+                <tr>
+                    <td>{{ $tariff['name'] }}</td>
+                    <td>{{ $tariff['value'] }}</td>
+                    <td>В процессе..</td>
+                </tr>
+            @endforeach
             </tbody>
         </table>
     </div>

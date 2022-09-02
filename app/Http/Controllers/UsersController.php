@@ -26,8 +26,8 @@ class UsersController extends Controller
     {
         $users = User::all();
 
-        $users->map(function ($user){
-            if(!$user->session)
+        $users->map(function ($user) {
+            if (!$user->session)
                 return true;
 
             $user->session->agent = $this->createAgent($user->session);
@@ -46,7 +46,7 @@ class UsersController extends Controller
      */
     public function login($id)
     {
-        if(Auth::loginUsingId($id))
+        if (Auth::loginUsingId($id))
             return redirect('/');
         else
             return redirect('users');
@@ -65,7 +65,7 @@ class UsersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -76,7 +76,7 @@ class UsersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -87,16 +87,16 @@ class UsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
     {
-        $role = Role::all()->pluck('name', 'id')->map(function ($val){
+        $role = Role::all()->pluck('name', 'id')->map(function ($val) {
             return __($val);
         });
 
-        $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val){
+        $lang = collect(Storage::disk('lang')->files())->mapWithKeys(function ($val) {
             $str = Str::before($val, '.');
             return [$str => __($str)];
         });
@@ -139,20 +139,20 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        if($user->id == Auth::id()){
+        if ($user->id == Auth::id()) {
             flash()->overlay(__('You cannot delete yourself'), __('Error user'))->error();
-        }else{
+        } else {
             $user->delete();
             flash()->overlay(__('User deleted successfully'), __('Delete user'))->success();
         }
 
-       return redirect('users');
+        return redirect('users');
     }
 
     /**
      * Create a new agent instance from the given session.
      *
-     * @param  mixed  $session
+     * @param mixed $session
      * @return \Jenssegers\Agent\Agent
      */
     private function createAgent($session)
