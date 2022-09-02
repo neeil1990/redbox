@@ -55,10 +55,10 @@ abstract class SettingsAbstract
     }
 
     /**
-     * @param $code
+     * @param string $code
      * @return int|string
      */
-    protected function getUsedLimit($code)
+    protected function getUsedLimit(string $code)
     {
         /** @var User $user */
         $user = Auth::user();
@@ -95,8 +95,8 @@ abstract class SettingsAbstract
 
             case 'MetaTagsProject':
             case 'MetaTagsPages':
-            case 'UniqueWords':
             case 'price':
+            case 'UniqueWords':
             case 'HtmlEditor':
             case 'CompetitorAnalysis':
 
