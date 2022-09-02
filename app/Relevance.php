@@ -158,19 +158,24 @@ class Relevance
         }
 
         if (!$this->mainPageIsRelevance) {
-            $this->sites[$this->params['main_page_link']]['inRelevance'] = false;
-            $this->sites[$this->params['main_page_link']]['danger'] = false;
-            $this->sites[$this->params['main_page_link']]['ignored'] = false;
-            $this->sites[$this->params['main_page_link']]['site'] = $this->params['main_page_link'];
-            $this->sites[$this->params['main_page_link']]['mainPage'] = true;
-            $this->sites[$this->params['main_page_link']]['defaultHtml'] = $this->sites[$this->params['main_page_link']]['html'] = $this->mainPage['html'];
             if ($xmlResponse) {
-                $this->sites[$this->params['main_page_link']]['position'] = array_search(Str::lower($this->params['main_page_link']), $xmlResponse);
+                $position = array_search(Str::lower($this->params['main_page_link']), $xmlResponse);
             } elseif ($searchPosition) {
-                $this->sites[$this->params['main_page_link']]['position'] = SimplifiedXmlFacade::getPosition($this->request);
+                $position = SimplifiedXmlFacade::getPosition($this->request);
             } else {
-                $this->sites[$this->params['main_page_link']]['position'] = count($this->domains) + 1;
+                $position = count($this->domains) + 1;
             }
+
+            $this->sites[$this->params['main_page_link']] = [
+                'inRelevance' => false,
+                'danger' => $this->mainPage['html'] === "",
+                'ignored' => false,
+                'mainPage' => true,
+                'defaultHtml' => $this->mainPage['html'],
+                'html' => $this->mainPage['html'],
+                'site' => $this->params['main_page_link'],
+                'position' => $position
+            ];
         }
     }
 

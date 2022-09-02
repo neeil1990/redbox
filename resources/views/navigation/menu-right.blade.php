@@ -37,7 +37,12 @@
                                 <div class="progress-bar progress-bar-danger"
                                      style="width: {{ $tariff['percent'] }}%"></div>
                             </div>
-                            Осталось {{ $tariff['value'] - $tariff['used'] }}
+                            @if(gettype($tariff['used']) == 'integer')
+                                Осталось {{ $tariff['value'] - $tariff['used'] }}
+                            @else
+                                {{ $tariff['used'] }}
+                            @endif
+
                         </td>
                     </tr>
                 @endif
