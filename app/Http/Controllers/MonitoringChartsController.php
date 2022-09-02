@@ -34,6 +34,9 @@ class MonitoringChartsController extends Controller
 
     public function getPositionsForRange($dateRange = null)
     {
+        if($dateRange)
+            $dateRange = explode(' - ', $dateRange);
+
         $model = new MonitoringPosition();
         $positions = $model->where('monitoring_searchengine_id', $this->region->id)
             ->whereIn('monitoring_keyword_id', $this->keywords->pluck('id'))
@@ -65,30 +68,36 @@ class MonitoringChartsController extends Controller
 
     protected function getTopPercent(Request $request)
     {
-        $top = [10, 20, 30, 40, 50];
+        $topSettings = [
+            10 => ['top' => 10, 'color' => '#28a745'],
+            20 => ['top' => 20, 'color' => '#007bff'],
+            30 => ['top' => 30, 'color' => '#ffc107'],
+            40 => ['top' => 40, 'color' => '#dc3545'],
+            50 => ['top' => 50, 'color' => '#6c757d'],
+        ];
         $response = [];
         $positions = $this->getLastPositionsByDays();
         foreach ($positions as $date => $position){
 
             $response['labels'][] = $date;
-            foreach ($top as $t)
-                $response['data'][$t][] = $this->calculatePercentPositionsInTop($position, $t);
+            foreach ($topSettings as $setting)
+                $response['data'][$setting['top']][] = $this->calculatePercentPositionsInTop($position, $setting['top']);
         }
 
         $chart = new AreaChartData($response['labels']);
-        foreach ($response['data'] as $p => $d)
-        $chart->setLabel('% ключей в ТОП-' . $p)->setData($d);
+        foreach ($response['data'] as $top => $data)
+        $chart->setBackgroundColor($topSettings[$top]['color'])->setBorderColor($topSettings[$top]['color'])->setLabel('% ключей в ТОП-' . $top)->setData($data);
 
         return $chart->get();
     }
 
     public function calculatePercentPositionsInTop(Collection $positions, $top)
     {
-        $items = $positions->count();
+        $items = $this->keywords->count();
         $count = $positions->filter(function ($val) use ($top){
             return $val <= $top;
         })->count();
 
-        return round(($count / $items) * 100, 2);
+        return round(($count / $items) * 100, 1);
     }
 }
