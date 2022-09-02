@@ -103,7 +103,7 @@ class RelevanceHistory extends Model
                 $now = Carbon::now();
                 $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
 
-                $countRecordInThisMonth = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
+                $countRecordInThisMonth = RelevanceHistory::where('user_id', '=', Auth::id())
                     ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
                     ->count();
 

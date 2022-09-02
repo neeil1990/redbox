@@ -7,7 +7,6 @@ namespace App\Classes\Tariffs\Settings;
 use App\DomainInformation;
 use App\DomainMonitoring;
 use App\ProjectTracking;
-use App\RelevanceAnalyseResults;
 use App\RelevanceHistory;
 use App\SearchCompetitors;
 use App\TariffSettingValue;
@@ -78,7 +77,7 @@ abstract class SettingsAbstract
                     ->sum('counter');
 
             case 'RelevanceAnalysis':
-                return (int)RelevanceAnalyseResults::where('user_id', '=', $user->id)
+                return (int)RelevanceHistory::where('user_id', '=', $user->id)
                     ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
                     ->count();
 
