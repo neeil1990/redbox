@@ -1090,5 +1090,5 @@ function getColor(result, ideal) {
 
 function getTextResult(result, ideal) {
 
-    return 'Посадочная страница получила <b>' + result + '</b>.<br> Cреднее значение <b>' + ideal + '</b>';
+    return 'Посадочная страница получила <b>' + result + '</b>.<br> Рекомендованное значение <b>' + ideal + '</b>';
 }
