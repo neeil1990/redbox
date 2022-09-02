@@ -34,6 +34,9 @@ class MonitoringChartsController extends Controller
 
     public function getPositionsForRange($dateRange = null)
     {
+        if($dateRange)
+            $dateRange = explode(' - ', $dateRange);
+
         $model = new MonitoringPosition();
         $positions = $model->where('monitoring_searchengine_id', $this->region->id)
             ->whereIn('monitoring_keyword_id', $this->keywords->pluck('id'))
@@ -95,6 +98,6 @@ class MonitoringChartsController extends Controller
             return $val <= $top;
         })->count();
 
-        return round(($count / $items) * 100, 2);
+        return round(($count / $items) * 100, 1);
     }
 }

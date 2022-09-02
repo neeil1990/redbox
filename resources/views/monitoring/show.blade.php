@@ -850,6 +850,7 @@
             axios.get('/monitoring/charts', {
                 params: {
                     projectId: PROJECT_ID,
+                    dateRange: DATES,
                 }
             }).then(function (response) {
 
