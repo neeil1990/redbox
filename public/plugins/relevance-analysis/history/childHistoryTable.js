@@ -625,19 +625,9 @@ function customHistoryFilters(tableID, table, prefix = '') {
     });
 
     $.fn.dataTable.ext.search.push(function (settings, data) {
-        let maxAVGPoints = parseFloat($('#maxAVGPoints' + prefix).val());
-        let minAvgPoints = parseFloat($('#minAVGPoints' + prefix).val());
-        let target = parseFloat(data[7]);
-        return isValidate(minAvgPoints, maxAVGPoints, target, settings, tableID)
-    });
-    $('#minAVGPoints' + prefix + ', #maxAVGPoints' + prefix).keyup(function () {
-        table.draw();
-    });
-
-    $.fn.dataTable.ext.search.push(function (settings, data) {
         let maxCoverage = parseFloat($('#maxCoverage' + prefix).val());
         let minCoverage = parseFloat($('#minCoverage' + prefix).val());
-        let target = parseFloat(data[8]);
+        let target = parseFloat(data[7]);
         return isValidate(minCoverage, maxCoverage, target, settings, tableID)
     });
     $('#minCoverage' + prefix + ', #maxCoverage' + prefix).keyup(function () {
@@ -645,19 +635,9 @@ function customHistoryFilters(tableID, table, prefix = '') {
     });
 
     $.fn.dataTable.ext.search.push(function (settings, data) {
-        let maxAVGCoverage = parseFloat($('#maxAVGCoverage' + prefix).val());
-        let minAVGCoverage = parseFloat($('#minAVGCoverage' + prefix).val());
-        let target = parseFloat(data[9]);
-        return isValidate(minAVGCoverage, maxAVGCoverage, target, settings, tableID)
-    });
-    $('#minAVGCoverage' + prefix + ', #maxAVGCoverage' + prefix).keyup(function () {
-        table.draw();
-    });
-
-    $.fn.dataTable.ext.search.push(function (settings, data) {
         let maxCoverageTf = parseFloat($('#maxCoverageTf' + prefix).val());
         let minCoverageTf = parseFloat($('#minCoverageTf' + prefix).val());
-        let target = parseFloat(data[10]);
+        let target = parseFloat(data[8]);
         return isValidate(minCoverageTf, maxCoverageTf, target, settings, tableID)
     });
     $('#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix).keyup(function () {
@@ -665,19 +645,9 @@ function customHistoryFilters(tableID, table, prefix = '') {
     });
 
     $.fn.dataTable.ext.search.push(function (settings, data) {
-        let maxAVGCoverageTf = parseFloat($('#maxAVGCoverageTf' + prefix).val());
-        let minAVGCoverageTf = parseFloat($('#minAVGCoverageTf' + prefix).val());
-        let target = parseFloat(data[11]);
-        return isValidate(minAVGCoverageTf, maxAVGCoverageTf, target, settings, tableID)
-    });
-    $('#minAVGCoverageTf' + prefix + ', #maxAVGCoverageTf' + prefix).keyup(function () {
-        table.draw();
-    });
-
-    $.fn.dataTable.ext.search.push(function (settings, data) {
         let maxWidth = parseFloat($('#maxWidth' + prefix).val());
         let minWidth = parseFloat($('#minWidth' + prefix).val());
-        let target = parseFloat(data[12]);
+        let target = parseFloat(data[9]);
         return isValidate(minWidth, maxWidth, target, settings, tableID)
     });
     $('#minWidth' + prefix + ', #maxWidth' + prefix).keyup(function () {
@@ -685,32 +655,12 @@ function customHistoryFilters(tableID, table, prefix = '') {
     });
 
     $.fn.dataTable.ext.search.push(function (settings, data) {
-        let maxAVGWidth = parseFloat($('#maxAVGWidth' + prefix).val());
-        let minAVGWidth = parseFloat($('#minAVGWidth' + prefix).val());
-        let target = parseFloat(data[13]);
-        return isValidate(minAVGWidth, maxAVGWidth, target, settings, tableID)
-    });
-    $('#minAVGWidth' + prefix + ', #maxAVGWidth' + prefix).keyup(function () {
-        table.draw();
-    });
-
-    $.fn.dataTable.ext.search.push(function (settings, data) {
         let maxDensity = parseFloat($('#maxDensity' + prefix).val());
         let minDensity = parseFloat($('#minDensity' + prefix).val());
-        let target = parseFloat(data[14]);
+        let target = parseFloat(data[10]);
         return isValidate(minDensity, maxDensity, target, settings, tableID)
     });
     $('#minDensity' + prefix + ', #maxDensity' + prefix).keyup(function () {
-        table.draw();
-    });
-
-    $.fn.dataTable.ext.search.push(function (settings, data) {
-        let maxAVGDensity = parseFloat($('#maxAVGDensity' + prefix).val());
-        let minAVGDensity = parseFloat($('#minAVGDensity' + prefix).val());
-        let target = parseFloat(data[15]);
-        return isValidate(minAVGDensity, maxAVGDensity, target, settings, tableID)
-    });
-    $('#minAVGDensity' + prefix + ', #maxAVGDensity' + prefix).keyup(function () {
         table.draw();
     });
 }
@@ -822,15 +772,10 @@ $(document).ready(function () {
                                     "   <td>" + val.main_link + "</td>" +
                                     "   <td>" + position + "</td>" +
                                     "   <td>" + val.points + "</td>" +
-                                    "   <td>нет данных</td>" +
                                     "   <td>" + val.coverage + "</td>" +
-                                    "   <td>нет данных</td>" +
                                     "   <td>" + val.coverage_tf + "</td>" +
-                                    "   <td>нет данных</td>" +
                                     "   <td>" + val.width + "</td>" +
-                                    "   <td>нет данных</td>" +
                                     "   <td>" + val.density + "</td>" +
-                                    "   <td>нет данных</td>" +
                                     "   <td>" +
                                     "      <div class='d-flex justify-content-center'> " +
                                     "          <div class='__helper-link ui_tooltip_w'> " +
@@ -855,16 +800,11 @@ $(document).ready(function () {
                                     "   <td>" + getRegionName(val.region) + "</td>" +
                                     "   <td>" + val.main_link + "</td>" +
                                     "   <td>" + position + "</td>" +
-                                    "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + val.points + "</td>" +
-                                    "   <td >" + Math.round(val.average_values.points) + "</td>" +
-                                    "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + val.coverage + "</td>" +
-                                    "   <td>" + Math.round(val.average_values.coverage) + "</td>" +
-                                    "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + val.coverage_tf + "</td>" +
-                                    "   <td>" + Math.round(val.average_values.coverageTf) + "</td>" +
-                                    "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + val.width + "</td>" +
-                                    "   <td>" + Math.round(val.average_values.width) + "</td>" +
-                                    "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + val.density + "</td>" +
-                                    "   <td>" + Math.round(val.average_values.densityPercent) + "</td>" +
+                                    "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
+                                    "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + getTextResult(val.coverage, Math.round(val.average_values.coverage)) + "</td>" +
+                                    "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + getTextResult(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "</td>" +
+                                    "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + getTextResult(val.width, Math.round(val.average_values.width)) + "</td>" +
+                                    "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + getTextResult(val.density, Math.round(val.average_values.densityPercent)) + "</td>" +
                                     "   <td>" +
                                     "      <div class='d-flex justify-content-center'> " +
                                     "          <div class='__helper-link ui_tooltip_w'> " +
@@ -1146,4 +1086,9 @@ function getColor(result, ideal) {
 
     return 'rgba(220,53,69,0.5)';
 
+}
+
+function getTextResult(result, ideal) {
+
+    return 'Посадочная страница получила <b>' + result + '</b>.<br> Cреднее значение <b>' + ideal + '</b>';
 }
