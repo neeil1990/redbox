@@ -268,6 +268,13 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
+Route::get('/test', function () {
+    $user = Auth::user();
+    $tariff = $user->tariff();
+    $tariffs = $tariff->getAsArray();
+    dd($tariffs);
+});
+
 Route::get('/get-passages/{link}', function ($link) {
     $link = str_replace('-', '/', $link);
 
