@@ -31,7 +31,13 @@
                 <tr>
                     <td>{{ $tariff['name'] }}</td>
                     <td>{{ $tariff['value'] }}</td>
-                    <td>В процессе..</td>
+                    <td>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar progress-bar-danger"
+                                 style="width: {{ $tariff['percent'] }}%"></div>
+                        </div>
+                        {{ $tariff['used'] }}
+                    </td>
                 </tr>
             @endforeach
             </tbody>
