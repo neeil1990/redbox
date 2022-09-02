@@ -28,17 +28,19 @@
             </thead>
             <tbody>
             @foreach($tariffs as $key => $tariff)
-                <tr>
-                    <td>{{ $tariff['name'] }}</td>
-                    <td>{{ $tariff['value'] }}</td>
-                    <td>
-                        <div class="progress progress-xs">
-                            <div class="progress-bar progress-bar-danger"
-                                 style="width: {{ $tariff['percent'] }}%"></div>
-                        </div>
-                        {{ $tariff['used'] }}
-                    </td>
-                </tr>
+                @if($key != 'price')
+                    <tr>
+                        <td>{{ $tariff['name'] }}</td>
+                        <td>{{ $tariff['value'] }}</td>
+                        <td>
+                            <div class="progress progress-xs">
+                                <div class="progress-bar progress-bar-danger"
+                                     style="width: {{ $tariff['percent'] }}%"></div>
+                            </div>
+                            {{ $tariff['used'] }}
+                        </td>
+                    </tr>
+                @endif
             @endforeach
             </tbody>
         </table>
