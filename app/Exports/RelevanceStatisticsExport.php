@@ -62,23 +62,23 @@ class RelevanceStatisticsExport implements FromCollection
                 'phrase' => (string)$result->phrase,
                 'main_link' => (string)$result->main_link,
 
-                'region' => (string)$this->getRegionName($result->region),
+                'region' => $this->getRegionName($result->region),
                 'position' => $result->position === 0 ? "Сайт не попал в топ" : $result->position,
 
                 'points' => (int)round($result->points),
-                'ideal_points' => (int)round($avg['points']),
+                'ideal_points' => $this->isExists($avg['points']),
 
                 'coverage' => (int)round($result->coverage),
-                'ideal_coverage' => (int)round($avg['coverage']),
+                'ideal_coverage' => $this->isExists($avg['coverage']),
 
                 'coverage_tf' => (int)round($result->coverage_tf),
-                'ideal_coverage_tf' => (int)round($avg['coverageTf']),
+                'ideal_coverage_tf' => $this->isExists($avg['coverageTf']),
 
                 'width' => (int)round($result->width),
-                'ideal_width' => (int)round($avg['width']),
+                'ideal_width' => $this->isExists($avg['width']),
 
                 'density' => (int)round($result->density),
-                'ideal_density' => (int)round($avg['densityPercent']),
+                'ideal_density' => $this->isExists($avg['densityPercent']),
 
                 'comment' => $result->comment,
             ];
@@ -90,7 +90,20 @@ class RelevanceStatisticsExport implements FromCollection
         return collect($excelRows);
     }
 
-    protected function getRegionName($id)
+    /**
+     * @param $val
+     * @return string
+     */
+    protected function isExists($val): string
+    {
+        return $val ?? 'Нет данных';
+    }
+
+    /**
+     * @param string $id
+     * @return string
+     */
+    protected function getRegionName(string $id): string
     {
         switch ($id) {
             case '1' :
