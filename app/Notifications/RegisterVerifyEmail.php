@@ -51,7 +51,7 @@ class RegisterVerifyEmail extends Notification
         /**
          * @var $user User
          */
-        $user = User::where('id', '!=', 0)->latest()->first();
+        $user = User::latest()->first();
         Log::debug('register user_id', [
             $user,
         ]);
