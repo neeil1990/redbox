@@ -52,19 +52,27 @@ class RegisterVerifyEmail extends Notification
          * @var $user User
          */
         $user = User::latest()->first();
-        Log::debug('register user_id', [
-            $user,
-        ]);
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
-        return (new MailMessage)
-            ->greeting('Hello, dear')
-            ->subject(Lang::getFromJson('Verify Email Address'))
-            ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
-            ->line('Verify Input Code: ' . $verificationCode)
-            ->action(Lang::getFromJson('Verify Email Address'), $verificationUrl)
-            ->line(Lang::getFromJson('If you did not create an account, no further action is required.'));
+        if ($user->lang === 'ru') {
+            return (new MailMessage)
+                ->greeting('Привет, ' . $user->name . '.')
+                ->subject(Lang::getFromJson('Подтверждение регистрации'))
+                ->line(Lang::getFromJson('Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты.'))
+                ->line('Ваш верификационный код: ' . $verificationCode)
+                ->action(Lang::getFromJson('Нажмите сюда'), $verificationUrl)
+                ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
+        } else {
+            return (new MailMessage)
+                ->greeting('Hello, ' . $user->name . '.')
+                ->subject(Lang::getFromJson('Verify Email Address'))
+                ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
+                ->line('Verify Input Code: ' . $verificationCode)
+                ->action(Lang::getFromJson('Verify Email Address'), $verificationUrl)
+                ->line(Lang::getFromJson('If you did not create an account, no further action is required.'));
+        }
+
     }
 
     /**

@@ -272,24 +272,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-//    laravel-excel-ovPtElS6SaIvK5BMvU3ukhnoUaaSKy2v.xls;
-//    $xls = Excel::download(new \App\Exports\RelevanceStatisticsExport, 'relevance_statistics.xls');
-//    $csv = Excel::download(new \App\Exports\RelevanceStatisticsExport, 'relevance_statistics.csv');
-//
-//
-//    $fileName = $csv->getFile()->getFilename();
-//
-//    $filePath = storage_path('framework\laravel-excel\\' . $fileName);
-//
-//    header('Content-Description: File Transfer');
-//    header('Content-Type: application/octet-stream');
-//    header('Content-Disposition: attachment; filename=' . basename($filePath));
-//    header('Content-Transfer-Encoding: binary');
-//    header('Content-Length: ' . filesize($filePath));
-//
-//    readfile($filePath);
-//
-//    unlink($filePath);
+    dd(env('APP_NAME'));
 });
 
 Route::get('/get-passages/{link}', function ($link) {
