@@ -13,6 +13,7 @@
     {{-- Intro Lines --}}
     @foreach ($introLines as $line)
         {{ $line }}
+
     @endforeach
 
     {{-- Action Button --}}
@@ -35,14 +36,15 @@
     {{-- Outro Lines --}}
     @foreach ($outroLines as $line)
         {{ $line }}
+
     @endforeach
 
     {{-- Salutation --}}
-    @if (!empty($salutation))
+    @if (! empty($salutation))
         {{ $salutation }}
     @else
         @lang('Regards'),<br>
-        Redbox
+        {{ "Laravel" }}
     @endif
 
     {{-- Subcopy --}}
