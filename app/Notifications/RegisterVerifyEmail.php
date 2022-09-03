@@ -51,11 +51,9 @@ class RegisterVerifyEmail extends Notification
         /**
          * @var $user User
          */
-        $userId = Auth::id();
-        $user = User::where('id', '=', $userId + 1)->first();
+        $user = User::where('id', '!=', 0)->latest()->first();
         Log::debug('register user_id', [
             $user,
-            Auth::id()
         ]);
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
