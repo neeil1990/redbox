@@ -7,8 +7,10 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Url\Url as SpatieUrl;
 
@@ -29,7 +31,7 @@ class RegisterVerifyEmail extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -40,16 +42,17 @@ class RegisterVerifyEmail extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param mixed $notifiable
+     * @return MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
+        Log::debug('register user_id', [Auth::id()]);
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
         return (new MailMessage)
-            ->greeting('322')
+            ->greeting('Hello, dear user.')
             ->subject(Lang::getFromJson('Verify Email Address'))
             ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
             ->line('Verify Input Code: ' . $verificationCode)
@@ -60,7 +63,7 @@ class RegisterVerifyEmail extends Notification
     /**
      * Get the verification URL for the given notifiable.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return string
      */
     protected function verificationUrl($notifiable)
