@@ -800,7 +800,7 @@ class HistoryRelevanceController extends Controller
 
         $fileName = $csv->getFile()->getFilename();
 
-        $filePath = storage_path('framework\laravel-excel\\' . $fileName);
+        $filePath = storage_path('framework/laravel-excel/' . $fileName);
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
