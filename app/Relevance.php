@@ -1222,6 +1222,7 @@ class Relevance
 
         $result['densityMain'] = min(round($densityMain), 100);
         $result['densityMainPercent'] = round($densityMain / 1000);
+
         return $result;
     }
 
