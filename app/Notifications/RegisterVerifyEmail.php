@@ -51,6 +51,7 @@ class RegisterVerifyEmail extends Notification
         /**
          * @var $user User
          */
+        sleep(1);
         $user = Auth::user();
         Log::debug('register user_id', [$user]);
         $verificationUrl = $this->verificationUrl($notifiable);
