@@ -64,26 +64,25 @@
             </div>
         </div>
     </form>
-    <fieldset class="unique-words-filter mt-4 mb-3">
-        <legend>{{__('Additionally')}}</legend>
-        <div class="d-flex mt-2 mb-2">
-            <div class="w-auto">
+    <div class="unique-words-filter mt-4 mb-3 card bg-gradient-light">
+        <h3 class="m-3">{{__('Additionally')}}</h3>
+        <div class="m-3">
+            <div class="w-25">
                 <p class="mr-3">{{__('Delete lines where the number of occurrences:')}}</p>
             </div>
-            <div class="d-flex flex-column w-auto mr-1 ml-4">
+            <div class="d-flex flex-column w-25 mt-2">
                 <p>{{__('greater than or equal to:')}}</p>
                 <input type="number" min="1" id="greaterOrEqual" class="form-control">
             </div>
-            <div class="d-flex flex-column w-auto ml-1 mr-4">
+            <div class="d-flex flex-column w-25 mt-2">
                 <p>{{__('less than or equal to:')}}</p>
                 <input type="number" min="1" id="lessOrEqual" class="form-control">
             </div>
-            <div class="w-auto d-flex flex-column-reverse ml-3">
-                <input type="button" class="btn btn-secondary btn-flat" value="{{__('Remove')}}"
-                       onclick="deleteItems()">
+            <div class="w-25 d-flex flex-column-reverse mt-2">
+                <input type="button" class="btn btn-secondary btn-flat" value="{{__('Remove')}}" onclick="deleteItems()">
             </div>
         </div>
-        <div class="d-flex row mt-3 mb-3">
+        <div class="d-flex row m-3">
             <div>
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox"
@@ -149,7 +148,7 @@
                 </div>
             </div>
         </div>
-    </fieldset>
+    </div>
     <div class="card mt-3 mb-3 unique-words-result">
         <div class="card-header border-bottom">
             <h2 class="card-title">{{__('Result')}}</h2>

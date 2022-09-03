@@ -700,12 +700,13 @@ $(document).ready(function () {
             hideListHistory()
             hideTableHistory()
 
+            let storyId = $(this).attr('data-order')
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 url: "/get-stories",
                 data: {
-                    history_id: $(this).attr('data-order'),
+                    history_id: storyId,
                 },
                 async: true,
                 success: function (response) {
@@ -826,7 +827,6 @@ $(document).ready(function () {
 
                         $(document).ready(function () {
                             if ($.fn.DataTable.fnIsDataTable($('#history_table'))) {
-                                console.log('крашу таблицу')
                                 $('#history_table').dataTable().fnDestroy();
                             }
 
@@ -834,13 +834,16 @@ $(document).ready(function () {
                                 "order": [[0, "desc"]],
                                 "pageLength": 25,
                                 "searching": true,
-                                dom: 'lBfrtip',
-                                buttons: [
-                                    'copy', 'csv', 'excel'
-                                ]
                             });
 
                             $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+
+                            $('#history_table_length').before(
+                                "<span>" +
+                                "<a href='/get-file/" + storyId + "/csv' class='btn btn-secondary ml-1'>CSV</a>" +
+                                "<a href='/get-file/" + storyId + "/xls' class='btn btn-secondary ml-1'>Excel</a>" +
+                                "</span>"
+                            )
 
                             $(".dt-button").addClass('btn btn-secondary')
 

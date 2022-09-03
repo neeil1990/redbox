@@ -13,6 +13,7 @@
 
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
     phpinfo();
@@ -193,6 +194,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::post('/get-stories-v2', 'HistoryRelevanceController@getHistoryInfoV2')->name('get.stories.v2');
+    Route::get('/get-file/{id}/{type}', 'HistoryRelevanceController@getFile')->name('get.relevance.file');
+
     Route::get('/get-history-info/{object}', 'HistoryRelevanceController@getHistoryInfo')->name('get.history.info');
     Route::post('/repeat-scan', 'HistoryRelevanceController@repeatScan')->name('repeat.scan');
     Route::post('/repeat-queue-competitors-scan', 'HistoryRelevanceController@repeatQueueCompetitorsScan')->name('repeat.queue.competitors.scan');
@@ -266,6 +269,27 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
+});
+
+Route::get('/test', function () {
+//    laravel-excel-ovPtElS6SaIvK5BMvU3ukhnoUaaSKy2v.xls;
+//    $xls = Excel::download(new \App\Exports\RelevanceStatisticsExport, 'relevance_statistics.xls');
+//    $csv = Excel::download(new \App\Exports\RelevanceStatisticsExport, 'relevance_statistics.csv');
+//
+//
+//    $fileName = $csv->getFile()->getFilename();
+//
+//    $filePath = storage_path('framework\laravel-excel\\' . $fileName);
+//
+//    header('Content-Description: File Transfer');
+//    header('Content-Type: application/octet-stream');
+//    header('Content-Disposition: attachment; filename=' . basename($filePath));
+//    header('Content-Transfer-Encoding: binary');
+//    header('Content-Length: ' . filesize($filePath));
+//
+//    readfile($filePath);
+//
+//    unlink($filePath);
 });
 
 Route::get('/get-passages/{link}', function ($link) {

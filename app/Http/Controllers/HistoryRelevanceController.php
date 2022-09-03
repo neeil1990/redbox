@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RelevanceStatisticsExport;
 use App\Jobs\RelevanceAnalysisQueue;
 use App\ProjectRelevanceHistory;
 use App\ProjectRelevanceThough;
@@ -19,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class HistoryRelevanceController extends Controller
@@ -790,5 +792,24 @@ class HistoryRelevanceController extends Controller
             'result' => $result,
             'admin' => $admin
         ]);
+    }
+
+    public function getFile(int $id, string $type)
+    {
+        $csv = Excel::download(new RelevanceStatisticsExport($id), 'relevance_statistics.' . $type);
+
+        $fileName = $csv->getFile()->getFilename();
+
+        $filePath = storage_path('framework\laravel-excel\\' . $fileName);
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename=' . basename($filePath));
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($filePath));
+
+        readfile($filePath);
+
+        unlink($filePath);
     }
 }
