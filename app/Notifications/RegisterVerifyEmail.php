@@ -53,12 +53,15 @@ class RegisterVerifyEmail extends Notification
          */
         $userId = Auth::id() + 1;
         $user = User::where('id', '=', $userId)->first();
-        Log::debug('register user_id', [$user]);
+        Log::debug('register user_id', [
+            $user,
+            Auth::id()
+        ]);
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
         return (new MailMessage)
-            ->greeting('Hello, dear' . $user->name)
+            ->greeting('Hello, dear')
             ->subject(Lang::getFromJson('Verify Email Address'))
             ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
             ->line('Verify Input Code: ' . $verificationCode)
