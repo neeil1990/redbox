@@ -29,7 +29,7 @@
             <tbody>
             @foreach($tariffs as $key => $tariff)
                 @if($key != 'price')
-                    <tr>
+                    <tr class="{{ $key }}">
                         <td>{{ $tariff['name'] }}</td>
                         <td>{{ $tariff['value'] }}</td>
                         <td>

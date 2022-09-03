@@ -3,6 +3,7 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
     @endslot
     {!! Form::open(['action' =>'DomainMonitoringController@store', 'method' => 'POST'])!!}
     <div class='col-md-6 mt-3'>

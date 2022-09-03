@@ -15,6 +15,10 @@
                 min-width: 250px;
                 max-width: 250px
             }
+
+            .CompetitorAnalysisPhrases {
+                background: oldlace;
+            }
         </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">

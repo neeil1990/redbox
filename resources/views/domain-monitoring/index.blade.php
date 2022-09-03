@@ -6,6 +6,8 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">

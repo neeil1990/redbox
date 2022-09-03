@@ -7,6 +7,12 @@
               href="{{ asset('plugins/domain-information/css/domain-information.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+
+        <style>
+            .DomainInformation {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -3862,7 +3868,7 @@
                         })
                         $('#count-projects').text($('#count-projects').text() - iterator)
                         console.log($('#count-projects').text())
-                        if($('#count-projects').text() == 0){
+                        if ($('#count-projects').text() == 0) {
                             window.location.replace('https://lk.redbox.su/add-domain-information');
                         }
                         $('.toast-top-right.delete-success-message').show(300)

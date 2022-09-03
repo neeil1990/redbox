@@ -7,6 +7,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <style>
+            .TextAnalyzer {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
@@ -25,7 +30,7 @@
                            id="switchNoindex"
                            name="noIndex"
                            @isset($response['noIndex'])
-                           checked
+                               checked
                         @endisset>
                     <label class="custom-control-label" for="switchNoindex"></label>
                 </div>
@@ -40,7 +45,7 @@
                            id="switchAltAndTitle"
                            name="hiddenText"
                            @isset($response['hiddenText'])
-                           checked
+                               checked
                         @endisset>
                     <label class="custom-control-label" for="switchAltAndTitle"></label>
                 </div>
@@ -55,7 +60,7 @@
                            id="switchConjunctionsPrepositionsPronouns"
                            name="conjunctionsPrepositionsPronouns"
                            @isset($response['conjunctionsPrepositionsPronouns'])
-                           checked
+                               checked
                         @endisset>
                     <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
                 </div>
@@ -70,7 +75,7 @@
                            id="switchMyListWords"
                            name="switchMyListWords"
                            @isset($response['listWords'])
-                           checked
+                               checked
                         @endisset>
                     <label class="custom-control-label" for="switchMyListWords"></label>
                 </div>
@@ -80,7 +85,7 @@
     </div>
     <div class="form-group required list-words mt-1"
          @if(empty($response['listWords']))
-         style="display: none"
+             style="display: none"
         @endif>
         {!! Form::textarea(
             'listWords',

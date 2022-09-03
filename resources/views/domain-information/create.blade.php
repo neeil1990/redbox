@@ -4,7 +4,11 @@
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-
+        <style>
+            .DomainInformation {
+                background: oldlace;
+            }
+        </style>
     @endslot
     {!! Form::open(['action' =>'DomainInformationController@store', 'method' => 'POST', 'class' => 'single'])!!}
     <div class='col-md-6'>
