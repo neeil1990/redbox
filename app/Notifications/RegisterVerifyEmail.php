@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -47,12 +48,16 @@ class RegisterVerifyEmail extends Notification
      */
     public function toMail($notifiable): MailMessage
     {
-        Log::debug('register user_id', [Auth::id()]);
+        /**
+         * @var $user User
+         */
+        $user = Auth::user();
+        Log::debug('register user_id', [$user]);
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
         return (new MailMessage)
-            ->greeting('Hello, dear user.')
+            ->greeting('Hello, dear' . $user->name)
             ->subject(Lang::getFromJson('Verify Email Address'))
             ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
             ->line('Verify Input Code: ' . $verificationCode)
