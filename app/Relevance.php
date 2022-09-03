@@ -367,7 +367,7 @@ class Relevance
             $object = $page['html'] . ' ' . $page['linkText'] . ' ' . $page['hiddenText'];
             $coverage = $this->calculateCoverage($object);
 
-            $this->sites[$pageKey]['coverage'] = round($coverage['text'] / 6, 2);
+            $this->sites[$pageKey]['coverage'] = round($coverage['text'] / 10, 2);
             $this->sites[$pageKey]['coverageTf'] = round($coverage['tf'] / ($totalTf / 100), 2);
         }
     }
@@ -1220,7 +1220,7 @@ class Relevance
             $testMainIterator++;
         }
 
-        $result['densityMain'] = round($densityMain);
+        $result['densityMain'] = min(round($densityMain), 100);
         $result['densityMainPercent'] = round($densityMain / 1000);
         return $result;
     }
