@@ -49,6 +49,7 @@ class RegisterVerifyEmail extends Notification
         $verificationCode = $this->verificationCode($verificationUrl);
 
         return (new MailMessage)
+            ->greeting('322')
             ->subject(Lang::getFromJson('Verify Email Address'))
             ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
             ->line('Verify Input Code: ' . $verificationCode)
