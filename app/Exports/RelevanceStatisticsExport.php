@@ -66,19 +66,19 @@ class RelevanceStatisticsExport implements FromCollection
                 'position' => $result->position === 0 ? "Сайт не попал в топ" : $result->position,
 
                 'points' => (int)round($result->points),
-                'ideal_points' => $avg['points'] ?? 'нет данных',
+                'ideal_points' => $avg['points'] ? (int)round($avg['points']) : 'нет данных',
 
                 'coverage' => (int)round($result->coverage),
-                'ideal_coverage' => $avg['coverage'] ?? 'нет данных',
+                'ideal_coverage' => $avg['coverage'] ? (int)round($avg['coverage']) : 'нет данных',
 
                 'coverage_tf' => (int)round($result->coverage_tf),
-                'ideal_coverage_tf' => $avg['coverageTf'] ?? 'нет данных',
+                'ideal_coverage_tf' => $avg['coverageTf'] ? (int)round($avg['coverageTf']) : 'нет данных',
 
                 'width' => (int)round($result->width),
-                'ideal_width' => $avg['width'] ?? 'нет данных',
+                'ideal_width' => $avg['width'] ? (int)round($avg['width']) : 'нет данных',
 
                 'density' => (int)round($result->density),
-                'ideal_density' => $avg['densityPercent'] ?? 'нет данных',
+                'ideal_density' => $avg['densityPercent'] ? (int)round($avg['densityPercent']) : 'нет данных',
 
                 'comment' => $result->comment,
             ];
