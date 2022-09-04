@@ -803,15 +803,18 @@ class HistoryRelevanceController extends Controller
         $fileName = $csv->getFile()->getFilename();
 
         $filePath = storage_path('framework/laravel-excel/' . $fileName);
+        $newFileName = storage_path('framework/laravel-excel/' . md5(microtime())) . '.' . $type;
+
+        $filePath = rename($filePath, $newFileName);
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename=' . basename($filePath));
+        header('Content-Disposition: attachment; filename=' . basename($newFileName));
         header('Content-Transfer-Encoding: binary');
-        header('Content-Length: ' . filesize($filePath));
+        header('Content-Length: ' . filesize($newFileName));
 
-        readfile($filePath);
+        readfile($newFileName);
 
-        unlink($filePath);
+        unlink($newFileName);
     }
 }
