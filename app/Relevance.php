@@ -668,6 +668,14 @@ class Relevance
             $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
         }
 
+        uasort($this->wordForms, function ($l, $r) {
+            $first = array_sum($r);
+            $second = array_sum($l);
+
+            if ($first == $second) return 0;
+            return ($first < $second) ? -1 : 1;
+        });
+
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
 
     }
