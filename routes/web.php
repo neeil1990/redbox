@@ -11,6 +11,7 @@
 |
 */
 
+use App\Morphy;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -272,7 +273,8 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    dd(env('APP_NAME'));
+    $morphy = new Morphy();
+    dd($morphy->base('микроскопы'));
 });
 
 Route::get('/get-passages/{link}', function ($link) {

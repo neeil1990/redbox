@@ -588,7 +588,7 @@ class Relevance
      */
     public function removeListWords()
     {
-        if ($this->request['switchMyListWords'] == 'true') {
+        if (filter_var($this->request['switchMyListWords'], FILTER_VALIDATE_BOOLEAN)) {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $this->request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
 
@@ -639,8 +639,7 @@ class Relevance
 
         $array = explode(' ', $this->competitorsTextAndLinks);
         $array = array_count_values($array);
-        asort($array);
-        $array = array_reverse($array);
+        arsort($array);
 
         $version = $this->request['version'] ?? 'phpmorphy';
 
@@ -659,7 +658,7 @@ class Relevance
 
                 $wordWorms[$root][$key] = $item;
 
-                if (count($wordWorms) >= 1000) {
+                if (count($wordWorms) >= 3500) {
                     break;
                 }
             }
@@ -668,6 +667,13 @@ class Relevance
         foreach ($wordWorms as $wordWorm) {
             $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
         }
+
+        uasort($this->wordForms, function ($l, $r) {
+            return array_sum($r) - array_sum($l);
+        });
+
+        $this->wordForms = array_slice($this->wordForms, 0, 1000);
+
     }
 
     /**
