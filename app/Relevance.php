@@ -596,32 +596,35 @@ class Relevance
                 $this->ignoredWords[$key] = " $word ";
             }
 
-            $this->mainPage['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['html']);
-            $this->mainPage['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['linkText']);
-            $this->mainPage['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->mainPage['hiddenText']);
             foreach ($this->sites as $key => $page) {
-                $this->sites[$key]['html'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->sites[$key]['html']);
-                $this->sites[$key]['linkText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->sites[$key]['linkText']);
-                $this->sites[$key]['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, '', $this->sites[$key]['hiddenText']);
+                $this->sites[$key]['html'] = Relevance::mbStrReplace($this->ignoredWords, ' ', $this->sites[$key]['html']);
+                $this->sites[$key]['linkText'] = Relevance::mbStrReplace($this->ignoredWords, ' ', $this->sites[$key]['linkText']);
+                $this->sites[$key]['hiddenText'] = Relevance::mbStrReplace($this->ignoredWords, ' ', $this->sites[$key]['hiddenText']);
+
+                if ($this->sites[$key]['mainPage']) {
+                    $this->mainPage['html'] = $this->sites[$key]['html'];
+                    $this->mainPage['linkText'] = $this->sites[$key]['linkText'];
+                    $this->mainPage['hiddenText'] = $this->sites[$key]['hiddenText'];
+                }
             }
         }
     }
 
     /**
-     * Преобразование слова в нужную кодировку
+     * Преобразование слова в нужную кодировку и удаление слов
      *
      * @param $search
      * @param $replace
      * @param $string
-     * @return array|false|string|string[]
+     * @return string
      */
-    public static function mbStrReplace($search, $replace, $string)
+    public static function mbStrReplace($search, $replace, $string): string
     {
         $charset = mb_detect_encoding($string);
 
         $unicodeString = iconv($charset, "UTF-8", $string);
 
-        return str_replace($search, $replace, $unicodeString);
+        return preg_replace('| +|', ' ', str_replace($search, $replace, $unicodeString));
     }
 
     /**

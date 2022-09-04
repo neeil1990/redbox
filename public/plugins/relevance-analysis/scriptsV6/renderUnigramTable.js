@@ -220,7 +220,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
         });
 
         if (searchPassages) {
-            $('#unigram_filter > label > input[type=search]').keydown(function () {
+            $('#unigram_filter > label > input[type=search]').change(function () {
                 hideOrShowPassagesElem(searchPassages)
             })
 
