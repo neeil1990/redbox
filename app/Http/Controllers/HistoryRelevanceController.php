@@ -76,7 +76,9 @@ class HistoryRelevanceController extends Controller
         ]);
 
         foreach ($results as $result) {
-            $result['average_values'] = json_decode($result->results['average_values']);
+            if (isset($result->results['average_values'])) {
+                $result['average_values'] = json_decode($result->results['average_values']);
+            }
             unset($result->results);
         }
 
