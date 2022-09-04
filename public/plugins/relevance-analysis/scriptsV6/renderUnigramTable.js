@@ -1,10 +1,39 @@
 function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = false) {
+    if (searchPassages) {
+        $('#unigram > thead > tr:nth-child(2) > th:nth-child(12)').after(
+            "<th class='passages-elem'>Среднее кол-во повторений в пассажах</th>" +
+            "<th class='passages-elem'>Количество повторений в пассажах</th>"
+        )
+
+        $("#unigram > thead > tr:nth-child(1) > th:nth-child(12)").after(
+            "<th class='passages-elem'>" +
+            "    <div>" +
+            "        <input class='w-100' type='number' name='minAVGPassages' id='minAVGPassages'" +
+            "               placeholder='min'>" +
+            "        <input class='w-100' type='number' name='maxAVGPassages' id='maxAVGPassages'" +
+            "               placeholder='max'>" +
+            "    </div>" +
+            "</th>" +
+            "<th class='passages-elem'>" +
+            "    <div>" +
+            "        <input class='w-100' type='number' name='minPassages' id='minPassages'" +
+            "               placeholder='min'>" +
+            "        <input class='w-100' type='number' name='maxPassages' id='maxPassages'" +
+            "               placeholder='max'>" +
+            "    </div>" +
+            "</th>"
+        )
+
+    } else {
+        $('.passages-elem').remove()
+    }
+
     sessionStorage.setItem('searchPassages', (searchPassages).toString())
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
     $.each(unigramTable, function (key, wordWorm) {
-        renderMainTr(tBody, key, wordWorm)
+        renderMainTr(tBody, key, wordWorm, searchPassages)
     })
 
     $(document).ready(function () {
@@ -51,7 +80,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
+
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -65,8 +94,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -80,8 +107,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -96,7 +121,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -111,7 +135,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -126,7 +149,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -141,7 +163,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -156,7 +177,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -171,37 +191,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
-        });
-
-        $.fn.dataTable.ext.search.push(function (settings, data) {
-            var minAVGPassages = parseFloat($('#minAVGPassages').val());
-            var maxAVGPassages = parseFloat($('#maxAVGPassages').val());
-            var count = parseFloat(data[12])
-            return isUnigram(minAVGPassages, maxAVGPassages, count, settings)
-        });
-        $('#minAVGPassages, #maxAVGPassages').keyup(function () {
-            table.draw();
-            $.each($('[generated-child=true]'), function () {
-                $(this).attr('generated-child', false)
-            })
-
-            hideOrShowPassagesElem(searchPassages)
-        });
-
-        $.fn.dataTable.ext.search.push(function (settings, data) {
-            var minPassages = parseFloat($('#minPassages').val());
-            var maxPassages = parseFloat($('#maxPassages').val());
-            var count = parseFloat(data[13])
-            return isUnigram(minPassages, maxPassages, count, settings)
-        });
-        $('#minPassages, #maxPassages').keyup(function () {
-            table.draw();
-            $.each($('[generated-child=true]'), function () {
-                $(this).attr('generated-child', false)
-            })
-
-            hideOrShowPassagesElem(searchPassages)
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -216,28 +205,42 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 $(this).attr('generated-child', false)
             })
 
-            hideOrShowPassagesElem(searchPassages)
         });
 
-        if (!searchPassages) {
-            $('#unigram_filter > label > input[type=search]').keydown(function () {
-                hideOrShowPassagesElem(searchPassages)
-            })
-            $('#unigram_filter > label > input[type=search]').keyup(function () {
-                hideOrShowPassagesElem(searchPassages)
-            })
+        if(sessionStorage.getItem('searchPassages') === 'true'){
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                var minAVGPassages = parseFloat($('#minAVGPassages').val());
+                var maxAVGPassages = parseFloat($('#maxAVGPassages').val());
+                var count = parseFloat(data[12])
+                return isUnigram(minAVGPassages, maxAVGPassages, count, settings)
+            });
+            $('#minAVGPassages, #maxAVGPassages').keyup(function () {
+                table.draw();
+                $.each($('[generated-child=true]'), function () {
+                    $(this).attr('generated-child', false)
+                })
 
-            $('#unigram_length > label > select').on('change', function () {
-                hideOrShowPassagesElem(searchPassages)
-            })
+            });
+
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                var minPassages = parseFloat($('#minPassages').val());
+                var maxPassages = parseFloat($('#maxPassages').val());
+                var count = parseFloat(data[13])
+                return isUnigram(minPassages, maxPassages, count, settings)
+            });
+            $('#minPassages, #maxPassages').keyup(function () {
+                table.draw();
+                $.each($('[generated-child=true]'), function () {
+                    $(this).attr('generated-child', false)
+                })
+
+            });
         }
 
-
-        hideOrShowPassagesElem(searchPassages)
     });
 }
 
-function renderMainTr(tBody, key, wordWorm) {
+function renderMainTr(tBody, key, wordWorm, searchPassages) {
     let links = '';
     $.each(wordWorm['total']['occurrences'], function (elem, value) {
         let url = new URL(elem);
@@ -266,6 +269,7 @@ function renderMainTr(tBody, key, wordWorm) {
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + key + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
         "    </span>";
 
+
     let newRow = "<tr class='render'>" +
         "   <td class='" + className + "' onclick='showWordWorms($(this))' data-target='" + key + "'>" +
         "      <i class='fa fa-plus'></i>" +
@@ -287,10 +291,15 @@ function renderMainTr(tBody, key, wordWorm) {
         "   <td>" + avgInText + "</td>" +
         "   <td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
         "   <td>" + avgInLink + "</td>" +
-        "   <td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
-        "   <td class='passages-elem'>" + avgInPassages + "</td>" +
-        "   <td class='passages-elem " + myPassagesWarning + "'>" + repeatInPassagesMainPage + "</td> " +
-        "</tr>"
+        "   <td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>"
+
+    if (searchPassages) {
+        newRow += "   <td class='passages-elem'>" + avgInPassages + "</td>" +
+            "   <td class='passages-elem " + myPassagesWarning + "'>" + repeatInPassagesMainPage + "</td> " +
+            "</tr>"
+    } else {
+        newRow += "</tr>";
+    }
 
     tBody.append(
         newRow
@@ -366,18 +375,16 @@ function renderChildTr(elem, key, word, stats) {
         "   <td>" + avgInText + "</td>" +
         "   <td " + textWarn + ">" + repeatInTextMainPage + "</td>" +
         "   <td>" + avgInLink + "</td>" +
-        "   <td " + linkWarn + ">" + repeatInLinkMainPage + "</td>" +
-        "   <td class='passages-elem'>" + avgPassages + "</td>" +
-        "   <td class='passages-elem " + repeatInPassagesMainPageWarning + "'>" + repeatInPassagesMainPage + "</td>" +
-        "</tr>"
+        "   <td " + linkWarn + ">" + repeatInLinkMainPage + "</td>"
 
     if (sessionStorage.getItem('searchPassages') === 'true') {
         newChildRow +=
             "   <td class='passages-elem'>" + avgPassages + "</td>" +
             "   <td class='passages-elem " + repeatInPassagesMainPageWarning + "'>" + repeatInPassagesMainPage + "</td>"
+            + "  </tr>"
+    } else {
+        newChildRow += "</tr>"
     }
-
-    newChildRow += "</tr>"
 
     elem.after(
         newChildRow
@@ -396,7 +403,6 @@ function showWordWorms(elem) {
             renderChildTr(parent, target, word, stats)
         })
         elem.addClass('show-children')
-        hideOrShowPassagesElem(sessionStorage.getItem('searchPassages') === 'true')
     }
 }
 
@@ -499,12 +505,4 @@ function removeWordFromIgnored(elem) {
     }, 3000)
     elem.hide()
     elem.parent().children().eq(0).show()
-}
-
-function hideOrShowPassagesElem(searchPassages) {
-    if (searchPassages) {
-        $('.passages-elem').show()
-    } else {
-        $('.passages-elem').hide()
-    }
 }
