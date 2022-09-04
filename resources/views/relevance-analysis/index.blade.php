@@ -13,6 +13,30 @@
             #tab_1 > div.d-flex.flex-column > div:nth-child(1) > button.btn.btn-secondary.col-2 > span > span > span {
                 width: 400px;
             }
+
+            .first-action::after {
+                display: inline;
+                content: "{{ __(' Go to the landing page') }}";
+                font-weight: normal;
+            }
+
+            .second-action::after {
+                display: inline;
+                content: "{{ __(' Go to the text analyzer') }}";
+                font-weight: normal;
+            }
+
+            .third-action::after {
+                display: inline;
+                content: "{{ __(' Add to Ignored Domains') }}";
+                font-weight: normal;
+            }
+
+            .fourth-action::after {
+                display: inline;
+                content: "{{ __(' Exclude from ignored domains') }}";
+                font-weight: normal;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
