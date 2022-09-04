@@ -57,7 +57,12 @@ class RelevanceStatisticsExport implements FromCollection
         ];
 
         foreach ($results as $result) {
-            $avg = json_decode($result->results['average_values'], true);
+            if (isset($result->results['average_values'])) {
+                $avg = json_decode($result->results['average_values'], true);
+            } else {
+                $avg = [];
+            }
+
             $excelRows[] = [
                 'phrase' => (string)$result->phrase,
                 'main_link' => (string)$result->main_link,
