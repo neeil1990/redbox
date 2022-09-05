@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Common;
+use App\Exports\RelevanceStatisticsExport;
+use App\Exports\VerifiedUsersExport;
 use App\User;
 use Exception;
 use Illuminate\Auth\Events\PasswordReset;
@@ -20,6 +23,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Jenssegers\Agent\Agent;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
@@ -189,5 +193,20 @@ class UsersController extends Controller
         return tap(new Agent, function ($agent) use ($session) {
             $agent->setUserAgent($session->user_agent);
         });
+    }
+
+    /**
+     * @param $type
+     * @return void
+     */
+    public function getFile($type)
+    {
+        if (User::isUserAdmin()) {
+            $file = Excel::download(new VerifiedUsersExport(), 'verified_users.' . $type);
+            Common::fileExport($file, $type, 'verified-users');
+        } else {
+            abort(403);
+        }
+
     }
 }

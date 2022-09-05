@@ -7,8 +7,8 @@
         <div class="p-3 border-bottom d-flex justify-content-between w-100 align-items-center">
             <h3 class="card-title">{{ __('Users') }}</h3>
             <div>
-                <a href="#" class="btn btn-secondary">Excel</a>
-                <a href="#" class="btn btn-secondary">CSV</a>
+                <a href="{{ route('get.verified.users', 'xls') }}" class="btn btn-secondary">Excel</a>
+                <a href="{{ route('get.verified.users', 'csv') }}" class="btn btn-secondary">CSV</a>
             </div>
         </div>
 
@@ -80,7 +80,7 @@
                             @endif
                         </td>
                         <td>
-                            {{ $user->created_at->format('m.d.Y H:m:s') }}
+                            {{ $user->created_at->format('d.m.Y H:m:s') }}
                             <br/>
                             <small>{{ $user->created_at->diffForHumans() }}</small>
                         </td>
@@ -90,7 +90,7 @@
                             @endforeach
                         </td>
                         <td>
-                            {{ $user->last_online_at->format('m.d.Y H:m:s') }}
+                            {{ $user->last_online_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>

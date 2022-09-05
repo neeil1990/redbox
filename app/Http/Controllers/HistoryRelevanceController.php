@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Common;
 use App\Exports\RelevanceStatisticsExport;
 use App\Jobs\RelevanceAnalysisQueue;
 use App\ProjectRelevanceHistory;
@@ -796,25 +797,27 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
+    /**
+     * @param int $id
+     * @param string $type
+     * @return void
+     */
     public function getFile(int $id, string $type)
     {
-        $csv = Excel::download(new RelevanceStatisticsExport($id), 'relevance_statistics.' . $type);
+        $history = ProjectRelevanceHistory::where('id', '=', $id)->first();
+        $admin = User::isUserAdmin();
+        $userId = Auth::id();
 
-        $fileName = $csv->getFile()->getFilename();
+        $share = RelevanceSharing::where('user_id', '=', $userId)
+            ->where('owner_id', '=', $history->user_id)
+            ->where('access', '=', 2)
+            ->first();
 
-        $filePath = storage_path('framework/laravel-excel/' . $fileName);
-        $newFileName = storage_path('framework/laravel-excel/' . md5(microtime())) . '.' . $type;
+        if ($history->user_id != $userId && !isset($share) && !$admin) {
+            abort(403);
+        }
 
-        $filePath = rename($filePath, $newFileName);
-
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename=' . basename($newFileName));
-        header('Content-Transfer-Encoding: binary');
-        header('Content-Length: ' . filesize($newFileName));
-
-        readfile($newFileName);
-
-        unlink($newFileName);
+        $file = Excel::download(new RelevanceStatisticsExport($id), 'relevance_statistics.' . $type);
+        Common::fileExport($file, $type, 'relevance_statistics');
     }
 }

@@ -32,7 +32,7 @@ class RelevanceStatisticsExport implements FromCollection
             'comment', 'user_id', 'state',
         ]);
 
-        $excelRows[] = [
+        $rows[] = [
             'Ключевая фраза',
             'Посадочная страница',
             'Регион',
@@ -63,7 +63,7 @@ class RelevanceStatisticsExport implements FromCollection
                 $avg = [];
             }
 
-            $excelRows[] = [
+            $rows[] = [
                 'phrase' => (string)$result->phrase,
                 'main_link' => (string)$result->main_link,
 
@@ -92,7 +92,7 @@ class RelevanceStatisticsExport implements FromCollection
             unset($result->results);
         }
 
-        return collect($excelRows);
+        return collect($rows);
     }
 
     /**
