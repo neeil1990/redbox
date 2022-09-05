@@ -32,7 +32,7 @@ class VerifiedUsersExport implements FromCollection
             $roles = '';
 
             foreach ($user->getRoleNames() as $role) {
-                $roles = __($role) . "\n";
+                $roles .= __($role) . "\n";
             }
 
             $rows[] = [
