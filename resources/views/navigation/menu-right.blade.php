@@ -13,9 +13,11 @@
 @endif
 
 <div class="dropdown p-0 m-0 nav-item">
-    <span class="dropdown-toggle nav-link" role="button" data-toggle="dropdown" aria-expanded="false">
+    @if($tariffs != [])
+        <span class="dropdown-toggle nav-link" role="button" data-toggle="dropdown" aria-expanded="false">
         Ваши лимиты
     </span>
+    @endif
 
     <div class="dropdown-menu p-0 m-0" style="width: 410px">
         <table class="table table-bordered p-0 m-0">
