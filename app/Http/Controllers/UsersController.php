@@ -150,7 +150,11 @@ class UsersController extends Controller
             $user->save();
         }
 
-        flash()->overlay(__('User update successfully'), ' ')->success();
+        if ($user->lang == 'en') {
+            flash()->overlay('User update successfully', ' ')->success();
+        } else {
+            flash()->overlay('Даные пользователя успешно обновлены', ' ')->success();
+        }
 
         return redirect('users');
     }
