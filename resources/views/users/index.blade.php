@@ -4,8 +4,12 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between">
             <h3 class="card-title">{{ __('Users') }}</h3>
+            <div>
+                <a href="#" class="btn btn-secondary">Excel</a>
+                <a href="#" class="btn btn-secondary">CSV</a>
+            </div>
         </div>
 
         <div class="card-body table-responsive p-0">
@@ -117,11 +121,10 @@
 @section('js')
     <script>
 
-        function agreeUser(event)
-        {
+        function agreeUser(event) {
             if (window.confirm("Do you really want to delete?")) {
                 return true;
-            }else{
+            } else {
                 event.preventDefault();
             }
         }

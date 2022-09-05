@@ -16,7 +16,11 @@ class UserPanelComposer
 
         $tariff = $user->tariff();
         $name = ($tariff) ? $tariff->name() : null;
-        $tariffs = $tariff->getAsArray()['settings'];
+        try {
+            $tariffs = $tariff->getAsArray()['settings'];
+        } catch (\Throwable $e) {
+            dd($tariff->getAsArray());
+        }
 
         $view->with(compact('user', 'name', 'tariffs'));
     }
