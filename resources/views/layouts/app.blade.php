@@ -60,7 +60,6 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-
     <!-- Main Footer -->
     <footer class="main-footer" id="main-footer">
         <strong>Copyright &copy; 2021-{{ date('Y') }} <a href="https://redbox.su/">redbox.su</a>.</strong>
@@ -93,11 +92,12 @@
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
 <script>
     $(function () {
         let visible = true;
-        var token = $('meta[name="csrf-token"]').attr('content');
+        let token = $('meta[name="csrf-token"]').attr('content');
         getCountNewNews()
         getProjects()
 
@@ -151,6 +151,37 @@
 
                         $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
                     })
+
+                    $(function () {
+                        $(".nav.nav-pills.nav-sidebar.flex-column").sortable();
+                        $(".nav.nav-pills.nav-sidebar.flex-column").mouseup(function () {
+                            setTimeout(() => {
+                                let array = [];
+                                $.each($('.nav-item.menu-item'), function (key, value) {
+                                    if ($(this).attr('data-id') !== null) {
+                                        array.push($(this).attr('data-id'))
+                                    }
+                                })
+
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: "/menu-item-sortable",
+                                    data: {
+                                        '_token': token,
+                                        'positions': array,
+                                    },
+                                    success: function (response) {
+                                        if (response.code === 200) {
+                                            console.log(response.code)
+                                        } else if (response.code === 415) {
+                                            console.log(response.code)
+                                        }
+                                    },
+                                });
+                            }, 300)
+                        });
+                    });
                 },
             });
         }
@@ -218,28 +249,28 @@
 @include('flash::message')
 
 @if(!config('app.debug'))
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function (m, e, t, r, i, k, a) {
-        m[i] = m[i] || function () {
-            (m[i].a = m[i].a || []).push(arguments)
-        };
-        m[i].l = 1 * new Date();
-        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-    })
-    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function (m, e, t, r, i, k, a) {
+            m[i] = m[i] || function () {
+                (m[i].a = m[i].a || []).push(arguments)
+            };
+            m[i].l = 1 * new Date();
+            k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+        })
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-    ym(89500732, "init", {
-        clickmap: true,
-        trackLinks: true,
-        accurateTrackBounce: true,
-        webvisor: true
-    });
-</script>
-<noscript>
-    <div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt=""/></div>
-</noscript>
-<!-- /Yandex.Metrika counter -->
+        ym(89500732, "init", {
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+        });
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt=""/></div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
 @endif
 </body>
 </html>

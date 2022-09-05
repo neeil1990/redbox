@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 
@@ -70,13 +71,17 @@ class HomeController extends Controller
      */
     public function menuItemSort(Request $request)
     {
-        $positions = '';
-        foreach ($request->orders as $order) {
-            $positions .= $order['id'] . ',';
-        }
         $projectsPositions = ProjectsPositions::firstOrNew([
             'user_id' => Auth::id(),
         ]);
+
+        Log::debug('orders', [$request->all()]);
+
+        $positions = '';
+        foreach ($request->positions as $key => $position) {
+            $positions .= $position . ',';
+        }
+
         $projectsPositions->menu_positions = $positions;
 
         $projectsPositions->save();
@@ -115,7 +120,7 @@ class HomeController extends Controller
 
             $access = (is_null($item['access'])) ? [] : $item['access'];
 
-            if($user->hasRole($access))
+            if ($user->hasRole($access))
                 $response[] = [
                     'id' => $item['id'],
                     'title' => __($item['title']),
