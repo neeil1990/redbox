@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header d-flex justify-content-between">
+        <div class="p-3 border-bottom d-flex justify-content-between w-100 align-items-center">
             <h3 class="card-title">{{ __('Users') }}</h3>
             <div>
                 <a href="#" class="btn btn-secondary">Excel</a>
