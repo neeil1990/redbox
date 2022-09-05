@@ -685,6 +685,7 @@
     "When you create a project, you need to manually add the localization text to the item": "Когда вы создаёте сервис, нужно вручную добавить текст в локализации в пункте",
     "######################## https://lk.redbox.su/analyze-relevance ###############################": "",
     "Your limits are exhausted this month": "Ваши лимиты в этом месяце исчерпаны",
+    "Editing a profile ": "Редактирование профиля ",
     "Users and their tasks": "Пользователи и их задачи",
     "End-to-end analysis": "Сквозной анализ",
     "Are you going to untie the label from the project, are you sure?": "Вы собираетесь удалить метку у проекта, вы уверены?",
@@ -925,5 +926,9 @@
     "Top list of phrases (TLP)": "Топ лист фраз (TLP)",
     "Top list of phrases (TLPs)": "Топ лист словосочетаний (TLPs)",
     "The total score is calculated as follows: coverage by important words + coverage by tf + density": "Общий балл рассчитывается следующим образом: охват по важным словам + охват по tf + плотность",
-    "Hide": "Скрыть"
+    "Hide": "Скрыть",
+    "Email": "Почтовый адрес",
+    "Interface language": "Язык интерфейса",
+    "Leave it blank if you don't want to change": "Оставьте пустым, если не хотите изменять",
+    "User update successfully": "Данные пользователя успешно обновлены"
 }

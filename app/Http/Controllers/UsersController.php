@@ -3,10 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Exception;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use Jenssegers\Agent\Agent;
 use Spatie\Permission\Models\Role;
 
@@ -20,7 +32,7 @@ class UsersController extends Controller
     /**
      * Show all users
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function index()
     {
@@ -42,7 +54,7 @@ class UsersController extends Controller
 
     /**
      * @param $id
-     * @return \Illuminate\Contracts\Auth\Authenticatable
+     * @return Authenticatable
      */
     public function login($id)
     {
@@ -55,7 +67,7 @@ class UsersController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -65,8 +77,8 @@ class UsersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -77,7 +89,7 @@ class UsersController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -88,7 +100,7 @@ class UsersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(User $user)
     {
@@ -101,16 +113,20 @@ class UsersController extends Controller
             return [$str => __($str)];
         });
 
-        return view('users.edit', compact('user', 'role', 'lang'));
+        $superAdmin = in_array(3, Auth::user()->role->toArray());
+
+        if (!$superAdmin) {
+            unset($role[3]);
+        }
+
+        return view('users.edit', compact('user', 'role', 'lang', 'superAdmin'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
      * @param User $user
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
+     * @param Request $request
+     * @return Application|RedirectResponse|Redirector|void
+     * @throws ValidationException
      */
     public function update(User $user, Request $request)
     {
@@ -119,13 +135,22 @@ class UsersController extends Controller
             'last_name' => ['required', 'string', 'min:3', 'max:255'],
             'email' => ['required', 'string', 'email', 'min:3', 'max:255'],
             'role' => ['required'],
+            'password' => ['nullable', 'min:8']
         ]);
 
         $user->update($request->all());
 
         $user->syncRoles($request->input('role'));
 
-        flash()->overlay(__('User update successfully'), __('Update user'))->success();
+        if ($request->input('password') !== null && in_array(3, Auth::user()->role->toArray())) {
+            $user->password = Hash::make($request->input('password'));
+
+            $user->setRememberToken(Str::random(60));
+
+            $user->save();
+        }
+
+        flash()->overlay(__('User update successfully'), ' ')->success();
 
         return redirect('users');
     }
@@ -134,8 +159,8 @@ class UsersController extends Controller
      * Remove the specified resource from storage.
      *
      * @param User $user
-     * @return \Illuminate\Http\Response
-     * @throws \Exception
+     * @return Response
+     * @throws Exception
      */
     public function destroy(User $user)
     {
@@ -153,7 +178,7 @@ class UsersController extends Controller
      * Create a new agent instance from the given session.
      *
      * @param mixed $session
-     * @return \Jenssegers\Agent\Agent
+     * @return Agent
      */
     private function createAgent($session)
     {
