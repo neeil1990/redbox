@@ -152,36 +152,36 @@
                         $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
                     })
 
-                    $(function () {
-                        $(".nav.nav-pills.nav-sidebar.flex-column").sortable();
-                        $(".nav.nav-pills.nav-sidebar.flex-column").mouseup(function () {
-                            setTimeout(() => {
-                                let array = [];
-                                $.each($('.nav-item.menu-item'), function (key, value) {
-                                    if ($(this).attr('data-id') !== null) {
-                                        array.push($(this).attr('data-id'))
-                                    }
-                                })
-
-                                $.ajax({
-                                    type: "POST",
-                                    dataType: "json",
-                                    url: "/menu-item-sortable",
-                                    data: {
-                                        '_token': token,
-                                        'positions': array,
-                                    },
-                                    success: function (response) {
-                                        if (response.code === 200) {
-                                            console.log(response.code)
-                                        } else if (response.code === 415) {
-                                            console.log(response.code)
-                                        }
-                                    },
-                                });
-                            }, 300)
-                        });
-                    });
+                    // $(function () {
+                    //     $(".nav.nav-pills.nav-sidebar.flex-column").sortable();
+                    //     $(".nav.nav-pills.nav-sidebar.flex-column").mouseup(function () {
+                    //         setTimeout(() => {
+                    //             let array = [];
+                    //             $.each($('.nav-item.menu-item'), function (key, value) {
+                    //                 if ($(this).attr('data-id') !== null) {
+                    //                     array.push($(this).attr('data-id'))
+                    //                 }
+                    //             })
+                    //
+                    //             $.ajax({
+                    //                 type: "POST",
+                    //                 dataType: "json",
+                    //                 url: "/menu-item-sortable",
+                    //                 data: {
+                    //                     '_token': token,
+                    //                     'positions': array,
+                    //                 },
+                    //                 success: function (response) {
+                    //                     if (response.code === 200) {
+                    //                         console.log(response.code)
+                    //                     } else if (response.code === 415) {
+                    //                         console.log(response.code)
+                    //                     }
+                    //                 },
+                    //             });
+                    //         }, 300)
+                    //     });
+                    // });
                 },
             });
         }
