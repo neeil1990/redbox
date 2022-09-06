@@ -31,7 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'balance', 'name', 'last_name', 'email', 'lang', 'password', 'last_authorization'
+        'balance', 'name', 'last_name', 'email', 'lang', 'password', 'last_authorization', 'telegram_token'
     ];
 
     /**
@@ -40,7 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'telegram_token',
+        'password', 'remember_token',
     ];
 
     /**
