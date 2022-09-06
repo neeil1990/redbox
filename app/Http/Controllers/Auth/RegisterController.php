@@ -90,7 +90,7 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'lang' => $data['lang'],
             'password' => Hash::make($data['password']),
-            'telegram_token' => str_shuffle(md5(microtime()))
+            'telegram_token' => str_shuffle(Str::random(50) . Carbon::now())
         ]);
 
         $user->assignRole('Free');
