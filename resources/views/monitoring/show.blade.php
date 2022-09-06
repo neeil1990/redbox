@@ -84,7 +84,7 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-responsive table-bordered table-hover text-center"></table>
+                <table class="table table-responsive table-bordered table-hover text-center" id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -150,7 +150,7 @@
             const PAGE_LENGTH = '{{ $length }}';
             const MAIN_COLUMNS_COUNT = 8;
 
-            let table = $('.table');
+            let table = $('#monitoringTable');
 
             toastr.options = {
                 "preventDuplicates": true,
