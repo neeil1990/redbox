@@ -57,17 +57,11 @@ class RelevanceController extends Controller
         $relevance->getMainPageHtml();
 
         if ($request['type'] == 'phrase') {
+
             $relevance->analysisByPhrase($request->all(), $request->exp);
 
         } elseif ($request['type'] == 'list') {
-            $sitesList = str_replace("\r\n", "\n", $request['siteList']);
-            $sitesList = explode("\n", $sitesList);
 
-            if (count($sitesList) < 5) {
-                return response()->json([
-                    'message' => 'Общее количество анализируемых сайтов должно быть не меньше пяти'
-                ])->setStatusCode(500);
-            }
             $relevance->analysisByList($request->all());
         }
 

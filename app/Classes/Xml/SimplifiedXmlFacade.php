@@ -3,6 +3,7 @@
 namespace App\Classes\Xml;
 
 use App\TelegramBot;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Ixudra\Curl\Facades\Curl;
@@ -62,9 +63,9 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param $lastTry
-     * @return array
+     * @return Exception|mixed
      */
-    protected function sendRequestV1($lastTry): array
+    protected function sendRequestV1($lastTry)
     {
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
@@ -85,7 +86,8 @@ class SimplifiedXmlFacade extends XmlFacade
         if (isset($result['response']['error']) && $lastTry) {
             TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
             TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
-            die();
+
+            return new Exception($result['response']['error']);
         }
 
         return $result;
@@ -93,11 +95,10 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param $lastTry
-     * @return array
+     * @return array|Exception|mixed
      */
-    protected function sendRequestV2($lastTry): array
+    protected function sendRequestV2($lastTry)
     {
-        Log::info('try');
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
@@ -118,7 +119,8 @@ class SimplifiedXmlFacade extends XmlFacade
         } elseif (isset($responseArray['response']['error']) && $lastTry) {
             TelegramBot::sendMessage("XML error: " . $responseArray['response']['error'], 938341087);
             TelegramBot::sendMessage("XML error: " . $responseArray['response']['error'], 169011279);
-            die();
+
+            return new Exception($responseArray['response']['error']);
         }
 
         $sites = [];

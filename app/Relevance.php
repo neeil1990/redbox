@@ -1372,18 +1372,23 @@ class Relevance
      */
     public function analysisByPhrase($request, $exp)
     {
-        RelevanceProgress::editProgress(10, $request);
-        $xml = new SimplifiedXmlFacade($request['region']);
-        $xml->setQuery($request['phrase']);
-        $xmlResponse = $xml->getXMLResponse();
+        try {
+            RelevanceProgress::editProgress(10, $request);
+            $xml = new SimplifiedXmlFacade($request['region']);
+            $xml->setQuery($request['phrase']);
+            $xmlResponse = $xml->getXMLResponse();
 
-        $this->removeIgnoredDomains(
-            $request,
-            $xmlResponse,
-            $exp
-        );
+            $this->removeIgnoredDomains(
+                $request,
+                $xmlResponse,
+                $exp
+            );
 
-        $this->parseSites($xmlResponse);
+            $this->parseSites($xmlResponse);
+        } catch (\Throwable $exception) {
+            $this->saveError();
+            die();
+        }
     }
 
     /**
