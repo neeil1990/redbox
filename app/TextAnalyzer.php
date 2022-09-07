@@ -175,6 +175,7 @@ class TextAnalyzer extends Model
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
 
+        $html = str_replace('>', '> ', $html);
         $text = trim(strip_tags($html));
 
         $text = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($text)));

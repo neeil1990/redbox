@@ -14,6 +14,7 @@
 use App\Morphy;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
@@ -186,7 +187,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
-    Route::get('/show-child-words', 'RelevanceController@showChildWords')->name('show.child.words');
 
     Route::get('/history', 'HistoryRelevanceController@index')->name('relevance.history');
     Route::post('/edit-group-name', 'HistoryRelevanceController@editGroupName')->name('edit.group.name');
@@ -274,8 +274,25 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $morphy = new Morphy();
-    dd($morphy->base('микроскопы'));
+//    https://www.minecraft.net/ru-ru
+//    https://www.tourister.ru/world/africa/egypt/city/giza/placeofinterest/36431/
+//    https://gnkmed.ru/catalog/ranorasshiriteli-ginekologicheskie/
+
+//    https://vilmed.ru/catalog/veterinariya/
+//    https://gnkmed.ru/catalog/ranorasshiriteli-ginekologicheskie/
+//    https://riester.su/catalog/otoskopy-lor/
+
+    $html = TextAnalyzer::curlInit('https://www.tourister.ru/world/africa/egypt/city/giza/placeofinterest/36431/');
+    $site = TextAnalyzer::removeStylesAndScripts($html);
+    $text = TextAnalyzer::deleteEverythingExceptCharacters($site);
+    $text = trim($text);
+    dump($text);
+    dump([
+        'Количество символов' => Str::length($text)
+    ]);
+    dd([
+        'Количество слов' => count(explode(' ', $text))
+    ]);
 });
 
 Route::get('/get-passages/{link}', function ($link) {

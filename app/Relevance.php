@@ -82,11 +82,9 @@ class Relevance
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
-        if (isset($this->request['searchPassages'])) {
-            $this->request['searchPassages'] = filter_var($this->request['searchPassages'], FILTER_VALIDATE_BOOLEAN);
-        } else {
-            $this->request['searchPassages'] = false;
-        }
+        $this->request['searchPassages'] = isset($this->request['searchPassages'])
+            ? filter_var($this->request['searchPassages'], FILTER_VALIDATE_BOOLEAN)
+            : false;
 
         if ($this->queue) {
             $params = [
@@ -450,7 +448,6 @@ class Relevance
     public function calculateTextInfo()
     {
         foreach ($this->sites as $key => $site) {
-            $this->countNotIgnoredSites++;
             $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($site['defaultHtml']);
             $countSymbols = Str::length($totalWords);
             $countWords = count(explode(' ', $totalWords));
@@ -459,6 +456,7 @@ class Relevance
                 $this->countSymbolsInMyPage = $countSymbols;
                 $this->countWordsInMyPage = $countWords;
             } else if (!$site['ignored']) {
+                $this->countNotIgnoredSites++;
                 $this->countSymbols += $countSymbols;
                 $this->countWords += $countWords;
             }
