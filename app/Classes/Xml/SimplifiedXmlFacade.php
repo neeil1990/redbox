@@ -2,6 +2,7 @@
 
 namespace App\Classes\Xml;
 
+use App\TelegramBot;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Ixudra\Curl\Facades\Curl;
@@ -34,11 +35,10 @@ class SimplifiedXmlFacade extends XmlFacade
     {
         $response = $this->sendRequest($boolean);
         if (isset($response['response']['error'])) {
-            Log::debug('xml error', [$response['response']['error']]);
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser('sv@prime-ltd.su');
             $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            $response = $this->sendRequest($boolean);
+            $response = $this->sendRequest($boolean, true);
         }
 
         return $response;
@@ -46,23 +46,25 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param bool $bool
+     * @param bool $lastTry
      * @return array
      */
-    protected function sendRequest(bool $bool = false): array
+    protected function sendRequest(bool $bool = false, bool $lastTry = false): array
     {
         if ($bool) {
-            $result = $this->sendRequestV1();
+            $result = $this->sendRequestV1($lastTry);
         } else {
-            $result = $this->sendRequestV2();
+            $result = $this->sendRequestV2($lastTry);
         }
 
         return $result;
     }
 
     /**
+     * @param $lastTry
      * @return array
      */
-    protected function sendRequestV1(): array
+    protected function sendRequestV1($lastTry): array
     {
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
@@ -78,14 +80,24 @@ class SimplifiedXmlFacade extends XmlFacade
 
         $json = json_encode($xml);
 
-        return json_decode($json, true);
+        $result = json_decode($json, true);
+
+        if (isset($result['response']['error']) && $lastTry) {
+            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
+            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
+            die();
+        }
+
+        return $result;
     }
 
     /**
+     * @param $lastTry
      * @return array
      */
-    protected function sendRequestV2(): array
+    protected function sendRequestV2($lastTry): array
     {
+        Log::info('try');
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
@@ -101,6 +113,14 @@ class SimplifiedXmlFacade extends XmlFacade
         $json = json_encode($xml);
         $responseArray = json_decode($json, true);
 
+        if (isset($responseArray['response']['error']) && !$lastTry) {
+            return $responseArray;
+        } elseif (isset($responseArray['response']['error']) && $lastTry) {
+            TelegramBot::sendMessage("XML error: " . $responseArray['response']['error'], 938341087);
+            TelegramBot::sendMessage("XML error: " . $responseArray['response']['error'], 169011279);
+            die();
+        }
+
         $sites = [];
         foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
             if (array_key_exists(0, $item['doc'])) {
@@ -108,10 +128,6 @@ class SimplifiedXmlFacade extends XmlFacade
             } else {
                 $sites[] = Str::lower($item['doc']['url']);
             }
-        }
-
-        if (count($sites) == 0) {
-            Log::debug('error xml request', [$responseArray]);
         }
 
         return $sites;

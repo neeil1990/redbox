@@ -282,7 +282,10 @@ Route::get('/test', function () {
 //    https://gnkmed.ru/catalog/ranorasshiriteli-ginekologicheskie/
 //    https://riester.su/catalog/otoskopy-lor/
 
-    $html = TextAnalyzer::curlInit('https://www.tourister.ru/world/africa/egypt/city/giza/placeofinterest/36431/');
+//    https://promedikal.ru/category_31/category_32/570/
+
+
+    $html = TextAnalyzer::curlInit('https://promedikal.ru/category_31/category_32/570/');
     $site = TextAnalyzer::removeStylesAndScripts($html);
     $text = TextAnalyzer::deleteEverythingExceptCharacters($site);
     $text = trim($text);

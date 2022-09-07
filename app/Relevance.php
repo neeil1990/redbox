@@ -746,8 +746,8 @@ class Relevance
                 $repeatLinkInMainPage = $myLink[$word] ?? 0;
                 $repeatInPassagesMainPage = $myPassages[$word] ?? 0;
 
-                $tf = round($item / $wordCount, 5);
-                $idf = round(log10($wordCount / $item), 5);
+                $tf = round($item / $wordCount, 7);
+                $idf = round(log10($wordCount / $item), 7);
 
                 $this->wordForms[$root][$word] = [
                     'tf' => $tf,
@@ -840,8 +840,12 @@ class Relevance
 
         $collection = collect($this->wordForms);
 
-        $this->wordForms = $collection->sortBy(function ($key, $value) {
-        }, SORT_REGULAR, true)->toArray();
+        $this->wordForms = $collection->sortBy(
+            function ($key, $value) {
+            },
+            SORT_REGULAR,
+            true
+        )->toArray();
     }
 
     /**
