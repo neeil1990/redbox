@@ -74,6 +74,12 @@
 
     @section('js')
         <script>
+            if (navigator.language === 'en') {
+                $('#select-language').val('en')
+            } else {
+                $('#select-language').val('ru')
+            }
+
             $(".flags").select2({
                 theme: 'bootstrap4',
                 minimumResultsForSearch: Infinity,

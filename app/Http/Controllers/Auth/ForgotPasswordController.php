@@ -43,8 +43,6 @@ class ForgotPasswordController extends Controller
             return Str::before($val, '.');
         });
 
-        $lang = array_reverse($lang->toArray());
-
         return view('auth.passwords.email', ['lang' => $lang]);
     }
 }

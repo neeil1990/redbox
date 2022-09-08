@@ -121,6 +121,12 @@
     </script>
     @section('js')
         <script>
+            if (navigator.language === 'en') {
+                $('#select-language').val('en')
+            } else {
+                $('#select-language').val('ru')
+            }
+
             $(".flags").select2({
                 theme: 'bootstrap4',
                 minimumResultsForSearch: Infinity,
@@ -140,21 +146,29 @@
             $(document).ready(function () {
                 $('#select-language').on('change', function () {
                     if ($(this).val() === 'en') {
-                        $('#password').attr('placeholder', 'Password')
-                        $('#remember-me-label').html('Remember me')
-                        $('#login-button').html('Login')
-                        $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
-                        $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new user')
-                        $('#auth-header').html('Log in to the system')
+                        setEngLanguage()
                     } else {
-                        $('#password').attr('placeholder', 'Пароль')
-                        $('#remember-me-label').html('Запомнить меня')
-                        $('#login-button').html('Войти')
-                        $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
-                        $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
-                        $('#auth-header').html('Вход в систему')
+                        setRuLanguage()
                     }
                 })
+
+                function setEngLanguage() {
+                    $('#password').attr('placeholder', 'Password')
+                    $('#remember-me-label').html('Remember me')
+                    $('#login-button').html('Login')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new user')
+                    $('#auth-header').html('Log in to the system')
+                }
+
+                function setRuLanguage() {
+                    $('#password').attr('placeholder', 'Пароль')
+                    $('#remember-me-label').html('Запомнить меня')
+                    $('#login-button').html('Войти')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
+                    $('#auth-header').html('Вход в систему')
+                }
             })
         </script>
     @endsection

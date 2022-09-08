@@ -18,7 +18,7 @@
                     <div class="input-group mb-3">
                         <select id="select-language" name="lang"
                                 class="custom-select flags @error('lang') is-invalid @enderror">
-                            @foreach(array_reverse($lang->toArray()) as $l)
+                            @foreach($lang as $l)
                                 <option value="{{ $l }}">
                                     @if($l == 'ru')
                                         Русский
@@ -153,6 +153,12 @@
 
 @section('js')
     <script>
+        if (navigator.language === 'en') {
+            $('#select-language').val('en')
+        } else {
+            $('#select-language').val('ru')
+        }
+
         $(".flags").select2({
             theme: 'bootstrap4',
             minimumResultsForSearch: Infinity,
