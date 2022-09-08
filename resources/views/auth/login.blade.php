@@ -7,7 +7,7 @@
         <!-- /.login-logo -->
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <h1><b id="auth-header">{{ __('Authentication') }}</b></h1>
+                <h1><b id="auth-header">{{ __('Log in to the system') }}</b></h1>
             </div>
             <div class="card-body">
                 <form action="{{ route('login') }}" method="POST">
@@ -145,14 +145,14 @@
                         $('#login-button').html('Login')
                         $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
                         $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new user')
-                        $('#auth-header').html('Authentication')
+                        $('#auth-header').html('Log in to the system')
                     } else {
                         $('#password').attr('placeholder', 'Пароль')
                         $('#remember-me-label').html('Запомнить меня')
                         $('#login-button').html('Войти')
                         $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
                         $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
-                        $('#auth-header').html('Аутентификация')
+                        $('#auth-header').html('Вход в систему')
                     }
                 })
             })
