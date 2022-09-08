@@ -62,6 +62,11 @@ abstract class SettingsAbstract
     {
         /** @var User $user */
         $user = Auth::user();
+
+        if ($user == null) {
+            return 'Нет данных';
+        }
+
         $now = Carbon::now();
         $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
 
