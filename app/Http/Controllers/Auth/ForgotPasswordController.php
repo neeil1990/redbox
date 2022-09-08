@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class ForgotPasswordController extends Controller
 {
@@ -32,9 +35,16 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Validate the email for the given request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
+     * @return View
      */
+    public function showLinkRequestForm(): View
+    {
+        $lang = collect(Storage::disk('lang')->files())->map(function ($val) {
+            return Str::before($val, '.');
+        });
+
+        $lang = array_reverse($lang->toArray());
+
+        return view('auth.passwords.email', ['lang' => $lang]);
+    }
 }

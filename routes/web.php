@@ -11,11 +11,9 @@
 |
 */
 
-use App\Morphy;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
     phpinfo();
@@ -30,6 +28,8 @@ Route::get('public/behavior/{id}/check', 'PublicController@checkBehavior')->name
 Route::post('public/behavior/verify', 'PublicController@verifyBehavior')->name('behavior.verify');
 Route::get('public/behavior/{site}/code', 'PublicController@codeBehavior')->name('behavior.code');
 Route::post('/balance-add/result', 'BalanceAddController@result')->name('balance.add.result');
+Route::get('/personal-data', 'AccessController@getPersonalData')->name('personal.data');
+Route::get('/privacy-policy', 'AccessController@getPrivacyPolicy')->name('privacy.policy');
 
 Route::middleware(['verified'])->group(function () {
 

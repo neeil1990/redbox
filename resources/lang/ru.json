@@ -4,6 +4,8 @@
     "Verify page": "Страница верификации на сервисе RedBox",
     "Register page": "Страница регистрации на сервисе RedBox",
     "Reset page": "Восстановление пароля на сервисе RedBox",
+    "Authentication": "Аутентификация",
+    "Back to the login page": "Назад к странице входа",
 
     "I give my consent to the processing": "Я даю свое согласие на обработку",
     "personal data": "персональных данных",
@@ -100,6 +102,9 @@
     "######################## Пункты меню ###############################": "",
     "Home": "Главная",
     "Menu": "Меню",
+    "Your limits": "Ваши лимиты",
+    "Limits": "Лимиты",
+    "Exhausted": "Исчерпано",
     "Keyword generator": "Генератор слов",
     "Remove Duplicates": "Удаление дубликатов",
     "ROI calculator": "Калькулятор ROI",

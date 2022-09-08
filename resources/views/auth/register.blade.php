@@ -4,20 +4,28 @@
 
 @section('content')
 
-<div class="register-box">
+    <div class="register-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="#" class="h1"><b>{{ __('Register') }}</b></a>
+                <h1><b id="register-header">{{ __('Register') }}</b></h1>
             </div>
 
             <div class="card-body">
                 <form action="{{ route('register') }}" method="POST">
+                    @csrf
                     <p class="login-box-msg">{{ __('Select your language') }}</p>
 
                     <div class="input-group mb-3">
-                        <select name="lang" class="custom-select flags @error('lang') is-invalid @enderror">
-                            @foreach($lang as $l)
-                            <option value="{{ $l }}">{{ __($l) }}</option>
+                        <select id="select-language" name="lang"
+                                class="custom-select flags @error('lang') is-invalid @enderror">
+                            @foreach(array_reverse($lang->toArray()) as $l)
+                                <option value="{{ $l }}">
+                                    @if($l == 'ru')
+                                        Русский
+                                    @else
+                                        English
+                                    @endif
+                                </option>
                             @endforeach
                         </select>
                         @error('lang')
@@ -31,7 +39,9 @@
                     @csrf
 
                     <div class="input-group mb-3">
-                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" autocomplete="name" autofocus required>
+                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror"
+                               name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" autocomplete="name"
+                               autofocus required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -45,7 +55,9 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input id="last_name" type="text" class="form-control @error('last_name') is-invalid @enderror" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('Last name') }}" autocomplete="last_name" autofocus required>
+                        <input id="last_name" type="text" class="form-control @error('last_name') is-invalid @enderror"
+                               name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('Last name') }}"
+                               autocomplete="last_name" autofocus required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -59,7 +71,9 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" autocomplete="email" required>
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
+                               name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail') }}"
+                               autocomplete="email" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -73,7 +87,9 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="{{ __('Password') }}" autocomplete="new-password" required>
+                        <input id="password" type="password"
+                               class="form-control @error('password') is-invalid @enderror" name="password"
+                               placeholder="{{ __('Password') }}" autocomplete="new-password" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -86,7 +102,8 @@
                         @enderror
                     </div>
                     <div class="input-group mb-3">
-                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" autocomplete="new-password" required>
+                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation"
+                               placeholder="{{ __('Confirm Password') }}" autocomplete="new-password" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -98,24 +115,28 @@
                             <div class="icheck-primary">
                                 <input type="checkbox" id="agreeTerms" name="terms" value="agree" required>
                                 <label for="agreeTerms">
-                                    {{ __('I give my consent to the processing') }} <a href="{{ __('rule agree link one') }}" target="_blank">{{ __('personal data') }}</a> {{ __('and agree to the terms') }}
-                                    <a href="{{ __('rule agree link two') }}" target="_blank">{{ __('privacy policy') }}</a>
+                                    <span>{{ __('I give my consent to the processing') }}</span>
+                                    <a href="{{ route('personal.data') }}"
+                                       target="_blank">{{ __('personal data') }}</a>
+
+                                    <span>{{ __('and agree to the terms') }}</span>
+                                    <a href="{{ route('privacy.policy') }}"
+                                       target="_blank">{{ __('privacy policy') }}</a>
                                 </label>
                             </div>
                         </div>
-                        <!-- /.col -->
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-block" onclick="ym(89500732,'reachGoal','novaja_registracija_1231')">
+                        <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-primary btn-block"
+                                    onclick="ym(89500732,'reachGoal','novaja_registracija_1231')">
                                 <i class="fas fa-user-plus"></i> {{ __('Register') }}
                             </button>
                         </div>
-                        <!-- /.col -->
                     </div>
                 </form>
 
                 <div class="social-auth-links text-center">
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="btn btn-block btn-primary">
+                        <a href="{{ route('password.request') }}" target="_blank" class="btn btn-block btn-primary">
                             <i class="fas fa-key mr-2"></i> {{ __('Forgot Your Password?') }}
                         </a>
                     @endif
@@ -126,8 +147,7 @@
                     @endif
                 </div>
             </div>
-            <!-- /.form-box -->
-        </div><!-- /.card -->
+        </div>
     </div>
 @endsection
 
@@ -147,5 +167,44 @@
                 return $state;
             }
         });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#select-language').on('change', function () {
+                if ($(this).val() === 'en') {
+                    $('#register-header').html('Register')
+                    $('body > div > div > div.card-body > form > p:nth-child(2)').html('Select yor language')
+                    $('body > div > div > div.card-body > form > p:nth-child(4)').html('Register a new membership')
+                    $('#name').attr('placeholder', 'Name')
+                    $('#last_name').attr('placeholder', 'Last name')
+                    $('#password').attr('placeholder', 'Password')
+                    $('#password-confirm').attr('placeholder', 'Confirm password')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(1)').html('I give my consent to the processing')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').html('personal data')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(3)').html('and agree to the terms')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').html('privacy policy')
+                    $('body > div > div > div.card-body > form > div.row > div.col-12.mt-2 > button').html('<i class="fas fa-user-plus"></i> Registration')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-user mr-2"></i> Login membership')
+
+                } else {
+                    $('#register-header').html('Регистрация')
+                    $('body > div > div > div.card-body > form > p:nth-child(2)').html('Выберите ваш язык')
+                    $('body > div > div > div.card-body > form > p:nth-child(4)').html('Зарегистрировать нового пользователя')
+                    $('#name').attr('placeholder', 'Имя')
+                    $('#last_name').attr('placeholder', 'Фамилия')
+                    $('#password').attr('placeholder', 'Пароль')
+                    $('#password-confirm').attr('placeholder', 'Подтвердить пароль')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(1)').html('Я даю свое согласие на обработку')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').html('персональных данных')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(3)').html('и соглашаюсь с условиями')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').html('политики конфиденциальности')
+                    $('body > div > div > div.card-body > form > div.row > div.col-12.mt-2 > button').html('<i class="fas fa-user-plus"></i> Регистрация')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
+                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-user mr-2"></i> Уже зарегистрирован')
+                }
+            })
+        })
     </script>
 @endsection

@@ -15,15 +15,15 @@
 @if($tariffs != [])
     <div class="dropdown p-0 m-0 nav-item">
         <span class="dropdown-toggle nav-link" role="button" data-toggle="dropdown" aria-expanded="false">
-            Ваши лимиты
+            {{ __('Your limits') }}
         </span>
         <div class="dropdown-menu p-0 m-0" style="width: 410px">
             <table class="table table-bordered p-0 m-0">
                 <thead>
                 <tr>
-                    <th>Модуль</th>
-                    <th>Лимиты</th>
-                    <th>Исчерпано</th>
+                    <th>{{ __('Module') }}</th>
+                    <th>{{ __('Limits') }}</th>
+                    <th>{{ __('Exhausted') }}</th>
                 </tr>
                 </thead>
                 <tbody>

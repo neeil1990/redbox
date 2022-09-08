@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class ResetPasswordController extends Controller
 {
@@ -36,10 +40,4 @@ class ResetPasswordController extends Controller
     {
         $this->middleware('guest');
     }
-
-    /**
-     * Get the password reset validation error messages.
-     *
-     * @return array
-     */
 }
