@@ -12,6 +12,7 @@ class AreaChartData
     public $borderColor = "#1976d2";
     public $pointHoverRadius = "10";
     public $pointRadius = "5";
+    public $hidden = false;
 
     protected $labels;
     protected $datasets;
@@ -43,6 +44,7 @@ class AreaChartData
             'borderColor' => $this->borderColor,
             'pointHoverRadius' => $this->pointHoverRadius,
             'pointRadius' => $this->pointRadius,
+            'hidden' => $this->hidden,
         ];
 
         return $this;
@@ -72,7 +74,7 @@ class AreaChartData
      * @param string $backgroundColor
      * @return AreaChartData
      */
-    public function setBackgroundColor(string $backgroundColor): AreaChartData
+    public function setBackgroundColor($backgroundColor): AreaChartData
     {
         $this->backgroundColor = $backgroundColor;
         return $this;
@@ -107,5 +109,17 @@ class AreaChartData
         $this->pointRadius = $pointRadius;
         return $this;
     }
+
+    /**
+     * @param bool $hidden
+     * @return AreaChartData
+     */
+    public function setHidden(bool $hidden): AreaChartData
+    {
+        $this->hidden = $hidden;
+        return $this;
+    }
+
+
 
 }
