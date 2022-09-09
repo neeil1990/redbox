@@ -51,53 +51,31 @@
         @if($actual->isNotEmpty())
             <div class="col-md-6">
                 @include('tariff.subscribe')
-                <div class="col-md-12 d-flex flex-row flex-wrap">
-                    @foreach ($tariffsArray as $tariff)
-                        <div class="card">
-                            <div class="card-header bg-info">
-                                Тариф: {{ $tariff['name'] }}
-                            </div>
-                            <div class="card-body">
-                                @foreach ($tariff['settings'] as $module)
-                                    @if($module['name'] !== 'Цена тарифа')
-                                        <div>
-                                <span>
-                                    {{ $module['name'] }}:
-                                    <b>{{ $module['value'] }}</b>
-                                </span>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @else
-            <div class="col-md-6">
-                <div class="col-md-12 d-flex flex-row flex-wrap">
-                    @foreach ($tariffsArray as $tariff)
-                        <div class="card">
-                            <div class="card-header bg-info">
-                                Тариф: {{ $tariff['name'] }}
-                            </div>
-                            <div class="card-body">
-                                @foreach ($tariff['settings'] as $module)
-                                    @if($module['name'] !== 'Цена тарифа')
-                                        <div>
-                                <span>
-                                    {{ $module['name'] }}:
-                                    <b>{{ $module['value'] }}</b>
-                                </span>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
             </div>
         @endif
+
+        <div class="col-md-12 d-flex flex-row flex-wrap">
+            @foreach ($tariffsArray as $tariff)
+                <div class="card">
+                    <div class="card-header bg-info">
+                        Тариф: {{ $tariff['name'] }}
+                    </div>
+                    <div class="card-body">
+                        @foreach ($tariff['settings'] as $module)
+                            @if($module['name'] !== 'Цена тарифа')
+                                <div>
+                                <span>
+                                    {{ $module['name'] }}:
+                                    <b>{{ $module['value'] }}</b>
+                                </span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
     </div>
 @stop
 
