@@ -66,7 +66,11 @@
                                 <div>
                                 <span>
                                     {{ $module['name'] }}:
-                                    <b>{{ $module['value'] }}</b>
+                                    @if($module['value'] === 1000000)
+                                        <b>Без ограничений</b>
+                                    @else
+                                        <b>{{ $module['value'] }}</b>
+                                    @endif
                                 </span>
                                 </div>
                             @endif
