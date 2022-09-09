@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs;
+use App\PolicyTermsDocs;
 use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
 use App\RelevanceAllUniquePages;
@@ -154,6 +155,38 @@ class AdminController extends Controller
     {
         return response()->json([
             'jobs' => UsersJobs::where('count_jobs', '>', 0)->with('user')->get()
+        ]);
+    }
+
+    public function editPolicyFilesView()
+    {
+        return view('policy.index');
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function editPolicyFiles(Request $request): RedirectResponse
+    {
+        PolicyTermsDocs::editDocument($request->input('type'), $request->input('description'));
+
+        flash()->overlay('Документ успешно отредактирован', ' ')->success();
+
+        return Redirect::back();
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getPolicyDocument(Request $request): JsonResponse
+    {
+        $docs = PolicyTermsDocs::first($request->input('type'))->toArray();
+
+        return response()->json([
+            'code' => 200,
+            'document' => $docs[$request->input('type')]
         ]);
     }
 }

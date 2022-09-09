@@ -116,11 +116,11 @@
                                 <input type="checkbox" id="agreeTerms" name="terms" value="agree" required>
                                 <label for="agreeTerms">
                                     <span>{{ __('I give my consent to the processing') }}</span>
-                                    <a href="{{ route('personal.data') }}"
+                                    <a href="/personal-data/ru"
                                        target="_blank">{{ __('personal data') }}</a>
 
                                     <span>{{ __('and agree to the terms') }}</span>
-                                    <a href="{{ route('privacy.policy') }}"
+                                    <a href="/privacy-policy/ru"
                                        target="_blank">{{ __('privacy policy') }}</a>
                                 </label>
                             </div>
@@ -155,8 +155,12 @@
     <script>
         if (navigator.language === 'en') {
             $('#select-language').val('en')
+            $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').attr('href', '/personal-data/en')
+            $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').attr('href', '/privacy-policy/en')
         } else {
             $('#select-language').val('ru')
+            $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').attr('href', '/privacy-policy/ru')
+            $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').attr('href', '/personal-data/ru')
         }
 
         $(".flags").select2({
@@ -188,8 +192,10 @@
                     $('#password-confirm').attr('placeholder', 'Confirm password')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(1)').html('I give my consent to the processing')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').html('personal data')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').attr('href', '/personal-data/en')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(3)').html('and agree to the terms')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').html('privacy policy')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').attr('href', '/privacy-policy/en')
                     $('body > div > div > div.card-body > form > div.row > div.col-12.mt-2 > button').html('<i class="fas fa-user-plus"></i> Registration')
                     $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
                     $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-user mr-2"></i> Login membership')
@@ -204,8 +210,10 @@
                     $('#password-confirm').attr('placeholder', 'Подтвердить пароль')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(1)').html('Я даю свое согласие на обработку')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').html('персональных данных')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(2)').attr('href', '/personal-data/ru')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > span:nth-child(3)').html('и соглашаюсь с условиями')
                     $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').html('политики конфиденциальности')
+                    $('body > div > div > div.card-body > form > div.row > div:nth-child(1) > div > label > a:nth-child(4)').attr('href', '/privacy-policy/ru')
                     $('body > div > div > div.card-body > form > div.row > div.col-12.mt-2 > button').html('<i class="fas fa-user-plus"></i> Регистрация')
                     $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
                     $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-user mr-2"></i> Уже зарегистрирован')
