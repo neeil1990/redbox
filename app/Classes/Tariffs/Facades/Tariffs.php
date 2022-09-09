@@ -27,6 +27,7 @@ class Tariffs
     public function __construct()
     {
         // all of tariffs
+        $this->setTariffs(new FreeTariff());
         $this->setTariffs(new OptimalTariff());
         $this->setTariffs(new UltimateTariff());
         $this->setTariffs(new MaximumTariff());
