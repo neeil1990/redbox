@@ -56,7 +56,7 @@
 
         <div class="col-md-12 d-flex flex-row flex-wrap">
             @foreach ($tariffsArray as $tariff)
-                <div class="card">
+                <div class="card col-3 p-0">
                     <div class="card-header bg-info">
                         Тариф: {{ $tariff['name'] }}
                     </div>
@@ -66,7 +66,11 @@
                                 <div>
                                 <span>
                                     {{ $module['name'] }}:
-                                    <b>{{ $module['value'] }}</b>
+                                    @if($module['value'] === 1000000)
+                                        <b>Без ограничений</b>
+                                    @else
+                                        <b>{{ $module['value'] }}</b>
+                                    @endif
                                 </span>
                                 </div>
                             @endif

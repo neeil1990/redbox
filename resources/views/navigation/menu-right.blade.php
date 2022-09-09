@@ -31,7 +31,13 @@
                     @if($key != 'price')
                         <tr class="{{ $key }}">
                             <td>{{ $tariff['name'] }}</td>
-                            <td>{{ $tariff['value'] }}</td>
+                            <td>
+                                @if($tariff['value'] === 1000000)
+                                    Без ограничений
+                                @else
+                                    {{ $tariff['value'] }}
+                                @endif
+                            </td>
                             <td>
                                 <div class="progress progress-xs">
                                     <div class="progress-bar progress-bar-danger"
