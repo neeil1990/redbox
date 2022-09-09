@@ -48,6 +48,12 @@
             </div>
         </div>
 
+        @if($actual->isNotEmpty())
+            <div class="col-md-6">
+                @include('tariff.subscribe')
+            </div>
+        @endif
+
         <div class="col-md-12 d-flex flex-row flex-wrap">
             @foreach ($tariffsArray as $tariff)
                 <div class="card">
@@ -70,11 +76,6 @@
             @endforeach
         </div>
 
-        @if($actual->isNotEmpty())
-            <div class="col-md-6">
-                @include('tariff.subscribe')
-            </div>
-        @endif
     </div>
 @stop
 
