@@ -29,11 +29,11 @@
                 <div class="card-body">
 
                     @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <h5><i class="icon fas fa-ban"></i> {{ __('Error') }}!</h5>
-                        {{ session('error') }}
-                    </div>
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h5><i class="icon fas fa-ban"></i> {{ __('Error') }}!</h5>
+                            {{ session('error') }}
+                        </div>
                     @endif
 
                     @include('tariff.partials._form')
@@ -48,10 +48,32 @@
             </div>
         </div>
 
-        @if($actual->isNotEmpty())
-        <div class="col-md-6">
-            @include('tariff.subscribe')
+        <div class="col-md-12 d-flex flex-row flex-wrap">
+            @foreach ($tariffsArray as $tariff)
+                <div class="card">
+                    <div class="card-header bg-info">
+                        Тариф: {{ $tariff['name'] }}
+                    </div>
+                    <div class="card-body">
+                        @foreach ($tariff['settings'] as $module)
+                            @if($module['name'] !== 'Цена тарифа')
+                                <div>
+                                <span>
+                                    {{ $module['name'] }}:
+                                    <b>{{ $module['value'] }}</b>
+                                </span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
         </div>
+
+        @if($actual->isNotEmpty())
+            <div class="col-md-6">
+                @include('tariff.subscribe')
+            </div>
         @endif
     </div>
 @stop
@@ -79,42 +101,42 @@
                     name: tariff,
                     period: period,
                 },
-            }).then(function(response){
+            }).then(function (response) {
                 let total = $('#total tbody');
 
                 total.find('tr').remove();
-                $.each(response.data, function(i, val){
+                $.each(response.data, function (i, val) {
                     let tr = $('<tr />');
                     tr.append($('<th />').css('width', '50%').text(val.title), $('<td />').text(val.value));
                     total.append(tr);
                 });
             }).catch(function (error) {
-                if(error.response){
+                if (error.response) {
                     toastr.error(error.response.data.message);
                 }
             });
         });
 
-        $('#unsubscribe').click(function(){
+        $('#unsubscribe').click(function () {
             axios.request({
                 url: "{{ route('tariff.unsubscribe', ['confirm']) }}",
                 method: "GET",
-            }).then(function(response){
+            }).then(function (response) {
                 let msg = `Вам будет начислено ${response.data.prices.priceWithDiscount} баллов за ${response.data.active_days} дней, по текущей ставке тарифа ${response.data.prices.percent}%. Вы уверены, что хотите отписаться от тарифа?`;
                 let result = confirm(msg);
-                if(result){
+                if (result) {
                     axios.get("{{ route('tariff.unsubscribe', ['canceled']) }}")
-                    .then(function () {
-                        window.location.reload();
-                    })
-                    .catch(function (error) {
-                        if(error.response){
-                            toastr.error(error.response.data.message);
-                        }
-                    });
+                        .then(function () {
+                            window.location.reload();
+                        })
+                        .catch(function (error) {
+                            if (error.response) {
+                                toastr.error(error.response.data.message);
+                            }
+                        });
                 }
             }).catch(function (error) {
-                if(error.response){
+                if (error.response) {
                     toastr.error(error.response.data.message);
                 }
             });

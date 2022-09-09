@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\Classes\Tariffs\Interfaces\Period;
 use App\Classes\Tariffs\Tariff;
+use App\TariffSetting;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -26,7 +28,7 @@ class TariffPayController extends Controller
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
 
-            if($this->isSubscribe())
+            if ($this->isSubscribe())
                 $this->active = $this->user->pay()->active()->first();
 
             return $next($request);
@@ -45,7 +47,7 @@ class TariffPayController extends Controller
     public function index()
     {
         $actual = collect();
-        if($this->isSubscribe()){
+        if ($this->isSubscribe()) {
             $model = $this->active;
             $tariff = new $model->class_tariff;
             $actual->put('info', [
@@ -67,10 +69,22 @@ class TariffPayController extends Controller
 
         $select = $this->select;
 
-        return view('tariff.index', compact('select', 'total', 'actual'));
+        $tariffs = new Tariffs();
+        $tariffsArray = [];
+        foreach ($tariffs->getTariffs() as $tariff) {
+            $tariffsArray[] = $tariff->getAsArray();
+        }
+
+        foreach ($tariffsArray as $key => $item) {
+            ksort($item['settings']);
+            $tariffsArray[$key] = $item;
+        }
+
+        return view('tariff.index', compact('select', 'total', 'actual', 'tariffsArray'));
     }
 
-    public function total(Request $request){
+    public function total(Request $request)
+    {
         $name = $request->input('name');
         $period = $request->input('period');
 
@@ -79,11 +93,10 @@ class TariffPayController extends Controller
 
     protected function getTotal(string $name = null, string $period = null)
     {
-        $tariff = null;
-        if(is_null($name) && is_null($period)){
+        if (is_null($name) && is_null($period)) {
             $tariff = Arr::first($this->tariffs);
             $tariff->setPeriod(Arr::first($this->periods));
-        }else{
+        } else {
             $tariff = $this->getTariff($name);
             $tariff->setPeriod($this->getPeriod($period));
         }
@@ -103,8 +116,8 @@ class TariffPayController extends Controller
      */
     protected function getTariff(string $code): Tariff
     {
-        foreach ($this->tariffs as $tariff){
-            if($tariff->code() === $code)
+        foreach ($this->tariffs as $tariff) {
+            if ($tariff->code() === $code)
                 return $tariff;
         }
 
@@ -117,8 +130,8 @@ class TariffPayController extends Controller
      */
     protected function getPeriod(string $code): Period
     {
-        foreach ($this->periods as $period){
-            if($period->code() === $code)
+        foreach ($this->periods as $period) {
+            if ($period->code() === $code)
                 return $period;
         }
 
@@ -143,12 +156,12 @@ class TariffPayController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        if($this->isSubscribe()){
+        if ($this->isSubscribe()) {
             Session::flash('error', __('Subscribe has already activated!'));
             return redirect()->route('tariff.index');
         }
@@ -156,9 +169,9 @@ class TariffPayController extends Controller
         $tariff = $this->getTariff($request->input('tariff'));
         $tariff->setPeriod($this->getPeriod($request->input('period')));
 
-        try{
+        try {
             $this->user->decrement('balance', $tariff->price('priceWithDiscount'));
-        }catch (QueryException $exception){
+        } catch (QueryException $exception) {
             Session::flash('error', __('Replenish the balance!'));
             return redirect()->route('tariff.index');
         }
@@ -203,7 +216,7 @@ class TariffPayController extends Controller
 
     public function confirmUnsubscribe($confirm = null)
     {
-        if($confirm === "confirm"){
+        if ($confirm === "confirm") {
             $tariff = $this->calculateCostDaysByActiveTariff();
 
             return collect([
@@ -213,7 +226,7 @@ class TariffPayController extends Controller
             ]);
         }
 
-        if($confirm === "canceled"){
+        if ($confirm === "canceled") {
             $this->unsubscribe();
             Session::flash('info', __('Subscribe has been canceled!'));
         }
@@ -221,11 +234,11 @@ class TariffPayController extends Controller
 
     /**
      * @param int|null $days
-     * @return Tariff
+     * @return Tariff|null
      */
-    public function calculateCostDaysByActiveTariff(int $days = null): Tariff
+    public function calculateCostDaysByActiveTariff(int $days = null): ?Tariff
     {
-        if(!$this->isSubscribe())
+        if (!$this->isSubscribe())
             return null;
 
         $model = $this->active;
@@ -236,7 +249,7 @@ class TariffPayController extends Controller
         /** @var Period $period */
         $period = new $model->class_period;
 
-        if(empty($days))
+        if (empty($days))
             $days = $model->active_to->diffInDays();
 
         $period->setMonths(0);
@@ -250,7 +263,7 @@ class TariffPayController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -261,7 +274,7 @@ class TariffPayController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -272,8 +285,8 @@ class TariffPayController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -284,7 +297,7 @@ class TariffPayController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

@@ -46,7 +46,8 @@ class Tariffs
     }
 
     /**
-     * @param array $tariffs
+     * @param Tariff $tariffs
+     * @return void
      */
     private function setTariffs(Tariff $tariffs): void
     {
