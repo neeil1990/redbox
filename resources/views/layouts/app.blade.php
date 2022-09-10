@@ -72,7 +72,7 @@
 
 <!-- jQuery -->
 {{--  connect in views/navigation/menu-right.blade.php  --}}
-<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+{{--<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>--}}
 <!-- Bootstrap -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- app -->
