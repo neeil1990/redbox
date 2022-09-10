@@ -820,48 +820,103 @@
                 }
             });
 
-            let topPercent = $('#topPercent').get(0).getContext('2d');
-
-            let areaChartOptions = {
-                title: {
-                    display: false,
-                    text: 'Chart'
-                },
-                maintainAspectRatio : false,
-                legend: {
-                    display: true
-                },
-                scales: {
-                    xAxes: [{
-                        gridLines : {
-                            display : false,
-                        }
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            stepSize: 10
-                        }
-                    }]
+            axios.get('/monitoring/charts', {
+                params: {
+                    projectId: PROJECT_ID,
+                    dateRange: DATES,
+                    chart: 'top',
                 }
-            };
+            }).then(function (response) {
 
-            areaChartOptions.title.text = "% ключей в ТОП-10";
+                new Chart($('#topPercent').get(0).getContext('2d'), {
+                    type: 'line',
+                    data: response.data,
+                    options: {
+                        title: {
+                            display: true,
+                            text: '% ключей в ТОП',
+                            position: 'left',
+                        },
+                        maintainAspectRatio : false,
+                        legend: {
+                            display: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines : {
+                                    display : false,
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    stepSize: 10
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
 
             axios.get('/monitoring/charts', {
                 params: {
                     projectId: PROJECT_ID,
                     dateRange: DATES,
+                    chart: 'middle',
                 }
             }).then(function (response) {
 
-                new Chart(topPercent, {
+                new Chart($('#middlePosition').get(0).getContext('2d'), {
                     type: 'line',
                     data: response.data,
-                    options: areaChartOptions
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Средняя позиция',
+                            position: 'left',
+                        },
+                        maintainAspectRatio : false,
+                        legend: {
+                            display: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines : {
+                                    display : false,
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    stepSize: 10
+                                }
+                            }]
+                        }
+                    }
                 });
-            }).catch(function () {
+            });
 
-                toastr.error('Something is going wrong');
+            axios.get('/monitoring/charts', {
+                params: {
+                    projectId: PROJECT_ID,
+                    dateRange: DATES,
+                    chart: 'distribution',
+                }
+            }).then(function (response) {
+
+                new Chart($('#distributionByTop').get(0).getContext('2d'), {
+                    type: 'doughnut',
+                    data: response.data,
+                    options: {
+                        maintainAspectRatio : false,
+                        title: {
+                            display: true,
+                            text: 'Распределение по ТОП-100',
+                            position: 'left',
+                        },
+                        legend: {
+                            display: true
+                        }
+                    }
+                });
             });
         </script>
     @endslot
