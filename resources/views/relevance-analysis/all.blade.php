@@ -77,7 +77,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
                     <div class="d-flex w-100">
-                        <div class="w-50 p-3">
+                        <div class="w-50 pr-3">
                             <h3>{{ __('General statistics of the module') }}</h3>
                             <table style="margin: 0 0 35px 0 !important;" id="statistics_table"
                                    class="table table-bordered table-hover dataTable dtr-inline mb-5">
@@ -125,7 +125,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="w-50 p-3">
+                        <div class="w-50 ">
                             <h3>{{ __('Users and their tasks') }}</h3>
                             <table style="margin: 0 0 35px 0 !important;" id="user_jobs_table"
                                    class="table table-bordered table-hover dataTable dtr-inline mb-5">
