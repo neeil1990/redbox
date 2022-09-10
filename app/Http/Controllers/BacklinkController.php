@@ -51,13 +51,13 @@ class BacklinkController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        if($tariff = $user->tariff()){
+        if ($tariff = $user->tariff()) {
             $count = ProjectTracking::where('user_id', '=', $user->id)->count();
             $tariff = $tariff->getAsArray();
             if (array_key_exists('BacklinkProject', $tariff['settings'])) {
 
-                if($count >= $tariff['settings']['BacklinkProject']['value']){
-                    if($tariff['settings']['BacklinkProject']['message'])
+                if ($count >= $tariff['settings']['BacklinkProject']['value']) {
+                    if ($tariff['settings']['BacklinkProject']['message'])
                         flash()->overlay($tariff['settings']['BacklinkProject']['message'], __('Error'))->error();
 
                     return redirect('backlink');
@@ -177,7 +177,7 @@ class BacklinkController extends Controller
     {
         if (isset($request->countRows)) {
 
-            if($this->checkLinks((int)$request->countRows))
+            if ($this->checkLinks((int)$request->countRows))
                 return redirect()->route('backlink');
 
             $this->simplifiedCreate($request);
@@ -190,7 +190,7 @@ class BacklinkController extends Controller
                 return Redirect::refresh();
             }
 
-            if($this->checkLinks(count($phrases)))
+            if ($this->checkLinks(count($phrases)))
                 return redirect()->route('backlink');
 
             $this->expressCreate($request, $phrases);
@@ -204,13 +204,13 @@ class BacklinkController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        if($tariff = $user->tariff()){
+        if ($tariff = $user->tariff()) {
             $tariff = $tariff->getAsArray();
             if (array_key_exists('BacklinkLinks', $tariff['settings'])) {
 
-                if($count > $tariff['settings']['BacklinkLinks']['value']){
+                if ($count > $tariff['settings']['BacklinkLinks']['value']) {
 
-                    if($tariff['settings']['BacklinkLinks']['message'])
+                    if ($tariff['settings']['BacklinkLinks']['message'])
                         flash()->overlay($tariff['settings']['BacklinkLinks']['message'], __('Error'))->error();
 
                     return true;
