@@ -1,7 +1,4 @@
 @extends('layouts.app')
-<title>
-    {{ __('Profile') }}
-</title>
 
 @section('css')
     <!-- Select2 -->
@@ -198,6 +195,8 @@
 
     <script src="{{ asset('plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
     <script>
+        document.title = "{{ __('Profile') }}";
+
         $(function () {
             bsCustomFileInput.init();
 
