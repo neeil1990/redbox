@@ -34,7 +34,7 @@ abstract class SettingsAbstract
                 if ($setting->value > 0) {
                     $percent = ceil($used / ($setting->value / 100));
                 } else {
-                    $percent = 0;
+                    $percent = 100;
                 }
             } else {
                 $percent = 0;
