@@ -63,15 +63,13 @@
                     <div class="card-body">
                         @foreach ($tariff['settings'] as $module)
                             @if($module['name'] !== 'Цена тарифа')
-                                <div>
-                                <span>
+                                <div class="border-bottom p-2">
                                     {{ $module['name'] }}:
                                     @if($module['value'] === 1000000)
                                         <b>Без ограничений</b>
                                     @else
                                         <b>{{ $module['value'] }}</b>
                                     @endif
-                                </span>
                                 </div>
                             @endif
                         @endforeach
