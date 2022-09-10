@@ -25,17 +25,19 @@ abstract class SettingsAbstract
     {
         $this->settings = [];
 
+
         $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
         foreach ($settings as $setting) {
             $used = $this->getUsedLimit($setting->property->code);
 
-            $percent = 100;
             if (gettype($used) === 'integer') {
-                if ($used === 0 && $setting->value > 0) {
+                if ($setting->value > 0) {
                     $percent = ceil($used / ($setting->value / 100));
-                } elseif ($used === 0) {
+                } else {
                     $percent = 0;
                 }
+            } else {
+                $percent = 0;
             }
 
             $this->settings[$setting->property->code] = [
