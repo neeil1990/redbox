@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Tariff') ])
+@component('component.card', ['title' =>  __('Your Tariff') ])
     @slot('css')
         <style>
             #app > div > div > div.card-body > div > div.col-md-12.d-flex.flex-row.flex-wrap > div > div.card-body > div:hover {
