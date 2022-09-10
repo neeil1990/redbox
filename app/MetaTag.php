@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MetaTag extends Model
 {
@@ -20,12 +22,12 @@ class MetaTag extends Model
         'keywords_max',
     ];
 
-    public function histories()
+    public function histories(): HasMany
     {
         return $this->hasMany(MetaTagsHistory::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

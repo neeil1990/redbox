@@ -12,13 +12,19 @@ use App\MetaTagsHistory;
 use App\TelegramBot;
 use App\User;
 use Carbon\Carbon;
+use ErrorException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Yangqi\Htmldom\Htmldom;
 use Ixudra\Curl\Facades\Curl;
 
@@ -55,7 +61,7 @@ class MetaTagsController extends Controller
 
     /**
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return BinaryFileResponse
      */
     public function export($id)
     {
@@ -64,14 +70,15 @@ class MetaTagsController extends Controller
 
     /**
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return BinaryFileResponse
      */
     public function exportCompare($id, $id_compare)
     {
         return Excel::download(new MetaTagsCompareHistoriesExport($id, $id_compare), 'meta_tags_compare.csv');
     }
 
-    protected function lang() {
+    protected function lang()
+    {
 
         return collect([
             'check_url' => __('Check URL'),
@@ -118,7 +125,7 @@ class MetaTagsController extends Controller
 
     /**
      * @param Request $request
-     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @return array|Factory|View|mixed
      */
     public function index()
     {
@@ -133,7 +140,8 @@ class MetaTagsController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getMetaTags(Request $request) {
+    public function getMetaTags(Request $request)
+    {
         $title = $request->input('url', false);
         $length = $request->input('length', false);
 
@@ -144,7 +152,7 @@ class MetaTagsController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        if($tariff = $user->tariff()){
+        if ($tariff = $user->tariff()) {
             $tariff = $tariff->getAsArray();
             if (array_key_exists('MetaTagsPages', $tariff['settings'])) {
                 return collect($tariff['settings']['MetaTagsPages']);
@@ -165,19 +173,19 @@ class MetaTagsController extends Controller
         $recommend_length = [];
 
         foreach ($length as $len) {
-            $recommend_length[$len['id'].'_min'] = $len['input']['min'];
-            $recommend_length[$len['id'].'_max'] = $len['input']['max'];
+            $recommend_length[$len['id'] . '_min'] = $len['input']['min'];
+            $recommend_length[$len['id'] . '_max'] = $len['input']['max'];
         }
 
         $data = $this->domain($title)->get();
 
-        foreach ($data as $tag => $value){
+        foreach ($data as $tag => $value) {
             $error['main'][$tag] = $this->errorsMetaTags($tag, $value, 'main', $recommend_length);
 
 
-            if($this->response['status'] !== 200 && $tag === 'title'){
+            if ($this->response['status'] !== 200 && $tag === 'title') {
                 $status = 'code:' . $this->response['status'];
-                $error['badge'][$status] = [$this->templateErrors( __('Error') . ' ' . __('code') . ': ' . $this->response['status'], '')];
+                $error['badge'][$status] = [$this->templateErrors(__('Error') . ' ' . __('code') . ': ' . $this->response['status'], '')];
             }
 
             $error['badge'][$tag] = $this->errorsMetaTags($tag, $value, 'badge', $recommend_length);
@@ -211,7 +219,7 @@ class MetaTagsController extends Controller
     {
         $result = [];
 
-        foreach ($this->tags as $tag){
+        foreach ($this->tags as $tag) {
             $result[$tag['name']] = $this->getByString($tag['tag']);
         }
 
@@ -222,15 +230,15 @@ class MetaTagsController extends Controller
     {
         $el = $this->html->find($tag);
 
-        if(!$el)
+        if (!$el)
             return false;
 
         $arr = [];
-        foreach ($el as $e){
+        foreach ($el as $e) {
 
-            if(strlen(trim($e->plaintext)) > 1)
+            if (strlen(trim($e->plaintext)) > 1)
                 $arr[] = trim($e->plaintext);
-            elseif(isset($e->attr['content']))
+            elseif (isset($e->attr['content']))
                 $arr[] = trim($e->attr['content']);
             else
                 $arr[] = trim($e->outertext);
@@ -242,21 +250,21 @@ class MetaTagsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Database\Eloquent\Model
+     * @param Request $request
+     * @return Model
      */
-    public function store(Request $request)
+    public function store(Request $request): Model
     {
         /** @var User $user */
         $user = Auth::user();
         $model = $user->metaTags();
 
-        if($tariff = $user->tariff()){
+        if ($tariff = $user->tariff()) {
 
             $tariff = $tariff->getAsArray();
             if (array_key_exists('MetaTagsProject', $tariff['settings'])) {
 
-                if($model->count() >= $tariff['settings']['MetaTagsProject']['value']){
+                if ($model->count() >= $tariff['settings']['MetaTagsProject']['value']) {
                     abort(403, $tariff['settings']['MetaTagsProject']['message']);
                 }
             }
@@ -273,11 +281,12 @@ class MetaTagsController extends Controller
      * @param Request $request
      * @param $id
      */
-    public function storeHistories(Request $request, $id) {
+    public function storeHistories(Request $request, $id)
+    {
 
         $history = $request->input('histories', false);
 
-        if($history){
+        if ($history) {
             $history_links = count($history);
             $history = collect($history)->toJson();
 
@@ -289,9 +298,10 @@ class MetaTagsController extends Controller
      * All histories by meta tags
      *
      * @param $id
-     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @return array|Factory|View|mixed
      */
-    public function showHistories($id) {
+    public function showHistories($id)
+    {
 
         $project = Auth::user()->metaTags()->find($id);
 
@@ -302,10 +312,10 @@ class MetaTagsController extends Controller
             $errors = json_decode($item->data);
 
             $error_quantity = null;
-            foreach ($errors as $e){
-                if(isset($e->error)){
+            foreach ($errors as $e) {
+                if (isset($e->error)) {
                     $arr_error = Arr::flatten($e->error->badge);
-                    if(is_array($arr_error))
+                    if (is_array($arr_error))
                         $error_quantity += count($arr_error);
                 }
             }
@@ -321,15 +331,16 @@ class MetaTagsController extends Controller
      * One history by meta tags
      *
      * @param $id
-     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
-     * @throws \ErrorException
+     * @return array|Factory|View|mixed
+     * @throws ErrorException
      */
-    public function showHistory($id){
+    public function showHistory($id)
+    {
 
         $history = MetaTagsHistory::findOrFail($id);
 
-        if($history->project->user_id != Auth::id())
-            throw new \ErrorException('User not valid');
+        if ($history->project->user_id != Auth::id())
+            throw new ErrorException('User not valid');
 
         $project = $history->project;
         $data = collect(json_decode($history->data));
@@ -346,8 +357,8 @@ class MetaTagsController extends Controller
         $history = MetaTagsHistory::findOrFail($id);
         $history_compare = MetaTagsHistory::findOrFail($id_compare);
 
-        if($history->project->user_id != Auth::id() || $history_compare->project->user_id != Auth::id())
-            throw new \ErrorException('User not valid');
+        if ($history->project->user_id != Auth::id() || $history_compare->project->user_id != Auth::id())
+            throw new ErrorException('User not valid');
 
         $this->createCompareArray($history, 'card', $response);
         $this->createCompareArray($history_compare, 'card_compare', $response);
@@ -355,10 +366,10 @@ class MetaTagsController extends Controller
         $collection = collect($response);
 
         $filter = [];
-        foreach ($response as $r){
-            if(isset($r['badge'])){
+        foreach ($response as $r) {
+            if (isset($r['badge'])) {
                 $tags = collect($r['badge'])->collapse()->keys();
-                foreach($tags as $tag)
+                foreach ($tags as $tag)
                     $filter[$tag] = $tag;
             }
         }
@@ -369,14 +380,14 @@ class MetaTagsController extends Controller
     protected function createCompareArray($model, $name = 'card', &$response = [])
     {
         $histories = json_decode($model->data);
-        foreach ($histories as $item){
+        foreach ($histories as $item) {
             $response[$item->title][$name]['id'] = $model->id;
             $response[$item->title][$name]['date'] = $model->created_at->format('d.m.Y');
             $response[$item->title][$name]['tags'] = $item->data;
             $response[$item->title][$name]['error'] = $item->error->main;
 
-            foreach ($item->error->badge as $t => $b){
-                if(count($b))
+            foreach ($item->error->badge as $t => $b) {
+                if (count($b))
                     $response[$item->title]['badge'][$model->created_at->format('d.m.Y') . '(' . $model->id . ')'][$t] = $b;
             }
         }
@@ -391,46 +402,46 @@ class MetaTagsController extends Controller
      * @param $type
      * @return array
      */
-    public function errorsMetaTags($tag, $val, $type, $recommend_length = array()) {
+    public function errorsMetaTags($tag, $val, $type, $recommend_length = array())
+    {
 
-        if(empty($type))
+        if (empty($type))
             $type = 'main';
 
         $strSmall = '';
         $errors = [];
 
-        if(is_array($val)){
+        if (is_array($val)) {
 
-            if(count($val) > 1 && ($tag === 'title' || $tag === 'description' || $tag === 'keywords' || $tag === 'canonical' || $tag === 'h1')){
+            if (count($val) > 1 && ($tag === 'title' || $tag === 'description' || $tag === 'keywords' || $tag === 'canonical' || $tag === 'h1')) {
 
-                if($type === 'main')
+                if ($type === 'main')
                     $strSmall = __('Duplicate tag, Check the page and leave 1 tag');
 
-                $errors[] = $this->templateErrors('< '.$tag.' > ' . count($val) . 'шт.', $strSmall);
-            }
-            elseif(count($val) === 1) {
+                $errors[] = $this->templateErrors('< ' . $tag . ' > ' . count($val) . 'шт.', $strSmall);
+            } elseif (count($val) === 1) {
 
-                if(isset($recommend_length[$tag.'_min']) && $recommend_length[$tag.'_max']){
+                if (isset($recommend_length[$tag . '_min']) && $recommend_length[$tag . '_max']) {
 
-                    $min = $recommend_length[$tag.'_min'];
-                    $max = $recommend_length[$tag.'_max'];
+                    $min = $recommend_length[$tag . '_min'];
+                    $max = $recommend_length[$tag . '_max'];
 
-                    if($min && $max) {
-                        if( strlen($val[0]) < $min || strlen($val[0]) > $max){
+                    if ($min && $max) {
+                        if (strlen($val[0]) < $min || strlen($val[0]) > $max) {
 
-                            if($type === 'main')
-                                $strSmall = __('You have set a range from') . ' '.$min.' '. __('to') .' '.$max;
+                            if ($type === 'main')
+                                $strSmall = __('You have set a range from') . ' ' . $min . ' ' . __('to') . ' ' . $max;
 
-                            $errors[] = $this->templateErrors( __('Length') . ' '.$tag.': '.strlen($val[0]), $strSmall);
+                            $errors[] = $this->templateErrors(__('Length') . ' ' . $tag . ': ' . strlen($val[0]), $strSmall);
                         }
                     }
                 }
             }
         }
 
-        if($type === 'main'){
-            if(empty($errors))
-                $errors[] = '<span class="badge badge-success">'. __('No problem') .'</span>';
+        if ($type === 'main') {
+            if (empty($errors))
+                $errors[] = '<span class="badge badge-success">' . __('No problem') . '</span>';
         }
 
         return $errors;
@@ -440,16 +451,17 @@ class MetaTagsController extends Controller
     {
         $str = '';
 
-        if(strlen($text))
-            $str .= '<span class="badge badge-danger mr-1">'.$text.'</span>';
+        if (strlen($text))
+            $str .= '<span class="badge badge-danger mr-1">' . $text . '</span>';
 
-        if(strlen($smallText))
-            $str .= '<br/><small>'.$smallText.'</small>';
+        if (strlen($smallText))
+            $str .= '<br/><small>' . $smallText . '</small>';
 
         return $str;
     }
 
-    public function updateHistoriesIdeal(Request $request, $id) {
+    public function updateHistoriesIdeal(Request $request, $id)
+    {
 
         $project = Auth::user()->metaTags()->find($id);
         $project->histories()->where('ideal', true)->update(['ideal' => false]);
@@ -463,21 +475,21 @@ class MetaTagsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
      * @return void
      */
     public function update(Request $request, $id)
     {
-       Auth::user()->metaTags()->find($id)->update($request->all((new MetaTag)->getFillable()));
-       return Auth::user()->metaTags()->find($id);
+        Auth::user()->metaTags()->find($id)->update($request->all((new MetaTag)->getFillable()));
+        return Auth::user()->metaTags()->find($id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
     public function destroy($id)
     {
@@ -488,8 +500,8 @@ class MetaTagsController extends Controller
     {
         $history = MetaTagsHistory::findOrFail($id);
 
-        if($history->project->user_id != Auth::id())
-            throw new \ErrorException('User not valid');
+        if ($history->project->user_id != Auth::id())
+            throw new ErrorException('User not valid');
 
         $history->delete();
     }

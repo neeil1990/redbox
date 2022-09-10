@@ -11,6 +11,7 @@
 |
 */
 
+use App\MetaTag;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -276,31 +277,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
-});
-
-Route::get('/test', function () {
-//    https://www.minecraft.net/ru-ru
-//    https://www.tourister.ru/world/africa/egypt/city/giza/placeofinterest/36431/
-//    https://gnkmed.ru/catalog/ranorasshiriteli-ginekologicheskie/
-
-//    https://vilmed.ru/catalog/veterinariya/
-//    https://gnkmed.ru/catalog/ranorasshiriteli-ginekologicheskie/
-//    https://riester.su/catalog/otoskopy-lor/
-
-//    https://promedikal.ru/category_31/category_32/570/
-
-
-    $html = TextAnalyzer::curlInit('https://promedikal.ru/category_31/category_32/570/');
-    $site = TextAnalyzer::removeStylesAndScripts($html);
-    $text = TextAnalyzer::deleteEverythingExceptCharacters($site);
-    $text = trim($text);
-    dump($text);
-    dump([
-        'Количество символов' => Str::length($text)
-    ]);
-    dd([
-        'Количество слов' => count(explode(' ', $text))
-    ]);
 });
 
 Route::get('/get-passages/{link}', function ($link) {

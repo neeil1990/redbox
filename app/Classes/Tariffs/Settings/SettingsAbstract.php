@@ -6,6 +6,7 @@ namespace App\Classes\Tariffs\Settings;
 
 use App\DomainInformation;
 use App\DomainMonitoring;
+use App\MetaTag;
 use App\ProjectTracking;
 use App\RelevanceHistory;
 use App\SearchCompetitors;
@@ -27,14 +28,13 @@ abstract class SettingsAbstract
         $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
         foreach ($settings as $setting) {
             $used = $this->getUsedLimit($setting->property->code);
-            $percent = gettype($used) === 'integer' ? ceil($used / ($setting->value / 100)) : 100;
 
             $this->settings[$setting->property->code] = [
                 'name' => $setting->property->name,
                 'message' => $this->replaceMsg($setting->property->message, $setting->value),
                 'value' => $setting->value,
                 'used' => $used,
-                'percent' => $percent
+                'percent' => gettype($used) === 'integer' ? ceil($used / ($setting->value / 100)) : 100
             ];
         }
 
@@ -70,6 +70,13 @@ abstract class SettingsAbstract
         $now = Carbon::now();
         $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
 
+        $metaTagsProjects = MetaTag::where('user_id', '=', Auth::id())->get();
+
+        $metaTagsHistoriesCount = 0;
+        foreach ($metaTagsProjects as $metaTagsProject) {
+            $metaTagsHistoriesCount += $metaTagsProject->histories()->where('id', '>', 0)->count();
+        }
+
         switch ($code) {
             case 'CompetitorAnalysisPhrases':
                 return (int)SearchCompetitors::where('user_id', '=', $user->id)
@@ -99,7 +106,9 @@ abstract class SettingsAbstract
                 return $user->behaviors()->count();
 
             case 'MetaTagsProject':
+                return count($metaTagsProjects->toArray());
             case 'MetaTagsPages':
+                return $metaTagsHistoriesCount;
             case 'price':
             case 'UniqueWords':
             case 'HtmlEditor':

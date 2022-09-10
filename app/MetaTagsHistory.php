@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MetaTagsHistory extends Model
 {
@@ -10,8 +11,7 @@ class MetaTagsHistory extends Model
 
     protected $dates = ['created_at'];
 
-
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(MetaTag::class, 'meta_tag_id');
     }
