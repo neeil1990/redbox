@@ -31,7 +31,7 @@ abstract class SettingsAbstract
 
             $percent = 100;
             if (gettype($used) === 'integer') {
-                if ($used > 0) {
+                if ($used === 0 && $setting->value > 0) {
                     $percent = ceil($used / ($setting->value / 100));
                 }
             }
