@@ -34,7 +34,7 @@ abstract class SettingsAbstract
                 'message' => $this->replaceMsg($setting->property->message, $setting->value),
                 'value' => $setting->value,
                 'used' => $used,
-                'percent' => gettype($used) === 'integer' ? ceil($used / ($setting->value / 100)) : 100
+                'percent' => gettype($used) === 'integer' && $used > 0 ? ceil($used / ($setting->value / 100)) : 100
             ];
         }
 
