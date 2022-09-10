@@ -29,12 +29,19 @@ abstract class SettingsAbstract
         foreach ($settings as $setting) {
             $used = $this->getUsedLimit($setting->property->code);
 
+            $percent = 100;
+            if (gettype($used) === 'integer') {
+                if ($used > 0) {
+                    $percent = ceil($used / ($setting->value / 100));
+                }
+            }
+
             $this->settings[$setting->property->code] = [
                 'name' => $setting->property->name,
                 'message' => $this->replaceMsg($setting->property->message, $setting->value),
                 'value' => $setting->value,
                 'used' => $used,
-                'percent' => gettype($used) === 'integer' && $used > 0 ? ceil($used / ($setting->value / 100)) : 100
+                'percent' => $percent
             ];
         }
 
@@ -107,8 +114,10 @@ abstract class SettingsAbstract
 
             case 'MetaTagsProject':
                 return count($metaTagsProjects->toArray());
+
             case 'MetaTagsPages':
                 return $metaTagsHistoriesCount;
+
             case 'price':
             case 'UniqueWords':
             case 'HtmlEditor':
