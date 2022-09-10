@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
 @section('css')
-    <!-- Toastr -->
     <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+    <style>
+        #app > div > div > div.col-md-12.d-flex.flex-row.flex-wrap > div:nth-child(n) > div.card-body > div:nth-child(n):hover {
+            background: oldlace;
+            cursor: pointer;
+        }
+    </style>
 @stop
 
 @section('content')
@@ -57,13 +62,13 @@
         <div class="col-md-12 d-flex flex-row flex-wrap">
             @foreach ($tariffsArray as $tariff)
                 <div class="card col-3 p-0">
-                    <div class="card-header bg-info">
+                    <div class="card-header bg-primary">
                         Тариф: {{ $tariff['name'] }}
                     </div>
                     <div class="card-body">
                         @foreach ($tariff['settings'] as $module)
                             @if($module['name'] !== 'Цена тарифа')
-                                <div class="border-bottom p-2">
+                                <div class="border-bottom pt-2">
                                     {{ $module['name'] }}:
                                     @if($module['value'] === 1000000)
                                         <b>Без ограничений</b>
