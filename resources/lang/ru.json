@@ -938,5 +938,7 @@
     "Email": "Почтовый адрес",
     "Interface language": "Язык интерфейса",
     "Leave it blank if you don't want to change": "Оставьте пустым, если не хотите изменять",
-    "User update successfully": "Данные пользователя успешно обновлены"
+    "User update successfully": "Данные пользователя успешно обновлены",
+    "Left": "Осталось",
+    "No restrictions": "Без ограничений"
 }

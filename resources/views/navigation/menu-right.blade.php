@@ -23,7 +23,7 @@
                 <tr>
                     <th>{{ __('Module') }}</th>
                     <th>{{ __('Limits') }}</th>
-                    <th>{{ __('Exhausted') }}</th>
+                    <th>{{ __('Left') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -33,20 +33,16 @@
                             <td>{{ $tariff['name'] }}</td>
                             <td>
                                 @if($tariff['value'] === 1000000)
-                                    Без ограничений
+                                    {{ __('No restrictions') }}
                                 @else
                                     {{ $tariff['value'] }}
                                 @endif
                             </td>
                             <td>
-                                <div class="progress progress-xs">
-                                    <div class="progress-bar progress-bar-danger"
-                                         style="width: {{ $tariff['percent'] }}%"></div>
-                                </div>
                                 @if(gettype($tariff['used']) == 'integer')
-                                    Осталось {{ $tariff['value'] - $tariff['used'] }}
+                                    {{ $tariff['value'] - $tariff['used'] }}
                                 @else
-                                    {{ $tariff['used'] }}
+                                    {{ __('No restrictions') }}
                                 @endif
 
                             </td>
@@ -57,5 +53,14 @@
             </table>
         </div>
     </div>
+
+    <li class="nav-item">
+        <div class="nav-link">
+            <span id="userModuleLimit">myLimits</span>
+            <span id="userModuleUsed">myUsed</span>
+        </div>
+    </li>
 @endif
+
+
 
