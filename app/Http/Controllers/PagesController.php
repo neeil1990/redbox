@@ -19,9 +19,9 @@ class PagesController extends Controller
     /**
      * @param Request $request
      * @param HttpHeader $header
-     * @return View
+     * @return array|false|\Illuminate\Contracts\Foundation\Application|Factory|View|mixed
      */
-    public function httpHeaders(Request $request, HttpHeader $header): View
+    public function httpHeaders(Request $request, HttpHeader $header)
     {
         if($request->input('http', false))
             return (new CurlFacade($request->input('url')))->httpCode();

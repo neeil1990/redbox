@@ -38,7 +38,7 @@ class HttpHeader extends Model
 
     /**
      * @param int|null $id
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function getData(int $id = null)
     {
