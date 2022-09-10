@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-{{--    <meta name="csrf-token" content="{{ csrf_token() }}">--}}
+    {{--    <meta name="csrf-token" content="{{ csrf_token() }}">--}}
     <link rel="shortcut icon" href="{{ asset('img/favicon.svg') }}"/>
     <title>@yield('title')</title>
     <!-- Google Font: Source Sans Pro -->
@@ -72,7 +72,7 @@
 
 <!-- jQuery -->
 {{--  connect in views/navigation/menu-right.blade.php  --}}
-{{--<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>--}}
+<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <!-- Bootstrap -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- app -->
@@ -96,7 +96,7 @@
 {{--<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>--}}
 
 <script>
-    $(function () {
+    $(document).ready(function () {
         let visible = true;
         let token = $('meta[name="csrf-token"]').attr('content');
         getCountNewNews()
