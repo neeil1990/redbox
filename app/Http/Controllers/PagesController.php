@@ -11,15 +11,17 @@ use App\Classes\Curl\CurlFacade;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HttpHeadersExport;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PagesController extends Controller
 {
 
     /**
      * @param Request $request
-     * @return Factory|View
+     * @param HttpHeader $header
+     * @return View
      */
-    public function httpHeaders(Request $request, HttpHeader $header)
+    public function httpHeaders(Request $request, HttpHeader $header): View
     {
         if($request->input('http', false))
             return (new CurlFacade($request->input('url')))->httpCode();

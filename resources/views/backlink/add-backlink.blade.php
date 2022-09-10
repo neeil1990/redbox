@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
     @endslot
     {!! Form::open(['action' =>'BacklinkController@storeLink', 'method' => 'POST'])!!}
-    <div class='col-md-6 mt-3 express-form'>
+    <div class='col-md-6 express-form'>
         <div class='form-group required'>
             <input type="hidden" name="id" value="{{ $id }}">
             {!! Form::label( __('Loading links with a list')) !!}

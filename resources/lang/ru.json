@@ -615,7 +615,7 @@
     "You can": "Вы можете",
     "use a simplified format": "воспользоваться упрощённым форматом",
     "use the accelerated format": "воспользоваться ускоренным форматом",
-    "Link to the page of the donor website": "Ссылка на страницу сайта донор",
+    "Link to the page of the donor website": "Ссылка на сайта донор",
     "Check that the rel attribute with the nofollow property is not present in the link": "Проверять что в ссылке не присутствует атрибут rel с свойством nofollow",
     "Check that the link is missing in the noindex tag": "Проверять что ссылка отсутствует в теге noindex",
     "Checking that the link is indexed by Yandex": "Проверка того, что ссылка проиндексирована Яндексом",
