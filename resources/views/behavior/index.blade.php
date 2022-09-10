@@ -2,6 +2,12 @@
 
     @slot('css')
 
+        <style>
+            .behavior {
+                background: oldlace;
+            }
+        </style>
+
     @endslot
 
     <div class="card">
@@ -22,29 +28,32 @@
 
                 <tbody>
                 @foreach($behaviors as $behavior)
-                <tr>
-                    <td><a href="{{ route('behavior.show', [$behavior->id]) }}" class="text-muted text-bold">{{ $behavior->domain }}</a></td>
-                    <td>
-                        <a href="{{ route('behavior.show', [$behavior->id]) }}" class="btn btn-app">
-                            <i class="fas fa-project-diagram"></i> {{ __('Go to project') }}
-                        </a>
-                    </td>
-                    <td>
-                        <div class="input-group">
-                            <input type="text" class="form-control" value="{{ route('behavior.check', [$behavior->id]) }}">
-                            <div class="input-group-append">
+                    <tr>
+                        <td><a href="{{ route('behavior.show', [$behavior->id]) }}"
+                               class="text-muted text-bold">{{ $behavior->domain }}</a></td>
+                        <td>
+                            <a href="{{ route('behavior.show', [$behavior->id]) }}" class="btn btn-app">
+                                <i class="fas fa-project-diagram"></i> {{ __('Go to project') }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" class="form-control"
+                                       value="{{ route('behavior.check', [$behavior->id]) }}">
+                                <div class="input-group-append">
                                 <span class="input-group-text">
-                                    <a href="{{ route('behavior.check', [$behavior->id]) }}" target="_blank" class="text-muted"> <i class="fas fa-window-restore"></i></a>
+                                    <a href="{{ route('behavior.check', [$behavior->id]) }}" target="_blank"
+                                       class="text-muted"> <i class="fas fa-window-restore"></i></a>
                                 </span>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td class="text-center">
-                        <a href="{{ route('behavior.edit', [$behavior->id]) }}" class="btn btn-app">
-                            <i class="fas fa-edit"></i> {{ __('Add request') }}
-                        </a>
-                    </td>
-                </tr>
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ route('behavior.edit', [$behavior->id]) }}" class="btn btn-app">
+                                <i class="fas fa-edit"></i> {{ __('Add request') }}
+                            </a>
+                        </td>
+                    </tr>
                 @endforeach
 
                 </tbody>
@@ -62,6 +71,5 @@
     @slot('js')
 
     @endslot
-
 
 @endcomponent

@@ -1,4 +1,11 @@
 @component('component.card', ['title' => __('Counting text length')])
+    @slot('css')
+        <style>
+            .TextLength {
+                background: oldlace;
+            }
+        </style>
+    @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div>
         <h2>{{__("Enter text")}}</h2>

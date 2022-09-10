@@ -3,6 +3,12 @@
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <style>
+            .MetaTagsProject,
+            .MetaTagsPages {
+                background: oldlace;
+            }
+        </style>
 
     @endslot
 

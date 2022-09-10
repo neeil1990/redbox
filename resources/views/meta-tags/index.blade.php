@@ -11,20 +11,25 @@
             }
 
             .card-header-accordion:hover {
-                background-color: rgba(0,0,0,.075);
+                background-color: rgba(0, 0, 0, .075);
             }
 
             [data-toggle=collapse] i.expandable-accordion-caret {
                 transition: -webkit-transform .3s linear;
                 transition: transform .3s linear;
-                transition: transform .3s linear,-webkit-transform .3s linear;
+                transition: transform .3s linear, -webkit-transform .3s linear;
             }
 
             [data-toggle=collapse][aria-expanded=true] i.expandable-accordion-caret[class*=right] {
                 -webkit-transform: rotate(
-                        90deg);
+                    90deg);
                 transform: rotate(
-                        90deg);
+                    90deg);
+            }
+
+            .MetaTagsProject,
+            .MetaTagsPages {
+                background: oldlace;
             }
         </style>
     @endslot
@@ -42,6 +47,5 @@
             };
         </script>
     @endslot
-
 
 @endcomponent

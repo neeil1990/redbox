@@ -26,6 +26,11 @@
                 transform: rotate(
                         90deg);
             }
+
+            .MetaTagsProject,
+            .MetaTagsPages {
+                background: oldlace;
+            }
         </style>
 
     @endslot

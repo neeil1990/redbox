@@ -4,6 +4,12 @@
         <!-- CodeMirror -->
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/codemirror.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
+
+        <style>
+            .behavior {
+                background: oldlace;
+            }
+        </style>
     @endslot
 
     <div class="row">

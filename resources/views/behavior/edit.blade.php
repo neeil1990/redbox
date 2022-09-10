@@ -2,6 +2,12 @@
 
     @slot('css')
 
+        <style>
+            .behavior {
+                background: oldlace;
+            }
+        </style>
+
     @endslot
 
     <div class="col-md-6">

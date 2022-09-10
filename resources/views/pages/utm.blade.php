@@ -2,6 +2,12 @@
 
     @slot('css')
         <link rel='stylesheet' id='swpc-main-css'  href='{{ asset('plugins/utm-marks/css/style.css') }}' type='text/css' media='all' />
+
+        <style>
+            .UTM {
+                background: oldlace;
+            }
+        </style>
     @endslot
 
     <div class="grid urlBuilder mt-base">

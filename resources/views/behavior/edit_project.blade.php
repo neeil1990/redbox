@@ -3,6 +3,12 @@
     @slot('css')
         <!-- summernote -->
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
+
+        <style>
+            .behavior {
+                background: oldlace;
+            }
+        </style>
     @endslot
 
     <div class="col-md-6">

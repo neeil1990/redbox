@@ -3,6 +3,12 @@
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}" />
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}" />
+
+        <style>
+            .GeneratorWords {
+                background: oldlace;
+            }
+        </style>
     @endslot
 
     <div id="keyword-generator">
