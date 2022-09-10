@@ -1,4 +1,7 @@
 @extends('layouts.app')
+<title>
+    {{ __('Profile') }}
+</title>
 
 @section('css')
     <!-- Select2 -->

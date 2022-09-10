@@ -1,18 +1,13 @@
-@extends('layouts.app')
-
-@section('css')
-    <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
-    <style>
-        #app > div > div > div.col-md-12.d-flex.flex-row.flex-wrap > div:nth-child(n) > div.card-body > div:nth-child(n):hover {
-            background: oldlace;
-            cursor: pointer;
-        }
-    </style>
-@stop
-
-@section('content')
+@component('component.card', ['title' =>  __('Tariff') ])
+    @slot('css')
+        <style>
+            #app > div > div > div.card-body > div > div.col-md-12.d-flex.flex-row.flex-wrap > div > div.card-body > div:hover {
+                background: oldlace;
+                cursor: pointer;
+            }
+        </style>
+    @endslot
     <div class="row">
-
         @if (session('info'))
             <div class="col-md-12">
                 <div class="alert alert-info alert-dismissible">
@@ -84,71 +79,71 @@
         </div>
 
     </div>
-@stop
+    @section('js')
 
-@section('js')
+        <!-- Toastr -->
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 
-    <!-- Toastr -->
-    <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+        <script>
 
-    <script>
+            toastr.options = {
+                "preventDuplicates": true,
+                "timeOut": "1500"
+            };
 
-        toastr.options = {
-            "preventDuplicates": true,
-            "timeOut": "1500"
-        };
+            $('#tariff, #period').change(function () {
+                let tariff = $('#tariff').val();
+                let period = $('#period').val();
 
-        $('#tariff, #period').change(function () {
-            let tariff = $('#tariff').val();
-            let period = $('#period').val();
+                axios.request({
+                    url: "/tariff/total",
+                    method: "POST",
+                    data: {
+                        name: tariff,
+                        period: period,
+                    },
+                }).then(function (response) {
+                    let total = $('#total tbody');
 
-            axios.request({
-                url: "/tariff/total",
-                method: "POST",
-                data: {
-                    name: tariff,
-                    period: period,
-                },
-            }).then(function (response) {
-                let total = $('#total tbody');
-
-                total.find('tr').remove();
-                $.each(response.data, function (i, val) {
-                    let tr = $('<tr />');
-                    tr.append($('<th />').css('width', '50%').text(val.title), $('<td />').text(val.value));
-                    total.append(tr);
+                    total.find('tr').remove();
+                    $.each(response.data, function (i, val) {
+                        let tr = $('<tr />');
+                        tr.append($('<th />').css('width', '50%').text(val.title), $('<td />').text(val.value));
+                        total.append(tr);
+                    });
+                }).catch(function (error) {
+                    if (error.response) {
+                        toastr.error(error.response.data.message);
+                    }
                 });
-            }).catch(function (error) {
-                if (error.response) {
-                    toastr.error(error.response.data.message);
-                }
             });
-        });
 
-        $('#unsubscribe').click(function () {
-            axios.request({
-                url: "{{ route('tariff.unsubscribe', ['confirm']) }}",
-                method: "GET",
-            }).then(function (response) {
-                let msg = `Вам будет начислено ${response.data.prices.priceWithDiscount} баллов за ${response.data.active_days} дней, по текущей ставке тарифа ${response.data.prices.percent}%. Вы уверены, что хотите отписаться от тарифа?`;
-                let result = confirm(msg);
-                if (result) {
-                    axios.get("{{ route('tariff.unsubscribe', ['canceled']) }}")
-                        .then(function () {
-                            window.location.reload();
-                        })
-                        .catch(function (error) {
-                            if (error.response) {
-                                toastr.error(error.response.data.message);
-                            }
-                        });
-                }
-            }).catch(function (error) {
-                if (error.response) {
-                    toastr.error(error.response.data.message);
-                }
+            $('#unsubscribe').click(function () {
+                axios.request({
+                    url: "{{ route('tariff.unsubscribe', ['confirm']) }}",
+                    method: "GET",
+                }).then(function (response) {
+                    let msg = `Вам будет начислено ${response.data.prices.priceWithDiscount} баллов за ${response.data.active_days} дней, по текущей ставке тарифа ${response.data.prices.percent}%. Вы уверены, что хотите отписаться от тарифа?`;
+                    let result = confirm(msg);
+                    if (result) {
+                        axios.get("{{ route('tariff.unsubscribe', ['canceled']) }}")
+                            .then(function () {
+                                window.location.reload();
+                            })
+                            .catch(function (error) {
+                                if (error.response) {
+                                    toastr.error(error.response.data.message);
+                                }
+                            });
+                    }
+                }).catch(function (error) {
+                    if (error.response) {
+                        toastr.error(error.response.data.message);
+                    }
+                });
             });
-        });
-    </script>
+        </script>
 
-@endsection
+    @endsection
+@endcomponent
+

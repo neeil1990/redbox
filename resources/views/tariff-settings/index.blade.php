@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Variable Table')])
+@component('component.card', ['title' => __('Tariffs settings')])
 
     @slot('css')
         <!-- Toastr -->
