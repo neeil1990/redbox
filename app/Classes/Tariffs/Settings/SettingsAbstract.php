@@ -6,6 +6,7 @@ namespace App\Classes\Tariffs\Settings;
 
 use App\DomainInformation;
 use App\DomainMonitoring;
+use App\LinkTracking;
 use App\MetaTag;
 use App\ProjectTracking;
 use App\RelevanceHistory;
@@ -88,6 +89,13 @@ abstract class SettingsAbstract
             $metaTagsHistoriesCount += $metaTagsProject->histories()->where('id', '>', 0)->count();
         }
 
+        $projectTracking = ProjectTracking::where('user_id', '=', $user->id)->with('link')->get();
+
+        $projectTrackingLinks = 0;
+        foreach ($projectTracking as $item) {
+            $projectTrackingLinks += count($item->link);
+        }
+
         switch ($code) {
             case 'CompetitorAnalysisPhrases':
                 return (int)SearchCompetitors::where('user_id', '=', $user->id)
@@ -108,7 +116,10 @@ abstract class SettingsAbstract
                 return (int)DomainMonitoring::where('user_id', '=', $user->id)->count();
 
             case 'BacklinkProject':
-                return (int)ProjectTracking::where('user_id', '=', $user->id)->count();
+                return count($projectTracking);
+
+            case 'BacklinkLinks':
+                return $projectTrackingLinks;
 
             case 'DomainInformation':
                 return (int)DomainInformation::where('user_id', '=', $user->id)->count();

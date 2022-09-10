@@ -44,7 +44,6 @@
                                 @else
                                     {{ __('No restrictions') }}
                                 @endif
-
                             </td>
                         </tr>
                     @endif

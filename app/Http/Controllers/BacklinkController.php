@@ -200,7 +200,7 @@ class BacklinkController extends Controller
         return Redirect::route('backlink');
     }
 
-    protected function checkLinks(int $count)
+    protected function checkLinks(int $count): bool
     {
         /** @var User $user */
         $user = Auth::user();
