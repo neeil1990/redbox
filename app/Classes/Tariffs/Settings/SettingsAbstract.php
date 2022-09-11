@@ -22,35 +22,42 @@ abstract class SettingsAbstract
     protected $tariff;
     protected $settings;
 
+
+    // TODO ВЫЗЫВАЕТСЯ НЕСКОЛЬКО РАЗ
     public function get(): array
     {
         $this->settings = [];
 
+        /** @var User $user */
+        $user = Auth::user();
 
-        $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
-        foreach ($settings as $setting) {
-            $used = $this->getUsedLimit($setting->property->code);
+        if ($user) {
+            $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
+            foreach ($settings as $setting) {
+                $used = $this->getUsedLimit($setting->property->code, $user);
 
-            if (gettype($used) === 'integer') {
-                if ($setting->value > 0) {
-                    $percent = ceil($used / ($setting->value / 100));
+                if (isset($used['count']) && gettype($used['count']) === 'integer') {
+                    if ($setting->value > 0) {
+                        $percent = ceil($used['count'] / ($setting->value / 100));
+                    } else {
+                        $percent = 100;
+                    }
                 } else {
-                    $percent = 100;
+                    $percent = 0;
                 }
-            } else {
-                $percent = 0;
-            }
 
-            $this->settings[$setting->property->code] = [
-                'name' => $setting->property->name,
-                'message' => $this->replaceMsg($setting->property->message, $setting->value),
-                'value' => $setting->value,
-                'used' => $used,
-                'percent' => $percent
-            ];
+                $this->settings[$setting->property->code] = [
+                    'name' => $setting->property->name,
+                    'message' => $this->replaceMsg($setting->property->message, $setting->value),
+                    'value' => $setting->value,
+                    'used' => $used['count'],
+                    'position' => $used['position'],
+                    'percent' => $percent
+                ];
+            }
         }
 
-        return $this->settings;
+        return collect($this->settings)->sortBy('position')->toArray();
     }
 
     protected function replaceMsg(?string $str, $val)
@@ -68,17 +75,11 @@ abstract class SettingsAbstract
 
     /**
      * @param string $code
-     * @return int|string
+     * @param $user
+     * @return array
      */
-    protected function getUsedLimit(string $code)
+    protected function getUsedLimit(string $code, $user): array
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($user == null) {
-            return 'Нет данных';
-        }
-
         $now = Carbon::now();
         $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
 
@@ -97,49 +98,132 @@ abstract class SettingsAbstract
         }
 
         switch ($code) {
-            case 'CompetitorAnalysisPhrases':
-                return (int)SearchCompetitors::where('user_id', '=', $user->id)
-                    ->where('month', '=', $now->year . '-' . $now->month)
-                    ->sum('counter');
-
-            case 'TextAnalyzer':
-                return (int)TextAnalyzer::where('user_id', '=', $user->id)
-                    ->where('month', '=', $now->year . '-' . $now->month)
-                    ->sum('counter');
 
             case 'RelevanceAnalysis':
-                return (int)RelevanceHistory::where('user_id', '=', $user->id)
-                    ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
-                    ->count();
+                return [
+                    'count' => (int)RelevanceHistory::where('user_id', '=', $user->id)
+                        ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
+                        ->count(),
+                    'position' => 1
+                ];
+
+            case 'TextAnalyzer':
+                return [
+                    'count' => (int)TextAnalyzer::where('user_id', '=', $user->id)
+                        ->where('month', '=', $now->year . '-' . $now->month)
+                        ->sum('counter'),
+                    'position' => 2
+                ];
+
+            case 'CompetitorAnalysisPhrases':
+                return [
+                    'count' => (int)SearchCompetitors::where('user_id', '=', $user->id)
+                        ->where('month', '=', $now->year . '-' . $now->month)
+                        ->sum('counter'),
+                    'position' => 3
+                ];
 
             case 'domainMonitoringProject':
-                return (int)DomainMonitoring::where('user_id', '=', $user->id)->count();
-
-            case 'BacklinkProject':
-                return count($projectTracking);
-
-            case 'BacklinkLinks':
-                return $projectTrackingLinks;
+                return [
+                    'count' => (int)DomainMonitoring::where('user_id', '=', $user->id)->count(),
+                    'position' => 4
+                ];
 
             case 'DomainInformation':
-                return (int)DomainInformation::where('user_id', '=', $user->id)->count();
-
-            case 'behavior':
-                return $user->behaviors()->count();
+                return [
+                    'count' => (int)DomainInformation::where('user_id', '=', $user->id)->count(),
+                    'position' => 5
+                ];
 
             case 'MetaTagsProject':
-                return count($metaTagsProjects->toArray());
+                return [
+                    'count' => count($metaTagsProjects->toArray()),
+                    'position' => 6,
+                ];
 
             case 'MetaTagsPages':
-                return $metaTagsHistoriesCount;
+                return [
+                    'count' => $metaTagsHistoriesCount,
+                    'position' => 7
+                ];
 
-            case 'price':
+            case 'GeneratorWords':
+                return [
+                    'count' => 1000000,
+                    'position' => 8
+                ];
+
+            case 'PasswordGenerator':
+                return [
+                    'count' => 1000000,
+                    'position' => 9
+                ];
+
+            case 'TextLength':
+                return [
+                    'count' => 1000000,
+                    'position' => 10
+                ];
+
+            case 'ListComparison':
+                return [
+                    'count' => 1000000,
+                    'position' => 11
+                ];
+
             case 'UniqueWords':
+                return [
+                    'count' => 1000000,
+                    'position' => 12
+                ];
+
             case 'HtmlEditor':
-            case 'CompetitorAnalysis':
+                return [
+                    'count' => 1000000,
+                    'position' => 13
+                ];
+
+            case 'RemoveDublicate':
+                return [
+                    'count' => 1000000,
+                    'position' => 14
+                ];
+
+            case 'UTM':
+                return [
+                    'count' => 1000000,
+                    'position' => 15
+                ];
+
+            case 'ROI':
+                return [
+                    'count' => 1000000,
+                    'position' => 16
+                ];
+
+            case 'BacklinkProject':
+                return [
+                    'count' => count($projectTracking),
+                    'position' => 17
+                ];
+
+            case 'BacklinkLinks':
+                return [
+                    'count' => $projectTrackingLinks,
+                    'position' => 18
+                ];
+
+            case 'behavior':
+                return [
+                    'count' => $user->behaviors()->count(),
+                    'position' => 19
+                ];
 
             default:
-                return 'Нет данных';
+                return [
+                    'count' => 100000,
+                    'position' => 100
+                ];
         }
     }
 }

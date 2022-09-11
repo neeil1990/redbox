@@ -75,11 +75,6 @@ class TariffPayController extends Controller
             $tariffsArray[] = $tariff->getAsArray();
         }
 
-        foreach ($tariffsArray as $key => $item) {
-            ksort($item['settings']);
-            $tariffsArray[$key] = $item;
-        }
-
         return view('tariff.index', compact('select', 'total', 'actual', 'tariffsArray'));
     }
 
