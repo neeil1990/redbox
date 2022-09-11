@@ -67,7 +67,7 @@
     $(document).ready(function () {
         $.each($('#header-nav-bar > ul.navbar-nav.ml-auto > div > div > table > tbody > tr'), function (key, value) {
             if ($(this).css('background-color') === 'rgb(253, 245, 230)') {
-                if ($(this).children('td').eq(1).html() === 'Без ограничений') {
+                if (($(this).children('td').eq(1).html()).trim() === 'Без ограничений') {
                     $('#userModuleLimit').html('Без ограничений')
                 } else {
                     $('#userModuleLimit').html("из " + $(this).children('td').eq(1).html())
