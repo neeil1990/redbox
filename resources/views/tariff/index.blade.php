@@ -71,7 +71,7 @@
                                 <div class="border-bottom pt-2">
                                     {{ $module['name'] }}:
                                     @if($module['value'] === 1000000)
-                                        <b>Без ограничений</b>
+                                        <b>{{ __('No restrictions') }}</b>
                                     @else
                                         <b>{{ $module['value'] }}</b>
                                     @endif

@@ -42,7 +42,7 @@
                                 @if(gettype($tariff['used']) == 'integer')
                                     {{ $tariff['value'] - $tariff['used'] }}
                                 @else
-                                    {{ __('No restrictions') }}
+                                    {{ $tariff['used'] }}
                                 @endif
                             </td>
                         </tr>

@@ -6,7 +6,6 @@ namespace App\Classes\Tariffs\Settings;
 
 use App\DomainInformation;
 use App\DomainMonitoring;
-use App\LinkTracking;
 use App\MetaTag;
 use App\ProjectTracking;
 use App\RelevanceHistory;
@@ -36,23 +35,12 @@ abstract class SettingsAbstract
             foreach ($settings as $setting) {
                 $used = $this->getUsedLimit($setting->property->code, $user);
 
-                if (isset($used['count']) && gettype($used['count']) === 'integer') {
-                    if ($setting->value > 0) {
-                        $percent = ceil($used['count'] / ($setting->value / 100));
-                    } else {
-                        $percent = 100;
-                    }
-                } else {
-                    $percent = 0;
-                }
-
                 $this->settings[$setting->property->code] = [
                     'name' => $setting->property->name,
                     'message' => $this->replaceMsg($setting->property->message, $setting->value),
                     'value' => $setting->value,
                     'used' => $used['count'],
                     'position' => $used['position'],
-                    'percent' => $percent
                 ];
             }
         }
@@ -149,55 +137,55 @@ abstract class SettingsAbstract
 
             case 'GeneratorWords':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 8
                 ];
 
             case 'PasswordGenerator':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 9
                 ];
 
             case 'TextLength':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 10
                 ];
 
             case 'ListComparison':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 11
                 ];
 
             case 'UniqueWords':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 12
                 ];
 
             case 'HtmlEditor':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 13
                 ];
 
             case 'RemoveDublicate':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 14
                 ];
 
             case 'UTM':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 15
                 ];
 
             case 'ROI':
                 return [
-                    'count' => 1000000,
+                    'count' => __('Restrictions are not tracked'),
                     'position' => 16
                 ];
 

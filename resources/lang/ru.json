@@ -16,6 +16,7 @@
 
     "######################## Meta tags ###############################": "",
     "Your Tariff": "Ваш тариф",
+    "Restrictions are not tracked": "Ограничения не отслеживаются",
     "Profile": "Профиль",
     "Tariffs settings": "Настройка тарифов",
     "Your tariff: {TARIFF}. Limith: {VALUE}.": "Ваш тариф: {TARIFF}. Лимит: {VALUE}.",
