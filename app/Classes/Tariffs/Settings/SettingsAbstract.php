@@ -206,6 +206,11 @@ abstract class SettingsAbstract
                     'count' => $user->behaviors()->count(),
                     'position' => 19
                 ];
+            case 'HttpHeaders':
+                return [
+                    'count' => __('Restrictions are not tracked'),
+                    'position' => 20
+                ];
 
             default:
                 return [
