@@ -941,7 +941,8 @@
                             position: 'left',
                         },
                         legend: {
-                            display: true
+                            display: true,
+                            position: 'left',
                         },
                         plugins: {
                             datalabels: {
