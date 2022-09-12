@@ -954,7 +954,7 @@
 
                                     let percent = Math.round((value * 100 / sum));
 
-                                    if(percent > 3)
+                                    if(percent > 1)
                                         return `${percent}%`;
                                     else
                                         return null;
