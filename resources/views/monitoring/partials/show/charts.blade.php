@@ -17,6 +17,12 @@
         </div>
     </div>
 
+    <div class="card-top px-4 py-2">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+        </div>
+    </div>
+
     <div class="card-body">
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">

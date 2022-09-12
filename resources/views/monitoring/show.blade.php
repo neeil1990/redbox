@@ -820,6 +820,8 @@
                 }
             });
 
+            let progress = 0;
+
             let charts = {
                 'top' : {
                     el: $('#topPercent').get(0).getContext('2d'),
@@ -834,7 +836,13 @@
                             duration: 2000,
                             onProgress: function(animation) {
 
-                                console.log(Math.round((animation.animationObject.currentStep / animation.animationObject.numSteps)*100));
+                                if(progress < 100){
+                                    progress = Math.round((animation.animationObject.currentStep / animation.animationObject.numSteps) * 100);
+                                    $('.progress div').attr('aria-valuenow', progress).css('width', progress + '%');
+                                }
+                            },
+                            onComplete: function () {
+                                $('.progress').addClass('d-none');
                             }
                         },
                         maintainAspectRatio : false,
@@ -896,6 +904,8 @@
 
                 chartFilterPeriod.change(function() {
                     let range = $(this).val();
+                    progress = 0;
+                    $('.progress').removeClass('d-none');
 
                     axios.get('/monitoring/charts', {
                         params: {
