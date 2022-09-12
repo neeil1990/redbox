@@ -17,13 +17,12 @@
         </div>
     </div>
 
-    <div class="card-top px-4 py-2">
-        <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
-        </div>
-    </div>
+    <div class="card-body" style="position: relative">
 
-    <div class="card-body">
+        <div class="progress-spinner">
+            <img src="/img/1485.gif" style="width: 50px; height: 50px;">
+        </div>
+
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
                 <div class="chart" style="position: relative; height:40vh; width:100%">

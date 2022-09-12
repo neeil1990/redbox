@@ -47,6 +47,13 @@
             .popover {
                 max-width: none;
             }
+            .progress-spinner{
+                position: absolute;
+                top: 20%;
+                width: 100%;
+                text-align: center;
+                z-index: 1;
+            }
         </style>
     @endslot
 
@@ -820,8 +827,6 @@
                 }
             });
 
-            let progress = 0;
-
             let charts = {
                 'top' : {
                     el: $('#topPercent').get(0).getContext('2d'),
@@ -831,19 +836,6 @@
                             display: true,
                             text: '% Ключевых слов в ТОП',
                             position: 'left',
-                        },
-                        animation: {
-                            duration: 2000,
-                            onProgress: function(animation) {
-
-                                if(progress < 100){
-                                    progress = Math.round((animation.animationObject.currentStep / animation.animationObject.numSteps) * 100);
-                                    $('.progress div').attr('aria-valuenow', progress).css('width', progress + '%');
-                                }
-                            },
-                            onComplete: function () {
-                                $('.progress').addClass('d-none');
-                            }
                         },
                         maintainAspectRatio : false,
                         legend: {
@@ -904,8 +896,7 @@
 
                 chartFilterPeriod.change(function() {
                     let range = $(this).val();
-                    progress = 0;
-                    $('.progress').removeClass('d-none');
+                    $('.progress-spinner').removeClass('d-none');
 
                     axios.get('/monitoring/charts', {
                         params: {
@@ -917,6 +908,8 @@
                     }).then(function (response) {
                         chart.data = response.data;
                         chart.update();
+
+                        $('.progress-spinner').addClass('d-none');
                     });
                 });
             });
