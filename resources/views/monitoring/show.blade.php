@@ -852,6 +852,9 @@
                                     stepSize: 10
                                 }
                             }]
+                        },
+                        plugins: {
+                            datalabels: false
                         }
                     }
                 },
@@ -879,6 +882,9 @@
                                     stepSize: 10
                                 }
                             }]
+                        },
+                        plugins: {
+                            datalabels: false
                         }
                     }
                 },
@@ -936,9 +942,45 @@
                         },
                         legend: {
                             display: true
+                        },
+                        plugins: {
+                            datalabels: {
+                                anchor: 'center',
+                                formatter: (value, ctx) => {
+                                    let sum = 0;
+                                    let dataArr = ctx.chart.data.datasets[0].data;
+                                    dataArr.map(data => { sum += data });
+
+                                    let percent = Math.round((value * 100 / sum));
+
+                                    if(percent > 0)
+                                        return `${percent}%`;
+                                    else
+                                        return null;
+                                },
+                                color: '#fff',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
                         }
                     }
                 });
+            });
+
+            $('#showChartsBlock').click(function () {
+                let btn = $(this);
+                let charts = $('.card-charts');
+
+                if(charts.hasClass('d-none')) {
+                    charts.removeClass('d-none');
+                    btn.text('Скрыть графики');
+                }else {
+                    charts.addClass('d-none');
+                    btn.text('Показать графики');
+                }
+
             });
         </script>
     @endslot

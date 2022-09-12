@@ -23,6 +23,8 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <a class="btn btn-default btn-sm" id="showChartsBlock">Показать графики</a>
                         </div>
                     </form>
 

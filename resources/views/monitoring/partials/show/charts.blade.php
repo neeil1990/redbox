@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card card-charts d-none">
     <div class="card-header">
         <div class="card-title">
             <ul class="nav nav-pills">
