@@ -820,21 +820,14 @@
                 }
             });
 
-            axios.get('/monitoring/charts', {
-                params: {
-                    projectId: PROJECT_ID,
-                    dateRange: DATES,
-                    chart: 'top',
-                }
-            }).then(function (response) {
-
-                new Chart($('#topPercent').get(0).getContext('2d'), {
+            let charts = {
+                'top' : {
+                    el: $('#topPercent').get(0).getContext('2d'),
                     type: 'line',
-                    data: response.data,
                     options: {
                         title: {
                             display: true,
-                            text: '% ключей в ТОП',
+                            text: '% Ключевых слов в ТОП',
                             position: 'left',
                         },
                         maintainAspectRatio : false,
@@ -854,20 +847,10 @@
                             }]
                         }
                     }
-                });
-            });
-
-            axios.get('/monitoring/charts', {
-                params: {
-                    projectId: PROJECT_ID,
-                    dateRange: DATES,
-                    chart: 'middle',
-                }
-            }).then(function (response) {
-
-                new Chart($('#middlePosition').get(0).getContext('2d'), {
+                },
+                'middle' : {
+                    el: $('#middlePosition').get(0).getContext('2d'),
                     type: 'line',
-                    data: response.data,
                     options: {
                         title: {
                             display: true,
@@ -891,8 +874,37 @@
                             }]
                         }
                     }
+                },
+            };
+
+            let chartFilterPeriod = $('#chartFilterPeriod');
+
+            $.each(charts, function(key, obj){
+
+                let chart = new Chart(obj.el, {
+                    type: obj.type,
+                    data: {},
+                    options: obj.options
+                });
+
+                chartFilterPeriod.change(function() {
+                    let range = $(this).val();
+
+                    axios.get('/monitoring/charts', {
+                        params: {
+                            projectId: PROJECT_ID,
+                            dateRange: DATES,
+                            range: range,
+                            chart: key,
+                        }
+                    }).then(function (response) {
+                        chart.data = response.data;
+                        chart.update();
+                    });
                 });
             });
+
+            chartFilterPeriod.trigger('change');
 
             axios.get('/monitoring/charts', {
                 params: {

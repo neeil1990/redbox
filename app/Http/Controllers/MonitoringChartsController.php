@@ -49,6 +49,9 @@ class MonitoringChartsController extends Controller
     {
         $positions = $this->positions->groupBy('date')->transform(function($item){
             return $item->sortByDesc('created_at')->unique('monitoring_keyword_id')->pluck('position');
+        })->sortBy(function ($product, $key) {
+
+            return strtotime($key);
         });
 
         return $positions;
@@ -116,7 +119,7 @@ class MonitoringChartsController extends Controller
     protected function getMiddlePosition(Request $request)
     {
         $response = [];
-        $positions = $this->getLastPositionsByDays();
+        $positions = $this->getLastPositions($request->input('range'));
         foreach ($positions as $date => $position){
 
             $response['labels'][] = $date;
@@ -143,7 +146,8 @@ class MonitoringChartsController extends Controller
             50 => ['top' => 50, 'color' => '#6c757d', 'hidden' => true],
         ];
         $response = [];
-        $positions = $this->getLastPositionsByDays();
+        $positions = $this->getLastPositions($request->input('range'));
+
         foreach ($positions as $date => $position){
 
             $response['labels'][] = $date;
@@ -160,6 +164,41 @@ class MonitoringChartsController extends Controller
             ->setData($data);
 
         return $chart->get();
+    }
+
+    public function getLastPositions(string $range = null)
+    {
+        $positions = $this->getLastPositionsByDays();
+
+        if($range == 'weeks')
+            $positions = $this->getLastPositionsByWeeks($positions);
+
+        if($range == 'month')
+            $positions = $this->getLastPositionsByMonths($positions);
+
+        return $positions;
+    }
+
+    protected function getLastPositionsByWeeks(Collection $positionByDays)
+    {
+        $days = -1;
+        $filtered = $positionByDays->filter(function () use (&$days) {
+            $days++;
+            return !($days % 7);
+        });
+
+        return $filtered;
+    }
+
+    protected function getLastPositionsByMonths(Collection $positionByDays)
+    {
+        $days = -1;
+        $filtered = $positionByDays->filter(function () use (&$days) {
+            $days++;
+            return !($days % 31);
+        });
+
+        return $filtered;
     }
 
     public function calculatePercentPositionsInTop(Collection $positions, $top)
