@@ -830,6 +830,13 @@
                             text: '% Ключевых слов в ТОП',
                             position: 'left',
                         },
+                        animation: {
+                            duration: 2000,
+                            onProgress: function(animation) {
+
+                                console.log(Math.round((animation.animationObject.currentStep / animation.animationObject.numSteps)*100));
+                            }
+                        },
                         maintainAspectRatio : false,
                         legend: {
                             display: true
