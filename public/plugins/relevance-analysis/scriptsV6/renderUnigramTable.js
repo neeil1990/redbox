@@ -30,8 +30,10 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
 
     sessionStorage.setItem('searchPassages', (searchPassages).toString())
     sessionStorage.setItem('childTableRows', JSON.stringify(unigramTable))
+
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
+
     $.each(unigramTable, function (key, wordWorm) {
         renderMainTr(tBody, key, wordWorm, searchPassages)
     })
