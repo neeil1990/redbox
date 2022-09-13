@@ -1,5 +1,4 @@
 function renderTopSites(response) {
-    console.log(response)
     $('.top-sites').show(300)
     let tbody = document.querySelector('#top-sites-body');
     for (var keyword in response.sites) {
@@ -35,7 +34,6 @@ function renderTopSites(response) {
 
             let u = document.createElement('u')
             u.style.cursor = 'pointer'
-            console.log(response.sites[keyword][items])
             u.textContent = response.sites[keyword][items].doc.domain
 
             let div2 = document.createElement('div')

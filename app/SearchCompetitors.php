@@ -24,7 +24,7 @@ class SearchCompetitors extends Model
 
         foreach ($phrases as $phrase) {
             $xml->setQuery($phrase);
-            $result = $xml->getXMLResponse(true);
+            $result = $xml->getXMLResponse();
             $resultArray[$phrase] = $result['response']['results']['grouping']['group'];
         }
 

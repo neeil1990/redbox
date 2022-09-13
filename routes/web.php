@@ -12,6 +12,7 @@
 */
 
 use App\MetaTag;
+use App\SearchCompetitors;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -279,62 +280,12 @@ Route::middleware(['verified'])->group(function () {
 
 });
 
-Route::get('/get-passages/{link}', function ($link) {
-    $link = str_replace('-', '/', $link);
-
-    $results = [];
-    $passages = 0;
-    $countWords = 0;
-    $passagesLength = 0;
-    $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($link));
-
-    $html = preg_replace('| +|', ' ', $html);
-    $html = str_replace("\n", " ", $html);
-    preg_match_all('(<li.*?>(.*?)</li>)', $html, $li, PREG_SET_ORDER);
-//    dump(['список всех li' => $li]);
-    foreach ($li as $item) {
-        $ul = str_replace('>', '> ', $item[1]);
-        $ul = TextAnalyzer::clearHTMLFromLinks($ul);
-
-        $text = trim(strip_tags($ul));
-        $text = preg_replace('| +|', ' ', $text);
-        $text = preg_replace("/&#?[a-z\d]+;/i", "", $text);
-        $text = trim(TextAnalyzer::deleteEverythingExceptCharacters($text));
-        if (mb_strlen($text) < 200 && $text != "") {
-            $results[] = $text;
-            $passages++;
-            $passagesLength += mb_strlen($text);
-            $countWords += count(explode(' ', $text));
-        }
-    }
-
-    dump([
-        'Массив пасажей' => $results,
-        'Текст пассажей' => implode(' ', $results),
-        'Количество пассажей' => $passages,
-        'Количество слов в пассажах' => $countWords,
-        'Общее кол-во символов в пассажах' => $passagesLength,
-        'Среднее количство символов в пассаже' => $passagesLength / $passages
+Route::get('/test', function () {
+    $xmlResult = SearchCompetitors::analyzeList([
+        'phrases' => 'Купить слона',
+        'count' => 20,
+        'region' => 1
     ]);
-
-    $clearHtml = TextAnalyzer::deleteEverythingExceptCharacters($html);
-
-    $results = array_unique($results);
-    natcasesort($results);
-    $text = $clearHtml;
-    foreach ($results as $item) {
-        $text = str_replace($item, "", $text);
-    }
-    $text = preg_replace('| +|', " ", $text);
-
-    dump([
-        'Текст страницы(включая пассажи)' => $clearHtml,
-        'Общее количество слов (включая пассажи)' => count(explode(' ', $clearHtml)),
-        'Общее количество символов(включая пассажи)' => mb_strlen($clearHtml),
-    ]);
-    dump([
-        'Текст (без пассажей)' => $text,
-        'Общее количество слов (без пассажей)' => count(explode(' ', str_replace('| +|', ' ', $text))),
-        'Общее количество символов(без пассажей)' => mb_strlen($text)
-    ]);
+    dd($xmlResult);
+    $sites = SearchCompetitors::scanSites($xmlResult);
 });
