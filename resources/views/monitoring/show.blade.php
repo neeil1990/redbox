@@ -910,6 +910,7 @@
                             dateRange: DATES,
                             range: range,
                             chart: key,
+                            mode: MODE,
                         }
                     }).then(function (response) {
                         chart.data = response.data;
@@ -927,6 +928,7 @@
                     projectId: PROJECT_ID,
                     dateRange: DATES,
                     chart: 'distribution',
+                    mode: MODE,
                 }
             }).then(function (response) {
 
