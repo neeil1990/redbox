@@ -46,58 +46,11 @@ class SimplifiedXmlFacade extends XmlFacade
     }
 
     /**
-     * @param bool $bool
+     * @param bool $prepareResponse
      * @param bool $lastTry
-     * @return array
+     * @return array|Exception
      */
-    protected function sendRequest(bool $bool = false, bool $lastTry = false): array
-    {
-        if ($bool) {
-            $result = $this->sendRequestV1($lastTry);
-        } else {
-            $result = $this->sendRequestV2($lastTry);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param $lastTry
-     * @return Exception|mixed
-     */
-    protected function sendRequestV1($lastTry)
-    {
-        $query = str_replace(' ', '%20', $this->query);
-        $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
-            . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
-
-        $response = Curl::to($url)
-            ->withData($this->buildQuery())
-            ->withResponseHeaders()
-            ->returnResponseObject()
-            ->get();
-
-        $xml = $this->load($response->content);
-
-        $json = json_encode($xml);
-
-        $result = json_decode($json, true);
-
-        if (isset($result['response']['error']) && $lastTry) {
-            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
-            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
-
-            return new Exception($result['response']['error']);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param $lastTry
-     * @return array|Exception|mixed
-     */
-    protected function sendRequestV2($lastTry)
+    protected function sendRequest(bool $prepareResponse, bool $lastTry = false)
     {
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
@@ -112,27 +65,37 @@ class SimplifiedXmlFacade extends XmlFacade
         $xml = $this->load($response);
 
         $json = json_encode($xml);
-        $responseArray = json_decode($json, true);
+        $result = json_decode($json, true);
 
-        if (isset($responseArray['response']['error']) && !$lastTry) {
-            return $responseArray;
-        } elseif (isset($responseArray['response']['error']) && $lastTry) {
-            TelegramBot::sendMessage("XML error: " . $responseArray['response']['error'], 938341087);
-            TelegramBot::sendMessage("XML error: " . $responseArray['response']['error'], 169011279);
+        if (isset($result['response']['error']) && $lastTry) {
+            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
+            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
 
-            return new Exception($responseArray['response']['error']);
+            return new Exception($result['response']['error']);
         }
 
-        $sites = [];
-        foreach ($responseArray['response']['results']['grouping']['group'] as $item) {
-            if (array_key_exists(0, $item['doc'])) {
-                $sites[] = Str::lower($item['doc'][0]['url']);
-            } else {
-                $sites[] = Str::lower($item['doc']['url']);
+        if ($prepareResponse) {
+            $sites = [];
+            foreach ($result['response']['results']['grouping']['group'] as $item) {
+                if (array_key_exists(0, $item['doc'])) {
+                    $sites[] = Str::lower($item['doc'][0]['url']);
+                } else {
+                    $sites[] = Str::lower($item['doc']['url']);
+                }
             }
-        }
 
-        return $sites;
+            return $sites;
+
+        } else {
+
+            foreach ($result['response']['results']['grouping']['group'] as $key => $item) {
+                if (array_key_exists(0, $item['doc'])) {
+                    $result['response']['results']['grouping']['group'][$key]['doc'] = $item['doc'][0];
+                }
+            }
+
+            return $result;
+        }
     }
 
     /**

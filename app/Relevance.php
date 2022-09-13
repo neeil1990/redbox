@@ -802,10 +802,6 @@ class Relevance
                     $reSpam = $word['reSpam'];
                 }
 
-                if ($word['numberOccurrences'] > $numberOccurrences) {
-                    $numberOccurrences = $word['numberOccurrences'];
-                }
-
                 foreach ($word['occurrences'] as $key2 => $value) {
                     if (key_exists($key2, $occurrences)) {
                         $occurrences[$key2] += $value;
@@ -826,7 +822,7 @@ class Relevance
                 'repeatInTextMainPage' => $repeatInText,
                 'repeatInLinkMainPage' => $repeatInLink,
                 'totalRepeatMainPage' => $totalRepeatMainPage,
-                'numberOccurrences' => $numberOccurrences,
+                'numberOccurrences' => count($occurrences),
                 'reSpam' => $reSpam,
                 'danger' => $danger,
                 'occurrences' => $occurrences,
@@ -841,8 +837,7 @@ class Relevance
         $collection = collect($this->wordForms);
 
         $this->wordForms = $collection->sortBy(
-            function ($key, $value) {
-            },
+            function ($key, $value) {},
             SORT_REGULAR,
             true
         )->toArray();
@@ -1376,7 +1371,7 @@ class Relevance
             RelevanceProgress::editProgress(10, $request);
             $xml = new SimplifiedXmlFacade($request['region']);
             $xml->setQuery($request['phrase']);
-            $xmlResponse = $xml->getXMLResponse();
+            $xmlResponse = $xml->getXMLResponse(true);
 
             $this->removeIgnoredDomains(
                 $request,
