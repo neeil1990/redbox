@@ -47,6 +47,13 @@
             .popover {
                 max-width: none;
             }
+            .progress-spinner{
+                position: absolute;
+                top: 20%;
+                width: 100%;
+                text-align: center;
+                z-index: 1;
+            }
         </style>
     @endslot
 
@@ -820,21 +827,14 @@
                 }
             });
 
-            axios.get('/monitoring/charts', {
-                params: {
-                    projectId: PROJECT_ID,
-                    dateRange: DATES,
-                    chart: 'top',
-                }
-            }).then(function (response) {
-
-                new Chart($('#topPercent').get(0).getContext('2d'), {
+            let charts = {
+                'top' : {
+                    el: $('#topPercent').get(0).getContext('2d'),
                     type: 'line',
-                    data: response.data,
                     options: {
                         title: {
                             display: true,
-                            text: '% ключей в ТОП',
+                            text: '% Ключевых слов в ТОП',
                             position: 'left',
                         },
                         maintainAspectRatio : false,
@@ -852,22 +852,15 @@
                                     stepSize: 10
                                 }
                             }]
+                        },
+                        plugins: {
+                            datalabels: false
                         }
                     }
-                });
-            });
-
-            axios.get('/monitoring/charts', {
-                params: {
-                    projectId: PROJECT_ID,
-                    dateRange: DATES,
-                    chart: 'middle',
-                }
-            }).then(function (response) {
-
-                new Chart($('#middlePosition').get(0).getContext('2d'), {
+                },
+                'middle' : {
+                    el: $('#middlePosition').get(0).getContext('2d'),
                     type: 'line',
-                    data: response.data,
                     options: {
                         title: {
                             display: true,
@@ -889,10 +882,45 @@
                                     stepSize: 10
                                 }
                             }]
+                        },
+                        plugins: {
+                            datalabels: false
                         }
                     }
+                },
+            };
+
+            let chartFilterPeriod = $('#chartFilterPeriod');
+
+            $.each(charts, function(key, obj){
+
+                let chart = new Chart(obj.el, {
+                    type: obj.type,
+                    data: {},
+                    options: obj.options
+                });
+
+                chartFilterPeriod.change(function() {
+                    let range = $(this).val();
+                    $('.progress-spinner').removeClass('d-none');
+
+                    axios.get('/monitoring/charts', {
+                        params: {
+                            projectId: PROJECT_ID,
+                            dateRange: DATES,
+                            range: range,
+                            chart: key,
+                        }
+                    }).then(function (response) {
+                        chart.data = response.data;
+                        chart.update();
+
+                        $('.progress-spinner').addClass('d-none');
+                    });
                 });
             });
+
+            chartFilterPeriod.trigger('change');
 
             axios.get('/monitoring/charts', {
                 params: {
@@ -913,10 +941,47 @@
                             position: 'left',
                         },
                         legend: {
-                            display: true
+                            display: true,
+                            position: 'left',
+                        },
+                        plugins: {
+                            datalabels: {
+                                anchor: 'center',
+                                formatter: (value, ctx) => {
+                                    let sum = 0;
+                                    let dataArr = ctx.chart.data.datasets[0].data;
+                                    dataArr.map(data => { sum += data });
+
+                                    let percent = Math.round((value * 100 / sum));
+
+                                    if(percent > 1)
+                                        return `${percent}%`;
+                                    else
+                                        return null;
+                                },
+                                color: '#fff',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
                         }
                     }
                 });
+            });
+
+            $('#showChartsBlock').click(function () {
+                let btn = $(this);
+                let charts = $('.card-charts');
+
+                if(charts.hasClass('d-none')) {
+                    charts.removeClass('d-none');
+                    btn.text('Скрыть графики');
+                }else {
+                    charts.addClass('d-none');
+                    btn.text('Показать графики');
+                }
+
             });
         </script>
     @endslot
