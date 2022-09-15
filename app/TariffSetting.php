@@ -136,13 +136,16 @@ class TariffSetting extends Model
         $now = Carbon::now();
 
         /**
-         * унаследовано от Model, но не является экземпляром Model @var $class Model
+         * унаследовано от Model, но не является экземпляром Model
+         * @var $class Model
          */
         $record = $class::firstOrNew(
             ['month' => $now->year . '-' . $now->month],
             ['user_id' => Auth::id()]
         );
 
+        Log::debug('comp statistic user id', [Auth::id()]);
+        Log::debug('comp record', [$record]);
         $record->counter++;
 
         $record->save();

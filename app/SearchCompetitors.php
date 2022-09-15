@@ -4,7 +4,6 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class SearchCompetitors extends Model
 {

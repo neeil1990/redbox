@@ -321,7 +321,6 @@
                         pageHash: window.session,
                     },
                     success: function (response) {
-                        console.log(response.percent.percent)
                         setProgressBarStyles(response.percent.percent)
                     }
                 });
