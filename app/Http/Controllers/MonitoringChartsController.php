@@ -29,18 +29,24 @@ class MonitoringChartsController extends Controller
 
         $this->region = $region->orderBy('id', 'asc')->first();
 
-        $this->positions = $this->getPositionsForRange($request->input('dateRange', null));
+        $this->positions = $this->getPositionsForRange($request->input('dateRange', null), $request->input('mode', null));
     }
 
-    public function getPositionsForRange($dateRange = null)
+    public function getPositionsForRange($dateRange = null, $mode = null)
     {
         if($dateRange)
             $dateRange = explode(' - ', $dateRange);
 
         $model = new MonitoringPosition();
-        $positions = $model->where('monitoring_searchengine_id', $this->region->id)
-            ->whereIn('monitoring_keyword_id', $this->keywords->pluck('id'))
-            ->dateRange($dateRange)->get();
+        $query = $model->where('monitoring_searchengine_id', $this->region->id)
+            ->whereIn('monitoring_keyword_id', $this->keywords->pluck('id'));
+
+        if($mode == 'datesFind')
+            $query = $query->dateFind($dateRange);
+        else
+            $query = $query->dateRange($dateRange);
+
+        $positions = $query->get();
 
         return $positions;
     }
@@ -84,7 +90,11 @@ class MonitoringChartsController extends Controller
             'data' => [0, 0, 0, 0, 0, 0],
         ];
         $positionsGroupByDate = $this->getLastPositionsByDays();
-        $positions = $positionsGroupByDate->flatten();
+
+        if($positionsGroupByDate->isEmpty())
+            return (new AreaChartData([]))->setData([])->get();
+
+        $positions = $positionsGroupByDate->last();
         foreach ($positions as $position){
 
             if($position > 0 && $position <= 3)
@@ -103,8 +113,7 @@ class MonitoringChartsController extends Controller
                 $response['data'][4] += 1;
         }
 
-        foreach ($positionsGroupByDate as $date)
-            $response['data'][5] += ($this->keywords->count() - $date->count());
+        $response['data'][5] += ($this->keywords->count() - $positions->count());
 
         $chart = new AreaChartData($response['labels']);
         $chart->setBackgroundColor(['rgb(46, 150, 221)', 'rgb(33, 147, 108)', 'rgb(26, 188, 156)', 'rgb(162, 223, 159)', 'rgb(176, 199, 199)', 'rgb(251, 192, 45)'])
@@ -120,6 +129,10 @@ class MonitoringChartsController extends Controller
     {
         $response = [];
         $positions = $this->getLastPositions($request->input('range'));
+
+        if($positions->isEmpty())
+            return (new AreaChartData([]))->setData([])->get();
+
         foreach ($positions as $date => $position){
 
             $response['labels'][] = $date;
@@ -147,6 +160,9 @@ class MonitoringChartsController extends Controller
         ];
         $response = [];
         $positions = $this->getLastPositions($request->input('range'));
+
+        if($positions->isEmpty())
+            return (new AreaChartData([]))->setData([])->get();
 
         foreach ($positions as $date => $position){
 
