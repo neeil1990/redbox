@@ -248,7 +248,7 @@ class SearchCompetitors extends Model
             }
         }
 
-        TariffSetting::saveStatistics(SearchCompetitors::class);
+        TariffSetting::saveStatistics(SearchCompetitors::class, count($this->phrases));
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 100
         ]);

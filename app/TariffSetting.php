@@ -131,7 +131,7 @@ class TariffSetting extends Model
     /**
      * @return void
      */
-    public static function saveStatistics(string $class)
+    public static function saveStatistics(string $class, $count = 1)
     {
         $now = Carbon::now();
 
@@ -143,12 +143,12 @@ class TariffSetting extends Model
             ->where('user_id', '=', Auth::id())->first();
 
         if (isset($record)) {
-            $record->counter++;
+            $record->counter += $count;
         } else {
             $record = new $class();
             $record->month = $now->year . '-' . $now->month;
             $record->user_id = Auth::id();
-            $record->counter = 1;
+            $record->counter = $count;
         }
 
         $record->save();
