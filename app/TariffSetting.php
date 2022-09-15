@@ -139,16 +139,18 @@ class TariffSetting extends Model
          * унаследовано от Model, но не является экземпляром Model
          * @var $class Model
          */
-        $record = $class::firstOrNew(
-            ['month' => $now->year . '-' . $now->month],
-            ['user_id' => Auth::id()]
-        );
+        $record = $class::where('month', '=', $now->year . '-' . $now->month)
+            ->where('user_id', '=', Auth::id())->first();
 
-        Log::debug('comp statistic user id', [Auth::id()]);
-        Log::debug('comp record', [$record]);
-        $record->counter++;
-
-        $record->save();
+        if (!isset($record)) {
+            $record = new $class();
+            $record->month = $now->year . '-' . $now->month;
+            $record->user_id = Auth::id();
+            $record->counter = 1;
+        } else {
+            $record->counter++;
+            $record->save();
+        }
     }
 
 }
