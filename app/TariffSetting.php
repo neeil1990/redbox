@@ -142,15 +142,17 @@ class TariffSetting extends Model
         $record = $class::where('month', '=', $now->year . '-' . $now->month)
             ->where('user_id', '=', Auth::id())->first();
 
-        if (!isset($record)) {
+        if (isset($record)) {
+            $record->counter++;
+        } else {
             $record = new $class();
             $record->month = $now->year . '-' . $now->month;
             $record->user_id = Auth::id();
             $record->counter = 1;
-        } else {
-            $record->counter++;
-            $record->save();
         }
+
+        $record->save();
+
     }
 
 }
