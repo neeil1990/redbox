@@ -11,11 +11,8 @@
 |
 */
 
-use App\MetaTag;
 use App\SearchCompetitors;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 Route::get('info', function () {
     phpinfo();
@@ -177,6 +174,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analysis.nesting');
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
     Route::post('/analyze-tags', 'SearchCompetitorsController@analyseTags')->name('analysis.tags');
+    Route::post('/start-competitor-progress', 'SearchCompetitorsController@startProgressBar')->name('start.competitor.progress');
+    Route::post('/get-competitor-progress', 'SearchCompetitorsController@getProgressBar')->name('get.competitor.progress');
+    Route::post('/remove-competitor-progress', 'SearchCompetitorsController@removeProgressBar')->name('remove.competitor.progress');
 
     Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
     Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
@@ -281,11 +281,12 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $xmlResult = SearchCompetitors::analyzeList([
-        'phrases' => 'Купить слона',
-        'count' => 20,
-        'region' => 1
-    ]);
-    dd($xmlResult);
-    $sites = SearchCompetitors::scanSites($xmlResult);
+    $analysis = new SearchCompetitors();
+    $analysis->setPhrases("azbuka");
+    $analysis->setRegion(1);
+    $analysis->setCount(10);
+    $analysis->analyzeList();
+
+    dd($analysis->getResult());
+
 });

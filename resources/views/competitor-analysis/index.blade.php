@@ -19,9 +19,14 @@
             .CompetitorAnalysisPhrases {
                 background: oldlace;
             }
+
+            .danger {
+                background: rgb(255, 193, 7);
+            }
         </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <div class="col-md-6">
         <div class="form-group required">
             <label>{{ __('List of phrases') }}</label>
@@ -111,10 +116,12 @@
                 class="toast-message"></div>
         </div>
     </div>
+
     <div id="progress-bar" style="display: none">
         <div class="progress-bar mt-5" role="progressbar"></div>
         <div id="stage" class="text-muted"></div>
     </div>
+
     <div class="top-sites mt-5" style="display: none">
         <h2>{{ __('Top sites based on your keywords') }}</h2>
         <table class="table table-bordered table-striped dataTable dtr-inline top-sites-table"
@@ -148,6 +155,7 @@
             </tbody>
         </table>
     </div>
+
     <div class="nested mt-5" style="display:none;">
         <h2>{{ __('Analysis of page nesting') }}</h2>
         <table class="table table-bordered table-striped dataTable dtr-inline">
@@ -171,9 +179,23 @@
             </tbody>
         </table>
     </div>
+
     <div class="positions mt-5" style="display: none">
         <h2>{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
+        <table class="table table-bordered table-striped dataTable dtr-inline" id="positions">
+            <thead>
+            <tr>
+                <th>{{ __('Domain') }}</th>
+                <th>{{ __('Percentage of getting into the top') }}</th>
+                <th>{{ __('Middle position') }}</th>
+            </tr>
+            </thead>
+            <tbody id="positions-tbody">
+
+            </tbody>
+        </table>
     </div>
+
     <div class="tag-analysis mt-5" style="display: none">
         <h2>{{ __('Tag Analysis') }}</h2>
         <table class="table table-bordered table-striped dataTable dtr-inline" id="tag-analysis"
@@ -194,51 +216,91 @@
             </tbody>
         </table>
     </div>
+
     @slot('js')
         <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-site-positions-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-tags-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/actions-on-the-page.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
+            String.prototype.shuffle = function () {
+                var a = this.split(""),
+                    n = a.length;
+
+                for (var i = n - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = a[i];
+                    a[i] = a[j];
+                    a[j] = tmp;
+                }
+                return a.join("").replaceAll(" ", "");
+            }
+            window.session = String(new Date()).shuffle();
+            localStorage.setItem("sessionCompetitors", window.session);
+            onStorage = function (e) {
+                if (e.key === 'sessionCompetitors' && e.newValue !== window.session)
+                    localStorage.setItem("multitab", window.session);
+                if (e.key === "multitab" && e.newValue && e.newValue !== window.session) {
+                    window.removeEventListener("storage", onStorage);
+                    localStorage.setItem("sessionCompetitors", localStorage.getItem("multitab"));
+                    localStorage.removeItem("multitab");
+                }
+            };
+            window.addEventListener('storage', onStorage);
+
             $('.btn.btn-secondary.pull-left').click(() => {
-                var metaTags = ''
-                var phrases = $('.form-control.phrases').val()
-                var count = $('.custom-select.rounded-0.count').val()
-                var interval = null
-                if ($.trim($('.form-control.phrases').val())) {
+                let phrases = $.trim($('.form-control.phrases').val())
+                let count = $('.custom-select.rounded-0.count').val()
+                let interval = null
+                let token = $('meta[name="csrf-token"]').attr('content')
+                if (phrases) {
+
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('start.competitor.progress') }}",
+                        data: {
+                            _token: token,
+                            pageHash: window.session,
+                        },
+                    });
+
                     $.ajax({
                         type: "POST",
                         dataType: "json",
                         url: "{{ route('analysis.sites') }}",
                         data: {
+                            _token: token,
                             phrases: phrases,
                             count: count,
                             region: $('.custom-select.rounded-0.region').val(),
-                            _token: $('meta[name="csrf-token"]').attr('content')
+                            pageHash: window.session,
                         },
                         beforeSend: function () {
                             refreshAll()
-                            let percent = 0.0;
                             interval = setInterval(() => {
-                                percent += 0.5
-                                setProgressBarStyles(percent)
+                                getProgressPercent(token)
                             }, 1000)
                         },
                         success: function (response) {
                             if (response.code === 415) {
                                 getBrokenScriptMessage(interval, response.message)
                             }
+                            renderTopSites(response.result.analysedSites)
+                            renderNestingTable(response.result.pagesCounter)
+                            renderSitePositionsTable(response.result.domainsPosition)
+                            renderTagsTable(response.result.totalMetaTags)
 
-                            if (response.code === 200) {
-                                $('#stage').text("{{ __('Generating tables') }}")
-                                metaTags = response.metaTags
-                                renderTopSites(response)
-                                nestedRequest(response)
-                            }
+                            setProgressBarStyles(100)
+                            setTimeout(() => {
+                                $("#progress-bar").hide(300)
+                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                            }, 2000)
 
+                            removeProgressPercent(token)
+                            clearInterval(interval)
                         },
                         error: function () {
                             getBrokenScriptMessage(interval)
@@ -247,76 +309,35 @@
                 } else {
                     getBrokenScriptMessage(interval, "{{ __('The list of keywords should not be empty') }}")
                 }
-
-                async function nestedRequest(response) {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('analysis.nesting') }}",
-                        data: {
-                            scanResult: response.scanResult,
-                            sites: response.sites,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: async function (response) {
-                            await clearInterval(interval);
-                            await setProgressBarStyles(65)
-                            await renderNestingTable(response)
-                            await setProgressBarStyles(95)
-                            await positionsRequest(response)
-                        },
-                        error: function () {
-                            getBrokenScriptMessage(interval)
-                        }
-                    });
-                }
-
-                async function positionsRequest(response) {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('analysis.positions') }}",
-                        data: {
-                            phrases: phrases,
-                            count: count,
-                            scanResult: response.scanResult,
-                            sites: response.sites,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: async function (response) {
-                            await setProgressBarStyles(75)
-                            await renderSitePositionsTable(response)
-                            await metaTagsRequest(metaTags)
-                        },
-                        error: function () {
-                            getBrokenScriptMessage(interval)
-                        }
-                    });
-                }
-
-                async function metaTagsRequest(metaTags) {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('analysis.tags') }}",
-                        data: {
-                            metaTags: metaTags,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: async function (response) {
-                            await setProgressBarStyles(100)
-                            setTimeout(() => {
-                                $("#progress-bar").hide(300)
-                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                            }, 2000)
-                            await renderTagsTable(response.metaTags)
-                        },
-                        error: function () {
-                            getBrokenScriptMessage(interval)
-                        }
-                    });
-                }
             });
+
+            function getProgressPercent(token) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('get.competitor.progress') }}",
+                    data: {
+                        _token: token,
+                        pageHash: window.session,
+                    },
+                    success: function (response) {
+                        console.log(response.percent.percent)
+                        setProgressBarStyles(response.percent.percent)
+                    }
+                });
+            }
+
+            function removeProgressPercent(token) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('remove.competitor.progress') }}",
+                    data: {
+                        _token: token,
+                        pageHash: window.session,
+                    },
+                });
+            }
 
             function getBrokenScriptMessage(interval, message = false) {
                 setProgressBarStyles(100)
@@ -324,6 +345,7 @@
                     $("#progress-bar").hide(300)
                     $('.btn.btn-secondary.pull-left').prop('disabled', false);
                 }, 2000)
+                clearInterval(interval)
 
                 $('.toast-top-right.broken-script-message').show(300)
                 if (message !== false) {
@@ -335,7 +357,6 @@
                     $('.toast-top-right.broken-script-message').hide(300)
                 }, 10000)
 
-                clearInterval(interval)
                 refreshAll()
             }
 

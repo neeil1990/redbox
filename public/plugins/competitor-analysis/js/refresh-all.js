@@ -9,11 +9,12 @@ function refreshAll() {
     $('.positions').hide()
     $('.tag-analysis').hide()
     $('.render').remove()
-    $('#positions_wrapper').remove()
 
     if ($('.custom-select.rounded-0.count').val() === '20') {
         $('.extra-th').show()
     } else {
         $('.extra-th').hide()
     }
+
+    $('#positions').dataTable().fnDestroy();
 }

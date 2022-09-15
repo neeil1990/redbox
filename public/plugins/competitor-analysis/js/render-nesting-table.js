@@ -1,7 +1,10 @@
-function renderNestingTable(response) {
-    $('.mainPageCounter').html(response.nesting['mainPageCounter'])
-    $('.mainPagePercent').html(response.nesting['mainPagePercent'] + '%')
-    $('.nestedPageCounter').html(response.nesting['nestedPageCounter'])
-    $('.nestedPagePercent').html(response.nesting['nestedPagePercent'] + '%')
+/**
+ * @param nesting
+ */
+function renderNestingTable(nesting) {
+    $('.mainPageCounter').html(nesting['mainPageCounter'])
+    $('.mainPagePercent').html(nesting['mainPagePercent'] + '%')
+    $('.nestedPageCounter').html(nesting['nestedPageCounter'])
+    $('.nestedPagePercent').html(nesting['nestedPagePercent'] + '%')
     $('.nested').show()
 }

@@ -24,14 +24,15 @@ class TextAnalyzer extends Model
         curl_setopt($curl, CURLOPT_URL, $link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 4);
+        curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-        curl_setopt($curl, CURLOPT_HEADER, false);
+
+        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 4);
 
         return TextAnalyzer::curlConnect($curl);
     }

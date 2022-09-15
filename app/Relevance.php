@@ -1371,7 +1371,7 @@ class Relevance
             RelevanceProgress::editProgress(10, $request);
             $xml = new SimplifiedXmlFacade($request['region']);
             $xml->setQuery($request['phrase']);
-            $xmlResponse = $xml->getXMLResponse(true);
+            $xmlResponse = $xml->getXMLResponse();
 
             $this->removeIgnoredDomains(
                 $request,

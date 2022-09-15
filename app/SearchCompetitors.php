@@ -4,6 +4,7 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class SearchCompetitors extends Model
 {
@@ -11,37 +12,91 @@ class SearchCompetitors extends Model
 
     protected $table = 'competitor_analysis_count_checks';
 
+    protected $metaTags = [];
+
+    protected $sites = [];
+
+    protected $analysedSites = [];
+
+    protected $pagesCounter = [];
+
+    protected $totalMetaTags = [];
+
+    protected $domainsPosition = [];
+
+    protected $region;
+
+    protected $phrases;
+
+    protected $count;
+
+    public $pageHash;
+
     /**
-     * @param $request
-     * @return array
+     * @param string $pageHash
+     * @return void
      */
-    public static function analyzeList($request): array
+    public function setPageHash(string $pageHash)
     {
-        $array = explode("\n", $request['phrases']);
-        $phrases = array_diff($array, ['']);
-        $resultArray = [];
-        $xml = new SimplifiedXmlFacade($request['region'], $request['count']);
+        $this->pageHash = $pageHash;
+    }
 
-        foreach ($phrases as $phrase) {
-            $xml->setQuery($phrase);
-            $result = $xml->getXMLResponse();
-            $resultArray[$phrase] = $result['response']['results']['grouping']['group'];
-        }
+    public function setPhrases(string $string)
+    {
+        $phrases = explode("\n", $string);
 
-        return $resultArray;
+        $this->phrases = array_diff($phrases, ['']);
+    }
+
+    public function setRegion(string $region)
+    {
+        $this->region = $region;
+    }
+
+    public function setCount(int $count)
+    {
+        $this->count = $count;
     }
 
     /**
-     * @param $scanResult
      * @return array
      */
-    public static function scanSites($scanResult): array
+    public function getResult(): array
     {
-        $metaTags = [];
-        $result = $scanResult;
-        foreach ($result as $key => $items) {
-            foreach ($items as $key1 => $item) {
-                $site = SearchCompetitors::curlInit($item['doc']['url']);
+        return [
+            'analysedSites' => $this->analysedSites,
+            'pagesCounter' => $this->pagesCounter,
+            'totalMetaTags' => $this->totalMetaTags,
+            'domainsPosition' => $this->domainsPosition,
+        ];
+    }
+
+    /**
+     * @return void
+     */
+    public function analyzeList()
+    {
+        $xml = new SimplifiedXmlFacade($this->region, $this->count);
+
+        foreach ($this->phrases as $phrase) {
+            $xml->setQuery($phrase);
+            $this->sites[$phrase] = $xml->getXMLResponse();
+        }
+
+        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
+            'percent' => 25
+        ]);
+        $this->scanSites();
+    }
+
+    /**
+     * @return void
+     */
+    public function scanSites()
+    {
+        foreach ($this->sites as $key => $items) {
+            foreach ($items as $item) {
+                $site = SearchCompetitors::curlInit($item);
                 try {
                     $contentType = $site[1]['content_type'];
                     if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
@@ -51,24 +106,16 @@ class SearchCompetitors extends Model
                 } catch (\Exception $exception) {
                 }
 
-                $description = SearchCompetitors::getHiddenText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
-                $title = SearchCompetitors::getHiddenText($site[0], "/<title.*?>(.*?)<\/title>/");
-                $h1 = SearchCompetitors::getHiddenText($site[0], "/<h1.*?>(.*?)<\/h1>/");
-                $h2 = SearchCompetitors::getHiddenText($site[0], "/<h2.*?>(.*?)<\/h2>/");
-                $h3 = SearchCompetitors::getHiddenText($site[0], "/<h3.*?>(.*?)<\/h3>/");
-                $h4 = SearchCompetitors::getHiddenText($site[0], "/<h4.*?>(.*?)<\/h4>/");
-                $h5 = SearchCompetitors::getHiddenText($site[0], "/<h5.*?>(.*?)<\/h5>/");
-                $h6 = SearchCompetitors::getHiddenText($site[0], "/<h6.*?>(.*?)<\/h6>/");
+                $description = SearchCompetitors::getText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
+                $title = SearchCompetitors::getText($site[0], "/<title.*?>(.*?)<\/title>/");
+                $h1 = SearchCompetitors::getText($site[0], "/<h1.*?>(.*?)<\/h1>/");
+                $h2 = SearchCompetitors::getText($site[0], "/<h2.*?>(.*?)<\/h2>/");
+                $h3 = SearchCompetitors::getText($site[0], "/<h3.*?>(.*?)<\/h3>/");
+                $h4 = SearchCompetitors::getText($site[0], "/<h4.*?>(.*?)<\/h4>/");
+                $h5 = SearchCompetitors::getText($site[0], "/<h5.*?>(.*?)<\/h5>/");
+                $h6 = SearchCompetitors::getText($site[0], "/<h6.*?>(.*?)<\/h6>/");
 
-                $metaTags[$key]['title'][] = $title;
-                $metaTags[$key]['h1'][] = $h1;
-                $metaTags[$key]['h2'][] = $h2;
-                $metaTags[$key]['h3'][] = $h3;
-                $metaTags[$key]['h4'][] = $h4;
-                $metaTags[$key]['h5'][] = $h5;
-                $metaTags[$key]['h6'][] = $h6;
-
-                $result[$key][$key1]['meta'] = [
+                $this->analysedSites[$key][$item]['meta'] = [
                     'title' => $title,
                     'h1' => $h1,
                     'h2' => $h2,
@@ -78,111 +125,134 @@ class SearchCompetitors extends Model
                     'h6' => $h6,
                     'description' => $description,
                 ];
+
+                //Если все теги пустые, значит не получилось получить данные со страницы
+                $this->analysedSites[$key][$item]['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
             }
         }
 
-        TariffSetting::saveStatistics(SearchCompetitors::class);
-
-        return [
-            'sites' => $result,
-            'metaTags' => $metaTags
-        ];
+        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
+            'percent' => 50
+        ]);
+        $this->analysisPageNesting();
     }
 
     /**
-     * @param $scanResult
-     * @return int[]
+     * @return void
      */
-    public static function analysisPageNesting($scanResult): array
+    public function analysisPageNesting()
     {
-        $pagesCounter = [
+        $this->pagesCounter = [
             'mainPageCounter' => 0,
             'nestedPageCounter' => 0
         ];
 
         $counter = 0;
-        foreach ($scanResult as $items) {
+        foreach ($this->sites as $items) {
             foreach ($items as $item) {
-                $url = parse_url($item['doc']['url']);
-                $domain = parse_url($item['doc']['domain']);
-                if ($url['host'] . $url['path'] === $domain['path'] . '/') {
-                    $pagesCounter['mainPageCounter']++;
+                $url = parse_url($item);
+                if ($url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php') {
+                    $this->pagesCounter['mainPageCounter']++;
                 } else {
-                    $pagesCounter['nestedPageCounter']++;
+                    $this->pagesCounter['nestedPageCounter']++;
                 }
                 $counter++;
             }
         }
-        $pagesCounter['mainPagePercent'] = round((100 / $counter) * $pagesCounter['mainPageCounter'], 1);
-        $pagesCounter['nestedPagePercent'] = round((100 / $counter) * $pagesCounter['nestedPageCounter'], 1);
 
-        return $pagesCounter;
+        $this->pagesCounter['mainPagePercent'] = round((100 / $counter) * $this->pagesCounter['mainPageCounter'], 1);
+        $this->pagesCounter['nestedPagePercent'] = round((100 / $counter) * $this->pagesCounter['nestedPageCounter'], 1);
+
+        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
+            'percent' => 75
+        ]);
+
+        $this->scanTags();
     }
 
     /**
-     * @param $metaTagsArray
-     * @return array
+     * @return void
      */
-    public static function scanTags($metaTagsArray): array
+    public function scanTags()
     {
-        $tags = [];
-        $wordForms = [];
-        $result = [];
-
-        foreach ($metaTagsArray as $key => $metaTags) {
-            foreach ($metaTags as $key1 => $metaTag) {
-                foreach ($metaTag as $items) {
-                    foreach ($items as $item) {
-                        $tags[$key][$key1][] = $item;
-                    }
-                }
+        foreach ($this->analysedSites as $phrase => $sites) {
+            foreach ($sites as $link => $site) {
+                $this->metaTags[$phrase][] = $site['meta'];
             }
         }
 
-        foreach ($tags as $key => $elems) {
-            if (isset($elems['title'])) {
-                $wordForms[$key]['title'] = SearchCompetitors::searchWordForms(implode(' ', $elems['title']));
-            }
-            if (isset($elems['h1'])) {
-                $wordForms[$key]['h1'] = SearchCompetitors::searchWordForms(implode(' ', $elems['h1']));
-            }
-            if (isset($elems['h2'])) {
-                $wordForms[$key]['h2'] = SearchCompetitors::searchWordForms(implode(' ', $elems['h2']));
-            }
-            if (isset($elems['h3'])) {
-                $wordForms[$key]['h3'] = SearchCompetitors::searchWordForms(implode(' ', $elems['h3']));
-            }
-            if (isset($elems['h4'])) {
-                $wordForms[$key]['h4'] = SearchCompetitors::searchWordForms(implode(' ', $elems['h4']));
-            }
-            if (isset($elems['h5'])) {
-                $wordForms[$key]['h5'] = SearchCompetitors::searchWordForms(implode(' ', $elems['h5']));
-            }
-            if (isset($elems['h6'])) {
-                $wordForms[$key]['h6'] = SearchCompetitors::searchWordForms(implode(' ', $elems['h6']));
+        foreach ($this->metaTags as $phrase => $metaTags) {
+            foreach ($metaTags as $metaTag) {
+                $this->totalMetaTags[$phrase]['title'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['title']));
+                $this->totalMetaTags[$phrase]['h1'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h1']));
+                $this->totalMetaTags[$phrase]['h2'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h2']));
+                $this->totalMetaTags[$phrase]['h3'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h3']));
+                $this->totalMetaTags[$phrase]['h4'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h4']));
+                $this->totalMetaTags[$phrase]['h5'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h5']));
+                $this->totalMetaTags[$phrase]['h6'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h6']));
             }
         }
 
-        foreach ($wordForms as $key => $tags) {
-            foreach ($tags as $key1 => $words) {
-                foreach ($words as $key2 => $word) {
-                    foreach ($word as $item) {
-                        if (isset($result[$key][$key1][$key2])) {
-                            $result[$key][$key1][$key2] += $item;
-                        } else {
-                            $result[$key][$key1][$key2] = $item;
-                        }
-                    }
-                }
-            }
+        foreach ($this->metaTags as $phrase => $metaTags) {
+            $this->totalMetaTags[$phrase]['title'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['title']))));
+            $this->totalMetaTags[$phrase]['h1'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h1']))));
+            $this->totalMetaTags[$phrase]['h2'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h2']))));
+            $this->totalMetaTags[$phrase]['h3'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h3']))));
+            $this->totalMetaTags[$phrase]['h4'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h4']))));
+            $this->totalMetaTags[$phrase]['h5'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h5']))));
+            $this->totalMetaTags[$phrase]['h6'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h6']))));
+
+            arsort($this->totalMetaTags[$phrase]['title']);
+            arsort($this->totalMetaTags[$phrase]['h1']);
+            arsort($this->totalMetaTags[$phrase]['h2']);
+            arsort($this->totalMetaTags[$phrase]['h3']);
+            arsort($this->totalMetaTags[$phrase]['h4']);
+            arsort($this->totalMetaTags[$phrase]['h5']);
+            arsort($this->totalMetaTags[$phrase]['h6']);
         }
-        foreach ($result as $key1 => $elems) {
-            foreach ($elems as $key2 => $elem) {
-                arsort($result[$key1][$key2]);
+
+        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
+            'percent' => 90
+        ]);
+        $this->calculatePositions();
+    }
+
+    /**
+     * @return void
+     */
+    public function calculatePositions()
+    {
+        $domains = [];
+
+        foreach ($this->analysedSites as $phrase => $sites) {
+            $position = 1;
+            foreach ($sites as $link => $item) {
+                $domains[parse_url($link)['host']][] = $position;
+                $position++;
             }
         }
 
-        return $result;
+        $countPhrases = count($this->phrases);
+
+        foreach ($domains as $key => $positions) {
+            $countPositions = count($positions);
+            $sum = array_sum($positions);
+
+
+            $percent = $countPhrases / 100;
+            $this->domainsPosition[$key]['topPercent'] = min(100, $countPositions / $percent);
+            $this->domainsPosition[$key]['text'] = "($countPositions/$countPhrases)";
+            if ($countPhrases === $countPositions || $countPhrases < $countPositions) {
+                $this->domainsPosition[$key]['avg'] = $sum / $countPositions;
+            } else {
+                $this->domainsPosition[$key]['avg'] = ((($countPhrases - $countPositions) * $this->count + 1) + $sum) / $countPositions;
+            }
+        }
+
+        TariffSetting::saveStatistics(SearchCompetitors::class);
+        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
+            'percent' => 100
+        ]);
     }
 
     /**
@@ -190,7 +260,7 @@ class SearchCompetitors extends Model
      * @param $regex
      * @return array
      */
-    public static function getHiddenText($html, $regex): array
+    public static function getText($html, $regex): array
     {
         $hiddenText = [];
         preg_match_all($regex, $html, $matches, PREG_SET_ORDER);
@@ -200,93 +270,6 @@ class SearchCompetitors extends Model
             }
         }
         return $hiddenText;
-    }
-
-    /**
-     * @param $request
-     * @return array
-     */
-    public static function calculatePositions($request): array
-    {
-        $array = explode("\n", $request['phrases']);
-        $phrases = array_diff($array, ['']);
-        $countPhrases = count($phrases);
-        $sites = $request->sites;
-        foreach ($request->scanResult as $item) {
-            for ($i = 0; $i < count($item); $i++) {
-                $sites[$item[$i]['doc']['domain']][] = $i + 1;
-            }
-        }
-        $positions = 0;
-        foreach ($sites as $key => $site) {
-            $sites[$key]['count'] = 0;
-            $avg = 0.0;
-            for ($i = 0; $i < $countPhrases; $i++) {
-                if (isset($site[$i])) {
-                    $avg += $positions++;
-                    $sites[$key]['count'] += 1;
-                } else {
-                    $avg += 11;
-                }
-            }
-            $sites[$key]['percent'] = round(100 / $countPhrases * $sites[$key]['count'], 1);
-            $sites[$key]['count'] .= '/' . $countPhrases;
-            $sites[$key]['avg'] = round($avg / $countPhrases, 1);
-
-            if ($positions == $request['conut']) {
-                $positions = 0;
-            }
-        }
-
-        foreach ($phrases as $phrase) {
-            unset($sites[$phrase]);
-        }
-        return $sites;
-    }
-
-    /**
-     * @param $string
-     * @return array
-     */
-    public static function searchWordForms($string): array
-    {
-        $stemmer = new LinguaStem();
-        $wordForms = [];
-        $will = [];
-
-        $string = mb_strtolower($string);
-        $string = str_replace([
-            "\n", "\t", "\r", "nbsp",
-            "»", "«", ".", ",", "!", "?",
-            "(", ")", "+", ";", ":", "-",
-            "₽", "$", "/", "[", "]", "“", '—', ""
-        ], ' ', $string);
-
-        $array = explode(' ', $string);
-        $array = array_count_values($array);
-        arsort($array);
-
-        foreach ($array as $key1 => $item1) {
-            if (!in_array($key1, $will)) {
-                foreach ($array as $key2 => $item2) {
-                    if (!in_array($key2, $will)) {
-                        similar_text($key1, $key2, $percent);
-                        if (
-                            preg_match("/[А-Яа-я]/", $key1)
-                            && $stemmer->getRootWord($key2) == $stemmer->getRootWord($key1)
-                            || preg_match("/[A-Za-z]/", $key1)
-                            && $percent >= 82
-                        ) {
-                            $wordForms[$key1][$key2] = $item2;
-                            $will[] = $key2;
-                            $will[] = $key1;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $wordForms;
     }
 
     /**
@@ -334,7 +317,7 @@ class SearchCompetitors extends Model
             curl_setopt($curl, CURLOPT_USERAGENT, $userAgents[$i]);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
-            if ($headers['http_code'] == 200 && $html != false) {
+            if ($headers['http_code'] == 200 && $html !== false) {
                 $html = preg_replace('//i', '', $html);
                 break;
             }

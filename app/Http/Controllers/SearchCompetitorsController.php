@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Classes\Tariffs\Facades\Tariffs;
+use App\CompetitorsProgressBar;
 use App\SearchCompetitors;
 use App\TariffSetting;
 use App\TextAnalyzer;
@@ -47,13 +48,15 @@ class SearchCompetitorsController extends Controller
             ]);
         }
 
-        $xmlResult = SearchCompetitors::analyzeList($request->all());
-        $sites = SearchCompetitors::scanSites($xmlResult);
+        $analysis = new SearchCompetitors();
+        $analysis->setPhrases($request->input('phrases'));
+        $analysis->setRegion($request->input('region'));
+        $analysis->setCount($request->input('count'));
+        $analysis->setPageHash($request->input('pageHash'));
+        $analysis->analyzeList();
 
         return response()->json([
-            'sites' => $sites['sites'],
-            'metaTags' => $sites['metaTags'],
-            'scanResult' => $xmlResult,
+            'result' => $analysis->getResult(),
             'code' => 200,
         ]);
     }
@@ -62,14 +65,17 @@ class SearchCompetitorsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analyseNesting(Request $request): JsonResponse
+    public function startProgressBar(Request $request): JsonResponse
     {
-        $pageNesting = SearchCompetitors::analysisPageNesting($request->scanResult);
+        $progress = CompetitorsProgressBar::firstOrNew([
+            'page_hash' => $request->input('pageHash')
+        ]);
+
+        $progress->save();
 
         return response()->json([
-            'sites' => $request->sites,
-            'scanResult' => $request->scanResult,
-            'nesting' => $pageNesting,
+            'code' => 200,
+            'object_id' => $progress->id
         ]);
     }
 
@@ -77,14 +83,11 @@ class SearchCompetitorsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analysePositions(Request $request): JsonResponse
+    public function getProgressBar(Request $request): JsonResponse
     {
-        $positions = SearchCompetitors::calculatePositions($request);
-
         return response()->json([
-            'sites' => $request->sites,
-            'scanResult' => $request->scanResult,
-            'positions' => $positions
+            'percent' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->first(['percent']),
+            'code' => 200,
         ]);
     }
 
@@ -92,13 +95,11 @@ class SearchCompetitorsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analyseTags(Request $request): JsonResponse
+    public function removeProgressBar(Request $request): JsonResponse
     {
-        $tags = SearchCompetitors::scanTags($request->metaTags);
-
         return response()->json([
-            'metaTags' => $tags,
+            'code' => 200,
+            'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete()
         ]);
     }
-
 }

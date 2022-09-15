@@ -1028,7 +1028,7 @@
             window.session = String(new Date()).shuffle();
             localStorage.setItem("session", window.session);
 
-            var onStorage = function (e) {
+              onStorage = function (e) {
                 if (e.key === 'session' && e.newValue !== window.session)
                     localStorage.setItem("multitab", window.session);
                 if (e.key === "multitab" && e.newValue && e.newValue !== window.session) {
