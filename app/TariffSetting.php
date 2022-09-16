@@ -119,7 +119,7 @@ class TariffSetting extends Model
             $tariff = $tariff->getAsArray();
         }
 
-        if (isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases'] > 0) {
+        if (isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases']['value'] > 0) {
 
             if ($newRequest + $count > $tariff['settings']['CompetitorAnalysisPhrases']['value']) {
                 return true;
