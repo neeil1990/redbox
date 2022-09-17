@@ -406,7 +406,9 @@ class HistoryRelevanceController extends Controller
                 'coverage',
                 'coverage_tf',
                 'width',
-                'density'
+                'density',
+                'phrase',
+                'state'
             ]);
 
         Log::debug('countProjects', [count($projects)]);
