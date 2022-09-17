@@ -408,9 +408,13 @@ class HistoryRelevanceController extends Controller
                 'width',
                 'density'
             ]);
-        $userId = Auth::id();
+
+        Log::debug('countProjects', [count($projects)]);
+
         $ownerId = $projects[0]->user_id;
         $admin = User::isUserAdmin();
+        $userId = Auth::id();
+
         $share = RelevanceSharing::where('user_id', '=', $userId)
             ->where('owner_id', '=', $ownerId)
             ->where('access', '=', 2)
