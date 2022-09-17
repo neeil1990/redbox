@@ -248,9 +248,9 @@ class SearchCompetitors extends Model
             $this->domainsPosition[$key]['text'] = "($countPositions/$countPhrases)";
 
             if ($countPhrases === $countPositions || $countPhrases < $countPositions) {
-                $this->domainsPosition[$key]['avg'] = $sum / $countPositions;
+                $this->domainsPosition[$key]['avg'] = ceil($sum / $countPositions);
             } else {
-                $this->domainsPosition[$key]['avg'] = ((($countPhrases - $countPositions) * $this->count + 1) + $sum) / $countPositions;
+                $this->domainsPosition[$key]['avg'] = ceil(((($countPhrases - $countPositions) * $this->count + 1) + $sum) / $countPositions);
             }
         }
 
