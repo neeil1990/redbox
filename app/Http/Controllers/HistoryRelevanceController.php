@@ -408,7 +408,8 @@ class HistoryRelevanceController extends Controller
                 'width',
                 'density',
                 'phrase',
-                'state'
+                'state',
+                'comment'
             ]);
 
         Log::debug('countProjects', [count($projects)]);
