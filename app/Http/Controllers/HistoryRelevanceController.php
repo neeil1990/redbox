@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -393,7 +394,10 @@ class HistoryRelevanceController extends Controller
      */
     public function getHistoryInfoV2(Request $request): JsonResponse
     {
-        $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)->latest('id')->get();
+        $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)->latest('id')
+            ->get([
+                'created_at', 'region', 'main_link', 'points', 'position', 'user_id', 'coverage', 'coverage_tf', 'width', 'density'
+            ]);
         $userId = Auth::id();
         $ownerId = $projects[0]->user_id;
         $admin = User::isUserAdmin();
