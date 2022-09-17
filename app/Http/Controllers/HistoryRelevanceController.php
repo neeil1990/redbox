@@ -396,7 +396,17 @@ class HistoryRelevanceController extends Controller
     {
         $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)->latest('id')
             ->get([
-                'created_at', 'region', 'main_link', 'points', 'position', 'user_id', 'coverage', 'coverage_tf', 'width', 'density'
+                'id',
+                'created_at',
+                'region',
+                'main_link',
+                'points',
+                'position',
+                'user_id',
+                'coverage',
+                'coverage_tf',
+                'width',
+                'density'
             ]);
         $userId = Auth::id();
         $ownerId = $projects[0]->user_id;
