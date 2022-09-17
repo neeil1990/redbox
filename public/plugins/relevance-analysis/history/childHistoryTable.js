@@ -12,6 +12,7 @@ function getHistoryInfo() {
             dataType: "json",
             url: "/get-history-info/" + id,
             success: function (response) {
+                $('.history').show()
                 let history = response.history
                 if (history.type === 'list') {
                     $('#key-phrase').hide()
@@ -148,8 +149,7 @@ function format(data) {
             state =
                 '<button type="button" class="btn btn-secondary get-history-info" data-order="' + value['id'] + '" data-toggle="modal" data-target="#staticBackdrop">' +
                 '   Повторить анализ' +
-                '</button>'
-                +
+                '</button>' +
                 "<a href='/show-history/" + value['id'] + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
 
         } else if (value['state'] === 0) {
