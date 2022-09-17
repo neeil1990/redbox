@@ -81,10 +81,6 @@ class SearchCompetitors extends Model
             $xml->setQuery($phrase);
             $this->sites[$phrase] = $xml->getXMLResponse();
         }
-
-        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
-            'percent' => 25
-        ]);
         $this->scanSites();
     }
 
@@ -93,6 +89,8 @@ class SearchCompetitors extends Model
      */
     public function scanSites()
     {
+        $total = ($this->count * count($this->phrases)) / 100;
+        $iterator = 0;
         foreach ($this->sites as $key => $items) {
             foreach ($items as $item) {
                 $site = SearchCompetitors::curlInit($item);
@@ -127,12 +125,21 @@ class SearchCompetitors extends Model
 
                 //Если все теги пустые, значит не получилось получить данные со страницы
                 $this->analysedSites[$key][$item]['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
-            }
-        }
 
-        CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
-            'percent' => 50
-        ]);
+                $this->analysedSites[$key][$item]['mainPage'] = SearchCompetitors::isLinkMainPage($item);
+
+                $iterator++;
+
+                if ($iterator % 3 === 0) {
+                    $percent = $iterator / $total;
+                    CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
+                        'percent' => ceil($percent)
+                    ]);
+                }
+            }
+
+
+        }
         $this->analysisPageNesting();
     }
 
@@ -149,8 +156,7 @@ class SearchCompetitors extends Model
         $counter = 0;
         foreach ($this->sites as $items) {
             foreach ($items as $item) {
-                $url = parse_url($item);
-                if ($url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php') {
+                if (SearchCompetitors::isLinkMainPage($item)) {
                     $this->pagesCounter['mainPageCounter']++;
                 } else {
                     $this->pagesCounter['nestedPageCounter']++;
@@ -163,7 +169,7 @@ class SearchCompetitors extends Model
         $this->pagesCounter['nestedPagePercent'] = round((100 / $counter) * $this->pagesCounter['nestedPageCounter'], 1);
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
-            'percent' => 75
+            'percent' => 93
         ]);
 
         $this->scanTags();
@@ -211,7 +217,7 @@ class SearchCompetitors extends Model
         }
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
-            'percent' => 90
+            'percent' => 95
         ]);
         $this->calculatePositions();
     }
@@ -236,11 +242,11 @@ class SearchCompetitors extends Model
         foreach ($domains as $key => $positions) {
             $countPositions = count($positions);
             $sum = array_sum($positions);
-
-
             $percent = $countPhrases / 100;
+
             $this->domainsPosition[$key]['topPercent'] = min(100, $countPositions / $percent);
             $this->domainsPosition[$key]['text'] = "($countPositions/$countPhrases)";
+
             if ($countPhrases === $countPositions || $countPhrases < $countPositions) {
                 $this->domainsPosition[$key]['avg'] = $sum / $countPositions;
             } else {
@@ -323,5 +329,16 @@ class SearchCompetitors extends Model
         }
         curl_close($curl);
         return [$html, $headers];
+    }
+
+    /**
+     * @param $link
+     * @return bool
+     */
+    public static function isLinkMainPage($link): bool
+    {
+        $url = parse_url($link);
+
+        return $url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php';
     }
 }

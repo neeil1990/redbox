@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Classes\Tariffs\Facades\Tariffs;
+use App\CompetitorConfig;
 use App\CompetitorsProgressBar;
 use App\SearchCompetitors;
 use App\TariffSetting;
@@ -13,11 +14,13 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Throwable;
 
 class SearchCompetitorsController extends Controller
 {
@@ -32,7 +35,10 @@ class SearchCompetitorsController extends Controller
      */
     public function index()
     {
-        return view('competitor-analysis.index');
+        $admin = User::isUserAdmin();
+        $config = CompetitorConfig::first();
+
+        return view('competitor-analysis.index', ['admin' => $admin, 'agrigators' => $config->agrigators]);
     }
 
     /**
@@ -48,17 +54,26 @@ class SearchCompetitorsController extends Controller
             ]);
         }
 
-        $analysis = new SearchCompetitors();
-        $analysis->setPhrases($request->input('phrases'));
-        $analysis->setRegion($request->input('region'));
-        $analysis->setCount($request->input('count'));
-        $analysis->setPageHash($request->input('pageHash'));
-        $analysis->analyzeList();
+        try {
+            $analysis = new SearchCompetitors();
+            $analysis->setPhrases($request->input('phrases'));
+            $analysis->setRegion($request->input('region'));
+            $analysis->setCount($request->input('count'));
+            $analysis->setPageHash($request->input('pageHash'));
+            $analysis->analyzeList();
 
-        return response()->json([
-            'result' => $analysis->getResult(),
-            'code' => 200,
-        ]);
+            return response()->json([
+                'result' => $analysis->getResult(),
+                'code' => 200,
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'code' => 200,
+                'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete(),
+                'message' => 'Произошла непредвиденная ошибка, обратитесь к администратору'
+            ]);
+        }
+
     }
 
     /**
@@ -101,5 +116,36 @@ class SearchCompetitorsController extends Controller
             'code' => 200,
             'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete()
         ]);
+    }
+
+    /**
+     * @return array|false|Application|Factory|View|mixed|void
+     */
+    public function config()
+    {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
+        $now = Carbon::now();
+        $counter = (int)SearchCompetitors::where('month', '=', $now->year . '-' . $now->month)
+            ->sum('counter');
+        $config = CompetitorConfig::first();
+
+        return view('competitor-analysis.config', ['admin' => true, 'config' => $config, 'counter' => $counter]);
+
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function editConfig(Request $request): RedirectResponse
+    {
+        $config = CompetitorConfig::first();
+        $config->agrigators = trim($request->input('agrigators'));
+        $config->save();
+
+        return Redirect::back();
     }
 }

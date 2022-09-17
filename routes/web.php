@@ -12,6 +12,7 @@
 */
 
 use App\SearchCompetitors;
+use App\TariffSetting;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -169,7 +170,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/edit-comment', 'NewsController@editComment')->name('edit.comment');
     Route::post('/get-count-new-news', 'NewsController@calculateCountNewNews')->name('get.count.new.news');
 
-    Route::get('/competitor-analysis', 'SearchCompetitorsController@index');
+    Route::get('/competitor-analysis', 'SearchCompetitorsController@index')->name('competitor.analysis');
     Route::post('/competitor-analysis', 'SearchCompetitorsController@analyseSites')->name('analysis.sites');
     Route::post('/analyze-nesting', 'SearchCompetitorsController@analyseNesting')->name('analysis.nesting');
     Route::post('/analyze-positions', 'SearchCompetitorsController@analysePositions')->name('analysis.positions');
@@ -177,6 +178,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-competitor-progress', 'SearchCompetitorsController@startProgressBar')->name('start.competitor.progress');
     Route::post('/get-competitor-progress', 'SearchCompetitorsController@getProgressBar')->name('get.competitor.progress');
     Route::post('/remove-competitor-progress', 'SearchCompetitorsController@removeProgressBar')->name('remove.competitor.progress');
+    Route::get('/competitors-config', 'SearchCompetitorsController@config')->name('competitor.config');
+    Route::post('/competitors-config', 'SearchCompetitorsController@editConfig')->name('competitor.edit.config');
 
     Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
     Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
@@ -281,6 +284,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
+
     $analysis = new SearchCompetitors();
     $analysis->setPhrases("azbuka");
     $analysis->setRegion(1);

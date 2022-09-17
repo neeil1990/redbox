@@ -8,6 +8,7 @@ function refreshAll() {
     $('.nested').hide()
     $('.positions').hide()
     $('.tag-analysis').hide()
+    $('#sites-block').hide()
     $('.render').remove()
 
     if ($('.custom-select.rounded-0.count').val() === '20') {
