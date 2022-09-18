@@ -310,7 +310,7 @@
                     </table>
                 </div>
 
-                <div class="urls mt-5">
+                <div class="urls mt-5" style="display: none">
                     <h2>{{ __('Landing Page analysis') }}</h2>
                     <table class="table table-bordered table-striped dataTable dtr-inline" id="urls-table">
                         <thead>
