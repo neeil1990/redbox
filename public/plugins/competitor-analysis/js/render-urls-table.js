@@ -1,4 +1,5 @@
-function renderUrlsTable(urls) {
+function renderUrlsTable(urls, pageLength) {
+    console.log('urls' + pageLength)
     $.each(urls, function (key, value) {
 
         let hideBlock = '<div class="card direct-chat direct-chat-primary collapsed-card pt-2 mb-0" style="background: transparent !important; box-shadow: none; border: none">' +
@@ -16,7 +17,7 @@ function renderUrlsTable(urls) {
 
         $('#urls-tbody').append(
             "<tr class='render'>" +
-            "   <td class='col-9'>" + key + "</td>" +
+            "   <td>" + key + "</td>" +
             "   <td class='col-2'>" + hideBlock + "</td>" +
             "   <td class='col-1'>" + value['count'] + "</td>" +
             "</tr>"
@@ -25,8 +26,8 @@ function renderUrlsTable(urls) {
 
     $(document).ready(function (){
         $('#urls-table').dataTable({
-            "order": [[2, "desc"]],
-            "pageLength": 10,
+            "order": [[2, "asc"]],
+            "pageLength": pageLength,
             "searching": true,
         })
     })

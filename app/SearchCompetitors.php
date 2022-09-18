@@ -81,8 +81,11 @@ class SearchCompetitors extends Model
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
 
         foreach ($this->phrases as $phrase) {
-            $xml->setQuery($phrase);
-            $this->sites[$phrase] = $xml->getXMLResponse();
+            $phrase = trim($phrase);
+            if ($phrase != '') {
+                $xml->setQuery($phrase);
+                $this->sites[$phrase] = $xml->getXMLResponse();
+            }
         }
 
         TariffSetting::saveStatistics(SearchCompetitors::class, count($this->phrases));
@@ -237,25 +240,29 @@ class SearchCompetitors extends Model
         foreach ($this->analysedSites as $phrase => $sites) {
             $position = 1;
             foreach ($sites as $link => $item) {
-                $domains[parse_url($link)['host']][] = $position;
+                $host = parse_url($link)['host'];
+                $domains[$host]['position'][] = $position;
+                $domains[$host]['phrases'][] = $phrase;
+                $domains[$host]['phrases'] = array_unique($domains[$host]['phrases']);
                 $position++;
             }
         }
 
         $countPhrases = count($this->phrases);
 
-        foreach ($domains as $key => $positions) {
-            $countPositions = count($positions);
-            $sum = array_sum($positions);
+        foreach ($domains as $domain => $info) {
+            $countPositions = count($info['position']);
+            $sum = array_sum($info['position']);
             $percent = $countPhrases / 100;
 
-            $this->domainsPosition[$key]['topPercent'] = min(100, $countPositions / $percent);
-            $this->domainsPosition[$key]['text'] = "($countPositions/$countPhrases)";
+            $this->domainsPosition[$domain]['phrases'] = $info['phrases'];
+            $this->domainsPosition[$domain]['topPercent'] = min(100, $countPositions / $percent);
+            $this->domainsPosition[$domain]['text'] = "($countPositions/$countPhrases)";
 
             if ($countPhrases === $countPositions || $countPhrases < $countPositions) {
-                $this->domainsPosition[$key]['avg'] = ceil($sum / $countPositions);
+                $this->domainsPosition[$domain]['avg'] = ceil($sum / $countPositions);
             } else {
-                $this->domainsPosition[$key]['avg'] = ceil(((($countPhrases - $countPositions) * $this->count + 1) + $sum) / $countPositions);
+                $this->domainsPosition[$domain]['avg'] = ceil(((($countPhrases - $countPositions) * $this->count + 1) + $sum) / $countPositions);
             }
         }
 

@@ -38,7 +38,7 @@ class SearchCompetitorsController extends Controller
         $admin = User::isUserAdmin();
         $config = CompetitorConfig::first();
 
-        return view('competitor-analysis.index', ['admin' => $admin, 'agrigators' => $config->agrigators]);
+        return view('competitor-analysis.index', ['admin' => $admin, 'config' => $config]);
     }
 
     /**
@@ -144,6 +144,8 @@ class SearchCompetitorsController extends Controller
     {
         $config = CompetitorConfig::first();
         $config->agrigators = trim($request->input('agrigators'));
+        $config->urls_length = trim($request->input('urls_length'));
+        $config->positions_length = trim($request->input('positions_length'));
         $config->save();
 
         return Redirect::back();

@@ -59,7 +59,33 @@
                                               id="agrigators"
                                               cols="30" rows="10"
                                               class="form form-control"
-                                    >@isset($config){{ $config->agrigators }}@endisset</textarea>
+                                    >{{ $config->agrigators }}</textarea>
+
+                                    <div class="mt-3 mb-3">
+                                        <label for="urls_lenght">Стандартная длинна таблицы
+                                            <b>"Анализ по страницам"</b>
+                                        </label>
+                                        {!! Form::select('urls_length', array_unique([
+                                                $config->urls_length => $config->urls_length,
+                                                '10' => 10,
+                                                '25' => 25,
+                                                '50' => 50,
+                                                '100' => 100,
+                                        ]), null, ['class' => 'custom-select rounded-0 w-25']) !!}
+                                    </div>
+
+                                    <div class="mt-3 mb-3">
+                                        <label for="urls_lenght">Стандартная длинна таблицы
+                                            <b>"Анализ по проценту попадания в топ и средней позиции"</b>
+                                        </label>
+                                        {!! Form::select('positions_length', array_unique([
+                                                $config->positions_length => $config->positions_length,
+                                                '10' => 10,
+                                                '25' => 25,
+                                                '50' => 50,
+                                                '100' => 100,
+                                        ]), null, ['class' => 'custom-select rounded-0 w-25']) !!}
+                                    </div>
 
                                     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Update') }}">
                                 </form>

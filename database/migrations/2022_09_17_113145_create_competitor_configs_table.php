@@ -16,6 +16,8 @@ class CreateCompetitorConfigsTable extends Migration
         Schema::create('competitor_configs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('agrigators')->nullable();
+            $table->integer('urls_length')->nullable();
+            $table->integer('positions_length')->nullable();
             $table->timestamps();
         });
 

@@ -223,7 +223,8 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="coloredAgrigatorsLabel">{{ __('Highlighting aggregators') }}</h5>
+                                        <h5 class="modal-title"
+                                            id="coloredAgrigatorsLabel">{{ __('Highlighting aggregators') }}</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -231,7 +232,7 @@
                                     <div class="modal-body">
                                         <label for="search">{{ __('List of aggregator sites') }}</label>
                                         <textarea disabled name="search" id="search-agrigators" cols="30" rows="10"
-                                                  class="form form-control">{{ $agrigators }}</textarea>
+                                                  class="form form-control">{{ $config->agrigators }}</textarea>
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-default colored-button"
@@ -309,13 +310,13 @@
                     </table>
                 </div>
 
-                <div class="urls mt-5" style="display: none">
+                <div class="urls mt-5">
                     <h2>{{ __('Landing Page analysis') }}</h2>
                     <table class="table table-bordered table-striped dataTable dtr-inline" id="urls-table">
                         <thead>
                         <tr>
-                            <th>{{ __('Links') }}</th>
-                            <th>{{ __('The phrase in which the link occurs') }}</th>
+                            <th style='max-width: 600px !important; min-width: 450px !important;'>{{ __('Links') }}</th>
+                            <th style='max-width: 350px !important; min-width: 250px !important;'>{{ __('The phrase in which the link occurs') }}</th>
                             <th>{{ __('Number of repetitions') }}</th>
                         </thead>
                         <tbody id="urls-tbody">
@@ -438,9 +439,9 @@
                             renderTopSites(response.result.analysedSites)
                             renderTopSitesV2(response.result.analysedSites)
                             renderNestingTable(response.result.pagesCounter)
-                            renderSitePositionsTable(response.result.domainsPosition)
+                            renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
                             renderTagsTable(response.result.totalMetaTags)
-                            renderUrlsTable(response.result.urls)
+                            renderUrlsTable(response.result.urls, {{ $config->urls_length }})
 
                             setProgressBarStyles(100)
                             setTimeout(() => {
