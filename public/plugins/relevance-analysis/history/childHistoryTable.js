@@ -714,7 +714,7 @@ $(document).ready(function () {
                 },
                 async: true,
                 success: function (response) {
-                    thisElement.attr('class', 'fa fa-list project_name_v2')
+                    thisElement.attr('class', 'fa fa-list project_name')
 
                     if (response.code === 415) {
                         getErrorMessage(response.message)
@@ -864,7 +864,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function () {
-                    thisElement.attr('class', 'fa fa-list project_name_v2')
+                    thisElement.attr('class', 'fa fa-list project_name')
                 }
             });
         });
