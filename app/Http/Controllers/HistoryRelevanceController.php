@@ -412,8 +412,6 @@ class HistoryRelevanceController extends Controller
                 'comment'
             ]);
 
-        Log::debug('countProjects', [count($projects)]);
-
         $ownerId = $projects[0]->user_id;
         $admin = User::isUserAdmin();
         $userId = Auth::id();

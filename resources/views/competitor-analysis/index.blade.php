@@ -309,6 +309,20 @@
                     </table>
                 </div>
 
+                <div class="urls mt-5" style="display: none">
+                    <h2>{{ __('Landing Page analysis') }}</h2>
+                    <table class="table table-bordered table-striped dataTable dtr-inline" id="urls-table">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Links') }}</th>
+                            <th>{{ __('The phrase in which the link occurs') }}</th>
+                            <th>{{ __('Number of repetitions') }}</th>
+                        </thead>
+                        <tbody id="urls-tbody">
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="positions mt-5" style="display: none">
                     <h2>{{ __('Analysis by the percentage of getting into the top and middle positions') }}</h2>
                     <table class="table table-bordered table-striped dataTable dtr-inline" id="positions">
@@ -354,6 +368,7 @@
         <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-site-positions-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-tags-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-urls-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
@@ -425,6 +440,7 @@
                             renderNestingTable(response.result.pagesCounter)
                             renderSitePositionsTable(response.result.domainsPosition)
                             renderTagsTable(response.result.totalMetaTags)
+                            renderUrlsTable(response.result.urls)
 
                             setProgressBarStyles(100)
                             setTimeout(() => {

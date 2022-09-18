@@ -16,6 +16,7 @@ function renderTopSites(analysedSites) {
 
             if (info['danger']) {
                 infoBlock = '<div class="text-danger mt-2">Сайт защищен от сбора информации, советуем проанализировать вручную</div>'
+                infoBlock = getStub(url['host'], btnGroup, infoBlock, true)
             } else {
                 infoBlock = ''
                 $.each(info['meta'], function (key, values) {
@@ -31,9 +32,9 @@ function renderTopSites(analysedSites) {
                     }
 
                 })
+                infoBlock = getStub(url['host'], btnGroup, infoBlock)
             }
 
-            infoBlock = getStub(url['host'], btnGroup, infoBlock)
 
             tr += '<td class="' + danger + '">' + infoBlock + '</td>'
 
@@ -101,9 +102,26 @@ function renderTopSitesV2(analysedSites) {
  * @param host
  * @param btnGroup
  * @param html
+ * @param showBlock
  * @returns {string}
  */
-function getStub(host, btnGroup, html) {
+function getStub(host, btnGroup, html, showBlock = false) {
+
+    if (showBlock) {
+        return '<div class="card direct-chat direct-chat-primary" style="background: transparent !important; box-shadow: none; border: none">' +
+            '        <div class="card-header ui-sortable-handle" style="padding: 0 !important; border: 0">' +
+            '            <div class="d-flex justify-content-between">' +
+            '<div>' + host + btnGroup + '</div>' +
+            '                <button type="button" class="btn btn-tool" data-card-widget="collapse">' +
+            '                    <i class="fas fa-minus"></i>' +
+            '                </button>' +
+            '            </div>' +
+            '        </div>' +
+            '        <div class="card-body">' +
+            '            ' + html +
+            '        </div>' +
+            '    </div>';
+    }
 
     return '<div class="card direct-chat direct-chat-primary collapsed-card" style="background: transparent !important; box-shadow: none; border: none">' +
         '        <div class="card-header ui-sortable-handle" style="padding: 0 !important; border: 0">' +

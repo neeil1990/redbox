@@ -697,6 +697,7 @@ $(document).ready(function () {
         });
 
         $('.project_name').unbind().click(function () {
+            let thisElement = $(this)
             hideListHistory()
             hideTableHistory()
 
@@ -708,8 +709,13 @@ $(document).ready(function () {
                 data: {
                     history_id: storyId,
                 },
+                beforeSend: function () {
+                    thisElement.attr('class', 'fa fa-clock')
+                },
                 async: true,
                 success: function (response) {
+                    thisElement.attr('class', 'fa fa-list project_name_v2')
+
                     if (response.code === 415) {
                         getErrorMessage(response.message)
                     } else {
@@ -857,10 +863,14 @@ $(document).ready(function () {
                         });
                     }
                 },
+                error: function () {
+                    thisElement.attr('class', 'fa fa-list project_name_v2')
+                }
             });
         });
 
         $('.project_name_v2').unbind().click(function () {
+            let thisElement = $(this)
             hideListHistory()
             hideTableHistory()
 
@@ -872,7 +882,12 @@ $(document).ready(function () {
                 data: {
                     historyId: $(this).attr('data-order'),
                 },
+                beforeSend: function () {
+                    thisElement.attr('class', 'fa fa-clock')
+                },
                 success: function (response) {
+                    thisElement.attr('class', 'fa fa-list project_name_v2')
+
                     if (response.code === 415) {
                         getErrorMessage(response.message)
                     } else {
@@ -959,6 +974,9 @@ $(document).ready(function () {
                         })
                         repeatScan()
                     }
+                },
+                error: function () {
+                    thisElement.attr('class', 'fa fa-list project_name_v2')
                 }
             });
         })

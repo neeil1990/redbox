@@ -23,6 +23,8 @@ class SearchCompetitors extends Model
 
     protected $domainsPosition = [];
 
+    protected $urls = [];
+
     protected $region;
 
     protected $phrases;
@@ -67,6 +69,7 @@ class SearchCompetitors extends Model
             'pagesCounter' => $this->pagesCounter,
             'totalMetaTags' => $this->totalMetaTags,
             'domainsPosition' => $this->domainsPosition,
+            'urls' => $this->urls,
         ];
     }
 
@@ -81,6 +84,8 @@ class SearchCompetitors extends Model
             $xml->setQuery($phrase);
             $this->sites[$phrase] = $xml->getXMLResponse();
         }
+
+        TariffSetting::saveStatistics(SearchCompetitors::class, count($this->phrases));
         $this->scanSites();
     }
 
@@ -140,13 +145,13 @@ class SearchCompetitors extends Model
 
 
         }
-        $this->analysisPageNesting();
+        $this->analysisNestingDomains();
     }
 
     /**
      * @return void
      */
-    public function analysisPageNesting()
+    public function analysisNestingDomains()
     {
         $this->pagesCounter = [
             'mainPageCounter' => 0,
@@ -254,7 +259,31 @@ class SearchCompetitors extends Model
             }
         }
 
-        TariffSetting::saveStatistics(SearchCompetitors::class, count($this->phrases));
+        $this->analysisRepeatUrl();
+    }
+
+    /**
+     * @return void
+     */
+    protected function analysisRepeatUrl()
+    {
+        $this->urls = [];
+        foreach ($this->analysedSites as $phrase => $urls) {
+            foreach ($urls as $url => $info) {
+                if (isset($this->urls[$url])) {
+                    $this->urls[$url]['count'] += 1;
+                } else {
+                    $this->urls[$url]['count'] = 1;
+                }
+
+                $this->urls[$url]['phrases'][] = $phrase;
+            }
+        }
+
+        foreach ($this->urls as $url => $info) {
+            $this->urls[$url]['phrases'] = array_unique($this->urls[$url]['phrases']);
+        }
+
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 100
         ]);
