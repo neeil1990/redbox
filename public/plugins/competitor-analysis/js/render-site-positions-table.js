@@ -1,5 +1,4 @@
 function renderSitePositionsTable(domainsPosition, pageLength) {
-    console.log('domainsPosition' + pageLength)
     $.each(domainsPosition, function (domain, info) {
         let hideBlock = '<div class="card direct-chat direct-chat-primary collapsed-card pt-2 mb-0" style="background: transparent !important; box-shadow: none; border: none">' +
             '        <div class="card-header ui-sortable-handle" style="padding: 0 !important; border: 0">' +
