@@ -1,4 +1,4 @@
-<div class="card card-charts d-none">
+<div class="card card-charts "> {{--d-none--}}
     <div class="card-header">
         <div class="card-title">
             <ul class="nav nav-pills">
@@ -24,7 +24,7 @@
         </div>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="tab_1">
+            <div class="tab-pane" id="tab_1">
                 <div class="chart" style="position: relative; height:40vh; width:100%">
                     <canvas id="topPercent"></canvas>
                 </div>
@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <div class="tab-pane" id="tab_3">
+            <div class="tab-pane active" id="tab_3">
                 <div class="chart" style="position: relative; height:40vh; width:100%">
                     <canvas id="distributionByTop"></canvas>
                 </div>
