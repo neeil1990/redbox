@@ -9,6 +9,7 @@
         <link rel="stylesheet"
               type="text/css"
               href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/bootstrap4-duallistbox/bootstrap-duallistbox.css') }}">
 
         <style>
             .row-width {
@@ -146,8 +147,7 @@
 
                 <div id="toast-container" class="toast-top-right broken-script-message" style="display: none">
                     <div class="toast toast-error" aria-live="assertive">
-                        <div
-                            class="toast-message"></div>
+                        <div class="toast-message"></div>
                     </div>
                 </div>
 
@@ -156,11 +156,15 @@
                     <div id="stage" class="text-muted"></div>
                 </div>
 
+                <div class="mt-4" id="render-bar" style="display: none">
+                    <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
+                    <p>Отрисовка данных..</p>
+                </div>
+
                 <div
                     id="sites-block"
                     class="mt-5"
-                    style="display:none;"
-                >
+                    style="display:none;">
                     <h2>{{ __('Top sites based on your keywords') }}</h2>
                     <div class="site-block-buttons">
                         <button class="btn btn-secondary colored-button" id="coloredEloquentDomains">
@@ -354,17 +358,49 @@
                             <th style="min-width:200px; max-width: 200px">H4</th>
                             <th style="min-width:200px; max-width: 200px">H5</th>
                             <th style="min-width:200px; max-width: 200px">H6</th>
+                            <th style="min-width:200px; max-width: 200px">description</th>
                         </tr>
                         </thead>
                         <tbody id="tag-analysis-tbody">
                         </tbody>
                     </table>
                 </div>
+
+{{--                <div class="card">--}}
+{{--                    <div class="card-body d-flex">--}}
+{{--                        <div class="w-50 pr-3">--}}
+{{--                            <h3>Выберите фразы</h3>--}}
+{{--                            <select multiple="multiple" size="10" name="duallistbox_demo1">--}}
+{{--                                <option value="h1">Фраза 1</option>--}}
+{{--                                <option value="h1">Фраза 2</option>--}}
+{{--                                <option value="h1">И так далее</option>--}}
+{{--                            </select>--}}
+{{--                        </div>--}}
+{{--                        <div class="w-50 pl-3">--}}
+{{--                            <h3>Выберите теги</h3>--}}
+{{--                            <select multiple="multiple" size="10" name="duallistbox_demo1">--}}
+{{--                                <option value="h1">h1</option>--}}
+{{--                                <option value="h2">h2</option>--}}
+{{--                                <option value="h3">h3</option>--}}
+{{--                                <option value="h4">h4</option>--}}
+{{--                                <option value="h5">h5</option>--}}
+{{--                                <option value="h6">h6</option>--}}
+{{--                                <option value="title">title</option>--}}
+{{--                                <option value="description">description</option>--}}
+{{--                            </select>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="card-footer">--}}
+{{--                        <button class="btn btn-secondary">Получить рекомендации (csv)</button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+
             </div>
         </div>
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-site-positions-table.js') }}"></script>
@@ -373,6 +409,7 @@
         <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
+            var demo1 = $('[name=duallistbox_demo1]').bootstrapDualListbox();
             String.prototype.shuffle = function () {
                 var a = this.split(""),
                     n = a.length;
@@ -432,25 +469,25 @@
                                 getProgressPercent(token)
                             }, 500)
                         },
-                        success: function (response) {
-                            if (response.code === 415) {
-                                getBrokenScriptMessage(interval, response.message)
-                            }
-                            renderTopSites(response.result.analysedSites)
-                            renderTopSitesV2(response.result.analysedSites)
-                            renderNestingTable(response.result.pagesCounter)
-                            renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
-                            renderTagsTable(response.result.totalMetaTags)
-                            renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-
+                        success: async function (response) {
                             setProgressBarStyles(100)
                             setTimeout(() => {
                                 $("#progress-bar").hide(300)
                                 $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                            }, 2000)
-
+                                $('#render-bar').show(300)
+                            }, 1000)
                             removeProgressPercent(token)
                             clearInterval(interval)
+
+                            if (response.code === 415) {
+                                getBrokenScriptMessage(false, response.message)
+                            }
+                            await renderTopSites(response.result.analysedSites)
+                            await renderTopSitesV2(response.result.analysedSites)
+                            await renderNestingTable(response.result.pagesCounter)
+                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
+                            await renderTagsTable(response.result.totalMetaTags)
+                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
                         },
                         error: function () {
                             getBrokenScriptMessage(interval)
@@ -489,12 +526,15 @@
             }
 
             function getBrokenScriptMessage(interval, message = false) {
-                setProgressBarStyles(100)
-                setTimeout(() => {
-                    $("#progress-bar").hide(300)
-                    $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                }, 2000)
-                clearInterval(interval)
+                if (!interval) {
+                    setProgressBarStyles(100)
+                    setTimeout(() => {
+                        $("#progress-bar").hide(300)
+                        $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                        $('#render-bar').hide(300)
+                    }, 2000)
+                    clearInterval(interval)
+                }
 
                 $('.toast-top-right.broken-script-message').show(300)
                 if (message !== false) {

@@ -9,7 +9,7 @@ function renderTagsTable(metaTags) {
             row += '<td><div style="height: 260px; overflow-x: auto;">'
             let metas = ''
             $.each(values, function (word, count) {
-                if (word != undefined && word != "" && word != 'undefined') {
+                if (word !== undefined && word !== "" && word !== 'undefined') {
                     metas += '<span>' + word + ': ' + count + '</span> <br>'
                 }
             })

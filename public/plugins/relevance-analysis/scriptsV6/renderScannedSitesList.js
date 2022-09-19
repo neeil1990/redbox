@@ -104,7 +104,7 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
     });
 
     setTimeout(() => {
-        $('#scanned-sites').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+        $('#scanned-sites').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
 
         $('#scanned-sites_length').before(
             "    <div class='d-flex'>" +

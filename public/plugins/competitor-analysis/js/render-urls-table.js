@@ -31,5 +31,11 @@ function renderUrlsTable(urls, pageLength) {
         })
     })
 
+    $('#urls-table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
     $('.urls.mt-5').show()
+
+
+    setTimeout(() => {
+        $('#render-bar').hide(300)
+    }, 1000)
 }

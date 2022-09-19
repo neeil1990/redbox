@@ -697,7 +697,8 @@ $(document).ready(function () {
         });
 
         $('.project_name').unbind().click(function () {
-            let thisElement = $(this)
+            let thisElem = $(this)
+            let thisElementClass = $(this).attr('class')
             hideListHistory()
             hideTableHistory()
 
@@ -710,11 +711,11 @@ $(document).ready(function () {
                     history_id: storyId,
                 },
                 beforeSend: function () {
-                    thisElement.attr('class', 'fa fa-clock')
+                    thisElem.attr('class', 'fa fa-clock')
                 },
                 async: true,
                 success: function (response) {
-                    thisElement.attr('class', 'fa fa-list project_name')
+                    thisElem.attr('class', thisElementClass)
 
                     if (response.code === 415) {
                         getErrorMessage(response.message)
@@ -842,7 +843,7 @@ $(document).ready(function () {
                                 "searching": true,
                             });
 
-                            $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+                            $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
 
                             $('#history_table_length').before(
                                 "<span>" +
@@ -864,13 +865,14 @@ $(document).ready(function () {
                     }
                 },
                 error: function () {
-                    thisElement.attr('class', 'fa fa-list project_name')
+                    thisElem.attr('class', thisElementClass)
                 }
             });
         });
 
         $('.project_name_v2').unbind().click(function () {
-            let thisElement = $(this)
+            let thisElem = $(this)
+            let thisElementClass = $(this).attr('class')
             hideListHistory()
             hideTableHistory()
 
@@ -883,10 +885,10 @@ $(document).ready(function () {
                     historyId: $(this).attr('data-order'),
                 },
                 beforeSend: function () {
-                    thisElement.attr('class', 'fa fa-clock')
+                    thisElem.attr('class', 'fa fa-clock')
                 },
                 success: function (response) {
-                    thisElement.attr('class', 'fa fa-list project_name_v2')
+                    thisElem.attr('class', thisElementClass)
 
                     if (response.code === 415) {
                         getErrorMessage(response.message)
@@ -976,7 +978,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function () {
-                    thisElement.attr('class', 'fa fa-list project_name_v2')
+                    thisElem.attr('class', thisElementClass)
                 }
             });
         })

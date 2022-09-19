@@ -27,7 +27,7 @@ function renderSitePositionsTable(domainsPosition, pageLength) {
         $('tr:empty').remove();
 
         $('#positions').dataTable({
-            "order": [[1, "asc"]],
+            "order": [[1, "desc"]],
             "pageLength": pageLength,
         })
 

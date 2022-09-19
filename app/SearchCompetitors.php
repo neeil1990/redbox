@@ -4,6 +4,7 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class SearchCompetitors extends Model
 {
@@ -46,7 +47,7 @@ class SearchCompetitors extends Model
     {
         $phrases = explode("\n", $string);
 
-        $this->phrases = array_diff($phrases, ['']);
+        $this->phrases = array_unique(array_diff($phrases, ['']));
     }
 
     public function setRegion(string $region)
@@ -194,40 +195,35 @@ class SearchCompetitors extends Model
             }
         }
 
-        foreach ($this->metaTags as $phrase => $metaTags) {
-            foreach ($metaTags as $metaTag) {
-                $this->totalMetaTags[$phrase]['title'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['title']));
-                $this->totalMetaTags[$phrase]['h1'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h1']));
-                $this->totalMetaTags[$phrase]['h2'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h2']));
-                $this->totalMetaTags[$phrase]['h3'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h3']));
-                $this->totalMetaTags[$phrase]['h4'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h4']));
-                $this->totalMetaTags[$phrase]['h5'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h5']));
-                $this->totalMetaTags[$phrase]['h6'][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag['h6']));
-            }
-        }
+        $metaTagsArray = ['title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'description'];
 
-        foreach ($this->metaTags as $phrase => $metaTags) {
-            $this->totalMetaTags[$phrase]['title'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['title']))));
-            $this->totalMetaTags[$phrase]['h1'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h1']))));
-            $this->totalMetaTags[$phrase]['h2'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h2']))));
-            $this->totalMetaTags[$phrase]['h3'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h3']))));
-            $this->totalMetaTags[$phrase]['h4'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h4']))));
-            $this->totalMetaTags[$phrase]['h5'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h5']))));
-            $this->totalMetaTags[$phrase]['h6'] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase]['h6']))));
-
-            arsort($this->totalMetaTags[$phrase]['title']);
-            arsort($this->totalMetaTags[$phrase]['h1']);
-            arsort($this->totalMetaTags[$phrase]['h2']);
-            arsort($this->totalMetaTags[$phrase]['h3']);
-            arsort($this->totalMetaTags[$phrase]['h4']);
-            arsort($this->totalMetaTags[$phrase]['h5']);
-            arsort($this->totalMetaTags[$phrase]['h6']);
+        foreach ($metaTagsArray as $metaTag) {
+            $this->searchMetaTag($metaTag);
         }
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 95
         ]);
         $this->calculatePositions();
+    }
+
+    /**
+     * @param $key
+     * @return void
+     */
+    protected function searchMetaTag($key)
+    {
+        foreach ($this->metaTags as $phrase => $metaTags) {
+            foreach ($metaTags as $metaTag) {
+                $this->totalMetaTags[$phrase][$key][] = TextAnalyzer::deleteEverythingExceptCharacters(implode(' ', $metaTag[$key]));
+            }
+        }
+
+        foreach ($this->metaTags as $phrase => $metaTags) {
+            $this->totalMetaTags[$phrase][$key] = array_count_values(explode(' ', mb_strtolower(implode(' ', $this->totalMetaTags[$phrase][$key]))));
+
+            arsort($this->totalMetaTags[$phrase][$key]);
+        }
     }
 
     /**
@@ -256,7 +252,7 @@ class SearchCompetitors extends Model
             $percent = $countPhrases / 100;
 
             $this->domainsPosition[$domain]['phrases'] = $info['phrases'];
-            $this->domainsPosition[$domain]['topPercent'] = min(100, $countPositions / $percent);
+            $this->domainsPosition[$domain]['topPercent'] = ceil(min(100, $countPositions / $percent));
             $this->domainsPosition[$domain]['text'] = "($countPositions/$countPhrases)";
 
             if ($countPhrases === $countPositions || $countPhrases < $countPositions) {
