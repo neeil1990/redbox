@@ -351,6 +351,37 @@
                             });
                         });
 
+                        let notValidateUrl = $('<div />', {
+                            class: 'custom-control custom-switch'
+                        }).css({
+                            float: "left",
+                            "margin-left": "2.25rem",
+                            "margin-top": "6px",
+                        });
+
+                        notValidateUrl.append($('<input />', {
+                            type: "checkbox",
+                            id: "notValidateUrl",
+                            name: "url",
+                            value: "1",
+                            class: "custom-control-input",
+                        }).click(function () {
+                            let val = $(this).val();
+
+                            if(val == "1")
+                                $(this).val(0);
+                            else
+                                $(this).val(1);
+
+                            api.column($(this).attr('name') + ':name').search(val).draw();
+                        }));
+
+                        notValidateUrl.append($('<label />', {
+                            for: "notValidateUrl",
+                            class: "custom-control-label",
+                        }).text("Показать нецелевые URL"));
+
+
                         let btnGroup = $('<div />', {
                             class: "btn-group"
                         });
@@ -408,6 +439,7 @@
                             }
                         });
 
+                        this.closest('.card').find('.card-header').append(notValidateUrl);
                         this.closest('.card').find('.card-header .card-title').html(btnGroup);
                         this.closest('.card').find('.card-header .card-title').prepend($('<h3 />', {class: "card-title"}).css({"line-height": '38px', "margin-right": '10px'}).text("Скрыть колонки:"));
 
