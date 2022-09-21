@@ -29,9 +29,9 @@ class SimplifiedXmlFacade extends XmlFacade
     }
 
     /**
-     * @return array
+     * @return array|Exception
      */
-    public function getXMLResponse(): array
+    public function getXMLResponse()
     {
         return $this->sendRequest();
     }
@@ -42,6 +42,7 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     protected function sendRequest(bool $lastTry = false)
     {
+        Log::debug('trt', [$this->path]);
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
@@ -59,8 +60,8 @@ class SimplifiedXmlFacade extends XmlFacade
 
         if (isset($result['response']['error'])) {
             if ($lastTry) {
-                TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
-                TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
+                TelegramBot::sendMessage("localtest XML error: " . $result['response']['error'], 938341087);
+                TelegramBot::sendMessage("localtest XML error: " . $result['response']['error'], 169011279);
 
                 return new Exception($result['response']['error']);
             }

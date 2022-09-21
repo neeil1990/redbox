@@ -68,7 +68,7 @@ class SearchCompetitorsController extends Controller
             ]);
         } catch (Throwable $e) {
             return response()->json([
-                'code' => 200,
+                'code' => 415,
                 'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete(),
                 'message' => 'Произошла непредвиденная ошибка, обратитесь к администратору'
             ]);
