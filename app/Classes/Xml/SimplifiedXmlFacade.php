@@ -61,6 +61,7 @@ class SimplifiedXmlFacade extends XmlFacade
             if ($lastTry) {
                 TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
                 TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
+                Log::debug("XML error: " . $result['response']['error']);
 
                 return new Exception($result['response']['error']);
             }
