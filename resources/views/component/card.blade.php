@@ -8,9 +8,10 @@
 
 @section('content')
 
-    @role('admin')
-        <a href="{{ route('description.edit', [$code, 'top']) }}" class="btn btn-secondary mb-4">{{ __('Add description') }}</a>
-    @endrole
+    @if(\App\User::isUserAdmin())
+        <a href="{{ route('description.edit', [$code, 'top']) }}"
+           class="btn btn-secondary mb-4">{{ __('Add description') }}</a>
+    @endif
 
     @if(isset($description['top']))
         @include('description.main', ['description' => $description['top']])
@@ -20,7 +21,8 @@
             <h3 class="card-title">{{ $title }}</h3>
             <div class="card-tools">
                 <!-- This will cause the card to maximize when clicked -->
-                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i>
+                </button>
             </div>
         </div>
         <!-- /.card-header -->
@@ -31,10 +33,10 @@
         <!-- /.card-body -->
 
         @if(isset($footer))
-        <div class="card-footer">
-            {{ $footer ?? null }}
-        </div>
-        <!-- /.card-footer -->
+            <div class="card-footer">
+                {{ $footer ?? null }}
+            </div>
+            <!-- /.card-footer -->
         @endif
     </div>
     <!-- /.card -->
@@ -55,9 +57,9 @@
             cookies.set(name, 'expand');
         });
 
-        if(cookies.get(name) == 'collapse'){
+        if (cookies.get(name) == 'collapse') {
             $('.card-widget').addClass('collapsed-card');
-        }else{
+        } else {
             $('.card-widget').removeClass('collapsed-card');
         }
     </script>
