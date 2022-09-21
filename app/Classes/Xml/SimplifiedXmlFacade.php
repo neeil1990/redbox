@@ -59,12 +59,12 @@ class SimplifiedXmlFacade extends XmlFacade
 
         if (isset($result['response']['error'])) {
             if ($lastTry) {
-                TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
-                TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
-                Log::debug("XML error: " . $result['response']['error']);
-
                 return new Exception($result['response']['error']);
             }
+
+            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
+            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
+            Log::debug("XML error: " . $result['response']['error']);
 
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser('sv@prime-ltd.su');
