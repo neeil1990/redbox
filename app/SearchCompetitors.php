@@ -89,7 +89,14 @@ class SearchCompetitors extends Model
             }
         }
 
-        TariffSetting::saveStatistics(SearchCompetitors::class, count($this->phrases));
+        $counter = 0;
+        foreach ($this->sites as $site) {
+            if (is_array($site)) {
+                $counter++;
+            }
+        }
+        TariffSetting::saveStatistics(SearchCompetitors::class, $counter);
+
         $this->scanSites();
     }
 

@@ -18,6 +18,11 @@ class SimplifiedXmlFacade extends XmlFacade
     protected $count;
 
     /**
+     * @var mixed
+     */
+    protected $result;
+
+    /**
      * @param $lr -- region
      */
     public function __construct($lr, $count = 100)
@@ -31,58 +36,73 @@ class SimplifiedXmlFacade extends XmlFacade
     /**
      * @return array|Exception
      */
-    public function getXMLResponse()
+    public function getXMLResponse(bool $lastTry = false)
     {
-        return $this->sendRequest();
+        if ($lastTry) {
+            $this->setPath('https://xmlproxy.ru/search/xml');
+            $this->setUser('sv@prime-ltd.su');
+            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
+        } else {
+            $this->setPath('https://xmlstock.com/yandex/xml/');
+            $this->setUser('9371');
+            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+        }
+
+        $xml = $this->sendRequest();
+
+        if (isset($xml['response']['error'])) {
+            Log::debug("$this->path: " . $xml['response']['error']);
+            TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
+            TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
+
+            if ($lastTry) {
+                return new Exception($xml['response']['error']);
+            }
+
+            return $this->getXMLResponse(true);
+
+        } else {
+            return $this->parseResult($xml['response']['results']['grouping']['group']);
+        }
     }
 
     /**
-     * @param bool $lastTry
      * @return array|Exception
      */
-    protected function sendRequest(bool $lastTry = false)
+    protected function sendRequest()
     {
         $query = str_replace(' ', '%20', $this->query);
         $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
             . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
 
-        $response = file_get_contents($url, false, stream_context_create([
+        $config = file_get_contents($url, false, stream_context_create([
             "ssl" => [
                 "verify_peer" => false,
                 "verify_peer_name" => false,
             ],
         ]));
-        $xml = $this->load($response);
-
+        $xml = $this->load($config);
         $json = json_encode($xml);
-        $result = json_decode($json, true);
 
-        if (isset($result['response']['error'])) {
-            if ($lastTry) {
-                return new Exception($result['response']['error']);
+        return json_decode($json, true);
+    }
+
+    /**
+     * @param $xmlResult
+     * @return array
+     */
+    protected function parseResult($xmlResult): array
+    {
+        $result = [];
+        foreach ($xmlResult as $item) {
+            if (array_key_exists(0, $item['doc'])) {
+                $result[] = Str::lower($item['doc'][0]['url']);
+            } else {
+                $result[] = Str::lower($item['doc']['url']);
             }
-
-            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
-            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
-            Log::debug("XML error: " . $result['response']['error']);
-
-            $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser('sv@prime-ltd.su');
-            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            return $this->sendRequest(true);
-
-        } else {
-            $sites = [];
-            foreach ($result['response']['results']['grouping']['group'] as $item) {
-                if (array_key_exists(0, $item['doc'])) {
-                    $sites[] = Str::lower($item['doc'][0]['url']);
-                } else {
-                    $sites[] = Str::lower($item['doc']['url']);
-                }
-            }
-
-            return $sites;
         }
+
+        return $result;
     }
 
     /**

@@ -501,26 +501,26 @@
                             }, 500)
                         },
                         success: async function (response) {
-                            setProgressBarStyles(100)
-                            setTimeout(() => {
-                                $("#progress-bar").hide(300)
-                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                                $('#render-bar').show(300)
-                            }, 1000)
-                            removeProgressPercent(token)
-                            clearInterval(interval)
-
                             if (response.code === 415) {
                                 getBrokenScriptMessage(false, response.message)
-                            }
-                            await renderTopSites(response.result.analysedSites)
-                            await renderTopSitesV2(response.result.analysedSites)
-                            await renderNestingTable(response.result.pagesCounter)
-                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
-                            await renderTagsTable(response.result.totalMetaTags)
-                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                            await duallboxBlockRender(response.result.totalMetaTags)
+                            } else {
+                                setProgressBarStyles(100)
+                                setTimeout(() => {
+                                    $("#progress-bar").hide(300)
+                                    $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                                    $('#render-bar').show(300)
+                                }, 1000)
+                                removeProgressPercent(token)
+                                clearInterval(interval)
 
+                                await renderTopSites(response.result.analysedSites)
+                                await renderTopSitesV2(response.result.analysedSites)
+                                await renderNestingTable(response.result.pagesCounter)
+                                await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
+                                await renderTagsTable(response.result.totalMetaTags)
+                                await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
+                                await duallboxBlockRender(response.result.totalMetaTags)
+                            }
                         },
                         error: function () {
                             getBrokenScriptMessage(interval)

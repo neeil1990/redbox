@@ -282,7 +282,7 @@ function setRandomColor(elem, defaultColor = false) {
         let colorG = Math.floor((Math.random() * 256));
         let colorB = Math.floor((Math.random() * 256));
 
-        elem.css("background-color", "rgb(" + colorR + "," + colorG + "," + colorB + ")");
+        elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
         elem.css("color", "white");
         elem.css("text-shadow", "1px 1px 1px black");
     }
@@ -295,7 +295,7 @@ function setColorElems(elems) {
     let colorB = Math.floor((Math.random() * 256));
 
     $.each(elems, function (key, elem) {
-        elem.css("background-color", "rgb(" + colorR + "," + colorG + "," + colorB + ")");
+        elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
         elem.css("color", "white");
         elem.css("text-shadow", "1px 1px 1px black");
     })

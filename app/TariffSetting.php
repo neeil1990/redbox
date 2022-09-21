@@ -134,26 +134,24 @@ class TariffSetting extends Model
      */
     public static function saveStatistics(string $class, $count = 1)
     {
-        $now = Carbon::now();
+        if ($count > 0) {
+            $now = Carbon::now();
 
-        /**
-         * унаследовано от Model, но не является экземпляром Model
-         * @var $class Model
-         */
-        $record = $class::where('month', '=', $now->year . '-' . $now->month)
-            ->where('user_id', '=', Auth::id())->first();
+            $record = $class::where('user_id', '=', Auth::id())
+                ->where('month', '=', $now->year . '-' . $now->month)
+                ->first();
 
-        if (isset($record)) {
-            $record->counter += $count;
-        } else {
-            $record = new $class();
-            $record->month = $now->year . '-' . $now->month;
-            $record->user_id = Auth::id();
-            $record->counter = $count;
+            if (isset($record)) {
+                $record->counter += $count;
+            } else {
+                $record = new $class();
+                $record->month = $now->year . '-' . $now->month;
+                $record->user_id = Auth::id();
+                $record->counter = $count;
+            }
+
+            $record->save();
         }
-
-        $record->save();
-
     }
 
 }
