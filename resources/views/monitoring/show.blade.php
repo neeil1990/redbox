@@ -351,6 +351,37 @@
                             });
                         });
 
+                        let notValidateUrl = $('<div />', {
+                            class: 'custom-control custom-switch'
+                        }).css({
+                            float: "left",
+                            "margin-left": "2.25rem",
+                            "margin-top": "6px",
+                        });
+
+                        notValidateUrl.append($('<input />', {
+                            type: "checkbox",
+                            id: "notValidateUrl",
+                            name: "url",
+                            value: "1",
+                            class: "custom-control-input",
+                        }).click(function () {
+                            let val = $(this).val();
+
+                            if(val == "1")
+                                $(this).val(0);
+                            else
+                                $(this).val(1);
+
+                            api.column($(this).attr('name') + ':name').search(val).draw();
+                        }));
+
+                        notValidateUrl.append($('<label />', {
+                            for: "notValidateUrl",
+                            class: "custom-control-label",
+                        }).text("Показать нецелевые URL"));
+
+
                         let btnGroup = $('<div />', {
                             class: "btn-group"
                         });
@@ -408,6 +439,7 @@
                             }
                         });
 
+                        this.closest('.card').find('.card-header').append(notValidateUrl);
                         this.closest('.card').find('.card-header .card-title').html(btnGroup);
                         this.closest('.card').find('.card-header .card-title').prepend($('<h3 />', {class: "card-title"}).css({"line-height": '38px', "margin-right": '10px'}).text("Скрыть колонки:"));
 
@@ -943,8 +975,59 @@
                             position: 'left',
                         },
                         legend: {
-                            display: true,
                             position: 'left',
+                            labels: {
+                                fontSize: 24,
+                                fontStyle: "normal",
+                                generateLabels: function(chart){
+                                    let data = chart.data;
+
+                                    return data.labels.map(function(label, i) {
+                                        let meta = chart.getDatasetMeta(0);
+                                        let ds = data.datasets[0];
+                                        let arc = meta.data[i];
+                                        let custom = arc && arc.custom || {};
+                                        let getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                                        let arcOpts = chart.options.elements.arc;
+                                        let fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                        let stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                        let bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                                        let sum = 0;
+                                        ds.data.map(data => { sum += data });
+                                        let value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
+                                        let percent = Math.round((value * 100 / sum));
+
+                                        return {
+                                            text: label + ": " + percent + "%",
+                                            fillStyle: fill,
+                                            strokeStyle: fill,
+                                            lineWidth: bw,
+                                            hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                            index: i
+                                        };
+                                    });
+                                },
+                            },
+                        },
+                        tooltips: {
+                            xPadding: 15,
+                            yPadding: 10,
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+
+                                    let label = data.labels[tooltipItem.index];
+                                    let dataItem = data.datasets[0].data[tooltipItem.index];
+
+                                    let sum = 0;
+                                    data.datasets[0].data.map(data => { sum += data });
+                                    let percent = Math.round((dataItem * 100 / sum));
+
+                                    label += ': ' + dataItem + ' (' + percent + '%)';
+
+                                    return label;
+                                }
+                            }
                         },
                         plugins: {
                             datalabels: {
@@ -952,6 +1035,7 @@
                                 formatter: (value, ctx) => {
                                     let sum = 0;
                                     let dataArr = ctx.chart.data.datasets[0].data;
+
                                     dataArr.map(data => { sum += data });
 
                                     let percent = Math.round((value * 100 / sum));

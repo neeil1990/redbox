@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Classes\Monitoring\AreaChartData;
 use App\MonitoringPosition;
 use App\MonitoringProject;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -208,13 +209,12 @@ class MonitoringChartsController extends Controller
 
     protected function getLastPositionsByMonths(Collection $positionByDays)
     {
-        $days = -1;
-        $filtered = $positionByDays->filter(function () use (&$days) {
-            $days++;
-            return !($days % 31);
+        $unique = $positionByDays->unique(function ($item, $key) {
+            $carbon = Carbon::parse($key);
+            return $carbon->format('m.Y');
         });
 
-        return $filtered;
+        return $unique;
     }
 
     public function calculatePercentPositionsInTop(Collection $positions, $top)
