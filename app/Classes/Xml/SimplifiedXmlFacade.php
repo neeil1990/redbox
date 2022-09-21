@@ -34,12 +34,6 @@ class SimplifiedXmlFacade extends XmlFacade
     public function getXMLResponse(): array
     {
         $response = $this->sendRequest();
-        if (isset($response['response']['error'])) {
-            $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser('sv@prime-ltd.su');
-            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            $response = $this->sendRequest(true);
-        }
 
         return $response;
     }
@@ -65,23 +59,31 @@ class SimplifiedXmlFacade extends XmlFacade
         $json = json_encode($xml);
         $result = json_decode($json, true);
 
-        if (isset($result['response']['error']) && $lastTry) {
-            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
-            TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
+        if (isset($result['response']['error'])) {
+            if ($lastTry) {
+                TelegramBot::sendMessage("XML error: " . $result['response']['error'], 938341087);
+                TelegramBot::sendMessage("XML error: " . $result['response']['error'], 169011279);
 
-            return new Exception($result['response']['error']);
-        }
-
-        $sites = [];
-        foreach ($result['response']['results']['grouping']['group'] as $item) {
-            if (array_key_exists(0, $item['doc'])) {
-                $sites[] = Str::lower($item['doc'][0]['url']);
-            } else {
-                $sites[] = Str::lower($item['doc']['url']);
+                return new Exception($result['response']['error']);
             }
-        }
 
-        return $sites;
+            $this->setPath('https://xmlproxy.ru/search/xml');
+            $this->setUser('sv@prime-ltd.su');
+            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
+            return $this->sendRequest(true);
+
+        } else {
+            $sites = [];
+            foreach ($result['response']['results']['grouping']['group'] as $item) {
+                if (array_key_exists(0, $item['doc'])) {
+                    $sites[] = Str::lower($item['doc'][0]['url']);
+                } else {
+                    $sites[] = Str::lower($item['doc']['url']);
+                }
+            }
+
+            return $sites;
+        }
     }
 
     /**
