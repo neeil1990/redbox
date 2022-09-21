@@ -7,8 +7,10 @@ function refreshAll() {
     $('.tag-analysis').hide()
     $('#sites-block').hide()
     $('.urls.mt-5').hide()
+    $('#recommendations-block').hide()
     $('.render').remove()
 
+    removePhrasesDuallbox()
     if ($('.custom-select.rounded-0.count').val() === '20') {
         $('.extra-th').show()
     } else {

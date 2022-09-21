@@ -76,8 +76,6 @@ class HomeController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        Log::debug('orders', [$request->all()]);
-
         $positions = '';
         foreach ($request->positions as $key => $position) {
             $positions .= $position . ',';

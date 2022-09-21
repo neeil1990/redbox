@@ -56,7 +56,6 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
     {
 
         if ($this->stage == 1) {
-            Log::debug('Первая стадия сквозного анализа ' . $this->mainId);
             ProjectRelevanceThough::thoughAnalyse($this->items, $this->mainId, $this->countRecords);
 
             dispatch(new RelevanceThoughAnalysisQueue([
@@ -67,7 +66,6 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
             ]));
 
         } elseif ($this->stage == 2) {
-            Log::debug('Вторая стадия сквозного анализа ' . $this->mainId);
 
             $though = ProjectRelevanceThough::where('project_relevance_history_id', '=', $this->mainId)->first();
             $thoughWords = json_decode(gzuncompress(base64_decode($though->though_words)), true);
@@ -82,7 +80,6 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
             ]));
 
         } elseif ($this->stage == 3) {
-            Log::debug('Третья стадия сквозного анализа ' . $this->mainId);
 
             $though = ProjectRelevanceThough::where('project_relevance_history_id', '=', $this->mainId)->first();
             $wordWorms = json_decode(gzuncompress(base64_decode($though->word_worms)), true);

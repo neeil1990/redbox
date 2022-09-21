@@ -16,7 +16,7 @@ function renderUrlsTable(urls, pageLength) {
 
         $('#urls-tbody').append(
             "<tr class='render'>" +
-            "   <td>" + key + "</td>" +
+            "   <td class='col-9 word-wrap'>" + key + "</td>" +
             "   <td class='col-2'>" + hideBlock + "</td>" +
             "   <td class='col-1'>" + value['count'] + "</td>" +
             "</tr>"
@@ -31,7 +31,6 @@ function renderUrlsTable(urls, pageLength) {
         })
     })
 
-    $('#urls-table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
     $('.urls.mt-5').show()
 
 

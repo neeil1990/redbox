@@ -298,6 +298,7 @@
                             <th>{{ __('Page') }}</th>
                             <th>{{ __('Count') }}</th>
                             <th>{{ __('Ratio') }}</th>
+                        </tr>
                         </thead>
                         <tbody>
                         <tr>
@@ -345,7 +346,13 @@
                 </div>
 
                 <div class="tag-analysis mt-5" style="display: none">
-                    <h2>{{ __('Tag Analysis') }}</h2>
+                    <div class="d-flex flex-row pb-2">
+                        <h2>{{ __('Tag Analysis') }}</h2>
+                        <button type="button" class="btn btn-secondary ml-2" data-toggle="modal"
+                                data-target="#recommendationModal">
+                            Получить рекомендации
+                        </button>
+                    </div>
                     <table class="table table-bordered table-striped dataTable dtr-inline" id="tag-analysis"
                            style="display: block; overflow-x: auto;">
                         <thead>
@@ -366,35 +373,55 @@
                     </table>
                 </div>
 
-{{--                <div class="card">--}}
-{{--                    <div class="card-body d-flex">--}}
-{{--                        <div class="w-50 pr-3">--}}
-{{--                            <h3>Выберите фразы</h3>--}}
-{{--                            <select multiple="multiple" size="10" name="duallistbox_demo1">--}}
-{{--                                <option value="h1">Фраза 1</option>--}}
-{{--                                <option value="h1">Фраза 2</option>--}}
-{{--                                <option value="h1">И так далее</option>--}}
-{{--                            </select>--}}
-{{--                        </div>--}}
-{{--                        <div class="w-50 pl-3">--}}
-{{--                            <h3>Выберите теги</h3>--}}
-{{--                            <select multiple="multiple" size="10" name="duallistbox_demo1">--}}
-{{--                                <option value="h1">h1</option>--}}
-{{--                                <option value="h2">h2</option>--}}
-{{--                                <option value="h3">h3</option>--}}
-{{--                                <option value="h4">h4</option>--}}
-{{--                                <option value="h5">h5</option>--}}
-{{--                                <option value="h6">h6</option>--}}
-{{--                                <option value="title">title</option>--}}
-{{--                                <option value="description">description</option>--}}
-{{--                            </select>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="card-footer">--}}
-{{--                        <button class="btn btn-secondary">Получить рекомендации (csv)</button>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
+                <div class="modal fade" id="recommendationModal" data-backdrop="static" data-keyboard="false"
+                     tabindex="-1" aria-labelledby="recommendationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="recommendationModalLabel"></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex flex-row">
+                                    <div class="w-50 pr-3" id="dualbox-phrases-block">
+                                    </div>
+                                    <div class="w-50 pl-3">
+                                        <h3>Выберите теги</h3>
+                                        <select multiple="multiple" size="10" name="duallistbox_tags"
+                                                id="duallistbox_tags">
+                                            <option value="h1" class="duallist-default">h1</option>
+                                            <option value="h2" class="duallist-default">h2</option>
+                                            <option value="h3" class="duallist-default">h3</option>
+                                            <option value="h4" class="duallist-default">h4</option>
+                                            <option value="h5" class="duallist-default">h5</option>
+                                            <option value="h6" class="duallist-default">h6</option>
+                                            <option value="title" class="duallist-default">title</option>
+                                            <option value="description" class="duallist-default">description
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button class="btn btn-secondary" id="getRecommendations" data-dismiss="modal">Получить
+                                    рекомендации
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div id="recommendations-block" class="mt-5" style="display: none">
+                    <h3>Рекомендации</h3>
+                    <table class="table table-bordered table-striped dataTable dtr-inline" id="recommendations-table">
+                        <thead id="recommendations-head">
+                        </thead>
+                        <tbody id="recommendations-tbody">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -407,9 +434,13 @@
         <script src="{{ asset('plugins/competitor-analysis/js/render-tags-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-urls-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/duallbox-block.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            var demo1 = $('[name=duallistbox_demo1]').bootstrapDualListbox();
             String.prototype.shuffle = function () {
                 var a = this.split(""),
                     n = a.length;
@@ -488,6 +519,8 @@
                             await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
                             await renderTagsTable(response.result.totalMetaTags)
                             await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
+                            await duallboxBlockRender(response.result.totalMetaTags)
+
                         },
                         error: function () {
                             getBrokenScriptMessage(interval)
