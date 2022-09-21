@@ -33,9 +33,7 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     public function getXMLResponse(): array
     {
-        $response = $this->sendRequest();
-
-        return $response;
+        return $this->sendRequest();
     }
 
     /**
