@@ -34,7 +34,7 @@ function duallboxBlockRender(metaTags, count) {
                     newHead += '<th>' + tag + '</th>'
                     newRow += '<td>'
                     $.each(values, function (word, count) {
-                        newRow += word + ": " + count + "<br>"
+                        newRow += word + ": " + count + "\n"
                     })
                     newRow += "</td>"
                 })
