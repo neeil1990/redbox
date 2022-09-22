@@ -70,7 +70,7 @@ function renderTopSitesV2(analysedSites) {
             let url = new URL(link)
             let btnGroup = getBtnGroup(url, true)
             newTable +=
-                '<tr style="height: 100px !important" ' +
+                '<tr style="height: 100px !important; cursor: pointer" ' +
                 'data-order="' + url['host'] + '" ' +
                 'data-full-url="' + link + '" ' +
                 'data-main-page="' + object['mainPage'] + '">' +
@@ -95,6 +95,7 @@ function renderTopSitesV2(analysedSites) {
     })
 
     $('#sites-block').show()
+    showEquivalentElements()
 }
 
 /**
@@ -133,7 +134,7 @@ function getStub(host, btnGroup, html, showBlock = false) {
         '            </div>' +
         '        </div>' +
         '        <div class="card-body" style="display: none;">' +
-        '            ' + html +
+        html +
         '        </div>' +
         '    </div>';
 }
@@ -147,8 +148,7 @@ function getStub(host, btnGroup, html, showBlock = false) {
 function getBtnGroup(url, colorElems = false) {
     if (colorElems) {
         return '<div class="btn-group">' +
-            '   <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-tool dropdown-toggle" style="text-shadow: 1px 1px 1px black;' +
-            '    color: white;">' +
+            '   <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-tool dropdown-toggle" style="color: black;">' +
             '   <i class="fas fa-external-link-alt"></i>' +
             '   </button>' +
             '       <div role="menu" class="dropdown-menu dropdown-menu-left">' +
@@ -283,8 +283,8 @@ function setRandomColor(elem, defaultColor = false) {
         let colorB = Math.floor((Math.random() * 256));
 
         elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
-        elem.css("color", "white");
-        elem.css("text-shadow", "1px 1px 1px black");
+        // elem.css("color", "white");
+        // elem.css("text-shadow", "1px 1px 1px black");
     }
 
 }
@@ -296,8 +296,8 @@ function setColorElems(elems) {
 
     $.each(elems, function (key, elem) {
         elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
-        elem.css("color", "white");
-        elem.css("text-shadow", "1px 1px 1px black");
+        // elem.css("color", "white");
+        // elem.css("text-shadow", "1px 1px 1px black");
     })
 }
 
@@ -307,4 +307,28 @@ function setColorElems(elems) {
 function coloredButtons(elem) {
     $('.colored-button').attr('class', 'btn btn-default colored-button')
     elem.attr('class', 'btn btn-secondary colored-button')
+}
+
+function showEquivalentElements() {
+    let target = $('#sites-tables > div > div.card-body.p-0 > table > tbody > tr')
+
+    target.unbind('mouseenter').mouseenter(function () {
+        let background = $(this).css('background-color')
+        $('tr').filter(function () {
+            return $(this).css('background-color') === background &&
+                $(this).attr('data-main-page') !== false &&
+                typeof $(this).attr('data-main-page') !== 'undefined';
+
+        }).css("box-shadow", "inset 0 0 10px black");
+    })
+
+    target.unbind('mouseleave').mouseleave(function () {
+        let background = $(this).css('background-color')
+        $('tr').filter(function () {
+            return $(this).css('background-color') === background &&
+                $(this).attr('data-main-page') !== false &&
+                typeof $(this).attr('data-main-page') !== 'undefined';
+
+        }).css("box-shadow", "none");
+    })
 }
