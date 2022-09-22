@@ -1,57 +1,71 @@
-function duallboxBlockRender(metaTags) {
+function duallboxBlockRender(metaTags, count) {
     getPhrasesDuallbox(metaTags)
 
     $('#getRecommendations').unbind().on('click', function () {
+        if ($.fn.DataTable.fnIsDataTable($('#recommendations-table'))) {
+            $('#recommendations-table').dataTable().fnDestroy()
+        }
         $('.recommendations-render').remove()
-        $('#recommendations-table').dataTable().fnDestroy()
+
         let selectedPhrases = $('#bootstrap-duallistbox-selected-list_duallistbox_phrases option').toArray().map(item => item.value);
         let selectedTags = $('#bootstrap-duallistbox-selected-list_duallistbox_tags option').toArray().map(item => item.value);
 
-        let newHead = '<tr class="recommendations-render render"><th>Фраза</th>'
-        $.each(selectedTags, function (key1, tag) {
-            newHead += '<th>' + tag + '</th>'
-        })
-        newHead += '</tr>'
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/get-recommendations",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                selectedPhrases: selectedPhrases,
+                selectedTags: selectedTags,
+                count: count,
+                metaTags: metaTags
+            },
+            success: function (response) {
+                // let newHead = '<tr class="recommendations-render render">'
+                // $.each(selectedTags, function (key1, tag) {
+                //     newHead += '<th>' + tag + '</th>'
+                // })
+                // newHead += '</tr>'
 
-        $('#recommendations-head').append(newHead)
-
-        $.each(selectedPhrases, function (key, phrase) {
-            let newRow = '<tr class="recommendations-render render">' +
-                '<td>' + phrase + '</td>'
-            $.each(selectedTags, function (key1, tag) {
-                newRow += '<td>'
-                let words = []
-                $.each(metaTags[phrase][tag], function (word, count) {
-                    if (count >= 3 && word !== "") {
-                        words.push(word)
-                    }
+                let newRow = "<tr class='recommendations-render render'>"
+                let newHead = '<tr class="recommendations-render render">'
+                $.each(response.result, function (tag, values) {
+                    newHead += '<th>' + tag + '</th>'
+                    newRow += '<td>'
+                    $.each(values, function (word, count) {
+                        newRow += word + ": " + count + "<br>"
+                    })
+                    newRow += "</td>"
                 })
+                newHead += '</tr>'
+                $('#recommendations-head').append(newHead)
+                $('#recommendations-body').append(newRow + "</tr>")
 
-                newRow += words.join("\n") + '</td>'
-            })
-            $('#recommendations-tbody').append(newRow + "</tr>")
-        })
+                $('#recommendations-block').show()
 
-        $('#recommendations-block').show()
+                $(document).ready(function () {
+                    $('#recommendations-table').dataTable({
+                        "order": [[0, "desc"]],
+                        "pageLength": 10,
+                        "searching": true,
+                        dom: 'lBfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel'
+                        ]
+                    })
 
-
-        $('#recommendations-table').dataTable({
-            "order": [[0, "desc"]],
-            "pageLength": 10,
-            "searching": true,
-            dom: 'lBfrtip',
-            buttons: [
-                'copy', 'csv', 'excel'
-            ]
-        })
-
-        $('#recommendations-table_length').attr('class', 'pl-2')
-        $('.dt-button').attr('btn btn-secondary')
+                    $('#recommendations-table_length').css('margin-right', '5px')
+                    $('#recommendations-table_wrapper > div.dt-buttons').css('display', 'inline')
+                    $('#recommendations-table_wrapper > div.dt-buttons').css('margin-left', '20px')
+                    $('.dt-button').attr('class', 'btn btn-secondary')
+                })
+            },
+            error: function () {
+                $('#recommendations-block').hide()
+            }
+        });
     })
-}
-
-function removePhrasesDuallbox() {
-    $('#dualbox-phrases-block').html('')
 }
 
 function getPhrasesDuallbox(metaTags) {

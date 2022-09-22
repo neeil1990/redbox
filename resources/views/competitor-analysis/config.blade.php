@@ -75,7 +75,7 @@
                                     </div>
 
                                     <div class="mt-3 mb-3">
-                                        <label for="urls_lenght">Стандартная длинна таблицы
+                                        <label for="urls_length">Стандартная длинна таблицы
                                             <b>"Анализ по проценту попадания в топ и средней позиции"</b>
                                         </label>
                                         {!! Form::select('positions_length', array_unique([
@@ -87,7 +87,18 @@
                                         ]), null, ['class' => 'custom-select rounded-0 w-25']) !!}
                                     </div>
 
-                                    <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Update') }}">
+                                    <div class="mt-3 mb-3">
+                                        <label for="count_top_10">Среднее количество повторений для вхождения слова в рекомендаци <b>Топ 10</b></label>
+                                        <input type="number" name="count_repeat_top_10" class="form form-control" value="{{ $config->count_repeat_top_10 }}">
+                                    </div>
+
+
+                                    <div class="mt-3 mb-3">
+                                        <label for="count_top_20">Среднее количество повторений для вхождения слова в рекомендаци <b>Топ 20</b></label>
+                                        <input type="number" name="count_repeat_top_20" class="form form-control" value="{{ $config->count_repeat_top_20 }}">
+                                    </div>
+
+                                    <input type="submit" class="btn btn-secondary mt-2 float-right" value="{{ __('Update') }}">
                                 </form>
                             </div>
                         </div>

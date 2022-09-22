@@ -52,7 +52,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
         //Добавляем только в ниграм
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {
-                $(this).append("<a class='btn btn-secondary mr-1 ml-1' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");
+                $(this).append("<a class='btn btn-secondary' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");
                 if (resultId !== 0) {
                     $(this).append("<a class='btn btn-secondary mr-1 ml-1' href='/show-missing-words/" + resultId + "' target='_blank'>Missing Words</a>");
                 }
@@ -209,7 +209,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
 
         });
 
-        if(sessionStorage.getItem('searchPassages') === 'true'){
+        if (sessionStorage.getItem('searchPassages') === 'true') {
             $.fn.dataTable.ext.search.push(function (settings, data) {
                 var minAVGPassages = parseFloat($('#minAVGPassages').val());
                 var maxAVGPassages = parseFloat($('#maxAVGPassages').val());

@@ -418,7 +418,7 @@
                     <table class="table table-bordered table-striped dataTable dtr-inline" id="recommendations-table">
                         <thead id="recommendations-head">
                         </thead>
-                        <tbody id="recommendations-tbody">
+                        <tbody id="recommendations-body">
                         </tbody>
                     </table>
                 </div>
@@ -465,14 +465,13 @@
                 }
             };
             window.addEventListener('storage', onStorage);
-
+            $('#duallistbox_tags').bootstrapDualListbox();
             $('.btn.btn-secondary.pull-left').click(() => {
                 let phrases = $.trim($('.form-control.phrases').val())
                 let count = $('.custom-select.rounded-0.count').val()
-                let interval = null
                 let token = $('meta[name="csrf-token"]').attr('content')
+                let interval = null
                 if (phrases) {
-
                     $.ajax({
                         type: "POST",
                         dataType: "json",
@@ -519,7 +518,7 @@
                                 await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
                                 await renderTagsTable(response.result.totalMetaTags)
                                 await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                                await duallboxBlockRender(response.result.totalMetaTags)
+                                await duallboxBlockRender(response.result.totalMetaTags, count)
                             }
                         },
                         error: function () {

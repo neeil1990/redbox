@@ -143,11 +143,65 @@ class SearchCompetitorsController extends Controller
     public function editConfig(Request $request): RedirectResponse
     {
         $config = CompetitorConfig::first();
-        $config->agrigators = trim($request->input('agrigators'));
-        $config->urls_length = trim($request->input('urls_length'));
-        $config->positions_length = trim($request->input('positions_length'));
-        $config->save();
+        $config->update($request->all());
 
         return Redirect::back();
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getRecommendations(Request $request): JsonResponse
+    {
+        $config = CompetitorConfig::first();
+
+        if ($request->input('count') === 10) {
+            $delimiter = $config->count_repeat_top_10;
+        } else {
+            $delimiter = $config->count_repeat_top_20;
+        }
+
+        $phrases = $request->input('selectedPhrases');
+        $tags = $request->input('selectedTags');
+        $metaTags = $request->input('metaTags');
+        $countPhrases = count($phrases);
+
+        $information = [];
+        foreach ($phrases as $phrase) {
+            foreach ($metaTags[$phrase] as $tag => $values) {
+                if (in_array($tag, $tags)) {
+                    $information[$tag][] = $values;
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($information as $tag => $values) {
+            foreach ($values as $value) {
+                foreach ($value as $word => $count) {
+                    if (isset($result[$tag][$word])) {
+                        $result[$tag][$word] += $count;
+                    } else {
+                        $result[$tag][$word] = $count;
+                    }
+                }
+            }
+        }
+
+        foreach ($result as $tag => $values) {
+            foreach ($values as $word => $count) {
+                if (($count / $countPhrases) < $delimiter || $word === 0) {
+                    unset($result[$tag][$word]);
+                }
+            }
+        }
+
+        return response()->json([
+            'result' => $result,
+            'tags' => $tags,
+            'code' => 200
+        ]);
+
     }
 }

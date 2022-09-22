@@ -10,7 +10,7 @@ function refreshAll() {
     $('#recommendations-block').hide()
     $('.render').remove()
 
-    removePhrasesDuallbox()
+    $('#dualbox-phrases-block').html('')
     if ($('.custom-select.rounded-0.count').val() === '20') {
         $('.extra-th').show()
     } else {
