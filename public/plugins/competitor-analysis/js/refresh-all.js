@@ -1,6 +1,5 @@
 function refreshAll() {
     $('.btn.btn-secondary.pull-left').prop('disabled', true);
-    $('#stage').text(getXMLMessage())
     $('.top-sites').hide()
     $('.nested').hide()
     $('.positions').hide()

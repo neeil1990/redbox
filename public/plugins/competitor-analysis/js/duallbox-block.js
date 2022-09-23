@@ -10,6 +10,10 @@ function duallboxBlockRender(metaTags, count) {
         let selectedPhrases = $('#bootstrap-duallistbox-selected-list_duallistbox_phrases option').toArray().map(item => item.value);
         let selectedTags = $('#bootstrap-duallistbox-selected-list_duallistbox_tags option').toArray().map(item => item.value);
 
+        if (selectedPhrases.length === 0 || selectedTags.length === 0) {
+            return;
+        }
+
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -22,12 +26,6 @@ function duallboxBlockRender(metaTags, count) {
                 metaTags: metaTags
             },
             success: function (response) {
-                // let newHead = '<tr class="recommendations-render render">'
-                // $.each(selectedTags, function (key1, tag) {
-                //     newHead += '<th>' + tag + '</th>'
-                // })
-                // newHead += '</tr>'
-
                 let newRow = "<tr class='recommendations-render render'>"
                 let newHead = '<tr class="recommendations-render render">'
                 $.each(response.result, function (tag, values) {

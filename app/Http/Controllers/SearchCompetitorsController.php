@@ -49,9 +49,8 @@ class SearchCompetitorsController extends Controller
     {
         if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
             return response()->json([
-                'code' => 415,
                 'message' => __('Your limits are exhausted this month')
-            ]);
+            ], 500);
         }
 
         try {
@@ -64,14 +63,12 @@ class SearchCompetitorsController extends Controller
 
             return response()->json([
                 'result' => $analysis->getResult(),
-                'code' => 200,
             ]);
         } catch (Throwable $e) {
             return response()->json([
-                'code' => 415,
                 'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete(),
-                'message' => 'Произошла непредвиденная ошибка, обратитесь к администратору'
-            ]);
+                'message' => __('An unexpected error has occurred, please contact the administrator')
+            ], 500);
         }
 
     }
@@ -113,7 +110,6 @@ class SearchCompetitorsController extends Controller
     public function removeProgressBar(Request $request): JsonResponse
     {
         return response()->json([
-            'code' => 200,
             'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete()
         ]);
     }
@@ -154,6 +150,12 @@ class SearchCompetitorsController extends Controller
      */
     public function getRecommendations(Request $request): JsonResponse
     {
+        if (count($request->input('selectedPhrases')) < 0 || count($request->input('selectedTags')) < 0) {
+            return response()->json([
+                'message' => __('invalid data')
+            ], 500);
+        }
+
         $config = CompetitorConfig::first();
 
         if ($request->input('count') === 10) {
