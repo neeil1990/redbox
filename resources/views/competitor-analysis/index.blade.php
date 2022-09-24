@@ -70,6 +70,14 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }
+
+            .separate-header {
+                height: 92px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
         </style>
 
     @endslot
