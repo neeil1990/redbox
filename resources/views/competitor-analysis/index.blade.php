@@ -61,10 +61,17 @@
                 border: 1px solid #ced4da;
                 border-radius: 0.25rem;
                 box-shadow: inset 0 0 0 transparent;
-                transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+                transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
             }
 
+            .separate-text {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
         </style>
+
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -182,22 +189,19 @@
                 <p>{{ __('Render data') }}</p>
             </div>
 
-            <div
-                id="sites-block"
-                class="mt-5"
-                style="display:none;">
+            <div id="sites-block" class="mt-5" style="display:none;">
                 <h2>{{ __('Top sites based on your keywords') }}</h2>
                 <div class="site-block-buttons">
-                    <button class="btn btn-secondary colored-button" id="coloredEloquentDomains">
+                    <button class="btn btn-secondary colored-button" id="coloredEloquentUrls">
+                        {{ __('Highlight identical urls') }}
+                    </button>
+
+                    <button class="btn btn-default colored-button" id="coloredEloquentDomains">
                         {{ __('Highlight the same domains') }}
                     </button>
 
                     <button class="btn btn-default colored-button" id="coloredMainPages">
                         {{ __('Highlight all main pages') }}
-                    </button>
-
-                    <button class="btn btn-default colored-button" id="coloredEloquentUrls">
-                        {{ __('Highlight identical urls') }}
                     </button>
 
                     <button type="button" class="btn btn-default" data-toggle="modal"

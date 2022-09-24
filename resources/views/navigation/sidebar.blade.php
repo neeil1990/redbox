@@ -21,7 +21,7 @@
             </div>
         </div>
     </div>
-    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false" style="min-height: 70vh; overflow-x: hidden !important;">
+    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false" style="min-height: 70vh; overflow-x: auto !important;">
         {{-- Cписок пунктов меню подргружается при помощи скрипта app.blade.php -> js -> getProjects() --}}
         {{-- Это нужно для того, чтобы пользователь мог сортировать пункты меню так, как ему удобно --}}
         {{-- Добавить пункт меню и вывод сервиса на главную можно тут /main-projects --}}

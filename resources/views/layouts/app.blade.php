@@ -16,6 +16,12 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     @yield('css')
+    <style>
+        .main-sidebar.sidebar-dark-primary.elevation-4{
+            position: fixed;
+            height: 100vh;
+        }
+    </style>
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 </head>
 

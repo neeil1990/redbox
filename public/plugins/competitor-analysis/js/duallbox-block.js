@@ -20,10 +20,10 @@ function duallboxBlockRender(metaTags, count) {
             url: "/get-recommendations",
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                selectedPhrases: selectedPhrases,
-                selectedTags: selectedTags,
-                count: count,
-                metaTags: metaTags
+                selectedPhrases: JSON.stringify(selectedPhrases),
+                selectedTags: JSON.stringify(selectedTags),
+                metaTags: JSON.stringify(metaTags),
+                count: count
             },
             success: function (response) {
                 let newRow = "<tr class='recommendations-render render'>"
@@ -32,7 +32,7 @@ function duallboxBlockRender(metaTags, count) {
                     newHead += '<th>' + tag + '</th>'
                     newRow += '<td>'
                     $.each(values, function (word, count) {
-                        newRow += word + ": " + count + "\n"
+                        newRow += "<div>" + word + ": " + count + "</div>"
                     })
                     newRow += "</td>"
                 })
@@ -57,6 +57,13 @@ function duallboxBlockRender(metaTags, count) {
                     $('#recommendations-table_wrapper > div.dt-buttons').css('display', 'inline')
                     $('#recommendations-table_wrapper > div.dt-buttons').css('margin-left', '20px')
                     $('.dt-button').attr('class', 'btn btn-secondary')
+
+                    $("html, body").animate({
+                        scrollTop: $("#recommendations-table").offset().top
+                    }, {
+                        duration: 600,   // по умолчанию «400»
+                        easing: "swing" // по умолчанию «swing»
+                    });
                 })
             },
             error: function () {

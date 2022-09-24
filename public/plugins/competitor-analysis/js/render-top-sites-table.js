@@ -53,42 +53,39 @@ function renderTopSitesV2(analysedSites) {
     let links = [];
     $.each(analysedSites, function (phrase, sites) {
         let newTable = '' +
-            '<div class="card render mt-3" style="min-width: 350px;">' +
-            '   <div class="card-header"><h3>' + phrase + '</h3></div>' +
-            '   <div class="card-body p-0">' +
-            '      <table class="table">' +
-            '          <thead>' +
-            '          <tr class="fixed-color">' +
-            '              <th style="width: 10px">#</th>' +
-            '              <th>Домен</th>' +
-            '          </tr>' +
-            '          </thead>' +
-            '          <tbody>'
+            '<div class="card render mt-3" style="width: 350px; flex-shrink: 0">' +
+            '   <div class="card-header separate-header border"><h3>' + phrase + '</h3></div>' +
+            '   <div class="card-body p-0 d-flex flex-column">' +
+            '       <div class="fixed-color d-flex p-2 border">' +
+            '           <div class="font-weight-bold pr-2">#</div>' +
+            '           <div class="font-weight-bold">Домен</div>' +
+            '       </div>'
 
         let iterator = 1
         $.each(sites, function (link, object) {
             let url = new URL(link)
             let btnGroup = getBtnGroup(url, true)
             newTable +=
-                '<tr style="height: 100px !important; cursor: pointer" ' +
+                '<div class="d-flex border p-2 align-items-center justify-content-start" style="cursor: pointer; height: 75px" ' +
                 'data-order="' + url['host'] + '" ' +
                 'data-full-url="' + link + '" ' +
                 'data-main-page="' + object['mainPage'] + '">' +
-                '    <td>' + iterator + '</td>' +
-                '    <td class="word-wrap">' + (link).substr(0, 70) + btnGroup + '</td>' +
-                '</tr>'
-            iterator++
+                '    <div class="pl-2 pr-2">' + iterator + '</div>' +
+                '    <div class="word-wrap">' + (link).substr(0, 70) + btnGroup + '</div>' +
+                '</div>'
             domains.push(url['host'])
             links.push(link)
+
+            iterator++
         })
-        newTable += '</tbody></table></div></div>'
+        newTable += '</div></div>'
 
         $('#sites-tables').append(newTable)
 
         let uniqueDomains = [...new Set(domains)];
 
-        $.each(uniqueDomains, function (key, value) {
-            setRandomColor($('[data-order="' + value + '"]'))
+        $.each(links, function (key, value) {
+            setRandomColor($('[data-full-url="' + value + '"]'))
         })
 
         colorButtonsActions(uniqueDomains, links)
@@ -200,7 +197,7 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredEloquentDomains').unbind().on('click', function () {
         coloredButtons($(this))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div'), true)
 
         $.each(uniqueDomains, function (key, value) {
             setRandomColor($('[data-order="' + value + '"]'))
@@ -209,7 +206,7 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredEloquentUrls').unbind().on('click', function () {
         coloredButtons($(this))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div'), true)
 
         $.each(links, function (key, value) {
             setRandomColor($('[data-full-url="' + value + '"]'))
@@ -218,14 +215,14 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredEloquentMyText').unbind().on('click', function () {
         coloredButtons($('#sites-block > div.site-block-buttons > button:nth-child(4)'))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div'), true)
 
         let myValues = $('#search-textarea').val()
 
         let myValuesAr = myValues.split("\n")
 
         let elems = []
-        $.each($('#sites-tables tr'), function (key, value) {
+        $.each($('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div'), function (key, value) {
             let target = $(this).attr('data-full-url');
             if (target) {
                 let elem = $(this);
@@ -243,14 +240,14 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredAgrigatorsButton').unbind().on('click', function () {
         coloredButtons($('#sites-block > div.site-block-buttons > button:nth-child(6)'))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div'), true)
 
         let agrigators = $('#search-agrigators').val()
 
         let agrigatorsAr = agrigators.split("\n")
 
         let elems = []
-        $.each($('#sites-tables tr'), function (key, value) {
+        $.each($('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div'), function (key, value) {
             let target = $(this).attr('data-order');
             if (target) {
                 if (agrigatorsAr.indexOf(target) !== -1) {
@@ -283,8 +280,6 @@ function setRandomColor(elem, defaultColor = false) {
         let colorB = Math.floor((Math.random() * 256));
 
         elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
-        // elem.css("color", "white");
-        // elem.css("text-shadow", "1px 1px 1px black");
     }
 
 }
@@ -296,8 +291,6 @@ function setColorElems(elems) {
 
     $.each(elems, function (key, elem) {
         elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
-        // elem.css("color", "white");
-        // elem.css("text-shadow", "1px 1px 1px black");
     })
 }
 
@@ -310,25 +303,30 @@ function coloredButtons(elem) {
 }
 
 function showEquivalentElements() {
-    let target = $('#sites-tables > div > div.card-body.p-0 > table > tbody > tr')
+    let target = $('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div')
 
     target.unbind('mouseenter').mouseenter(function () {
         let background = $(this).css('background-color')
-        $('tr').filter(function () {
-            return $(this).css('background-color') === background &&
-                $(this).attr('data-main-page') !== false &&
-                typeof $(this).attr('data-main-page') !== 'undefined';
-
+        $('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div').filter(function () {
+            return validateColor(background, $(this))
         }).css("box-shadow", "inset 0 0 10px black");
     })
 
     target.unbind('mouseleave').mouseleave(function () {
         let background = $(this).css('background-color')
-        $('tr').filter(function () {
-            return $(this).css('background-color') === background &&
-                $(this).attr('data-main-page') !== false &&
-                typeof $(this).attr('data-main-page') !== 'undefined';
-
+        $('#sites-tables > div > div.card-body.p-0.d-flex.flex-column > div').filter(function () {
+            return validateColor(background, $(this))
         }).css("box-shadow", "none");
     })
+}
+
+function validateColor(background, target) {
+    if (background === 'white' ||
+        background === 'rgb(255, 255, 255)' ||
+        background === 'rgba(0, 0, 0, 0)') {
+        return false;
+    }
+    return target.css('background-color') === background &&
+        target.attr('data-main-page') !== false &&
+        typeof target.attr('data-main-page') !== 'undefined';
 }

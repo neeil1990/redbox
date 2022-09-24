@@ -65,6 +65,11 @@ class SearchCompetitorsController extends Controller
                 'result' => $analysis->getResult(),
             ]);
         } catch (Throwable $e) {
+            Log::debug('competitor error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             return response()->json([
                 'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete(),
                 'message' => __('An unexpected error has occurred, please contact the administrator')
@@ -150,57 +155,21 @@ class SearchCompetitorsController extends Controller
      */
     public function getRecommendations(Request $request): JsonResponse
     {
-        if (count($request->input('selectedPhrases')) < 0 || count($request->input('selectedTags')) < 0) {
+        $phrases = json_decode($request->input('selectedPhrases'), true);
+        $tags = json_decode($request->input('selectedTags'), true);
+
+        if (count($phrases) < 0 || count($tags) < 0) {
             return response()->json([
                 'message' => __('invalid data')
             ], 500);
         }
 
-        $config = CompetitorConfig::first();
-
-        if ($request->input('count') === 10) {
-            $delimiter = $config->count_repeat_top_10;
-        } else {
-            $delimiter = $config->count_repeat_top_20;
-        }
-
-        $phrases = $request->input('selectedPhrases');
-        $tags = $request->input('selectedTags');
-        $metaTags = $request->input('metaTags');
+        Log::debug('me', $request->all());
+        $metaTags = json_decode($request->input('metaTags'), true);
         $countPhrases = count($phrases);
 
-        $information = [];
-        foreach ($phrases as $phrase) {
-            foreach ($metaTags[$phrase] as $tag => $values) {
-                if (in_array($tag, $tags)) {
-                    $information[$tag][] = $values;
-                }
-            }
-        }
-
-        $result = [];
-        foreach ($information as $tag => $values) {
-            foreach ($values as $value) {
-                foreach ($value as $word => $count) {
-                    if (isset($result[$tag][$word])) {
-                        $result[$tag][$word] += $count;
-                    } else {
-                        $result[$tag][$word] = $count;
-                    }
-                }
-            }
-        }
-
-        foreach ($result as $tag => $values) {
-            foreach ($values as $word => $count) {
-                if (($count / $countPhrases) < $delimiter || $word === 0) {
-                    unset($result[$tag][$word]);
-                }
-            }
-        }
-
         return response()->json([
-            'result' => $result,
+            'result' => SearchCompetitors::getRecommendations($phrases, $tags, $metaTags, $countPhrases, $request->input('count')),
             'tags' => $tags,
             'code' => 200
         ]);

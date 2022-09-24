@@ -65,13 +65,13 @@ class SearchCompetitors extends Model
      */
     public function getResult(): array
     {
-        return [
+        return mb_convert_encoding([
             'analysedSites' => $this->analysedSites,
             'pagesCounter' => $this->pagesCounter,
             'totalMetaTags' => $this->totalMetaTags,
             'domainsPosition' => $this->domainsPosition,
             'urls' => $this->urls,
-        ];
+        ], 'UTF-8', 'auto');
     }
 
     /**
@@ -379,5 +379,56 @@ class SearchCompetitors extends Model
         $url = parse_url($link);
 
         return $url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php';
+    }
+
+    /**
+     * @param $phrases
+     * @param $tags
+     * @param $metaTags
+     * @param $countPhrases
+     * @param $count
+     * @return array[]
+     */
+    public static function getRecommendations($phrases, $tags, $metaTags, $countPhrases, $count): array
+    {
+        $config = CompetitorConfig::first();
+
+        if ($count === "10") {
+            $minimumValue = $config->count_repeat_top_10;
+        } else {
+            $minimumValue = $config->count_repeat_top_20;
+        }
+
+        $information = [];
+        foreach ($phrases as $phrase) {
+            foreach ($metaTags[$phrase] as $tag => $values) {
+                if (in_array($tag, $tags)) {
+                    $information[$tag][] = $values;
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($information as $tag => $values) {
+            foreach ($values as $value) {
+                foreach ($value as $word => $count) {
+                    if (isset($result[$tag][$word])) {
+                        $result[$tag][$word] += $count;
+                    } else {
+                        $result[$tag][$word] = $count;
+                    }
+                }
+            }
+        }
+
+        foreach ($result as $tag => $values) {
+            foreach ($values as $word => $count) {
+                if (($count / $countPhrases) < $minimumValue || $word === 0 || $word === "") {
+                    unset($result[$tag][$word]);
+                }
+            }
+        }
+
+        return $result;
     }
 }
