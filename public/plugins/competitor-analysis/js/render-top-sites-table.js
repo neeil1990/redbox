@@ -53,42 +53,40 @@ function renderTopSitesV2(analysedSites) {
     let links = [];
     $.each(analysedSites, function (phrase, sites) {
         let newTable = '' +
-            '<div class="card render mt-3" style="min-width: 350px;">' +
-            '   <div class="card-header"><h3>' + phrase + '</h3></div>' +
-            '   <div class="card-body p-0">' +
-            '      <table class="table">' +
-            '          <thead>' +
-            '          <tr class="fixed-color">' +
-            '              <th style="width: 10px">#</th>' +
-            '              <th>Домен</th>' +
-            '          </tr>' +
-            '          </thead>' +
-            '          <tbody>'
+            '<div class="card render mt-3" style="width: 300px; flex-shrink: 0">' +
+            '   <div class="card-header separate-header border"><h3>' + phrase + '</h3></div>' +
+            '   <div class="card-body p-0 d-flex flex-column">' +
+            '       <div class="fixed-color d-flex p-2 border">' +
+            '           <div class="font-weight-bold pr-2">#</div>' +
+            '           <div class="font-weight-bold">Домен</div>' +
+            '       </div>'
 
         let iterator = 1
         $.each(sites, function (link, object) {
             let url = new URL(link)
-            let btnGroup = getBtnGroup(url, true)
+            let btnGroup = getBtnGroup(url)
             newTable +=
-                '<tr style="height: 100px !important; cursor: pointer" ' +
+                '<div class="d-flex p-2 align-items-center justify-content-start border await-color" style="cursor: pointer; height: 75px" ' +
                 'data-order="' + url['host'] + '" ' +
                 'data-full-url="' + link + '" ' +
                 'data-main-page="' + object['mainPage'] + '">' +
-                '    <td>' + iterator + '</td>' +
-                '    <td class="word-wrap">' + (link).substr(0, 70) + btnGroup + '</td>' +
-                '</tr>'
-            iterator++
+                '    <div class="pl-2 pr-2" style="width: 40px">' + iterator + '</div>' +
+                '    <div class="fixed-lines word-wrap">' + link + '</div>' +
+                '    <div>' + btnGroup + '</div>' +
+                '</div>'
             domains.push(url['host'])
             links.push(link)
+
+            iterator++
         })
-        newTable += '</tbody></table></div></div>'
+        newTable += '</div></div>'
 
         $('#sites-tables').append(newTable)
 
         let uniqueDomains = [...new Set(domains)];
 
-        $.each(uniqueDomains, function (key, value) {
-            setRandomColor($('[data-order="' + value + '"]'))
+        $.each(links, function (key, value) {
+            setRandomColor($('[data-full-url="' + value + '"]'))
         })
 
         colorButtonsActions(uniqueDomains, links)
@@ -142,47 +140,26 @@ function getStub(host, btnGroup, html, showBlock = false) {
 /**
  *
  * @param url
- * @param colorElems = false
  * @returns {string}
  */
-function getBtnGroup(url, colorElems = false) {
-    if (colorElems) {
-        return '<div class="btn-group">' +
-            '   <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-tool dropdown-toggle" style="color: black;">' +
-            '   <i class="fas fa-external-link-alt"></i>' +
-            '   </button>' +
-            '       <div role="menu" class="dropdown-menu dropdown-menu-left">' +
+function getBtnGroup(url) {
+    return '<div class="btn-group pl-1 p-0">' +
+        '   <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-tool dropdown-toggle p-0" style="color: black;">' +
+        '   <i class="fas fa-external-link-alt"></i>' +
+        '   </button>' +
+        '       <div role="menu" class="dropdown-menu dropdown-menu-left">' +
 
-            '       <a target="_blank" class="dropdown-item" href="' + url['href'] + '" style="text-shadow: none">' +
-            '       <i class="fas fa-external-link-alt"></i> Перейти на посадочную страницу</a>' +
+        '       <a target="_blank" class="dropdown-item" href="' + url['href'] + '" style="text-shadow: none">' +
+        '       <i class="fas fa-external-link-alt"></i> Перейти на посадочную страницу</a>' +
 
-            '       <a target="_blank" class="dropdown-item" href="' + url['origin'] + '" style="text-shadow: none">' +
-            '       <i class="fas fa-external-link-alt"></i> Перейти на сайт</a>' +
+        '       <a target="_blank" class="dropdown-item" href="' + url['origin'] + '" style="text-shadow: none">' +
+        '       <i class="fas fa-external-link-alt"></i> Перейти на сайт</a>' +
 
-            '       <a style="text-shadow: none" target="_blank" class="dropdown-item" href="/redirect-to-text-analyzer/' + url['origin'].replace(/\\|\//g, 'abc') + '">' +
-            '       <i class="fas fa-external-link-alt"></i> Проанализировать текст</a>' +
+        '       <a style="text-shadow: none" target="_blank" class="dropdown-item" href="/redirect-to-text-analyzer/' + url['origin'].replace(/\\|\//g, 'abc') + '">' +
+        '       <i class="fas fa-external-link-alt"></i> Проанализировать текст</a>' +
 
-            '   </div>' +
-            '</div>'
-    } else {
-        return '<div class="btn-group">' +
-            '   <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-tool dropdown-toggle">' +
-            '   <i class="fas fa-external-link-alt"></i>' +
-            '   </button>' +
-            '       <div role="menu" class="dropdown-menu dropdown-menu-left">' +
-
-            '       <a target="_blank" class="dropdown-item" href="' + url['href'] + '">' +
-            '       <i class="fas fa-external-link-alt"></i> Перейти на посадочную страницу</a>' +
-
-            '       <a target="_blank" class="dropdown-item" href="' + url['origin'] + '">' +
-            '       <i class="fas fa-external-link-alt"></i> Перейти на сайт</a>' +
-
-            '       <a target="_blank" class="dropdown-item" href="/redirect-to-text-analyzer/' + url['origin'].replace(/\\|\//g, 'abc') + '">' +
-            '       <i class="fas fa-external-link-alt"></i> Проанализировать текст</a>' +
-
-            '   </div>' +
-            '</div>'
-    }
+        '   </div>' +
+        '</div>'
 }
 
 /**
@@ -200,7 +177,7 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredEloquentDomains').unbind().on('click', function () {
         coloredButtons($(this))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('.await-color'), true)
 
         $.each(uniqueDomains, function (key, value) {
             setRandomColor($('[data-order="' + value + '"]'))
@@ -209,7 +186,7 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredEloquentUrls').unbind().on('click', function () {
         coloredButtons($(this))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('.await-color'), true)
 
         $.each(links, function (key, value) {
             setRandomColor($('[data-full-url="' + value + '"]'))
@@ -218,14 +195,14 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredEloquentMyText').unbind().on('click', function () {
         coloredButtons($('#sites-block > div.site-block-buttons > button:nth-child(4)'))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('.await-color'), true)
 
         let myValues = $('#search-textarea').val()
 
         let myValuesAr = myValues.split("\n")
 
         let elems = []
-        $.each($('#sites-tables tr'), function (key, value) {
+        $.each($('.await-color'), function (key, value) {
             let target = $(this).attr('data-full-url');
             if (target) {
                 let elem = $(this);
@@ -243,14 +220,14 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredAgrigatorsButton').unbind().on('click', function () {
         coloredButtons($('#sites-block > div.site-block-buttons > button:nth-child(6)'))
-        setRandomColor($('#sites-tables tr'), true)
+        setRandomColor($('.await-color'), true)
 
         let agrigators = $('#search-agrigators').val()
 
         let agrigatorsAr = agrigators.split("\n")
 
         let elems = []
-        $.each($('#sites-tables tr'), function (key, value) {
+        $.each($('.await-color'), function (key, value) {
             let target = $(this).attr('data-order');
             if (target) {
                 if (agrigatorsAr.indexOf(target) !== -1) {
@@ -278,27 +255,25 @@ function setRandomColor(elem, defaultColor = false) {
     }
 
     if (elem.length > 1) {
-        let colorR = Math.floor((Math.random() * 256));
-        let colorG = Math.floor((Math.random() * 256));
-        let colorB = Math.floor((Math.random() * 256));
-
-        elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
-        // elem.css("color", "white");
-        // elem.css("text-shadow", "1px 1px 1px black");
+        elem.css("background-color", "rgba(" + randomColor() + "," + randomColor() + "," + randomColor() + "," + getRandomOpacity() + ")");
     }
 
 }
 
 function setColorElems(elems) {
-    let colorR = Math.floor((Math.random() * 256));
-    let colorG = Math.floor((Math.random() * 256));
-    let colorB = Math.floor((Math.random() * 256));
-
     $.each(elems, function (key, elem) {
-        elem.css("background-color", "rgba(" + colorR + "," + colorG + "," + colorB + ", .5)");
-        // elem.css("color", "white");
-        // elem.css("text-shadow", "1px 1px 1px black");
+        elem.css("background-color", "rgba(" + randomColor() + "," + randomColor() + "," + randomColor() + "," + getRandomOpacity() + ")");
     })
+}
+
+function randomColor() {
+    return Math.floor((Math.random() * 256));
+}
+
+function getRandomOpacity() {
+    let randomOpacity = [0.5, 0.6, 0.65, 0.70, 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.78, 79, 80];
+
+    return randomOpacity[Math.floor(Math.random() * randomOpacity.length)];
 }
 
 /**
@@ -310,25 +285,30 @@ function coloredButtons(elem) {
 }
 
 function showEquivalentElements() {
-    let target = $('#sites-tables > div > div.card-body.p-0 > table > tbody > tr')
+    let target = $('.await-color')
 
     target.unbind('mouseenter').mouseenter(function () {
         let background = $(this).css('background-color')
-        $('tr').filter(function () {
-            return $(this).css('background-color') === background &&
-                $(this).attr('data-main-page') !== false &&
-                typeof $(this).attr('data-main-page') !== 'undefined';
-
+        $('.await-color').filter(function () {
+            return validateColor(background, $(this))
         }).css("box-shadow", "inset 0 0 10px black");
     })
 
     target.unbind('mouseleave').mouseleave(function () {
         let background = $(this).css('background-color')
-        $('tr').filter(function () {
-            return $(this).css('background-color') === background &&
-                $(this).attr('data-main-page') !== false &&
-                typeof $(this).attr('data-main-page') !== 'undefined';
-
+        $('.await-color').filter(function () {
+            return validateColor(background, $(this))
         }).css("box-shadow", "none");
     })
+}
+
+function validateColor(background, target) {
+    if (background === 'white' ||
+        background === 'rgb(255, 255, 255)' ||
+        background === 'rgba(0, 0, 0, 0)') {
+        return false;
+    }
+    return target.css('background-color') === background &&
+        target.attr('data-main-page') !== false &&
+        typeof target.attr('data-main-page') !== 'undefined';
 }

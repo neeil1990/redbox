@@ -25,9 +25,12 @@
                 background: rgb(255, 193, 7);
             }
 
-            .word-wrap {
+            .fixed-lines {
                 word-wrap: break-word;
-                max-width: 300px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
             }
 
             .select-text {
@@ -61,10 +64,31 @@
                 border: 1px solid #ced4da;
                 border-radius: 0.25rem;
                 box-shadow: inset 0 0 0 transparent;
-                transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+                transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
             }
 
+            .separate-text {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .separate-header {
+                height: 92px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .await-color {
+                word-break: break-word;
+            }
+
+
         </style>
+
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -182,22 +206,19 @@
                 <p>{{ __('Render data') }}</p>
             </div>
 
-            <div
-                id="sites-block"
-                class="mt-5"
-                style="display:none;">
+            <div id="sites-block" class="mt-5" style="display:none;">
                 <h2>{{ __('Top sites based on your keywords') }}</h2>
                 <div class="site-block-buttons">
-                    <button class="btn btn-secondary colored-button" id="coloredEloquentDomains">
+                    <button class="btn btn-secondary colored-button" id="coloredEloquentUrls">
+                        {{ __('Highlight identical urls') }}
+                    </button>
+
+                    <button class="btn btn-default colored-button" id="coloredEloquentDomains">
                         {{ __('Highlight the same domains') }}
                     </button>
 
                     <button class="btn btn-default colored-button" id="coloredMainPages">
                         {{ __('Highlight all main pages') }}
-                    </button>
-
-                    <button class="btn btn-default colored-button" id="coloredEloquentUrls">
-                        {{ __('Highlight identical urls') }}
                     </button>
 
                     <button type="button" class="btn btn-default" data-toggle="modal"
@@ -539,11 +560,12 @@
                             await duallboxBlockRender(response.result.totalMetaTags, count)
                         },
                         error: function (response) {
-                            getBrokenScriptMessage(interval, response.responseJSON.message)
                             setTimeout(() => {
                                 $("#progress-bar").hide(300)
                                 $('.btn.btn-secondary.pull-left').prop('disabled', false);
                             }, 1000)
+                            console.log(response)
+                            getBrokenScriptMessage(interval, response)
                         }
                     });
                 } else {
@@ -590,8 +612,8 @@
                 }
 
                 $('.toast-top-right.broken-script-message').show(300)
-                if (message !== false) {
-                    $('.toast-message').html(message)
+                if (message.responseJSON.message !== false) {
+                    $('.toast-message').html(message.responseJSON)
                 }
                 setTimeout(() => {
                     $('.toast-top-right.broken-script-message').hide(300)

@@ -32,7 +32,21 @@ class SearchCompetitors extends Model
 
     protected $count;
 
+    protected $duplicates = [];
+
+    protected $savedHtml = [];
+
+    protected $countPhrases;
+
     public $pageHash;
+
+    /**
+     * @return mixed
+     */
+    public function getCountPhrases()
+    {
+        return $this->countPhrases;
+    }
 
     /**
      * @param string $pageHash
@@ -65,13 +79,13 @@ class SearchCompetitors extends Model
      */
     public function getResult(): array
     {
-        return [
+        return mb_convert_encoding([
             'analysedSites' => $this->analysedSites,
             'pagesCounter' => $this->pagesCounter,
             'totalMetaTags' => $this->totalMetaTags,
             'domainsPosition' => $this->domainsPosition,
             'urls' => $this->urls,
-        ];
+        ], 'UTF-8', 'auto');
     }
 
     /**
@@ -89,14 +103,18 @@ class SearchCompetitors extends Model
             }
         }
 
-        $counter = 0;
-        foreach ($this->sites as $site) {
+        $this->countPhrases = 0;
+        foreach ($this->sites as $key => $site) {
             if (is_array($site)) {
-                $counter++;
+                $this->countPhrases++;
+            } else {
+                unset($this->sites[$key]);
             }
         }
-        TariffSetting::saveStatistics(SearchCompetitors::class, $counter);
 
+        TariffSetting::saveStatistics(SearchCompetitors::class, $this->countPhrases);
+
+        $this->searchDuplicates();
         $this->scanSites();
     }
 
@@ -105,47 +123,30 @@ class SearchCompetitors extends Model
      */
     public function scanSites()
     {
-        $total = ($this->count * count($this->phrases)) / 100;
         $iterator = 0;
-        foreach ($this->sites as $key => $items) {
-            foreach ($items as $item) {
-                $site = SearchCompetitors::curlInit($item);
-                try {
-                    $contentType = $site[1]['content_type'];
-                    if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-                        $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-                        $site = mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
+        $total = ($this->count * count($this->phrases)) / 100;
+        foreach ($this->sites as $phrase => $items) {
+            foreach ($items as $link) {
+                if ($this->duplicates[$link]) {
+                    if (array_key_exists($link, $this->savedHtml)) {
+                        $this->analysedSites[$phrase][$link] = $this->savedHtml[$link];
+                    } else {
+                        $this->savedHtml[$link] = $this->analyseSite(
+                            $this->convertEncoding($this->encodingContent(SearchCompetitors::curlInit($link))),
+                            $phrase,
+                            $link
+                        );
                     }
-                } catch (\Exception $exception) {
+                } else {
+                    $this->analyseSite(
+                        $this->convertEncoding($this->encodingContent(SearchCompetitors::curlInit($link))),
+                        $phrase,
+                        $link
+                    );
                 }
 
-                $description = SearchCompetitors::getText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
-                $title = SearchCompetitors::getText($site[0], "/<title.*?>(.*?)<\/title>/");
-                $h1 = SearchCompetitors::getText($site[0], "/<h1.*?>(.*?)<\/h1>/");
-                $h2 = SearchCompetitors::getText($site[0], "/<h2.*?>(.*?)<\/h2>/");
-                $h3 = SearchCompetitors::getText($site[0], "/<h3.*?>(.*?)<\/h3>/");
-                $h4 = SearchCompetitors::getText($site[0], "/<h4.*?>(.*?)<\/h4>/");
-                $h5 = SearchCompetitors::getText($site[0], "/<h5.*?>(.*?)<\/h5>/");
-                $h6 = SearchCompetitors::getText($site[0], "/<h6.*?>(.*?)<\/h6>/");
-
-                $this->analysedSites[$key][$item]['meta'] = [
-                    'title' => $title,
-                    'h1' => $h1,
-                    'h2' => $h2,
-                    'h3' => $h3,
-                    'h4' => $h4,
-                    'h5' => $h5,
-                    'h6' => $h6,
-                    'description' => $description,
-                ];
-
-                //Если все теги пустые, значит не получилось получить данные со страницы
-                $this->analysedSites[$key][$item]['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
-
-                $this->analysedSites[$key][$item]['mainPage'] = SearchCompetitors::isLinkMainPage($item);
 
                 $iterator++;
-
                 if ($iterator % 3 === 0) {
                     $percent = $iterator / $total;
                     CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
@@ -154,15 +155,108 @@ class SearchCompetitors extends Model
                 }
             }
 
-
         }
+
         $this->analysisNestingDomains();
+    }
+
+    /**
+     * @param $site
+     * @param $phrase
+     * @param $link
+     * @return mixed
+     */
+    protected function analyseSite($site, $phrase, $link)
+    {
+        $description = SearchCompetitors::getText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
+        $title = SearchCompetitors::getText($site[0], "/<title.*?>(.*?)<\/title>/");
+        $h1 = SearchCompetitors::getText($site[0], "/<h1.*?>(.*?)<\/h1>/");
+        $h2 = SearchCompetitors::getText($site[0], "/<h2.*?>(.*?)<\/h2>/");
+        $h3 = SearchCompetitors::getText($site[0], "/<h3.*?>(.*?)<\/h3>/");
+        $h4 = SearchCompetitors::getText($site[0], "/<h4.*?>(.*?)<\/h4>/");
+        $h5 = SearchCompetitors::getText($site[0], "/<h5.*?>(.*?)<\/h5>/");
+        $h6 = SearchCompetitors::getText($site[0], "/<h6.*?>(.*?)<\/h6>/");
+
+        $this->analysedSites[$phrase][$link]['meta'] = [
+            'title' => $title,
+            'h1' => $h1,
+            'h2' => $h2,
+            'h3' => $h3,
+            'h4' => $h4,
+            'h5' => $h5,
+            'h6' => $h6,
+            'description' => $description,
+        ];
+
+        //Если все теги пустые, значит не получилось получить данные со страницы
+        $this->analysedSites[$phrase][$link]['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
+
+        $this->analysedSites[$phrase][$link]['mainPage'] = SearchCompetitors::isLinkMainPage($link);
+
+        return $this->analysedSites[$phrase][$link];
+    }
+
+    /**
+     * @param array $site
+     * @return array|false|string|string[]|null
+     */
+    protected function encodingContent(array $site)
+    {
+        try {
+            $contentType = $site[1]['content_type'];
+            if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
+                $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
+                return mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
+            }
+
+        } catch (\Throwable $e) {
+            return $site;
+        }
+
+        return $site;
     }
 
     /**
      * @return void
      */
-    public function analysisNestingDomains()
+    protected function searchDuplicates()
+    {
+        foreach ($this->sites as $phrase => $links) {
+            foreach ($links as $link) {
+                if (isset($this->duplicates[$link])) {
+                    $this->duplicates[$link] = true;
+                } else {
+                    $this->duplicates[$link] = false;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $site
+     * @return array|false|string|string[]|null
+     */
+    protected function convertEncoding($site)
+    {
+        try {
+            $contentType = $site[1]['content_type'];
+            if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
+                $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
+
+                return mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
+            }
+
+            return $site;
+
+        } catch (\Exception $exception) {
+            return $site;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function analysisNestingDomains()
     {
         $this->pagesCounter = [
             'mainPageCounter' => 0,
@@ -379,5 +473,56 @@ class SearchCompetitors extends Model
         $url = parse_url($link);
 
         return $url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php';
+    }
+
+    /**
+     * @param $phrases
+     * @param $tags
+     * @param $metaTags
+     * @param $countPhrases
+     * @param $count
+     * @return array[]
+     */
+    public static function getRecommendations($phrases, $tags, $metaTags, $countPhrases, $count): array
+    {
+        $config = CompetitorConfig::first();
+
+        if ($count === "10") {
+            $minimumValue = $config->count_repeat_top_10;
+        } else {
+            $minimumValue = $config->count_repeat_top_20;
+        }
+
+        $information = [];
+        foreach ($phrases as $phrase) {
+            foreach ($metaTags[$phrase] as $tag => $values) {
+                if (in_array($tag, $tags)) {
+                    $information[$tag][] = $values;
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($information as $tag => $values) {
+            foreach ($values as $value) {
+                foreach ($value as $word => $count) {
+                    if (isset($result[$tag][$word])) {
+                        $result[$tag][$word] += $count;
+                    } else {
+                        $result[$tag][$word] = $count;
+                    }
+                }
+            }
+        }
+
+        foreach ($result as $tag => $values) {
+            foreach ($values as $word => $count) {
+                if (($count / $countPhrases) < $minimumValue || $word === 0 || $word === "") {
+                    unset($result[$tag][$word]);
+                }
+            }
+        }
+
+        return $result;
     }
 }
