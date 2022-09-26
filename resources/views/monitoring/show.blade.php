@@ -54,6 +54,11 @@
                 text-align: center;
                 z-index: 1;
             }
+            .reset-zoom {
+                position: absolute;
+                top: 50px;
+                right: 30px;
+            }
         </style>
     @endslot
 
@@ -124,6 +129,8 @@
     {!! Form::close() !!}
     @endhasanyrole
 
+    <div class="chart"><canvas id="chart1"></canvas></div>
+
     @include('monitoring.keywords.modal.main')
 
     @slot('js')
@@ -147,6 +154,11 @@
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
         <!-- Papa parse -->
         <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
+
+        <!-- Charts -->
+        <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
+        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-crosshair.js') }}"></script>
+        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>
 
         <script>
 
@@ -503,7 +515,6 @@
                         });
                     },
                 });
-
 
                 $('.modal').on('show.bs.modal', function (event) {
                     let button = $(event.relatedTarget);
@@ -874,19 +885,41 @@
                             display: true
                         },
                         scales: {
-                            xAxes: [{
-                                gridLines : {
+                            x: {
+                                grid : {
                                     display : false,
                                 }
-                            }],
-                            yAxes: [{
+                            },
+                            y: {
                                 ticks: {
-                                    stepSize: 10
+                                    stepSize: 5
                                 }
-                            }]
+                            }
                         },
                         plugins: {
-                            datalabels: false
+                            crosshair: {
+                                sync: {
+                                    enabled: false
+                                },
+                                snapping: {
+                                    enabled: true,
+                                },
+                                zoom: {
+                                    enabled: true,
+                                    zoomButtonText: 'Reset',
+                                    zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
+                                },
+                                callbacks: {
+                                    afterZoom: function() {
+                                        charts.top.options.plugins.crosshair.zoom.enabled = false;
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                animation: false,
+                                mode: "index",
+                                intersect: false,
+                            }
                         }
                     }
                 },
@@ -904,19 +937,41 @@
                             display: true
                         },
                         scales: {
-                            xAxes: [{
-                                gridLines : {
+                            x: {
+                                grid : {
                                     display : false,
                                 }
-                            }],
-                            yAxes: [{
+                            },
+                            y: {
                                 ticks: {
-                                    stepSize: 10
+                                    stepSize: 5
                                 }
-                            }]
+                            }
                         },
                         plugins: {
-                            datalabels: false
+                            crosshair: {
+                                sync: {
+                                    enabled: false
+                                },
+                                snapping: {
+                                    enabled: true,
+                                },
+                                zoom: {
+                                    enabled: true,
+                                    zoomButtonText: 'Reset',
+                                    zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
+                                },
+                                callbacks: {
+                                    afterZoom: function() {
+                                        charts.middle.options.plugins.crosshair.zoom.enabled = false;
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                animation: false,
+                                mode: "index",
+                                intersect: false,
+                            }
                         }
                     }
                 },
@@ -942,7 +997,6 @@
                             dateRange: DATES,
                             range: range,
                             chart: key,
-                            mode: MODE,
                         }
                     }).then(function (response) {
                         chart.data = response.data;
@@ -960,13 +1014,13 @@
                     projectId: PROJECT_ID,
                     dateRange: DATES,
                     chart: 'distribution',
-                    mode: MODE,
                 }
             }).then(function (response) {
 
                 new Chart($('#distributionByTop').get(0).getContext('2d'), {
                     type: 'doughnut',
                     data: response.data,
+                    plugins: [ChartDataLabels],
                     options: {
                         maintainAspectRatio : false,
                         title: {
@@ -974,87 +1028,79 @@
                             text: 'Распределение по ТОП-100',
                             position: 'left',
                         },
-                        legend: {
-                            position: 'left',
-                            labels: {
-                                fontSize: 24,
-                                fontStyle: "normal",
-                                generateLabels: function(chart){
-                                    let data = chart.data;
-
-                                    return data.labels.map(function(label, i) {
-                                        let meta = chart.getDatasetMeta(0);
-                                        let ds = data.datasets[0];
-                                        let arc = meta.data[i];
-                                        let custom = arc && arc.custom || {};
-                                        let getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
-                                        let arcOpts = chart.options.elements.arc;
-                                        let fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
-                                        let stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
-                                        let bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+                        plugins: {
+                            crosshair: false,
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label;
+                                        let data = context.dataset.data;
+                                        let dataItem = data[context.dataIndex];
 
                                         let sum = 0;
-                                        ds.data.map(data => { sum += data });
-                                        let value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
-                                        let percent = Math.round((value * 100 / sum));
+                                        data.map(data => { sum += data });
+                                        let percent = Math.round((dataItem * 100 / sum));
 
-                                        return {
-                                            text: label + ": " + percent + "%",
-                                            fillStyle: fill,
-                                            strokeStyle: fill,
-                                            lineWidth: bw,
-                                            hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
-                                            index: i
-                                        };
-                                    });
-                                },
-                            },
-                        },
-                        tooltips: {
-                            xPadding: 15,
-                            yPadding: 10,
-                            callbacks: {
-                                label: function(tooltipItem, data) {
+                                        label += ': ' + dataItem + ' (' + percent + '%)';
 
-                                    let label = data.labels[tooltipItem.index];
-                                    let dataItem = data.datasets[0].data[tooltipItem.index];
-
-                                    let sum = 0;
-                                    data.datasets[0].data.map(data => { sum += data });
-                                    let percent = Math.round((dataItem * 100 / sum));
-
-                                    label += ': ' + dataItem + ' (' + percent + '%)';
-
-                                    return label;
+                                        return label;
+                                    }
                                 }
-                            }
-                        },
-                        plugins: {
+                            },
                             datalabels: {
                                 anchor: 'center',
+                                color: '#fff',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
                                 formatter: (value, ctx) => {
                                     let sum = 0;
                                     let dataArr = ctx.chart.data.datasets[0].data;
-
                                     dataArr.map(data => { sum += data });
-
                                     let percent = Math.round((value * 100 / sum));
-
                                     if(percent > 1)
                                         return `${percent}%`;
                                     else
                                         return null;
                                 },
-                                color: '#fff',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            }
+                            },
+                            legend: {
+                                position: 'left',
+                                labels: {
+                                    font: {
+                                        size: 24,
+                                        style: "normal",
+                                    },
+                                    generateLabels: function(chart){
+                                        let data = chart.data;
+
+                                        return data.labels.map(function(label, i) {
+                                            let dsIndex = 0;
+                                            let ds = data.datasets[0];
+
+                                            let sum = 0;
+                                            ds.data.map(data => { sum += data });
+
+                                            let value = chart.config.data.datasets[dsIndex].data[i];
+                                            let percent = Math.round((value * 100 / sum));
+
+                                            return {
+                                                text: label + ": " + percent + "%",
+                                                fillStyle: ds.backgroundColor[i],
+                                                strokeStyle: ds.backgroundColor[i],
+                                                hidden: ds.hidden,
+                                                index: i
+                                            };
+                                        });
+                                    },
+                                },
+                            },
                         }
                     }
                 });
             });
+
 
             $('#showChartsBlock').click(function () {
                 let btn = $(this);

@@ -83,12 +83,10 @@
 <script src="{{ asset('js/adminlte.js') }}"></script>
 
 <!-- OPTIONAL SCRIPTS -->
-<script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
-<script src="{{ asset('plugins/chart.js/chartjs-plugin-datalabels.min.js') }}"></script>
+{{--<script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>--}}
+
 <!-- AdminLTE for demo purposes -->
 <script src="{{ asset('js/demo.js') }}"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="{{ asset('js/pages/dashboard3.js') }}"></script>
 
 @yield('js')
 

@@ -30,24 +30,19 @@ class MonitoringChartsController extends Controller
 
         $this->region = $region->orderBy('id', 'asc')->first();
 
-        $this->positions = $this->getPositionsForRange($request->input('dateRange', null), $request->input('mode', null));
+        $this->positions = $this->getPositionsForRange($request->input('dateRange', null));
     }
 
-    public function getPositionsForRange($dateRange = null, $mode = null)
+    public function getPositionsForRange($dateRange = null)
     {
         if($dateRange)
             $dateRange = explode(' - ', $dateRange);
 
         $model = new MonitoringPosition();
-        $query = $model->where('monitoring_searchengine_id', $this->region->id)
-            ->whereIn('monitoring_keyword_id', $this->keywords->pluck('id'));
-
-        if($mode == 'datesFind')
-            $query = $query->dateFind($dateRange);
-        else
-            $query = $query->dateRange($dateRange);
-
-        $positions = $query->get();
+        $positions = $model->where('monitoring_searchengine_id', $this->region->id)
+            ->whereIn('monitoring_keyword_id', $this->keywords->pluck('id'))
+            ->dateRange($dateRange)
+            ->get();
 
         return $positions;
     }
