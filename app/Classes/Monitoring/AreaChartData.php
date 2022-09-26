@@ -10,8 +10,6 @@ class AreaChartData
     public $fill = false;
     public $backgroundColor = "#1976d2";
     public $borderColor = "#1976d2";
-    public $pointHoverRadius = "10";
-    public $pointRadius = "5";
     public $hidden = false;
 
     protected $labels;
@@ -42,8 +40,6 @@ class AreaChartData
             'fill' => $this->fill,
             'backgroundColor' => $this->backgroundColor,
             'borderColor' => $this->borderColor,
-            'pointHoverRadius' => $this->pointHoverRadius,
-            'pointRadius' => $this->pointRadius,
             'hidden' => $this->hidden,
         ];
 
