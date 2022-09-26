@@ -52,13 +52,13 @@ class SearchCompetitorsController extends Controller
                 'message' => __('Your limits are exhausted this month')
             ], 500);
         }
+        $analysis = new SearchCompetitors();
+        $analysis->setPhrases($request->input('phrases'));
+        $analysis->setRegion($request->input('region'));
+        $analysis->setCount($request->input('count'));
+        $analysis->setPageHash($request->input('pageHash'));
 
         try {
-            $analysis = new SearchCompetitors();
-            $analysis->setPhrases($request->input('phrases'));
-            $analysis->setRegion($request->input('region'));
-            $analysis->setCount($request->input('count'));
-            $analysis->setPageHash($request->input('pageHash'));
             $analysis->analyzeList();
 
             return response()->json([
@@ -70,6 +70,12 @@ class SearchCompetitorsController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);
+
+            $now = Carbon::now();
+            SearchCompetitors::where('user_id', '=', Auth::id())
+                ->where('month', '=', $now->year . '-' . $now->month)->decriment('counter', $analysis->getCountPhrases())
+                ->sum('counter');
+
             return response()->json([
                 'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete(),
                 'message' => __('An unexpected error has occurred, please contact the administrator')

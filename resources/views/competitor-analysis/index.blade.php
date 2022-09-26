@@ -25,9 +25,12 @@
                 background: rgb(255, 193, 7);
             }
 
-            .word-wrap {
+            .fixed-lines {
                 word-wrap: break-word;
-                max-width: 300px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
             }
 
             .select-text {
@@ -78,6 +81,12 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }
+
+            .await-color {
+                word-break: break-word;
+            }
+
+
         </style>
 
     @endslot
@@ -551,11 +560,12 @@
                             await duallboxBlockRender(response.result.totalMetaTags, count)
                         },
                         error: function (response) {
-                            getBrokenScriptMessage(interval, response.responseJSON.message)
                             setTimeout(() => {
                                 $("#progress-bar").hide(300)
                                 $('.btn.btn-secondary.pull-left').prop('disabled', false);
                             }, 1000)
+                            console.log(response)
+                            getBrokenScriptMessage(interval, response)
                         }
                     });
                 } else {
@@ -602,8 +612,8 @@
                 }
 
                 $('.toast-top-right.broken-script-message').show(300)
-                if (message !== false) {
-                    $('.toast-message').html(message)
+                if (message.responseJSON.message !== false) {
+                    $('.toast-message').html(message.responseJSON)
                 }
                 setTimeout(() => {
                     $('.toast-top-right.broken-script-message').hide(300)
