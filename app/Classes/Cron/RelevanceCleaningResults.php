@@ -57,8 +57,6 @@ class RelevanceCleaningResults
                 ['cleaning', '=', 0]
             ])->take(5)->get();
         }
-
-        Log::debug('Было отчищено и сжато', [$total]);
     }
 
     /**
@@ -90,8 +88,6 @@ class RelevanceCleaningResults
                 ['compressed', '=', 0],
             ])->take(5)->get();
         }
-
-        Log::debug('Было сжато', [$total]);
     }
 
 }

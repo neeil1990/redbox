@@ -170,7 +170,6 @@ class SearchCompetitorsController extends Controller
             ], 500);
         }
 
-        Log::debug('me', $request->all());
         $metaTags = json_decode($request->input('metaTags'), true);
         $countPhrases = count($phrases);
 

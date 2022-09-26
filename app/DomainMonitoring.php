@@ -172,9 +172,6 @@ class DomainMonitoring extends Model
                 curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
             }
 
-            if (curl_error($curl) != "") {
-                Log::debug('domain monitoring curl error', [curl_error($curl)]);
-            }
             if ($headers['http_code'] == 200 && $html != false) {
                 $html = preg_replace('//i', '', $html);
                 break;
