@@ -49,11 +49,17 @@ class SearchCompetitorsController extends Controller
     {
         if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
             return response()->json([
-                'message' => __('Your limits are exhausted this month')
+                'message' => __('Exceeding the limit')
             ], 500);
         }
         $analysis = new SearchCompetitors();
         $analysis->setPhrases($request->input('phrases'));
+        if (count($analysis->getPhrases()) > 40) {
+            return response()->json([
+                'message' => __('The maximum number of keywords is 40, and you have - ') . count($analysis->getPhrases())
+            ], 500);
+        }
+
         $analysis->setRegion($request->input('region'));
         $analysis->setCount($request->input('count'));
         $analysis->setPageHash($request->input('pageHash'));
@@ -70,11 +76,6 @@ class SearchCompetitorsController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);
-
-            $now = Carbon::now();
-            SearchCompetitors::where('user_id', '=', Auth::id())
-                ->where('month', '=', $now->year . '-' . $now->month)->decriment('counter', $analysis->getCountPhrases())
-                ->sum('counter');
 
             return response()->json([
                 'object' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->delete(),
