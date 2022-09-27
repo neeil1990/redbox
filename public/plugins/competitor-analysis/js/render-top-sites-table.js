@@ -85,8 +85,9 @@ function renderTopSitesV2(analysedSites) {
 
         let uniqueDomains = [...new Set(domains)];
 
+        let colors = getColorsArray()
         $.each(links, function (key, value) {
-            setRandomColor($('[data-full-url="' + value + '"]'))
+            setRandomColor($('[data-full-url="' + value + '"]'), colors.shift())
         })
 
         colorButtonsActions(uniqueDomains, links)
@@ -171,31 +172,34 @@ function colorButtonsActions(uniqueDomains, links) {
     $('#coloredMainPages').unbind().on('click', function () {
         coloredButtons($(this))
 
-        setRandomColor($('[data-main-page="false"]'), true)
-        setRandomColor($('[data-main-page="true"]'))
+        setRandomColor($('[data-main-page="false"]'), false, true)
+        let colors = getColorsArray()
+        setRandomColor($('[data-main-page="true"]'), colors.shift())
     });
 
     $('#coloredEloquentDomains').unbind().on('click', function () {
         coloredButtons($(this))
-        setRandomColor($('.await-color'), true)
+        setRandomColor($('.await-color'), false, true)
 
+        let colors = getColorsArray()
         $.each(uniqueDomains, function (key, value) {
-            setRandomColor($('[data-order="' + value + '"]'))
+            setRandomColor($('[data-order="' + value + '"]'), colors.shift())
         })
     })
 
     $('#coloredEloquentUrls').unbind().on('click', function () {
         coloredButtons($(this))
-        setRandomColor($('.await-color'), true)
+        setRandomColor($('.await-color'), false, true)
 
+        let colors = getColorsArray()
         $.each(links, function (key, value) {
-            setRandomColor($('[data-full-url="' + value + '"]'))
+            setRandomColor($('[data-full-url="' + value + '"]'), colors.shift())
         })
     })
 
     $('#coloredEloquentMyText').unbind().on('click', function () {
         coloredButtons($('#sites-block > div.site-block-buttons > button:nth-child(4)'))
-        setRandomColor($('.await-color'), true)
+        setRandomColor($('.await-color'), false, true)
 
         let myValues = $('#search-textarea').val()
 
@@ -220,7 +224,7 @@ function colorButtonsActions(uniqueDomains, links) {
 
     $('#coloredAgrigatorsButton').unbind().on('click', function () {
         coloredButtons($('#sites-block > div.site-block-buttons > button:nth-child(6)'))
-        setRandomColor($('.await-color'), true)
+        setRandomColor($('.await-color'), false, true)
 
         let agrigators = $('#search-agrigators').val()
 
@@ -244,9 +248,10 @@ function colorButtonsActions(uniqueDomains, links) {
 /**
  *
  * @param elem
- * @param defaultColor = false
+ * @param backgroundColor
+ * @param defaultColor
  */
-function setRandomColor(elem, defaultColor = false) {
+function setRandomColor(elem, backgroundColor = false, defaultColor = false) {
     if (defaultColor) {
         elem.css("background-color", "white");
         elem.css("color", "black");
@@ -255,25 +260,21 @@ function setRandomColor(elem, defaultColor = false) {
     }
 
     if (elem.length > 1) {
-        elem.css("background-color", "rgba(" + randomColor() + "," + randomColor() + "," + randomColor() + "," + getRandomOpacity() + ")");
+        elem.css("background-color", backgroundColor);
     }
-
 }
 
 function setColorElems(elems) {
+    let colors = getColorsArray()
+    let color = colors.shift()
+
     $.each(elems, function (key, elem) {
-        elem.css("background-color", "rgba(" + randomColor() + "," + randomColor() + "," + randomColor() + "," + getRandomOpacity() + ")");
+        elem.css("background-color", color);
     })
 }
 
 function randomColor() {
     return Math.floor((Math.random() * 256));
-}
-
-function getRandomOpacity() {
-    let randomOpacity = [0.5, 0.6, 0.65, 0.70, 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.78, 79, 80];
-
-    return randomOpacity[Math.floor(Math.random() * randomOpacity.length)];
 }
 
 /**
@@ -311,4 +312,54 @@ function validateColor(background, target) {
     return target.css('background-color') === background &&
         target.attr('data-main-page') !== false &&
         typeof target.attr('data-main-page') !== 'undefined';
+}
+
+/**
+ *
+ * @returns {string[]}
+ */
+function getColorsArray() {
+    let colorArray = [
+        "rgba(220,51,10,0.6)",
+        "rgba(121,25,6,0.6)",
+        "rgba(214, 96, 110, 0.6)",
+        "rgba(252, 170, 153, 0.6)",
+        "rgba(214, 2, 86, 0.6)",
+        "rgba(147,50,88, 0.6)",
+        "rgba(247, 220, 163, 0.6)",
+        "rgba(204, 118, 32, 0.6)",
+        "rgba(255,89,0,0.6)",
+        "rgba(164,58,1,0.6)",
+        "rgba(73,28,1,0.6)",
+        "rgba(178, 135, 33, 0.6)",
+        "rgba(166,166,6,0.6)",
+        "rgba(248,195,4,0.6)",
+        "rgba(246,223,78,0.6)",
+        "rgba(77,77,24,0.6)",
+        "rgba(1,253,215,0.6)",
+        "rgba(1,148,130,0.6)",
+        "rgba(1,79,66,0.6)",
+        "rgba(139, 150, 24, 0.6)",
+        "rgba(154, 205, 50, 0.6)",
+        "rgba(151, 186, 229, 0.6)",
+        "rgba(0,69,255,0.6)",
+        "rgba(1,45,152,0.6)",
+        "rgba(0,24,75,0.6)",
+        "rgba(157, 149, 226, 0.6)",
+        "rgba(6, 136, 165, 0.6)",
+        "rgba(64, 97, 206, 0.6)",
+        "rgba(19,212,224, 0.6)",
+        "rgba(2, 97, 214, 0.6)",
+        "rgba(159, 112, 216, 0.6)",
+        "rgba(239, 50, 223, 0.6)",
+        "rgba(209, 46, 127, 0.6)",
+        "rgba(194, 85, 237, 0.6)",
+        "rgba(252, 194, 243, 0.6)",
+        "rgba(244, 139, 200, 0.6)",
+        "rgba(87,64,64, 0.6)",
+        "rgba(26,25,25, 0.6)",
+        "rgba(110,95,95, 0.6)",
+    ]
+
+    return colorArray.sort(() => Math.random() - 0.5);
 }
