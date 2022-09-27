@@ -568,7 +568,7 @@ class MonitoringController extends Controller
             $item->urls = collect([]);
 
             if(isset($urls[$item->id]))
-                $item->urls = $urls[$item->id];
+                $item->urls = $urls[$item->id]->unique('url');
 
             return $item;
         });
