@@ -408,8 +408,16 @@ class MonitoringController extends Controller
                         return $item->created_at->format('d.m.Y');
                     });
 
-                    if($unique->count())
-                        $item->last_positions = collect([$unique->first(), $unique->last()]);
+                    if($unique->count()) {
+                        $first = $unique->first();
+                        $last = $unique->last();
+                        $datesPosition = [
+                            $first->date => $first->position,
+                            $last->date => $last->position
+                        ];
+
+                        $item->last_positions = collect($datesPosition);
+                    }
 
                     return $item;
                 });
@@ -445,6 +453,9 @@ class MonitoringController extends Controller
                     return $item->format('d.m.Y');
                 });
 
+                foreach ($keywords as $keyword)
+                    $keyword->last_positions = $keyword->last_positions->pluck('position', 'date');
+
                 $dateOfColumns = collect([]);
                 foreach ($getDateForColumns as $i => $m)
                     $dateOfColumns->put('data_' . $i, $m->format('d.m.Y'));
@@ -464,81 +475,13 @@ class MonitoringController extends Controller
                         return $item->created_at->format('d.m.Y');
                     });
 
-                    $item->last_positions = $unique;
+                    $item->last_positions = $unique->pluck('position', 'date');
 
                     return $item;
                 });
         }
 
-        $table = [];
-
-        foreach ($keywords as $keyword){
-
-            $id = $keyword->id;
-
-            $table[$id] = collect([]);
-
-            foreach ($columns as $i => $v){
-
-                switch ($i) {
-                    case 'id':
-                        $table[$id]->put('id', $id);
-                        break;
-                    case 'checkbox':
-                        $table[$id]->put('checkbox', view('monitoring.partials.show.checkbox', ['id' => $id])->render());
-                        break;
-                    case 'btn':
-                        $table[$id]->put('btn', view('monitoring.partials.show.btn', ['key' => $keyword])->render());
-                        break;
-                    case 'query':
-                        $table[$id]->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
-                        break;
-                    case 'url':
-
-                        $urls = $keyword->urls;
-                        $textClass = 'text-bold';
-                        if($keyword->page && $urls->count()){
-                            $lastUrl = $urls->first();
-                            if($lastUrl->url != $keyword->page)
-                                $textClass = 'text-danger';
-                            else
-                                $textClass = 'text-success';
-                        }
-
-                        $table[$id]->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
-                        break;
-                    case 'group':
-                        $table[$id]->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
-                        break;
-                    case 'target':
-                        $table[$id]->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
-                        break;
-                    case 'dynamics':
-                        $dynamics = 0;
-                        $positions = $keyword->last_positions;
-                        if($positions && $positions->count() > 1)
-                            $dynamics = ($positions->last()->position - $positions->first()->position);
-
-                        $table[$id]->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
-                        break;
-                    default:
-                        if($mode === "dates"){
-                            $model = $keyword->last_positions;
-                            if($model)
-                                $table[$id]->put($i, view('monitoring.partials.show.position_with_date', ['model' => $model->shift()])->render());
-                            else
-                                $table[$id]->put($i, '-');
-
-                        }else{
-                            $model = $keyword->last_positions->firstWhere('date', $v);
-                            if($model && $model->position)
-                                $table[$id]->put($i, view('monitoring.partials.show.position', ['model' => $model])->render());
-                            else
-                                $table[$id]->put($i, '-');
-                        }
-                }
-            }
-        }
+        $table = $this->generateDataTable($keywords, $columns, $mode);
 
         $data = collect([
             'region' => $region,
@@ -550,6 +493,88 @@ class MonitoringController extends Controller
         ]);
 
         return $data;
+    }
+
+    private function generateDataTable($keywords, $columns, $mode)
+    {
+        $table = [];
+        foreach ($keywords as $keyword){
+
+            $id = $keyword->id;
+            $table[$id] = $this->generateRowDataTable($columns, $keyword, $mode);
+        }
+
+        return $table;
+    }
+
+    private function generateRowDataTable($columns, $keyword, $mode)
+    {
+        $row = collect([]);
+
+        foreach ($columns as $i => $v){
+
+            switch ($i) {
+                case 'id':
+                    $row->put('id', $keyword->id);
+                    break;
+                case 'checkbox':
+                    $row->put('checkbox', view('monitoring.partials.show.checkbox', ['id' => $keyword->id])->render());
+                    break;
+                case 'btn':
+                    $row->put('btn', view('monitoring.partials.show.btn', ['key' => $keyword])->render());
+                    break;
+                case 'query':
+                    $row->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
+                    break;
+                case 'url':
+
+                    $urls = $keyword->urls;
+                    $textClass = 'text-bold';
+                    if($keyword->page && $urls->count()){
+                        $lastUrl = $urls->first();
+                        if($lastUrl->url != $keyword->page)
+                            $textClass = 'text-danger';
+                        else
+                            $textClass = 'text-success';
+                    }
+
+                    $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
+                    break;
+                case 'group':
+                    $row->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
+                    break;
+                case 'target':
+                    $row->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
+                    break;
+                case 'dynamics':
+                    $dynamics = 0;
+                    $positions = $keyword->last_positions;
+
+                    if($positions && $positions->count() > 1)
+                        $dynamics = ($positions->last() - $positions->first());
+
+                    $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
+                    break;
+                default:
+                    if($mode === "dates"){
+                        $position = $keyword->last_positions;
+                        $dates = $position->keys();
+                        if($position) {
+                            $row->put($i, view('monitoring.partials.show.position_with_date', ['position' => $position->shift(), 'date' => $dates->shift()])->render());
+                        }else
+                            $row->put($i, '-');
+
+                    }else{
+                        $position = $keyword->last_positions[$v];
+                        if($position) {
+                            $row->put($i, view('monitoring.partials.show.position', ['position' => $position])->render());
+                        }else
+                            $row->put($i, '-');
+                    }
+            }
+        }
+
+        return $row;
     }
 
     private function setUrlsInKeywords($keywords, $regionId)

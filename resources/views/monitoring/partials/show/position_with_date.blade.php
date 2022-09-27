@@ -1,8 +1,8 @@
 
-<span data-position="{{ $model->position }}" data-id="{{ $model->id }}">
-    {{ $model->position }}
+<span data-position="{{ $position }}">
+    {{ $position }}
     <sup class="text-sm"></sup>
 </span>
 
-<div class="badge badge-info">{{ $model->date }}</div>
+<div class="badge badge-info">{{ $date }}</div>
 
