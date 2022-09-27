@@ -377,6 +377,8 @@ class MonitoringController extends Controller
 
         $mode = $request->input('mode_range', 'range');
 
+        $keywords->load('group');
+
         $keywords->load(['positions' => function($query) use ($region, $dates, $mode){
 
             $query->where('monitoring_searchengine_id', $region->id);
@@ -386,6 +388,8 @@ class MonitoringController extends Controller
             else
                 $query->dateRange($dates);
         }]);
+
+        $keywords = $this->setUrlsInKeywords($keywords, $region->id);
 
         $columns = $this->getMainColumns();
 
@@ -491,13 +495,7 @@ class MonitoringController extends Controller
                         break;
                     case 'url':
 
-                        $urls = $keyword->positions()
-                            ->where('monitoring_searchengine_id', $region->id)
-                            ->whereNotNull('url')
-                            ->groupBy('url')
-                            ->orderBy('created_at', 'desc')
-                            ->get();
-
+                        $urls = $keyword->urls;
                         $textClass = 'text-bold';
                         if($keyword->page && $urls->count()){
                             $lastUrl = $urls->first();
@@ -552,6 +550,30 @@ class MonitoringController extends Controller
         ]);
 
         return $data;
+    }
+
+    private function setUrlsInKeywords($keywords, $regionId)
+    {
+        $ids = $keywords->pluck('id');
+
+        $model = MonitoringPosition::select('monitoring_keyword_id', 'url', 'created_at')
+            ->where('monitoring_searchengine_id', $regionId)
+            ->whereNotNull('url')
+            ->whereIn('monitoring_keyword_id', $ids)->orderBy('created_at', 'desc')->get();
+
+        $urls = $model->groupBy('monitoring_keyword_id');
+
+        $keywords->transform(function($item) use ($urls){
+
+            $item->urls = collect([]);
+
+            if(isset($urls[$item->id]))
+                $item->urls = $urls[$item->id]->unique('url');
+
+            return $item;
+        });
+
+        return $keywords;
     }
 
     private function getDateRangeForColumns($region, $dates, $mode)
