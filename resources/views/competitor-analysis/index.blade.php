@@ -513,7 +513,7 @@
                 let count = $('.custom-select.rounded-0.count').val()
                 let token = $('meta[name="csrf-token"]').attr('content')
                 let interval = null
-                if (phrases) {
+                if (phrases.length > 0) {
                     $.ajax({
                         type: "POST",
                         dataType: "json",
@@ -564,8 +564,7 @@
                                 $("#progress-bar").hide(300)
                                 $('.btn.btn-secondary.pull-left').prop('disabled', false);
                             }, 1000)
-                            console.log(response)
-                            getBrokenScriptMessage(interval, response)
+                            getBrokenScriptMessage(interval, response.responseJSON.message)
                         }
                     });
                 } else {
@@ -612,9 +611,7 @@
                 }
 
                 $('.toast-top-right.broken-script-message').show(300)
-                if (message.responseJSON.message !== false) {
-                    $('.toast-message').html(message.responseJSON)
-                }
+                $('.toast-message').html(message)
                 setTimeout(() => {
                     $('.toast-top-right.broken-script-message').hide(300)
                 }, 10000)

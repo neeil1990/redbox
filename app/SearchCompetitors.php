@@ -3,8 +3,11 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class SearchCompetitors extends Model
 {
@@ -40,18 +43,11 @@ class SearchCompetitors extends Model
 
     public $pageHash;
 
-    /**
-     * @return mixed
-     */
     public function getCountPhrases()
     {
         return $this->countPhrases;
     }
 
-    /**
-     * @param string $pageHash
-     * @return void
-     */
     public function setPageHash(string $pageHash)
     {
         $this->pageHash = $pageHash;
@@ -64,6 +60,11 @@ class SearchCompetitors extends Model
         $this->phrases = array_unique(array_diff($phrases, ['']));
     }
 
+    public function getPhrases()
+    {
+        return $this->phrases;
+    }
+
     public function setRegion(string $region)
     {
         $this->region = $region;
@@ -74,9 +75,6 @@ class SearchCompetitors extends Model
         $this->count = $count;
     }
 
-    /**
-     * @return array
-     */
     public function getResult(): array
     {
         return mb_convert_encoding([
@@ -89,7 +87,7 @@ class SearchCompetitors extends Model
     }
 
     /**
-     * @return void
+     * @return Exception|void
      */
     public function analyzeList()
     {
@@ -114,8 +112,19 @@ class SearchCompetitors extends Model
 
         TariffSetting::saveStatistics(SearchCompetitors::class, $this->countPhrases);
 
-        $this->searchDuplicates();
-        $this->scanSites();
+        try {
+            $this->searchDuplicates();
+            $this->scanSites();
+        } catch (Throwable $e) {
+            $now = Carbon::now();
+
+            SearchCompetitors::where('user_id', '=', Auth::id())
+                ->where('month', '=', $now->year . '-' . $now->month)
+                ->decriment('counter', $this->getCountPhrases());
+
+            return new Exception('competitors error');
+        }
+
     }
 
     /**
@@ -209,7 +218,7 @@ class SearchCompetitors extends Model
                 return mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
             }
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return $site;
         }
 
@@ -248,7 +257,7 @@ class SearchCompetitors extends Model
 
             return $site;
 
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $site;
         }
     }

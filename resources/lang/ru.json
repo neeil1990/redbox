@@ -482,6 +482,8 @@
     "The phrase in which the link occurs": "Фраза в которой встречается ссылка",
     "Get recommendations": "Получить рекомендации",
     "Recommendations": "Рекомендации",
+    "The maximum number of keywords is 40, and you have - ": "Максимальное количество ключевых фраз - 40, а у вас - ",
+    "Exceeding the limit": "Превышение лимита",
     "Landing Page analysis": "Анализ по страницам",
     "Number of repetitions": "Количество повторений",
     "Scans in the current month": "Сканирований в текущем месяце",
