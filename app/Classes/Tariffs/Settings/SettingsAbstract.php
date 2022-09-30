@@ -22,27 +22,18 @@ abstract class SettingsAbstract
     protected $settings;
 
 
-    // TODO ВЫЗЫВАЕТСЯ НЕСКОЛЬКО РАЗ
     public function get(): array
     {
         $this->settings = [];
 
-        /** @var User $user */
-        $user = Auth::user();
+        $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
+        foreach ($settings as $setting) {
 
-        if ($user) {
-            $settings = TariffSettingValue::where('tariff', $this->tariff)->get();
-            foreach ($settings as $setting) {
-                $used = $this->getUsedLimit($setting->property->code, $user);
-
-                $this->settings[$setting->property->code] = [
-                    'name' => $setting->property->name,
-                    'message' => $this->replaceMsg($setting->property->message, $setting->value),
-                    'value' => $setting->value,
-                    'used' => $used['count'],
-                    'position' => $used['position'],
-                ];
-            }
+            $this->settings[$setting->property->code] = [
+                'name' => $setting->property->name,
+                'message' => $this->replaceMsg($setting->property->message, $setting->value),
+                'value' => $setting->value,
+            ];
         }
 
         return collect($this->settings)->sortBy('position')->toArray();
