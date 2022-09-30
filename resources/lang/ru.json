@@ -722,6 +722,7 @@
     "This module allows you to add services that are displayed on the main page": "Этот модуль позволяет добавлять сервисы, которые отображаются на главной странице",
     "When you create a project, you need to manually add the localization text to the item": "Когда вы создаёте сервис, нужно вручную добавить текст в локализации в пункте",
     "######################## https://lk.redbox.su/analyze-relevance ###############################": "",
+    "Check Type": "Тип проверки",
     "Your limits are exhausted this month": "Ваши лимиты в этом месяце исчерпаны",
     "Editing a profile ": "Редактирование профиля ",
     "Users and their tasks": "Пользователи и их задачи",
@@ -970,5 +971,8 @@
     "Leave it blank if you don't want to change": "Оставьте пустым, если не хотите изменять",
     "User update successfully": "Данные пользователя успешно обновлены",
     "Left": "Осталось",
-    "No restrictions": "Без ограничений"
+    "No restrictions": "Без ограничений",
+
+    "######################## CLUSTER ########################": "",
+    "clustering level": "Уровень кластеризации"
 }

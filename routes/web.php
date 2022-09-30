@@ -285,6 +285,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
+    Route::get('/cluster', 'ClusterController@index')->name('cluster');
+    Route::post('/analysis-cluster', 'ClusterController@analysisCluster')->name('analysis.cluster');
+
 });
 
 Route::get('/test', function () {
@@ -296,3 +299,4 @@ Route::get('/test', function () {
 
     dd($analysis->getResult());
 });
+

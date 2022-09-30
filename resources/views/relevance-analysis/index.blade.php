@@ -93,7 +93,7 @@
                         </div>
 
                         <div class="form-group required">
-                            <label>{{ __('Тип проверки') }}</label>
+                            <label>{{ __('Check Type') }}</label>
                             {!! Form::select('type', [
                                 'phrase' => __('Keyword'),
                                 'list' => __('List of scanned sites'),
