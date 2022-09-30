@@ -12,7 +12,7 @@
     </li>
 @endif
 
-@if($tariffs != [])
+@if($tariffs != [] && isset($tariff['used']))
     <div class="dropdown p-0 m-0 nav-item">
         <span class="dropdown-toggle nav-link" role="button" data-toggle="dropdown" aria-expanded="false">
             {{ __('Your limits') }}

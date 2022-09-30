@@ -7,6 +7,28 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Пополнить баланс</h3>
+                </div>
+
+                {!! Form::open(['method' => 'POST', 'route' => ['balance-add.store']]) !!}
+                <div class="card-body">
+
+                    <div class="form-group">
+                        {!! Form::label('sum', 'Сумма') !!}
+                        {!! Form::number('sum', null, ['class' => 'form-control' . ($errors->has('domain') ? ' is-invalid' : ''), 'min' => '1']) !!}
+                        @error('sum') <span class="error invalid-feedback d-block">{{ $message }}</span> @enderror
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    {!! Form::submit('Пополнить', ['class' => 'btn btn-success']) !!}
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
                 <div class="card-header border-0">
                     <h3 class="card-title">{{ __('History') }}</h3>
                 </div>
@@ -53,29 +75,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Пополнить баланс</h3>
-                </div>
-
-                {!! Form::open(['method' => 'POST', 'route' => ['balance-add.store']]) !!}
-                <div class="card-body">
-
-                    <div class="form-group">
-                        {!! Form::label('sum', 'Сумма') !!}
-                        {!! Form::number('sum', null, ['class' => 'form-control' . ($errors->has('domain') ? ' is-invalid' : ''), 'min' => '1']) !!}
-                        @error('sum') <span class="error invalid-feedback d-block">{{ $message }}</span> @enderror
-                    </div>
-
-                </div>
-                <div class="card-footer">
-                    {!! Form::submit('Пополнить', ['class' => 'btn btn-success']) !!}
-                </div>
-                {!! Form::close() !!}
             </div>
         </div>
     </div>

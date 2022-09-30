@@ -36,7 +36,7 @@ class RobokassaPay extends Pay
         $this->password = $config['password'];
         $this->password2 = $config['password2'];
 
-        $this->setParams('MrchLogin',$this->login);
+        $this->setParams('MerchantLogin',$this->login);
     }
 
     public function action(){
