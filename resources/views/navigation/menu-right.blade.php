@@ -12,7 +12,7 @@
     </li>
 @endif
 
-@if($tariffs != [] && isset($tariff['used']))
+@if($limitsStatistics != [])
     <div class="dropdown p-0 m-0 nav-item">
         <span class="dropdown-toggle nav-link" role="button" data-toggle="dropdown" aria-expanded="false">
             {{ __('Your limits') }}
@@ -27,7 +27,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($tariffs as $key => $tariff)
+                @foreach($limitsStatistics as $key => $tariff)
                     @if($key != 'price')
                         <tr class="{{ $key }}">
                             <td>{{ $tariff['name'] }}</td>
