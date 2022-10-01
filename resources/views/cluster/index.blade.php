@@ -123,7 +123,7 @@
                                 {!! Form::select('count', array_unique([
                                         '10' => 10,
                                         '20' => 20,
-                                        ]), null, ['class' => 'custom-select rounded-0 count']) !!}
+                                ]), null, ['class' => 'custom-select rounded-0 count']) !!}
                             </div>
 
                             <div class="form-group required">
@@ -134,26 +134,50 @@
                             <div class="form-group required">
                                 <label>{{ __('clustering level') }}</label>
                                 {!! Form::select('clustering_level', [
-                                    'soft' => 'soft - 50%',
-                                    'hard' => 'hard - 70%',
+                                    '5' => 'soft - 50%',
+                                    '7' => 'hard - 70%',
                                     ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
                             </div>
 
                             <input type="submit" class="btn btn-secondary" value="{{ __('Analysis') }}">
 
                         </form>
-
-                        @isset($result)
-                            <div>
-
-                            </div>
-                        @endisset
                     </div>
+                    @isset($results)
+                        <div class="mt-3">
+                            <h3>Таблица кластеров</h3>
+                            <table id="clusters-table" class="table table-bordered table-hover dtr-inline">
+                                <thead>
+                                <tr>
+                                    <th>Кластер</th>
+                                    <th>ссылка / количество повторений в кластере</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($results['result'] as $result)
+                                    <tr class="odd">
+                                        <td>
+                                            @foreach($result as $phrase => $sites)
+                                                @if($phrase !== 'finallyResult')
+                                                    <p>{{ $phrase }}</p>
+                                                @endif
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @foreach($result['finallyResult'] as $site => $count)
+                                                <div>
+                                                    <b>{{ $site }}</b>: {{ $count }}
+                                                </div>
+                                            @endforeach
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endisset
                 </div>
             </div>
         </div>
     </div>
-    @slot('js')
-
-    @endslot
 @endcomponent

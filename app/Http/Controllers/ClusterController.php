@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Cluster;
-use App\CompetitorConfig;
-use App\Relevance;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,21 +10,25 @@ use Illuminate\View\View;
 class ClusterController extends Controller
 {
     /**
+     * @param $results
      * @return View
      */
-    public function index(): View
+    public function index($results = null): View
     {
         $admin = User::isUserAdmin();
 
-        return view('cluster.index', ['admin' => $admin]);
+        return view('cluster.index', ['admin' => $admin, 'results' => $results]);
     }
 
-    public function analysisCluster(Request $request)
+    /**
+     * @param Request $request
+     * @return View
+     */
+    public function analysisCluster(Request $request): View
     {
         $cluster = new Cluster($request->all());
-        $result = $cluster->startAnalysis();
-        $admin = User::isUserAdmin();
+        $cluster->startAnalysis();
 
-        return view('cluster.index', ['admin' => $admin, 'result' => $result]);
+        return $this->index($cluster->getAnalysisResult());
     }
 }

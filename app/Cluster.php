@@ -30,7 +30,7 @@ class Cluster
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
-        $this->clusteringLevel = $request['clustering_level'];
+        $this->clusteringLevel = (int)$request['clustering_level'];
 
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
@@ -42,17 +42,17 @@ class Cluster
             $this->setSites();
             $this->searchClusters();
             $this->calculateClustersInfo();
-
-            return $this->getAnalysisResult();
         } catch (\Throwable $e) {
-            Log::debug('cluster error', [
+//            Log::debug('cluster error', [
+//                $e->getMessage(),
+//                $e->getLine(),
+//                $e->getFile()
+//            ]);
+            dd([
                 $e->getMessage(),
                 $e->getLine(),
                 $e->getFile()
             ]);
-            $this->setResult([]);
-            $this->setMessage('error');
-            dd($this);
         }
     }
 
@@ -72,7 +72,7 @@ class Cluster
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
                     continue;
-                } elseif (count(array_intersect($sites['sites'], $sites2['sites'])) >= 3) {
+                } elseif (count(array_intersect($sites['sites'], $sites2['sites'])) >= $this->clusteringLevel) {
                     $this->clusters[$phrase][$phrase2] = $sites2['sites'];
                     $willClustered[$phrase2] = true;
                 }
@@ -100,7 +100,9 @@ class Cluster
      */
     protected function setResult(array $result)
     {
-        $this->result = $result;
+        $this->result = collect($result)->sortByDesc(function ($item, $key) {
+            return count($item);
+        })->values()->all();
     }
 
     /**
