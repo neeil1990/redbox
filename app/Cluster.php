@@ -3,8 +3,6 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -30,7 +28,7 @@ class Cluster
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
-        $this->clusteringLevel = (int)$request['clustering_level'];
+        $this->clusteringLevel = (int)'0.' . $request['clustering_level'];
 
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
@@ -67,12 +65,13 @@ class Cluster
 
     protected function searchClusters()
     {
+        $minimum = $this->countPhrases * $this->clusteringLevel;
         $willClustered = [];
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
                     continue;
-                } elseif (count(array_intersect($sites['sites'], $sites2['sites'])) >= $this->clusteringLevel) {
+                } elseif (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
                     $this->clusters[$phrase][$phrase2] = $sites2['sites'];
                     $willClustered[$phrase2] = true;
                 }
