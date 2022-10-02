@@ -147,28 +147,60 @@
                         <div class="mt-3">
                             <h3>Таблица кластеров</h3>
                             <table id="clusters-table" class="table table-bordered table-hover dtr-inline">
-                                <thead>
-                                <tr>
-                                    <th>Кластер</th>
-                                    <th>ссылка / количество повторений в кластере</th>
-                                </tr>
-                                </thead>
                                 <tbody>
-                                @foreach($results['result'] as $result)
-                                    <tr class="odd">
-                                        <td>
-                                            @foreach($result as $phrase => $sites)
-                                                @if($phrase !== 'finallyResult')
-                                                    <p>{{ $phrase }}</p>
-                                                @endif
-                                            @endforeach
-                                        </td>
-                                        <td>
-                                            @foreach($result['finallyResult'] as $site => $count)
-                                                <div>
-                                                    <b>{{ $site }}</b>: {{ $count }}
-                                                </div>
-                                            @endforeach
+                                @foreach($results['result'] as $key => $result)
+                                    <tr>
+                                        <td colspan="2">
+                                            <table>
+                                                <thead>
+                                                <tr>
+                                                    <th>Ключевой запрос</th>
+                                                    <th>Ссылка</th>
+                                                </tr>
+                                                </thead>
+                                                @foreach($result as $phrase => $sites)
+                                                    @if($phrase !== 'finallyResult')
+                                                        <tr>
+                                                            <td>
+                                                                {{ $phrase }}
+                                                            </td>
+                                                            <td>
+                                                                @foreach($sites as $site)
+                                                                    <div>
+                                                                        {{ $site }}
+                                                                    </div>
+                                                                @endforeach
+                                                            </td>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <td>
+                                                                Частота вхождения ссылок в ключевой запрос
+                                                            </td>
+                                                            <td>
+                                                                <p>
+                                                                    <a class="btn btn-default" data-toggle="collapse"
+                                                                       href="#collapseExample{{ $key }}" role="button"
+                                                                       aria-expanded="false"
+                                                                       aria-controls="collapseExample{{ $key }}">
+                                                                        Показать сводку
+                                                                    </a>
+                                                                </p>
+                                                                <div class="collapse" id="collapseExample{{ $key }}">
+                                                                    <div class="card card-body">
+                                                                        @foreach($result['finallyResult'] as $site => $count)
+                                                                            <div>
+                                                                                {{ $site }}: {{ $count }}
+                                                                            </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+
+                                            </table>
                                         </td>
                                     </tr>
                                 @endforeach
