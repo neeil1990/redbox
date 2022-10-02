@@ -154,13 +154,26 @@
                                             <table>
                                                 <thead>
                                                 <tr>
+                                                    <th>№</th>
                                                     <th>Ключевой запрос</th>
-                                                    <th>Ссылка</th>
+                                                    <th>Группа</th>
+                                                    <th colspan="3">Частотность</th>
+                                                    <th>Конкуренты</th>
+                                                </tr>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th>Название главного ключевого запроса</th>
+                                                    <th>Базовая</th>
+                                                    <th>"Фразовая"</th>
+                                                    <th>"!Точная"</th>
+                                                    <th></th>
                                                 </tr>
                                                 </thead>
                                                 @foreach($result as $phrase => $sites)
                                                     @if($phrase !== 'finallyResult')
                                                         <tr>
+                                                            <td>in process ..</td>
                                                             <td>
                                                                 {{ $phrase }}
                                                             </td>
@@ -171,9 +184,14 @@
                                                                     </div>
                                                                 @endforeach
                                                             </td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <th></th>
                                                         </tr>
                                                     @else
                                                         <tr>
+                                                            <td>in process..</td>
                                                             <td>
                                                                 Частота вхождения ссылок в ключевой запрос
                                                             </td>
@@ -190,12 +208,16 @@
                                                                     <div class="card card-body">
                                                                         @foreach($result['finallyResult'] as $site => $count)
                                                                             <div>
-                                                                                {{ $site }}: {{ $count }}
+                                                                                <b>{{ $site }}</b>: {{ $count }}
                                                                             </div>
                                                                         @endforeach
                                                                     </div>
                                                                 </div>
                                                             </td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <th></th>
                                                         </tr>
                                                     @endif
                                                 @endforeach
