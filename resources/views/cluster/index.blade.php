@@ -128,7 +128,7 @@
 
                             <div class="form-group required">
                                 <label id="phrases">{{ __('Phrases') }}</label>
-                                {!! Form::textarea("phrases", null,["class" => "form-control phrases"] ) !!}
+                                {!! Form::textarea("phrases", null,["class" => "form-control phrases", 'required'] ) !!}
                             </div>
 
                             <div class="form-group required">

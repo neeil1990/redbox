@@ -28,7 +28,7 @@ class Cluster
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
-        $this->clusteringLevel = (int)'0.' . $request['clustering_level'];
+        $this->clusteringLevel = $request['clustering_level'] == 5 ? 0.5 : 0.7;
 
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
@@ -65,7 +65,7 @@ class Cluster
 
     protected function searchClusters()
     {
-        $minimum = $this->countPhrases * $this->clusteringLevel;
+        $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
