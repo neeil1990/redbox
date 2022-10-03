@@ -10,7 +10,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                Не забудьте выбрать тариф: <a href="/tariff">ВЫБРАТЬ</a>
+                <p class="text-center" style="font-size: 24px"><i class="fas fa-money-bill"></i></p>
+                <p class="text-center">Не забудьте выбрать тариф: <a href="/tariff">ВЫБРАТЬ</a></p>
             </div>
         </div>
     </div>
