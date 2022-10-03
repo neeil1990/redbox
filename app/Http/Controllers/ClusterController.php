@@ -11,13 +11,14 @@ class ClusterController extends Controller
 {
     /**
      * @param $results
+     * @param string $phrases
      * @return View
      */
-    public function index($results = null): View
+    public function index($results = null, string $phrases = ''): View
     {
         $admin = User::isUserAdmin();
 
-        return view('cluster.index', ['admin' => $admin, 'results' => $results]);
+        return view('cluster.index', ['admin' => $admin, 'results' => $results, 'phrases' => $phrases]);
     }
 
     /**
@@ -29,6 +30,6 @@ class ClusterController extends Controller
         $cluster = new Cluster($request->all());
         $cluster->startAnalysis();
 
-        return $this->index($cluster->getAnalysisResult());
+        return $this->index($cluster->getAnalysisResult(), $request->input('phrases'));
     }
 }

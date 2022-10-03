@@ -128,7 +128,7 @@
 
                             <div class="form-group required">
                                 <label id="phrases">{{ __('Phrases') }}</label>
-                                {!! Form::textarea("phrases", null,["class" => "form-control phrases", 'required'] ) !!}
+                                {!! Form::textarea("phrases", $phrases, ["class" => "form-control phrases", 'required'] ) !!}
                             </div>
 
                             <div class="form-group required">
@@ -144,85 +144,73 @@
                         </form>
                     </div>
                     @isset($results)
-                        <div class="mt-3">
+                        <div class="mt-3" style="width: 100%; overflow-x: scroll;">
                             <h3>Таблица кластеров</h3>
                             <table id="clusters-table" class="table table-bordered table-hover dtr-inline">
+                                <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Ключевой запрос</th>
+                                    <th>Группа</th>
+                                    <th colspan="3">Частотность</th>
+                                    <th>Конкуренты</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Базовая</th>
+                                    <th>"Фразовая"</th>
+                                    <th>"!Точная"</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
                                 <tbody>
                                 @foreach($results['result'] as $key => $result)
                                     <tr>
-                                        <td colspan="2">
-                                            <table>
-                                                <thead>
-                                                <tr>
-                                                    <th>№</th>
-                                                    <th>Ключевой запрос</th>
-                                                    <th>Группа</th>
-                                                    <th colspan="3">Частотность</th>
-                                                    <th>Конкуренты</th>
-                                                </tr>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th>Название главного ключевого запроса</th>
-                                                    <th>Базовая</th>
-                                                    <th>"Фразовая"</th>
-                                                    <th>"!Точная"</th>
-                                                    <th></th>
-                                                </tr>
-                                                </thead>
-                                                @foreach($result as $phrase => $sites)
-                                                    @if($phrase !== 'finallyResult')
-                                                        <tr>
-                                                            <td>in process ..</td>
-                                                            <td>
-                                                                {{ $phrase }}
-                                                            </td>
-                                                            <td>
+                                        <td>in process..</td>
+                                        <td>
+                                            @foreach($result as $phrase => $sites)
+                                                @if($phrase !== 'finallyResult')
+                                                    <div class="mb-2">
+                                                        {{ $phrase }}
+                                                        <span class="__helper-link ui_tooltip_w">
+                                                        <i class="fa fa-paperclip"></i>
+                                                        <span class="ui_tooltip __right"
+                                                              style="min-width: 250px;">
+                                                            <span class="ui_tooltip_content">
                                                                 @foreach($sites as $site)
                                                                     <div>
-                                                                        {{ $site }}
+                                                                        <a href="{{ $site }}" target="_blank">
+                                                                            {{ parse_url($site)['host'] }}
+                                                                        </a>
                                                                     </div>
                                                                 @endforeach
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <th></th>
-                                                        </tr>
-                                                    @else
-                                                        <tr>
-                                                            <td>in process..</td>
-                                                            <td>
-                                                                Частота вхождения ссылок в ключевой запрос
-                                                            </td>
-                                                            <td>
-                                                                <p>
-                                                                    <a class="btn btn-default" data-toggle="collapse"
-                                                                       href="#collapseExample{{ $key }}" role="button"
-                                                                       aria-expanded="false"
-                                                                       aria-controls="collapseExample{{ $key }}">
-                                                                        Показать сводку
-                                                                    </a>
-                                                                </p>
-                                                                <div class="collapse" id="collapseExample{{ $key }}">
-                                                                    <div class="card card-body">
-                                                                        @foreach($result['finallyResult'] as $site => $count)
-                                                                            <div>
-                                                                                <b>{{ $site }}</b>: {{ $count }}
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <th></th>
-                                                        </tr>
-                                                    @endif
-                                                @endforeach
-
-                                            </table>
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            in process..
+                                        </td>
+                                        <td>
+                                            in process..
+                                        </td>
+                                        <td>
+                                            in process..
+                                        </td>
+                                        <td>
+                                            in process..
+                                        </td>
+                                        <td>
+                                            @foreach($result['finallyResult'] as $site => $count)
+                                                <div>
+                                                    <b>{{ $site }}</b>: {{ $count }}
+                                                </div>
+                                            @endforeach
                                         </td>
                                     </tr>
                                 @endforeach

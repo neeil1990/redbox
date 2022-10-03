@@ -45,7 +45,7 @@ function renderRecommendationsTable(recommendations, count) {
     });
 
     setTimeout(() => {
-        $('#recommendations').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+        $('#recommendations').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
     }, 500);
 
 

@@ -48,7 +48,7 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
                 'copy', 'csv', 'excel'
             ]
         });
-        $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+        $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
         //Добавляем только в ниграм
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {

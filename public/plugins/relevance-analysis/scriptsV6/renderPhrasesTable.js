@@ -17,7 +17,7 @@ function renderPhrasesTable(phrases, count) {
         });
 
         setTimeout(() => {
-            $('#phrases').wrap("<div style='width: 100%; overflow-x: scroll; max-height:90vh;'></div>")
+            $('#phrases').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
             $('.buttons-html5').addClass('btn btn-secondary')
 
             function isPhrases(min, max, target, settings) {
