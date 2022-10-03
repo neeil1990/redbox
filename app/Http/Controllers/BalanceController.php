@@ -12,12 +12,12 @@ class BalanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($response = null)
     {
         $user = Auth::user();
         $balances = $user->balances()->orderBy('id', 'desc')->get();
 
-        return view('balance.index', compact('balances'));
+        return view('balance.index', compact('balances', 'response'));
     }
 
     /**

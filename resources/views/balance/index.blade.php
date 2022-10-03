@@ -79,8 +79,21 @@
         </div>
     </div>
 
+    @if($response == 'success')
+        @include('balance.success')
+    @endif
+
+    @if($response == 'fail')
+        @include('balance.fail')
+    @endif
 
     @slot('js')
+
+        @if($response)
+        <script>
+            $('.modal').modal('show');
+        </script>
+        @endif
 
     @endslot
 
