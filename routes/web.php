@@ -230,7 +230,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/edit-policy-files', 'AdminController@editPolicyFiles')->name('edit.policy.files');
     Route::post('/get-policy-document', 'AdminController@getPolicyDocument')->name('get.policy.document');
 
-    Route::get('/balance', 'BalanceController@index')->name('balance.index');
+    Route::get('/balance/{response?}', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
 
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');
