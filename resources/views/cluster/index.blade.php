@@ -177,11 +177,10 @@
                                                 <tr>
                                                     <th>№</th>
                                                     <th>Ключевой запрос</th>
-                                                    <th>Группа</th>
+                                                    <th rowspan="2" style="text-align: center;vertical-align: inherit;">Группа</th>
                                                     <th colspan="3" style="text-align: center">Частотность</th>
                                                 </tr>
                                                 <tr>
-                                                    <th></th>
                                                     <th></th>
                                                     <th></th>
                                                     <th>Базовая</th>
