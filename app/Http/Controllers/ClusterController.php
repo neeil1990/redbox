@@ -12,35 +12,26 @@ use Illuminate\View\View;
 class ClusterController extends Controller
 {
     /**
-     * @param Request $request
+     * @param $result
      * @return View
      */
-    public function index(Request $request): View
+    public function index($result = null): View
     {
         $admin = User::isUserAdmin();
 
-        $sessionResult = $request->session()->pull('cluster.results');
-        if (isset($sessionResult)) {
-            dd($sessionResult);
-            $sessionResult = $sessionResult[0];
-            $request->session()->pull('cluster.results');
-        } else {
-            $sessionResult = null;
-        }
-
-        return view('cluster.index', ['admin' => $admin, 'results' => $sessionResult]);
+        return view('cluster.index', ['admin' => $admin, 'results' => $result]);
     }
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return View
      */
-    public function analysisCluster(Request $request): RedirectResponse
+    public function analysisCluster(Request $request): View
     {
         $cluster = new Cluster($request->all());
         $cluster->startAnalysis();
-        $request->session()->push('cluster.results', $cluster->getAnalysisResult());
+        $cluster->getAnalysisResult();
 
-        return Redirect::back()->withInput();
+        return $this->index($cluster->getAnalysisResult());
     }
 }
