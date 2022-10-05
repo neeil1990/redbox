@@ -21,6 +21,7 @@ class ClusterController extends Controller
 
         $sessionResult = $request->session()->pull('cluster.results');
         if (isset($sessionResult)) {
+            dd($sessionResult);
             $sessionResult = $sessionResult[0];
             $request->session()->pull('cluster.results');
         } else {
