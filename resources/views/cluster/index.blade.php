@@ -6,6 +6,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <style>
+            #clusters-table > tbody > tr > td > table > thead:hover {
+                background: transparent !important;
+            }
+        </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
         <div class="toast toast-error" aria-live="polite">
@@ -53,82 +58,83 @@
                             <div class="form-group required">
                                 <label>{{ __('Region') }}</label>
                                 {!! Form::select('region', array_unique([
-                                      '213' => __('Moscow'),
-                                       '1' => __('Moscow and the area'),
-                                       '20' => __('Arkhangelsk'),
-                                       '37' => __('Astrakhan'),
-                                       '197' => __('Barnaul'),
-                                       '4' => __('Belgorod'),
-                                       '77' => __('Blagoveshchensk'),
-                                       '191' => __('Bryansk'),
-                                       '24' => __('Veliky Novgorod'),
-                                       '75' => __('Vladivostok'),
-                                       '33' => __('Vladikavkaz'),
-                                       '192' => __('Vladimir'),
-                                       '38' => __('Volgograd'),
-                                       '21' => __('Vologda'),
-                                       '193' => __('Voronezh'),
-                                       '1106' => __('Grozny'),
-                                       '54' => __('Ekaterinburg'),
-                                       '5' => __('Ivanovo'),
-                                       '63' => __('Irkutsk'),
-                                       '41' => __('Yoshkar-ola'),
-                                       '43' => __('Kazan'),
-                                       '22' => __('Kaliningrad'),
-                                       '64' => __('Kemerovo'),
-                                       '7' => __('Kostroma'),
-                                       '35' => __('Krasnodar'),
-                                       '62' => __('Krasnoyarsk'),
-                                       '53' => __('Kurgan'),
-                                       '8' => __('Kursk'),
-                                       '9' => __('Lipetsk'),
-                                       '28' => __('Makhachkala'),
-                                       '23' => __('Murmansk'),
-                                       '1092' => __('Nazran'),
-                                       '30' => __('Nalchik'),
-                                       '47' => __('Nizhniy Novgorod'),
-                                       '65' => __('Novosibirsk'),
-                                       '66' => __('Omsk'),
-                                       '10' => __('Eagle'),
-                                       '48' => __('Orenburg'),
-                                       '49' => __('Penza'),
-                                       '50' => __('Perm'),
-                                       '25' => __('Pskov'),
-                                       '39' => __('Rostov-on-Don'),
-                                       '11' => __('Ryazan'),
-                                       '51' => __('Samara'),
-                                       '42' => __('Saransk'),
-                                       '2' => __('Saint-Petersburg'),
-                                       '12' => __('Smolensk'),
-                                       '239' => __('Sochi'),
-                                       '36' => __('Stavropol'),
-                                       '10649' => __('Stary Oskol'),
-                                       '973' => __('Surgut'),
-                                       '13' => __('Tambov'),
-                                       '14' => __('Tver'),
-                                       '67' => __('Tomsk'),
-                                       '15' => __('Tula'),
-                                       '195' => __('Ulyanovsk'),
-                                       '172' => __('Ufa'),
-                                       '76' => __('Khabarovsk'),
-                                       '45' => __('Cheboksary'),
-                                       '56' => __('Chelyabinsk'),
-                                       '1104' => __('Cherkessk'),
-                                       '16' => __('Yaroslavl'),
-                                       ]), null, ['class' => 'custom-select rounded-0 region']) !!}
+                                  '213' => __('Moscow'),
+                                   '1' => __('Moscow and the area'),
+                                   '20' => __('Arkhangelsk'),
+                                   '37' => __('Astrakhan'),
+                                   '197' => __('Barnaul'),
+                                   '4' => __('Belgorod'),
+                                   '77' => __('Blagoveshchensk'),
+                                   '191' => __('Bryansk'),
+                                   '24' => __('Veliky Novgorod'),
+                                   '75' => __('Vladivostok'),
+                                   '33' => __('Vladikavkaz'),
+                                   '192' => __('Vladimir'),
+                                   '38' => __('Volgograd'),
+                                   '21' => __('Vologda'),
+                                   '193' => __('Voronezh'),
+                                   '1106' => __('Grozny'),
+                                   '54' => __('Ekaterinburg'),
+                                   '5' => __('Ivanovo'),
+                                   '63' => __('Irkutsk'),
+                                   '41' => __('Yoshkar-ola'),
+                                   '43' => __('Kazan'),
+                                   '22' => __('Kaliningrad'),
+                                   '64' => __('Kemerovo'),
+                                   '7' => __('Kostroma'),
+                                   '35' => __('Krasnodar'),
+                                   '62' => __('Krasnoyarsk'),
+                                   '53' => __('Kurgan'),
+                                   '8' => __('Kursk'),
+                                   '9' => __('Lipetsk'),
+                                   '28' => __('Makhachkala'),
+                                   '23' => __('Murmansk'),
+                                   '1092' => __('Nazran'),
+                                   '30' => __('Nalchik'),
+                                   '47' => __('Nizhniy Novgorod'),
+                                   '65' => __('Novosibirsk'),
+                                   '66' => __('Omsk'),
+                                   '10' => __('Eagle'),
+                                   '48' => __('Orenburg'),
+                                   '49' => __('Penza'),
+                                   '50' => __('Perm'),
+                                   '25' => __('Pskov'),
+                                   '39' => __('Rostov-on-Don'),
+                                   '11' => __('Ryazan'),
+                                   '51' => __('Samara'),
+                                   '42' => __('Saransk'),
+                                   '2' => __('Saint-Petersburg'),
+                                   '12' => __('Smolensk'),
+                                   '239' => __('Sochi'),
+                                   '36' => __('Stavropol'),
+                                   '10649' => __('Stary Oskol'),
+                                   '973' => __('Surgut'),
+                                   '13' => __('Tambov'),
+                                   '14' => __('Tver'),
+                                   '67' => __('Tomsk'),
+                                   '15' => __('Tula'),
+                                   '195' => __('Ulyanovsk'),
+                                   '172' => __('Ufa'),
+                                   '76' => __('Khabarovsk'),
+                                   '45' => __('Cheboksary'),
+                                   '56' => __('Chelyabinsk'),
+                                   '1104' => __('Cherkessk'),
+                                   '16' => __('Yaroslavl'),
+                               ]), null, ['class' => 'custom-select rounded-0 region']) !!}
                             </div>
 
                             <div class="form-group required">
                                 <label>{{ __('Top 10/20') }}</label>
                                 {!! Form::select('count', array_unique([
-                                        '10' => 10,
-                                        '20' => 20,
+                                    '10' => 10,
+                                    '20' => 20,
+                                    '30' => 30,
                                 ]), null, ['class' => 'custom-select rounded-0 count']) !!}
                             </div>
 
                             <div class="form-group required">
                                 <label id="phrases">{{ __('Phrases') }}</label>
-                                {!! Form::textarea("phrases", $phrases, ["class" => "form-control phrases", 'required'] ) !!}
+                                {!! Form::textarea("phrases", old('phrases'), ["class" => "form-control phrases", 'required'] ) !!}
                             </div>
 
                             <div class="form-group required">
@@ -139,6 +145,14 @@
                                     ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
                             </div>
 
+                            <div class="form-group required">
+                                <label>Объединение кластеров</label>
+                                {!! Form::select('engine_version', [
+                                    'old' => 'Формирование на основе первой попавшейся фразы (old)',
+                                    'new' => 'Формирование на основе первой попавшейся фразы или на основе массива ссылок кластера (new)',
+                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
+                            </div>
+
                             <input type="submit" class="btn btn-secondary" value="{{ __('Analysis') }}">
 
                         </form>
@@ -146,71 +160,98 @@
                     @isset($results)
                         <div class="mt-3" style="width: 100%; overflow-x: scroll;">
                             <h3>Таблица кластеров</h3>
-                            <table id="clusters-table" class="table table-bordered table-hover dtr-inline">
+                            <table id="clusters-table" class="table table-bordered dtr-inline">
                                 <thead>
                                 <tr>
-                                    <th>№</th>
-                                    <th>Ключевой запрос</th>
-                                    <th>Группа</th>
-                                    <th colspan="3">Частотность</th>
-                                    <th>Конкуренты</th>
-                                </tr>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>Базовая</th>
-                                    <th>"Фразовая"</th>
-                                    <th>"!Точная"</th>
-                                    <th></th>
+                                    <th>Кластеры</th>
+                                    <th style="min-width: 250px;">Конкуренты</th>
                                 </tr>
                                 </thead>
                                 <tbody>
+                                @php ($iterator = 0)
                                 @foreach($results['result'] as $key => $result)
                                     <tr>
-                                        <td>in process..</td>
                                         <td>
-                                            @foreach($result as $phrase => $sites)
-                                                @if($phrase !== 'finallyResult')
-                                                    <div class="mb-2">
-                                                        {{ $phrase }}
-                                                        <span class="__helper-link ui_tooltip_w">
-                                                        <i class="fa fa-paperclip"></i>
-                                                        <span class="ui_tooltip __right"
-                                                              style="min-width: 250px;">
-                                                            <span class="ui_tooltip_content">
-                                                                @foreach($sites as $site)
-                                                                    <div>
-                                                                        <a href="{{ $site }}" target="_blank">
-                                                                            {{ parse_url($site)['host'] }}
-                                                                        </a>
+                                            <table class="table table-hover text-nowrap" style="width: 100%;">
+                                                <thead>
+                                                <tr>
+                                                    <th>№</th>
+                                                    <th>Ключевой запрос</th>
+                                                    <th>Группа</th>
+                                                    <th colspan="3" style="text-align: center">Частотность</th>
+                                                </tr>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th>Базовая</th>
+                                                    <th>"Фразовая"</th>
+                                                    <th>"!Точная"</th>
+                                                </tr>
+                                                </thead>
+                                                @foreach($result as $phrase => $sites)
+                                                    @if($phrase !== 'finallyResult')
+                                                        @php ($iterator++)
+                                                        <tr>
+                                                            <td class="border-0">
+                                                                {{ $iterator }}
+                                                            </td>
+                                                            <td class="border-0">
+                                                                <div class="col-12 d-flex">
+                                                                    <div class="col-11">
+                                                                        {{ $phrase }}
                                                                     </div>
-                                                                @endforeach
-                                                            </span>
-                                                        </span>
-                                                    </span>
-                                                    </div>
-                                                @endif
-                                            @endforeach
+                                                                    <div class="col-1">
+                                                                        <span class="__helper-link ui_tooltip_w">
+                                                                    <i class="fa fa-paperclip"></i>
+                                                                    <span class="ui_tooltip __right"
+                                                                          style="min-width: 250px;">
+                                                                        <span class="ui_tooltip_content">
+                                                                            @foreach($sites as $site)
+                                                                                <div>
+                                                                                    <a href="{{ $site }}"
+                                                                                       target="_blank">
+                                                                                        {{ parse_url($site)['host'] }}
+                                                                                    </a>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        </span>
+                                                                    </span>
+                                                                </span>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="border-0">
+                                                                group
+                                                            </td>
+                                                            <td class="border-0">based</td>
+                                                            <td class="border-0">phrases</td>
+                                                            <td class="border-0">target</td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            </table>
                                         </td>
                                         <td>
-                                            in process..
-                                        </td>
-                                        <td>
-                                            in process..
-                                        </td>
-                                        <td>
-                                            in process..
-                                        </td>
-                                        <td>
-                                            in process..
-                                        </td>
-                                        <td>
-                                            @foreach($result['finallyResult'] as $site => $count)
+                                            <p>
+                                                <a class="btn btn-secondary" data-toggle="collapse"
+                                                   href="#competitors{{$key}}" role="button" aria-expanded="false"
+                                                   aria-controls="competitors{{$key}}">
+                                                    Конкуренты
+                                                </a>
+                                            </p>
+                                            <div class="collapse" id="competitors{{$key}}">
                                                 <div>
-                                                    <b>{{ $site }}</b>: {{ $count }}
+                                                    @foreach($result['finallyResult'] as $site => $count)
+                                                        <div>
+                                                            <a href="{{ $site }}" target="_blank">
+                                                                {{ parse_url($site)['host'] }}
+                                                            </a> : {{ $count }}
+                                                        </div>
+                                                    @endforeach
                                                 </div>
-                                            @endforeach
+                                            </div>
+
                                         </td>
                                     </tr>
                                 @endforeach

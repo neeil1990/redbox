@@ -18,17 +18,18 @@ class Cluster
 
     protected $sites;
 
-    protected $message;
-
     protected $result;
 
     protected $clusters = [];
+
+    protected $engineVersion;
 
     public function __construct(array $request)
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
         $this->clusteringLevel = $request['clustering_level'] == 5 ? 0.5 : 0.7;
+        $this->engineVersion = $request['engine_version'];
 
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
@@ -65,8 +66,18 @@ class Cluster
 
     protected function searchClusters()
     {
+        if ($this->engineVersion === 'old') {
+            $this->searchClustersEngineV1();
+        } else {
+            $this->searchClustersEngineV2();
+        }
+    }
+
+    protected function searchClustersEngineV1()
+    {
         $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
+
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
@@ -79,6 +90,44 @@ class Cluster
         }
     }
 
+    protected function searchClustersEngineV2()
+    {
+        $minimum = $this->count * $this->clusteringLevel;
+        $willClustered = [];
+        $clusters = [];
+
+        foreach ($this->sites as $phrase => $sites) {
+            foreach ($this->sites as $phrase2 => $sites2) {
+                if (isset($willClustered[$phrase2])) {
+                    continue;
+                }
+                if (isset($clusters[$phrase])) {
+                    foreach ($clusters[$phrase] as $elems) {
+                        foreach ($elems as $elem) {
+                            if (count(array_intersect($elem, $sites2['sites'])) >= $minimum) {
+                                $clusters[$phrase][$phrase2][] = $sites2['sites'];
+                                $willClustered[$phrase2] = true;
+                                break 2;
+                            }
+                        }
+                    }
+                } else {
+                    if (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
+                        $clusters[$phrase][$phrase2][] = $sites2['sites'];
+                        $willClustered[$phrase2] = true;
+                    }
+                }
+
+            }
+        }
+
+        foreach ($clusters as $phrase => $item) {
+            foreach ($item as $itemPhrase => $elems) {
+                $this->clusters[$phrase][$itemPhrase] = $elems[0];
+            }
+        }
+    }
+
     protected function calculateClustersInfo()
     {
         foreach ($this->clusters as $key => $phrases) {
@@ -86,11 +135,12 @@ class Cluster
             foreach ($phrases as $phrase => $sites) {
                 $merge = array_merge($merge, $sites);
             }
-            $this->clusters[$key]['finallyResult'] = array_count_values($merge);
+            $merge = array_count_values($merge);
+            arsort($merge);
+            $this->clusters[$key]['finallyResult'] = $merge;
         }
 
         $this->setResult($this->clusters);
-        $this->setMessage('success');
     }
 
     /**
@@ -113,32 +163,13 @@ class Cluster
     }
 
     /**
-     * @param string $message
-     * @return void
-     */
-    protected function setMessage(string $message)
-    {
-        $this->message = $message;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getMessage(): string
-    {
-        return $this->message;
-    }
-
-    /**
      * @return string[]
      */
     public function getAnalysisResult(): array
     {
         return [
-            'message' => $this->getMessage(),
             'result' => $this->getResult()
         ];
     }
-
 
 }

@@ -4,32 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Cluster;
 use App\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ClusterController extends Controller
 {
     /**
-     * @param $results
-     * @param string $phrases
+     * @param Request $request
      * @return View
      */
-    public function index($results = null, string $phrases = ''): View
+    public function index(Request $request): View
     {
         $admin = User::isUserAdmin();
 
-        return view('cluster.index', ['admin' => $admin, 'results' => $results, 'phrases' => $phrases]);
+        $sessionResult = $request->session()->pull('cluster.results');
+        if (isset($sessionResult)) {
+            $sessionResult = $sessionResult[0];
+            $request->session()->pull('cluster.results');
+        } else {
+            $sessionResult = null;
+        }
+
+        return view('cluster.index', ['admin' => $admin, 'results' => $sessionResult]);
     }
 
     /**
      * @param Request $request
-     * @return View
+     * @return RedirectResponse
      */
-    public function analysisCluster(Request $request): View
+    public function analysisCluster(Request $request): RedirectResponse
     {
         $cluster = new Cluster($request->all());
         $cluster->startAnalysis();
+        $request->session()->push('cluster.results', $cluster->getAnalysisResult());
 
-        return $this->index($cluster->getAnalysisResult(), $request->input('phrases'));
+        return Redirect::back()->withInput();
     }
 }
