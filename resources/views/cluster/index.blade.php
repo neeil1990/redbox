@@ -10,6 +10,11 @@
             #clusters-table > tbody > tr > td > table > thead:hover {
                 background: transparent !important;
             }
+
+            .centered-text {
+                text-align: center;
+                vertical-align: inherit;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
@@ -175,25 +180,32 @@
                                             <table class="table table-hover text-nowrap" style="width: 100%;">
                                                 <thead>
                                                 <tr>
-                                                    <th>№</th>
-                                                    <th>Ключевой запрос</th>
-                                                    <th rowspan="2" style="text-align: center;vertical-align: inherit;">Группа</th>
-                                                    <th colspan="3" style="text-align: center">Частотность</th>
+                                                    <th class="centered-text" rowspan="2">Порядковый номер</th>
+                                                    <th class="centered-text" rowspan="2">Порядковый номер в кластере
+                                                    </th>
+                                                    <th class="centered-text" rowspan="2">Ключевой запрос</th>
+                                                    <th class="centered-text" rowspan="2">
+                                                        Группа
+                                                    </th>
+                                                    <th class="centered-text" colspan="3">Частотность</th>
                                                 </tr>
                                                 <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th>Базовая</th>
-                                                    <th>"Фразовая"</th>
-                                                    <th>"!Точная"</th>
+                                                    <th class="centered-text">Базовая</th>
+                                                    <th class="centered-text">"Фразовая"</th>
+                                                    <th class="centered-text">"!Точная"</th>
                                                 </tr>
                                                 </thead>
+                                                @php($clusterIterator = 0)
                                                 @foreach($result as $phrase => $sites)
                                                     @if($phrase !== 'finallyResult')
                                                         @php ($iterator++)
+                                                        @php ($clusterIterator++)
                                                         <tr>
                                                             <td class="border-0">
                                                                 {{ $iterator }}
+                                                            </td>
+                                                            <td class="border-0">
+                                                                {{ $clusterIterator }}
                                                             </td>
                                                             <td class="border-0">
                                                                 <div class="col-12 d-flex">
