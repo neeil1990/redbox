@@ -41,17 +41,15 @@ class RelevanceController extends Controller
             ]);
         }
 
-        $messages = [
-            'link.required' => __('A link to the landing page is required.'),
-            'phrase.required' => __('The keyword is required to fill in.'),
-            'siteList.required' => __('The list of sites is required to fill in.'),
-        ];
-
         $request->validate([
             'link' => 'required|website',
             'phrase' => 'required|not_website',
             'siteList' => 'required_without:link',
-        ], $messages);
+        ], [
+            'link.required' => __('A link to the landing page is required.'),
+            'phrase.required' => __('The keyword is required to fill in.'),
+            'siteList.required' => __('The list of sites is required to fill in.'),
+        ]);
 
         $relevance = new Relevance($request->all());
         $relevance->getMainPageHtml();
@@ -63,6 +61,7 @@ class RelevanceController extends Controller
         } elseif ($request['type'] == 'list') {
 
             $relevance->analysisByList($request->all());
+
         }
 
         $relevance->analysis(Auth::id());

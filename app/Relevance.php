@@ -201,26 +201,13 @@ class Relevance
             $this->prepareClouds();
             $this->saveHistory($userId, $historyId);
         } catch (\Throwable $exception) {
-            Log::debug('Relevance Error', [
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'message' => $exception->getMessage(),
-                'userId' => $userId,
-            ]);
-
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
                     'state' => '-1'
                 ]);
             }
 
-            if ($this->queue) {
-                UsersJobs::where('user_id', '=', $userId)->update([
-                    'count_jobs' => '-1'
-                ]);
-            }
-
-            $this->saveError();
+            $this->saveError($exception);
         }
     }
 
@@ -837,7 +824,8 @@ class Relevance
         $collection = collect($this->wordForms);
 
         $this->wordForms = $collection->sortBy(
-            function ($key, $value) {},
+            function ($key, $value) {
+            },
             SORT_REGULAR,
             true
         )->toArray();
@@ -1381,7 +1369,7 @@ class Relevance
 
             $this->parseSites($xmlResponse);
         } catch (\Throwable $exception) {
-            $this->saveError();
+            $this->saveError($exception);
             die();
         }
     }
@@ -1490,7 +1478,7 @@ class Relevance
     /**
      * @return void
      */
-    public function saveError()
+    public function saveError($exception)
     {
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
         if ($toDay->id) {
@@ -1499,6 +1487,17 @@ class Relevance
             $toDay->count_fails = 1;
         }
         $toDay->save();
+
+
+        if ($this->queue) {
+            UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
+        }
+
+        Log::debug('Relevance Error', [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ]);
     }
 
     /**
