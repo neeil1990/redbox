@@ -3,8 +3,6 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
             #clusters-table > tbody > tr > td > table > thead:hover {
@@ -180,23 +178,23 @@
                                             <table class="table table-hover text-nowrap" style="width: 100%;">
                                                 <thead>
                                                 <tr>
-                                                    <th class="centered-text" rowspan="2">Порядковый номер</th>
-                                                    <th class="centered-text" rowspan="2">Порядковый номер в кластере
+                                                    <th rowspan="2">Порядковый номер</th>
+                                                    <th rowspan="2">Порядковый номер в кластере
                                                     </th>
-                                                    <th class="centered-text" rowspan="2">Ключевой запрос</th>
-                                                    <th class="centered-text" rowspan="2">
+                                                    <th rowspan="2">Ключевой запрос</th>
+                                                    <th rowspan="2">
                                                         Группа
                                                     </th>
                                                     <th class="centered-text" colspan="3">Частотность</th>
                                                 </tr>
                                                 <tr>
-                                                    <th class="centered-text">Базовая</th>
-                                                    <th class="centered-text">"Фразовая"</th>
-                                                    <th class="centered-text">"!Точная"</th>
+                                                    <th>Базовая</th>
+                                                    <th>"Фразовая"</th>
+                                                    <th>"!Точная"</th>
                                                 </tr>
                                                 </thead>
                                                 @php($clusterIterator = 0)
-                                                @foreach($result as $phrase => $sites)
+                                                @foreach($result as $phrase => $information)
                                                     @if($phrase !== 'finallyResult')
                                                         @php ($iterator++)
                                                         @php ($clusterIterator++)
@@ -214,29 +212,55 @@
                                                                     </div>
                                                                     <div class="col-1">
                                                                         <span class="__helper-link ui_tooltip_w">
-                                                                    <i class="fa fa-paperclip"></i>
-                                                                    <span class="ui_tooltip __right"
-                                                                          style="min-width: 250px;">
-                                                                        <span class="ui_tooltip_content">
-                                                                            @foreach($sites as $site)
-                                                                                <div>
-                                                                                    <a href="{{ $site }}"
-                                                                                       target="_blank">
-                                                                                        {{ parse_url($site)['host'] }}
-                                                                                    </a>
-                                                                                </div>
-                                                                            @endforeach
+                                                                            <i class="fa fa-paperclip"></i>
+                                                                            <span class="ui_tooltip __right"
+                                                                                  style="min-width: 250px;">
+                                                                                <span class="ui_tooltip_content">
+                                                                                    @foreach($information['sites'] as $site)
+                                                                                        <div>
+                                                                                            <a href="{{ $site }}"
+                                                                                               target="_blank">
+                                                                                                {{ parse_url($site)['host'] }}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    @endforeach
+                                                                                </span>
+                                                                            </span>
                                                                         </span>
-                                                                    </span>
-                                                                </span>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td class="border-0">
-                                                                group
+                                                                {{ $information['group'] ?? 'no found' }}
+                                                                @if(isset($information['searchType']))
+                                                                    @if($information['searchType'] === 'similar')
+                                                                        <span class="__helper-link ui_tooltip_w">
+                                                                        <i class="fa fa-question-circle"
+                                                                           style="color: grey;"></i>
+                                                                        <span class="ui_tooltip __right">
+                                                                            <span class="ui_tooltip_content">
+                                                                                Ключевая фраза была найдена, <br>
+                                                                                но она была видоизменена
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                    @endif
+                                                                @else
+                                                                    <span class="__helper-link ui_tooltip_w">
+                                                                        <i class="fa fa-question-circle"
+                                                                           style="color: grey;"></i>
+                                                                        <span class="ui_tooltip __right">
+                                                                            <span class="ui_tooltip_content">
+                                                                                Ключевая фраза не была найдена,<br>
+                                                                                возможно она была видоизменена <br>
+                                                                                или имеет < 10 запросов в месяц.
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                @endif
                                                             </td>
-                                                            <td class="border-0">based</td>
-                                                            <td class="border-0">phrases</td>
+                                                            <td class="border-0">{{ $information['based'] ?? 'no found'}}</td>
+                                                            <td class="border-0">phrase</td>
                                                             <td class="border-0">target</td>
                                                         </tr>
                                                     @endif
@@ -262,7 +286,6 @@
                                                     @endforeach
                                                 </div>
                                             </div>
-
                                         </td>
                                     </tr>
                                 @endforeach

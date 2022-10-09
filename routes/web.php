@@ -291,12 +291,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $analysis = new SearchCompetitors();
-    $analysis->setPhrases("azbuka\nazbyka");
-    $analysis->setRegion(1);
-    $analysis->setCount(5);
-    $analysis->analyzeList();
 
-    dd($analysis->getResult());
 });
 

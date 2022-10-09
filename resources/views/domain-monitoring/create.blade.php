@@ -1,9 +1,11 @@
+@php use Illuminate\Support\Facades\Auth; @endphp
 @component('component.card', ['title' => __('Add a monitored domain')])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
+        <link rel="stylesheet" type="text/css"
+              href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
     @endslot
     {!! Form::open(['action' =>'DomainMonitoringController@store', 'method' => 'POST'])!!}
     <div class='col-md-6 mt-3'>
@@ -35,7 +37,7 @@
             ], 10, ['class' => 'form-control custom-select rounded-0 monitoring']) !!}
         </div>
         <div id="searchPhrase">
-            <div class="form-group required d-flex flex-column">
+            <div class="form-group required flex-column">
                 {!! Form::label(__('Keyword Search')) !!}
                 {!! Form::checkbox(null, null, true, ['class' => 'checkbox']); !!}
             </div>
@@ -48,7 +50,7 @@
             <span
                 class="text-info">{{ __('If the phrase is not selected, the server will wait for the 200 response code') }}</span>
         </div>
-        @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
+        @if(!Auth::user()->telegram_bot_active)
             <span>
             {{ __('Want to') }}
                 <a href="{{ route('profile.index') }}" target="_blank">
