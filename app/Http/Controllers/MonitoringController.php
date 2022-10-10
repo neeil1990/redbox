@@ -501,10 +501,9 @@ class MonitoringController extends Controller
         foreach ($keywords as $keyword){
 
             $id = $keyword->id;
-            dump($id);
+            if($id != 181)
             $table[$id] = $this->generateRowDataTable($columns, $keyword, $mode);
         }
-        dd($table);
 
         return $table;
     }
