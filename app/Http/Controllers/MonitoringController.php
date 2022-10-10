@@ -511,9 +511,6 @@ class MonitoringController extends Controller
     {
         $row = collect([]);
 
-        if($keyword->id == 181)
-            dd(1);
-
         foreach ($columns as $i => $v){
 
             switch ($i) {
@@ -530,6 +527,9 @@ class MonitoringController extends Controller
                     $row->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
                     break;
                 case 'url':
+
+                    if($keyword->id == 181)
+                        dd(1);
 
                     $urls = $keyword->urls;
                     $textClass = 'text-bold';
