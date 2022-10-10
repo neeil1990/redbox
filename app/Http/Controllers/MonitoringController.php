@@ -498,7 +498,6 @@ class MonitoringController extends Controller
     private function generateDataTable($keywords, $columns, $mode)
     {
         $table = [];
-        dd($keywords);
         foreach ($keywords as $keyword){
 
             $id = $keyword->id;
@@ -511,6 +510,8 @@ class MonitoringController extends Controller
     private function generateRowDataTable($columns, $keyword, $mode)
     {
         $row = collect([]);
+
+        dd($keyword->last_positions);
 
         foreach ($columns as $i => $v){
 
