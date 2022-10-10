@@ -511,8 +511,6 @@ class MonitoringController extends Controller
     {
         $row = collect([]);
 
-        dd($keyword->last_positions);
-
         foreach ($columns as $i => $v){
 
             switch ($i) {
@@ -575,6 +573,8 @@ class MonitoringController extends Controller
                     }
             }
         }
+
+        dd($keyword->last_positions);
 
         return $row;
     }
