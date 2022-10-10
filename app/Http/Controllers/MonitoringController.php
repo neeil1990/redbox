@@ -565,14 +565,8 @@ class MonitoringController extends Controller
                             $row->put($i, '-');
 
                     }else{
-                        if($keyword->id == 181){
-
-                            dd($keyword->last_positions, $v);
-                        }
-                        $position = $keyword->last_positions[$v];
-
-                        if($position) {
-                            $row->put($i, view('monitoring.partials.show.position', ['position' => $position])->render());
+                        if(isset($keyword->last_positions[$v])) {
+                            $row->put($i, view('monitoring.partials.show.position', ['position' => $keyword->last_positions[$v]])->render());
                         }else
                             $row->put($i, '-');
                     }
