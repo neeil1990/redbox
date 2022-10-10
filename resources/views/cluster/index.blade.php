@@ -250,7 +250,7 @@
                                                                 </div>
                                                             </td>
                                                             <td class="border-0">
-                                                                {{ $information['group'] ?? 'no found' }}
+                                                                {{ $information['group'] ?? $phrase }}
                                                                 @if(isset($information['searchType']))
                                                                     @if($information['searchType'] === 'similar')
                                                                         <span class="__helper-link ui_tooltip_w">
@@ -280,7 +280,7 @@
                                                                     </span>
                                                                 @endif
                                                             </td>
-                                                            <td class="border-0">{{ $information['based'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['based'] ?? 'встречается менее 10 раз'}}</td>
                                                             <td class="border-0">{{ $information['phrased'] ?? 'no found'}}</td>
                                                             <td class="border-0">{{ $information['target'] ?? 'no found'}}</td>
                                                         </tr>

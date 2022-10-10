@@ -251,13 +251,6 @@ class Cluster
      */
     protected function riverRequest($array, bool $notBased = false): array
     {
-        if (empty($array)) {
-            return [
-                'number' => 0,
-                'phrase' => 'need fix bug'
-            ];
-        }
-
         if (count($array) > 1) {
             $url = $this->xmlRiwerPath . '(' . implode(' | ', $array) . ')';
         } else {
@@ -268,7 +261,6 @@ class Cluster
 
         $attempt = 1;
         while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
-            Log::debug('url', [$url]);
             $riwerResponse = json_decode(file_get_contents($url), true);
             $attempt++;
         }
