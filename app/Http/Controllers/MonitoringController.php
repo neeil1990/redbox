@@ -567,7 +567,7 @@ class MonitoringController extends Controller
                     }else{
                         if($keyword->id == 181){
 
-                            dd($keyword->last_positions);
+                            dd($keyword->last_positions, $v);
                         }
                         $position = $keyword->last_positions[$v];
 
