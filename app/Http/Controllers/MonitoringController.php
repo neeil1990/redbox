@@ -498,12 +498,12 @@ class MonitoringController extends Controller
     private function generateDataTable($keywords, $columns, $mode)
     {
         $table = [];
+        dd($keywords);
         foreach ($keywords as $keyword){
 
             $id = $keyword->id;
             $table[$id] = $this->generateRowDataTable($columns, $keyword, $mode);
         }
-        dd($table);
 
         return $table;
     }
