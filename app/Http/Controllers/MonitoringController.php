@@ -541,8 +541,6 @@ class MonitoringController extends Controller
                     $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
                     break;
                 case 'group':
-                    if($keyword->id == 181)
-                        dd(1);
                     $row->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
                     break;
                 case 'target':
@@ -554,6 +552,9 @@ class MonitoringController extends Controller
 
                     if($positions && $positions->count() > 1)
                         $dynamics = ($positions->last() - $positions->first());
+
+                    if($keyword->id == 181)
+                        dd($dynamics);
 
                     $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
                     break;
