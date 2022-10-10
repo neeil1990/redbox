@@ -501,6 +501,7 @@ class MonitoringController extends Controller
         foreach ($keywords as $keyword){
 
             $id = $keyword->id;
+            dump($id);
             $table[$id] = $this->generateRowDataTable($columns, $keyword, $mode);
         }
         dd($table);
