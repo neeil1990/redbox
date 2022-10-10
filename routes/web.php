@@ -292,5 +292,7 @@ Route::middleware(['verified'])->group(function () {
 
 Route::get('/test', function () {
 
+    $riverResponse = ['content' => 1];
+    dd(empty($riverResponse['content']['includingPhrases']['items']));
 });
 

@@ -25,7 +25,11 @@ class Cluster
 
     protected $engineVersion;
 
-    protected $xmlRiwerPath = 'https://xmlriver.com/wordstat/json?user=6602&key=8c0d8e659c4ba2240e791fb3e6b4f172556be01f&query=';
+    private $xmlRiwerPath = 'https://xmlriver.com/wordstat/json?user=6602&key=8c0d8e659c4ba2240e791fb3e6b4f172556be01f&query=';
+
+    protected $searchPhrases;
+
+    protected $searchTarget;
 
     public function __construct(array $request)
     {
@@ -33,6 +37,8 @@ class Cluster
         $this->region = $request['region'];
         $this->clusteringLevel = $request['clustering_level'] == 5 ? 0.5 : 0.7;
         $this->engineVersion = $request['engine_version'];
+        $this->searchPhrases = isset($request['searchPhrases']);
+        $this->searchTarget = isset($request['searchTarget']);
 
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
@@ -149,64 +155,132 @@ class Cluster
     protected function searchForms()
     {
         foreach ($this->clusters as $key => $cluster) {
-            $riwerResponse = $this->basedRiverRequest($cluster);
+            $riwerResponse = $this->prepareRiverRequest($cluster);
 
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     $options = $this->phraseOptions($phrase);
-                    foreach ($riwerResponse['content']['includingPhrases']['items'] as $item) {
-                        if ($item['phrase'] == $phrase) {
-                            $this->clusters[$key][$phrase]['group'] = $item['phrase'];
-                            $this->clusters[$key][$phrase]['based'] = $item['number'];
-                            $this->clusters[$key][$phrase]['searchType'] = 'equivalent';
-                        } else if (in_array($item['phrase'], $options)) {
-                            $this->clusters[$key][$phrase]['group'] = $item['phrase'];
-                            $this->clusters[$key][$phrase]['based'] = $item['number'];
-                            $this->clusters[$key][$phrase]['searchType'] = 'similar';
-                        }
-                    }
+                    $this->setValues($riwerResponse, 'based', $key, $phrase, $options);
+                    $this->setValues($riwerResponse, 'target', $key, $phrase, $options);
+                    $this->setValues($riwerResponse, 'phrased', $key, $phrase, $options);
                 }
             }
 
         }
-//        dd($this->clusters);
-//        foreach ($phrases as $phrase) {
-//            $based[] = $phrase;
-//            $phrased[] = '"' . $phrase . '"';
-//            $target[] = "!" . implode(' !', explode(' ', $phrase));
-//        }
-//
-//        $based = $riwerPath . '(' . implode(' | ', $based) . ')';
-//        $phrased = $riwerPath . '(' . implode(' | ', $phrased) . ')';
-//        $target = $riwerPath . '(' . implode(' | ', $target) . ')';
-//
-//        $based = str_replace(' ', '%20', $based);
-//        dump($based);
 
         $this->setResult($this->clusters);
+    }
+
+    protected function setValues($riwerResponse, $type, $key, $phrase, $options)
+    {
+        foreach ($riwerResponse[$type] as $item) {
+            if ($item['phrase'] === $phrase) {
+                if ($type === 'based') {
+                    $this->clusters[$key][$phrase]['group'] = $item['phrase'];
+                    $this->clusters[$key][$phrase]['based'] = $item['number'];
+                    $this->clusters[$key][$phrase]['searchType'] = 'equivalent';
+                } elseif ($type === 'phrased') {
+                    $this->clusters[$key][$phrase]['phrased'] = $item['number'];
+                } elseif ($type === 'target') {
+                    $this->clusters[$key][$phrase]['target'] = $item['number'];
+                }
+
+            } else if (in_array($item['phrase'], $options)) {
+                if ($type === 'based') {
+                    $this->clusters[$key][$phrase]['group'] = $item['phrase'];
+                    $this->clusters[$key][$phrase]['based'] = $item['number'];
+                    $this->clusters[$key][$phrase]['searchType'] = 'similar';
+                } elseif ($type === 'phrased') {
+                    $this->clusters[$key][$phrase]['phrased'] = $item['number'];
+                } elseif ($type === 'target') {
+                    $this->clusters[$key][$phrase]['target'] = $item['number'];
+                }
+            }
+        }
     }
 
     /**
      * @param $cluster
      * @return array
      */
-    protected function basedRiverRequest($cluster): array
+    protected function prepareRiverRequest($cluster): array
     {
+        $items = [
+            'based' => [],
+            'phrased' => [],
+            'target' => [],
+        ];
         $based = [];
+        $phrased = [];
+        $target = [];
+
         foreach ($cluster as $phrase => $sites) {
             if ($phrase !== 'finallyResult') {
                 $based[] = $phrase;
+                $phrased[] = '"' . $phrase . '"';
+                $target[] = '"!' . implode(' !', explode(' ', $phrase)) . '"';
+
+                if ($this->searchPhrases) {
+                    $items['phrased'][] = array_merge($items['phrased'], $this->riverRequest($phrased, true));
+                    $phrased = [];
+                }
+
+                if ($this->searchTarget) {
+                    $items['target'][] = array_merge($items['target'], $this->riverRequest($target, true));
+                    $target = [];
+                }
+
+                if (count($based) % 3 === 0) {
+                    $items['based'] = array_merge($items['based'], $this->riverRequest($based));
+                    $based = [];
+                }
             }
         }
-        if (count($based) > 1) {
-            $based = $this->xmlRiwerPath . '(' . implode(' | ', $based) . ')';
-        } else {
-            $based = $this->xmlRiwerPath . implode(' | ', $based);
-        }
-        $based = str_replace(' ', '%20', $based);
 
-        Log::debug('based', [$based]);
-        return json_decode(file_get_contents($based), true);
+        if (count($based) > 0) {
+            $items['based'] = array_merge($items['based'], $this->riverRequest($based));
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param $array
+     * @param bool $notBased
+     * @return array
+     */
+    protected function riverRequest($array, bool $notBased = false): array
+    {
+        if (empty($array)) {
+            return [
+                'number' => 0,
+                'phrase' => 'need fix bug'
+            ];
+        }
+
+        if (count($array) > 1) {
+            $url = $this->xmlRiwerPath . '(' . implode(' | ', $array) . ')';
+        } else {
+            $url = $this->xmlRiwerPath . implode(' | ', $array);
+        }
+        $url = str_replace(' ', '%20', $url);
+        $riwerResponse = [];
+
+        $attempt = 1;
+        while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
+            Log::debug('url', [$url]);
+            $riwerResponse = json_decode(file_get_contents($url), true);
+            $attempt++;
+        }
+
+        if ($notBased) {
+            return [
+                'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),
+                'phrase' => str_replace(['"', '!'], "", implode(' ', $array))
+            ];
+        }
+
+        return $riwerResponse['content']['includingPhrases']['items'] ?? [];
     }
 
     /**

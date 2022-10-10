@@ -13,6 +13,10 @@
                 text-align: center;
                 vertical-align: inherit;
             }
+
+            .ui_tooltip_content {
+                width: 325px;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
@@ -152,8 +156,23 @@
                                 <label>Объединение кластеров</label>
                                 {!! Form::select('engine_version', [
                                     'old' => 'Формирование на основе первой попавшейся фразы (old)',
-                                    'new' => 'Формирование на основе первой попавшейся фразы или на основе массива ссылок кластера (new)',
+                                    'new' => 'Формирование на основе массива ссылок кластера (new)',
                                     ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
+                            </div>
+
+                            <div class="form-group required">
+                                <div>
+                                    <label for="searchBased">Анализ базовой формы</label>
+                                    <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
+                                </div>
+                                <div>
+                                    <label for="searchPhrases">Анализ фразовой формы</label>
+                                    <input type="checkbox" name="searchPhrases" id="searchPhrases">
+                                </div>
+                                <div>
+                                    <label for="searchTarget">Анализ точной формы</label>
+                                    <input type="checkbox" name="searchTarget" id="searchTarget">
+                                </div>
                             </div>
 
                             <input type="submit" class="btn btn-secondary" value="{{ __('Analysis') }}">
@@ -174,7 +193,7 @@
                                 @php ($iterator = 0)
                                 @foreach($results['result'] as $key => $result)
                                     <tr>
-                                        <td>
+                                        <td class="p-0">
                                             <table class="table table-hover text-nowrap" style="width: 100%;">
                                                 <thead>
                                                 <tr>
@@ -237,7 +256,8 @@
                                                                         <span class="__helper-link ui_tooltip_w">
                                                                         <i class="fa fa-question-circle"
                                                                            style="color: grey;"></i>
-                                                                        <span class="ui_tooltip __right">
+                                                                        <span class="ui_tooltip __right"
+                                                                              style="min-width: 250px">
                                                                             <span class="ui_tooltip_content">
                                                                                 Ключевая фраза была найдена, <br>
                                                                                 но она была видоизменена
@@ -250,18 +270,19 @@
                                                                         <i class="fa fa-question-circle"
                                                                            style="color: grey;"></i>
                                                                         <span class="ui_tooltip __right">
-                                                                            <span class="ui_tooltip_content">
+                                                                            <span class="ui_tooltip_content"
+                                                                                  style="min-width: 250px">
                                                                                 Ключевая фраза не была найдена,<br>
                                                                                 возможно она была видоизменена <br>
-                                                                                или имеет < 10 запросов в месяц.
+                                                                                или имеет менее 10 запросов в месяц.
                                                                             </span>
                                                                         </span>
                                                                     </span>
                                                                 @endif
                                                             </td>
                                                             <td class="border-0">{{ $information['based'] ?? 'no found'}}</td>
-                                                            <td class="border-0">phrase</td>
-                                                            <td class="border-0">target</td>
+                                                            <td class="border-0">{{ $information['phrased'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['target'] ?? 'no found'}}</td>
                                                         </tr>
                                                     @endif
                                                 @endforeach
