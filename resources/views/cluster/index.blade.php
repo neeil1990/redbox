@@ -218,13 +218,13 @@
                                                         @php ($iterator++)
                                                         @php ($clusterIterator++)
                                                         <tr>
-                                                            <td class="border-0 pl-1">
+                                                            <td class="border-0">
                                                                 {{ $iterator }}
                                                             </td>
-                                                            <td class="border-0 pl-1">
+                                                            <td class="border-0">
                                                                 {{ $clusterIterator }}
                                                             </td>
-                                                            <td class="border-0 pl-1">
+                                                            <td class="border-0">
                                                                 <div class="d-flex">
                                                                     <div class="col-11">
                                                                         {{ $phrase }}
@@ -249,7 +249,7 @@
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td class="border-0 pl-1">
+                                                            <td class="border-0">
                                                                 {{ $information['group'] ?? 'no found' }}
                                                                 @if(isset($information['searchType']))
                                                                     @if($information['searchType'] === 'similar')
@@ -280,9 +280,9 @@
                                                                     </span>
                                                                 @endif
                                                             </td>
-                                                            <td class="border-0 pl-1">{{ $information['based'] ?? 'no found'}}</td>
-                                                            <td class="border-0 pl-1">{{ $information['phrased'] ?? 'no found'}}</td>
-                                                            <td class="border-0 pl-1">{{ $information['target'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['based'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['phrased'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['target'] ?? 'no found'}}</td>
                                                         </tr>
                                                     @endif
                                                 @endforeach
