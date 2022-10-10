@@ -59,16 +59,23 @@
                 top: 50px;
                 right: 30px;
             }
+
+            .table tbody tr:hover td{
+                color: #212529;
+                background-color: rgba(0,0,0,.075);
+                z-index: 1;
+            }
         </style>
     @endslot
 
     <div class="row">
         @foreach($navigations as $navigation)
         <div class="col-lg-2 col-6">
-            <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}">
+            <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}" style="min-height: 137px">
                 <div class="inner">
                     <h3>{{ $navigation['h3'] }}</h3>
                     <p>{{ $navigation['p'] }}</p>
+                    <small>{{ $navigation['small'] }}</small>
                 </div>
                 <div class="icon">
                     <i class="{{ $navigation['icon'] }}"></i>
@@ -96,7 +103,7 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-responsive table-bordered table-hover text-center" id="monitoringTable"></table>
+                <table class="table table-responsive table-bordered text-center" id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -129,8 +136,6 @@
     {!! Form::close() !!}
     @endhasanyrole
 
-    <div class="chart"><canvas id="chart1"></canvas></div>
-
     @include('monitoring.keywords.modal.main')
 
     @slot('js')
@@ -161,7 +166,6 @@
         <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>
 
         <script>
-
             const PROJECT_ID = '{{ $project->id }}';
             const REGION_ID = '{{ request('region', null) }}';
             const DATES = '{{ request('dates', null) }}';
@@ -291,11 +295,14 @@
                             let parsePositions = container.find('.parse-positions');
                             parsePositions.click(function () {
 
-                                axios.post('/monitoring/parse/positions/project', {
-                                    projectId: PROJECT_ID,
-                                }).then(function () {
-                                    toastr.success('Задание добавленно в очередь.');
-                                });
+                                if (window.confirm("Вы собираетесь добавить в очередь все запросы, подтвердите ваше действие")) {
+
+                                    axios.post('/monitoring/parse/positions/project', {
+                                        projectId: PROJECT_ID,
+                                    }).then(function () {
+                                        toastr.success('Задание добавленно в очередь.');
+                                    });
+                                }
                             });
 
                             let parsePositionsKeys = container.find('.parse-positions-keys');
@@ -315,6 +322,8 @@
                                     toastr.success('Задание добавленно в очередь.');
                                 });
                             });
+
+                            container.find('.tooltip-on').tooltip();
                         });
 
                         $('.search-button').click(function () {
