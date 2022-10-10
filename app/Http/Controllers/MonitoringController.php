@@ -481,9 +481,9 @@ class MonitoringController extends Controller
                 });
         }
 
-        dd(1);
-
         $table = $this->generateDataTable($keywords, $columns, $mode);
+
+        dd($table);
 
         $data = collect([
             'region' => $region,
