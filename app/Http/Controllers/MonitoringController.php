@@ -528,9 +528,6 @@ class MonitoringController extends Controller
                     break;
                 case 'url':
 
-                    if($keyword->id == 181)
-                        dd(1);
-
                     $urls = $keyword->urls;
                     $textClass = 'text-bold';
                     if($keyword->page && $urls->count()){
@@ -544,6 +541,8 @@ class MonitoringController extends Controller
                     $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
                     break;
                 case 'group':
+                    if($keyword->id == 181)
+                        dd(1);
                     $row->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
                     break;
                 case 'target':
