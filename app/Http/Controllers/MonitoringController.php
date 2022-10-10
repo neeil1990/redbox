@@ -503,6 +503,7 @@ class MonitoringController extends Controller
             $id = $keyword->id;
             $table[$id] = $this->generateRowDataTable($columns, $keyword, $mode);
         }
+        dd($table);
 
         return $table;
     }
@@ -573,8 +574,6 @@ class MonitoringController extends Controller
                     }
             }
         }
-
-        dd($keyword->last_positions);
 
         return $row;
     }
