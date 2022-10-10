@@ -553,12 +553,12 @@ class MonitoringController extends Controller
                     if($positions && $positions->count() > 1)
                         $dynamics = ($positions->last() - $positions->first());
 
-                    if($keyword->id == 181)
-                        dd($dynamics);
-
                     $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
                     break;
                 default:
+                    if($keyword->id == 181)
+                        dd($mode);
+
                     if($mode === "dates"){
                         $position = $keyword->last_positions;
                         $dates = $position->keys();
