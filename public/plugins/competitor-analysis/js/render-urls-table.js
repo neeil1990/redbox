@@ -25,7 +25,7 @@ function renderUrlsTable(urls, pageLength) {
 
     $(document).ready(function () {
         $('#urls-table').dataTable({
-            "order": [[2, "asc"]],
+            "order": [[2, "desc"]],
             "pageLength": pageLength,
             "searching": true,
         })
