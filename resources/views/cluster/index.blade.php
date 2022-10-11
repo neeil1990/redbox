@@ -250,35 +250,7 @@
                                                                 </div>
                                                             </td>
                                                             <td class="border-0">
-                                                                {{ $information['group'] ?? $phrase }}
-                                                                @if(isset($information['searchType']))
-                                                                    @if($information['searchType'] === 'similar')
-                                                                        <span class="__helper-link ui_tooltip_w">
-                                                                        <i class="fa fa-question-circle"
-                                                                           style="color: grey;"></i>
-                                                                        <span class="ui_tooltip __right"
-                                                                              style="min-width: 250px">
-                                                                            <span class="ui_tooltip_content">
-                                                                                Ключевая фраза была найдена, <br>
-                                                                                но она была видоизменена
-                                                                            </span>
-                                                                        </span>
-                                                                    </span>
-                                                                    @endif
-                                                                @else
-                                                                    <span class="__helper-link ui_tooltip_w">
-                                                                        <i class="fa fa-question-circle"
-                                                                           style="color: grey;"></i>
-                                                                        <span class="ui_tooltip __right">
-                                                                            <span class="ui_tooltip_content"
-                                                                                  style="min-width: 250px">
-                                                                                Ключевая фраза не была найдена,<br>
-                                                                                возможно она была видоизменена <br>
-                                                                                или имеет менее 10 запросов в месяц.
-                                                                            </span>
-                                                                        </span>
-                                                                    </span>
-                                                                @endif
+                                                                {{ $result['finallyResult']['groupName'] }}
                                                             </td>
                                                             <td class="border-0">{{ $information['based'] ?? 'встречается менее 10 раз'}}</td>
                                                             <td class="border-0">{{ $information['phrased'] ?? 'no found'}}</td>
@@ -298,7 +270,7 @@
                                             </p>
                                             <div class="collapse" id="competitors{{$key}}">
                                                 <div>
-                                                    @foreach($result['finallyResult'] as $site => $count)
+                                                    @foreach($result['finallyResult']['sites'] as $site => $count)
                                                         <div>
                                                             <a href="{{ $site }}" target="_blank">
                                                                 {{ parse_url($site)['host'] }}

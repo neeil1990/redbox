@@ -146,7 +146,7 @@ class Cluster
             }
             $merge = array_count_values($merge);
             arsort($merge);
-            $this->clusters[$key]['finallyResult'] = $merge;
+            $this->clusters[$key]['finallyResult']['sites'] = $merge;
         }
 
         $this->searchForms();
@@ -168,28 +168,35 @@ class Cluster
 
         }
 
+        $this->searchGroupName();
+    }
+
+    protected function searchGroupName()
+    {
+        foreach ($this->clusters as $key => $cluster) {
+            $maxRepeatPhrase = 0;
+            $groupName = '';
+            foreach ($cluster as $phrase => $info) {
+                if ($phrase !== 'finallyResult') {
+                    if ($info['based'] > $maxRepeatPhrase) {
+                        $maxRepeatPhrase = $info['based'];
+                        $groupName = $info['group'];
+                    }
+                }
+            }
+            $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
+        }
+
         $this->setResult($this->clusters);
     }
 
     protected function setValues($riwerResponse, $type, $key, $phrase, $options)
     {
         foreach ($riwerResponse[$type] as $item) {
-            if ($item['phrase'] === $phrase) {
+            if ($item['phrase'] === $phrase || in_array($item['phrase'], $options)) {
                 if ($type === 'based') {
-                    $this->clusters[$key][$phrase]['group'] = $item['phrase'];
                     $this->clusters[$key][$phrase]['based'] = $item['number'];
-                    $this->clusters[$key][$phrase]['searchType'] = 'equivalent';
-                } elseif ($type === 'phrased') {
-                    $this->clusters[$key][$phrase]['phrased'] = $item['number'];
-                } elseif ($type === 'target') {
-                    $this->clusters[$key][$phrase]['target'] = $item['number'];
-                }
-
-            } else if (in_array($item['phrase'], $options)) {
-                if ($type === 'based') {
                     $this->clusters[$key][$phrase]['group'] = $item['phrase'];
-                    $this->clusters[$key][$phrase]['based'] = $item['number'];
-                    $this->clusters[$key][$phrase]['searchType'] = 'similar';
                 } elseif ($type === 'phrased') {
                     $this->clusters[$key][$phrase]['phrased'] = $item['number'];
                 } elseif ($type === 'target') {

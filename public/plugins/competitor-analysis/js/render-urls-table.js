@@ -23,12 +23,14 @@ function renderUrlsTable(urls, pageLength) {
         )
     })
 
-    $(document).ready(function (){
+    $(document).ready(function () {
         $('#urls-table').dataTable({
             "order": [[2, "asc"]],
             "pageLength": pageLength,
             "searching": true,
         })
+
+        $('#urls-table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
     })
 
     $('.urls.mt-5').show()
