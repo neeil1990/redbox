@@ -75,7 +75,8 @@
             }
 
             .separate-header {
-                height: 92px;
+                height: 89px;
+                cursor: pointer;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
@@ -209,19 +210,19 @@
             <div id="sites-block" class="mt-5" style="display:none;">
                 <h2>{{ __('Top sites based on your keywords') }}</h2>
                 <div class="site-block-buttons">
-                    <button class="btn btn-secondary colored-button" id="coloredEloquentUrls">
+                    <button class="btn btn-secondary colored-button mt-1" id="coloredEloquentUrls">
                         {{ __('Highlight identical urls') }}
                     </button>
 
-                    <button class="btn btn-default colored-button" id="coloredEloquentDomains">
+                    <button class="btn btn-default colored-button mt-1" id="coloredEloquentDomains">
                         {{ __('Highlight the same domains') }}
                     </button>
 
-                    <button class="btn btn-default colored-button" id="coloredMainPages">
+                    <button class="btn btn-default colored-button mt-1" id="coloredMainPages">
                         {{ __('Highlight all main pages') }}
                     </button>
 
-                    <button type="button" class="btn btn-default" data-toggle="modal"
+                    <button type="button" class="btn btn-default mt-1" data-toggle="modal"
                             data-target="#coloredEloquentMyTextModal">
                         {{ __('Highlight your') }}
                     </button>
@@ -258,7 +259,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-default" data-toggle="modal"
+                    <button type="button" class="btn btn-default mt-1" data-toggle="modal"
                             data-target="#coloredAgrigators">
                         {{ __('Highlight site aggregators') }}
                     </button>
