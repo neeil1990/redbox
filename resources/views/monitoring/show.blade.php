@@ -411,7 +411,7 @@
                         });
 
                         let dynamicOptions = [
-                            {val : '', text: 'Фильтр динамики'},
+                            {val : '', text: 'Динамика'},
                             {val : 'positive', text: 'Положительная'},
                             {val : 'negative', text: 'Отрицательная'},
                         ];
