@@ -393,6 +393,59 @@ class MonitoringController extends Controller
 
         $columns = $this->getMainColumns();
 
+        $this->getLastPositions($keywords,$columns, $mode, $region, $dates);
+
+        $table = $this->generateDataTable($keywords, $columns, $mode);
+
+        $data = collect([
+            'region' => $region,
+            'columns' => $columns,
+            'data' => collect($table)->values(),
+            'draw' => $request->input('draw'),
+            'recordsFiltered' => $keywords->total(),
+            'recordsTotal' => $keywords->total(),
+        ]);
+
+        return $data;
+    }
+
+    private function updateKeywordsDynamic($keywords, $region, $request)
+    {
+        $mode = $request->input('mode_range', 'range');
+        $dates = null;
+        if($request->input('dates_range', null)){
+            $dates = explode(' - ', $request->input('dates_range'), 2);
+        }
+
+        $keywords = $keywords->get();
+
+        $keywords->load(['positions' => function($query) use ($region, $dates, $mode){
+
+            $query->where('monitoring_searchengine_id', $region->id);
+
+            if($mode === "datesFind")
+                $query->dateFind($dates);
+            else
+                $query->dateRange($dates);
+        }]);
+
+        $columns = $this->getMainColumns();
+        $this->getLastPositions($keywords,$columns, $mode, $region, $dates);
+
+        foreach ($keywords as $keyword){
+
+            $dynamics = 0;
+            $positions = $keyword->last_positions;
+
+            if($positions && $positions->count() > 1)
+                $dynamics = ($positions->last() - $positions->first());
+
+            MonitoringKeyword::where('id', $keyword->id)->update(['dynamic' => $dynamics]);
+        }
+    }
+
+    private function getLastPositions(&$keywords, &$columns, $mode, $region, $dates)
+    {
         switch ($mode){
             case "dates":
                 $dateColumns = collect([
@@ -480,19 +533,6 @@ class MonitoringController extends Controller
                     return $item;
                 });
         }
-
-        $table = $this->generateDataTable($keywords, $columns, $mode);
-
-        $data = collect([
-            'region' => $region,
-            'columns' => $columns,
-            'data' => collect($table)->values(),
-            'draw' => $request->input('draw'),
-            'recordsFiltered' => $keywords->total(),
-            'recordsTotal' => $keywords->total(),
-        ]);
-
-        return $data;
     }
 
     private function generateDataTable($keywords, $columns, $mode)
@@ -678,6 +718,15 @@ class MonitoringController extends Controller
                 case 'url':
                     if($column['search']['value'])
                         $model->whereIn('id', $this->getKeywordIdsWithNotValidateUrl($project->id, $region->id));
+                    break;
+                case 'dynamics':
+                    if($column['search']['value']){
+                        $this->updateKeywordsDynamic($model, $region, $request);
+                        if($column['search']['value'] == 'positive')
+                            $model->where('dynamic', '>', 0);
+                        elseif ($column['search']['value'] == 'negative')
+                            $model->where('dynamic', '<', 0);
+                    }
                     break;
             }
         }

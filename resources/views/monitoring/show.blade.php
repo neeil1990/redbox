@@ -402,6 +402,34 @@
                             class: "custom-control-label",
                         }).text("Показать нецелевые URL"));
 
+                        let dynamic = $('<div />', {
+                            class: 'form-group'
+                        }).css({
+                            float: "left",
+                            "margin-left": "2.25rem",
+                            "margin-bottom": "0px",
+                        });
+
+                        let dynamicOptions = [
+                            {val : '', text: 'Динамика'},
+                            {val : 'positive', text: 'Положительная'},
+                            {val : 'negative', text: 'Отрицательная'},
+                        ];
+
+                        let dynamicSelect = $('<select />', {
+                           class: 'custom-select',
+                            name: 'dynamics'
+                        });
+                        $.each(dynamicOptions, function() {
+                            dynamicSelect.append($("<option />").attr('value', this.val).text(this.text));
+                        });
+
+                        dynamicSelect.change(function () {
+                            let self = $(this);
+                            api.column(self.attr('name') + ':name').search(self.val()).draw();
+                        });
+
+                        dynamic.append(dynamicSelect);
 
                         let btnGroup = $('<div />', {
                             class: "btn-group"
@@ -461,6 +489,7 @@
                         });
 
                         this.closest('.card').find('.card-header').append(notValidateUrl);
+                        this.closest('.card').find('.card-header').append(dynamic);
                         this.closest('.card').find('.card-header .card-title').html(btnGroup);
                         this.closest('.card').find('.card-header .card-title').prepend($('<h3 />', {class: "card-title"}).css({"line-height": '38px', "margin-right": '10px'}).text("Скрыть колонки:"));
 
