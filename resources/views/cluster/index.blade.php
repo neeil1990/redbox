@@ -4,6 +4,7 @@
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <style>
             #clusters-table > tbody > tr > td > table > thead:hover {
                 background: transparent !important;
@@ -17,15 +18,14 @@
             .ui_tooltip_content {
                 width: 325px;
             }
+
+            .dataTables_info, .hidden-result-table_filter {
+                display: none;
+            }
         </style>
     @endslot
-    <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
-        <div class="toast toast-error" aria-live="polite">
-            <div class="toast-message error-message" id="toast-message"></div>
-        </div>
-    </div>
 
-    <div id="toast-container" class="toast-top-right success-message lock-word" style="display:none;">
+    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
             <div class="toast-message"></div>
         </div>
@@ -162,15 +162,15 @@
 
                             <div class="form-group required">
                                 <div>
-                                    <label for="searchBased">Анализ базовой формы</label>
+                                    <label for="searchBased">Анализ базовой частотности</label>
                                     <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
                                 </div>
                                 <div>
-                                    <label for="searchPhrases">Анализ фразовой формы</label>
+                                    <label for="searchPhrases">Анализ фразовой частотности</label>
                                     <input type="checkbox" name="searchPhrases" id="searchPhrases">
                                 </div>
                                 <div>
-                                    <label for="searchTarget">Анализ точной формы</label>
+                                    <label for="searchTarget">Анализ точной частотности</label>
                                     <input type="checkbox" name="searchTarget" id="searchTarget">
                                 </div>
                             </div>
@@ -180,8 +180,55 @@
                         </form>
                     </div>
                     @isset($results)
+                        <textarea name="hiddenForCopy" id="hiddenForCopy" class="d-none"></textarea>
                         <div class="mt-3" style="width: 100%; overflow-x: scroll;">
                             <h3>Таблица кластеров</h3>
+                            <table class="d-none" id="hidden-result-table">
+                                <thead>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    <th class="centered-text" colspan="3">Частотность</th>
+                                </tr>
+                                <tr>
+                                    <th>Порядковый номер</th>
+                                    <th>Порядковый номер в кластере</th>
+                                    <th>Ключевой запрос</th>
+                                    <th>Группа</th>
+                                    <th>Базовая</th>
+                                    <th>"Фразовая"</th>
+                                    <th>"!Точная"</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @php ($iterator = 0)
+                                @foreach($results['result'] as $key => $result)
+                                    @php($clusterIterator = 0)
+                                    @foreach($result as $phrase => $information)
+                                        @if($phrase !== 'finallyResult')
+                                            <tr>
+                                                @php ($iterator++)
+                                                @php ($clusterIterator++)
+                                                <td class="border-0">
+                                                    {{ $iterator }}
+                                                </td>
+                                                <td class="border-0">
+                                                    {{ $clusterIterator }}
+                                                </td>
+                                                <td class="border-0">
+                                                    {{ $phrase }}
+                                                </td>
+                                                <td class="border-0">
+                                                    {{ $result['finallyResult']['groupName'] }}
+                                                </td>
+                                                <td class="border-0">{{ $information['based']['number'] ?? 'встречается менее 10 раз'}}</td>
+                                                <td class="border-0">{{ $information['phrased']['number'] ?? 'no found'}}</td>
+                                                <td class="border-0">{{ $information['target']['number'] ?? 'no found'}}</td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                @endforeach
+                                </tbody>
+                            </table>
                             <table id="clusters-table" class="table table-bordered dtr-inline">
                                 <thead>
                                 <tr>
@@ -194,19 +241,18 @@
                                 @foreach($results['result'] as $key => $result)
                                     <tr>
                                         <td class="p-0">
-                                            <table class="table table-hover text-nowrap" style="width: 100%;">
+                                            <table class="table table-hover text-nowrap render-table"
+                                                   id="render-table-{{$key}}" style="width: 100%;">
                                                 <thead>
                                                 <tr>
-                                                    <th rowspan="2">Порядковый номер</th>
-                                                    <th rowspan="2">Порядковый номер в кластере
-                                                    </th>
-                                                    <th rowspan="2">Ключевой запрос</th>
-                                                    <th rowspan="2">
-                                                        Группа
-                                                    </th>
+                                                    <th colspan="4"></th>
                                                     <th class="centered-text" colspan="3">Частотность</th>
                                                 </tr>
                                                 <tr>
+                                                    <th>Порядковый номер</th>
+                                                    <th>Порядковый номер в кластере</th>
+                                                    <th>Ключевой запрос <i class="fa fa-copy copy-phrases"></i></th>
+                                                    <th>Группа</th>
                                                     <th>Базовая</th>
                                                     <th>"Фразовая"</th>
                                                     <th>"!Точная"</th>
@@ -252,9 +298,9 @@
                                                             <td class="border-0">
                                                                 {{ $result['finallyResult']['groupName'] }}
                                                             </td>
-                                                            <td class="border-0">{{ $information['based'] ?? 'встречается менее 10 раз'}}</td>
-                                                            <td class="border-0">{{ $information['phrased'] ?? 'no found'}}</td>
-                                                            <td class="border-0">{{ $information['target'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['based']['number'] ?? 'встречается менее 10 раз'}}</td>
+                                                            <td class="border-0">{{ $information['phrased']['number'] ?? 'no found'}}</td>
+                                                            <td class="border-0">{{ $information['target']['number'] ?? 'no found'}}</td>
                                                         </tr>
                                                     @endif
                                                 @endforeach
@@ -290,4 +336,64 @@
             </div>
         </div>
     </div>
+    @slot('js')
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        @isset($results)
+            <script>
+                $.each($('.render-table'), function (key, value) {
+                    $('#' + $(this).attr('id')).dataTable({
+                        'order': [[5, "desc"]],
+                        'bPaginate': false,
+                        'orderCellsTop': true,
+                        'sDom': '<"top"i>rt<"bottom"lp><"clear">'
+                    })
+                })
+
+                $('#hidden-result-table').dataTable({
+                    'order': [[5, "desc"]],
+                    'bPaginate': false,
+                    'orderCellsTop': true,
+                    'dom': 'lBfrtip',
+                    'buttons': [
+                        'copy', 'csv', 'excel'
+                    ]
+                })
+
+                $('#hidden-result-table_filter').remove()
+                $('.dt-button').addClass('btn btn-secondary')
+                $('.dt-buttons').addClass('pb-3')
+
+
+                $('.copy-phrases').unbind().on('click', function () {
+                    $('#hiddenForCopy').val('')
+                    let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
+                    console.log(trs)
+
+                    $.each(trs, function (key, value) {
+                        let phrase = ($(this).children('td:nth-of-type(3)').children('div.d-flex').children('div.col-11').html()).trim();
+                        if ($('#hiddenForCopy').val() === '') {
+                            $('#hiddenForCopy').val(phrase)
+                        } else {
+                            $('#hiddenForCopy').val($('#hiddenForCopy').val() + "\n" + phrase)
+                        }
+                    })
+
+                    let text = document.getElementById("hiddenForCopy");
+
+                    text.select();
+                    document.execCommand("copy");
+
+                    $('#toast-container').show(300)
+                    $('.toast-message').html("{{ __('Successfully copied') }}")
+                    setTimeout(() => {
+                        $('#toast-container').hide(300)
+                    }, 3000)
+                })
+            </script>
+        @endisset
+    @endslot
 @endcomponent

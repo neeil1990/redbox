@@ -23,12 +23,13 @@ class SimplifiedXmlFacade extends XmlFacade
     protected $result;
 
     /**
-     * @param $lr -- region
+     * @param $region
+     * @param $count
      */
-    public function __construct($lr, $count = 100)
+    public function __construct($region, $count = 100)
     {
         $this->count = $count;
-        $this->lr = $lr;
+        $this->lr = $region;
 
         return $this;
     }

@@ -31,6 +31,7 @@ class Cluster
 
     protected $searchTarget;
 
+
     public function __construct(array $request)
     {
         $this->count = $request['count'];
@@ -46,22 +47,26 @@ class Cluster
 
     public function startAnalysis()
     {
-        try {
-            $this->setSites();
-            $this->searchClusters();
-            $this->calculateClustersInfo();
-        } catch (\Throwable $e) {
+//        try {
+        $this->setSites();
+        $this->searchClusters();
+        $this->calculateClustersInfo();
+        $this->wordStats();
+        $this->searchGroupName();
+        $this->setResult($this->clusters);
+
+//        } catch (\Throwable $e) {
 //            Log::debug('cluster error', [
 //                $e->getMessage(),
 //                $e->getLine(),
 //                $e->getFile()
 //            ]);
-            dd([
-                $e->getMessage(),
-                $e->getLine(),
-                $e->getFile()
-            ]);
-        }
+//            dd([
+//                $e->getMessage(),
+//                $e->getLine(),
+//                $e->getFile()
+//            ]);
+//        }
     }
 
     protected function setSites()
@@ -71,6 +76,8 @@ class Cluster
             $xml->setQuery($phrase);
             $this->sites[$phrase]['sites'] = $xml->getXMLResponse();
         }
+
+        ksort($this->sites);
     }
 
     protected function searchClusters()
@@ -104,14 +111,13 @@ class Cluster
         $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
         $clusters = [];
-
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
                     continue;
                 }
-                if (isset($clusters[$phrase])) {
-                    foreach ($clusters[$phrase] as $elems) {
+                if (isset($clusters[$phrase2])) {
+                    foreach ($clusters[$phrase2] as $elems) {
                         foreach ($elems as $elem) {
                             if (count(array_intersect($elem, $sites2['sites'])) >= $minimum) {
                                 $clusters[$phrase][$phrase2][] = $sites2['sites'];
@@ -126,7 +132,6 @@ class Cluster
                         $willClustered[$phrase2] = true;
                     }
                 }
-
             }
         }
 
@@ -148,27 +153,28 @@ class Cluster
             arsort($merge);
             $this->clusters[$key]['finallyResult']['sites'] = $merge;
         }
-
-        $this->searchForms();
     }
 
-    protected function searchForms()
+    protected function wordStats()
     {
         foreach ($this->clusters as $key => $cluster) {
-            $riwerResponse = $this->prepareRiverRequest($cluster);
-
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
-                    $options = $this->phraseOptions($phrase);
-                    $this->setValues($riwerResponse, 'based', $key, $phrase, $options);
-                    $this->setValues($riwerResponse, 'target', $key, $phrase, $options);
-                    $this->setValues($riwerResponse, 'phrased', $key, $phrase, $options);
+                    if ($this->searchPhrases) {
+                        $based = '"' . $phrase . '"';
+                        $this->clusters[$key][$phrase]['phrased'] = $this->riverRequest($based);
+                    }
+
+                    if ($this->searchTarget) {
+                        $target = '"!' . implode(' !', explode(' ', $phrase)) . '"';
+                        $this->clusters[$key][$phrase]['target'] = $this->riverRequest($target);
+                    }
+
+                    $this->clusters[$key][$phrase]['based'] = $this->riverRequest($phrase);
                 }
             }
-
         }
 
-        $this->searchGroupName();
     }
 
     protected function searchGroupName()
@@ -178,108 +184,37 @@ class Cluster
             $groupName = '';
             foreach ($cluster as $phrase => $info) {
                 if ($phrase !== 'finallyResult') {
-                    if ($info['based'] > $maxRepeatPhrase) {
-                        $maxRepeatPhrase = $info['based'];
-                        $groupName = $info['group'];
+                    if ($info['based']['number'] > $maxRepeatPhrase) {
+                        $maxRepeatPhrase = $info['based']['number'];
+                        $groupName = $info['based']['phrase'];
                     }
                 }
             }
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
         }
-
-        $this->setResult($this->clusters);
-    }
-
-    protected function setValues($riwerResponse, $type, $key, $phrase, $options)
-    {
-        foreach ($riwerResponse[$type] as $item) {
-            if ($item['phrase'] === $phrase || in_array($item['phrase'], $options)) {
-                if ($type === 'based') {
-                    $this->clusters[$key][$phrase]['based'] = $item['number'];
-                    $this->clusters[$key][$phrase]['group'] = $item['phrase'];
-                } elseif ($type === 'phrased') {
-                    $this->clusters[$key][$phrase]['phrased'] = $item['number'];
-                } elseif ($type === 'target') {
-                    $this->clusters[$key][$phrase]['target'] = $item['number'];
-                }
-            }
-        }
     }
 
     /**
-     * @param $cluster
+     * @param $string
      * @return array
      */
-    protected function prepareRiverRequest($cluster): array
+    protected function riverRequest($string): array
     {
-        $items = [
-            'based' => [],
-            'phrased' => [],
-            'target' => [],
-        ];
-        $based = [];
-        $phrased = [];
-        $target = [];
-
-        foreach ($cluster as $phrase => $sites) {
-            if ($phrase !== 'finallyResult') {
-                $based[] = $phrase;
-                $phrased[] = '"' . $phrase . '"';
-                $target[] = '"!' . implode(' !', explode(' ', $phrase)) . '"';
-
-                if ($this->searchPhrases) {
-                    $items['phrased'][] = array_merge($items['phrased'], $this->riverRequest($phrased, true));
-                    $phrased = [];
-                }
-
-                if ($this->searchTarget) {
-                    $items['target'][] = array_merge($items['target'], $this->riverRequest($target, true));
-                    $target = [];
-                }
-
-                if (count($based) % 3 === 0) {
-                    $items['based'] = array_merge($items['based'], $this->riverRequest($based));
-                    $based = [];
-                }
-            }
-        }
-
-        if (count($based) > 0) {
-            $items['based'] = array_merge($items['based'], $this->riverRequest($based));
-        }
-
-        return $items;
-    }
-
-    /**
-     * @param $array
-     * @param bool $notBased
-     * @return array
-     */
-    protected function riverRequest($array, bool $notBased = false): array
-    {
-        if (count($array) > 1) {
-            $url = $this->xmlRiwerPath . '(' . implode(' | ', $array) . ')';
-        } else {
-            $url = $this->xmlRiwerPath . implode(' | ', $array);
-        }
+        $url = $this->xmlRiwerPath . $string;
         $url = str_replace(' ', '%20', $url);
         $riwerResponse = [];
 
         $attempt = 1;
         while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
+//            Log::debug('request', [$url]);
             $riwerResponse = json_decode(file_get_contents($url), true);
             $attempt++;
         }
 
-        if ($notBased) {
-            return [
-                'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),
-                'phrase' => str_replace(['"', '!'], "", implode(' ', $array))
-            ];
-        }
-
-        return $riwerResponse['content']['includingPhrases']['items'] ?? [];
+        return [
+            'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),
+            'phrase' => str_replace(['"', '!'], "", $string)
+        ];
     }
 
     /**
@@ -321,9 +256,9 @@ class Cluster
      * @param array $result
      * @return void
      */
-    protected function setResult(array $result)
+    protected function setResult(array $results)
     {
-        $this->result = collect($result)->sortByDesc(function ($item, $key) {
+        $this->result = collect($results)->sortByDesc(function ($item, $key) {
             return count($item);
         })->values()->all();
     }
