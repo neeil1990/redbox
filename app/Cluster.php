@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use Illuminate\Support\Facades\Log;
 
@@ -25,7 +26,7 @@ class Cluster
 
     protected $engineVersion;
 
-    private $xmlRiwerPath = 'https://xmlriver.com/wordstat/json?user=6602&key=8c0d8e659c4ba2240e791fb3e6b4f172556be01f&query=';
+    protected $xmlRiwerPath = 'https://xmlriver.com/wordstat/json?user=6602&key=8c0d8e659c4ba2240e791fb3e6b4f172556be01f&query=';
 
     protected $searchPhrases;
 
@@ -157,20 +158,27 @@ class Cluster
 
     protected function wordStats()
     {
+        $river = new RiverFacade($this->region);
+
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     if ($this->searchPhrases) {
-                        $based = '"' . $phrase . '"';
-                        $this->clusters[$key][$phrase]['phrased'] = $this->riverRequest($based);
+                        $river->setQuery('"' . $phrase . '"');
+                        $this->clusters[$key][$phrase]['phrased'] = $river->riverRequest();
                     }
 
                     if ($this->searchTarget) {
-                        $target = '"!' . implode(' !', explode(' ', $phrase)) . '"';
-                        $this->clusters[$key][$phrase]['target'] = $this->riverRequest($target);
+                        $river->setQuery('"!' . implode(' !', explode(' ', $phrase)) . '"');
+                        $this->clusters[$key][$phrase]['target'] = $river->riverRequest();
                     }
 
-                    $this->clusters[$key][$phrase]['based'] = $this->riverRequest($phrase);
+                    $river->setQuery($phrase);
+                    $response = $river->riverRequest();
+                    $this->clusters[$key][$phrase]['based'] = $response;
+                    if ($response['phrase'] !== $phrase) {
+                        $this->clusters[$key][$phrase]['basedNormal'] = $response['phrase'];
+                    }
                 }
             }
         }

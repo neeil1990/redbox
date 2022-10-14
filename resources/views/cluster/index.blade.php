@@ -270,10 +270,16 @@
                                                             <td class="border-0">
                                                                 {{ $clusterIterator }}
                                                             </td>
-                                                            <td class="border-0">
+                                                            <td class="border-0"  @isset($information['basedNormal']) style="background: rgba(245, 226, 170, 0.5);" @endisset>
                                                                 <div class="d-flex">
                                                                     <div class="col-11">
-                                                                        {{ $phrase }}
+                                                                        @isset($information['basedNormal'])
+                                                                            <div title="Фраза '{{ $phrase }}' была видоизменена">
+                                                                                {{ $information['basedNormal'] }}
+                                                                            </div>
+                                                                        @else
+                                                                            {{ $phrase }}
+                                                                        @endisset
                                                                     </div>
                                                                     <div class="col-1">
                                                                         <span class="__helper-link ui_tooltip_w">

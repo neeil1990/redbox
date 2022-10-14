@@ -24,9 +24,9 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param $region
-     * @param $count
+     * @param int $count
      */
-    public function __construct($region, $count = 100)
+    public function __construct($region, int $count = 100)
     {
         $this->count = $count;
         $this->lr = $region;
