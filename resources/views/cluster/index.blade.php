@@ -180,7 +180,6 @@
                         </form>
                     </div>
                     @isset($results)
-                        <textarea name="hiddenForCopy" id="hiddenForCopy" class="d-none"></textarea>
                         <div class="mt-3" style="width: 100%; overflow-x: scroll;">
                             <h3>Таблица кластеров</h3>
                             <table class="d-none" id="hidden-result-table">
@@ -270,13 +269,15 @@
                                                             <td class="border-0">
                                                                 {{ $clusterIterator }}
                                                             </td>
-                                                            <td class="border-0"  @isset($information['basedNormal']) style="background: rgba(245, 226, 170, 0.5);" @endisset>
+                                                            <td class="border-0"
+                                                                @isset($information['basedNormal'])
+                                                                    style="background: rgba(245, 226, 170, 0.5);"
+                                                                    title="Фраза '{{ $phrase }}' была видоизменена"
+                                                                @endisset>
                                                                 <div class="d-flex">
                                                                     <div class="col-11">
                                                                         @isset($information['basedNormal'])
-                                                                            <div title="Фраза '{{ $phrase }}' была видоизменена">
-                                                                                {{ $information['basedNormal'] }}
-                                                                            </div>
+                                                                            {{ $information['basedNormal'] }}
                                                                         @else
                                                                             {{ $phrase }}
                                                                         @endisset
@@ -338,6 +339,7 @@
                             </table>
                         </div>
                     @endisset
+                    <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
                 </div>
             </div>
         </div>
@@ -375,12 +377,13 @@
 
 
                 $('.copy-phrases').unbind().on('click', function () {
+                    $('#hiddenForCopy').css('display', 'block')
                     $('#hiddenForCopy').val('')
                     let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
-                    console.log(trs)
 
                     $.each(trs, function (key, value) {
                         let phrase = ($(this).children('td:nth-of-type(3)').children('div.d-flex').children('div.col-11').html()).trim();
+                        console.log(phrase)
                         if ($('#hiddenForCopy').val() === '') {
                             $('#hiddenForCopy').val(phrase)
                         } else {
@@ -393,6 +396,7 @@
                     text.select();
                     document.execCommand("copy");
 
+                    $('#hiddenForCopy').css('display', 'none')
                     $('#toast-container').show(300)
                     $('.toast-message').html("{{ __('Successfully copied') }}")
                     setTimeout(() => {
