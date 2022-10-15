@@ -70,8 +70,7 @@ class TextAnalyzerController extends Controller
      * @param $url
      * @return array|false|Application|Factory|View|mixed
      */
-    public
-    function redirectToAnalyse($url)
+    public function redirectToAnalyse($url)
     {
         $url = str_replace('abc', '/', $url);
 
