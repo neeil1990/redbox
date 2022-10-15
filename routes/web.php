@@ -13,6 +13,7 @@
 
 use App\SearchCompetitors;
 use App\TariffSetting;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -857,8 +858,7 @@ Route::get('/test', function () {
 //    ];
 //
 //    ksort($jayParsedAry);
-
-    $river = new \App\Classes\Xml\RiverFacade(1);
-    $river->setQuery('купить ларингоскоп');
-    dd($river->riverRequest());
+    $html = TextAnalyzer::curlInit('https://zenoptica.ru/catalog/solntsezashchitnye_ochki/');
+    $html = TextAnalyzer::removeStylesAndScripts($html);
+    echo $html;
 });

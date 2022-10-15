@@ -200,17 +200,21 @@ class TextAnalyzer extends Model
      */
     public static function removeStylesAndScripts($html): string
     {
-        $text = preg_replace([
+        $html = mb_strtolower($html);
+        $withHeader = preg_replace([
             "'<style[^>]*?>.*?</style>'si",
             "'<script[^>]*?>.*?</script>'si",
-            "'<head[^>]*?>.*?</head>'si",
             "'<i [^>]*?>.*?</i>'si",
             "'array\n\(\n.*?\n\)\n'si",
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
 
-        return mb_strtolower($text);
+        $withoutHeader = preg_replace([
+            "'<head[^>]*?>.*?</head>'si"
+        ], "", $withHeader);
+
+        return empty($withoutHeader) ? $withHeader : $withoutHeader;
     }
 
     /**
