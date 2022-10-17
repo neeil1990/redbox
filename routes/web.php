@@ -16,6 +16,8 @@ use App\TariffSetting;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 
 Route::get('info', function () {
     phpinfo();
@@ -858,7 +860,7 @@ Route::get('/test', function () {
 //    ];
 //
 //    ksort($jayParsedAry);
-    $html = TextAnalyzer::curlInit('https://zenoptica.ru/catalog/solntsezashchitnye_ochki/');
+    $html = TextAnalyzer::curlInit('https://www.deznet.ru/catalog/reanimatsionnoe_oborudovanie/laringoskopy/');
     $html = TextAnalyzer::removeStylesAndScripts($html);
-    echo $html;
+    dd($html);
 });

@@ -958,6 +958,7 @@
     </div>
     <input type="hidden" name="hash" id="hiddenHash">
     @slot('js')
+        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
@@ -1012,23 +1013,10 @@
             };
         </script>
         <script>
-            String.prototype.shuffle = function () {
-                var a = this.split(""),
-                    n = a.length;
-
-                for (var i = n - 1; i > 0; i--) {
-                    var j = Math.floor(Math.random() * (i + 1));
-                    var tmp = a[i];
-                    a[i] = a[j];
-                    a[j] = tmp;
-                }
-                return a.join("").replaceAll(" ", "");
-            }
-
             window.session = String(new Date()).shuffle();
             localStorage.setItem("session", window.session);
 
-              onStorage = function (e) {
+            onStorage = function (e) {
                 if (e.key === 'session' && e.newValue !== window.session)
                     localStorage.setItem("multitab", window.session);
                 if (e.key === "multitab" && e.newValue && e.newValue !== window.session) {
@@ -1308,14 +1296,14 @@
                 bar.html(percent + '%');
 
                 if (percent < 40) {
-                    $('#progress-bar-state').html('Парсинг сайтов..')
+                    $('#progress-bar-state').html("{{ __('Parsing sites..') }}")
                 } else {
-                    $('#progress-bar-state').html('Обработка полученных данных..')
+                    $('#progress-bar-state').html("{{ __('Processing of received data..') }}")
                 }
             }
 
             function stopProgressBar() {
-                $('#progress-bar-state').html('Подготовка данных..')
+                $('#progress-bar-state').html("{{ __('Data preparation..') }}")
                 setProgressBarStyles(100)
                 setTimeout(() => {
                     $('.progress-bar').css({
@@ -1334,7 +1322,7 @@
                     });
 
                     if (message === '') {
-                        message = 'Произошла непредвиденная ошибка, обратитесь к администратору'
+                        message = "{{ __('An unexpected error has occurred, contact your administrator') }}"
                     }
 
                     $('.toast-message.error-message').html(message)

@@ -37,16 +37,20 @@ class SimplifiedXmlFacade extends XmlFacade
     /**
      * @return array|Exception
      */
-    public function getXMLResponse(bool $lastTry = false)
+    public function getXMLResponse(int $try = 1)
     {
-        if ($lastTry) {
+        if ($try === 1) {
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser('sv@prime-ltd.su');
             $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-        } else {
+        } elseif ($try === 2) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser('9371');
             $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+        } elseif ($try === 3) {
+            $this->setPath('https://xmlriver.com/search/xml');
+            $this->setUser('6602');
+            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
         }
 
         $xml = $this->sendRequest();
@@ -54,13 +58,13 @@ class SimplifiedXmlFacade extends XmlFacade
         if (isset($xml['response']['error'])) {
             Log::debug("$this->path: " . $xml['response']['error']);
             TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
-            TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
+//            TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
 
-            if ($lastTry) {
+            if ($try === 3) {
                 return new Exception($xml['response']['error']);
             }
 
-            return $this->getXMLResponse(true);
+            return $this->getXMLResponse(++$try);
 
         } else {
             return $this->parseResult($xml['response']['results']['grouping']['group']);
@@ -73,8 +77,15 @@ class SimplifiedXmlFacade extends XmlFacade
     protected function sendRequest()
     {
         $query = str_replace(' ', '%20', $this->query);
-        $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
-            . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
+
+        if ($this->path === 'https://xmlriver.com/search/xml') {
+            $loc = $this->getRiverLoc();
+            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
+                . $this->count . ".docs-in-group%3D3&loc=$loc";
+        } else {
+            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
+                . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
+        }
 
         $config = file_get_contents($url, false, stream_context_create([
             "ssl" => [
@@ -119,4 +130,76 @@ class SimplifiedXmlFacade extends XmlFacade
         return array_search(Str::lower($request['link']), $xmlResponse);
     }
 
+    /**
+     * @return string
+     */
+    protected function getRiverLoc(): string
+    {
+        $array = [
+            '213' => '1015930',
+            '1' => '20949',
+            '20' => '1011859',
+            '37' => '1011862',
+            '197' => '1011853',
+            '4' => '1011868',
+            '77' => '1011858',
+            '191' => '1011869',
+            '24' => '1011977',
+            '75' => '1012008',
+            '33' => '1012037',
+            '192' => '1012073',
+            '38' => '1012068',
+            '21' => '1012075',
+            '193' => '1012077',
+            '1106' => '9040919',
+            '54' => '1012052',
+            '5' => '1011898',
+            '63' => '1011896',
+            '41' => '1011949',
+            '43' => '1012054',
+            '22' => '1011914',
+            '64' => '1011909',
+            '7' => '1011934',
+            '35' => '1011905',
+            '62' => '1011941',
+            '53' => '1011916',
+            '8' => '20943',
+            '9' => '1011947',
+            '28' => '1011892',
+            '23' => '1011976',
+            '1092' => '9051420',
+            '30' => '1011901',
+            '47' => '1011981',
+            '65' => '1011984',
+            '66' => '1011985',
+            '10' => '1014494',
+            '48' => '1011987',
+            '49' => '1011996',
+            '50' => '1011993',
+            '25' => '1012010',
+            '39' => '1012013',
+            '11' => '1012017',
+            '51' => '1012029',
+            '42' => '1011950',
+            '2' => '1012040',
+            '12' => '1012038',
+            '239' => '1011907',
+            '36' => '1012043',
+            '10649' => '9040930',
+            '973' => '1011924',
+            '13' => '1011924',
+            '14' => '1012061',
+            '67' => '1012059',
+            '15' => '1012060',
+            '195' => '1012067',
+            '172' => '1011867',
+            '76' => '1011918',
+            '45' => '9040951',
+            '56' => '1011874',
+            '1104' => '1011902',
+            '16' => '1012084',
+        ];
+
+        return $array[$this->lr];
+    }
 }
