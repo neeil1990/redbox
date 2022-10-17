@@ -46,6 +46,7 @@
                 top: 50px;
                 right: 30px;
             }
+
         </style>
     @endslot
 
