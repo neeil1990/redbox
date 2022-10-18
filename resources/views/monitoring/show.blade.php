@@ -4,7 +4,7 @@
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
         <!-- DataTables -->
-        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <!-- Select2 -->
@@ -14,36 +14,23 @@
         <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
 
         <style>
+            .dTable {
+                display: none;
+            }
             .table tbody tr td div {
                 width: 100%;
             }
-
             .table tr td:nth-child(4) {
                text-align: left;
-            }
-
-            .table tr td:nth-child(4) {
-                position: sticky;
-                left: 0;
-                background-color: #FFF;
-                box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.019);
-                z-index: 1;
-            }
-            .table tr:first-child td:nth-child(4) {
-                box-shadow: none;
             }
             .dataTables_processing {
                 margin: 10px auto;
                 z-index: 4;
             }
-            .dTable {
-                display: none;
-            }
             .exist-position {
                 color: #28a745!important;
                 font-weight: bold;
             }
-
             .popover {
                 max-width: none;
             }
@@ -60,11 +47,6 @@
                 right: 30px;
             }
 
-            .table tbody tr:hover td{
-                color: #212529;
-                background-color: rgba(0,0,0,.075);
-                z-index: 1;
-            }
         </style>
     @endslot
 
@@ -103,7 +85,7 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-responsive table-bordered text-center" id="monitoringTable"></table>
+                <table class="table table-hover table-responsive table-bordered text-center" id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
