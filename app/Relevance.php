@@ -437,11 +437,6 @@ class Relevance
         foreach ($this->sites as $key => $site) {
             $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($site['defaultHtml']);
             $countSymbols = Str::length($totalWords);
-            if ($countSymbols === 0) {
-                Log::debug('key', [$key]);
-                Log::debug('defaultHtml', [$site['defaultHtml']]);
-                Log::debug('$totalWords', [$totalWords]);
-            }
             $countWords = count(explode(' ', $totalWords));
 
             if ($this->sites[$key]['mainPage']) {
@@ -993,7 +988,7 @@ class Relevance
                 'position' => $item['position'],
             ];
 
-            if (isset($item['inRelevance']) && $item['inRelevance'] == false) {
+            if (isset($item['inRelevance']) && !$item['inRelevance']) {
                 $this->domains[$key]['inRelevance'] = false;
             }
         }
