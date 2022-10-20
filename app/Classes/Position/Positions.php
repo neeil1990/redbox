@@ -47,8 +47,6 @@ abstract class Positions
         $site = $this->domain;
         $results = $this->xml->getByArray();
 
-        dd($this->xml->getQueryURL());
-
         if(!isset($results['response']['error'])){
 
             $positions = $results['response']['results']['grouping']['group'];
