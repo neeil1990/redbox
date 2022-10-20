@@ -63,9 +63,10 @@ class RiverFacade
                 'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
             ];
         } catch (\Throwable $e) {
-            Log::debug('cluster url', [$url]);
-            Log::debug('cluster url', [$riwerResponse]);
-            die();
+            return [
+                'number' => 0,
+                'phrase' => $this->query
+            ];
         }
     }
 }

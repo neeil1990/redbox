@@ -40,13 +40,13 @@ class SimplifiedXmlFacade extends XmlFacade
     public function getXMLResponse(int $try = 1)
     {
         if ($try === 1) {
-            $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser('sv@prime-ltd.su');
-            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-        } elseif ($try === 2) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser('9371');
             $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+        } elseif ($try === 2) {
+            $this->setPath('https://xmlproxy.ru/search/xml');
+            $this->setUser('sv@prime-ltd.su');
+            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
         } elseif ($try === 3) {
             $this->setPath('https://xmlriver.com/search/xml');
             $this->setUser('6602');
@@ -79,12 +79,12 @@ class SimplifiedXmlFacade extends XmlFacade
         $query = str_replace(' ', '%20', $this->query);
 
         if ($this->path === 'https://xmlriver.com/search/xml') {
-            $loc = $this->getRiverLoc();
-            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
-                . $this->count . ".docs-in-group%3D3&loc=$loc";
+            $loc = $this->getRiverLocation();
+            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . $this->count . ".docs-in-group%3D1&loc=$loc";
         } else {
-            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr%3Dd.mode%3Ddeep.groups-on-page%3D"
-                . $this->count . ".docs-in-group%3D3&lr=$this->lr&sortby=$this->sortby&page=>$this->page";
+            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . $this->count . ".docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
         $config = file_get_contents($url, false, stream_context_create([
@@ -107,11 +107,7 @@ class SimplifiedXmlFacade extends XmlFacade
     {
         $result = [];
         foreach ($xmlResult as $item) {
-            if (array_key_exists(0, $item['doc'])) {
-                $result[] = Str::lower($item['doc'][0]['url']);
-            } else {
-                $result[] = Str::lower($item['doc']['url']);
-            }
+            $result[] = Str::lower($item['doc']['url']);
         }
 
         return $result;
@@ -133,7 +129,7 @@ class SimplifiedXmlFacade extends XmlFacade
     /**
      * @return string
      */
-    protected function getRiverLoc(): string
+    protected function getRiverLocation(): string
     {
         $array = [
             '213' => '1015930',
