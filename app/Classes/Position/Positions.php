@@ -34,7 +34,7 @@ abstract class Positions
     protected function setParams()
     {
         $this->xml->setPath($this->engine);
-        $this->xml->setGroupBy('flat.groups-on-page=100');
+        $this->xml->setGroupBy('attr=d.mode=deep.groups-on-page=100.docs-in-group=1');
         $this->xml->setLr($this->lr);
         $this->xml->setQuery($this->query);
     }
