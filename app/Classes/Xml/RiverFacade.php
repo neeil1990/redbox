@@ -2,6 +2,8 @@
 
 namespace App\Classes\Xml;
 
+use Illuminate\Support\Facades\Log;
+
 class RiverFacade
 {
     public $user = '6602';
@@ -46,18 +48,25 @@ class RiverFacade
      */
     public function riverRequest(): array
     {
-        $url = str_replace(' ', '%20', $this->xmlRiwerPath . $this->query);
-        $riwerResponse = [];
+        try {
+            $url = str_replace(' ', '%20', $this->xmlRiwerPath . $this->query);
+            $riwerResponse = [];
 
-        $attempt = 1;
-        while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
-            $riwerResponse = json_decode(file_get_contents($url), true);
-            $attempt++;
+            $attempt = 1;
+            while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
+                $riwerResponse = json_decode(file_get_contents($url), true);
+                $attempt++;
+            }
+
+            return [
+                'number' => $riwerResponse['content']['includingPhrases']['items'][0]['number'],
+                'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'number' => 0,
+                'phrase' => $this->query
+            ];
         }
-
-        return [
-            'number' => $riwerResponse['content']['includingPhrases']['items'][0]['number'],
-            'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
-        ];
     }
 }
