@@ -166,15 +166,7 @@ class TextAnalyzer extends Model
      */
     public static function deleteEverythingExceptCharacters($html)
     {
-        $html = preg_replace([
-            "'<style[^>]*?>.*?</style>'si",
-            "'<script[^>]*?>.*?</script>'si",
-            "'<head[^>]*?>.*?</head>'si",
-            "'<i [^>]*?>.*?</i>'si",
-            "'array\n\(\n.*?\n\)\n'si",
-            "'array.*?\(.*?\)'si",
-            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
-        ], "", $html);
+        $html = TextAnalyzer::removeStylesAndScripts($html);
 
         $html = str_replace('>', '> ', $html);
         $text = trim(strip_tags($html));

@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Jobs\ClusterQueue;
 use Illuminate\Support\Facades\Log;
 
 class Cluster
@@ -26,48 +26,45 @@ class Cluster
 
     protected $engineVersion;
 
-    protected $xmlRiwerPath = 'https://xmlriver.com/wordstat/json?user=6602&key=8c0d8e659c4ba2240e791fb3e6b4f172556be01f&query=';
-
     protected $searchPhrases;
 
     protected $searchTarget;
 
+    protected $progress;
 
     public function __construct(array $request)
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
-        $this->clusteringLevel = $request['clustering_level'] == 5 ? 0.5 : 0.7;
-        $this->engineVersion = $request['engine_version'];
-        $this->searchPhrases = isset($request['searchPhrases']);
-        $this->searchTarget = isset($request['searchTarget']);
+        $this->clusteringLevel = $request['clusteringLevel'] == 5 ? 0.5 : 0.7;
+        $this->engineVersion = $request['engineVersion'];
+        $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
+        $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
 
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
+
+        $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
     }
 
     public function startAnalysis()
     {
-//        try {
-        $this->setSites();
-        $this->searchClusters();
-        $this->calculateClustersInfo();
-        $this->wordStats();
-        $this->searchGroupName();
-        $this->setResult($this->clusters);
+        try {
+            $this->setSites();
+            $this->searchClusters();
+            $this->calculateClustersInfo();
+            $this->wordStats();
+            $this->searchGroupName();
+            $this->setResult($this->clusters);
 
-//        } catch (\Throwable $e) {
-//            Log::debug('cluster error', [
-//                $e->getMessage(),
-//                $e->getLine(),
-//                $e->getFile()
-//            ]);
-//            dd([
-//                $e->getMessage(),
-//                $e->getLine(),
-//                $e->getFile()
-//            ]);
-//        }
+        } catch (\Throwable $e) {
+            Log::debug('cluster error', [
+                $e->getMessage(),
+                $e->getLine(),
+                $e->getFile()
+            ]);
+            $this->progress->delete();
+        }
     }
 
     protected function setSites()
@@ -136,6 +133,24 @@ class Cluster
             }
         }
 
+        foreach ($clusters as $mainPhrase => $items) {
+            if (count($items) > 1) {
+                continue;
+            }
+            foreach ($clusters as $mainPhrase2 => $items2) {
+                if ($mainPhrase === $mainPhrase2) {
+                    continue;
+                }
+                foreach ($items2 as $item) {
+                    if (count(array_intersect($items[$mainPhrase][0], $item[0])) >= $minimum) {
+                        $jayParsedAry[$mainPhrase2][$mainPhrase] = $items[$mainPhrase];
+                        unset($jayParsedAry[$mainPhrase]);
+                    }
+                }
+
+            }
+        }
+
         foreach ($clusters as $phrase => $item) {
             foreach ($item as $itemPhrase => $elems) {
                 $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
@@ -158,31 +173,98 @@ class Cluster
 
     protected function wordStats()
     {
-        $river = new RiverFacade($this->region);
+        $this->progress->total = $this->calculateCountRequests();
+        $this->progress->save();
+        $percent = 90 / $this->progress->total;
 
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     if ($this->searchPhrases) {
-                        $river->setQuery('"' . $phrase . '"');
-                        $this->clusters[$key][$phrase]['phrased'] = $river->riverRequest();
+                        ClusterQueue::dispatch(
+                            $this->region,
+                            $this->progress->id,
+                            $percent,
+                            '"' . $phrase . '"',
+                            $key,
+                            $phrase,
+                            'phrased'
+                        )->onQueue('cluster_high');
                     }
 
                     if ($this->searchTarget) {
-                        $river->setQuery('"!' . implode(' !', explode(' ', $phrase)) . '"');
-                        $this->clusters[$key][$phrase]['target'] = $river->riverRequest();
+                        ClusterQueue::dispatch(
+                            $this->region,
+                            $this->progress->id,
+                            $percent,
+                            '"!' . implode(' !', explode(' ', $phrase)) . '"',
+                            $key,
+                            $phrase,
+                            'target'
+                        )->onQueue('cluster_high');
                     }
 
-                    $river->setQuery($phrase);
-                    $response = $river->riverRequest();
-                    $this->clusters[$key][$phrase]['based'] = $response;
-                    if ($response['phrase'] !== $phrase) {
-                        $this->clusters[$key][$phrase]['basedNormal'] = $response['phrase'];
+                    ClusterQueue::dispatch(
+                        $this->region,
+                        $this->progress->id,
+                        $percent,
+                        $phrase,
+                        $key,
+                        $phrase,
+                        'target'
+                    )->onQueue('cluster_high');
+                }
+            }
+        }
+
+        $this->waitRiverResponses();
+        $this->setRiverResults();
+    }
+
+    protected function waitRiverResponses()
+    {
+        $this->progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+
+        while ($this->progress->total !== $this->progress->success) {
+            Log::debug('сплю 5 секунд', [$this->progress->total, $this->progress->success]);
+            sleep(5);
+            $this->progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+        }
+    }
+
+    protected function setRiverResults()
+    {
+        $array = json_decode($this->progress->array, true);
+        foreach ($this->clusters as $key => $cluster) {
+            foreach ($cluster as $phrase => $sites) {
+                if ($phrase !== 'finallyResult') {
+                    if ($this->searchPhrases) {
+                        $this->clusters[$key][$phrase]['phrased'] = $array[$key][$phrase]['phrased'];
+                    }
+
+                    if ($this->searchTarget) {
+                        $this->clusters[$key][$phrase]['target'] = $array[$key][$phrase]['target'];
+                    }
+
+                    $this->clusters[$key][$phrase]['based'] = $array[$key][$phrase]['based'];
+                    if ($array[$key][$phrase]['based']['phrase'] !== $phrase) {
+                        $this->clusters[$key][$phrase]['basedNormal'] = $array[$key][$phrase]['based']['phrase'];
                     }
                 }
             }
         }
 
+    }
+
+    /**
+     * @return int
+     */
+    protected function calculateCountRequests(): int
+    {
+        $first = $this->searchPhrases ? 1 : 0;
+        $second = $this->searchTarget ? 1 : 0;
+
+        return $this->countPhrases * (1 + $first + $second);
     }
 
     protected function searchGroupName()
@@ -203,65 +285,7 @@ class Cluster
     }
 
     /**
-     * @param $string
-     * @return array
-     */
-    protected function riverRequest($string): array
-    {
-        $url = $this->xmlRiwerPath . $string;
-        $url = str_replace(' ', '%20', $url);
-        $riwerResponse = [];
-
-        $attempt = 1;
-        while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
-//            Log::debug('request', [$url]);
-            $riwerResponse = json_decode(file_get_contents($url), true);
-            $attempt++;
-        }
-
-        return [
-            'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),
-            'phrase' => str_replace(['"', '!'], "", $string)
-        ];
-    }
-
-    /**
-     * @param $phrase
-     * @return array
-     */
-    protected function phraseOptions($phrase): array
-    {
-        $result = [$phrase];
-        $default = explode(' ', $phrase);
-
-        if (count($default) === 0) {
-            return $result;
-        }
-
-        if (count($default) === 2) {
-            return [
-                $phrase,
-                implode(' ', array_reverse(explode(' ', $phrase)))
-            ];
-        }
-
-        foreach ($default as $key => $word) {
-            if ($key + 1 >= count($default)) {
-                continue;
-            }
-            $std = $default;
-            $tmp = $std[$key];
-            $std[$key] = $std[$key + 1];
-            $std[$key + 1] = $tmp;
-
-            $result[] = implode(' ', $std);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $result
+     * @param array $results
      * @return void
      */
     protected function setResult(array $results)
@@ -280,13 +304,11 @@ class Cluster
     }
 
     /**
-     * @return string[]
+     * @return array
      */
     public function getAnalysisResult(): array
     {
-        return [
-            'result' => $this->getResult()
-        ];
+        return $this->getResult();
     }
 
 }

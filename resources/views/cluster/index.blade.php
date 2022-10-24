@@ -22,12 +22,23 @@
             .dataTables_info, .hidden-result-table_filter {
                 display: none;
             }
+
+            .bg-cluster-warning {
+                background: rgba(245, 226, 170, 0.5);
+            }
         </style>
     @endslot
 
-    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message"></div>
+    <div id="toast-container" class="toast-top-right success-message">
+        <div class="toast toast-success" aria-live="polite" style="display:none;">
+            <div class="toast-message success-msg"></div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-top-right error-message">
+        <div class="toast toast-error" aria-live="assertive" style="display:none;">
+            <div
+                class="toast-message error-msg">{{ __('An unexpected error has occurred, please contact the administrator') }}</div>
         </div>
     </div>
 
@@ -52,182 +63,151 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
+                    <div class="col-5 pb-3">
+                        <div class="form-group required">
+                            <label>{{ __('Region') }}</label>
+                            {!! Form::select('region', array_unique([
+                              '213' => __('Moscow'),
+                               '1' => __('Moscow and the area'),
+                               '20' => __('Arkhangelsk'),
+                               '37' => __('Astrakhan'),
+                               '197' => __('Barnaul'),
+                               '4' => __('Belgorod'),
+                               '77' => __('Blagoveshchensk'),
+                               '191' => __('Bryansk'),
+                               '24' => __('Veliky Novgorod'),
+                               '75' => __('Vladivostok'),
+                               '33' => __('Vladikavkaz'),
+                               '192' => __('Vladimir'),
+                               '38' => __('Volgograd'),
+                               '21' => __('Vologda'),
+                               '193' => __('Voronezh'),
+                               '1106' => __('Grozny'),
+                               '54' => __('Ekaterinburg'),
+                               '5' => __('Ivanovo'),
+                               '63' => __('Irkutsk'),
+                               '41' => __('Yoshkar-ola'),
+                               '43' => __('Kazan'),
+                               '22' => __('Kaliningrad'),
+                               '64' => __('Kemerovo'),
+                               '7' => __('Kostroma'),
+                               '35' => __('Krasnodar'),
+                               '62' => __('Krasnoyarsk'),
+                               '53' => __('Kurgan'),
+                               '8' => __('Kursk'),
+                               '9' => __('Lipetsk'),
+                               '28' => __('Makhachkala'),
+                               '23' => __('Murmansk'),
+                               '1092' => __('Nazran'),
+                               '30' => __('Nalchik'),
+                               '47' => __('Nizhniy Novgorod'),
+                               '65' => __('Novosibirsk'),
+                               '66' => __('Omsk'),
+                               '10' => __('Eagle'),
+                               '48' => __('Orenburg'),
+                               '49' => __('Penza'),
+                               '50' => __('Perm'),
+                               '25' => __('Pskov'),
+                               '39' => __('Rostov-on-Don'),
+                               '11' => __('Ryazan'),
+                               '51' => __('Samara'),
+                               '42' => __('Saransk'),
+                               '2' => __('Saint-Petersburg'),
+                               '12' => __('Smolensk'),
+                               '239' => __('Sochi'),
+                               '36' => __('Stavropol'),
+                               '10649' => __('Stary Oskol'),
+                               '973' => __('Surgut'),
+                               '13' => __('Tambov'),
+                               '14' => __('Tver'),
+                               '67' => __('Tomsk'),
+                               '15' => __('Tula'),
+                               '195' => __('Ulyanovsk'),
+                               '172' => __('Ufa'),
+                               '76' => __('Khabarovsk'),
+                               '45' => __('Cheboksary'),
+                               '56' => __('Chelyabinsk'),
+                               '1104' => __('Cherkessk'),
+                               '16' => __('Yaroslavl'),
+                           ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region']) !!}
+                        </div>
+
+                        <div class="form-group required">
+                            <label>{{ __('Top 10/20') }}</label>
+                            {!! Form::select('count', array_unique([
+                                '10' => 10,
+                                '20' => 20,
+                                '30' => 30,
+                            ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
+                        </div>
+
+                        <div class="form-group required">
+                            <label>{{ __('Phrases') }}</label>
+                            {!! Form::textarea('phrases', null, ['class' => 'form-control', 'required', 'id'=>'phrases'] ) !!}
+                        </div>
+
+                        <div class="form-group required">
+                            <label>{{ __('clustering level') }}</label>
+                            {!! Form::select('clustering_level', [
+                                '5' => 'soft - 50%',
+                                '7' => 'hard - 70%',
+                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
+                        </div>
+
+                        <div class="form-group required">
+                            <label>Объединение кластеров</label>
+                            {!! Form::select('engine_version', [
+                                'old' => 'Формирование на основе первой попавшейся фразы (old)',
+                                'new' => 'Формирование на основе массива ссылок кластера (new)',
+                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
+                        </div>
+
+                        <div class="form-group required">
+                            <div>
+                                <label for="searchBased">Анализ базовой частотности</label>
+                                <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
+                            </div>
+                            <div>
+                                <label for="searchPhrases">Анализ фразовой частотности</label>
+                                <input type="checkbox" name="searchPhrases" id="searchPhrases">
+                            </div>
+                            <div>
+                                <label for="searchTarget">Анализ точной частотности</label>
+                                <input type="checkbox" name="searchTarget" id="searchTarget">
+                            </div>
+                        </div>
+
+                        <input type="button" class="btn btn-secondary" id="start-analysis"
+                               value="{{ __('Analysis') }}">
+                    </div>
+
                     <div id="progress-bar" style="display: none">
                         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
-                        <span class="text-muted" id="progress-bar-state">Подготовка данных..</span>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
-                    <div class="col-5 pb-3">
-                        <form action="{{ route('analysis.cluster') }}" method="POST">
-                            @csrf
-
-                            <div class="form-group required">
-                                <label>{{ __('Region') }}</label>
-                                {!! Form::select('region', array_unique([
-                                  '213' => __('Moscow'),
-                                   '1' => __('Moscow and the area'),
-                                   '20' => __('Arkhangelsk'),
-                                   '37' => __('Astrakhan'),
-                                   '197' => __('Barnaul'),
-                                   '4' => __('Belgorod'),
-                                   '77' => __('Blagoveshchensk'),
-                                   '191' => __('Bryansk'),
-                                   '24' => __('Veliky Novgorod'),
-                                   '75' => __('Vladivostok'),
-                                   '33' => __('Vladikavkaz'),
-                                   '192' => __('Vladimir'),
-                                   '38' => __('Volgograd'),
-                                   '21' => __('Vologda'),
-                                   '193' => __('Voronezh'),
-                                   '1106' => __('Grozny'),
-                                   '54' => __('Ekaterinburg'),
-                                   '5' => __('Ivanovo'),
-                                   '63' => __('Irkutsk'),
-                                   '41' => __('Yoshkar-ola'),
-                                   '43' => __('Kazan'),
-                                   '22' => __('Kaliningrad'),
-                                   '64' => __('Kemerovo'),
-                                   '7' => __('Kostroma'),
-                                   '35' => __('Krasnodar'),
-                                   '62' => __('Krasnoyarsk'),
-                                   '53' => __('Kurgan'),
-                                   '8' => __('Kursk'),
-                                   '9' => __('Lipetsk'),
-                                   '28' => __('Makhachkala'),
-                                   '23' => __('Murmansk'),
-                                   '1092' => __('Nazran'),
-                                   '30' => __('Nalchik'),
-                                   '47' => __('Nizhniy Novgorod'),
-                                   '65' => __('Novosibirsk'),
-                                   '66' => __('Omsk'),
-                                   '10' => __('Eagle'),
-                                   '48' => __('Orenburg'),
-                                   '49' => __('Penza'),
-                                   '50' => __('Perm'),
-                                   '25' => __('Pskov'),
-                                   '39' => __('Rostov-on-Don'),
-                                   '11' => __('Ryazan'),
-                                   '51' => __('Samara'),
-                                   '42' => __('Saransk'),
-                                   '2' => __('Saint-Petersburg'),
-                                   '12' => __('Smolensk'),
-                                   '239' => __('Sochi'),
-                                   '36' => __('Stavropol'),
-                                   '10649' => __('Stary Oskol'),
-                                   '973' => __('Surgut'),
-                                   '13' => __('Tambov'),
-                                   '14' => __('Tver'),
-                                   '67' => __('Tomsk'),
-                                   '15' => __('Tula'),
-                                   '195' => __('Ulyanovsk'),
-                                   '172' => __('Ufa'),
-                                   '76' => __('Khabarovsk'),
-                                   '45' => __('Cheboksary'),
-                                   '56' => __('Chelyabinsk'),
-                                   '1104' => __('Cherkessk'),
-                                   '16' => __('Yaroslavl'),
-                               ]), null, ['class' => 'custom-select rounded-0 region']) !!}
-                            </div>
-
-                            <div class="form-group required">
-                                <label>{{ __('Top 10/20') }}</label>
-                                {!! Form::select('count', array_unique([
-                                    '10' => 10,
-                                    '20' => 20,
-                                    '30' => 30,
-                                ]), null, ['class' => 'custom-select rounded-0 count']) !!}
-                            </div>
-
-                            <div class="form-group required">
-                                <label id="phrases">{{ __('Phrases') }}</label>
-                                {!! Form::textarea("phrases", old('phrases'), ["class" => "form-control phrases", 'required'] ) !!}
-                            </div>
-
-                            <div class="form-group required">
-                                <label>{{ __('clustering level') }}</label>
-                                {!! Form::select('clustering_level', [
-                                    '5' => 'soft - 50%',
-                                    '7' => 'hard - 70%',
-                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
-                            </div>
-
-                            <div class="form-group required">
-                                <label>Объединение кластеров</label>
-                                {!! Form::select('engine_version', [
-                                    'old' => 'Формирование на основе первой попавшейся фразы (old)',
-                                    'new' => 'Формирование на основе массива ссылок кластера (new)',
-                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'check-type']) !!}
-                            </div>
-
-                            <div class="form-group required">
-                                <div>
-                                    <label for="searchBased">Анализ базовой частотности</label>
-                                    <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
-                                </div>
-                                <div>
-                                    <label for="searchPhrases">Анализ фразовой частотности</label>
-                                    <input type="checkbox" name="searchPhrases" id="searchPhrases">
-                                </div>
-                                <div>
-                                    <label for="searchTarget">Анализ точной частотности</label>
-                                    <input type="checkbox" name="searchTarget" id="searchTarget">
-                                </div>
-                            </div>
-
-                            <input type="submit" class="btn btn-secondary" value="{{ __('Analysis') }}">
-
-                        </form>
-                    </div>
-                    @isset($results)
-                        <div class="mt-3" style="width: 100%; overflow-x: scroll;">
-                            <h3>Таблица кластеров</h3>
-                            <table class="d-none" id="hidden-result-table">
-                                <thead>
-                                <tr>
-                                    <th colspan="4"></th>
-                                    <th class="centered-text" colspan="3">Частотность</th>
-                                </tr>
-                                <tr>
-                                    <th>Порядковый номер</th>
-                                    <th>Порядковый номер в кластере</th>
-                                    <th>Ключевой запрос</th>
-                                    <th>Группа</th>
-                                    <th>Базовая</th>
-                                    <th>"Фразовая"</th>
-                                    <th>"!Точная"</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @php ($iterator = 0)
-                                @foreach($results['result'] as $key => $result)
-                                    @php($clusterIterator = 0)
-                                    @foreach($result as $phrase => $information)
-                                        @if($phrase !== 'finallyResult')
-                                            <tr>
-                                                @php ($iterator++)
-                                                @php ($clusterIterator++)
-                                                <td class="border-0">
-                                                    {{ $iterator }}
-                                                </td>
-                                                <td class="border-0">
-                                                    {{ $clusterIterator }}
-                                                </td>
-                                                <td class="border-0">
-                                                    {{ $phrase }}
-                                                </td>
-                                                <td class="border-0">
-                                                    {{ $result['finallyResult']['groupName'] }}
-                                                </td>
-                                                <td class="border-0">{{ $information['based']['number'] ?? 'встречается менее 10 раз'}}</td>
-                                                <td class="border-0">{{ $information['phrased']['number'] ?? 'no found'}}</td>
-                                                <td class="border-0">{{ $information['target']['number'] ?? 'no found'}}</td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                @endforeach
-                                </tbody>
-                            </table>
+                    <div id="block-for-downloads-files" style="display: none">
+                        <h3>Таблица кластеров</h3>
+                        <table id="hidden-result-table" style="display: none">
+                            <thead>
+                            <tr>
+                                <th colspan="4"></th>
+                                <th class="centered-text" colspan="3">Частотность</th>
+                            </tr>
+                            <tr>
+                                <th>Порядковый номер</th>
+                                <th>Порядковый номер в кластере</th>
+                                <th>Ключевой запрос</th>
+                                <th>Группа</th>
+                                <th>Базовая</th>
+                                <th>"Фразовая"</th>
+                                <th>"!Точная"</th>
+                            </tr>
+                            </thead>
+                            <tbody id="hidden-table-tbody">
+                            </tbody>
+                        </table>
+                        <div style='width: 100%; overflow-x: scroll;'>
                             <table id="clusters-table" class="table table-bordered dtr-inline">
                                 <thead>
                                 <tr>
@@ -235,175 +215,131 @@
                                     <th style="min-width: 250px;">Конкуренты</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                @php ($iterator = 0)
-                                @foreach($results['result'] as $key => $result)
-                                    <tr>
-                                        <td class="p-0">
-                                            <table class="table table-hover text-nowrap render-table"
-                                                   id="render-table-{{$key}}" style="width: 100%;">
-                                                <thead>
-                                                <tr>
-                                                    <th colspan="4"></th>
-                                                    <th class="centered-text" colspan="3">Частотность</th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Порядковый номер</th>
-                                                    <th>Порядковый номер в кластере</th>
-                                                    <th>Ключевой запрос <i class="fa fa-copy copy-phrases"></i></th>
-                                                    <th>Группа</th>
-                                                    <th>Базовая</th>
-                                                    <th>"Фразовая"</th>
-                                                    <th>"!Точная"</th>
-                                                </tr>
-                                                </thead>
-                                                @php($clusterIterator = 0)
-                                                @foreach($result as $phrase => $information)
-                                                    @if($phrase !== 'finallyResult')
-                                                        @php ($iterator++)
-                                                        @php ($clusterIterator++)
-                                                        <tr>
-                                                            <td class="border-0">
-                                                                {{ $iterator }}
-                                                            </td>
-                                                            <td class="border-0">
-                                                                {{ $clusterIterator }}
-                                                            </td>
-                                                            <td class="border-0"
-                                                                @isset($information['basedNormal'])
-                                                                    style="background: rgba(245, 226, 170, 0.5);"
-                                                                    title="Фраза '{{ $phrase }}' была видоизменена"
-                                                                @endisset>
-                                                                <div class="d-flex">
-                                                                    <div class="col-11">
-                                                                        @isset($information['basedNormal'])
-                                                                            {{ $information['basedNormal'] }}
-                                                                        @else
-                                                                            {{ $phrase }}
-                                                                        @endisset
-                                                                    </div>
-                                                                    <div class="col-1">
-                                                                        <span class="__helper-link ui_tooltip_w">
-                                                                            <i class="fa fa-paperclip"></i>
-                                                                            <span class="ui_tooltip __right"
-                                                                                  style="min-width: 250px;">
-                                                                                <span class="ui_tooltip_content">
-                                                                                    @foreach($information['sites'] as $site)
-                                                                                        <div>
-                                                                                            <a href="{{ $site }}"
-                                                                                               target="_blank">
-                                                                                                {{ parse_url($site)['host'] }}
-                                                                                            </a>
-                                                                                        </div>
-                                                                                    @endforeach
-                                                                                </span>
-                                                                            </span>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td class="border-0">
-                                                                {{ $result['finallyResult']['groupName'] }}
-                                                            </td>
-                                                            <td class="border-0">{{ $information['based']['number'] ?? 'встречается менее 10 раз'}}</td>
-                                                            <td class="border-0">{{ $information['phrased']['number'] ?? 'no found'}}</td>
-                                                            <td class="border-0">{{ $information['target']['number'] ?? 'no found'}}</td>
-                                                        </tr>
-                                                    @endif
-                                                @endforeach
-                                            </table>
-                                        </td>
-                                        <td>
-                                            <p>
-                                                <a class="btn btn-secondary" data-toggle="collapse"
-                                                   href="#competitors{{$key}}" role="button" aria-expanded="false"
-                                                   aria-controls="competitors{{$key}}">
-                                                    Конкуренты
-                                                </a>
-                                            </p>
-                                            <div class="collapse" id="competitors{{$key}}">
-                                                <div>
-                                                    @foreach($result['finallyResult']['sites'] as $site => $count)
-                                                        <div>
-                                                            <a href="{{ $site }}" target="_blank">
-                                                                {{ parse_url($site)['host'] }}
-                                                            </a> : {{ $count }}
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                <tbody id="clusters-table-tbody">
                                 </tbody>
                             </table>
                         </div>
-                    @endisset
+                    </div>
+
                     <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
+
+                    <input type="hidden" id="progressId">
                 </div>
             </div>
         </div>
     </div>
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-        @isset($results)
-            <script>
+        <script>
+            let progressId
+            let interval
+
+            $('#start-analysis').click(function () {
+                $(this).attr('disabled', true)
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('start.cluster.progress') }}",
+                    success: function (response) {
+                        progressId = response.id
+                        $('#progress-bar').show()
+                        $('#progressId').val(progressId)
+                        refreshAll()
+                        startAnalysis()
+
+                        interval = setInterval(() => {
+                            getProgressPercent(response.id)
+                        }, 1000)
+                    }
+                })
+            });
+
+
+            function getData() {
+                return {
+                    region: $('#region').val(),
+                    count: $('#count').val(),
+                    phrases: $('#phrases').val(),
+                    clusteringLevel: $('#clusteringLevel').val(),
+                    engineVersion: $('#engineVersion').val(),
+                    searchBased: $('#searchBased').is(':checked'),
+                    searchPhrases: $('#searchPhrases').is(':checked'),
+                    searchTarget: $('#searchTarget').is(':checked'),
+                    progressId: $('#progressId').val()
+                };
+            }
+
+            function refreshAll() {
                 $.each($('.render-table'), function (key, value) {
-                    $('#' + $(this).attr('id')).dataTable({
-                        'order': [[5, "desc"]],
-                        'bPaginate': false,
-                        'orderCellsTop': true,
-                        'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-                    })
+                    $('#' + $(this).attr('id')).dataTable().fnDestroy()
                 })
 
-                $('#hidden-result-table').dataTable({
-                    'order': [[5, "desc"]],
-                    'bPaginate': false,
-                    'orderCellsTop': true,
-                    'dom': 'lBfrtip',
-                    'buttons': [
-                        'copy', 'csv', 'excel'
-                    ]
+                $('.render').remove()
+                $('#hidden-result-table').dataTable().fnDestroy()
+                $('#block-for-downloads-files').hide()
+                $('.render-table').remove()
+            }
+
+            function getProgressPercent(id) {
+                $.ajax({
+                    type: "GET",
+                    url: `/get-cluster-progress/${id}`,
+                    success: function (response) {
+                        setProgressBarStyles(response.percent)
+                    }
                 })
+            }
 
-                $('#hidden-result-table_filter').remove()
-                $('.dt-button').addClass('btn btn-secondary')
-                $('.dt-buttons').addClass('pb-3')
+            function setProgressBarStyles(percent) {
+                let bar = $('.progress-bar')
+                bar.css({
+                    width: percent + '%'
+                })
+                bar.html(percent + '%');
+            }
 
+            function destroyProgress(progressId, interval) {
+                clearInterval(interval)
+                setTimeout(() => {
+                    setProgressBarStyles(0)
+                    $('#progress-bar').hide(300)
 
-                $('.copy-phrases').unbind().on('click', function () {
-                    $('#hiddenForCopy').css('display', 'block')
-                    $('#hiddenForCopy').val('')
-                    let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
-
-                    $.each(trs, function (key, value) {
-                        let phrase = ($(this).children('td:nth-of-type(3)').children('div.d-flex').children('div.col-11').html()).trim();
-                        console.log(phrase)
-                        if ($('#hiddenForCopy').val() === '') {
-                            $('#hiddenForCopy').val(phrase)
-                        } else {
-                            $('#hiddenForCopy').val($('#hiddenForCopy').val() + "\n" + phrase)
+                    $.ajax({
+                        type: "GET",
+                        url: `/destroy-progress/${progressId}`,
+                        success: function (response) {
                         }
                     })
+                }, 3000)
+            }
 
-                    let text = document.getElementById("hiddenForCopy");
-
-                    text.select();
-                    document.execCommand("copy");
-
-                    $('#hiddenForCopy').css('display', 'none')
-                    $('#toast-container').show(300)
-                    $('.toast-message').html("{{ __('Successfully copied') }}")
-                    setTimeout(() => {
-                        $('#toast-container').hide(300)
-                    }, 3000)
-                })
-            </script>
-        @endisset
+            function startAnalysis() {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('analysis.cluster') }}",
+                    data: getData(),
+                    success: function (response) {
+                        destroyProgress(progressId, interval)
+                        $('#start-analysis').attr('disabled', false)
+                        renderHiddenTable(response['result'])
+                        renderResultTable(response['result'])
+                    },
+                    error: function (response) {
+                        destroyProgress(progressId, interval)
+                        $('#start-analysis').attr('disabled', false)
+                        $('.toast.toast-error').show(300)
+                        setTimeout(function () {
+                            $('.toast.toast-error').hide(300)
+                        }, 5000)
+                    }
+                });
+            }
+        </script>
     @endslot
 @endcomponent

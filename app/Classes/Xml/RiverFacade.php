@@ -2,19 +2,19 @@
 
 namespace App\Classes\Xml;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class RiverFacade
 {
-    public $user = '6602';
+    protected $user = '6602';
 
-    public $key = '8c0d8e659c4ba2240e791fb3e6b4f172556be01f';
+    protected $key = '8c0d8e659c4ba2240e791fb3e6b4f172556be01f';
 
-    public $region;
+    protected $region;
 
-    public $query;
+    protected $query;
 
-    public $xmlRiwerPath;
+    protected $xmlRiwerPath;
 
     public function __construct($region)
     {
@@ -26,6 +26,11 @@ class RiverFacade
     public function setQuery($query)
     {
         $this->query = $query;
+    }
+
+    public function getQuery()
+    {
+        return $this->query;
     }
 
     public function setRegions($region)
@@ -44,9 +49,10 @@ class RiverFacade
     }
 
     /**
+     * @param bool $searchInItems
      * @return array
      */
-    public function riverRequest(): array
+    public function riverRequest(bool $searchInItems = true): array
     {
         try {
             $url = str_replace(' ', '%20', $this->xmlRiwerPath . $this->query);
@@ -58,14 +64,29 @@ class RiverFacade
                 $attempt++;
             }
 
-            return [
-                'number' => $riwerResponse['content']['includingPhrases']['items'][0]['number'],
-                'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
-            ];
+            if ($searchInItems) {
+                if(Str::length($riwerResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())) {
+                    return [
+                        'number' => $riwerResponse['content']['includingPhrases']['items'][0]['number'],
+                        'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
+                    ];
+                } else {
+                    return [
+                        'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),
+                        'phrase' => $this->getQuery()
+                    ];
+                }
+
+            } else {
+                return [
+                    'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),
+                    'phrase' => $this->getQuery()
+                ];
+            }
         } catch (\Throwable $e) {
             return [
                 'number' => 0,
-                'phrase' => $this->query
+                'phrase' => $this->getQuery()
             ];
         }
     }
