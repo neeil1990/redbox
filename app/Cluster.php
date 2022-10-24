@@ -211,7 +211,7 @@ class Cluster
                         $phrase,
                         $key,
                         $phrase,
-                        'target'
+                        'based'
                     )->onQueue('cluster_high');
                 }
             }
@@ -246,6 +246,7 @@ class Cluster
                         $this->clusters[$key][$phrase]['target'] = $array[$key][$phrase]['target'];
                     }
 
+                    Log::debug('a', [$array[$key][$phrase]]);
                     $this->clusters[$key][$phrase]['based'] = $array[$key][$phrase]['based'];
                     if ($array[$key][$phrase]['based']['phrase'] !== $phrase) {
                         $this->clusters[$key][$phrase]['basedNormal'] = $array[$key][$phrase]['based']['phrase'];

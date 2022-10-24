@@ -56,19 +56,28 @@ class ClusterQueue implements ShouldQueue
      */
     public function handle()
     {
-        $river = new RiverFacade($this->region);
-        $river->setQuery($this->targetPhrase);
-        $response = $river->riverRequest();
+        try {
+            $river = new RiverFacade($this->region);
+            $river->setQuery($this->targetPhrase);
+            $response = $river->riverRequest();
 
-        $this->progress = ClusterProgress::where('id', '=', $this->progressId)->first();
+            $this->progress = ClusterProgress::where('id', '=', $this->progressId)->first();
 
-        $array = json_decode($this->progress->array, true);
-        $array[$this->key][$this->phrase][$this->type] = $response;
-        $this->progress->array = json_encode($array);
+            $array = json_decode($this->progress->array, true);
+            $array[$this->key][$this->phrase][$this->type] = $response;
+            $this->progress->array = json_encode($array);
 
-        $this->progress->success += 1;
-        $this->progress->percent += $this->percent;
+            $this->progress->success += 1;
+            $this->progress->percent += $this->percent;
 
-        $this->progress->save();
+            $this->progress->save();
+        } catch (\Throwable $e) {
+            Log::debug('cluster job error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+        }
+
     }
 }
