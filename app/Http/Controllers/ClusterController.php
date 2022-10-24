@@ -61,14 +61,4 @@ class ClusterController extends Controller
             'percent' => $progress->percent,
         ]);
     }
-
-    /**
-     * @param ClusterProgress $progress
-     * @return void
-     * @throws Exception
-     */
-    public function destroyProgress(ClusterProgress $progress)
-    {
-        $progress->delete();
-    }
 }

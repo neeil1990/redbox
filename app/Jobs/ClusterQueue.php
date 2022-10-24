@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ClusterQueue implements ShouldQueue
@@ -59,25 +60,28 @@ class ClusterQueue implements ShouldQueue
         try {
             $river = new RiverFacade($this->region);
             $river->setQuery($this->targetPhrase);
-            $response = $river->riverRequest();
+            $clusterArrays = new \App\ClusterQueue();
+            $clusterArrays->json = json_encode([
+                $this->key => [
+                    $this->phrase => [
+                        $this->type => $river->riverRequest()
+                    ]
+                ]
+            ]);
+            $clusterArrays->progress_id = $this->progressId;
+            $clusterArrays->save();
 
             $this->progress = ClusterProgress::where('id', '=', $this->progressId)->first();
 
-            $array = json_decode($this->progress->array, true);
-            $array[$this->key][$this->phrase][$this->type] = $response;
-            $this->progress->array = json_encode($array);
+            $this->progress->update([
+                'success' => DB::raw('success + 1'),
+                'percent' => DB::raw("percent + $this->percent")
+            ]);
 
-            $this->progress->success += 1;
-            $this->progress->percent += $this->percent;
-
-            $this->progress->save();
         } catch (\Throwable $e) {
             Log::debug('cluster job error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'error' => $e->getMessage(),
             ]);
         }
-
     }
 }

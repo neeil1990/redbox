@@ -57,6 +57,9 @@ class Cluster
             $this->searchGroupName();
             $this->setResult($this->clusters);
 
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+
         } catch (\Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
@@ -64,6 +67,7 @@ class Cluster
                 $e->getFile()
             ]);
             $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
     }
 
@@ -223,18 +227,22 @@ class Cluster
 
     protected function waitRiverResponses()
     {
-        $this->progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+        $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
-        while ($this->progress->total !== $this->progress->success) {
-            Log::debug('сплю 5 секунд', [$this->progress->total, $this->progress->success]);
+        while ($this->progress->total !== $count) {
             sleep(5);
-            $this->progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+            $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
         }
     }
 
     protected function setRiverResults()
     {
-        $array = json_decode($this->progress->array, true);
+        $array = [];
+        $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
+        foreach ($results as $result) {
+            $array = array_merge_recursive($array, json_decode($result->json, true));
+        }
+
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
@@ -253,7 +261,21 @@ class Cluster
                 }
             }
         }
+    }
 
+    public function arraySum($arr1, $arr2)
+    {
+        $result = []; // здесь будет объединение массивов
+
+        foreach ($arr1 as $val) { // считываем первый массив
+            $result[] = $val;
+        }
+
+        foreach ($arr2 as $val) { // считываем 2-ой  массив
+            $result[] = $val;
+        }
+
+        return $result;
     }
 
     /**

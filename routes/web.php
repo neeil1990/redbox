@@ -292,73 +292,79 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $jayParsedAry = [
-        "heine delta 20 plus дерматоскоп купить" => [
-            "heine delta 20 plus дерматоскоп купить" => [
-                [
-                    "https://shop.heine-med.ru/catalog/dermatoskopy/dermatoskop_delta_20_plus/",
-                    "https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/",
-                    "https://medeq.ru/product/dermatoskop-heine-delta-20-plus/11424",
-                    "https://eurosmed.ru/products/dermatoskop-delta-20-plus",
-                    "https://almamed.su/category/heine-delta-20-plus-tsifrovye-dermatoskopy-s-polyarizatsiey-i-immersiey-germaniya/",
-                    "https://www.medrk.ru/shop/diagnosticheskoe-oborudovanie/dermatoskopy/id-23218",
-                    "https://www.lidermed-ru.com/products/dermatoskop-svetodiodnyj-heine-delta-20-plus",
-                    "https://vilmed.ru/catalog/heine-delta-20-plus-tsifrovye-dermatoskopy-s-polyarizatsiey-i-immersiey-germaniya/",
-                    "https://med-plus.shop/product-dermatoskop-delta-20-plus/",
-                    "http://www.deal-med.ru/dermatoskopy_heine.html"
-                ]
-            ]
-        ],
-        "дерматоскоп delta 20 купить" => [
-            "дерматоскоп delta 20 купить" => [
-                [
-                    "https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/",
-                    "https://shop.heine-med.ru/catalog/dermatoskopy/dermatoskop_delta_20_plus/",
-                    "https://medeq.ru/product/dermatoskop-heine-delta-20/11422",
-                    "https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/",
-                    "http://www.deal-med.ru/dermatoskop_delta_20.html",
-                    "https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/delta-20-t-k-26210118/",
-                    "https://www.uni-tec.su/dermatoskopy.html",
-                    "https://eurosmed.ru/products/dermatoskop-delta-20-plus",
-                    "https://heine-opto.ru/product/dermatoskop-heine-delta-20t/",
-                    "https://vendem.ru/catalog/funktsionalnaya_diagnostika/dermatoskopy/dermatoskop_heine_delta_20/"
-                ]
-            ],
-            "дерматоскоп delta купить" => [
-                [
-                    "https://shop.heine-med.ru/catalog/dermatoskopy/",
-                    "https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/",
-                    "http://medtehural.ru/oborudovanie/dermatoskopy",
-                    "https://medeq.ru/product/dermatoskop-heine-delta-20/11422",
-                    "https://heine-opto.ru/product/dermatoskop-heine-delta-20t/",
-                    "https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/",
-                    "https://eurosmed.ru/products/dermatoskop-delta-20-plus",
-                    "https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/",
-                    "http://www.deal-med.ru/dermatoskopy_heine.html",
-                    "https://vilmed.ru/catalog/dermatoskopy-heine-germaniya/"
-                ]
-            ]
-        ]
-    ];
-
-    dump($jayParsedAry);
-    foreach ($jayParsedAry as $mainPhrase => $items) {
-        if (count($items) > 1) {
-            continue;
-        }
-        foreach ($jayParsedAry as $mainPhrase2 => $items2) {
-            if ($mainPhrase === $mainPhrase2) {
-                continue;
-            }
-            foreach ($items2 as $item) {
-                if (count(array_intersect($items[$mainPhrase][0], $item[0])) >= 5) {
-                    $jayParsedAry[$mainPhrase2][$mainPhrase] = $items[$mainPhrase];
-                    unset($jayParsedAry[$mainPhrase]);
-                }
-            }
-
-        }
+    $array = [];
+    $results = \App\ClusterQueue::where('progress_id', '=', 19)->get();
+    foreach ($results as $result) {
+        $array = array_merge_recursive($array, json_decode($result->json, true));
     }
-
-    dd($jayParsedAry);
+    dd($array);
+//    $jayParsedAry = [
+//        "heine delta 20 plus дерматоскоп купить" => [
+//            "heine delta 20 plus дерматоскоп купить" => [
+//                [
+//                    "https://shop.heine-med.ru/catalog/dermatoskopy/dermatoskop_delta_20_plus/",
+//                    "https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/",
+//                    "https://medeq.ru/product/dermatoskop-heine-delta-20-plus/11424",
+//                    "https://eurosmed.ru/products/dermatoskop-delta-20-plus",
+//                    "https://almamed.su/category/heine-delta-20-plus-tsifrovye-dermatoskopy-s-polyarizatsiey-i-immersiey-germaniya/",
+//                    "https://www.medrk.ru/shop/diagnosticheskoe-oborudovanie/dermatoskopy/id-23218",
+//                    "https://www.lidermed-ru.com/products/dermatoskop-svetodiodnyj-heine-delta-20-plus",
+//                    "https://vilmed.ru/catalog/heine-delta-20-plus-tsifrovye-dermatoskopy-s-polyarizatsiey-i-immersiey-germaniya/",
+//                    "https://med-plus.shop/product-dermatoskop-delta-20-plus/",
+//                    "http://www.deal-med.ru/dermatoskopy_heine.html"
+//                ]
+//            ]
+//        ],
+//        "дерматоскоп delta 20 купить" => [
+//            "дерматоскоп delta 20 купить" => [
+//                [
+//                    "https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/",
+//                    "https://shop.heine-med.ru/catalog/dermatoskopy/dermatoskop_delta_20_plus/",
+//                    "https://medeq.ru/product/dermatoskop-heine-delta-20/11422",
+//                    "https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/",
+//                    "http://www.deal-med.ru/dermatoskop_delta_20.html",
+//                    "https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/delta-20-t-k-26210118/",
+//                    "https://www.uni-tec.su/dermatoskopy.html",
+//                    "https://eurosmed.ru/products/dermatoskop-delta-20-plus",
+//                    "https://heine-opto.ru/product/dermatoskop-heine-delta-20t/",
+//                    "https://vendem.ru/catalog/funktsionalnaya_diagnostika/dermatoskopy/dermatoskop_heine_delta_20/"
+//                ]
+//            ],
+//            "дерматоскоп delta купить" => [
+//                [
+//                    "https://shop.heine-med.ru/catalog/dermatoskopy/",
+//                    "https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/",
+//                    "http://medtehural.ru/oborudovanie/dermatoskopy",
+//                    "https://medeq.ru/product/dermatoskop-heine-delta-20/11422",
+//                    "https://heine-opto.ru/product/dermatoskop-heine-delta-20t/",
+//                    "https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/",
+//                    "https://eurosmed.ru/products/dermatoskop-delta-20-plus",
+//                    "https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/",
+//                    "http://www.deal-med.ru/dermatoskopy_heine.html",
+//                    "https://vilmed.ru/catalog/dermatoskopy-heine-germaniya/"
+//                ]
+//            ]
+//        ]
+//    ];
+//
+//    dump($jayParsedAry);
+//    foreach ($jayParsedAry as $mainPhrase => $items) {
+//        if (count($items) > 1) {
+//            continue;
+//        }
+//        foreach ($jayParsedAry as $mainPhrase2 => $items2) {
+//            if ($mainPhrase === $mainPhrase2) {
+//                continue;
+//            }
+//            foreach ($items2 as $item) {
+//                if (count(array_intersect($items[$mainPhrase][0], $item[0])) >= 5) {
+//                    $jayParsedAry[$mainPhrase2][$mainPhrase] = $items[$mainPhrase];
+//                    unset($jayParsedAry[$mainPhrase]);
+//                }
+//            }
+//
+//        }
+//    }
+//
+//    dd($jayParsedAry);
 });

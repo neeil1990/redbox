@@ -241,22 +241,24 @@
             let interval
 
             $('#start-analysis').click(function () {
-                $(this).attr('disabled', true)
-                $.ajax({
-                    type: "GET",
-                    url: "{{ route('start.cluster.progress') }}",
-                    success: function (response) {
-                        progressId = response.id
-                        $('#progress-bar').show()
-                        $('#progressId').val(progressId)
-                        refreshAll()
-                        startAnalysis()
+                if ($('#phrases').val() !== '') {
+                    $(this).attr('disabled', true)
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('start.cluster.progress') }}",
+                        success: function (response) {
+                            progressId = response.id
+                            $('#progress-bar').show()
+                            $('#progressId').val(progressId)
+                            refreshAll()
+                            startAnalysis()
 
-                        interval = setInterval(() => {
-                            getProgressPercent(response.id)
-                        }, 1000)
-                    }
-                })
+                            interval = setInterval(() => {
+                                getProgressPercent(response.id)
+                            }, 1000)
+                        }
+                    })
+                }
             });
 
 
@@ -308,13 +310,6 @@
                 setTimeout(() => {
                     setProgressBarStyles(0)
                     $('#progress-bar').hide(300)
-
-                    $.ajax({
-                        type: "GET",
-                        url: `/destroy-progress/${progressId}`,
-                        success: function (response) {
-                        }
-                    })
                 }, 3000)
             }
 
