@@ -129,7 +129,11 @@ class Relevance
             $domain = Str::lower($item['item']);
             $domain = $domain[-1] === '/' ? $domain : $domain . '/';
 
+
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+            if ($result == null) {
+                Log::debug('domain', [$domain]);
+            }
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
