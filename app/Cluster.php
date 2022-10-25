@@ -57,8 +57,8 @@ class Cluster
             $this->searchGroupName();
             $this->setResult($this->clusters);
 
-            $this->progress->delete();
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+//            $this->progress->delete();
+//            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
 
         } catch (\Throwable $e) {
             Log::debug('cluster error', [
@@ -66,8 +66,8 @@ class Cluster
                 $e->getLine(),
                 $e->getFile()
             ]);
-            $this->progress->delete();
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+//            $this->progress->delete();
+//            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
     }
 
@@ -110,9 +110,10 @@ class Cluster
 
     protected function searchClustersEngineV2()
     {
-        $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
         $clusters = [];
+
+        $minimum = $this->count * $this->clusteringLevel;
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
@@ -137,6 +138,12 @@ class Cluster
             }
         }
 
+        foreach ($clusters as $phrase => $item) {
+            foreach ($item as $itemPhrase => $elems) {
+                $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
+            }
+        }
+
         foreach ($clusters as $mainPhrase => $items) {
             if (count($items) > 1) {
                 continue;
@@ -146,18 +153,12 @@ class Cluster
                     continue;
                 }
                 foreach ($items2 as $item) {
-                    if (count(array_intersect($items[$mainPhrase][0], $item[0])) >= $minimum) {
-                        $jayParsedAry[$mainPhrase2][$mainPhrase] = $items[$mainPhrase];
-                        unset($jayParsedAry[$mainPhrase]);
+                    if (count(array_intersect($items[array_key_first($items)][0], $item[0])) >= 5) {
+                        $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
+                        unset($clusters[$mainPhrase]);
+                        break 2;
                     }
                 }
-
-            }
-        }
-
-        foreach ($clusters as $phrase => $item) {
-            foreach ($item as $itemPhrase => $elems) {
-                $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
             }
         }
     }
