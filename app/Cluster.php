@@ -63,8 +63,8 @@ class Cluster
             $this->searchGroupName();
             $this->setResult($this->clusters);
 
-//            $this->progress->delete();
-//            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
 
         } catch (\Throwable $e) {
             Log::debug('cluster error', [
@@ -72,8 +72,8 @@ class Cluster
                 $e->getLine(),
                 $e->getFile()
             ]);
-//            $this->progress->delete();
-//            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
     }
 
