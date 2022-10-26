@@ -36,7 +36,13 @@ class Cluster
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
-        $this->clusteringLevel = $request['clusteringLevel'] == 5 ? 0.5 : 0.7;
+        if ($request['clusteringLevel'] === 'light') {
+            $this->clusteringLevel = 0.4;
+        } else if ($request['clusteringLevel'] === 'soft') {
+            $this->clusteringLevel = 0.5;
+        } else {
+            $this->clusteringLevel = 0.7;
+        }
         $this->engineVersion = $request['engineVersion'];
         $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
         $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
@@ -84,16 +90,17 @@ class Cluster
 
     protected function searchClusters()
     {
+        $minimum = $this->count * $this->clusteringLevel;
+
         if ($this->engineVersion === 'old') {
-            $this->searchClustersEngineV1();
+            $this->searchClustersEngineV1($minimum);
         } else {
-            $this->searchClustersEngineV2();
+            $this->searchClustersEngineV2($minimum);
         }
     }
 
-    protected function searchClustersEngineV1()
+    protected function searchClustersEngineV1($minimum)
     {
-        $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
 
         foreach ($this->sites as $phrase => $sites) {
@@ -108,12 +115,11 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngineV2()
+    protected function searchClustersEngineV2($minimum)
     {
         $willClustered = [];
         $clusters = [];
 
-        $minimum = $this->count * $this->clusteringLevel;
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {

@@ -71,9 +71,7 @@ class ClusterQueue implements ShouldQueue
             $clusterArrays->progress_id = $this->progressId;
             $clusterArrays->save();
 
-            $this->progress = ClusterProgress::where('id', '=', $this->progressId)->first();
-
-            $this->progress->update([
+            $this->progress = ClusterProgress::where('id', '=', $this->progressId)->update([
                 'success' => DB::raw('success + 1'),
                 'percent' => DB::raw("percent + $this->percent")
             ]);

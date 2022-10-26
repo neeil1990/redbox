@@ -11,6 +11,7 @@
 |
 */
 
+use App\Classes\Xml\RiverFacade;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -292,6 +293,10 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
+//    план уборки на неделю трехкомнатной квартиры
+    $river = new RiverFacade(213);
+    $river->setQuery('план уборки на неделю трехкомнатной квартиры');
+    dd($river->riverRequest());
     $clusters = [
         "20 delta дерматоскоп" => [
             "20 delta дерматоскоп" => [

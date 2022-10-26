@@ -149,8 +149,9 @@
                         <div class="form-group required">
                             <label>{{ __('clustering level') }}</label>
                             {!! Form::select('clustering_level', [
-                                '5' => 'soft - 50%',
-                                '7' => 'hard - 70%',
+                                'light' => 'light - 40%',
+                                'soft' => 'soft - 50%',
+                                'hard' => 'hard - 70%',
                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
                         </div>
 
