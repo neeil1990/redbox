@@ -80,16 +80,16 @@ class Cluster
     protected function setSites()
     {
         $percent = 49 / $this->countPhrases;
-        $iterator = 1;
+        $iterator = 0;
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
         foreach ($this->phrases as $phrase) {
+            $this->progress->percent += $percent;
+            $iterator++;
             $xml->setQuery($phrase);
             $this->sites[$phrase]['sites'] = $xml->getXMLResponse();
             if ($iterator % 3 === 0 || $phrase === end($this->phrases)) {
                 $this->progress->save();
             }
-            $this->progress->percent += $percent;
-            $iterator++;
 
         }
 

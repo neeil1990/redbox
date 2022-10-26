@@ -39,6 +39,7 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     public function getXMLResponse(int $try = 1)
     {
+        https://xmlstock.com/yandex/xml/?user=9371&amp;key=660fb3c4c831f41ac36637cf3b69031e&amp;query=%D0%BF%D0%BB%D0%B0%D0%BD%20%D1%83%D0%B1%D0%BE%D1%80%D0%BA%D0%B8%20%D0%BD%D0%B0%20%D0%BD%D0%B5%D0%B4%D0%B5%D0%BB%D1%8E%20%D1%82%D1%80%D0%B5%D1%85%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D0%BE%D0%B9%20%D0%BA%D0%B2%D0%B0%D1%80%D1%82%D0%B8%D1%80%D1%8B&amp;groupby=attr=d.mode%3Ddeep.groups-on-page%3D20.docs-in-group%3D1&amp;lr=213&amp;sortby=rlv&amp;page=0
         if ($try === 1) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser('9371');
@@ -87,7 +88,8 @@ class SimplifiedXmlFacade extends XmlFacade
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-        $config = file_get_contents($url, false, stream_context_create([
+
+        $config = file_get_contents(str_replace($url, '&amp;', '&'), false, stream_context_create([
             "ssl" => [
                 "verify_peer" => false,
                 "verify_peer_name" => false,

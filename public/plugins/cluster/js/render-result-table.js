@@ -25,6 +25,7 @@ function renderResultTable(data) {
 
                 let changedBg = "basedNormal" in information;
                 let sites = ''
+                let fullUrls = information['sites'].join("\n\r")
 
                 $.each(information['sites'], function (key, site) {
                     sites +=
@@ -51,8 +52,10 @@ function renderResultTable(data) {
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
                     '       <div class="d-flex"> ' +
-                    '          <div class="col-11">' + targetPhrase + '</div> ' +
-                    '          <div class="col-1">' +
+                    '          <div class="col-10">' + targetPhrase + '</div> ' +
+                    '          <div class="col-2">' +
+                    '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
+                    '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
                     '                 <i class="fa fa-paperclip"></i>' +
                     '                 <span class="ui_tooltip __right" style="min-width: 250px;">' +
@@ -112,6 +115,7 @@ function renderResultTable(data) {
     copyBased()
     copyPhrases()
     copyTarget()
+    copyFullUrls()
 
     $(document).ready(function () {
         $.each($('.render-table'), function (key, value) {
@@ -133,7 +137,7 @@ function copyCluster() {
         let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
 
         $.each(trs, function (key, value) {
-            let phrase = ($(this).children('td:nth-of-type(3)').children('div.d-flex').children('div.col-11').html()).trim();
+            let phrase = ($(this).children('td:nth-of-type(3)').children('div.d-flex').children('div.col-10').html()).trim();
             if ($('#hiddenForCopy').val() === '') {
                 $('#hiddenForCopy').val(phrase)
             } else {
@@ -162,7 +166,6 @@ function copyGroup() {
         })
 
         copyInBuffer()
-        successCopiedMessage()
     })
 }
 
@@ -182,7 +185,7 @@ function copyBased() {
         })
 
         copyInBuffer()
-        successCopiedMessage()
+        $(this).trigger('click')
     })
 }
 
@@ -202,7 +205,7 @@ function copyPhrases() {
         })
 
         copyInBuffer()
-        successCopiedMessage()
+        $(this).trigger('click')
     })
 }
 
@@ -222,15 +225,25 @@ function copyTarget() {
         })
 
         copyInBuffer()
-        successCopiedMessage()
+        $(this).trigger('click')
     })
 }
 
 function copyInBuffer() {
+    successCopiedMessage()
+    $('#hiddenForCopy').css('display', 'block')
+
     let text = document.getElementById("hiddenForCopy");
     text.select();
     document.execCommand("copy");
     $('#hiddenForCopy').css('display', 'none')
+}
+
+function copyFullUrls() {
+    $('.copy-full-urls').unbind().on('click', function () {
+        $('#hiddenForCopy').val($('#hidden-urls-block-' + $(this).attr('data-target')).html())
+        copyInBuffer()
+    })
 }
 
 function successCopiedMessage() {
