@@ -86,9 +86,9 @@ class Cluster
             $xml->setQuery($phrase);
             $this->sites[$phrase]['sites'] = $xml->getXMLResponse();
             if ($iterator % 3 === 0 || $phrase === end($this->phrases)) {
-                $this->progress->percent += $percent;
                 $this->progress->save();
             }
+            $this->progress->percent += $percent;
             $iterator++;
 
         }
