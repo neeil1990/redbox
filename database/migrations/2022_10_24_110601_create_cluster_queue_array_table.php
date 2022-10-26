@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClusterProgressTable extends Migration
+class CreateClusterQueueArrayTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateClusterProgressTable extends Migration
      */
     public function up()
     {
-        Schema::create('cluster_progress', function (Blueprint $table) {
+        Schema::create('cluster_queue_array', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->float('percent')->default(1);
-            $table->longText('array')->nullable();
-            $table->integer('success')->nullable();
-            $table->integer('total')->nullable();
+            $table->unsignedBigInteger('progress_id');
+            $table->longText('json');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateClusterProgressTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cluster_progress');
+        Schema::dropIfExists('cluster_queue_array');
     }
 }

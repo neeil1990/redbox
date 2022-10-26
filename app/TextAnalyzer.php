@@ -188,9 +188,9 @@ class TextAnalyzer extends Model
 
     /**
      * @param $html
-     * @return string
+     * @return array|string|string[]|null
      */
-    public static function removeStylesAndScripts($html): string
+    public static function removeStylesAndScripts($html)
     {
         $html = mb_strtolower($html);
 

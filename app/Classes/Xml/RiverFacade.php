@@ -16,11 +16,15 @@ class RiverFacade
 
     protected $xmlRiwerPath;
 
+    protected $countAttempts;
+
     public function __construct($region)
     {
         $this->region = $region;
 
         $this->xmlRiwerPath = "https://xmlriver.com/wordstat/json?user=$this->user&key=$this->key&regions=$this->region&query=";
+
+        $this->countAttempts = 3;
     }
 
     public function setQuery($query)
@@ -59,7 +63,7 @@ class RiverFacade
             $riwerResponse = [];
 
             $attempt = 1;
-            while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= 3) {
+            while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
                 $riwerResponse = json_decode(file_get_contents($url), true);
                 $attempt++;
             }
@@ -76,7 +80,6 @@ class RiverFacade
                         'phrase' => $this->getQuery()
                     ];
                 }
-
             } else {
                 return [
                     'number' => preg_replace('/[^0-9]/', '', $riwerResponse['content']['includingPhrases']['info'][2]),

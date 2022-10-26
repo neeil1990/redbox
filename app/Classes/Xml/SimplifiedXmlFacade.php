@@ -81,13 +81,14 @@ class SimplifiedXmlFacade extends XmlFacade
         if ($this->path === 'https://xmlriver.com/search/xml') {
             $loc = $this->getRiverLocation();
             $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . $this->count . ".docs-in-group%3D1&loc=$loc";
+                . "$this->count.docs-in-group%3D1&loc=$loc";
         } else {
             $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . $this->count . ".docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-        $config = file_get_contents($url, false, stream_context_create([
+
+        $config = file_get_contents(str_replace('&amp;', '&', $url), false, stream_context_create([
             "ssl" => [
                 "verify_peer" => false,
                 "verify_peer_name" => false,

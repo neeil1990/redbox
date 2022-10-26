@@ -36,7 +36,13 @@ class Cluster
     {
         $this->count = $request['count'];
         $this->region = $request['region'];
-        $this->clusteringLevel = $request['clusteringLevel'] == 5 ? 0.5 : 0.7;
+        if ($request['clusteringLevel'] === 'light') {
+            $this->clusteringLevel = 0.4;
+        } else if ($request['clusteringLevel'] === 'soft') {
+            $this->clusteringLevel = 0.5;
+        } else {
+            $this->clusteringLevel = 0.7;
+        }
         $this->engineVersion = $request['engineVersion'];
         $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
         $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
@@ -57,6 +63,9 @@ class Cluster
             $this->searchGroupName();
             $this->setResult($this->clusters);
 
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+
         } catch (\Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
@@ -64,15 +73,24 @@ class Cluster
                 $e->getFile()
             ]);
             $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
     }
 
     protected function setSites()
     {
+        $percent = 49 / $this->countPhrases;
+        $iterator = 0;
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
         foreach ($this->phrases as $phrase) {
+            $this->progress->percent += $percent;
+            $iterator++;
             $xml->setQuery($phrase);
             $this->sites[$phrase]['sites'] = $xml->getXMLResponse();
+            if ($iterator % 3 === 0 || $phrase === end($this->phrases)) {
+                $this->progress->save();
+            }
+
         }
 
         ksort($this->sites);
@@ -80,16 +98,17 @@ class Cluster
 
     protected function searchClusters()
     {
+        $minimum = $this->count * $this->clusteringLevel;
+
         if ($this->engineVersion === 'old') {
-            $this->searchClustersEngineV1();
+            $this->searchClustersEngineV1($minimum);
         } else {
-            $this->searchClustersEngineV2();
+            $this->searchClustersEngineV2($minimum);
         }
     }
 
-    protected function searchClustersEngineV1()
+    protected function searchClustersEngineV1($minimum)
     {
-        $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
 
         foreach ($this->sites as $phrase => $sites) {
@@ -104,11 +123,11 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngineV2()
+    protected function searchClustersEngineV2($minimum)
     {
-        $minimum = $this->count * $this->clusteringLevel;
         $willClustered = [];
         $clusters = [];
+
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
@@ -133,6 +152,12 @@ class Cluster
             }
         }
 
+        foreach ($clusters as $phrase => $item) {
+            foreach ($item as $itemPhrase => $elems) {
+                $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
+            }
+        }
+
         foreach ($clusters as $mainPhrase => $items) {
             if (count($items) > 1) {
                 continue;
@@ -142,18 +167,12 @@ class Cluster
                     continue;
                 }
                 foreach ($items2 as $item) {
-                    if (count(array_intersect($items[$mainPhrase][0], $item[0])) >= $minimum) {
-                        $jayParsedAry[$mainPhrase2][$mainPhrase] = $items[$mainPhrase];
-                        unset($jayParsedAry[$mainPhrase]);
+                    if (count(array_intersect($items[array_key_first($items)][0], $item[0])) >= 5) {
+                        $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
+                        unset($clusters[$mainPhrase]);
+                        break 2;
                     }
                 }
-
-            }
-        }
-
-        foreach ($clusters as $phrase => $item) {
-            foreach ($item as $itemPhrase => $elems) {
-                $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
             }
         }
     }
@@ -175,7 +194,7 @@ class Cluster
     {
         $this->progress->total = $this->calculateCountRequests();
         $this->progress->save();
-        $percent = 90 / $this->progress->total;
+        $percent = 50 / $this->progress->total;
 
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
@@ -223,18 +242,22 @@ class Cluster
 
     protected function waitRiverResponses()
     {
-        $this->progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+        $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
-        while ($this->progress->total !== $this->progress->success) {
-            Log::debug('сплю 5 секунд', [$this->progress->total, $this->progress->success]);
+        while ($this->progress->total !== $count) {
             sleep(5);
-            $this->progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+            $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
         }
     }
 
     protected function setRiverResults()
     {
-        $array = json_decode($this->progress->array, true);
+        $array = [];
+        $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
+        foreach ($results as $result) {
+            $array = array_merge_recursive($array, json_decode($result->json, true));
+        }
+
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
@@ -253,7 +276,21 @@ class Cluster
                 }
             }
         }
+    }
 
+    public function arraySum($arr1, $arr2)
+    {
+        $result = []; // здесь будет объединение массивов
+
+        foreach ($arr1 as $val) { // считываем первый массив
+            $result[] = $val;
+        }
+
+        foreach ($arr2 as $val) { // считываем 2-ой  массив
+            $result[] = $val;
+        }
+
+        return $result;
     }
 
     /**
