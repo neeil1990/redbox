@@ -15,7 +15,7 @@ class CreateClusterProgressTable extends Migration
     {
         Schema::create('cluster_progress', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->float('percent')->default(10);
+            $table->float('percent')->default(1);
             $table->longText('array')->nullable();
             $table->integer('success')->nullable();
             $table->integer('total')->nullable();

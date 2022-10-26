@@ -79,10 +79,18 @@ class Cluster
 
     protected function setSites()
     {
+        $percent = 49 / $this->countPhrases;
+        $iterator = 1;
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
         foreach ($this->phrases as $phrase) {
             $xml->setQuery($phrase);
             $this->sites[$phrase]['sites'] = $xml->getXMLResponse();
+            if ($iterator % 3 === 0 || $phrase === end($this->phrases)) {
+                $this->progress->percent += $percent;
+                $this->progress->save();
+            }
+            $iterator++;
+
         }
 
         ksort($this->sites);
@@ -186,7 +194,7 @@ class Cluster
     {
         $this->progress->total = $this->calculateCountRequests();
         $this->progress->save();
-        $percent = 90 / $this->progress->total;
+        $percent = 50 / $this->progress->total;
 
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
