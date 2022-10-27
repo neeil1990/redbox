@@ -13,6 +13,11 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 
+        <style>
+            .input-group-text {
+                cursor: pointer;
+            }
+        </style>
     @endslot
 
     <div class="bs-stepper">
@@ -34,6 +39,10 @@
 
             <div class="line"></div>
 
+            @include('monitoring.partials.stepper._titles', ['item' => 5, 'target' => 'scan', 'name' => 'Настройка снятия'])
+
+            <div class="line"></div>
+
             @include('monitoring.partials.stepper._titles', ['item' => '<i class="fas fa-save"></i>', 'target' => 'save', 'name' => 'Сохранить!'])
 
         </div>
@@ -48,6 +57,8 @@
                 @include('monitoring.partials.stepper._content', ['target' => 'competitors', 'buttons' => ['previous', 'next']])
 
                 @include('monitoring.partials.stepper._content', ['target' => 'regions', 'buttons' => ['previous', 'next']])
+
+                @include('monitoring.partials.stepper._content', ['target' => 'scan', 'buttons' => ['previous', 'next']])
 
                 @include('monitoring.partials.stepper._content', ['target' => 'save', 'buttons' => ['previous', 'action']])
             </form>
@@ -72,6 +83,9 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <!-- InputMask -->
+        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+        <script src="{{ asset('plugins/inputmask/jquery.inputmask.bundle.js') }}"></script>
 
         <script>
 
@@ -88,6 +102,165 @@
             $('button[type="submit"]').click(function () {
                 window.onbeforeunload = null;
             });
+
+            let Modes = {
+                template: null,
+                params: [],
+
+                render: function(){
+
+                    if(this.params.length){
+                        let card = $('<div />');
+                        $.each(this.params, (i, param) => {
+                            card.append(this.card(param));
+                        });
+
+                        $('.mode-scan').html(card);
+
+                        card.find('.times').inputmask("hh:mm", {
+                                placeholder: moment().format('H:mm'),
+                            }
+                        );
+
+                        card.find('.time-reset').click(function(){
+                            $(this).closest('.input-group').find('.times').val("");
+
+                            if($(this).closest('.form-group').find('.select-days').length)
+                                $(this).closest('.form-group').find('.select-days')[0].selectedIndex = -1;
+                        });
+                    }
+                    this.params = [];
+                },
+                card: function(param){
+                    let card = $('<div />', {
+                        class: 'card'
+                    });
+
+                    let cardHeader = $('<div />', {
+                        class: 'card-header'
+                    });
+
+                    let cardBody = $('<div />', {
+                        class: 'card-body'
+                    });
+
+                    cardHeader.append(this.setHeader(param.search));
+                    cardBody.append(this.setContent(param));
+
+                    return card.append(cardHeader, cardBody);
+                },
+                setHeader: function(title) {
+
+                    return $('<h3 />', {
+                        class: "card-title"
+                    }).css('text-transform', 'capitalize').text(title);
+                },
+                setContent: function(param) {
+                    let template = $('<div />');
+
+                    $.each(param.region, (i, el) => {
+
+                        template.append(this.timeTemplate(el, param.lr[i], param.search).addClass('d-none'));
+                        template.append(this.weeksTemplate(el, param.lr[i], param.search).addClass('d-none'));
+                        template.append(this.rangeTemplate(el, param.lr[i], param.search).addClass('d-none'));
+                    });
+
+                    return this.template = template;
+                },
+                timeTemplate: function(name, val, search){
+
+                    let form = this.formGroupTemplate('times', val);
+                    let label = $('<label />').text(name);
+                    let input = this.inputTextTemplate(`time_scan[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
+
+                    return form.append(label, input);
+                },
+                weeksTemplate: function(name, val, search){
+
+                    let form = this.formGroupTemplate('weeks', val);
+                    let label = $('<label />').text(name);
+                    let input = this.inputTextTemplate(`time_scan[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
+
+                    let options = [
+                        {text: "Понедельник", val: "0", selected: false},
+                        {text: "Вторник", val: "1", selected: false},
+                        {text: "Среда", val: "2", selected: false},
+                        {text: "Четверг", val: "3", selected: false},
+                        {text: "Пятница", val: "4", selected: false},
+                        {text: "Суббота", val: "5", selected: false},
+                        {text: "Воскресенье", val: "6", selected: false}
+                    ];
+
+                    let selectContent = $('<select />', {
+                        name: `days_scan[${search}][${val}][]`,
+                        class: 'form-control select-days mb-2',
+                        multiple: 'true',
+                        size: 7,
+                    });
+
+                    $.each(options, (i, obj) => {
+                        let optionItems = $('<option />', {
+                            selected: obj.selected,
+                            value: obj.val,
+                        }).text(obj.text);
+
+                        selectContent.append(optionItems);
+                    });
+
+                    return form.append(label, selectContent, input);
+                },
+                rangeTemplate: function(name, val, search) {
+
+                    let form = this.formGroupTemplate('ranges', val);
+                    let label = $('<label />').text(name);
+                    let input = $('<input />', {
+                        class: 'form-control',
+                        type: 'number',
+                        min: '1',
+                        max: '31',
+                        name: `mouth_scan[${search}][${val}]`,
+                        placeholder: 'День месяца (от 1 до 31)'
+                    });
+
+                    return form.append(label, input);
+                },
+                formGroupTemplate: function(mode, lr){
+
+                    return $('<div />', {
+                        class: 'form-group',
+                        "data-mode": mode,
+                        "data-lr": lr,
+                    });
+                },
+                inputTextTemplate: function(name, val, cls, pls) {
+                    let group = $('<div />', {
+                        class: 'input-group'
+                    });
+
+                    let input = $('<input />', {
+                        class: `form-control ${cls}`,
+                        type: 'text',
+                        name: name,
+                        value: val,
+                        placeholder: pls
+                    });
+
+                    let icon = $('<div />', {
+                        class: 'input-group-append'
+                    }).append($('<span />', {class: 'input-group-text time-reset'}).append($('<i />', {class: 'far fa-times-circle'})));
+
+                    if(cls === 'times')
+                        return group.append(input, icon);
+
+                    return group.append(input);
+                },
+                setParams: function(params) {
+                    if(params.length > 0)
+                        this.params = params;
+
+                    return this;
+                },
+            };
 
             let Parts = {
                 part: null,
@@ -156,12 +329,6 @@
                     let textarea = this.part.find('#textarea-competitors');
                     let list = _.compact(textarea.val().split(/[\r\n]+/));
 
-                    if(!list.length){
-                        event.preventDefault();
-
-                        toastr.error('Заполните список.');
-                    }
-
                     $.each(list, function (index, value) {
                         let domain = value.replace(/\s/g, '');
                         let pattern = /^[a-z-а-я-0-9-\.]+\.[a-z-а-я]{2,4}$/;
@@ -176,17 +343,35 @@
                 regions: function(event){
                     let selects = this.part.find('.Select2');
                     let isEmpty = true;
+                    let modes = [];
 
                     selects.each(function(i, v){
-                        let option = $(v);
+                        let select = $(v);
 
-                        if(option.val().length)
+                        if(select.val().length){
+
                             isEmpty = false;
+
+                            let search = select.data('search');
+                            let lr = select.val();
+                            let region = select.find('option').map(function(){
+                                return $(this).text();
+                            });
+
+                            modes.push({
+                                search: search,
+                                region: region,
+                                lr: lr
+                            });
+                        }
                     });
 
                     if(isEmpty){
                         event.preventDefault();
                         toastr.error('Выберите регины поиска.');
+                    }else{
+                        Modes.setParams(modes).render();
+                        $('#mode-scan').trigger('change');
                     }
                 },
             };
@@ -211,20 +396,61 @@
 
                     switch (panel.attr('id')) {
                         case 'project-part':
-                            Parts.project(event);
+                            //Parts.project(event);
                             break;
                         case 'keywords-part':
-                            Parts.keywords(event);
+                            //Parts.keywords(event);
                             break;
                         case 'competitors-part':
-                            Parts.competitors(event);
+                            //Parts.competitors(event);
                             break;
                         case 'regions-part':
                             Parts.regions(event);
                             break;
+                        case 'scan-part':
+                            //logic
+                            console.log('scan');
+                            break;
                         default:
                             console.log('next...');
                     }
+                });
+            });
+
+            $('#mode-scan').change(function(){
+                let self = $(this);
+                let option = self.val();
+                let modes = $('.mode-scan').find('.form-group');
+
+                modes.addClass('d-none');
+                modes.find('code').remove();
+                modes.find('input, select').removeAttr('disabled');
+
+                let selected = modes.filter(function () {
+                    return $(this).data('mode') === option
+                }).removeClass('d-none');
+
+                let hidden = modes.filter(function () {
+                    return $(this).hasClass('d-none');
+                });
+
+                $.each(selected, function(i, elem){
+                    let el = $(elem);
+                    let lr = el.data('lr');
+
+                    let hiddenRegion = hidden.filter(function () {
+                        return $(this).data('lr') === lr
+                    });
+
+                    $.each(hiddenRegion, function (inc, region) {
+
+                        let values = $(region).find('input, select').val();
+                        if(values.length > 0){
+
+                            el.find('label').append($('<code />').text(' Режим уже задан: ' + self.find(`option[value="${$(region).data('mode')}"]`).text()));
+                            el.find('input, select').attr('disabled', 'disabled');
+                        }
+                    });
                 });
             });
 
@@ -262,6 +488,11 @@
                         };
                     },
                 }
+            });
+
+            $('.Select2').on('select2:unselect', function (e) {
+                let data = e.params.data;
+                $(data.element).remove();
             });
 
             let table = $('#myTable').DataTable({
