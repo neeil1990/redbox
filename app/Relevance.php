@@ -127,13 +127,8 @@ class Relevance
 
         foreach ($this->domains as $item) {
             $domain = Str::lower($item['item']);
-            $domain = $domain[-1] === '/' ? $domain : $domain . '/';
-
 
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
-            if ($result == null) {
-                Log::debug('domain', [$domain]);
-            }
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -148,7 +143,8 @@ class Relevance
                 $this->sites[$domain]['equallyHost'] = false;
             }
 
-            if ($domain == Str::lower($this->params['main_page_link'])) {
+            $url = $domain[-1] === '/' ? $domain : $domain . '/';
+            if ($url == Str::lower($this->params['main_page_link'])) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
                 $this->sites[$domain]['inRelevance'] = $item['inRelevance'] ?? true;
