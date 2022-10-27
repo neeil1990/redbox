@@ -7,37 +7,57 @@ namespace App\Classes\Position;
 use App\Classes\Position\Engine\Google;
 use App\Classes\Position\Engine\Yandex;
 use App\MonitoringKeyword;
+use App\MonitoringSearchengine;
+use Illuminate\Support\Arr;
 
 class PositionStore
 {
-    private $model;
     private $save;
 
-    public function __construct(MonitoringKeyword $query, $save = true)
+    public function __construct($saveAllResultIndexes = true)
     {
-        $this->model = $query;
-        $this->save = $save;
+        $this->save = $saveAllResultIndexes;
     }
 
-    public function save()
+    public function saveBySearchEngines(MonitoringSearchengine $model)
     {
-        $save = $this->save;
-        $query = $this->model->query;
-        $project = $this->model->project;
+        $project = $model->project;
+
+        foreach ($project->keywords as $keyword){
+
+            $response = $this->getEngine($model->engine, [
+                'domain' => $project->url,
+                'query' => $keyword->query,
+                'lr' => $model->lr,
+            ])->handle();
+
+            if($response)
+                $this->save($keyword, [
+                    'monitoring_searchengine_id' => $model->id,
+                    'position' => $response["position"],
+                    'url' => strtolower($response["url"]),
+                ]);
+        }
+
+        return true;
+    }
+
+    public function saveByQuery(MonitoringKeyword $model)
+    {
+        $query = $model->query;
+        $project = $model->project;
         $engines = $project->searchengines;
 
         foreach ($engines as $engine){
 
-            $response = null;
-            if($engine->engine == 'yandex')
-                $response = (new Yandex($project->url, $query, $engine->lr, $save))->handle();
-
-            if($engine->engine == 'google')
-                $response = (new Google($project->url, $query, $engine->lr, $save))->handle();
+            $response = $this->getEngine($engine->engine, [
+                'domain' => $project->url,
+                'query' => $query,
+                'lr' => $engine->lr,
+            ])->handle();
 
             if($response){
-
-                $this->model->positions()->create([
+                $this->save($model, [
                     'monitoring_searchengine_id' => $engine->id,
                     'position' => $response["position"],
                     'url' => strtolower($response["url"]),
@@ -46,6 +66,28 @@ class PositionStore
         }
 
         return true;
+    }
+
+    private function save(MonitoringKeyword $model, $params = [])
+    {
+        $model->positions()->create($params);
+    }
+
+    private function getEngine($name, $params = [])
+    {
+        if(!Arr::has($params, ['domain', 'query', 'lr']))
+            throw new \ErrorException('Params domain, query and lr is required.');
+
+        switch ($name) {
+            case "yandex":
+                return new Yandex($params['domain'], $params['query'], $params['lr'], $this->save);
+                break;
+            case "google":
+                return new Google($params['domain'], $params['query'], $params['lr'], $this->save);
+                break;
+            default:
+                throw new \ErrorException('Search engine not exist.');
+        }
     }
 
 }

@@ -7,16 +7,19 @@ use App\Classes\Monitoring\CacheOfUserForPosition;
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTable;
 use App\Classes\Position\PositionStore;
+use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
+use App\MonitoringSearchengine;
 use App\User;
 use Carbon\Carbon;
 use function foo\func;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,10 +49,17 @@ class MonitoringController extends Controller
      */
     public function index()
     {
-        //$model = new MonitoringKeyword();
-        //$query = $model->where('id', 5546)->first();
+        //$model = new MonitoringSearchengine();
+        //$searchengine = $model->find('36');
 
-        //(new PositionStore($query, false))->save();
+        //(new PositionStore(false))->saveBySearchEngines($searchengine);
+        //dispatch((new AutoUpdatePositionQueue($searchengine))->onQueue('position_low'));
+
+
+        //$model = new MonitoringKeyword();
+        //$query = $model->where('id', 136)->first();
+
+        //(new PositionStore(false))->saveByQuery($query);
         //dispatch((new PositionQueue($query))->onQueue('position_high'));
 
         return view('monitoring.index');
@@ -251,18 +261,37 @@ class MonitoringController extends Controller
         }
 
         $searches = $request->input('lr');
+        $autoupdate = $request->input('cron');
         foreach($searches as $engine => $dates){
 
             foreach ($dates as $data){
 
+                $time = $this->checkCronFields($autoupdate['time'], [$engine, $data]);
+                $weekdays = $this->checkCronFields($autoupdate['weekdays'], [$engine, $data]);
+                $monthday = $this->checkCronFields($autoupdate['monthday'], [$engine, $data]);
+                $auto_update_status = ($time || $weekdays || $monthday);
+
                 $project->searchengines()->create([
                     'engine' => $engine,
-                    'lr' => $data
+                    'lr' => $data,
+                    'auto_update' => $auto_update_status,
+                    'time' => $time,
+                    'weekdays' => $weekdays,
+                    'monthday' => $monthday,
                 ]);
             }
         }
 
         return redirect()->route('monitoring.index');
+    }
+
+    private function checkCronFields($array, $keys)
+    {
+        $result = null;
+        if(Arr::has($array, implode('.', $keys)))
+            $result = $array[$keys[0]][$keys[1]];
+
+        return $result;
     }
 
     /**

@@ -2,17 +2,17 @@
 
 namespace App\Jobs;
 
-use Exception;
 use App\Classes\Position\PositionStore;
-use App\MonitoringKeyword;
+use App\MonitoringSearchengine;
 use App\MonitoringStat;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class PositionQueue implements ShouldQueue
+class AutoUpdatePositionQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,19 +25,9 @@ class PositionQueue implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(MonitoringKeyword $keyword)
+    public function __construct(MonitoringSearchengine $model)
     {
-        $this->model = $keyword;
-    }
-
-    /**
-     *  Get current model
-     *
-     * @return MonitoringKeyword
-     */
-    public function getModel()
-    {
-        return $this->model;
+        $this->model = $model;
     }
 
     /**
@@ -48,7 +38,7 @@ class PositionQueue implements ShouldQueue
     public function handle()
     {
         $store = new PositionStore(false);
-        $store->saveByQuery($this->model);
+        $store->saveBySearchEngines($this->model);
 
         MonitoringStat::create([
             'queue' => $this->job->getQueue(),

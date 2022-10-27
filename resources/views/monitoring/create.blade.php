@@ -105,6 +105,9 @@
 
             let Modes = {
                 template: null,
+                time: 'cron[time]',
+                weekdays: 'cron[weekdays]',
+                monthday: 'cron[monthday]',
                 params: [],
 
                 render: function(){
@@ -171,7 +174,7 @@
 
                     let form = this.formGroupTemplate('times', val);
                     let label = $('<label />').text(name);
-                    let input = this.inputTextTemplate(`time_scan[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
+                    let input = this.inputTextTemplate(`${this.time}[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
 
                     return form.append(label, input);
                 },
@@ -179,20 +182,20 @@
 
                     let form = this.formGroupTemplate('weeks', val);
                     let label = $('<label />').text(name);
-                    let input = this.inputTextTemplate(`time_scan[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
+                    let input = this.inputTextTemplate(`${this.time}[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
 
                     let options = [
-                        {text: "Понедельник", val: "0", selected: false},
-                        {text: "Вторник", val: "1", selected: false},
-                        {text: "Среда", val: "2", selected: false},
-                        {text: "Четверг", val: "3", selected: false},
-                        {text: "Пятница", val: "4", selected: false},
-                        {text: "Суббота", val: "5", selected: false},
-                        {text: "Воскресенье", val: "6", selected: false}
+                        {text: "Понедельник", val: "mondays", selected: false},
+                        {text: "Вторник", val: "tuesdays", selected: false},
+                        {text: "Среда", val: "wednesdays", selected: false},
+                        {text: "Четверг", val: "thursdays", selected: false},
+                        {text: "Пятница", val: "fridays", selected: false},
+                        {text: "Суббота", val: "saturdays", selected: false},
+                        {text: "Воскресенье", val: "sundays", selected: false}
                     ];
 
                     let selectContent = $('<select />', {
-                        name: `days_scan[${search}][${val}][]`,
+                        name: `${this.weekdays}[${search}][${val}][]`,
                         class: 'form-control select-days mb-2',
                         multiple: 'true',
                         size: 7,
@@ -218,7 +221,7 @@
                         type: 'number',
                         min: '1',
                         max: '31',
-                        name: `mouth_scan[${search}][${val}]`,
+                        name: `${this.monthday}[${search}][${val}]`,
                         placeholder: 'День месяца (от 1 до 31)'
                     });
 
@@ -396,20 +399,16 @@
 
                     switch (panel.attr('id')) {
                         case 'project-part':
-                            //Parts.project(event);
+                            Parts.project(event);
                             break;
                         case 'keywords-part':
-                            //Parts.keywords(event);
+                            Parts.keywords(event);
                             break;
                         case 'competitors-part':
-                            //Parts.competitors(event);
+                            Parts.competitors(event);
                             break;
                         case 'regions-part':
                             Parts.regions(event);
-                            break;
-                        case 'scan-part':
-                            //logic
-                            console.log('scan');
                             break;
                         default:
                             console.log('next...');
