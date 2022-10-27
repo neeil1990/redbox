@@ -140,8 +140,10 @@ class Relevance
                 $this->sites[$domain]['equallyHost'] = false;
             }
 
-            $url = $domain[-1] === '/' ? $domain : $domain . '/';
-            if ($url == Str::lower($this->params['main_page_link'])) {
+            if (
+                $domain === Str::lower($this->params['main_page_link']) ||
+                $domain === Str::lower($this->params['main_page_link']).'/'
+            ) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
                 $this->sites[$domain]['inRelevance'] = $item['inRelevance'] ?? true;
