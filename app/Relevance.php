@@ -1488,7 +1488,6 @@ class Relevance
         }
         $toDay->save();
 
-
         if ($this->queue) {
             UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
         }

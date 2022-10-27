@@ -51,37 +51,43 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function handle()
     {
         $relevance = new Relevance($this->request, true);
+        try {
 
-        if ($this->type == 'full') {
+            if ($this->type == 'full') {
+                $relevance->getMainPageHtml();
 
-            $relevance->getMainPageHtml();
+                if ($this->request['type'] == 'phrase') {
+                    $relevance->analysisByPhrase($this->request, false);
 
-            if ($this->request['type'] == 'phrase') {
-                $relevance->analysisByPhrase($this->request, false);
+                } elseif ($this->request['type'] == 'list') {
+                    $relevance->analysisByList($this->request);
+                }
 
-            } elseif ($this->request['type'] == 'list') {
-                $relevance->analysisByList($this->request);
+            } elseif ($this->type == 'mainPage') {
+                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+                $relevance->getMainPageHtml();
+                $relevance->setSites($info->sites);
+
+            } elseif ($this->type == 'competitors') {
+                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+                $relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
+                $relevance->setDomains($info->sites);
+                $relevance->parseSites();
             }
 
-        } elseif ($this->type == 'mainPage') {
+            $relevance->analysis($this->userId, $this->historyId);
+            UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
 
-            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+        } catch (\Throwable $exception) {
+            RelevanceHistory::where('id', '=', $this->request['id'])->update([
+                'state' => '-1'
+            ]);
 
-            $relevance->getMainPageHtml();
-            $relevance->setSites($info->sites);
-
-        } elseif ($this->type == 'competitors') {
-
-            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-            $relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
-            $relevance->setDomains($info->sites);
-            $relevance->parseSites();
+            $relevance->saveError($exception);
         }
 
-        $relevance->analysis($this->userId, $this->historyId);
-
-        UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
     }
 
     /**
