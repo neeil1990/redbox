@@ -124,7 +124,12 @@ class SimplifiedXmlFacade extends XmlFacade
         $xml->setQuery($request['phrase']);
         $xmlResponse = $xml->getXMLResponse();
 
-        return array_search(Str::lower($request['link']), $xmlResponse);
+        $position = array_search(Str::lower($request['link']), $xmlResponse);
+        if ($position === false) {
+            $position = array_search(Str::lower($request['link'] . '/'), $xmlResponse);
+        }
+
+        return $position;
     }
 
     /**

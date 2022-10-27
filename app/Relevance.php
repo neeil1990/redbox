@@ -99,10 +99,7 @@ class Relevance
 
         $this->params = RelevanceAnalyseResults::firstOrNew($params);
 
-        $this->params['main_page_link'] = $request['link'][-1] === '/'
-            ? $request['link']
-            : $request['link'] . '/';
-
+        $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
     }
@@ -158,6 +155,9 @@ class Relevance
         if (!$this->mainPageIsRelevance) {
             if ($xmlResponse) {
                 $position = array_search(Str::lower($this->params['main_page_link']), $xmlResponse);
+                if ($position === false) {
+                    $position = array_search(Str::lower($this->params['main_page_link'] . '/'), $xmlResponse);
+                }
             } elseif ($searchPosition) {
                 $position = SimplifiedXmlFacade::getPosition($this->request);
             } else {
