@@ -76,27 +76,27 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     protected function sendRequest()
     {
-        $query = str_replace(' ', '%20', $this->query);
+        try {
+            $query = str_replace(' ', '%20', $this->query);
 
-        if ($this->path === 'https://xmlriver.com/search/xml') {
-            $loc = $this->getRiverLocation();
-            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . "$this->count.docs-in-group%3D1&loc=$loc";
-        } else {
-            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+            if ($this->path === 'https://xmlriver.com/search/xml') {
+                $loc = $this->getRiverLocation();
+                $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                    . "$this->count.docs-in-group%3D1&loc=$loc";
+            } else {
+                $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                    . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+            }
+
+            $config = file_get_contents(htmlspecialchars_decode($url));
+            $xml = $this->load($config);
+            $json = json_encode($xml);
+
+            return json_decode($json, true);
+        } catch (\Throwable $e) {
+            TelegramBot::sendMessage("error: $url" , 938341087);
         }
 
-        $config = file_get_contents(htmlspecialchars_decode($url), false, stream_context_create([
-            "ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ],
-        ]));
-        $xml = $this->load($config);
-        $json = json_encode($xml);
-
-        return json_decode($json, true);
     }
 
     /**

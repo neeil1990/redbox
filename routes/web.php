@@ -294,12 +294,9 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $text = str_replace("&nbsp;",'',htmlentities("2 837"));
-    dd($text);
-    $xml = new SimplifiedXmlFacade(213);
-    $xml->setQuery('ларингоскоп купить');
-    $xmlResponse = $xml->getXMLResponse();
-    dd($xmlResponse);
+    $str = 'https://xmlstock.com/yandex/xml/?user=9371&amp;key=660fb3c4c831f41ac36637cf3b69031e&amp;query=кольпоскопы%20орион&amp;groupby=attr=d.mode%3Ddeep.groups-on-page%3D100.docs-in-group%3D1&amp;lr=213&amp;sortby=rlv&amp;page=0';
+
+    dd(htmlspecialchars_decode($str));
     $clusters = [
         "20 delta дерматоскоп" => [
             "20 delta дерматоскоп" => [
