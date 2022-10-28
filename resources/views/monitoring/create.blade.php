@@ -185,13 +185,13 @@
                     let input = this.inputTextTemplate(`${this.time}[${search}][${val}]`, '', 'times', 'Время снятия (24 Hr)');
 
                     let options = [
-                        {text: "Понедельник", val: "mondays", selected: false},
-                        {text: "Вторник", val: "tuesdays", selected: false},
-                        {text: "Среда", val: "wednesdays", selected: false},
-                        {text: "Четверг", val: "thursdays", selected: false},
-                        {text: "Пятница", val: "fridays", selected: false},
-                        {text: "Суббота", val: "saturdays", selected: false},
-                        {text: "Воскресенье", val: "sundays", selected: false}
+                        {text: "Понедельник", val: "1", selected: false},
+                        {text: "Вторник", val: "2", selected: false},
+                        {text: "Среда", val: "3", selected: false},
+                        {text: "Четверг", val: "4", selected: false},
+                        {text: "Пятница", val: "5", selected: false},
+                        {text: "Суббота", val: "6", selected: false},
+                        {text: "Воскресенье", val: "0", selected: false}
                     ];
 
                     let selectContent = $('<select />', {
@@ -377,6 +377,16 @@
                         $('#mode-scan').trigger('change');
                     }
                 },
+                scan: function(event){
+                    let inputs = this.part.find('input, select');
+
+                    $.each(inputs, function (i, input) {
+                        let el = $(input);
+
+                        if(!el.val().length)
+                            $(input).attr('disabled', 'disabled');
+                    });
+                },
             };
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -409,6 +419,9 @@
                             break;
                         case 'regions-part':
                             Parts.regions(event);
+                            break;
+                        case 'scan-part':
+                            Parts.scan(event);
                             break;
                         default:
                             console.log('next...');
