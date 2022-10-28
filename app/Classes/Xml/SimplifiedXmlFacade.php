@@ -94,8 +94,8 @@ class SimplifiedXmlFacade extends XmlFacade
 
             return json_decode($json, true);
         } catch (\Throwable $e) {
-            TelegramBot::sendMessage("error: $url" , 938341087);
-            TelegramBot::sendMessage("error: htmlspecialchars_decode($url)" , 938341087);
+            TelegramBot::sendMessage("error: $url", 938341087);
+            TelegramBot::sendMessage("error: " . htmlspecialchars_decode($url), 938341087);
         }
 
     }
