@@ -3,6 +3,7 @@ function renderResultTable(data) {
     let style
     let phrased
     let target
+    let based
     let targetPhrase
 
     $.each(data, function (key, result) {
@@ -42,6 +43,7 @@ function renderResultTable(data) {
 
                 phrased = "phrased" in information ? information['phrased']['number'] : '0'
                 target = "target" in information ? information['target']['number'] : '0'
+                based = information['based']['number']
 
                 targetPhrase = changedBg ? information['basedNormal'] : phrase
                 let title = changedBg ? `title='Ваша фраза "${phrase}" была изменена'` : ''
@@ -66,9 +68,9 @@ function renderResultTable(data) {
                     '       </div>' +
                     '   </td> ' +
                     '   <td class="border-0">' + result['finallyResult']['groupName'] + '</td>' +
-                    '   <td class="border-0">' + information['based']['number'] + '</td>' +
-                    '   <td class="border-0">' + phrased + '</td>' +
-                    '   <td class="border-0">' + target + '</td>' +
+                    '   <td class="border-0" data-target="' + based + '">' + based + '</td>' +
+                    '   <td class="border-0" data-target="' + phrased + '">' + phrased + '</td>' +
+                    '   <td class="border-0" data-target="' + target + '">' + target + '</td>' +
                     '</tr>'
             }
         })

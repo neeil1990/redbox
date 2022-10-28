@@ -64,7 +64,7 @@ class ClusterQueue implements ShouldQueue
             $clusterArrays->json = json_encode([
                 $this->key => [
                     $this->phrase => [
-                        $this->type => $river->riverRequest()
+                        $this->type => $river->riverRequest($this->type === 'based')
                     ]
                 ]
             ]);
