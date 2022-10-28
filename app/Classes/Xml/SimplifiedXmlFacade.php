@@ -53,7 +53,11 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
         }
 
-        $xml = $this->sendRequest();
+        try {
+            $xml = $this->sendRequest();
+        } catch (\Throwable $e) {
+            return $this->getXMLResponse(++$try);
+        }
 
         if (isset($xml['response']['error'])) {
             Log::debug("$this->path: " . $xml['response']['error']);
@@ -76,29 +80,24 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     protected function sendRequest()
     {
-        try {
-            $query = str_replace(' ', '%20', $this->query);
+        $query = str_replace(' ', '%20', $this->query);
 
-            if ($this->path === 'https://xmlriver.com/search/xml') {
-                $loc = $this->getRiverLocation();
-                $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                    . "$this->count.docs-in-group%3D1&loc=$loc";
-            } else {
-                $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                    . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
-            }
-
-            $url = htmlspecialchars_decode($url);
-            $url = str_replace('&amp;', '&', $url);
-            $config = file_get_contents($url);
-
-            $xml = $this->load($config);
-            $json = json_encode($xml);
-
-            return json_decode($json, true);
-        } catch (\Throwable $e) {
-            TelegramBot::sendMessage("send request error: $url", 938341087);
+        if ($this->path === 'https://xmlriver.com/search/xml') {
+            $loc = $this->getRiverLocation();
+            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . "$this->count.docs-in-group%3D1&loc=$loc";
+        } else {
+            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
+
+        $url = html_entity_decode($url);
+        $config = file_get_contents($url);
+
+        $xml = $this->load($config);
+        $json = json_encode($xml);
+
+        return json_decode($json, true);
     }
 
     /**

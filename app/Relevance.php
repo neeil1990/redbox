@@ -187,31 +187,31 @@ class Relevance
      */
     public function analysis($userId, $historyId = false)
     {
-//        try {
-        $this->removeNoIndex();
-        $this->getHiddenData();
-        $this->separateLinksFromText();
-        $this->removePartsOfSpeech();
-        $this->removeListWords();
-        $this->getTextFromCompetitors();
-        $this->separateAllText();
-        $this->preparePhrasesTable();
-        $this->searchWordForms();
-        $this->processingOfGeneralInformation();
-        $this->prepareUnigramTable();
-        $this->analyzeRecommendations();
-        $this->prepareAnalysedSitesTable();
-        $this->prepareClouds();
-        $this->saveHistory($userId, $historyId);
-//        } catch (\Throwable $exception) {
-//            if ($historyId !== false) {
-//                RelevanceHistory::where('id', '=', $historyId)->update([
-//                    'state' => '-1'
-//                ]);
-//            }
-//
-//            $this->saveError($exception);
-//        }
+        try {
+            $this->removeNoIndex();
+            $this->getHiddenData();
+            $this->separateLinksFromText();
+            $this->removePartsOfSpeech();
+            $this->removeListWords();
+            $this->getTextFromCompetitors();
+            $this->separateAllText();
+            $this->preparePhrasesTable();
+            $this->searchWordForms();
+            $this->processingOfGeneralInformation();
+            $this->prepareUnigramTable();
+            $this->analyzeRecommendations();
+            $this->prepareAnalysedSitesTable();
+            $this->prepareClouds();
+            $this->saveHistory($userId, $historyId);
+        } catch (\Throwable $exception) {
+            if ($historyId !== false) {
+                RelevanceHistory::where('id', '=', $historyId)->update([
+                    'state' => '-1'
+                ]);
+            }
+
+            $this->saveError($exception);
+        }
     }
 
     /**
@@ -1358,23 +1358,23 @@ class Relevance
      */
     public function analysisByPhrase($request, $exp)
     {
-//        try {
-        RelevanceProgress::editProgress(10, $request);
-        $xml = new SimplifiedXmlFacade($request['region']);
-        $xml->setQuery($request['phrase']);
-        $xmlResponse = $xml->getXMLResponse();
+        try {
+            RelevanceProgress::editProgress(10, $request);
+            $xml = new SimplifiedXmlFacade($request['region']);
+            $xml->setQuery($request['phrase']);
+            $xmlResponse = $xml->getXMLResponse();
 
-        $this->removeIgnoredDomains(
-            $request,
-            $xmlResponse,
-            $exp
-        );
+            $this->removeIgnoredDomains(
+                $request,
+                $xmlResponse,
+                $exp
+            );
 
-        $this->parseSites($xmlResponse);
-//        } catch (\Throwable $exception) {
-//            $this->saveError($exception);
-//            die();
-//        }
+            $this->parseSites($xmlResponse);
+        } catch (\Throwable $exception) {
+            $this->saveError($exception);
+            die();
+        }
     }
 
     /**
@@ -1500,6 +1500,12 @@ class Relevance
             'line' => $exception->getLine(),
             'message' => $exception->getMessage(),
         ]);
+
+        TelegramBot::sendMessage(implode(' ', [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ]), 938341087);
     }
 
     /**
