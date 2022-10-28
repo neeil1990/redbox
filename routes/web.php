@@ -294,7 +294,8 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-//    план уборки на неделю трехкомнатной квартиры
+    $text = str_replace("&nbsp;",'',htmlentities("2 837"));
+    dd($text);
     $xml = new SimplifiedXmlFacade(213);
     $xml->setQuery('ларингоскоп купить');
     $xmlResponse = $xml->getXMLResponse();

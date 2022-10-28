@@ -72,6 +72,7 @@ class Cluster
                 $e->getLine(),
                 $e->getFile()
             ]);
+
             $this->progress->delete();
             \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
@@ -276,21 +277,6 @@ class Cluster
                 }
             }
         }
-    }
-
-    public function arraySum($arr1, $arr2)
-    {
-        $result = []; // здесь будет объединение массивов
-
-        foreach ($arr1 as $val) { // считываем первый массив
-            $result[] = $val;
-        }
-
-        foreach ($arr2 as $val) { // считываем 2-ой  массив
-            $result[] = $val;
-        }
-
-        return $result;
     }
 
     /**

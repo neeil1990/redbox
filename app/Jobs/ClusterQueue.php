@@ -64,14 +64,14 @@ class ClusterQueue implements ShouldQueue
             $clusterArrays->json = json_encode([
                 $this->key => [
                     $this->phrase => [
-                        $this->type => $river->riverRequest()
+                        $this->type => $river->riverRequest($this->type === 'based')
                     ]
                 ]
             ]);
             $clusterArrays->progress_id = $this->progressId;
             $clusterArrays->save();
 
-            $this->progress = ClusterProgress::where('id', '=', $this->progressId)->update([
+            ClusterProgress::where('id', '=', $this->progressId)->update([
                 'success' => DB::raw('success + 1'),
                 'percent' => DB::raw("percent + $this->percent")
             ]);

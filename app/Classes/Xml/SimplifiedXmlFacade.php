@@ -87,8 +87,7 @@ class SimplifiedXmlFacade extends XmlFacade
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-
-        $config = file_get_contents(str_replace('&amp;', '&', $url), false, stream_context_create([
+        $config = file_get_contents(htmlspecialchars_decode($url), false, stream_context_create([
             "ssl" => [
                 "verify_peer" => false,
                 "verify_peer_name" => false,
