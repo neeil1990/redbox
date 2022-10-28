@@ -294,7 +294,8 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $str = 'https://xmlstock.com/yandex/xml/?user=9371&amp;key=660fb3c4c831f41ac36637cf3b69031e&amp;query=кольпоскопы%20орион&amp;groupby=attr=d.mode%3Ddeep.groups-on-page%3D100.docs-in-group%3D1&amp;lr=213&amp;sortby=rlv&amp;page=0';
+    $str = 'https://xmlstock.com/yandex/xml/?user=9371&amp;key=660fb3c4c831f41ac36637cf3b69031e&amp;query=%D0%BA%D0%BE%D0%BB%D1%8C%D0%BF%D0%BE%D1%81%D0%BA%D0%BE%D0%BF%D1%8B%20%D0%BE%D1%80%D0%B8%D0%BE%D0%BD&amp;groupby=attr=d.mode%3Ddeep.groups-on-page%3D100.docs-in-group%3D1&amp;lr=213&amp;sortby=rlv&amp;page=0';
+    dd(htmlspecialchars_decode($str));
 
     dd(htmlspecialchars_decode($str));
     $clusters = [
