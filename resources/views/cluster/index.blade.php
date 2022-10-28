@@ -299,11 +299,12 @@
             }
 
             function setProgressBarStyles(percent) {
-                let bar = $('.progress-bar')
-                bar.css({
+                percent = percent > 100 ? 100 : percent;
+
+                $('.progress-bar').css({
                     width: percent + '%'
                 })
-                bar.html(percent + '%');
+                $('.progress-bar').html(percent + '%');
             }
 
             function destroyProgress(progressId, interval) {

@@ -85,8 +85,8 @@ function renderResultTable(data) {
             '               <th class="centered-text" colspan="3">Частотность</th>' +
             '           </tr>' +
             '           <tr>' +
-            '               <th>Порядковый номер</th>' +
-            '               <th>Порядковый номер в кластере</th>' +
+            '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер">#</th>' +
+            '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер в кластере">##</th>' +
             '               <th>Ключевой запрос <i class="fa fa-copy copy-cluster-phrases pr-1"></i> </th>' +
             '               <th>Группа <i class="fa fa-copy copy-group pr-1"></i> </th>' +
             '               <th>Базовая <i class="fa fa-copy copy-based pr-1"></i> </th>' +
