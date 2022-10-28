@@ -142,7 +142,8 @@ class Relevance
 
             if (
                 $domain === Str::lower($this->params['main_page_link']) ||
-                $domain === Str::lower($this->params['main_page_link']).'/'
+                $domain === Str::lower($this->params['main_page_link']) . '/' ||
+                $domain . '/' === Str::lower($this->params['main_page_link'])
             ) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
@@ -187,21 +188,21 @@ class Relevance
     public function analysis($userId, $historyId = false)
     {
 //        try {
-            $this->removeNoIndex();
-            $this->getHiddenData();
-            $this->separateLinksFromText();
-            $this->removePartsOfSpeech();
-            $this->removeListWords();
-            $this->getTextFromCompetitors();
-            $this->separateAllText();
-            $this->preparePhrasesTable();
-            $this->searchWordForms();
-            $this->processingOfGeneralInformation();
-            $this->prepareUnigramTable();
-            $this->analyzeRecommendations();
-            $this->prepareAnalysedSitesTable();
-            $this->prepareClouds();
-            $this->saveHistory($userId, $historyId);
+        $this->removeNoIndex();
+        $this->getHiddenData();
+        $this->separateLinksFromText();
+        $this->removePartsOfSpeech();
+        $this->removeListWords();
+        $this->getTextFromCompetitors();
+        $this->separateAllText();
+        $this->preparePhrasesTable();
+        $this->searchWordForms();
+        $this->processingOfGeneralInformation();
+        $this->prepareUnigramTable();
+        $this->analyzeRecommendations();
+        $this->prepareAnalysedSitesTable();
+        $this->prepareClouds();
+        $this->saveHistory($userId, $historyId);
 //        } catch (\Throwable $exception) {
 //            if ($historyId !== false) {
 //                RelevanceHistory::where('id', '=', $historyId)->update([
@@ -1358,18 +1359,18 @@ class Relevance
     public function analysisByPhrase($request, $exp)
     {
 //        try {
-            RelevanceProgress::editProgress(10, $request);
-            $xml = new SimplifiedXmlFacade($request['region']);
-            $xml->setQuery($request['phrase']);
-            $xmlResponse = $xml->getXMLResponse();
+        RelevanceProgress::editProgress(10, $request);
+        $xml = new SimplifiedXmlFacade($request['region']);
+        $xml->setQuery($request['phrase']);
+        $xmlResponse = $xml->getXMLResponse();
 
-            $this->removeIgnoredDomains(
-                $request,
-                $xmlResponse,
-                $exp
-            );
+        $this->removeIgnoredDomains(
+            $request,
+            $xmlResponse,
+            $exp
+        );
 
-            $this->parseSites($xmlResponse);
+        $this->parseSites($xmlResponse);
 //        } catch (\Throwable $exception) {
 //            $this->saveError($exception);
 //            die();
