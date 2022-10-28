@@ -186,7 +186,7 @@ class Relevance
      */
     public function analysis($userId, $historyId = false)
     {
-        try {
+//        try {
             $this->removeNoIndex();
             $this->getHiddenData();
             $this->separateLinksFromText();
@@ -202,15 +202,15 @@ class Relevance
             $this->prepareAnalysedSitesTable();
             $this->prepareClouds();
             $this->saveHistory($userId, $historyId);
-        } catch (\Throwable $exception) {
-            if ($historyId !== false) {
-                RelevanceHistory::where('id', '=', $historyId)->update([
-                    'state' => '-1'
-                ]);
-            }
-
-            $this->saveError($exception);
-        }
+//        } catch (\Throwable $exception) {
+//            if ($historyId !== false) {
+//                RelevanceHistory::where('id', '=', $historyId)->update([
+//                    'state' => '-1'
+//                ]);
+//            }
+//
+//            $this->saveError($exception);
+//        }
     }
 
     /**
@@ -1357,7 +1357,7 @@ class Relevance
      */
     public function analysisByPhrase($request, $exp)
     {
-        try {
+//        try {
             RelevanceProgress::editProgress(10, $request);
             $xml = new SimplifiedXmlFacade($request['region']);
             $xml->setQuery($request['phrase']);
@@ -1370,10 +1370,10 @@ class Relevance
             );
 
             $this->parseSites($xmlResponse);
-        } catch (\Throwable $exception) {
-            $this->saveError($exception);
-            die();
-        }
+//        } catch (\Throwable $exception) {
+//            $this->saveError($exception);
+//            die();
+//        }
     }
 
     /**
