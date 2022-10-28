@@ -88,16 +88,17 @@ class SimplifiedXmlFacade extends XmlFacade
                     . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
             }
 
-            $config = file_get_contents(htmlspecialchars_decode($url));
+            $url = htmlspecialchars_decode($url);
+            $url = str_replace('&amp;', '&', $url);
+            $config = file_get_contents($url);
+
             $xml = $this->load($config);
             $json = json_encode($xml);
 
             return json_decode($json, true);
         } catch (\Throwable $e) {
-            TelegramBot::sendMessage("error: $url", 938341087);
-            TelegramBot::sendMessage("error: " . htmlspecialchars_decode($url), 938341087);
+            TelegramBot::sendMessage("send request error: $url", 938341087);
         }
-
     }
 
     /**

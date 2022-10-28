@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Relevance;
 use App\RelevanceHistory;
+use App\TelegramBot;
 use App\UsersJobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -86,6 +87,8 @@ class RelevanceAnalysisQueue implements ShouldQueue
             ]);
 
             $relevance->saveError($exception);
+            TelegramBot::sendMessage('RelevanceAnalysisQueue error', 938341087);
+            TelegramBot::sendMessage(implode('  ', $this->request), 938341087);
         }
 
     }
