@@ -55,7 +55,6 @@ class MonitoringController extends Controller
         //(new PositionStore(false))->saveBySearchEngines($searchengine);
         //dispatch((new AutoUpdatePositionQueue($searchengine))->onQueue('position_low'));
 
-
         //$model = new MonitoringKeyword();
         //$query = $model->where('id', 136)->first();
 
@@ -266,9 +265,18 @@ class MonitoringController extends Controller
 
             foreach ($dates as $data){
 
-                $time = $this->checkCronFields($autoupdate['time'], [$engine, $data]);
-                $weekdays = $this->checkCronFields($autoupdate['weekdays'], [$engine, $data]);
-                $monthday = $this->checkCronFields($autoupdate['monthday'], [$engine, $data]);
+                $time = null;
+                if(isset($autoupdate['time']))
+                    $time = $this->checkCronFields($autoupdate['time'], [$engine, $data]);
+
+                $weekdays = null;
+                if(isset($autoupdate['weekdays']))
+                    $weekdays = $this->checkCronFields($autoupdate['weekdays'], [$engine, $data]);
+
+                $monthday = null;
+                if(isset($autoupdate['monthday']))
+                    $monthday = $this->checkCronFields($autoupdate['monthday'], [$engine, $data]);
+
                 $auto_update_status = ($time || $weekdays || $monthday);
 
                 $project->searchengines()->create([

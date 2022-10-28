@@ -2,11 +2,14 @@
 
 namespace App\Console;
 
+use App\Classes\Cron\AutoUpdateMonitoringPositions;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
+use App\MonitoringSearchengine;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use DB;
 
 
 class Kernel extends ConsoleKernel
@@ -41,8 +44,33 @@ class Kernel extends ConsoleKernel
         // Delete relevance histories > 30 days (see relevance_analysis_config table)
         $schedule->call(new RelevanceCleaningResults())->dailyAt('00:00');
 
+        // auto update positions in monitoring module
+        $this->autoUpdateMonitoringPositions($schedule);
+
         // $schedule->command('inspire')
         //          ->hourly();
+    }
+
+    private function autoUpdateMonitoringPositions($schedule)
+    {
+        $engines = MonitoringSearchengine::where('auto_update', true)->get();
+        if($engines->isNotEmpty()){
+
+            foreach ($engines as $engine){
+
+                $time = explode(':', $engine->time ?? '00:00');
+                $hour = (int) $time[0];
+                $minute = (int) $time[1];
+
+                $weekdays = ($engine->weekdays) ? implode(',', $engine->weekdays) : '*';
+
+                $monthday = ($engine->monthday) ? '*/' . $engine->monthday : '*';
+
+                $cron = implode(' ', [$minute, $hour, $monthday, '*', $weekdays]);
+
+                $schedule->call(new AutoUpdateMonitoringPositions($engine))->cron($cron);
+            }
+        }
     }
 
     /**
