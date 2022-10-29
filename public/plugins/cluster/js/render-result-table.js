@@ -11,6 +11,7 @@ function renderResultTable(data) {
         let newTableRows = ''
         let clusterSites = ''
         let newRow = ''
+        let clusterId = (Math.random() + 1).toString(36).substring(7)
 
         $.each(result['finallyResult']['sites'], function (site, count) {
             clusterSites +=
@@ -52,9 +53,9 @@ function renderResultTable(data) {
                     '<tr>' +
                     '   <td class="border-0">' + iterator + '</td> ' +
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
-                    '   <td class="border-0 ' + style + '" ' + title + '> ' +
+                    '   <td class="border-0' + style + '" ' + title + '> ' +
                     '       <div class="d-flex"> ' +
-                    '          <div class="col-10">' + targetPhrase + '</div> ' +
+                    '          <div class="col-10  cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
                     '          <div class="col-2">' +
                     '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
@@ -67,10 +68,10 @@ function renderResultTable(data) {
                     '          </div> ' +
                     '       </div>' +
                     '   </td> ' +
-                    '   <td class="border-0">' + result['finallyResult']['groupName'] + '</td>' +
-                    '   <td class="border-0" data-target="' + based + '">' + based + '</td>' +
-                    '   <td class="border-0" data-target="' + phrased + '">' + phrased + '</td>' +
-                    '   <td class="border-0" data-target="' + target + '">' + target + '</td>' +
+                    '   <td class="border-0 group-' + clusterId + '">' + result['finallyResult']['groupName'] + '</td>' +
+                    '   <td class="border-0 base-' + clusterId + '" data-target="' + based + '">' + based + '</td>' +
+                    '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phrased + '">' + phrased + '</td>' +
+                    '   <td class="border-0 target-' + clusterId + '" data-target="' + target + '">' + target + '</td>' +
                     '</tr>'
             }
         })
@@ -87,24 +88,45 @@ function renderResultTable(data) {
             '           <tr>' +
             '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер">#</th>' +
             '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер в кластере">##</th>' +
-            '               <th>Ключевой запрос <i class="fa fa-copy copy-cluster-phrases pr-1"></i> </th>' +
-            '               <th>Группа <i class="fa fa-copy copy-group pr-1"></i> </th>' +
-            '               <th>Базовая <i class="fa fa-copy copy-based pr-1"></i> </th>' +
-            '               <th>"Фразовая" <i class="fa fa-copy copy-phrases pr-1"></i> </th>' +
-            '               <th>"!Точная" <i class="fa fa-copy copy-target pr-1"></i> </th>' +
+            '               <th>Ключевой запрос</th>' +
+            '               <th>Группа</i></th>' +
+            '               <th>Базовая</th>' +
+            '               <th>"Фразовая"</th>' +
+            '               <th>"!Точная"</th>' +
             '           </tr>' +
             '       </thead>' +
             '       <tbody>' + newTableRows + '</tbody>' +
             '       </table>' +
             '   </td>' +
             '   <td>' +
-            '      <p>' +
-            '           <a class="btn btn-secondary" data-toggle="collapse"' +
-            '            href="#competitors' + key + '" role="button" aria-expanded="false"' +
-            '            aria-controls="competitors' + key + '">' +
-            '            Конкуренты' +
-            '           </a>' +
-            '       </p>' +
+            '       <div class="row">' +
+            '              <p class="btn btn-secondary copy-based col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                   <i class="fa fa-copy pr-1" style="color: white;"></i> базовую' +
+            '              </p>' +
+            '              <p class="btn btn-secondary copy-phrase col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                   <i class="fa fa-copy pr-1" style="color: white;"></i> фразовую' +
+            '              </p>' +
+            '              <p class="btn btn-secondary copy-target col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                   <i class="fa fa-copy pr-1" style="color: white;"></i> точную' +
+            '              </p>' +
+            '       </div>' +
+            '       <div class="row">' +
+            '            <p class="btn btn-secondary copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                <i class="fa fa-copy pr-1" style="color: white;"></i> ключевой запрос' +
+            '            </p>' +
+            '            <p class="btn btn-secondary copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                <i class="fa fa-copy pr-1" style="color: white;"></i> группу' +
+            '            </p>' +
+            '       </div>' +
+            '        <div class="row">' +
+            '            <p> ' +
+            '              <a class="btn btn-secondary" data-toggle="collapse"' +
+            '                href="#competitors' + key + '" role="button" aria-expanded="false"' +
+            '                aria-controls="competitors' + key + '">' +
+            '                Конкуренты' +
+            '               </a>' +
+            '            </p>' +
+            '       </div>' +
             '       <div class="collapse" id="competitors' + key + '">' + clusterSites + '</div>' +
             '   </td>' +
             '</tr>'
@@ -112,11 +134,12 @@ function renderResultTable(data) {
         $('#clusters-table-tbody').append(newRow)
     })
 
-    copyCluster()
-    copyGroup()
     copyBased()
     copyPhrases()
     copyTarget()
+    copyCluster()
+
+    copyGroup()
     copyFullUrls()
 
     $(document).ready(function () {
@@ -136,10 +159,11 @@ function copyCluster() {
     $('.copy-cluster-phrases').unbind().on('click', function () {
         $('#hiddenForCopy').css('display', 'block')
         $('#hiddenForCopy').val('')
-        let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
+        let iterator = $(this).attr('data-target')
+        let trs = $('.cluster-id-' + iterator)
 
         $.each(trs, function (key, value) {
-            let phrase = ($(this).children('td:nth-of-type(3)').children('div.d-flex').children('div.col-10').html()).trim();
+            let phrase = ($(this).html()).trim();
             if ($('#hiddenForCopy').val() === '') {
                 $('#hiddenForCopy').val(phrase)
             } else {
@@ -156,10 +180,11 @@ function copyGroup() {
     $('.copy-group').unbind().on('click', function () {
         $('#hiddenForCopy').css('display', 'block')
         $('#hiddenForCopy').val('')
-        let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
+        let iterator = $(this).attr('data-target')
+        let trs = $('.group-' + iterator)
 
         $.each(trs, function (key, value) {
-            let phrase = ($(this).children('td:nth-of-type(4)').html()).trim();
+            let phrase = ($(this).html()).trim();
             if ($('#hiddenForCopy').val() === '') {
                 $('#hiddenForCopy').val(phrase)
             } else {
@@ -175,10 +200,11 @@ function copyBased() {
     $('.copy-based').unbind().on('click', function () {
         $('#hiddenForCopy').css('display', 'block')
         $('#hiddenForCopy').val('')
-        let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
+        let iterator = $(this).attr('data-target')
+        let trs = $('.base-' + iterator)
 
         $.each(trs, function (key, value) {
-            let phrase = ($(this).children('td:nth-of-type(5)').html()).trim();
+            let phrase = ($(this).html()).trim();
             if ($('#hiddenForCopy').val() === '') {
                 $('#hiddenForCopy').val(phrase)
             } else {
@@ -191,13 +217,14 @@ function copyBased() {
 }
 
 function copyPhrases() {
-    $('.copy-phrases').unbind().on('click', function () {
+    $('.copy-phrase').unbind().on('click', function () {
         $('#hiddenForCopy').css('display', 'block')
         $('#hiddenForCopy').val('')
-        let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
+        let iterator = $(this).attr('data-target')
+        let trs = $('.phrase-' + iterator)
 
         $.each(trs, function (key, value) {
-            let phrase = ($(this).children('td:nth-of-type(6)').html()).trim();
+            let phrase = ($(this).html()).trim();
             if ($('#hiddenForCopy').val() === '') {
                 $('#hiddenForCopy').val(phrase)
             } else {
@@ -213,10 +240,11 @@ function copyTarget() {
     $('.copy-target').unbind().on('click', function () {
         $('#hiddenForCopy').css('display', 'block')
         $('#hiddenForCopy').val('')
-        let trs = $(this).parent().parent().parent().parent().children('tbody').children('tr');
+        let iterator = $(this).attr('data-target')
+        let trs = $('.target-' + iterator)
 
         $.each(trs, function (key, value) {
-            let phrase = ($(this).children('td:nth-of-type(7)').html()).trim();
+            let phrase = ($(this).html()).trim();
             if ($('#hiddenForCopy').val() === '') {
                 $('#hiddenForCopy').val(phrase)
             } else {
