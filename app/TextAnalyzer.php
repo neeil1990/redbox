@@ -29,7 +29,6 @@ class TextAnalyzer extends Model
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
         curl_setopt($curl, CURLOPT_TIMEOUT, 4);
@@ -45,6 +44,7 @@ class TextAnalyzer extends Model
     {
         $userAgents = [
             //Mozilla Firefox
+            'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)',
             'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0',
             'Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0',
             //opera
@@ -59,12 +59,14 @@ class TextAnalyzer extends Model
             curl_setopt($curl, CURLOPT_USERAGENT, $agent);
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
-            if ($headers['http_code'] == 200 && $html != false) {
+            if ($headers['http_code'] == 200 && $html) {
                 $html = preg_replace('//i', '', $html);
                 break;
             }
         }
 
+        dd($headers);
+        dd(curl_error($curl));
         curl_close($curl);
         try {
             $contentType = trim(str_replace('text/html;', '', $headers['content_type']));

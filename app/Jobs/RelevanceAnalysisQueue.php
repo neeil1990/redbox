@@ -52,7 +52,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
     public function handle()
     {
         $relevance = new Relevance($this->request, true);
-//        try {
+        try {
         if ($this->type == 'full') {
             $relevance->getMainPageHtml();
 
@@ -80,15 +80,15 @@ class RelevanceAnalysisQueue implements ShouldQueue
         $relevance->analysis($this->userId, $this->historyId);
         UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
 
-//        } catch (\Throwable $exception) {
-//            RelevanceHistory::where('id', '=', $this->request['id'])->update([
-//                'state' => '-1'
-//            ]);
-//
-//            $relevance->saveError($exception);
-//            TelegramBot::sendMessage('RelevanceAnalysisQueue error', 938341087);
-//            TelegramBot::sendMessage(implode('  ', $this->request), 938341087);
-//        }
+        } catch (\Throwable $exception) {
+            RelevanceHistory::where('id', '=', $this->request['id'])->update([
+                'state' => '-1'
+            ]);
+
+            $relevance->saveError($exception);
+            TelegramBot::sendMessage('RelevanceAnalysisQueue error', 938341087);
+            TelegramBot::sendMessage(implode('  ', $this->request), 938341087);
+        }
 
     }
 
