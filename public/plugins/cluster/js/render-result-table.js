@@ -187,7 +187,6 @@ function copyBased() {
         })
 
         copyInBuffer()
-        $(this).trigger('click')
     })
 }
 
@@ -207,7 +206,6 @@ function copyPhrases() {
         })
 
         copyInBuffer()
-        $(this).trigger('click')
     })
 }
 
@@ -227,7 +225,6 @@ function copyTarget() {
         })
 
         copyInBuffer()
-        $(this).trigger('click')
     })
 }
 
