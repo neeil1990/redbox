@@ -3,6 +3,7 @@
 namespace App\Classes\Xml;
 
 use App\TelegramBot;
+use App\TextAnalyzer;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -52,7 +53,7 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->setUser('6602');
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
         } else {
-            return new Exception('tree connect attempts failed');
+            return new Exception('tree attempts connect failed');
         }
 
         try {
@@ -94,12 +95,11 @@ class SimplifiedXmlFacade extends XmlFacade
         }
 
         $url = html_entity_decode($url);
-        $config = file_get_contents($url);
+        $response = TextAnalyzer::curlInit(html_entity_decode($url));
 
-        $xml = $this->load($config);
-        $json = json_encode($xml);
+        $xml = $this->load($response);
 
-        return json_decode($json, true);
+        return json_decode(json_encode($xml), true);
     }
 
     /**
