@@ -65,8 +65,6 @@ class TextAnalyzer extends Model
             }
         }
 
-        dd($headers);
-        dd(curl_error($curl));
         curl_close($curl);
         try {
             $contentType = trim(str_replace('text/html;', '', $headers['content_type']));
