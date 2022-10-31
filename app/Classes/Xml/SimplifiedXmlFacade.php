@@ -55,7 +55,6 @@ class SimplifiedXmlFacade extends XmlFacade
                 $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
             } else {
                 TelegramBot::sendMessage('tree attempts connect failed', 938341087);
-                TelegramBot::sendMessage('tree attempts connect failed', 169011279);
             }
 
             $xml = $this->sendRequest();
