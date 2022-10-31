@@ -40,6 +40,11 @@ class PositionQueue implements ShouldQueue
         return $this->model;
     }
 
+    public function getParams()
+    {
+        return $this->model->project->searchengines->implode('lr', ', ');
+    }
+
     /**
      * Execute the job.
      *
