@@ -19,34 +19,12 @@ class PositionStore
         $this->save = $saveAllResultIndexes;
     }
 
-    public function saveBySearchEngines(MonitoringSearchengine $model)
-    {
-        $project = $model->project;
-
-        foreach ($project->keywords as $keyword){
-
-            $response = $this->getEngine($model->engine, [
-                'domain' => $project->url,
-                'query' => $keyword->query,
-                'lr' => $model->lr,
-            ])->handle();
-
-            if($response)
-                $this->save($keyword, [
-                    'monitoring_searchengine_id' => $model->id,
-                    'position' => $response["position"],
-                    'url' => strtolower($response["url"]),
-                ]);
-        }
-
-        return true;
-    }
-
-    public function saveByQuery(MonitoringKeyword $model)
+    public function saveByQuery(MonitoringKeyword $model, $engine = null)
     {
         $query = $model->query;
         $project = $model->project;
-        $engines = $project->searchengines;
+
+        $engines = ($engine) ? [$engine] : $project->searchengines;
 
         foreach ($engines as $engine){
 

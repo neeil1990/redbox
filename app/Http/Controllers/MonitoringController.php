@@ -50,13 +50,10 @@ class MonitoringController extends Controller
     public function index()
     {
         //$model = new MonitoringSearchengine();
-        //$searchengine = $model->find('36');
-
-        //(new PositionStore(false))->saveBySearchEngines($searchengine);
-        //dispatch((new AutoUpdatePositionQueue($searchengine))->onQueue('position_low'));
+        //$searchengine = $model->find('62');
 
         //$model = new MonitoringKeyword();
-        //$query = $model->where('id', 136)->first();
+        //$query = $model->where('id', 5600)->first();
 
         //(new PositionStore(false))->saveByQuery($query);
         //dispatch((new PositionQueue($query))->onQueue('position_high'));

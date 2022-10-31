@@ -104,7 +104,7 @@ class MonitoringAdminController extends Controller
                 'email' => $item->keyword->project->user->email,
                 'site' => $item->keyword->project->url,
                 'group' => $item->keyword->group->name,
-                'params' => $item->keyword->project->searchengines->implode('lr', ', '),
+                'params' => $item->keyword->params,
                 'query' => $item->keyword->query,
                 'priority' => ($item->queue === 'position_high') ? __('High') : __('Low'),
                 'created_at' => $item->created_at->format('d.m.Y H:i:s'),
@@ -129,6 +129,7 @@ class MonitoringAdminController extends Controller
 
             $jobData = unserialize($item->payload['data']['command']);
             $item->keyword = $jobData->getModel();
+            $item->keyword->params = $jobData->getParams();
 
             return $item;
         });

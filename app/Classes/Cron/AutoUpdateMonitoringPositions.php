@@ -3,22 +3,26 @@
 
 namespace App\Classes\Cron;
 
-
 use App\Jobs\AutoUpdatePositionQueue;
 use Illuminate\Support\Facades\Log;
 
 class AutoUpdateMonitoringPositions
 {
-    private $model;
+    private $engine;
 
     public function __construct($engine)
     {
-        $this->model = $engine;
+        $this->engine = $engine;
     }
 
     public function __invoke()
     {
+        $engine = $this->engine;
+        $project = $engine->project;
+
+        foreach ($project->keywords as $query)
+            dispatch((new AutoUpdatePositionQueue($query, $engine))->onQueue('position_low'));
+
         //Log::debug($this->model);
-        dispatch((new AutoUpdatePositionQueue($this->model))->onQueue('position_low'));
     }
 }
