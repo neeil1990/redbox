@@ -759,13 +759,20 @@ class HistoryRelevanceController extends Controller
             ]);
         }
 
-        return response()->json([
-            'message' => 'success',
-            'object' => $object->results->id,
-            'code' => 200,
-            'newObject' => RelevanceHistory::where('project_relevance_history_id', '=', $object->project_relevance_history_id)
-                ->latest()->first(),
-        ]);
+        try {
+            return response()->json([
+                'message' => 'success',
+                'object' => $object->results->id,
+                'code' => 200,
+                'newObject' => RelevanceHistory::where('project_relevance_history_id', '=', $object->project_relevance_history_id)->latest()->first(),
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'error',
+                'code' => 500,
+            ]);
+        }
+
     }
 
     /**

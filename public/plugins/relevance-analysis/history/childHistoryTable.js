@@ -118,12 +118,14 @@ function isDateValid(target, settings, tableId, prefix) {
 }
 
 function scrollTo(elemPath) {
-    $('html, body').animate({
-        scrollTop: $(elemPath).offset().top
-    }, {
-        duration: 370,
-        easing: "linear"
-    });
+    $(document).ready(function () {
+        $('html, body').animate({
+            scrollTop: $(elemPath).offset().top
+        }, {
+            duration: 370,
+            easing: "linear"
+        });
+    })
 }
 
 function hideListHistory() {

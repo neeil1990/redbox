@@ -142,7 +142,8 @@ class Relevance
 
             if (
                 $domain === Str::lower($this->params['main_page_link']) ||
-                $domain === Str::lower($this->params['main_page_link']).'/'
+                $domain === Str::lower($this->params['main_page_link']) . '/' ||
+                $domain . '/' === Str::lower($this->params['main_page_link'])
             ) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
@@ -1499,6 +1500,12 @@ class Relevance
             'line' => $exception->getLine(),
             'message' => $exception->getMessage(),
         ]);
+
+        TelegramBot::sendMessage(implode(' ', [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ]), 938341087);
     }
 
     /**

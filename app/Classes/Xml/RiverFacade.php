@@ -65,35 +65,28 @@ class RiverFacade
 
             $attempt = 1;
             while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
-                $riwerResponse = json_decode(file_get_contents(htmlspecialchars_decode($url)), true);
+                $riwerResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
                 $attempt++;
             }
 
             if ($searchInItems) {
                 if (Str::length($riwerResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())) {
                     $number = htmlentities($riwerResponse['content']['includingPhrases']['items'][0]['number']);
-                    $number = str_replace("&nbsp;", '', $number);
-                    Log::debug($this->query, [$number]);
 
                     return [
-                        'number' => $number,
+                        'number' => str_replace("&nbsp;", '', $number),
                         'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
                     ];
                 } else {
-                    $number = $this->removeExtraSymbols($riwerResponse['content']['includingPhrases']['info'][2]);
-                    Log::debug($this->query, [$number]);
-
                     return [
-                        'number' => $number,
+                        'number' => $this->removeExtraSymbols($riwerResponse['content']['includingPhrases']['info'][2]),
                         'phrase' => $this->getQuery()
                     ];
                 }
             } else {
-                $number = $this->removeExtraSymbols($riwerResponse['content']['includingPhrases']['info'][2]);
-                Log::debug($this->query, [$number]);
 
                 return [
-                    'number' => $number,
+                    'number' => $this->removeExtraSymbols($riwerResponse['content']['includingPhrases']['info'][2]),
                     'phrase' => $this->getQuery()
                 ];
             }

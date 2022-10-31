@@ -213,7 +213,7 @@
                                 <thead>
                                 <tr>
                                     <th>Кластеры</th>
-                                    <th style="min-width: 250px;">Конкуренты</th>
+                                    <th style="min-width: 400px;">Конкуренты</th>
                                 </tr>
                                 </thead>
                                 <tbody id="clusters-table-tbody">

@@ -13,6 +13,7 @@
 
 use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -294,12 +295,16 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $text = str_replace("&nbsp;",'',htmlentities("2 837"));
-    dd($text);
-    $xml = new SimplifiedXmlFacade(213);
-    $xml->setQuery('ларингоскоп купить');
-    $xmlResponse = $xml->getXMLResponse();
-    dd($xmlResponse);
+
+    $result = [
+        'https://voronezh.vseinstrumenti.ru/santehnika/vodonagrevateli/elektricheskie/nakopitelnye/' => 503,
+        'https://voronezh.santehnika-online.ru/vodonagrevateli/nakopitelnye/' => "прроверка браузера (403)",
+        'https://voronezh.price.ru/vodonagrevateli-boylery/' => "требует авторизации 401",
+        'https://www.enkor24.ru/catalog/546-bojlery-nakopitelnye-vodonagrevateli/' => "Ошибка в урле, лишний последний слеш, а так всё кул",
+    ];
+    $t = TextAnalyzer::curlInit('https://www.svyaznoy.ru/catalog/other/16775/');
+    dd($t);
+
     $clusters = [
         "20 delta дерматоскоп" => [
             "20 delta дерматоскоп" => [

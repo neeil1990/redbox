@@ -54,7 +54,6 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-
         if ($this->stage == 1) {
             ProjectRelevanceThough::thoughAnalyse($this->items, $this->mainId, $this->countRecords);
 
@@ -85,7 +84,6 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
             $wordWorms = json_decode(gzuncompress(base64_decode($though->word_worms)), true);
             ProjectRelevanceThough::calculateFinalResult($wordWorms, $this->mainId);
         }
-
     }
 
     /**

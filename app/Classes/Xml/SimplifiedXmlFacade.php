@@ -3,6 +3,7 @@
 namespace App\Classes\Xml;
 
 use App\TelegramBot;
+use App\TextAnalyzer;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -51,9 +52,18 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->setPath('https://xmlriver.com/search/xml');
             $this->setUser('6602');
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+        } else {
+            TelegramBot::sendMessage('tree attempts connect failed', 938341087);
+            TelegramBot::sendMessage('tree attempts connect failed', 169011279);
+
+            return new Exception('tree attempts connect failed');
         }
 
-        $xml = $this->sendRequest();
+        try {
+            $xml = $this->sendRequest();
+        } catch (\Throwable $e) {
+            return $this->getXMLResponse(++$try);
+        }
 
         if (isset($xml['response']['error'])) {
             Log::debug("$this->path: " . $xml['response']['error']);
@@ -87,16 +97,12 @@ class SimplifiedXmlFacade extends XmlFacade
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-        $config = file_get_contents(htmlspecialchars_decode($url), false, stream_context_create([
-            "ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ],
-        ]));
-        $xml = $this->load($config);
-        $json = json_encode($xml);
+        $url = html_entity_decode($url);
+        $response = TextAnalyzer::curlInit(html_entity_decode($url));
 
-        return json_decode($json, true);
+        $xml = $this->load($response);
+
+        return json_decode(json_encode($xml), true);
     }
 
     /**
