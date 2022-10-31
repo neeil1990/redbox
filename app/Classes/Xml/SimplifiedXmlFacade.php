@@ -57,6 +57,7 @@ class SimplifiedXmlFacade extends XmlFacade
                 TelegramBot::sendMessage('tree attempts connect failed', 938341087);
                 TelegramBot::sendMessage('tree attempts connect failed', 169011279);
             }
+
             $xml = $this->sendRequest();
 
             if (isset($xml['response']['error'])) {
@@ -69,10 +70,13 @@ class SimplifiedXmlFacade extends XmlFacade
                 }
 
                 return $this->getXMLResponse(++$try);
+            }
 
-            } else {
+            if (isset($xml['response']['results']['grouping']['group'])) {
                 return $this->parseResult($xml['response']['results']['grouping']['group']);
             }
+
+            return $this->getXMLResponse(++$try);
         } catch (\Throwable $e) {
             Log::debug('SimplifiedXmlFacade' . $e->getMessage(), [$xml]);
             TelegramBot::sendMessage('SimplifiedXmlFacade' . $e->getMessage(), 938341087);
