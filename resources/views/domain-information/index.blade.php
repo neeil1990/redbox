@@ -48,11 +48,11 @@
         <thead>
         <tr>
             <th></th>
-            <th class="col-3">{{ __('Domain') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Track DNS changes') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Track the registration period') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Last check') }} <i class="fa fa-sort"></i></th>
-            <th class="col-4">{{ __('Domain information') }} <i class="fa fa-sort"></i></th>
+            <th class="col-3">{{ __('Domain') }}</th>
+            <th class="col-1">{{ __('Track DNS changes') }}</th>
+            <th class="col-1">{{ __('Track the registration period') }}</th>
+            <th class="col-2">{{ __('Last check') }}</th>
+            <th class="col-4">{{ __('Domain information') }}</th>
             <th class="col-1"></th>
         </tr>
         </thead>
