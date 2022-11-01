@@ -66,10 +66,6 @@ class SimplifiedXmlFacade extends XmlFacade
                 Log::debug("$this->path: " . $xml['response']['error']);
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
-
-                if ($attempt === 3) {
-                    return new Exception($xml['response']['error']);
-                }
             }
         } catch (\Throwable $e) {
 
