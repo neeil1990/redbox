@@ -288,23 +288,33 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/cluster', 'ClusterController@index')->name('cluster');
     Route::post('/analysis-cluster', 'ClusterController@analysisCluster')->name('analysis.cluster');
+    Route::post('/repeat-analysis-cluster', 'ClusterController@repeatAnalysisCluster')->name('repeat.analysis.cluster');
     Route::get('/start-cluster-progress', 'ClusterController@startProgress')->name('start.cluster.progress');
     Route::get('/get-cluster-progress/{progress}', 'ClusterController@getProgress')->name('get.cluster.progress');
     Route::get('/destroy-progress/{progress}', 'ClusterController@destroyProgress')->name('destroy.progress');
-
+    Route::get('/cluster-projects', 'ClusterController@clusterProjects')->name('cluster.projects');
+    Route::post('/edit-cluster-project', 'ClusterController@edit')->name('cluster.edit');
+    Route::post('/get-cluster-request/', 'ClusterController@getClusterRequest')->name('get.cluster.request');
+    Route::post('/repeat-analysis', 'ClusterController@repeatAnalysis')->name('repeat.cluster.analysis');
+    Route::get('/show-cluster-result/{cluster}', 'ClusterController@showResult')->name('show.cluster.result');
+    Route::get('/download-cluster-result/{cluster}/{type}', 'ClusterController@downloadClusterResult')->name('download.cluster.result');
 });
 
 Route::get('/test', function () {
+    $t = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab alias autem dolorum laborum molestiae nemo nihil tempore ut voluptas! Aliquam at culpa magni perferendis voluptatem. Illo nam recusandae ullam?';
+    $xml = new SimplifiedXmlFacade(213);
 
-    $result = [
-        'https://voronezh.vseinstrumenti.ru/santehnika/vodonagrevateli/elektricheskie/nakopitelnye/' => 503,
-        'https://voronezh.santehnika-online.ru/vodonagrevateli/nakopitelnye/' => "прроверка браузера (403)",
-        'https://voronezh.price.ru/vodonagrevateli-boylery/' => "требует авторизации 401",
-        'https://www.enkor24.ru/catalog/546-bojlery-nakopitelnye-vodonagrevateli/' => "Ошибка в урле, лишний последний слеш, а так всё кул",
-    ];
-    $t = TextAnalyzer::curlInit('https://www.svyaznoy.ru/catalog/other/16775/');
-    dd($t);
+    foreach (explode(' ', $t) as $item) {
+        $xml->setQuery($item);
+        $res = $xml->getXMLResponse();
 
+        if (count($res) !== 100) {
+            dd($res);
+        }
+    }
+
+
+    dd(1);
     $clusters = [
         "20 delta дерматоскоп" => [
             "20 delta дерматоскоп" => [
