@@ -80,12 +80,6 @@
 
             $('[data-toggle="tooltip"]').tooltip();
 
-            $('.parse-positions').click(function () {
-                axios.post('/monitoring/parse/positions/all/projects').then(function () {
-                    toastr.success('Задание добавленно в очередь.');
-                });
-            });
-
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 lengthMenu: [10, 20, 30, 50, 100],
@@ -239,6 +233,23 @@
                     this.find('tbody tr').addClass('main');
                     $('.pagination').addClass('pagination-sm');
                 },
+            });
+
+            $('.parse-positions').click(function () {
+
+                let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
+                let data = rows.data();
+
+                $.each(data, function(index, row){
+                    axios.post('/monitoring/parse/positions/project', {
+                        projectId: row.id
+                    });
+                });
+
+                if(data.length)
+                    toastr.success('Задание добавленно в очередь.');
+                else
+                    toastr.error('Выберите проект.');
             });
 
             $('.checkbox-delete').click(function(){
