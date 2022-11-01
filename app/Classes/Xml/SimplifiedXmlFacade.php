@@ -56,8 +56,11 @@ class SimplifiedXmlFacade extends XmlFacade
         }
         try {
             $xml = $this->sendRequest();
+            Log::debug('xml', [$xml]);
 
-            if (isset($xml['response']['error'])) {
+            if (isset($xml['response']['results']['grouping']['group'])) {
+                return $this->parseResult($xml['response']['results']['grouping']['group']);
+            } else if (isset($xml['response']['error'])) {
                 Log::debug("$this->path: " . $xml['response']['error']);
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
@@ -65,11 +68,10 @@ class SimplifiedXmlFacade extends XmlFacade
                 if ($try === 3) {
                     return new Exception($xml['response']['error']);
                 }
-
-                return $this->getXMLResponse(++$try);
             }
 
-            return $this->parseResult($xml['response']['results']['grouping']['group']);
+            return $this->getXMLResponse(++$try);
+
 
         } catch (\Throwable $e) {
             Log::debug('SimplifiedXmlFacade' . $e->getMessage(), [$xml]);
