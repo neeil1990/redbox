@@ -1364,12 +1364,7 @@ class Relevance
             $xml->setQuery($request['phrase']);
             $xmlResponse = $xml->getXMLResponse();
 
-            $this->removeIgnoredDomains(
-                $request,
-                $xmlResponse,
-                $exp
-            );
-
+            $this->removeIgnoredDomains($request, $xmlResponse, $exp);
             $this->parseSites($xmlResponse);
         } catch (\Throwable $exception) {
             $this->saveError($exception);
@@ -1502,6 +1497,7 @@ class Relevance
         ]);
 
         TelegramBot::sendMessage(implode(' ', [
+            'relevance error',
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'message' => $exception->getMessage(),
