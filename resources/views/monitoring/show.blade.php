@@ -17,9 +17,6 @@
             .dTable {
                 display: none;
             }
-            .table tbody tr td div {
-                width: 100%;
-            }
             .table tr td:nth-child(4) {
                text-align: left;
             }
