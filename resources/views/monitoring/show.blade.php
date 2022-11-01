@@ -882,10 +882,8 @@
                 let item = $(this);
                 let id = item.data('id');
 
-                if (window.confirm("Do you really want to delete?")) {
-
+                if (window.confirm("{{__('Do you really want to delete?')}}")) {
                     axios.delete(`/monitoring/keywords/${id}`);
-
                     item.closest('tr').remove();
                 }
             });
