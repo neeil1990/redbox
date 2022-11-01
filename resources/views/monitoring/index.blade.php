@@ -83,6 +83,7 @@
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 lengthMenu: [10, 20, 30, 50, 100],
+                "ordering": false,
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
@@ -108,8 +109,23 @@
                 columns: [
                     {
                         orderable: false,
-                        data: null,
-                        defaultContent: '<div class="form-check"><input class="form-check-input" type="checkbox"></div>',
+                        data: function (row, type, val, meta){
+
+                            let form = $('<div />', {
+                                class: 'form-check'
+                            });
+
+                            let input = $('<input />', {
+                                class: 'form-check-input'
+                            });
+
+                            input.attr({
+                                type: 'checkbox',
+                                value: row.id,
+                            });
+
+                            return form.append(input)[0].outerHTML;
+                        },
                     },
                     {
                         orderable: false,
@@ -158,16 +174,24 @@
                     },
                     {
                         width: '120px',
-                        title: 'Отчеты в pdf',
+                        title: 'Отчеты',
                         data: null,
                         class: 'project-actions text-right',
-                        defaultContent: '<a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i> View</a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i> View</a>',
+                        defaultContent: '<a class="btn btn-info btn-sm" href="#">{{ __('In progress') }}</a>',
                     },
                     {
                         width: '120px',
-                        data: null,
+                        data: function(row) {
+
+                            let create = $('<a />', { class: 'btn btn-sm btn-success'}).append($('<i />', { class: 'fas fa-plus'}));
+                            let edit = $('<a />', { class: 'btn btn-sm btn-info'}).append($('<i />', { class: 'fas fa-save'}));
+                            let trash = $('<a />', { class: 'btn btn-sm btn-danger'}).append($('<i />', { class: 'fas fa-trash'}));
+
+                            trash.attr('onclick', `onClickDeleteProject(${row.id})`);
+
+                            return create[0].outerHTML + " " + edit[0].outerHTML + " " + trash[0].outerHTML;
+                        },
                         class: 'project-actions text-right',
-                        defaultContent: '<a class="btn btn-success btn-sm" href="#"><i class="fas fa-plus"></i></a> <a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i></a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i></a>',
                     },
                 ],
                 initComplete: function () {
@@ -247,20 +271,48 @@
                 });
 
                 if(data.length)
-                    toastr.success('Задание добавленно в очередь.');
+                    toastr.success("{{ __('Task add in queue') }}");
                 else
-                    toastr.error('Выберите проект.');
+                    toastr.error("{{ __('Selected project') }}");
             });
 
             $('.checkbox-delete').click(function(){
+
                 let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
                 let data = rows.data();
 
+                if(!data.length){
+                    toastr.error("{{ __('Selected project') }}");
+                    return false;
+                }
+
+                if (!window.confirm("{{__('Do you really want to delete?')}}"))
+                    return false;
+
                 $.each(data, function(index, row){
-                    axios.delete(`monitoring/${row.id}`);
-                    rows.remove().draw(false);
+                    deleteProject(row.id);
                 });
+
+                window.location.reload();
             });
+
+            function onClickDeleteProject(id){
+
+                if (!window.confirm("{{__('Do you really want to delete?')}}"))
+                    return false;
+
+                deleteProject(id);
+
+                window.location.reload();
+            }
+
+            function deleteProject(id)
+            {
+                if(id)
+                    axios.delete(`monitoring/${id}`);
+                else
+                    alert('Delete error');
+            }
 
         </script>
     @endslot

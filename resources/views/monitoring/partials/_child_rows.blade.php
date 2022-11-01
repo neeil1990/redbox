@@ -3,7 +3,8 @@
         <table class="table table-sm table-bordered">
             <thead>
                 <tr>
-                    <th>ID REGION</th>
+                    <th>ID</th>
+                    <th>REGION</th>
                     <th>Источник</th>
                     <th>Дата обновления</th>
                     <th>Средняя позиция</th>
@@ -19,7 +20,8 @@
             <tbody>
                 @foreach($engines as $engine)
                 <tr>
-                    <td>[{{ $engine->id }}] {{ $engine->lr }}</td>
+                    <td>{{ $engine->id }}</td>
+                    <td>{{ $engine->lr }}</td>
                     <td>{{ ucfirst($engine->engine) }}, {{ $engine->location->name }}</td>
                     <td>{{ $engine->latest_created }}</td>
                     <td>{{ $engine->middle_position }}</td>

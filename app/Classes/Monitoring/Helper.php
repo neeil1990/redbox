@@ -26,7 +26,7 @@ class Helper
 
     static public function differentTopPercent($a, $b)
     {
-        $total = $a - $b;
+        $total = round($a - $b, 2);
 
         if(!$total || !$b)
             return '';
