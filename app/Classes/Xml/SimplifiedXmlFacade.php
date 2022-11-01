@@ -96,7 +96,7 @@ class SimplifiedXmlFacade extends XmlFacade
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-        $response = TextAnalyzer::curlInit(html_entity_decode($url));
+        $response = file_get_contents(html_entity_decode($url));
 
         $xml = $this->load($response);
 
