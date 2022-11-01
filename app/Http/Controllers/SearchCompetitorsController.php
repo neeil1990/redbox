@@ -47,24 +47,25 @@ class SearchCompetitorsController extends Controller
      */
     public function analyseSites(Request $request): JsonResponse
     {
-        if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
-            return response()->json([
-                'message' => __('Exceeding the limit')
-            ], 500);
-        }
-        $analysis = new SearchCompetitors();
-        $analysis->setPhrases($request->input('phrases'));
-        if (count($analysis->getPhrases()) > 40) {
-            return response()->json([
-                'message' => __('The maximum number of keywords is 40, and you have - ') . count($analysis->getPhrases())
-            ], 500);
-        }
-
-        $analysis->setRegion($request->input('region'));
-        $analysis->setCount($request->input('count'));
-        $analysis->setPageHash($request->input('pageHash'));
-
+        Log::debug('test -----------------------');
         try {
+            if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
+                return response()->json([
+                    'message' => __('Exceeding the limit')
+                ], 500);
+            }
+            $analysis = new SearchCompetitors();
+            $analysis->setPhrases($request->input('phrases'));
+            if (count($analysis->getPhrases()) > 40) {
+                return response()->json([
+                    'message' => __('The maximum number of keywords is 40, and you have - ') . count($analysis->getPhrases())
+                ], 500);
+            }
+
+            $analysis->setRegion($request->input('region'));
+            $analysis->setCount($request->input('count'));
+            $analysis->setPageHash($request->input('pageHash'));
+
             $analysis->analyzeList();
 
             return response()->json([

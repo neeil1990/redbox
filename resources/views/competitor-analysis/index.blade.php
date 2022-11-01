@@ -509,6 +509,7 @@
             };
             window.addEventListener('storage', onStorage);
             $('#duallistbox_tags').bootstrapDualListbox();
+
             $('.btn.btn-secondary.pull-left').click(() => {
                 let phrases = $.trim($('.form-control.phrases').val())
                 let count = $('.custom-select.rounded-0.count').val()
