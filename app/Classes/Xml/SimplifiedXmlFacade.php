@@ -39,22 +39,22 @@ class SimplifiedXmlFacade extends XmlFacade
      * @param int $try
      * @return array|Exception|null
      */
-    public function getXMLResponse(int $try = 1)
+    public function getXMLResponse(int $attempt = 1)
     {
-        if ($try === 1) {
+        if ($attempt === 1) {
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser('sv@prime-ltd.su');
             $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-        } elseif ($try === 2) {
+        } elseif ($attempt === 2) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser('9371');
             $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
-        } elseif ($try === 3) {
+        } elseif ($attempt === 3) {
             $this->setPath('https://xmlriver.com/search/xml');
             $this->setUser('6602');
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
         } else {
-            return null;
+            return $this->getXMLResponse();
         }
 
         try {
@@ -67,12 +67,12 @@ class SimplifiedXmlFacade extends XmlFacade
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
 
-                if ($try === 3) {
+                if ($attempt === 3) {
                     return new Exception($xml['response']['error']);
                 }
             }
             Log::debug('xml', [$xml]);
-            return $this->getXMLResponse(++$try);
+            return $this->getXMLResponse(++$attempt);
 
         } catch (\Throwable $e) {
             Log::debug('SimplifiedXmlFacade' . $e->getMessage(), [$xml]);
