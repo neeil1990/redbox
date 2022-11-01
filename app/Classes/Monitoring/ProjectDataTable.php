@@ -89,7 +89,7 @@ class ProjectDataTable
 
         $positionCacheKey = (new CacheOfUserForPosition($model))->getCacheKey();
 
-        $positionsCache = Cache::remember($positionCacheKey, 360, function () use ($keywords, $model) {
+        $positionsCache = Cache::remember($positionCacheKey, 21600, function () use ($keywords, $model) {
             return collect([
                 'positions' => $this->getLastPositionsByKeywords($keywords, $model),
                 'pre_positions' => $this->getPreLastPositionsByKeywords($keywords, $model),
