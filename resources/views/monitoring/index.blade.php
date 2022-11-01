@@ -83,6 +83,7 @@
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 lengthMenu: [10, 20, 30, 50, 100],
+                "ordering": false,
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
@@ -173,10 +174,10 @@
                     },
                     {
                         width: '120px',
-                        title: 'Отчеты в pdf',
+                        title: 'Отчеты',
                         data: null,
                         class: 'project-actions text-right',
-                        defaultContent: '<a class="btn btn-info btn-sm" href="#"><i class="fas fa-save"></i> View</a> <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"></i> View</a>',
+                        defaultContent: '<a class="btn btn-info btn-sm" href="#">{{ __('In progress') }}</a>',
                     },
                     {
                         width: '120px',
