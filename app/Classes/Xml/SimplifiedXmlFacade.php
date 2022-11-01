@@ -56,7 +56,6 @@ class SimplifiedXmlFacade extends XmlFacade
         }
         try {
             $xml = $this->sendRequest();
-            Log::debug('xml', [$xml]);
 
             if (isset($xml['response']['results']['grouping']['group'])) {
                 return $this->parseResult($xml['response']['results']['grouping']['group']);
@@ -69,9 +68,8 @@ class SimplifiedXmlFacade extends XmlFacade
                     return new Exception($xml['response']['error']);
                 }
             }
-
+            Log::debug('xml', [$xml]);
             return $this->getXMLResponse(++$try);
-
 
         } catch (\Throwable $e) {
             Log::debug('SimplifiedXmlFacade' . $e->getMessage(), [$xml]);
