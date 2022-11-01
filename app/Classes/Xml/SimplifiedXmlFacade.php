@@ -53,7 +53,10 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->setPath('https://xmlriver.com/search/xml');
             $this->setUser('6602');
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+        } else {
+            return null;
         }
+
         try {
             $xml = $this->sendRequest();
 
