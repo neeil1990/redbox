@@ -71,6 +71,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
         }
 
+        Log::debug('next attempt');
         return $this->getXMLResponse($attempt + 1);
     }
 
