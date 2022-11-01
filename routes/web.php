@@ -301,7 +301,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $t = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab alias autem dolorum laborum molestiae nemo nihil tempore ut voluptas! Aliquam at culpa magni perferendis voluptatem. Illo nam recusandae ullam?';
+    $t = 'Lorem ipsum';
     $xml = new SimplifiedXmlFacade(213);
 
     foreach (explode(' ', $t) as $item) {
