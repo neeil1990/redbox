@@ -114,7 +114,9 @@ class DomainInformation extends Model
      */
     public static function getDomain($link): string
     {
-        return parse_url($link)['host'];
+        $information = parse_url($link);
+
+        return $information['host'] ?? $link;
     }
 
 }
