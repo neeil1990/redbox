@@ -36,7 +36,7 @@ class SimplifiedXmlFacade extends XmlFacade
     }
 
     /**
-     * @param int $try
+     * @param int $attempt
      * @return array|Exception|null
      */
     public function getXMLResponse(int $attempt = 1)
@@ -57,30 +57,21 @@ class SimplifiedXmlFacade extends XmlFacade
             return $this->getXMLResponse();
         }
 
-        try {
-            $xml = $this->sendRequest();
+        $xml = $this->sendRequest();
 
-            if (isset($xml['response']['results']['grouping']['group'])) {
-                return $this->parseResult($xml['response']['results']['grouping']['group']);
-            } else if (isset($xml['response']['error'])) {
-                Log::debug("$this->path: " . $xml['response']['error']);
-                TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
-                TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
+        if (isset($xml['response']['results']['grouping']['group'])) {
+            return $this->parseResult($xml['response']['results']['grouping']['group']);
+        } else if (isset($xml['response']['error'])) {
+            Log::debug("$this->path: " . $xml['response']['error']);
+            TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
+            TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
 
-                if ($attempt === 3) {
-                    return new Exception($xml['response']['error']);
-                }
+            if ($attempt === 3) {
+                return new Exception($xml['response']['error']);
             }
-            Log::debug('xml', [$xml]);
-            return $this->getXMLResponse(++$attempt);
-
-        } catch (\Throwable $e) {
-            Log::debug('SimplifiedXmlFacade' . $e->getMessage(), [$xml]);
-            TelegramBot::sendMessage('SimplifiedXmlFacade' . $e->getMessage(), 938341087);
-
-            return null;
         }
 
+        return $this->getXMLResponse($attempt + 1);
     }
 
     /**

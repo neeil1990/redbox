@@ -308,6 +308,7 @@ Route::get('/test', function () {
         $xml->setQuery($item);
         $res = $xml->getXMLResponse();
 
+        dump($res);
         if (count($res) !== 100) {
             dd($res);
         }
