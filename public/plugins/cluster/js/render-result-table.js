@@ -53,7 +53,7 @@ function renderResultTable(data) {
                     '<tr>' +
                     '   <td class="border-0">' + iterator + '</td> ' +
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
-                    '   <td class="border-0' + style + '" ' + title + '> ' +
+                    '   <td class="border-0 ' + style + '" ' + title + '> ' +
                     '       <div class="d-flex"> ' +
                     '          <div class="col-10  cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
                     '          <div class="col-2">' +

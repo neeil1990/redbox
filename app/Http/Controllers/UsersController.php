@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Common;
-use App\Exports\RelevanceStatisticsExport;
 use App\Exports\VerifiedUsersExport;
 use App\User;
 use Exception;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;

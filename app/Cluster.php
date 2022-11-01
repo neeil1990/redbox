@@ -4,6 +4,7 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\ClusterQueue;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class Cluster
@@ -32,6 +33,12 @@ class Cluster
 
     protected $progress;
 
+    protected $save;
+
+    protected $request;
+
+    protected $newCluster;
+
     public function __construct(array $request)
     {
         $this->count = $request['count'];
@@ -50,6 +57,11 @@ class Cluster
         $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
         $this->countPhrases = count($this->phrases);
 
+        $this->save = filter_var($request['save'], FILTER_VALIDATE_BOOLEAN);
+        if ($this->save) {
+            $this->request = $request;
+        }
+
         $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
     }
 
@@ -62,20 +74,19 @@ class Cluster
             $this->wordStats();
             $this->searchGroupName();
             $this->setResult($this->clusters);
-
-            $this->progress->delete();
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
-
+            if ($this->save) {
+                $this->saveResult();
+            }
         } catch (\Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
                 $e->getLine(),
                 $e->getFile()
             ]);
-
-            $this->progress->delete();
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
+
+        $this->progress->delete();
+        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
     protected function setSites()
@@ -83,11 +94,16 @@ class Cluster
         $percent = 49 / $this->countPhrases;
         $iterator = 0;
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
-        foreach ($this->phrases as $phrase) {
+        foreach ($this->phrases as $key => $phrase) {
             $this->progress->percent += $percent;
             $iterator++;
             $xml->setQuery($phrase);
-            $this->sites[$phrase]['sites'] = $xml->getXMLResponse();
+            $sites = $xml->getXMLResponse();
+            if ($sites !== null) {
+                $this->sites[$phrase]['sites'] = $sites;
+            } else {
+                unset($this->phrases[$key]);
+            }
             if ($iterator % 3 === 0 || $phrase === end($this->phrases)) {
                 $this->progress->save();
             }
@@ -316,6 +332,32 @@ class Cluster
         $this->result = collect($results)->sortByDesc(function ($item, $key) {
             return count($item);
         })->values()->all();
+    }
+
+    /**
+     * @return void
+     */
+    protected function saveResult()
+    {
+        $this->newCluster = new ClusterResults();
+        $result = $this->getResult();
+        $this->newCluster->user_id = Auth::id();
+        $this->newCluster->result = base64_encode(gzcompress(json_encode($result), 9));
+        $this->newCluster->count_phrases = $this->countPhrases;
+        $this->newCluster->count_clusters = count($result);
+        $this->newCluster->clustering_level = $this->request['clusteringLevel'];
+        $this->newCluster->top = $this->count;
+        $this->newCluster->request = json_encode($this->request);
+
+        $this->newCluster->save();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNewCluster()
+    {
+        return $this->newCluster;
     }
 
     /**

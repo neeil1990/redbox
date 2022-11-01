@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Cluster;
 use App\ClusterProgress;
+use App\ClusterResults;
+use App\Common;
+use App\Exports\ClusterResultExport;
 use App\User;
-use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClusterController extends Controller
 {
@@ -23,7 +28,6 @@ class ClusterController extends Controller
         return view('cluster.index', ['admin' => $admin, 'results' => $result]);
     }
 
-
     /**
      * @param Request $request
      * @return JsonResponse
@@ -36,6 +40,34 @@ class ClusterController extends Controller
         return response()->json([
             'result' => $cluster->getAnalysisResult()
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function repeatAnalysisCluster(Request $request): JsonResponse
+    {
+        $cluster = new Cluster($request->all());
+        $cluster->startAnalysis();
+
+        return response()->json([
+            'cluster' => $cluster->getNewCluster()
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function repeatAnalysis(Request $request): JsonResponse
+    {
+        $cluster = new Cluster($request->all());
+        $cluster->startAnalysis();
+
+        return response()->json([
+            'result' => $cluster->getAnalysisResult()
+        ], 200);
     }
 
     /**
@@ -60,5 +92,82 @@ class ClusterController extends Controller
         return response()->json([
             'percent' => $progress->percent,
         ]);
+    }
+
+    /**
+     * @return View
+     */
+    public function clusterProjects(): View
+    {
+        $admin = User::isUserAdmin();
+        $projects = ClusterResults::where('user_id', '=', Auth::id())->get([
+            'id', 'user_id', 'comment', 'domain', 'count_phrases', 'count_clusters', 'clustering_level',
+            'top', 'created_at'
+        ]);
+
+        return view('cluster.projects', ['projects' => $projects, 'admin' => $admin]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function edit(Request $request): JsonResponse
+    {
+        ClusterResults::where('id', $request->id)
+            ->where('user_id', '=', Auth::id())
+            ->update([$request->option => $request->value]);
+        return response()->json([]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getClusterRequest(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->id)->first();
+
+        if ($cluster->user_id !== Auth::id()) {
+            return response()->json([
+                'message' => __("You don't have access to this object")
+            ], 500);
+        }
+
+        return response()->json([
+            'created_at' => Carbon::parse($cluster->created_at)->toDateTimeString(),
+            'request' => json_decode($cluster->request, true)
+        ]);
+    }
+
+    /**
+     * @param ClusterResults $cluster
+     * @return View
+     */
+    public function showResult(ClusterResults $cluster): View
+    {
+        if ($cluster->user_id !== Auth::id()) {
+            return abort(403);
+        }
+
+        $cluster->result = gzuncompress(base64_decode($cluster->result));
+        $cluster->request = json_decode($cluster->request, true);
+
+        return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
+    }
+
+    /**
+     * @param ClusterResults $cluster
+     * @param string $type
+     * @return void|null
+     */
+    public function downloadClusterResult(ClusterResults $cluster, string $type)
+    {
+        if ($cluster->user_id !== Auth::id() || !($type === 'xls' || $type === 'csv')) {
+            return abort(403);
+        }
+
+        $file = Excel::download(new ClusterResultExport($cluster), 'cluster_result.' . $type);
+        Common::fileExport($file, $type, 'cluster_result');
     }
 }

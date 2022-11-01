@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Concerns\FromArray;
 class HttpHeadersExport implements FromArray
 {
     protected $items;
+
     /**
      * HttpHeadersExport constructor.
      * @param $items

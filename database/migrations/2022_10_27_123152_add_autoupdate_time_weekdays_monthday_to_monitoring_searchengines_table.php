@@ -14,7 +14,7 @@ class AddAutoupdateTimeWeekdaysMonthdayToMonitoringSearchenginesTable extends Mi
     public function up()
     {
         Schema::table('monitoring_searchengines', function (Blueprint $table) {
-            $table->boolean('auto_update')->default(false);
+//            $table->boolean('auto_update')->default(false);
             $table->time('time')->nullable();
             $table->longText('weekdays')->nullable();
             $table->integer('monthday')->nullable();

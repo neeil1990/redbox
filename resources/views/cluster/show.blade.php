@@ -46,11 +46,14 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('cluster') }}">{{ __('Analyzer') }}</a>
+                    <a class="nav-link" href="{{ route('cluster') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link admin-link"
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-link active" href="#">{{ __('My project') }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link admin-link"
@@ -61,9 +64,6 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <div class="w-50 pb-3">
-                        @include('cluster.layouts.form')
-                    </div>
                     <div id="progress-bar" style="display: none">
                         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
@@ -121,6 +121,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            $(document).ready(function () {
+                renderHiddenTable({!! $cluster['result'] !!})
+                renderResultTable({!! $cluster['result'] !!})
+            })
+
             let progressId
             let interval
 
