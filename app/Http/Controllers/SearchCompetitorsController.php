@@ -47,7 +47,6 @@ class SearchCompetitorsController extends Controller
      */
     public function analyseSites(Request $request): JsonResponse
     {
-        Log::debug('test -----------------------');
         try {
             if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
                 return response()->json([
@@ -83,7 +82,6 @@ class SearchCompetitorsController extends Controller
                 'message' => __('An unexpected error has occurred, please contact the administrator')
             ], 500);
         }
-
     }
 
     /**

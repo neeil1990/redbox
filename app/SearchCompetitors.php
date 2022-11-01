@@ -141,14 +141,14 @@ class SearchCompetitors extends Model
                         $this->analysedSites[$phrase][$link] = $this->savedHtml[$link];
                     } else {
                         $this->savedHtml[$link] = $this->analyseSite(
-                            $this->convertEncoding($this->encodingContent(SearchCompetitors::curlInit($link))),
+                            $this->encodingContent(SearchCompetitors::curlInit($link)),
                             $phrase,
                             $link
                         );
                     }
                 } else {
                     $this->analyseSite(
-                        $this->convertEncoding($this->encodingContent(SearchCompetitors::curlInit($link))),
+                        $this->encodingContent(SearchCompetitors::curlInit($link)),
                         $phrase,
                         $link
                     );
@@ -197,7 +197,6 @@ class SearchCompetitors extends Model
             'description' => $description,
         ];
 
-        //Если все теги пустые, значит не получилось получить данные со страницы
         $this->analysedSites[$phrase][$link]['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
 
         $this->analysedSites[$phrase][$link]['mainPage'] = SearchCompetitors::isLinkMainPage($link);
@@ -238,27 +237,6 @@ class SearchCompetitors extends Model
                     $this->duplicates[$link] = false;
                 }
             }
-        }
-    }
-
-    /**
-     * @param $site
-     * @return array|false|string|string[]|null
-     */
-    protected function convertEncoding($site)
-    {
-        try {
-            $contentType = $site[1]['content_type'];
-            if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-                $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-
-                return mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
-            }
-
-            return $site;
-
-        } catch (Exception $exception) {
-            return $site;
         }
     }
 
