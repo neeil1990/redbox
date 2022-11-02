@@ -43,13 +43,13 @@ class SimplifiedXmlFacade extends XmlFacade
     {
         try {
             if ($attempt === 1) {
-                $this->setPath('https://xmlproxy.ru/search/xml');
-                $this->setUser('sv@prime-ltd.su');
-                $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            } elseif ($attempt === 2) {
                 $this->setPath('https://xmlstock.com/yandex/xml/');
                 $this->setUser('9371');
                 $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+            } elseif ($attempt === 2) {
+                $this->setPath('https://xmlproxy.ru/search/xml');
+                $this->setUser('sv@prime-ltd.su');
+                $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
             } elseif ($attempt === 3) {
                 $this->setPath('https://xmlriver.com/search/xml');
                 $this->setUser('6602');
