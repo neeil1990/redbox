@@ -753,9 +753,9 @@
                             });
 
                             if(existed.length === 0)
-                                data.push({id: index, query: value, page: relevant.val(), group: group.find('option:selected').text(), target: target.val()});
+                                data.push({id: index, query: value, page: relevant.val(), group: groupInput.find('option:selected').text(), target: target.val()});
                         }else{
-                            data.push({id: index, query: value, page: relevant.val(), group: group.find('option:selected').text(), target: target.val()});
+                            data.push({id: index, query: value, page: relevant.val(), group: groupInput.find('option:selected').text(), target: target.val()});
                         }
                     });
 
