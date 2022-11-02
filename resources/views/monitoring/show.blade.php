@@ -162,9 +162,8 @@
 
                 let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
-                    "ordering": false,
                     scrollX: true,
-                    lengthMenu: [5, 20, 30, 50, 100],
+                    lengthMenu: [10, 20, 30, 50, 100, 200, 500, 1000],
                     pageLength: PAGE_LENGTH,
                     pagingType: "simple_numbers",
                     language: {
@@ -193,8 +192,9 @@
                     columns: columns,
                     //rowReorder: true,
                     columnDefs: [
-                        //{ orderable: true, className: 'reorder', targets: 3 },
-                        //{ orderable: false, targets: '_all' },
+                        { orderable: true, className: 'reorder', targets: 0 },
+                        { orderable: true, className: 'reorder', targets: 3 },
+                        { orderable: false, targets: '_all' },
                         { "width": "350px", "targets": 3 },
                     ],
                     initComplete: function(){
