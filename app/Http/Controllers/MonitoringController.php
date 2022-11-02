@@ -648,13 +648,18 @@ class MonitoringController extends Controller
                     if($mode === "dates"){
                         $position = $keyword->last_positions;
                         $dates = $position->keys();
+
                         if($position) {
-                            $row->put($i, view('monitoring.partials.show.position_with_date', ['position' => $position->shift(), 'date' => $dates->shift()])->render());
+                            $position = $position->shift();
+                            if($position < 100)
+                                $row->put($i, view('monitoring.partials.show.position_with_date', ['position' => $position, 'date' => $dates->shift()])->render());
+                            else
+                                $row->put($i, '-');
                         }else
                             $row->put($i, '-');
 
                     }else{
-                        if(isset($keyword->last_positions[$v])) {
+                        if(isset($keyword->last_positions[$v]) && $keyword->last_positions[$v] < 100) {
                             $row->put($i, view('monitoring.partials.show.position', ['position' => $keyword->last_positions[$v]])->render());
                         }else
                             $row->put($i, '-');
