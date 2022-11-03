@@ -577,6 +577,23 @@
                     {
                         data: "group",
                         title: "Группа",
+                        render: function(data){
+
+                            let span_for_search = $('<span />', {
+                                class: "d-none"
+                            }).text(data);
+
+                            let input = $('<input />', {
+                                class: "form-control form-control-border p-0 my-group",
+                                placeholder: "Группа",
+                                value: data,
+                            }).css({
+                                background: "none",
+                                height: "auto"
+                            });
+
+                            return input[0].outerHTML + span_for_search[0].outerHTML;
+                        }
                     },
                     {
                         data: "target",
@@ -669,7 +686,7 @@
                 let csv = $('#csv-keywords');
                 let textarea = $('#textarea-keywords');
                 let duplicates = $('#remove-duplicates');
-                let group = $('#keyword-groups');
+                let groupInput = $('#keyword-groups');
                 let target = $('select[name="target"]');
 
                 let indexes = Math.max.apply(Math, table.rows().data().map(function(o) { return o.id ?? 0; }));
@@ -692,15 +709,19 @@
                                 $.each(result.data, function (i, value) {
                                     index = index + 1;
 
+                                    let group = groupInput.find('option:selected').text();
+                                    if(value[1])
+                                        group = value[1];
+
                                     if(duplicates.prop('checked')){
                                         let existed = $.grep(data, function(v) {
                                             return v.query === value[0];
                                         });
 
                                         if(existed.length === 0)
-                                            data.push({id: index, query: value[0], page: value[1], group: group.find('option:selected').text(), target: target.val()});
+                                            data.push({id: index, query: value[0], page: value[2], group: group, target: target.val()});
                                     }else{
-                                        data.push({id: index, query: value[0], page: value[1], group: group.find('option:selected').text(), target: target.val()});
+                                        data.push({id: index, query: value[0], page: value[2], group: group, target: target.val()});
                                     }
                                 });
 
@@ -732,9 +753,9 @@
                             });
 
                             if(existed.length === 0)
-                                data.push({id: index, query: value, page: relevant.val(), group: group.find('option:selected').text(), target: target.val()});
+                                data.push({id: index, query: value, page: relevant.val(), group: groupInput.find('option:selected').text(), target: target.val()});
                         }else{
-                            data.push({id: index, query: value, page: relevant.val(), group: group.find('option:selected').text(), target: target.val()});
+                            data.push({id: index, query: value, page: relevant.val(), group: groupInput.find('option:selected').text(), target: target.val()});
                         }
                     });
 

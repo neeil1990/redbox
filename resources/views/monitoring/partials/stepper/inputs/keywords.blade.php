@@ -56,7 +56,7 @@
 
                         <div class="form-group">
                             <label>Выбрать группу</label>
-                            <select class="form-control" name="group" id="keyword-groups" style="width: 100%;"></select>
+                            <select class="form-control" id="keyword-groups" style="width: 100%;"></select>
                         </div>
 
                         <div class="input-group mb-3">
