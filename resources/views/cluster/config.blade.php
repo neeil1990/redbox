@@ -26,6 +26,10 @@
             .bg-cluster-warning {
                 background: rgba(245, 226, 170, 0.5);
             }
+
+            .text-primary {
+                color: #007bff !important;
+            }
         </style>
     @endslot
     <div class="card">
@@ -38,11 +42,13 @@
                     <a class="nav-link admin-link"
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link admin-link active" href="{{ route('cluster.configuration') }}">
-                        {{ __('Module administration') }}
-                    </a>
-                </li>
+                @if($admin)
+                    <li class="nav-item">
+                        <a class="nav-link text-primary active" href="{{ route('cluster.configuration') }}">
+                            {{ __('Module administration') }}
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="card-body">
@@ -58,7 +64,8 @@
                                     <form action="{{ route('change.cluster.configuration') }}" method="post">
                                         @csrf
                                         @include('cluster.layouts.form')
-                                        <input type="submit" class="btn btn-secondary" value="Изменить стартовую конфигурацию">
+                                        <input type="submit" class="btn btn-secondary"
+                                               value="Изменить стартовую конфигурацию">
                                     </form>
                                 </div>
                             </div>
@@ -72,6 +79,7 @@
         <script>
             $('#start-analysis').remove()
             $('#phrases-form-block').remove()
+            $('#extra-block').remove()
         </script>
     @endslot
 @endcomponent

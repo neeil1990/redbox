@@ -184,7 +184,7 @@ class Cluster
                     continue;
                 }
                 foreach ($items2 as $item) {
-                    if (count(array_intersect($items[array_key_first($items)][0], $item[0])) >= 5) {
+                    if (count(array_intersect($items[array_key_first($items)][0], $item[0])) >= $minimum) {
                         $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
                         unset($clusters[$mainPhrase]);
                         break 2;

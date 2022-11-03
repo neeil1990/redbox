@@ -189,7 +189,7 @@ class ClusterController extends Controller
 
         $config = ClusterConfiguration::first();
 
-        return view('cluster.config', ['config' => $config]);
+        return view('cluster.config', ['config' => $config, 'admin' => User::isUserAdmin()]);
     }
 
     /**

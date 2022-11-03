@@ -30,6 +30,10 @@
             #repeat-scan > div > div > div.modal-body > div:nth-child(6) {
                 display: none;
             }
+
+            .text-primary {
+                color: #007bff !important;
+            }
         </style>
     @endslot
 
@@ -52,13 +56,16 @@
                     <a class="nav-link" href="{{ route('cluster') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active" href="{{ route('cluster.configuration') }}">{{ __('My projects') }}</a>
+                    <a class="nav-link admin-link active"
+                       href="{{ route('cluster.configuration') }}">{{ __('My projects') }}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
-                        {{ __('Module administration') }}
-                    </a>
-                </li>
+                @if($admin)
+                    <li class="nav-item">
+                        <a class="nav-link text-primary" href="{{ route('cluster.configuration') }}">
+                            {{ __('Module administration') }}
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="card-body">

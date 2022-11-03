@@ -26,6 +26,10 @@
             .bg-cluster-warning {
                 background: rgba(245, 226, 170, 0.5);
             }
+
+            .text-primary {
+                color: #007bff !important;
+            }
         </style>
     @endslot
 
@@ -53,11 +57,13 @@
                     <a class="nav-link admin-link"
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
-                        {{ __('Module administration') }}
-                    </a>
-                </li>
+                @if($admin)
+                    <li class="nav-item">
+                        <a class="nav-link text-primary" href="{{ route('cluster.configuration') }}">
+                            {{ __('Module administration') }}
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="card-body">
