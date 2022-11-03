@@ -27,7 +27,7 @@ function renderResultTable(data) {
 
                 let changedBg = "basedNormal" in information;
                 let sites = ''
-                let fullUrls = information['sites'].join("\n\r")
+                let fullUrls = information['sites'].join("\r")
 
                 $.each(information['sites'], function (key, site) {
                     sites +=

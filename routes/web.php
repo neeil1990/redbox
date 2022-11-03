@@ -303,46 +303,4 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $first =
-        'https://voronezh.leroymerlin.ru/catalogue/shtukaturki/dlya-naruzhnyh-rabot/
-
-https://www.avito.ru/voronezh/predlozheniya_uslug?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%be%d0%b2
-
-https://uslugi.yandex.ru/193-voronezh/category?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d1%81%d1%82%d0%b5%d0%bd+%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%b0
-
-https://dom-i-remont.info/posts/fasad-doma/vidy-fasadnyh-shtukaturok-harakteristiki-lidery-i-sekrety-otdelki/
-
-https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d0%b0%d1%8f%20%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d1%8b%d1%85%20%d1%80%d0%b0%d0%b1%d0%be%d1%82
-
-https://m-strana.ru/articles/otdelka-fasada-doma-shtukaturkoy/
-
-https://1pofasady.ru/shtukaturka/oshtukaturivanie-fasada
-
-https://st-par.ru/info/stati-o-sukhikh-smesyakh/shtukaturka-fasada/
-
-https://stroy-podskazka.ru/shtukaturka/fasadnaya/
-
-https://vrn.profi.ru/remont/malyarnye-shtukaturnye-raboty/shtukatury/shtukaturka-sten/shtukaturka-fasada/
-
-https://prodekorsten.com/vyravnivanie/fasada/shtukaturka-fasada.html
-
-https://www.youtube.com/playlist?list=pluivzwm_q9lz9x7bf9mxin8zpkdwtn_of
-
-https://dekoriko.ru/shtukaturka/fasadnaya/
-
-https://voronezh.myguru.ru/services/fasadnye-raboty/oshtukaturivanie-fasada-zdaniya/
-
-https://www.forumhouse.ru/journal/articles/4446-shtukaturka-fasada-doma
-
-https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/kakuyu-vybrat-shtukaturku-dlya-fasada.html
-
-https://lestep.pro/2018/04/06/kak-samostoyatelno-oshtukaturit-fasad-doma-materialy-tehnologii-etapnost-rabot/
-
-https://kronotech.ru/publications/shtukaturka-naruzhnyh-sten-doma
-
-https://www.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/fasadnaya/
-
-https://expert-dacha.pro/stroitelstvo/steny/otdelka-fasada/shtukaturka/kakaya-luchshe-vidy.html';
-
-    dd(explode("\n", $first));
 });
