@@ -17,18 +17,7 @@ class TextAnalyzer extends Model
      */
     public static function curlInit($link)
     {
-        $headers = [
-            "Accept: */*",
-            "Accept-Language: ru",
-            "Accept-Encoding: gzip, deflate",
-            "Cache-Control: max-age=259200",
-            "Pragma: no-cache",
-            "Via: 1.0 gsg-server.sitegroup:3129 (squid/2.6.STABLE5)",
-            "Connection: Keep-Alive"
-        ];
-
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
         curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
         curl_setopt($curl, CURLOPT_COOKIE, 'realauth=SvBD85dINu3; expires=Sat, 25 Feb 2030 02:16:43 GMT; path=/; SameSite=Lax');
@@ -55,7 +44,6 @@ class TextAnalyzer extends Model
     {
         $userAgents = [
             //Mozilla Firefox
-            'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)',
             'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0',
             'Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0',
             //opera
