@@ -613,22 +613,6 @@
                                                placeholder="max">
                                     </div>
                                 </th>
-                                <th class='passages-elem'>
-                                    <div>
-                                        <input class="w-100" type="number" name="minAVGPassages" id="minAVGPassages"
-                                               placeholder="min">
-                                        <input class="w-100" type="number" name="maxAVGPassages" id="maxAVGPassages"
-                                               placeholder="max">
-                                    </div>
-                                </th>
-                                <th class='passages-elem'>
-                                    <div>
-                                        <input class="w-100" type="number" name="minPassages" id="minPassages"
-                                               placeholder="min">
-                                        <input class="w-100" type="number" name="maxPassages" id="maxPassages"
-                                               placeholder="max">
-                                    </div>
-                                </th>
                             </tr>
                             <tr style="position: relative; z-index: 100">
                                 <th></th>
@@ -732,8 +716,6 @@
                                         </span>
                                     </span>
                                 </th>
-                                <th class='passages-elem'>Среднее кол-во повторений в пассажах</th>
-                                <th class='passages-elem'>Количество повторений в пассажах</th>
                             </tr>
                             </thead>
                             <tbody id="unigramTBody">

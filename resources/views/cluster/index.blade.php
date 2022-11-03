@@ -37,8 +37,9 @@
 
     <div id="toast-container" class="toast-top-right error-message">
         <div class="toast toast-error" aria-live="assertive" style="display:none;">
-            <div
-                class="toast-message error-msg">{{ __('An unexpected error has occurred, please contact the administrator') }}</div>
+            <div class="toast-message error-msg">
+                {{ __('An unexpected error has occurred, please contact the administrator') }}
+            </div>
         </div>
     </div>
 
