@@ -37,9 +37,9 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param int $attempt
-     * @return array|Exception|null
+     * @return array|null
      */
-    public function getXMLResponse(int $attempt = 1)
+    public function getXMLResponse(int $attempt = 1): ?array
     {
         try {
             if ($attempt === 1) {
@@ -68,10 +68,13 @@ class SimplifiedXmlFacade extends XmlFacade
                 TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
             }
         } catch (\Throwable $e) {
-
+            Log::debug('xml facade error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
         }
 
-        Log::debug('attempt', [$attempt]);
         return $this->getXMLResponse($attempt + 1);
     }
 
@@ -91,7 +94,7 @@ class SimplifiedXmlFacade extends XmlFacade
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-        $response = file_get_contents(html_entity_decode($url));
+        $response = file_get_contents($url);
 
         $xml = $this->load($response);
 

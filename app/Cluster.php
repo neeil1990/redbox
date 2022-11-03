@@ -99,6 +99,7 @@ class Cluster
             $iterator++;
             $xml->setQuery($phrase);
             $sites = $xml->getXMLResponse();
+            Log::debug('sites', [$sites]);
             if ($sites !== null) {
                 $this->sites[$phrase]['sites'] = $sites;
             } else {
