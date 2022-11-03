@@ -153,7 +153,7 @@ class ClusterController extends Controller
      */
     public function showResult(ClusterResults $cluster): View
     {
-        if ($cluster->user_id !== Auth::id() && $cluster->user_id !== User::isUserAdmin()) {
+        if ($cluster->user_id !== Auth::id() && !User::isUserAdmin()) {
             return abort(403);
         }
 
