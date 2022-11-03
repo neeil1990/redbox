@@ -23,7 +23,6 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             "    </div>" +
             "</th>"
         )
-
     } else {
         $('.passages-elem').remove()
     }
@@ -296,16 +295,14 @@ function renderMainTr(tBody, key, wordWorm, searchPassages) {
         "   <td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>"
 
     if (searchPassages) {
-        newRow += "   <td class='passages-elem'>" + avgInPassages + "</td>" +
+        newRow += "<td class='passages-elem'>" + avgInPassages + "</td>" +
             "   <td class='passages-elem " + myPassagesWarning + "'>" + repeatInPassagesMainPage + "</td> " +
             "</tr>"
     } else {
         newRow += "</tr>";
     }
 
-    tBody.append(
-        newRow
-    )
+    tBody.append(newRow)
 }
 
 function renderChildTr(elem, key, word, stats) {
