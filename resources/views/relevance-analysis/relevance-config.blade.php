@@ -57,7 +57,7 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-4">
                         <div class="card card-primary">
                             <div class="card-header">
                                 <h3 class="card-title">{{ __('Analyzer Settings') }}</h3>
@@ -286,7 +286,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-4">
                         <div class="card card-success">
                             <div class="card-header">
                                 <h3 class="card-title">{{ __('Settings for auto-cleaning results') }}</h3>

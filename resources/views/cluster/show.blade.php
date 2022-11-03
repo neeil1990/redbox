@@ -53,12 +53,11 @@
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active" href="#">{{ __('My project') }}</a>
+                    <a class="nav-link admin-link active" href="{{ route('cluster.configuration') }}">{{ __('My project') }}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link admin-link"
-                       href="#">{{ __('Module administration') }}</a>
-                </li>
+                <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
+                    {{ __('Module administration') }}
+                </a>
             </ul>
         </div>
         <div class="card-body">

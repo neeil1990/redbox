@@ -10,7 +10,9 @@ function getData(save = $('#save').val()) {
         searchBased: $('#searchBased').is(':checked'),
         searchPhrases: $('#searchPhrases').is(':checked'),
         searchTarget: $('#searchTarget').is(':checked'),
-        progressId: $('#progressId').val()
+        progressId: $('#progressId').val(),
+        domain: $('#domain-textarea').val(),
+        comment: $('#comment-textarea').val()
     };
 }
 
@@ -21,4 +23,16 @@ function setProgressBarStyles(percent) {
         width: percent + '%'
     })
     $('.progress-bar').html(percent + '%');
+}
+
+$('#save').on('change', function () {
+    renderExtraBlock()
+})
+
+function renderExtraBlock() {
+    if ($('#save').val() === '1') {
+        $('#extra-block').show()
+    } else {
+        $('#extra-block').hide()
+    }
 }

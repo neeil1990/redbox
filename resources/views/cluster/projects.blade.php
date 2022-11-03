@@ -52,11 +52,12 @@
                     <a class="nav-link" href="{{ route('cluster') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active" href="#">{{ __('My projects') }}</a>
+                    <a class="nav-link admin-link active" href="{{ route('cluster.configuration') }}">{{ __('My projects') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link"
-                       href="#">{{ __('Module administration') }}</a>
+                    <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
+                        {{ __('Module administration') }}
+                    </a>
                 </li>
             </ul>
         </div>
@@ -73,6 +74,7 @@
                             <th>Количество групп</th>
                             <th>ТОП</th>
                             <th>Режим</th>
+                            <th>{{ __('Region') }}</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -94,6 +96,7 @@
                                 <td>{{ $project->count_clusters }}</td>
                                 <td>{{ $project->top }}</td>
                                 <td>{{ $project->clustering_level }}</td>
+                                <td class="project-region">{{ $project->region }}</td>
                                 <td>
                                     <div class="d-flex flex-column">
                                         <button type="button"

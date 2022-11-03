@@ -298,6 +298,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/repeat-analysis', 'ClusterController@repeatAnalysis')->name('repeat.cluster.analysis');
     Route::get('/show-cluster-result/{cluster}', 'ClusterController@showResult')->name('show.cluster.result');
     Route::get('/download-cluster-result/{cluster}/{type}', 'ClusterController@downloadClusterResult')->name('download.cluster.result');
+    Route::get('/cluster-configuration', 'ClusterController@clusterConfiguration')->name('cluster.configuration');
+    Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
 });
 
 Route::get('/test', function () {

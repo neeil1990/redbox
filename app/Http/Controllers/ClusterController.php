@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Cluster;
+use App\ClusterConfiguration;
 use App\ClusterProgress;
 use App\ClusterResults;
 use App\Common;
@@ -10,8 +11,10 @@ use App\Exports\ClusterResultExport;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -25,7 +28,7 @@ class ClusterController extends Controller
     {
         $admin = User::isUserAdmin();
 
-        return view('cluster.index', ['admin' => $admin, 'results' => $result]);
+        return view('cluster.index', ['admin' => $admin, 'results' => $result, 'config' => ClusterConfiguration::first()]);
     }
 
     /**
@@ -102,10 +105,14 @@ class ClusterController extends Controller
         $admin = User::isUserAdmin();
         $projects = ClusterResults::where('user_id', '=', Auth::id())->get([
             'id', 'user_id', 'comment', 'domain', 'count_phrases', 'count_clusters', 'clustering_level',
-            'top', 'created_at'
+            'top', 'created_at', 'request'
         ]);
 
-        return view('cluster.projects', ['projects' => $projects, 'admin' => $admin]);
+        foreach ($projects as $key => $project) {
+            $project->region = Cluster::getRegionName(json_decode($project->request, true)['region']);
+        }
+
+        return view('cluster.projects', ['projects' => $projects, 'admin' => $admin, 'config' => ClusterConfiguration::first()]);
     }
 
     /**
@@ -170,4 +177,43 @@ class ClusterController extends Controller
         $file = Excel::download(new ClusterResultExport($cluster), 'cluster_result.' . $type);
         Common::fileExport($file, $type, 'cluster_result');
     }
+
+    /**
+     * @return View
+     */
+    public function clusterConfiguration(): View
+    {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
+        $config = ClusterConfiguration::first();
+
+        return view('cluster.config', ['config' => $config]);
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function changeClusterConfiguration(Request $request): RedirectResponse
+    {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
+        $config = ClusterConfiguration::first();
+
+        $config->region = $request->input('region');
+        $config->count = $request->input('count');
+        $config->clustering_level = $request->input('clustering_level');
+        $config->engine_version = $request->input('engine_version');
+        $config->save_results = $request->input('save');
+        $config->search_phrased = $request->input('searchPhrases') === 'on';
+        $config->search_target = $request->input('searchTarget') === 'on';
+        $config->save();
+
+        return Redirect::route('cluster.configuration');
+    }
+
 }

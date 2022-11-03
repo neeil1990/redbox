@@ -1,6 +1,7 @@
 <div class="form-group required">
     <label>{{ __('Region') }}</label>
     {!! Form::select('region', array_unique([
+        $config->region => $config->region,
       '213' => __('Moscow'),
        '1' => __('Moscow and the area'),
        '20' => __('Arkhangelsk'),
@@ -67,22 +68,24 @@
 </div>
 
 <div class="form-group required">
-    <label>{{ __('Top 10/20') }}</label>
+    <label>{{ __('TOP') }}</label>
     {!! Form::select('count', array_unique([
+       $config->count => $config->count,
         '10' => 10,
         '20' => 20,
         '30' => 30,
     ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
 </div>
 
-<div class="form-group required">
-    <label>{{ __('Phrases') }}</label>
+<div class="form-group required" id="phrases-form-block">
+    <label>{{ __('Key phrases') }}</label>
     {!! Form::textarea('phrases', null, ['class' => 'form-control', 'required', 'id'=>'phrases'] ) !!}
 </div>
 
 <div class="form-group required">
     <label>{{ __('clustering level') }}</label>
     {!! Form::select('clustering_level', [
+        $config->clustering_level => $config->clustering_level,
         'light' => 'light - 40%',
         'soft' => 'soft - 50%',
         'hard' => 'hard - 70%',
@@ -92,9 +95,10 @@
 <div class="form-group required">
     <label>Объединение кластеров</label>
     {!! Form::select('engine_version', [
-        'old' => 'Формирование на основе первой попавшейся фразы (old)',
-        'new' => 'Формирование на основе массива ссылок кластера (new)',
-        ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
+            $config->engine_version => $config->engine_version,
+            'old' => 'Формирование на основе первой попавшейся фразы (old)',
+            'new' => 'Формирование на основе массива ссылок кластера (new)',
+    ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 
 <div class="form-group required">
@@ -105,14 +109,28 @@
                 <span class="ui_tooltip_content" style="width: 300px">
                 Если вы сохраняете результаты, тогда вы сможете посмотреть результаты во вкладке "мои проекты" <br><br>
                 Если вы не сохраняете результаты, тогда вы сможете посмотреть результат только по завершению анализа,
-                при запуске следующего анализа изи перезагрузке страницы данные будут утеряны
+                при запуске следующего анализа или при перезагрузке страницы данные будут утеряны
                 </span>
             </span>
         </span>
     {!! Form::select('save', [
+        $config->save_results => $config->save_results,
         '1' => 'Сохранить',
         '0' => 'Не сохранять',
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
+</div>
+
+<div class="form-group required" id="extra-block">
+    <div class="row">
+        <div class="col-6 d-flex flex-column">
+            <label for="domain-textarea">Домен</label>
+            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"></textarea>
+        </div>
+        <div class="col-6 d-flex flex-column">
+            <label for="comment-textarea">Комментарий</label>
+            <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
+        </div>
+    </div>
 </div>
 
 <div class="form-group required">
@@ -122,12 +140,16 @@
     </div>
     <div>
         <label for="searchPhrases">Анализ фразовой частотности</label>
-        <input type="checkbox" name="searchPhrases" id="searchPhrases">
+        <input type="checkbox" name="searchPhrases" id="searchPhrases" @if($config->search_phrased) checked @endif>
     </div>
     <div>
         <label for="searchTarget">Анализ точной частотности</label>
-        <input type="checkbox" name="searchTarget" id="searchTarget">
+        <input type="checkbox" name="searchTarget" id="searchTarget" @if($config->search_target) checked @endif>
     </div>
 </div>
 
 <input type="button" class="btn btn-secondary" id="start-analysis" data-dismiss="modal" value="{{ __('Analysis') }}">
+
+@slot('js')
+
+@endslot()
