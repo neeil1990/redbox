@@ -51,3 +51,26 @@ Route::get('location', function(Request $request){
     else
         return '';
 });
+
+Route::get('yandex-location-update', function(){
+
+    set_time_limit(300);
+
+    $file = 'yandex.txt';
+    $path = storage_path('location');
+
+    $city = $path .'/'. $file;
+    $arrCity = [];
+
+    $fp = fopen($city, "r");
+    if($fp){
+        while (($buffer = fgets($fp)) !== false)
+            $arrCity[] = trim($buffer);
+
+        fclose($fp);
+
+        $location = new Yandex();
+        foreach ($arrCity as $city)
+            $location->get($city);
+    }
+});
