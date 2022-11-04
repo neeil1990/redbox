@@ -39,6 +39,8 @@ class Cluster
 
     protected $newCluster;
 
+    protected $sites_json;
+
     public function __construct(array $request)
     {
         $this->count = $request['count'];
@@ -99,7 +101,6 @@ class Cluster
             $iterator++;
             $xml->setQuery($phrase);
             $sites = $xml->getXMLResponse();
-            Log::debug('sites', [$sites]);
             if ($sites !== null) {
                 $this->sites[$phrase]['sites'] = $sites;
             } else {
@@ -116,6 +117,7 @@ class Cluster
 
     protected function searchClusters()
     {
+        $this->sites_json = json_encode($this->sites);
         $minimum = $this->count * $this->clusteringLevel;
 
         if ($this->engineVersion === 'old') {
@@ -155,7 +157,7 @@ class Cluster
                     foreach ($clusters[$phrase2] as $elems) {
                         foreach ($elems as $elem) {
                             if (count(array_intersect($elem, $sites2['sites'])) >= $minimum) {
-                                $clusters[$phrase][$phrase2][] = $sites2['sites'];
+                                $clusters[$phrase][$phrase2] = $sites2['sites'];
                                 $willClustered[$phrase2] = true;
                                 break 2;
                             }
@@ -163,18 +165,13 @@ class Cluster
                     }
                 } else {
                     if (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
-                        $clusters[$phrase][$phrase2][] = $sites2['sites'];
+                        $clusters[$phrase][$phrase2] = $sites2['sites'];
                         $willClustered[$phrase2] = true;
                     }
                 }
             }
         }
 
-        foreach ($clusters as $phrase => $item) {
-            foreach ($item as $itemPhrase => $elems) {
-                $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
-            }
-        }
 
         foreach ($clusters as $mainPhrase => $items) {
             if (count($items) > 1) {
@@ -185,14 +182,22 @@ class Cluster
                     continue;
                 }
                 foreach ($items2 as $item) {
-                    if (count(array_intersect($items[array_key_first($items)][0], $item[0])) >= $minimum) {
+                    if (count(array_intersect($items[array_key_first($items)], $item)) >= $minimum) {
                         $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
-                        unset($clusters[$mainPhrase]);
+                        unset($this->clusters[$mainPhrase]);
                         break 2;
                     }
                 }
             }
         }
+
+        foreach ($clusters as $phrase => $item) {
+            foreach ($item as $itemPhrase => $elems) {
+                $clusters[$phrase][$itemPhrase]['sites'] = $elems;
+            }
+        }
+
+        $this->clusters = $clusters;
     }
 
     protected function calculateClustersInfo()
@@ -351,6 +356,7 @@ class Cluster
         $this->newCluster->comment = $this->request['comment'];
         $this->newCluster->top = $this->count;
         $this->newCluster->request = json_encode($this->request);
+        $this->newCluster->sites_json = $this->sites_json;
 
         $this->newCluster->save();
     }

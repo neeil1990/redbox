@@ -74,13 +74,13 @@
                     <table id="my-cluster-projects" class="table table-bordered table-hover">
                         <thead>
                         <tr>
-                            <th>Дата анализа</th>
-                            <th>Домен</th>
-                            <th>Комментарий</th>
-                            <th>Количество фраз</th>
-                            <th>Количество групп</th>
-                            <th>ТОП</th>
-                            <th>Режим</th>
+                            <th>{{ __('Analysis date') }}</th>
+                            <th>{{ __('Domain') }}</th>
+                            <th>{{ __('Comment') }}</th>
+                            <th>{{ __('Number of phrases') }}</th>
+                            <th>{{ __('Number of groups') }}</th>
+                            <th>{{ __('TOP') }}</th>
+                            <th>{{ __('Mode') }}</th>
                             <th>{{ __('Region') }}</th>
                             <th></th>
                         </tr>
@@ -111,17 +111,18 @@
                                                 data-target="#repeat-scan"
                                                 data-order="{{ $project->id }}"
                                                 class="btn btn-secondary mb-2 repeat-scan">
-                                            Повторить анализ
+                                            {{ __('Repeat analysis') }}
                                         </button>
                                         <a class="btn btn-secondary mb-2"
-                                           href="{{ route('show.cluster.result', $project->id) }}" target="_blank">Просмотр
-                                            результатов</a>
+                                           href="{{ route('show.cluster.result', $project->id) }}" target="_blank">
+                                            {{ __('View results') }}
+                                        </a>
                                         <a class="btn btn-secondary mb-2"
                                            href="/download-cluster-result/{{$project->id}}/csv"
-                                           target="_blank">Скачать csv</a>
+                                           target="_blank">{{ __('Download csv') }}</a>
                                         <a class="btn btn-secondary mb-2"
                                            href="/download-cluster-result/{{$project->id}}/xls"
-                                           target="_blank">Скачать xls</a>
+                                           target="_blank">{{ __('Download xls') }}</a>
                                     </div>
                                 </td>
                             </tr>

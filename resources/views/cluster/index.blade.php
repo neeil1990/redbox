@@ -78,21 +78,21 @@
                     </div>
 
                     <div id="block-for-downloads-files" style="display: none">
-                        <h3>Таблица кластеров</h3>
+                        <h3>{{ __('Cluster table') }}</h3>
                         <table id="hidden-result-table" style="display: none">
                             <thead>
                             <tr>
                                 <th colspan="4"></th>
-                                <th class="centered-text" colspan="3">Частотность</th>
+                                <th class="centered-text" colspan="3">{{ __('Frequency') }}</th>
                             </tr>
                             <tr>
-                                <th>Порядковый номер</th>
-                                <th>Порядковый номер в кластере</th>
-                                <th>Ключевой запрос</th>
-                                <th>Группа</th>
-                                <th>Базовая</th>
-                                <th>"Фразовая"</th>
-                                <th>"!Точная"</th>
+                                <th>{{ __('Serial number') }}</th>
+                                <th>{{ __('Sequence number in the cluster') }}</th>
+                                <th>{{ __('Key query') }}</th>
+                                <th>{{ __('Group') }}</th>
+                                <th>{{ __('Base') }}</th>
+                                <th>"{{ __('Phrasal') }}"</th>
+                                <th>"!{{ __('Target') }}"</th>
                             </tr>
                             </thead>
                             <tbody id="hidden-table-tbody">
@@ -102,8 +102,8 @@
                             <table id="clusters-table" class="table table-bordered dtr-inline">
                                 <thead>
                                 <tr>
-                                    <th>Кластеры</th>
-                                    <th style="min-width: 400px;">Конкуренты</th>
+                                    <th>{{ __('Clusters') }}</th>
+                                    <th style="min-width: 400px;">{{ __('Competitors') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody id="clusters-table-tbody">

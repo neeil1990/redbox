@@ -303,4 +303,636 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
+    $jayParsedAry = [
+        "декоративная отделка фасадов" => [
+            "декоративная отделка фасадов" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://stroy-podskazka.ru/dom/otdelka-fasada/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b9%20%d0%b4%d0%b5%d0%ba%d0%be%d1%80%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d1%82%d0%b4%d0%b5%d0%bb%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://www.avito.ru/moskva_i_mo?q=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b9+%d0%b4%d0%b5%d0%ba%d0%be%d1%80",
+                "https://www.ivd.ru/dizajn-i-dekor/zagorodnyj-dom/kak-ukrasit-fasad-60-realnyx-variantov-22971",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://uslugi.yandex.ru/213-moscow/category?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b9+%d0%b4%d0%b5%d0%ba%d0%be%d1%80",
+                "https://strbani.ru/fasad-doma/",
+                "https://www.houzz.ru/foto/krasivye-doma-foto-fasadov-phbr0-bp~t_13935",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://artfasad.com/fasad/",
+                "https://planken.guru/otdelka-i-montazh-fasadov/dekorativnaya-otdelka-fasadov-raznoobrazie-otdelochnyh-materialov.html",
+                "https://kronotech.ru/fasadnye-raboty/otdelka-fasada"
+            ]
+        ],
+        "мокрый фасад воронеж" => [
+            "мокрый фасад воронеж" => [
+                "https://www.avito.ru/voronezh/predlozheniya_uslug?q=%d0%bc%d0%be%d0%ba%d1%80%d1%8b%d0%b9+%d1%84%d0%b0%d1%81%d0%b0%d0%b4",
+                "https://dekor36.com/mokriy-fasad.html",
+                "https://36-fasad.ru/nashi-uslugi/mokryj-fasad",
+                "http://fasad36.ru/services/mokryy-fasad/",
+                "https://uslugi.yandex.ru/193-voronezh/category?text=%d1%81%d0%b4%d0%b5%d0%bb%d0%b0%d1%82%d1%8c+%d0%bc%d0%be%d0%ba%d1%80%d1%8b%d0%b9+%d1%84%d0%b0%d1%81%d0%b0%d0%b4",
+                "https://kronvest.net/voronezh/wet-fasad",
+                "https://vrn.profi.ru/remont/montazh-mokrogo-fasada/",
+                "http://xn--36-glchqd5adeocin.xn--p1ai/mokryi-fasad.html",
+                "https://voronezh.vse-podklyuch.ru/stroitelstvo/oblitsovka-fasadov/mokryy-fasad/",
+                "https://uslugio.com/voronezh/1/9/mokryy-fasad",
+                "https://fasad-rem.ru/services/%d0%bc%d0%be%d0%ba%d1%80%d1%8b%d0%b9-%d1%84%d0%b0%d1%81%d0%b0%d0%b4/",
+                "http://teplofasad36.ru/morriy-fasad",
+                "http://index-fs.ru/otdelka-mokrym-fasadom",
+                "https://rskpanorama.com/uslugi/otdelochnye-raboty/montazh-mokrogo-fasada/",
+                "https://sezrem.ru/mokryj-fasad/",
+                "https://voronezh.stroyportal.ru/firms/section-mokrye-fasady-2933/",
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/mokryy-fasad-s-utepleniem/",
+                "https://www.remontnik.ru/voronezh/uteplenie_fasadov_mokryi_fasad/",
+                "https://voronezh.urfomarket.ru/montazh_mokrogo_fasada_pod_klyuch.php",
+                "https://visota-36.ru/uslugi/fasadnye-raboty/uteplenie-fasadov/"
+            ]
+        ],
+        "штукатурка короед купить в воронеже" => [
+            "штукатурка короед купить в воронеже" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "http://fasad36.ru/catalog/koroed/",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://stroybaza-vrn.ru/katalog/suhie-stroitelmie-smesi/%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f-%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0",
+                "https://lidecor.ru/category/pokrytiya-koroed/",
+                "https://voronezh.yavitrina.ru/dekorativnye-shtukaturki-koroed",
+                "https://voronezh.compumir.ru/fasadnaja-shtukaturka-koroed",
+                "https://voronezh.neopod.ru/shtukaturki-fasadnye-koroed-bergauf"
+            ],
+            "штукатурка короед цена в воронеже" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "http://fasad36.ru/catalog/koroed/",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://stroybaza-vrn.ru/katalog/suhie-stroitelmie-smesi/%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f-%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0",
+                "https://voronezh.yavitrina.ru/shtukaturka-koroed",
+                "https://lidecor.ru/category/dekorativnaya-shtukaturka-koroed/",
+                "https://voronez.gamma-cveta.ru/shtukaturki-dekorativnye-fakturnye-kraski-main/effekt-koroed/",
+                "https://voronezh.yamart.ru/shtukaturku-koroed-457562509/"
+            ],
+            "штукатурка короед цена воронеж" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "http://fasad36.ru/catalog/koroed/",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://voronezh.yavitrina.ru/shtukaturka-koroed",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://stroybaza-vrn.ru/katalog/suhie-stroitelmie-smesi/%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f-%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0",
+                "https://voronezh.neopod.ru/shtukaturki-fasadnye-koroed-bergauf",
+                "https://voronezh.compumir.ru/shtukaturka-koroed",
+                "https://lidecor.ru/category/dekorativnaya-shtukaturka-koroed/"
+            ]
+        ]
+    ];
+
+    dd($jayParsedAry);
+
+    $array = [
+        "декоративная отделка фасадов" => [
+            "sites" => [
+                "https://stroy-podskazka.ru/dom/otdelka-fasada/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://www.avito.ru/moskva_i_mo?q=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b9+%d0%b4%d0%b5%d0%ba%d0%be%d1%80",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b9%20%d0%b4%d0%b5%d0%ba%d0%be%d1%80%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d1%82%d0%b4%d0%b5%d0%bb%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://strbani.ru/fasad-doma/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://uslugi.yandex.ru/213-moscow/category?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b9+%d0%b4%d0%b5%d0%ba%d0%be%d1%80",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://planken.guru/otdelka-i-montazh-fasadov/dekorativnaya-otdelka-fasadov-raznoobrazie-otdelochnyh-materialov.html",
+                "https://www.ivd.ru/dizajn-i-dekor/zagorodnyj-dom/kak-ukrasit-fasad-60-realnyx-variantov-22971",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://www.houzz.ru/foto/krasivye-doma-foto-fasadov-phbr0-bp~t_13935",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://artfasad.com/fasad/",
+                "https://dekor-fasada.ru/katalog-fasadnogo-dekora"
+            ]
+        ],
+        "декоративная штукатурка короед цена" => [
+            "sites" => [
+                "https://leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://market.yandex.ru/search?text=%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f%20%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d1%86%d0%b5%d0%bd%d0%b0",
+                "https://www.ozon.ru/category/shtukaturka-koroed/",
+                "https://www.avito.ru/moskva/dlya_doma_i_dachi?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://www.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://moscow.petrovich.ru/catalog/6654/dekorativnaya-shtukaturka-koroed/",
+                "https://moskva.regmarkets.ru/shtukaturka-koroed/",
+                "https://st-par.ru/catalog/dekorativnye-shtukaturki/koroed/",
+                "https://www.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://www.mirkrasok.ru/catalog/shtukaturki_dekorativnye_i_fakturnye_kraski-effekt_koroed/work_type-is-naruzhnye_raboty/",
+                "https://msk.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://www.baufasad.ru/catalog/dekorativnaya_shtukaturka_dlya_mokrogo_fasada/filter/texture-is-koroed/",
+                "https://msk.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:34399_koroied&68946_dlia-naruzhnykh-rabot",
+                "https://www.strd.ru/suhie_smesi/dekorativnie_stukaturki/koroed/",
+                "https://glavsnab.net/shtukaturka-koroed",
+                "https://www.gipsoplita.ru/otdelochnye-materialy/dekorativnaja-shtukaturka/shtukaturka-koroed/",
+                "https://www.sdvor.com/moscow/s/shtukaturka-dekorativnaja-koroed21",
+                "https://kraskitorg.ru/collection/fakturnaya-shtukaturka-koroed",
+                "https://frontmaster.su/catalog/otdelochnye-materialy/dekorativnaya-shtukaturka/dekorativnaya-shtukaturka-koroed/",
+                "https://arhitektor.ru/s-shtukaturka-koroed/"
+            ]
+        ],
+        "короед воронеж" => [
+            "sites" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d0%ba%d1%83%d0%bf%d0%b8%d1%82%d1%8c%20%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d1%83%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://uslugi.yandex.ru/193-voronezh/category?text=%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "http://fasad36.ru/catalog/koroed/",
+                "https://36-fasad.ru/nashi-uslugi/otdelka-dekorativnoj-shtukaturkoj",
+                "https://stroidom36.ru/shtukaturka-koroed/",
+                "https://lidecor.ru/category/pokrytiya-koroed/",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "http://xn--b1adccftyeadasf.xn--p1ai/shtukaturki-i-gruntovki-76/shtukaturka/",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4"
+            ]
+        ],
+        "короед цена" => [
+            "sites" => [
+                "https://leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://market.yandex.ru/search?text=%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%b0%d1%8f%20%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d1%81%d1%82%d0%be%d0%b8%d0%bc%d0%be%d1%81%d1%82%d1%8c",
+                "https://www.ozon.ru/category/shtukaturka-koroed/",
+                "https://www.avito.ru/moskva/dlya_doma_i_dachi?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://moscow.petrovich.ru/catalog/6654/dekorativnaya-shtukaturka-koroed/",
+                "https://www.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://www.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://moskva.regmarkets.ru/shtukaturka-koroed/",
+                "https://www.mirkrasok.ru/catalog/shtukaturki_dekorativnye_i_fakturnye_kraski-effekt_koroed/",
+                "https://st-par.ru/catalog/dekorativnye-shtukaturki/koroed/",
+                "https://msk.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://glavsnab.net/shtukaturka-koroed",
+                "https://msk.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:34399_koroied&68946_dlia-naruzhnykh-rabot",
+                "https://moskva.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "https://www.sdvor.com/moscow/s/shtukaturka-dekorativnaja-koroed21",
+                "https://www.strd.ru/suhie_smesi/dekorativnie_stukaturki/koroed/",
+                "https://moskeram.ru/catalog/sukhie_smesi/shtukaturka_fasadnaya/filter/fasadnaya_shtukaturka_koroyed/",
+                "https://bau-store.ru/stroitelnyye-materialy/shtukaturka-koroed/",
+                "https://www.gipsoplita.ru/otdelochnye-materialy/dekorativnaja-shtukaturka/shtukaturka-koroed/",
+                "https://kraskitorg.ru/collection/fakturnaya-shtukaturka-koroed"
+            ]
+        ],
+        "короед штукатурка воронеж" => [
+            "sites" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "http://fasad36.ru/catalog/koroed/",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://lidecor.ru/category/pokrytiya-koroed/",
+                "https://stroybaza-vrn.ru/katalog/suhie-stroitelmie-smesi/%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f-%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0",
+                "https://voronezh.yavitrina.ru/shtukaturka-koroed",
+                "https://craftflex.ru/catalog/sukhie-stroitelnye-smesi/koroed/",
+                "https://voronezh.compumir.ru/shtukaturka-koroed"
+            ]
+        ],
+        "короед штукатурка цена" => [
+            "sites" => [
+                "https://leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://market.yandex.ru/search?text=%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d1%86%d0%b5%d0%bd%d0%b0%20%d0%b7%d0%b0%20%d0%bc%d0%b5%d1%88%d0%be%d0%ba%20%d0%bc%d0%be%d1%81%d0%ba%d0%b2%d0%b0",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://www.avito.ru/moskva/dlya_doma_i_dachi?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://moskva.regmarkets.ru/shtukaturka-koroed/",
+                "https://www.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://moscow.petrovich.ru/catalog/6654/dekorativnaya-shtukaturka-koroed/",
+                "https://www.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://www.mirkrasok.ru/catalog/shtukaturki_dekorativnye_i_fakturnye_kraski-effekt_koroed/work_type-is-naruzhnye_raboty/",
+                "https://st-par.ru/catalog/dekorativnye-shtukaturki/koroed/",
+                "https://msk.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://www.strd.ru/suhie_smesi/dekorativnie_stukaturki/koroed/",
+                "https://msk.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:34399_koroied&68946_dlia-naruzhnykh-rabot",
+                "https://www.gipsoplita.ru/otdelochnye-materialy/dekorativnaja-shtukaturka/shtukaturka-koroed/",
+                "https://glavsnab.net/shtukaturka-koroed",
+                "https://kraskitorg.ru/collection/fakturnaya-shtukaturka-koroed",
+                "https://www.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/s_effektom_koroeda/",
+                "https://moskva.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "https://www.sdvor.com/moscow/s/shtukaturka-dekorativnaja-koroed21",
+                "https://bau-store.ru/stroitelnyye-materialy/shtukaturka-koroed/"
+            ]
+        ],
+        "материалы для отделки фасада" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://stroy-podskazka.ru/materialy/fasadnye-luchshaya-oblicovka/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://market.yandex.ru/search?text=%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b%20%d0%b4%d0%bb%d1%8f%20%d0%be%d1%82%d0%b4%d0%b5%d0%bb%d0%ba%d0%b8%20%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%b0",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://www.alta-profil.ru/client-center/articles/sravnenie-novinok-na-rynke-fasadnyh-materialov/",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://leroymerlin.ru/catalogue/fasadnye-paneli/",
+                "https://domof.ru/articles/kakoy-material-vybrat-dlya-otdelki-fasada-zdaniya/",
+                "https://markakachestva.ru/rating-of/2247-luchshie-materialy-dlja-oblicovki-fasada.html",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/otdelochnye-materialy-dlya-fasadov-chastnyx-domov.html",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://alfakrov.com/blog/sovety_pokupatelyam/chem_obshit_dom_snaruzhi_deshevo_i_krasivo_foto_tseny_kharakteristiki_i_top_7_luchshikh_materialov/",
+                "https://dzen.ru/media/tablichnik/luchshie-materialy-dlia-otdelki-fasada-chastnogo-doma-5f0ffd317e2b585adad67632",
+                "https://www.ozon.ru/category/otdelochnye-materialy-dlya-fasada/"
+            ]
+        ],
+        "материалы для отделки фасада дома" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://stroy-podskazka.ru/materialy/fasadnye-luchshaya-oblicovka/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://markakachestva.ru/rating-of/2247-luchshie-materialy-dlja-oblicovki-fasada.html",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b5%20%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://www.alta-profil.ru/client-center/articles/sravnenie-novinok-na-rynke-fasadnyh-materialov/",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://cvet-dom.ru/dachnyy-dom/top-materialov-dlya-otdelki-fasada-dom",
+                "https://dzen.ru/media/tablichnik/luchshie-materialy-dlia-otdelki-fasada-chastnogo-doma-5f0ffd317e2b585adad67632",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/kakoj-material-deshevle-i-luchshe-dlya-oblicovki-fasada-doma-obzor-top-9-populyarnyx-materialov.html",
+                "https://design-homes.ru/stroitelstvo-i-remont/nedorogo-fasad-doma",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://alfakrov.com/blog/sovety_pokupatelyam/chem_obshit_dom_snaruzhi_deshevo_i_krasivo_foto_tseny_kharakteristiki_i_top_7_luchshikh_materialov/",
+                "https://domof.ru/articles/kakoy-material-vybrat-dlya-otdelki-fasada-zdaniya/"
+            ]
+        ],
+        "материалы для отделки фасадов частных домов" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://stroy-podskazka.ru/materialy/fasadnye-luchshaya-oblicovka/",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://www.alta-profil.ru/client-center/articles/sravnenie-novinok-na-rynke-fasadnyh-materialov/",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b5%20%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://dzen.ru/media/tablichnik/luchshie-materialy-dlia-otdelki-fasada-chastnogo-doma-5f0ffd317e2b585adad67632",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/otdelochnye-materialy-dlya-fasadov-chastnyx-domov.html",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://markakachestva.ru/rating-of/2247-luchshie-materialy-dlja-oblicovki-fasada.html",
+                "https://www.tn.ru/journal/chem-otdelat-fasad-chastnogo-doma-podrobnyy-gayd-po-populyarnym-materialam/",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://alfakrov.com/blog/sovety_pokupatelyam/chem_obshit_dom_snaruzhi_deshevo_i_krasivo_foto_tseny_kharakteristiki_i_top_7_luchshikh_materialov/",
+                "https://geostart.ru/post/5550",
+                "https://kronotech.ru/publications/otdelka-fasada-chastnogo-doma"
+            ]
+        ],
+        "материалы для фасадной отделки дома" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://stroy-podskazka.ru/materialy/fasadnye-luchshaya-oblicovka/",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b5%20%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://markakachestva.ru/rating-of/2247-luchshie-materialy-dlja-oblicovki-fasada.html",
+                "https://www.alta-profil.ru/client-center/articles/sravnenie-novinok-na-rynke-fasadnyh-materialov/",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/otdelochnye-materialy-dlya-fasadov-chastnyx-domov.html",
+                "https://dzen.ru/media/tablichnik/luchshie-materialy-dlia-otdelki-fasada-chastnogo-doma-5f0ffd317e2b585adad67632",
+                "https://domof.ru/articles/kakoy-material-vybrat-dlya-otdelki-fasada-zdaniya/",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://alfakrov.com/blog/sovety_pokupatelyam/chem_obshit_dom_snaruzhi_deshevo_i_krasivo_foto_tseny_kharakteristiki_i_top_7_luchshikh_materialov/",
+                "https://design-homes.ru/stroitelstvo-i-remont/nedorogo-fasad-doma",
+                "https://www.bazaznaniyst.ru/varianty-krasivoj-i-deshevoj-obshivki-doma-snaruzhi/"
+            ]
+        ],
+        "материалы для фасадных работ" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b5%20%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://stroy-podskazka.ru/materialy/fasadnye-luchshaya-oblicovka/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://leroymerlin.ru/catalogue/fasadnye-paneli/",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://psk-holding.ru/catalog/fasad/",
+                "https://krishafasad.ru/shop/fasadnye-materialy/",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://www.ozon.ru/category/otdelochnye-materialy-dlya-fasada/",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/naruzhnaya-otdelka-doma-varianty.html",
+                "https://geostart.ru/post/18183",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://domof.ru/articles/kakoy-material-vybrat-dlya-otdelki-fasada-zdaniya/",
+                "https://zod07.ru/statji/kak-vybrat-fasadnye-materialy-dlya-otdelki-doma-snaruzhi",
+                "https://mk4s.ru/fasadnye-materialy/"
+            ]
+        ],
+        "мокрый фасад воронеж" => [
+            "sites" => [
+                "https://www.avito.ru/voronezh/predlozheniya_uslug?q=%d0%bc%d0%be%d0%ba%d1%80%d1%8b%d0%b9+%d1%84%d0%b0%d1%81%d0%b0%d0%b4",
+                "https://dekor36.com/mokriy-fasad.html",
+                "https://36-fasad.ru/nashi-uslugi/mokryj-fasad",
+                "http://fasad36.ru/services/mokryy-fasad/",
+                "https://uslugi.yandex.ru/193-voronezh/category?text=%d1%81%d0%b4%d0%b5%d0%bb%d0%b0%d1%82%d1%8c+%d0%bc%d0%be%d0%ba%d1%80%d1%8b%d0%b9+%d1%84%d0%b0%d1%81%d0%b0%d0%b4",
+                "https://kronvest.net/voronezh/wet-fasad",
+                "https://vrn.profi.ru/remont/montazh-mokrogo-fasada/",
+                "http://xn--36-glchqd5adeocin.xn--p1ai/mokryi-fasad.html",
+                "https://voronezh.vse-podklyuch.ru/stroitelstvo/oblitsovka-fasadov/mokryy-fasad/",
+                "https://uslugio.com/voronezh/1/9/mokryy-fasad",
+                "https://fasad-rem.ru/services/%d0%bc%d0%be%d0%ba%d1%80%d1%8b%d0%b9-%d1%84%d0%b0%d1%81%d0%b0%d0%b4/",
+                "http://teplofasad36.ru/morriy-fasad",
+                "http://index-fs.ru/otdelka-mokrym-fasadom",
+                "https://rskpanorama.com/uslugi/otdelochnye-raboty/montazh-mokrogo-fasada/",
+                "https://sezrem.ru/mokryj-fasad/",
+                "https://voronezh.stroyportal.ru/firms/section-mokrye-fasady-2933/",
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/mokryy-fasad-s-utepleniem/",
+                "https://www.remontnik.ru/voronezh/uteplenie_fasadov_mokryi_fasad/",
+                "https://voronezh.urfomarket.ru/montazh_mokrogo_fasada_pod_klyuch.php",
+                "https://visota-36.ru/uslugi/fasadnye-raboty/uteplenie-fasadov/"
+            ]
+        ],
+        "облицовка фасада" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://www.avito.ru/moskva/predlozheniya_uslug?q=%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b0+%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%b0",
+                "https://stroy-podskazka.ru/dom/otdelka-fasada/",
+                "https://zoon.ru/msk/m/oblitsovka_fasada/",
+                "https://spk-fasad.ru/oblicovka-fasadov.html",
+                "https://uslugi.yandex.ru/213-moscow/category/remont-i-stroitelstvo/fasadnyie-rabotyi--1981",
+                "https://remont-book.com/oblicovka-fasada-zdaniya-kakoj-material-luchshe/",
+                "https://fasadblog.ru/otdelka-fasadov/",
+                "https://www.strd.ru/fasadi/",
+                "https://www.prof-fasady.ru/catalog/fasad-doma/otdelka/chastnogo/",
+                "https://www.timeout.ru/msk/uslugi/s_oblitsovka_fasada",
+                "https://www.project-home.ru/info/clauses/obliczovka-fasada-doma-vidyi-i-kakoj-material-i-instrumentyi-luchshe",
+                "https://mojdominfo.ru/oblicovka-fasada/",
+                "https://sovet-ingenera.com/obustroystvo/drugoe-obustroystvo/oblicovka-fasada-doma.html",
+                "https://www.tn.ru/journal/chem-otdelat-fasad-chastnogo-doma-podrobnyy-gayd-po-populyarnym-materialam/",
+                "https://proremdom.ru/services/otdelochnye-raboty/otdelochnye-raboty-fasada/",
+                "https://stroyhelper.ru/fasad-doma/",
+                "https://design-homes.ru/stroitelstvo-i-remont/nedorogo-fasad-doma",
+                "https://markakachestva.ru/rating-of/2247-luchshie-materialy-dlja-oblicovki-fasada.html",
+                "https://dzen.ru/media/tablichnik/luchshie-materialy-dlia-otdelki-fasada-chastnogo-doma-5f0ffd317e2b585adad67632"
+            ]
+        ],
+        "отделка фасада" => [
+            "sites" => [
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://www.avito.ru/moskva/predlozheniya_uslug?q=%d0%be%d1%82%d0%b4%d0%b5%d0%bb%d0%ba%d0%b0+%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%be%d0%b2",
+                "https://stroy-podskazka.ru/dom/otdelka-fasada/",
+                "https://uslugi.yandex.ru/213-moscow/category/remont-i-stroitelstvo/fasadnyie-rabotyi--1981",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://www.alta-profil.ru/client-center/articles/otdelka-fasada-doma/",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://kronotech.ru/fasadnye-raboty/otdelka-fasada",
+                "https://market.yandex.ru/search?text=%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%bd%d1%8b%d0%b5%20%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b%20%d0%b4%d0%bb%d1%8f%20%d0%bd%d0%b0%d1%80%d1%83%d0%b6%d0%bd%d0%be%d0%b9%20%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b8%20%d0%b4%d0%be%d0%bc%d0%b0",
+                "https://profi.ru/remont/fasadnye-raboty/remont-fasadov/oblicovka-fasadov/",
+                "https://www.prof-fasady.ru/catalog/fasad-doma/otdelka/chastnogo/",
+                "https://domof.ru/articles/kakoy-material-vybrat-dlya-otdelki-fasada-zdaniya/",
+                "https://pikabu.ru/story/kakoy_material_luchshe_dlya_otdelki_fasada_doma_6671254",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html"
+            ]
+        ],
+        "отделка фасада дома" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://stroy-podskazka.ru/dom/otdelka-fasada/",
+                "https://uslugi.yandex.ru/213-moscow/category/remont-i-stroitelstvo/fasadnyie-rabotyi--1981",
+                "https://www.alta-profil.ru/client-center/articles/otdelka-fasada-doma/",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://strbani.ru/fasad-doma/",
+                "https://www.avito.ru/moskva/predlozheniya_uslug?q=%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b0+%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%b0",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://www.houzz.ru/foto/krasivye-doma-foto-fasadov-phbr0-bp~t_13935",
+                "https://www.tn.ru/journal/chem-otdelat-fasad-chastnogo-doma-podrobnyy-gayd-po-populyarnym-materialam/",
+                "https://www.hata.by/articles/otdelka_fasada_doma-9122/",
+                "https://stroyka-gid.ru/fasad/otdelka-fasada-doma-kakoy-material-luchshe.html",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/naruzhnaya-otdelka-doma-varianty.html",
+                "https://pikabu.ru/story/kakoy_material_luchshe_dlya_otdelki_fasada_doma_6671254",
+                "https://vekroof.ru/articles/luchshie-materialy-dlya-otdelki-fasada/"
+            ]
+        ],
+        "отделка фасада частного дома" => [
+            "sites" => [
+                "https://m-strana.ru/articles/chem-nedorogo-otdelat-fasad-doma/",
+                "https://stroy-podskazka.ru/dom/otdelka-fasada/",
+                "https://www.forumhouse.ru/journal/themes/66-varianty-otdelki-fasada-populyarnye-vidy-konstruktiv-osobennosti",
+                "https://remstroiblog.ru/natalia/2017/03/07/10-materialov-dlya-otdelki-fasada-chastnogo-doma/",
+                "https://dizlandshafta.ru/dizajn/doma/varianty-otdelki-fasada/",
+                "https://domstrousam.ru/sovremennye-materialy-dlya-fasada-doma-foto/",
+                "https://www.grandline.ru/informaciya/fasad-chastnogo-doma-otdelka/",
+                "https://www.alta-profil.ru/client-center/articles/otdelka-fasada-doma/",
+                "https://srbu.ru/otdelochnye-materialy/1950-varianty-otdelki-fasada-chastnogo-doma.html",
+                "https://uslugi.yandex.ru/213-moscow/category/remont-i-stroitelstvo/fasadnyie-rabotyi--1981",
+                "https://strbani.ru/fasad-doma/",
+                "https://stroyday.ru/stroitelstvo-doma/fasadnye-raboty/naruzhnaya-otdelka-doma-varianty.html",
+                "http://remoo.ru/fasad/fasady-domov",
+                "https://pix-feed.com/krasivye-fasady-chastnyh-domov/",
+                "https://www.ksu-nordwest.ru/services/otdelka-fasada/",
+                "https://design-homes.ru/stroitelstvo-i-remont/nedorogo-fasad-doma",
+                "https://www.houzz.ru/foto/krasivye-doma-foto-fasadov-phbr0-bp~t_13935",
+                "https://realty.rbc.ru/news/61a7952a9a7947039b719b08",
+                "https://dzen.ru/media/tablichnik/luchshie-materialy-dlia-otdelki-fasada-chastnogo-doma-5f0ffd317e2b585adad67632",
+                "https://www.avito.ru/moskva/predlozheniya_uslug?q=%d0%be%d0%b1%d0%bb%d0%b8%d1%86%d0%be%d0%b2%d0%ba%d0%b0+%d1%84%d0%b0%d1%81%d0%b0%d0%b4%d0%b0"
+            ]
+        ],
+        "штукатурка короед купить в воронеже" => [
+            "sites" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "http://fasad36.ru/catalog/koroed/",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://stroybaza-vrn.ru/katalog/suhie-stroitelmie-smesi/%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f-%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0",
+                "https://lidecor.ru/category/pokrytiya-koroed/",
+                "https://voronezh.yavitrina.ru/dekorativnye-shtukaturki-koroed",
+                "https://voronezh.compumir.ru/fasadnaja-shtukaturka-koroed",
+                "https://voronezh.neopod.ru/shtukaturki-fasadnye-koroed-bergauf"
+            ]
+        ],
+        "штукатурка короед цена в воронеже" => [
+            "sites" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "http://fasad36.ru/catalog/koroed/",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://voronezh.yavitrina.ru/shtukaturka-koroed",
+                "https://voronezh.neopod.ru/shtukaturki-fasadnye-koroed-bergauf",
+                "https://voronezh.compumir.ru/shtukaturka-koroed",
+                "https://lidecor.ru/category/dekorativnaya-shtukaturka-koroed/",
+                "https://voronez.gamma-cveta.ru/shtukaturki-dekorativnye-fakturnye-kraski-main/effekt-koroed/"
+            ]
+        ],
+        "штукатурка короед цена воронеж" => [
+            "sites" => [
+                "https://voronezh.leroymerlin.ru/catalogue/shtukaturki/koroed/",
+                "https://www.avito.ru/voronezh?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0+%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://market.yandex.ru/search?text=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4%20%d0%b2%20%d0%b2%d0%be%d1%80%d0%be%d0%bd%d0%b5%d0%b6%d0%b5%20%d1%86%d0%b5%d0%bd%d1%8b",
+                "https://voronezh.regmarkets.ru/shtukaturka-koroed/",
+                "https://voronezh.stroyportal.ru/catalog/section-shtukaturka-koroed-7581/",
+                "https://voronezh.vseinstrumenti.ru/stroitelnye-materialy/otdelochnye-materialy/shtukaturki/koroed/",
+                "https://www.ozon.ru/category/shtukaturki-koroed/",
+                "https://kraski36.ru/shtukaturka-koroed-voronezh/",
+                "https://voronezh.pulscen.ru/price/110514-shtukaturka/f:62057_koroied",
+                "https://voronezh.blizko.ru/predl/construction/decoration/smesi/shtukaturki_dekorativny/f:166_koroied",
+                "https://voronezh.dommalera.ru/catalog/materialy_dlya_dekora/shtukaturki_dekorativnye_1/koroed_1/",
+                "https://voronezh.satom.ru/k/dekorativnye-shtukaturki-koroed/",
+                "http://fasad36.ru/catalog/koroed/",
+                "http://stroitelnye-materialy-v-voronezhe.ru/shtukaturka-koroed",
+                "https://voronezh.yavitrina.ru/shtukaturka-koroed",
+                "https://www.castorama.ru/catalogsearch/result/?q=%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0%20%d0%ba%d0%be%d1%80%d0%be%d0%b5%d0%b4",
+                "https://stroybaza-vrn.ru/katalog/suhie-stroitelmie-smesi/%d0%b4%d0%b5%d0%ba%d0%be%d1%80%d0%b0%d1%82%d0%b8%d0%b2%d0%bd%d0%b0%d1%8f-%d1%88%d1%82%d1%83%d0%ba%d0%b0%d1%82%d1%83%d1%80%d0%ba%d0%b0",
+                "https://voronezh.neopod.ru/shtukaturki-fasadnye-koroed-bergauf",
+                "https://voronezh.compumir.ru/shtukaturka-koroed",
+                "https://lidecor.ru/category/dekorativnaya-shtukaturka-koroed/"
+            ]
+        ]
+    ];
+    $minimum = 8;
+
+    $willClustered = [];
+    $clusters = [];
+
+    foreach ($array as $phrase => $sites) {
+        foreach ($array as $phrase2 => $sites2) {
+            if (isset($willClustered[$phrase2])) {
+                continue;
+            }
+            if (isset($clusters[$phrase2])) {
+                foreach ($clusters[$phrase2] as $elems) {
+                    foreach ($elems as $elem) {
+                        if (count(array_intersect($elem, $sites2['sites'])) >= $minimum) {
+                            $clusters[$phrase][$phrase2] = $sites2['sites'];
+                            $willClustered[$phrase2] = true;
+                            break 2;
+                        }
+                    }
+                }
+            } else {
+                if (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
+                    $clusters[$phrase][$phrase2] = $sites2['sites'];
+                    $willClustered[$phrase2] = true;
+                }
+            }
+        }
+    }
+
+    dd($clusters);
+    foreach ($clusters as $phrase => $item) {
+        foreach ($item as $itemPhrase => $elems) {
+            $this->clusters[$phrase][$itemPhrase]['sites'] = $elems[0];
+        }
+    }
+
+    foreach ($clusters as $mainPhrase => $items) {
+        if (count($items) > 1) {
+            continue;
+        }
+        foreach ($clusters as $mainPhrase2 => $items2) {
+            if ($mainPhrase === $mainPhrase2) {
+                continue;
+            }
+            foreach ($items2 as $item) {
+                if (count(array_intersect($items[array_key_first($items)][0], $item[0])) >= $minimum) {
+                    $this->clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
+                    unset($this->clusters[$mainPhrase]);
+                    break 2;
+                }
+            }
+        }
+    }
 });

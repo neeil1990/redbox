@@ -93,23 +93,23 @@
 </div>
 
 <div class="form-group required">
-    <label>Объединение кластеров</label>
+    <label>{{ __('Merging Clusters') }}</label>
     {!! Form::select('engine_version', [
             $config->engine_version => $config->engine_version,
-            'old' => 'Формирование на основе первой попавшейся фразы (old)',
-            'new' => 'Формирование на основе массива ссылок кластера (new)',
+            'old' => __('Formation based on the first available phrase (old)'),
+            'new' => __('Forming a cluster based on an array of links (new)'),
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 
 <div class="form-group required">
-    <label>Сохранить результат</label>
+    <label>{{ __('Save results') }}</label>
     <span class="__helper-link ui_tooltip_w">
             <i class="fa fa-question-circle" style="color: grey"></i>
             <span class="ui_tooltip __right">
                 <span class="ui_tooltip_content" style="width: 300px">
-                Если вы сохраняете результаты, тогда вы сможете посмотреть результаты во вкладке "мои проекты" <br><br>
-                Если вы не сохраняете результаты, тогда вы сможете посмотреть результат только по завершению анализа,
-                при запуске следующего анализа или при перезагрузке страницы данные будут утеряны
+                {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
+                {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
+                {{ __('data will be lost when starting the next analysis or when reloading the page') }}
                 </span>
             </span>
         </span>
@@ -123,11 +123,11 @@
 <div class="form-group required" id="extra-block">
     <div class="row">
         <div class="col-6 d-flex flex-column">
-            <label for="domain-textarea">Домен</label>
+            <label for="domain-textarea">{{ __('Domain') }}</label>
             <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"></textarea>
         </div>
         <div class="col-6 d-flex flex-column">
-            <label for="comment-textarea">Комментарий</label>
+            <label for="comment-textarea">{{ __('Comment') }}</label>
             <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
         </div>
     </div>
@@ -135,15 +135,15 @@
 
 <div class="form-group required">
     <div>
-        <label for="searchBased">Анализ базовой частотности</label>
+        <label for="searchBased">{{ __('Base frequency analysis') }}</label>
         <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
     </div>
     <div>
-        <label for="searchPhrases">Анализ фразовой частотности</label>
+        <label for="searchPhrases">{{ __('Phrase frequency analysis') }}</label>
         <input type="checkbox" name="searchPhrases" id="searchPhrases" @if($config->search_phrased) checked @endif>
     </div>
     <div>
-        <label for="searchTarget">Анализ точной частотности</label>
+        <label for="searchTarget">{{ __('Accurate frequency analysis') }}</label>
         <input type="checkbox" name="searchTarget" id="searchTarget" @if($config->search_target) checked @endif>
     </div>
 </div>
