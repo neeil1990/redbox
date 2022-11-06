@@ -147,7 +147,7 @@
 
                             interval = setInterval(() => {
                                 getProgressPercent(response.id)
-                            }, 1000)
+                            }, 5000)
                         }
                     })
                 }

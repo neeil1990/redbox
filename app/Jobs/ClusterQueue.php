@@ -51,19 +51,20 @@ class ClusterQueue implements ShouldQueue
     }
 
     /**
-     * Execute the job.
-     *
      * @return void
+     * @throws \Exception
      */
     public function handle()
     {
         $river = new RiverFacade($this->region);
         $river->setQuery($this->targetPhrase);
         $clusterArrays = new \App\ClusterQueue();
+        $response = $river->riverRequest($this->type === 'based');
+        Log::debug('river response', [$response]);
         $clusterArrays->json = json_encode([
             $this->key => [
                 $this->phrase => [
-                    $this->type => $river->riverRequest($this->type === 'based')
+                    $this->type => $response
                 ]
             ]
         ]);
@@ -72,6 +73,7 @@ class ClusterQueue implements ShouldQueue
 
         // 0.2s - 1.5s
         usleep(random_int(200000, 1500000));
+
         ClusterProgress::where('id', '=', $this->progressId)->update([
             'success' => DB::raw("success + 1"),
             'percent' => DB::raw("percent + $this->percent")
