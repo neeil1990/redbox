@@ -60,7 +60,6 @@ class ClusterQueue implements ShouldQueue
         $river->setQuery($this->targetPhrase);
         $clusterArrays = new \App\ClusterQueue();
         $response = $river->riverRequest($this->type === 'based');
-        Log::debug('river response', [$response]);
         $clusterArrays->json = json_encode([
             $this->key => [
                 $this->phrase => [

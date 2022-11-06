@@ -218,9 +218,7 @@ class Cluster
         $this->progress->save();
         $percent = 50 / $this->progress->total;
 
-        Log::debug('total', [$this->progress->total]);
         foreach ($this->clusters as $key => $cluster) {
-            Log::debug('counter clusters', [count($cluster)]);
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     if ($this->searchPhrases) {
@@ -266,12 +264,9 @@ class Cluster
 
     protected function waitRiverResponses()
     {
-        Log::debug('waitRiverResponses');
         $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
         while ($this->progress->total !== $count) {
-            Log::debug('total', [$this->progress->total]);
-            Log::debug('$count', [$count]);
             if ($this->progress->total < $count) {
                 Log::debug('ошибка кластеризатора в очередях');
                 die();
@@ -285,9 +280,6 @@ class Cluster
     {
         $array = [];
         $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
-        Log::debug('set results');
-        Log::debug('total', [$this->progress->total]);
-        Log::debug('count', [count($results)]);
         foreach ($results as $result) {
             $array = array_merge_recursive($array, json_decode($result->json, true));
         }
