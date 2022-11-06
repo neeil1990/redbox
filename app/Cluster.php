@@ -148,6 +148,7 @@ class Cluster
         $willClustered = [];
         $clusters = [];
 
+        Log::debug('sites', [count($this->sites)]);
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
@@ -198,6 +199,7 @@ class Cluster
         }
 
         $this->clusters = $clusters;
+        Log::debug('clusters', [count($this->clusters)]);
     }
 
     protected function calculateClustersInfo()

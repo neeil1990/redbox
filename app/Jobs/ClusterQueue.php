@@ -78,7 +78,6 @@ class ClusterQueue implements ShouldQueue
             'success' => DB::raw("success + 1"),
             'percent' => DB::raw("percent + $this->percent")
         ]);
-
     }
 
 }
