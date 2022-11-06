@@ -266,17 +266,17 @@ class Cluster
     protected function waitRiverResponses()
     {
         Log::debug('waitRiverResponses');
-        $progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+        $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
-        while ((int)$this->progress->total !== (int)$progress->success) {
-            if ($this->progress->total < (int)$progress->success) {
+        while ($this->progress->total !== $count) {
+            if ($this->progress->total < $count) {
                 Log::debug('ошибка кластеризатора в очередях, гг вп');
                 die();
             }
             Log::debug('total', [$this->progress->total]);
-            Log::debug('$count', [(int)$progress->success]);
+            Log::debug('$count', [$count]);
             sleep(5);
-            $progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
+            $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
         }
     }
 

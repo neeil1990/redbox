@@ -57,29 +57,26 @@ class ClusterQueue implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            $river = new RiverFacade($this->region);
-            $river->setQuery($this->targetPhrase);
-            $clusterArrays = new \App\ClusterQueue();
-            $clusterArrays->json = json_encode([
-                $this->key => [
-                    $this->phrase => [
-                        $this->type => $river->riverRequest($this->type === 'based')
-                    ]
+        $river = new RiverFacade($this->region);
+        $river->setQuery($this->targetPhrase);
+        $clusterArrays = new \App\ClusterQueue();
+        $clusterArrays->json = json_encode([
+            $this->key => [
+                $this->phrase => [
+                    $this->type => $river->riverRequest($this->type === 'based')
                 ]
-            ]);
-            $clusterArrays->progress_id = $this->progressId;
-            $clusterArrays->save();
+            ]
+        ]);
+        $clusterArrays->progress_id = $this->progressId;
+        $clusterArrays->save();
 
-            ClusterProgress::where('id', '=', $this->progressId)->update([
-                'success' => DB::raw("success + 1"),
-                'percent' => DB::raw("percent + $this->percent")
-            ]);
+        // 0.2s - 1.5s
+        usleep(random_int(200000, 1500000));
+        ClusterProgress::where('id', '=', $this->progressId)->update([
+            'success' => DB::raw("success + 1"),
+            'percent' => DB::raw("percent + $this->percent")
+        ]);
 
-        } catch (\Throwable $e) {
-            Log::debug('cluster job error', [
-                'error' => $e->getMessage(),
-            ]);
-        }
     }
+
 }
