@@ -1029,5 +1029,7 @@
     "Download csv": "Скачать csv",
     "Download xls": "Скачать xls",
     "Analysis results": "Результаты анализа",
-    "Cluster configuration": "Конфигурация кластеризатора"
+    "Cluster configuration": "Конфигурация кластеризатора",
+    "Analysis": "Конфигурация кластеризатора",
+    "Do not save": "Не сохранять"
 }

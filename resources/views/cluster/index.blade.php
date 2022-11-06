@@ -73,7 +73,7 @@
                         @include('cluster.layouts.form')
                     </div>
                     <div id="progress-bar" style="display: none">
-                        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+                        <div class="progress-bar mt-3 mb-3" role="progressbar" id="progress-bar-state"></div>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
@@ -170,6 +170,12 @@
                     url: `/get-cluster-progress/${id}`,
                     success: function (response) {
                         setProgressBarStyles(response.percent)
+
+                        if (response.percent <= 50) {
+                            $('#progress-bar-state').html('Паринг xml')
+                        } else {
+                            $('#progress-bar-state').html('Паринг river xml')
+                        }
                     }
                 })
             }

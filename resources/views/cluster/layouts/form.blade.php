@@ -115,8 +115,8 @@
         </span>
     {!! Form::select('save', [
         $config->save_results => $config->save_results,
-        '1' => 'Сохранить',
-        '0' => 'Не сохранять',
+        '1' => __('Save'),
+        '0' => __('Do not save'),
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
 </div>
 
@@ -148,8 +148,4 @@
     </div>
 </div>
 
-<input type="button" class="btn btn-secondary" id="start-analysis" data-dismiss="modal" value="{{ __('Analysis') }}">
-
-@slot('js')
-
-@endslot()
+<input type="button" class="btn btn-secondary" id="start-analysis" data-dismiss="modal" value="{{ __('Analyse') }}">
