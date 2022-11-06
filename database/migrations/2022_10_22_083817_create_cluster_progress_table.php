@@ -17,7 +17,7 @@ class CreateClusterProgressTable extends Migration
             $table->bigIncrements('id');
             $table->float('percent')->default(1);
             $table->longText('array')->nullable();
-            $table->integer('success')->nullable();
+            $table->integer('success')->default(0);
             $table->integer('total')->nullable();
             $table->timestamps();
         });
