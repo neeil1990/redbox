@@ -269,6 +269,9 @@ class Cluster
         $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
         while ($this->progress->total !== $count) {
+            if ($this->progress->total < $count) {
+                die();
+            }
             Log::debug('total', [$this->progress->total]);
             Log::debug('$count', [$count]);
             sleep(5);
