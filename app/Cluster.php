@@ -153,42 +153,23 @@ class Cluster
                 if (isset($willClustered[$phrase2])) {
                     continue;
                 }
-                if (isset($clusters[$phrase2])) {
-                    foreach ($clusters[$phrase2] as $elems) {
-                        foreach ($elems as $elem) {
-                            if (count(array_intersect($elem, $sites2['sites'])) >= $minimum) {
-                                $clusters[$phrase][$phrase2] = $sites2['sites'];
-                                $willClustered[$phrase2] = true;
-                                break 2;
-                            }
+                if (isset($clusters[$phrase])) {
+                    foreach ($clusters[$phrase] as $item) {
+                        if (count(array_intersect($item['sites'], $sites2['sites']))) {
+                            $clusters[$phrase][$phrase2] = $sites2;
+                            $willClustered[$phrase2] = true;
+                            break;
                         }
                     }
+
                 } else {
                     if (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
-                        $clusters[$phrase][$phrase2] = $sites2['sites'];
+                        $clusters[$phrase][$phrase2] = $sites2;
                         $willClustered[$phrase2] = true;
                     }
                 }
             }
         }
-//
-//        foreach ($clusters as $mainPhrase => $items) {
-//            if (count($items) > 1) {
-//                continue;
-//            }
-//            foreach ($clusters as $mainPhrase2 => $items2) {
-//                if ($mainPhrase === $mainPhrase2) {
-//                    continue;
-//                }
-//                foreach ($items2 as $item) {
-//                    if (count(array_intersect($items[array_key_first($items)], $item)) >= $minimum) {
-//                        $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
-//                        unset($this->clusters[$mainPhrase]);
-//                        break 2;
-//                    }
-//                }
-//            }
-//        }
 
         foreach ($clusters as $phrase => $item) {
             foreach ($item as $itemPhrase => $elems) {
