@@ -265,9 +265,12 @@ class Cluster
 
     protected function waitRiverResponses()
     {
+        Log::debug('waitRiverResponses');
         $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
         while ($this->progress->total !== $count) {
+            Log::debug('total', [$this->progress->total]);
+            Log::debug('$count', [$count]);
             sleep(5);
             $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
         }
