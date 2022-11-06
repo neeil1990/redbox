@@ -159,6 +159,7 @@
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
                 })
 
+                $('#progress-bar-state').html("{{ __('Parse xml') }}")
                 $('.render').remove()
                 $('#hidden-result-table').dataTable().fnDestroy()
                 $('#block-for-downloads-files').hide()
