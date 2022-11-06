@@ -303,7 +303,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $t = \App\ClusterResults::where('id', '=', '73')->first();
+    $t = \App\ClusterProgress::where('id', '=', '73')->first();
     dd($t);
     dd($t->increment('success'));
 });
