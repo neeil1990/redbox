@@ -87,7 +87,7 @@ class Cluster
             ]);
         }
 
-        $this->progress->delete();
+//        $this->progress->delete();
 //        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
@@ -266,17 +266,17 @@ class Cluster
     protected function waitRiverResponses()
     {
         Log::debug('waitRiverResponses');
-        $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
+        $progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
 
-        while ($this->progress->total !== $count) {
-            if ($this->progress->total < $count) {
+        while ($this->progress->total !== $progress->success) {
+            if ($this->progress->total < $progress->success) {
                 Log::debug('ошибка кластеризатора в очередях, гг вп');
                 die();
             }
             Log::debug('total', [$this->progress->total]);
-            Log::debug('$count', [$count]);
+            Log::debug('$count', [$progress->success]);
             sleep(5);
-            $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
+            $progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
         }
     }
 
