@@ -270,6 +270,7 @@ class Cluster
 
         while ($this->progress->total !== $count) {
             if ($this->progress->total < $count) {
+                Log::debug('ошибка кластеризатора в очередях, гг вп');
                 die();
             }
             Log::debug('total', [$this->progress->total]);
