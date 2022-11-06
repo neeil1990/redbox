@@ -171,24 +171,24 @@ class Cluster
                 }
             }
         }
-
-        foreach ($clusters as $mainPhrase => $items) {
-            if (count($items) > 1) {
-                continue;
-            }
-            foreach ($clusters as $mainPhrase2 => $items2) {
-                if ($mainPhrase === $mainPhrase2) {
-                    continue;
-                }
-                foreach ($items2 as $item) {
-                    if (count(array_intersect($items[array_key_first($items)], $item)) >= $minimum) {
-                        $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
-                        unset($this->clusters[$mainPhrase]);
-                        break 2;
-                    }
-                }
-            }
-        }
+//
+//        foreach ($clusters as $mainPhrase => $items) {
+//            if (count($items) > 1) {
+//                continue;
+//            }
+//            foreach ($clusters as $mainPhrase2 => $items2) {
+//                if ($mainPhrase === $mainPhrase2) {
+//                    continue;
+//                }
+//                foreach ($items2 as $item) {
+//                    if (count(array_intersect($items[array_key_first($items)], $item)) >= $minimum) {
+//                        $clusters[$mainPhrase2][$mainPhrase] = $items[array_key_first($items)];
+//                        unset($this->clusters[$mainPhrase]);
+//                        break 2;
+//                    }
+//                }
+//            }
+//        }
 
         foreach ($clusters as $phrase => $item) {
             foreach ($item as $itemPhrase => $elems) {
