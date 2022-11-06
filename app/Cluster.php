@@ -88,7 +88,7 @@ class Cluster
         }
 
         $this->progress->delete();
-        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+//        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
     protected function setSites()
@@ -277,6 +277,9 @@ class Cluster
     {
         $array = [];
         $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
+        Log::debug('set results');
+        Log::debug('total', [$this->progress->total]);
+        Log::debug('count', [count($results)]);
         foreach ($results as $result) {
             $array = array_merge_recursive($array, json_decode($result->json, true));
         }
