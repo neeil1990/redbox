@@ -2354,8 +2354,8 @@ Route::middleware(['verified'])->group(function () {
                 }
                 if (isset($clusters[$phrase])) {
                     foreach ($clusters[$phrase] as $item) {
-                        if (count(array_intersect($item['sites'], $sites2['sites']))) {
-                            $clusters[$phrase][$phrase2] = $sites2;
+                        if (count(array_intersect($item, $sites2['sites']))) {
+                            $clusters[$phrase][$phrase2] = $sites2['sites'];
                             $willClustered[$phrase2] = true;
                             break;
                         }
@@ -2363,7 +2363,7 @@ Route::middleware(['verified'])->group(function () {
 
                 } else {
                     if (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
-                        $clusters[$phrase][$phrase2] = $sites2;
+                        $clusters[$phrase][$phrase2] = $sites2['sites'];
                         $willClustered[$phrase2] = true;
                     }
                 }
