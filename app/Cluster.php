@@ -268,13 +268,13 @@ class Cluster
         Log::debug('waitRiverResponses');
         $progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
 
-        while ($this->progress->total !== $progress->success) {
-            if ($this->progress->total < $progress->success) {
+        while ((int)$this->progress->total !== (int)$progress->success) {
+            if ($this->progress->total < (int)$progress->success) {
                 Log::debug('ошибка кластеризатора в очередях, гг вп');
                 die();
             }
             Log::debug('total', [$this->progress->total]);
-            Log::debug('$count', [$progress->success]);
+            Log::debug('$count', [(int)$progress->success]);
             sleep(5);
             $progress = ClusterProgress::where('id', '=', $this->progress->id)->first();
         }
