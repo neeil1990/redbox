@@ -1031,5 +1031,7 @@
     "Analysis results": "Результаты анализа",
     "Cluster configuration": "Конфигурация кластеризатора",
     "Analysis": "Конфигурация кластеризатора",
-    "Do not save": "Не сохранять"
+    "Do not save": "Не сохранять",
+    "Parse xml": "Парcинг xml",
+    "Parse xml river": "Парcинг river xml"
 }
