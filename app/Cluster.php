@@ -172,7 +172,7 @@ class Cluster
 
         foreach ($clusters as $phrase => $item) {
             foreach ($item as $itemPhrase => $elems) {
-                $clusters[$phrase][$itemPhrase]['sites'] = $elems;
+                $clusters[$phrase][$itemPhrase] = ['sites' => $elems];
             }
         }
 
