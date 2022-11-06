@@ -304,6 +304,6 @@ Route::middleware(['verified'])->group(function () {
 
 Route::get('/test', function () {
     $t = \App\ClusterResults::where('id', '=', '73')->first();
-    dump($t);
+    dd($t);
     dd($t->increment('success'));
 });
