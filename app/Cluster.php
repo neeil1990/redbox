@@ -87,8 +87,8 @@ class Cluster
             ]);
         }
 
-//        $this->progress->delete();
-//        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+        $this->progress->delete();
+        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
     protected function setSites()
@@ -270,12 +270,12 @@ class Cluster
         $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
         while ($this->progress->total !== $count) {
-            if ($this->progress->total < $count) {
-                Log::debug('ошибка кластеризатора в очередях, гг вп');
-                die();
-            }
             Log::debug('total', [$this->progress->total]);
             Log::debug('$count', [$count]);
+            if ($this->progress->total < $count) {
+                Log::debug('ошибка кластеризатора в очередях');
+                die();
+            }
             sleep(5);
             $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
         }
