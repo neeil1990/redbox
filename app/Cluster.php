@@ -148,7 +148,6 @@ class Cluster
         $willClustered = [];
         $clusters = [];
 
-        Log::debug('sites', [count($this->sites)]);
         foreach ($this->sites as $phrase => $sites) {
             foreach ($this->sites as $phrase2 => $sites2) {
                 if (isset($willClustered[$phrase2])) {
@@ -172,7 +171,6 @@ class Cluster
                 }
             }
         }
-
 
         foreach ($clusters as $mainPhrase => $items) {
             if (count($items) > 1) {
@@ -199,7 +197,6 @@ class Cluster
         }
 
         $this->clusters = $clusters;
-        Log::debug('clusters', [count($this->clusters)]);
     }
 
     protected function calculateClustersInfo()
@@ -221,7 +218,9 @@ class Cluster
         $this->progress->save();
         $percent = 50 / $this->progress->total;
 
+        Log::debug('total', [$this->progress->total]);
         foreach ($this->clusters as $key => $cluster) {
+            Log::debug('counter clusters', [count($cluster)]);
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     if ($this->searchPhrases) {
