@@ -54,6 +54,9 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 
         <script>
+            const LENGTH_MENU = JSON.parse('{{ $lengthMenu }}');
+            const PAGE_LENGTH = '{{ $length }}';
+
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "5000"
@@ -82,7 +85,8 @@
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
-                lengthMenu: [10, 20, 30, 50, 100],
+                lengthMenu: LENGTH_MENU,
+                pageLength: PAGE_LENGTH,
                 "ordering": false,
                 pagingType: "simple_numbers",
                 language: {

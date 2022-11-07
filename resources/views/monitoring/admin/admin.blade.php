@@ -12,16 +12,11 @@
 
     <div class="row">
         <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ __('Administration') }}</h3>
-                </div>
-                <div class="card-body">
-                    <p>Some description <code>.btn.btn-app</code> to an <code>&lt;a&gt;</code> tag to achieve the following:</p>
+            @include('monitoring.admin._btn')
 
-                </div>
-            </div>
-
+            {!! Form::open(['route' => ['monitoring.admin.settings.update']]) !!}
+                @include('monitoring.admin.settings.global', ['settings' => $settings['global']])
+            {!! Form::close() !!}
         </div>
     </div>
 

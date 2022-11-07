@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Classes\Monitoring\StatisticsAdmin;
 use App\Jobs;
 use App\MonitoringProject;
+use App\MonitoringSettings;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,7 @@ class MonitoringAdminController extends Controller
     protected $jobs;
     protected $users;
     protected $projects;
+    protected $settings;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class MonitoringAdminController extends Controller
         $this->jobs = (new Jobs())->positionsQueue();
         $this->users = new User();
         $this->projects = new MonitoringProject();
+        $this->settings = new MonitoringSettings();
     }
 
     public function statPage(Request $request)
@@ -38,8 +41,12 @@ class MonitoringAdminController extends Controller
 
     public function adminPage()
     {
+        $settings = [];
 
-        return view('monitoring.admin.admin');
+        $globalFields = ['pagination_items', 'pagination_project', 'pagination_query'];
+        $settings['global'] = $this->settings->getValuesAsArray($globalFields);
+
+        return view('monitoring.admin.admin', compact('settings'));
     }
 
     public function deleteQueues(Request $request)

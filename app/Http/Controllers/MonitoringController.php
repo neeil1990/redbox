@@ -15,6 +15,7 @@ use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\MonitoringSearchengine;
+use App\MonitoringSettings;
 use App\User;
 use Carbon\Carbon;
 use function foo\func;
@@ -58,7 +59,10 @@ class MonitoringController extends Controller
         //(new PositionStore(false))->saveByQuery($query);
         //dispatch((new PositionQueue($query))->onQueue('position_high'));
 
-        return view('monitoring.index');
+        $lengthMenu = $this->getPaginationMenu();
+        $length = (new MonitoringSettings())->getValue('pagination_project');
+
+        return view('monitoring.index', compact('lengthMenu', 'length'));
     }
 
     public function parsePositionsInProject(Request $request)
@@ -314,17 +318,30 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        $length = $this->getLengthFromSettings($project->id);
+        $length = $this->getLength($project->id);
+        $lengthMenu = $this->getPaginationMenu();
 
-        return view('monitoring.show', compact('navigations', 'project', 'length'));
+        return view('monitoring.show', compact('navigations', 'project', 'length', 'lengthMenu'));
     }
 
-    public function getLengthFromSettings(int $projectId)
+    public function getPaginationMenu()
+    {
+        $lengthMenu = '[10,20,30,50]';
+
+        if($global = (new MonitoringSettings())->getValue('pagination_items'))
+            $lengthMenu = '['. $global .']';
+
+        return $lengthMenu;
+    }
+
+    public function getLength(int $projectId)
     {
         $lengthDefault = 100;
 
-        $length = $this->getSetting($projectId, 'length');
-        if($length)
+        if($global = (new MonitoringSettings())->getValue('pagination_query'))
+            $lengthDefault = $global;
+
+        if($length = $this->getSetting($projectId, 'length'))
             $lengthDefault = $length->value;
 
         return $lengthDefault;

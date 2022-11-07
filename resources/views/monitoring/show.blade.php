@@ -125,6 +125,7 @@
             const DATES = '{{ request('dates', null) }}';
             const MODE = '{{ request('mode', null) }}';
             const PAGE_LENGTH = '{{ $length }}';
+            const LENGTH_MENU = JSON.parse('{{ $lengthMenu }}');
             const MAIN_COLUMNS_COUNT = 8;
 
             let table = $('#monitoringTable');
@@ -163,7 +164,7 @@
                 let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
                     scrollX: true,
-                    lengthMenu: [10, 20, 30, 50, 100, 200, 500, 1000],
+                    lengthMenu: LENGTH_MENU,
                     pageLength: PAGE_LENGTH,
                     pagingType: "simple_numbers",
                     language: {
