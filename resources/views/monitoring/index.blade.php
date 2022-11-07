@@ -224,8 +224,11 @@
                         } else {
                             // Open this row
                             let data = row.data();
+                            let loading = $('#projects_processing');
 
+                            loading.css('display', 'block');
                             axios.get(`/monitoring/${data.id}/child-rows/get`).then(function(response){
+                                loading.css('display', 'none');
                                 row.child(response.data).show();
                             });
 
