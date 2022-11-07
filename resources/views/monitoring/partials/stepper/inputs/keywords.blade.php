@@ -26,7 +26,7 @@
 
                         <div class="form-group">
                             <input type="file" id="csv-keywords">
-                            <p class="text-sm text-muted">Вы можете загрузить csv файл, где в первой колонке будут запросы, а во второй релевантаная страница.</p>
+                            <p class="text-sm text-muted">Вы можете загрузить csv файл где в первой колонке будут запросы, второй группа запроса, третьей релевантная страница.</p>
                         </div>
 
                         <div class="form-group">
