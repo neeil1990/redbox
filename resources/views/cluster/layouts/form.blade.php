@@ -133,10 +133,9 @@
     </div>
     @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
         <div class="col-md-6 mt-2">
-            {{ __('Want to') }}
             <a href="{{ route('profile.index') }}" target="_blank">
-                {{ __('receive notifications from our telegram bot') }}
-            </a> ?
+                {{ __('Want to') }}  {{ __('receive notifications from our telegram bot') }}
+            </a>
         </div>
     @else
         <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>

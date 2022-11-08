@@ -42,8 +42,6 @@ class Cluster
 
     protected $sites_json;
 
-    protected $countGroup;
-
     public function __construct(array $request)
     {
         $this->count = $request['count'];
@@ -68,6 +66,8 @@ class Cluster
         }
 
         $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
+
+        Log::debug('cluster request', [$this->request]);
     }
 
     public function startAnalysis()
