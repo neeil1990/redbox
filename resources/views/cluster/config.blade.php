@@ -32,7 +32,7 @@
             }
 
             .nav-link.text-primary.active {
-                color: white;
+                color: white !important;
             }
         </style>
     @endslot
