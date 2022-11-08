@@ -30,6 +30,10 @@
             .text-primary {
                 color: #007bff !important;
             }
+
+            .nav-link.text-primary.active {
+                color: white;
+            }
         </style>
     @endslot
     <div class="card">
