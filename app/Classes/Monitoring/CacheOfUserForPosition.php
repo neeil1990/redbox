@@ -5,6 +5,7 @@ namespace App\Classes\Monitoring;
 
 
 use App\MonitoringProject;
+use App\MonitoringSettings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
@@ -12,8 +13,8 @@ use Illuminate\Support\Facades\Cache;
 class CacheOfUserForPosition
 {
     protected $userId;
-
     protected $project;
+    protected $time = 21600;
 
     private $cacheKeyForPosition;
 
@@ -24,6 +25,14 @@ class CacheOfUserForPosition
         $this->project = $project;
 
         $this->generateCacheKey();
+    }
+
+    public function getCacheTime()
+    {
+        if($time = (new MonitoringSettings())->getValue('cache_time_positions'))
+            $this->time = (int) $time;
+
+        return $this->time;
     }
 
     public function getCacheKey()

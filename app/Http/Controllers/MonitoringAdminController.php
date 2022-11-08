@@ -43,10 +43,22 @@ class MonitoringAdminController extends Controller
     {
         $settings = [];
 
-        $globalFields = ['pagination_items', 'pagination_project', 'pagination_query'];
-        $settings['global'] = $this->settings->getValuesAsArray($globalFields);
+        $globalSettingsField = $this->globalSettingsFields();
+
+        $settings['global']['request'] = $this->settings->getValuesAsArray($globalSettingsField->pluck('name'));
+        $settings['global']['fields'] = $globalSettingsField;
 
         return view('monitoring.admin.admin', compact('settings'));
+    }
+
+    protected function globalSettingsFields()
+    {
+        return collect([
+            ['type' => 'text', 'name' => 'pagination_items', 'label' => 'Меню постраничной навигации', 'placeholder' => '10,20,30,50,100,200,500,1000'],
+            ['type' => 'number', 'name' => 'pagination_project', 'label' => 'Количество элементов на странице проекты', 'placeholder' => '10'],
+            ['type' => 'number', 'name' => 'pagination_query', 'label' => 'Количество элементов на странице запросы', 'placeholder' => '100'],
+            ['type' => 'number', 'name' => 'cache_time_positions', 'label' => 'Время хранения кеша проекты (секунды)', 'placeholder' => '21600'],
+        ]);
     }
 
     public function deleteQueues(Request $request)
