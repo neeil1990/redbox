@@ -146,37 +146,25 @@ class Cluster
     protected function searchClustersEngineV2($minimum)
     {
         $willClustered = [];
-        $clusters = [];
 
-        foreach ($this->sites as $phrase => $sites) {
-            foreach ($this->sites as $phrase2 => $sites2) {
+        foreach ($this->sites as $phrase => $item) {
+            foreach ($this->sites as $phrase2 => $item2) {
                 if (isset($willClustered[$phrase2])) {
                     continue;
-                }
-                if (isset($clusters[$phrase])) {
-                    foreach ($clusters[$phrase] as $item) {
-                        if (count(array_intersect($item, $sites2['sites']))) {
-                            $clusters[$phrase][$phrase2] = $sites2['sites'];
+                } else if (isset($this->clusters[$phrase])) {
+                    foreach ($this->clusters[$phrase] as $target => $elem) {
+                        if (count(array_intersect($item2['sites'], $elem['sites'])) >= $minimum) {
+                            $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
                             $willClustered[$phrase2] = true;
                             break;
                         }
                     }
-                } else {
-                    if (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
-                        $clusters[$phrase][$phrase2] = $sites2['sites'];
-                        $willClustered[$phrase2] = true;
-                    }
+                } else if (count(array_intersect($item['sites'], $item2['sites'])) >= $minimum) {
+                    $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
+                    $willClustered[$phrase2] = true;
                 }
             }
         }
-
-        foreach ($clusters as $phrase => $item) {
-            foreach ($item as $itemPhrase => $elems) {
-                $clusters[$phrase][$itemPhrase] = ['sites' => $elems];
-            }
-        }
-
-        $this->clusters = $clusters;
     }
 
     protected function calculateClustersInfo()
