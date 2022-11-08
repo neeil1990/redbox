@@ -25,13 +25,13 @@
                     <td>{{ ucfirst($engine->engine) }}, {{ $engine->location->name }}</td>
                     <td>{{ $engine->latest_created }}</td>
                     <td>{{ $engine->middle_position }}</td>
-                    <td>{{$engine->top_1}}</td>
-                    <td>{{$engine->top_3}}</td>
-                    <td>{{$engine->top_5}}</td>
-                    <td>{{$engine->top_10}}</td>
-                    <td>{{$engine->top_20}}</td>
-                    <td>{{$engine->top_50}}</td>
-                    <td>{{$engine->top_100}}</td>
+                    <td class="top">{{$engine->top_1}}</td>
+                    <td class="top">{{$engine->top_3}}</td>
+                    <td class="top">{{$engine->top_5}}</td>
+                    <td class="top">{{$engine->top_10}}</td>
+                    <td class="top">{{$engine->top_20}}</td>
+                    <td class="top">{{$engine->top_50}}</td>
+                    <td class="top">{{$engine->top_100}}</td>
                 </tr>
                 @endforeach
             </tbody>

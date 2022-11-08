@@ -20,6 +20,12 @@
                 margin: 10px auto;
                 z-index: 4;
             }
+            .grow-color {
+                background-color: rgb(153, 228, 185);
+            }
+            .shrink-color {
+                background-color: rgb(251, 225, 223);
+            }
 
         </style>
     @endslot
@@ -233,7 +239,21 @@
                             loading.css('display', 'block');
                             axios.get(`/monitoring/${data.id}/child-rows/get`).then(function(response){
                                 loading.css('display', 'none');
-                                row.child(response.data).show();
+
+                                let content = $(response.data);
+
+                                $.each(content.find('.top'), function(i, el){
+
+                                    let str = $(el).text();
+
+                                    if(str.indexOf('+') > 0)
+                                        $(el).addClass('grow-color');
+
+                                    if(str.indexOf('-') > 0)
+                                        $(el).addClass('shrink-color');
+                                });
+
+                                row.child(content).show();
                             });
 
                             tr.addClass('shown');
