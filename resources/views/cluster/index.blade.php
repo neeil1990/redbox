@@ -158,13 +158,13 @@
                 $('.dont-worry-notification').show(300)
                 setTimeout(() => {
                     $('.dont-worry-notification').hide(300)
-                }, 10000)
+                }, 15000)
 
                 if ($('#save').val() === '1') {
                     $('.history-notification').show(300)
                     setTimeout(() => {
                         $('.history-notification').hide(300)
-                    }, 10000)
+                    }, 15000)
                 }
 
                 $.each($('.render-table'), function (key, value) {
