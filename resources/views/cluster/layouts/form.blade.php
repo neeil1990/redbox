@@ -1,6 +1,6 @@
 <div id="toast-container" class="toast-top-right success-message dont-worry-notification" style="display:none;">
     <div class="toast toast-info" aria-live="polite">
-        <div class="toast-message success-msg">
+        <div class="toast-message">
             {{ __("If your analysis is \"hanging\" at 50% for a long time, don't worry, it's just waiting in line to process xml requests river") }}
         </div>
     </div>
@@ -8,7 +8,7 @@
 
 <div id="toast-container" class="toast-top-right success-message history-notification" style="display: none">
     <div class="toast toast-info" aria-live="polite" style="top: 140px;">
-        <div class="toast-message success-msg">
+        <div class="toast-message">
             {{ __('You can close the page or start a new analysis, when your results are ready, you can view them') }}
             <a href="{{ route('cluster.configuration') }}"><u>{{ __('here') }}</u></a>
         </div>

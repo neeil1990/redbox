@@ -305,27 +305,52 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/test', function () {
 
-        $t = [
-            'https://shop.heine-med.ru/catalog/dermatoskopy/dermatoskop_delta_20_t/',
-            'https://heine.ru.com/product/dermatoskop_delta20t/',
-            'https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/delta-20-t-k-26210118/',
-            'https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/',
-            'https://www.uni-tec.su/dermatoskopy.html',
-            'https://www.heine.com/en/products/dermatoscopes-and-digital-documentation/dermatoscopes/detail/28744-heine-delta-20t-dermatoscope',
-            'https://mttechnica.ru/ufiles/ins/04-dermatoscopes-2018_ru.pdf',
-            'https://medmart.pro/products/dermatoskop-heine-delta-20t-s-rukoyatkoj-4usb',
-            'https://global-mt.ru/dermatologiya/dermatoskopy/heine/delta-20-t-2/',
-            'https://medeles.ru/dermatologiya/dermatoskop-delta-20-t',
-            'https://panfundus.ru/catalog/dermatoskopy-heine/derm-delta20-beta/',
-            'https://permedcom.ru/catalog/kosmetologiya-i-dermatovenerologiya/dermatoskopy/heine-delta-20-t-/',
-            'https://heine-opto.ru/product/dermatoskop-heine-delta-20t/',
-            'http://www.deal-med.ru/dermatoskop_delta_20.html',
+        $alone = [
+            'https://shop.heine-med.ru/catalog/dermatoskopy/',
+            'https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/',
             'https://medeq.ru/product/dermatoskop-heine-delta-20-plus/11424',
-            'https://www.presidentmed.ru/dermatoskop-heine-delta-20-t.html',
-            'https://vilmed.ru/product/dermatoskop-model-delta-20-t-s-rukoyatkoy-vyeta-25-v-batareechnoy-heine-germaniya-k-26210118/',
-            'https://1000med.ru/catalog/dermatoskopy-i-videodermatoskopy/dermatoskop_heine_delta_20_t_s_rukoyatkoy_4usb/',
-            'https://medtexst.livejournal.com/104378.html',
-            'https://xn--80aajbe5ajcy1b.xn--p1ai/products/dermatoskop-heine-delta-20t',
+            'http://www.deal-med.ru/dermatoskopy_heine.html',
+            'https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/',
+            'https://eurosmed.ru/products/dermatoskop-delta-20-plus',
+            'https://vilmed.ru/catalog/dermatoskopy-heine-germaniya/',
+            'https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/delta-20-t-k-26210118/',
+            'https://www.uni-tec.su/dermatoskopy.html',
+            'https://heine-opto.ru/tag/dermatoskopy-delta/',
+            'https://www.medrk.ru/shop/diagnosticheskoe-oborudovanie/dermatoskopy/id-23218',
+            'https://medmart.pro/products/dermatoskop-heine-delta-20t-s-rukoyatkoj-4usb',
+            'https://medicalclub.store/product/kosmetologiya/dermatoskopy/heine-delta-30-dermatoskop/',
+            'https://vendem.ru/catalog/funktsionalnaya_diagnostika/dermatoskopy/dermatoskop_heine_delta_20/',
+            'https://medeles.ru/dermatologiya/dermatoskop-delta-20-t',
+            'https://td-lab.ru/product/dermatoskop-medicinskij-delta-20-t-perezaryazhaemaya-rukoyatka-veta-nt/',
+            'https://www.lidermed-ru.com/products/dermatoskop-svetodiodnyj-heine-delta-20-plus',
+            'https://global-mt.ru/dermatologiya/dermatoskopy/heine/delta-20-t-2/',
+            'https://tehion.ru/catalog/cosmetology/dermatoskopy/560/',
+            'http://medtehural.ru/oborudovanie/dermatoskopy',
         ];
+
+        $cluster = [
+            'https://shop.heine-med.ru/catalog/dermatoskopy/',
+            'https://heine.ru.com/product-category/dermatologiya/dermatoskop-delta-20/',
+            'https://almamed.su/category/heine-delta-20-t-tsifrovye-dermatoskopy-germaniya/',
+            'https://medeq.ru/product/dermatoskop-heine-delta-20/11422',
+            'http://www.deal-med.ru/dermatoskop_delta_20.html',
+            'https://stkraft.com/dermatologiya/dermatoskopy/heine-5/delta-20-t/delta-20-t-k-26210118/',
+            'https://www.uni-tec.su/dermatoskopy.html',
+            'https://eurosmed.ru/products/dermatoskop-delta-20-plus',
+            'https://medmart.pro/products/dermatoskop-heine-delta-20t-s-rukoyatkoj-4usb',
+            'https://vilmed.ru/catalog/heine-delta-20-plus-tsifrovye-dermatoskopy-s-polyarizatsiey-i-immersiey-germaniya/',
+            'https://td-lab.ru/product/dermatoskop_delta20t/',
+            'https://vendem.ru/catalog/funktsionalnaya_diagnostika/dermatoskopy/dermatoskop_heine_delta_20/',
+            'https://heine-opto.ru/product/dermatoskop-heine-delta-20t/',
+            'https://www.medrk.ru/shop/diagnosticheskoe-oborudovanie/dermatoskopy/id-23218',
+            'https://global-mt.ru/dermatologiya/dermatoskopy/heine/delta-20-t-3/',
+            'https://medicalclub.store/product/kosmetologiya/dermatoskopy/heine-delta-20-dermatoskop/',
+            'https://www.lidermed-ru.com/products/dermatoskop-svetodiodnyj-heine-delta-20-plus',
+            'https://tehion.ru/catalog/cosmetology/dermatoskopy/563/',
+            'https://medeles.ru/dermatologiya/dermatoskop-delta-20-t',
+            'https://permedcom.ru/catalog/kosmetologiya-i-dermatovenerologiya/dermatoskopy/heine-delta-20-t-/',
+        ];
+
+        dd(array_intersect($cluster, $alone));
     });
 });
