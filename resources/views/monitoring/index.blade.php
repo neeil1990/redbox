@@ -7,6 +7,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
         <style>
             .table-hover tbody tr:hover {
@@ -46,6 +49,8 @@
         @include('monitoring.partials._table')
     </div>
 
+    @include('monitoring.keywords.modal.main')
+
     @slot('js')
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
@@ -58,6 +63,10 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <!-- Papa parse -->
+        <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
+        <!-- Select2 -->
+        <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
         <script>
             const LENGTH_MENU = JSON.parse('{{ $lengthMenu }}');
@@ -193,7 +202,16 @@
                         width: '120px',
                         data: function(row) {
 
-                            let create = $('<a />', { class: 'btn btn-sm btn-success'}).append($('<i />', { class: 'fas fa-plus'}));
+                            let create = $('<a />', { class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', { class: 'fas fa-plus'}));
+
+                            create.attr({
+                                "data-toggle": 'modal',
+                                "data-target": '.modal',
+                                "data-type": 'create_keywords',
+                                "data-id": row.id,
+                                title: 'Добавить запрос',
+                            });
+
                             let edit = $('<a />', { class: 'btn btn-sm btn-info'}).append($('<i />', { class: 'fas fa-save'}));
                             let trash = $('<a />', { class: 'btn btn-sm btn-danger'}).append($('<i />', { class: 'fas fa-trash'}));
 
@@ -340,6 +358,113 @@
                 else
                     alert('Delete error');
             }
+
+            $('.modal').on('show.bs.modal', function (event) {
+
+                let modal = $(this);
+                let button = $(event.relatedTarget);
+                let type = button.data('type');
+                let projectId = button.data('id');
+
+                if(type === 'create_keywords'){
+
+                    axios.get(`/monitoring/keywords/${projectId}/create`).then(function (response) {
+
+                        let content = response.data;
+
+                        modal.find('.modal-content').html(content);
+                        modal.find('#upload-queries').click(function () {
+
+                            let self = $(this);
+                            let csv = self.closest('.input-group').find('#upload');
+
+                            if(csv[0].files.length && csv[0].files[0].type === 'text/csv'){
+
+                                csv.parse({
+                                    config: {
+                                        skipEmptyLines: 'greedy',
+                                        complete: function (result) {
+
+                                            let value = '';
+                                            $.each(result.data, function(i, item){
+
+                                                if(item[0])
+                                                    value += item[0] + '\r\n';
+                                            });
+
+                                            modal.find('textarea[name="query"]').val(value);
+                                        },
+                                        download: 0
+                                    }
+                                });
+
+                            }else{
+
+                                toastr.error('Загрузите файл формата .csv');
+                            }
+                        });
+                    }).then(function () {
+
+                        let group = modal.find('.custom-select[name="monitoring_group_id"]');
+                        if(group.length){
+
+                            group.select2({
+                                theme: 'bootstrap4'
+                            });
+
+                            modal.find('#create-group').click(function(){
+                                let el = $(this);
+                                let input = el.closest('.input-group').find('input');
+
+                                if(input.val()){
+
+                                    let id_project = input.data('id');
+
+                                    axios.post('/monitoring/groups', {
+                                        monitoring_project_id: id_project,
+                                        type: "keyword",
+                                        name: input.val(),
+                                    }).then(function (response) {
+
+                                        let newOption = new Option(response.data.name, response.data.id, false, true);
+                                        group.append(newOption).trigger('change');
+
+                                        input.val(null);
+                                    }).catch(function (error) {
+
+                                        toastr.error('Something is going wrong');
+                                    });
+                                }
+                            });
+                        }
+
+                        modal.find('.save-modal').click(function () {
+                            let self = $(this);
+                            let form = self.closest('.modal-content').find('form');
+                            let action = form.attr('action');
+                            let method = form.attr('method');
+                            let data = {};
+
+                            $.each(form.serializeArray(), function (inc, item) {
+                                $.extend( data, {[item.name]: item.value} );
+                            });
+
+                            axios({
+                                method: method,
+                                url: action,
+                                data: data
+                            }).then(function (response) {
+
+                                table.draw(false);
+                                self.closest('.modal').modal('hide');
+                                toastr.success('Запросы добавлены');
+                            }).catch(function (error) {
+                                console.log(error);
+                            });
+                        });
+                    });
+                }
+            });
 
         </script>
     @endslot
