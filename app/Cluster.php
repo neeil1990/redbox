@@ -82,7 +82,7 @@ class Cluster
             if ($this->save) {
                 $this->saveResult();
 
-                if ($this->request['sendMessage']) {
+                if (filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
                     $this->sendNotification();
                 }
             }
@@ -345,16 +345,15 @@ class Cluster
             return;
         }
 
-        $message = "Модуль: Кластеризатор (ссылка на сам сервис)
-Выполнена задача
+        $message = "Модуль: <a href='https://lk.redbox.su/cluster'>Кластеризатор</a>
+Выполнена задача № " . $this->newCluster->id . "
 Домен: " . $this->request['domain'] . "
 Комментарий: " . $this->request['comment'] . "
 Количество фраз: $this->countPhrases
 Количество групп: " . count($this->clusters) . "
 Топ: $this->count
 Режим: " . $this->request['clusteringLevel'] . "
-Регион: " . $this->request['region'] . "
-Просмотр результатов  (ссылкой)
+Регион: " . Cluster::getRegionName($this->request['region']) . "
 <a href='https://lk.redbox.su/show-cluster-result/" . $this->newCluster->id . "'>Просмотр результатов</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/csv'>Скачать CSV</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
