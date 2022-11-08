@@ -347,13 +347,13 @@ class Cluster
 
         $message = "Модуль: Кластеризатор (ссылка на сам сервис)
 Выполнена задача
-Домен: ${$this->request['domain']}
-Комментарий: ${$this->request['comment']}
+Домен: " . $this->request['domain'] . "
+Комментарий: " . $this->request['comment'] . "
 Количество фраз: $this->countPhrases
 Количество групп: " . count($this->clusters) . "
 Топ: $this->count
-Режим: ${$this->request['clusteringLevel']}
-Регион: ${$this->request['region']}
+Режим: " . $this->request['clusteringLevel'] . "
+Регион: " . $this->request['region'] . "
 Просмотр результатов  (ссылкой)
 <a href='https://lk.redbox.su/show-cluster-result/" . $this->newCluster->id . "'>Просмотр результатов</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/csv'>Скачать CSV</a>
