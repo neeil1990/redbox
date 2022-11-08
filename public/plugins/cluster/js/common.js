@@ -12,7 +12,8 @@ function getData(save = $('#save').val()) {
         searchTarget: $('#searchTarget').is(':checked'),
         progressId: $('#progressId').val(),
         domain: $('#domain-textarea').val(),
-        comment: $('#comment-textarea').val()
+        comment: $('#comment-textarea').val(),
+        sendMessage: $('#sendMessage').val()
     };
 }
 

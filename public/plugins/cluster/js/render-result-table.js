@@ -61,7 +61,7 @@ function renderResultTable(data) {
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
                     '                 <i class="fa fa-paperclip"></i>' +
-                    '                 <span class="ui_tooltip __right" style="min-width: 250px;">' +
+                    '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
                     '                     <span class="ui_tooltip_content">' + sites + '</span>' +
                     '                 </span>' +
                     '             </span>' +

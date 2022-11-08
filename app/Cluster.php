@@ -6,6 +6,7 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\ClusterQueue;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class Cluster
 {
@@ -40,6 +41,8 @@ class Cluster
     protected $newCluster;
 
     protected $sites_json;
+
+    protected $countGroup;
 
     public function __construct(array $request)
     {
@@ -78,8 +81,12 @@ class Cluster
             $this->setResult($this->clusters);
             if ($this->save) {
                 $this->saveResult();
+
+                if ($this->request['sendMessage']) {
+                    $this->sendNotification();
+                }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
                 $e->getLine(),
@@ -330,6 +337,29 @@ class Cluster
         $this->newCluster->sites_json = $this->sites_json;
 
         $this->newCluster->save();
+    }
+
+    protected function sendNotification()
+    {
+        if (!Auth::user()->telegram_bot_active) {
+            return;
+        }
+
+        $message = "Модуль: Кластеризатор (ссылка на сам сервис)
+Выполнена задача
+Домен: ${$this->request['domain']}
+Комментарий: ${$this->request['comment']}
+Количество фраз: $this->countPhrases
+Количество групп: " . count($this->clusters) . "
+Топ: $this->count
+Режим: ${$this->request['clusteringLevel']}
+Регион: ${$this->request['region']}
+Просмотр результатов  (ссылкой)
+<a href='https://lk.redbox.su/show-cluster-result/" . $this->newCluster->id . "'>Просмотр результатов</a>
+<a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/csv'>Скачать CSV</a>
+<a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
+
+        TelegramBot::sendMessage($message, Auth::user()->chat_id);
     }
 
     /**

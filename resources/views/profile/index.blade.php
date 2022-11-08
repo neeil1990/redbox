@@ -150,7 +150,7 @@
         @if(!$user->telegram_bot_active)
             <div class="card-body">
                 <div>{{ __("This is your special token, don't show it to anyone!") }}<br>
-                    <div class="text-info">
+                    <div class="text-info d-flex">
                         <input type="text" value="{{ $user->telegram_token }}" id="special-token" class="form form-control w-75 d-inline">
                         <button class="btn btn-default ml-2" id="saveInBufferButton">
                             <i class="fa fa-copy"></i>

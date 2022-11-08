@@ -109,7 +109,7 @@
                 <span class="ui_tooltip_content" style="width: 300px">
                 {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
                 {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
-                {{ __('data will be lost when starting the next analysis or when reloading the page') }}
+                    {{ __('data will be lost when starting the next analysis or when reloading the page') }}
                 </span>
             </span>
         </span>
@@ -131,6 +131,22 @@
             <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
         </div>
     </div>
+    @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
+        <div class="col-md-6 mt-2">
+            {{ __('Want to') }}
+            <a href="{{ route('profile.index') }}" target="_blank">
+                {{ __('receive notifications from our telegram bot') }}
+            </a> ?
+        </div>
+    @else
+        <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+        {!! Form::select('sendMessage', [
+            $config->send_message => $config->send_message,
+            true => __('Yes'),
+            false => __('No'),
+        ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
+    @endif
+
 </div>
 
 <div class="form-group required">

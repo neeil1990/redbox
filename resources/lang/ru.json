@@ -1033,5 +1033,6 @@
     "Analysis": "Конфигурация кластеризатора",
     "Do not save": "Не сохранять",
     "Parse xml": "Парcинг xml",
-    "Parse xml river": "Парcинг xml river "
+    "Parse xml river": "Парcинг xml river",
+    "Notify in a telegram upon completion?": "Уведомить в телеграме по завершении?"
 }

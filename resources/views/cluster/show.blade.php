@@ -26,6 +26,11 @@
             .bg-cluster-warning {
                 background: rgba(245, 226, 170, 0.5);
             }
+
+            i:hover {
+                cursor: pointer;
+                color: black;
+            }
         </style>
     @endslot
 
@@ -53,7 +58,8 @@
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active" href="{{ route('cluster.configuration') }}">{{ __('My project') }}</a>
+                    <a class="nav-link admin-link active"
+                       href="{{ route('cluster.configuration') }}">{{ __('My project') }}</a>
                 </li>
                 <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
                     {{ __('Module administration') }}
@@ -89,7 +95,7 @@
                             <tbody id="hidden-table-tbody">
                             </tbody>
                         </table>
-                        <div style='width: 100%; overflow-x: scroll;'>
+                        <div style="width: 100%; overflow-x: scroll;">
                             <table id="clusters-table" class="table table-bordered dtr-inline">
                                 <thead>
                                 <tr>
