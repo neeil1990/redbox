@@ -80,7 +80,7 @@ class Cluster
             if ($this->save) {
                 $this->saveResult();
 
-                if (filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+                if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
                     $this->sendNotification();
                 }
             }

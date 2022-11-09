@@ -53,9 +53,11 @@ class ClusterController extends Controller
     {
         $cluster = new Cluster($request->all());
         $cluster->startAnalysis();
+        $result = $cluster->getNewCluster();
+        $result->region = Cluster::getRegionName($request->input('region'));
 
         return response()->json([
-            'cluster' => $cluster->getNewCluster()
+            'cluster' => $result->toArray()
         ]);
     }
 

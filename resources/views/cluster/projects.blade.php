@@ -27,10 +27,6 @@
                 background: rgba(245, 226, 170, 0.5);
             }
 
-            #repeat-scan > div > div > div.modal-body > div:nth-child(6) {
-                display: none;
-            }
-
             .text-primary {
                 color: #007bff !important;
             }
@@ -159,6 +155,8 @@
             var interval
 
             $(document).ready(function () {
+                $('#saveResultBlock').remove()
+
                 $('#my-cluster-projects').dataTable({
                     "order": [[0, "desc"]],
                     "pageLength": 10,
@@ -212,7 +210,8 @@
                             4: cluster['count_clusters'],
                             5: cluster['top'],
                             6: cluster['clustering_level'],
-                            7: '<div class="d-flex flex-column">' +
+                            7: cluster['region'],
+                            8: '<div class="d-flex flex-column">' +
                                 '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">Повторить анализ</button> ' +
                                 '<a href="/show-cluster-result/' + cluster['id'] + '" target="_blank" class="btn btn-secondary mb-2">Просмотр результатов</a> ' +
                                 '<button class="btn btn-secondary mb-2">Скачать csv</button>' +

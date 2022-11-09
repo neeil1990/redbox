@@ -118,7 +118,7 @@
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 
-<div class="form-group required">
+<div class="form-group required" id="saveResultBlock">
     <label>{{ __('Save results') }}</label>
     <span class="__helper-link ui_tooltip_w">
             <i class="fa fa-question-circle" style="color: grey"></i>
