@@ -66,8 +66,6 @@ class Cluster
         }
 
         $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
-
-        Log::debug('cluster request', [$this->request]);
     }
 
     public function startAnalysis()
