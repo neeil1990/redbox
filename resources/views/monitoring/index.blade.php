@@ -168,6 +168,10 @@
                         data: 'count'
                     },
                     {
+                        title: 'Ср.Позиция',
+                        data: 'middle_position',
+                    },
+                    {
                         title: '% в ТОП 3',
                         data: 'top_three',
                     },
@@ -186,10 +190,6 @@
                     {
                         title: '% в ТОП 100',
                         data: 'top_one_hundred',
-                    },
-                    {
-                        title: 'Ср.Позиция',
-                        data: 'middle_position',
                     },
                     {
                         width: '120px',
