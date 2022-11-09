@@ -121,6 +121,15 @@
         </div>
     </div>
     @slot('js')
+        <script>
+            function successCopiedMessage() {
+                $('.toast.toast-success').show(300)
+                $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
+                setTimeout(() => {
+                    $('.toast.toast-success').hide(300)
+                }, 3000)
+            }
+        </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>

@@ -61,9 +61,13 @@
                     <a class="nav-link admin-link active"
                        href="{{ route('cluster.configuration') }}">{{ __('My project') }}</a>
                 </li>
-                <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
-                    {{ __('Module administration') }}
-                </a>
+                @if($admin)
+                    <li>
+                        <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
+                            {{ __('Module administration') }}
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="card-body">
@@ -74,49 +78,86 @@
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
-                    <div id="block-for-downloads-files" style="display: none">
-                        <h3>{{ __('Cluster table') }}</h3>
-                        <table id="hidden-result-table" style="display: none">
+                    <div id="params">
+                        <span class="d-flex w-75 justify-content-around" style="margin-top: -1px;">
+                            <span>
+                                Уровень кластеризации: {{ $cluster['request']['clusteringLevel'] }}
+                            </span>
+                            <span>
+                                Фразы:
+                                <span class="__helper-link ui_tooltip_w">
+                                    <i class="fa fa-paperclip"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 450px !important;">
+                                            @foreach(explode("\n", $cluster['request']['phrases']) as $phrase)
+                                                <div>{{ $phrase }}</div>
+                                            @endforeach
+                                        </span>
+                                    </span>
+                                </span>
+                                <i class="fa fa-copy" id="copyUsedPhrases"></i>
+                                <textarea name="usedPhrases" id="usedPhrases"
+                                          style="display: none">{!! $cluster['request']['phrases'] !!}</textarea>
+                            </span>
+                            <span>
+                                Регион: {{ \App\Cluster::getRegionName($cluster['request']['region']) }}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div id="block-for-downloads-files" style="display: none">
+                    <h3>{{ __('Cluster table') }}</h3>
+                    <table id="hidden-result-table" style="display: none">
+                        <thead>
+                        <tr>
+                            <th colspan="4"></th>
+                            <th class="centered-text" colspan="3">{{ __('Frequency') }}</th>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Serial number') }}</th>
+                            <th>{{ __('Sequence number in the cluster') }}</th>
+                            <th>{{ __('Key query') }}</th>
+                            <th>{{ __('Group') }}</th>
+                            <th>{{ __('Base') }}</th>
+                            <th>"{{ __('Phrasal') }}"</th>
+                            <th>"!{{ __('Target') }}"</th>
+                        </tr>
+                        </thead>
+                        <tbody id="hidden-table-tbody">
+                        </tbody>
+                    </table>
+                    <div style="width: 100%; overflow-x: scroll;">
+                        <table id="clusters-table" class="table table-bordered dtr-inline">
                             <thead>
                             <tr>
-                                <th colspan="4"></th>
-                                <th class="centered-text" colspan="3">{{ __('Frequency') }}</th>
-                            </tr>
-                            <tr>
-                                <th>{{ __('Serial number') }}</th>
-                                <th>{{ __('Sequence number in the cluster') }}</th>
-                                <th>{{ __('Key query') }}</th>
-                                <th>{{ __('Group') }}</th>
-                                <th>{{ __('Base') }}</th>
-                                <th>"{{ __('Phrasal') }}"</th>
-                                <th>"!{{ __('Target') }}"</th>
+                                <th>{{ __('Clusters') }}</th>
+                                <th style="min-width: 333px;">{{ __('Competitors') }}</th>
                             </tr>
                             </thead>
-                            <tbody id="hidden-table-tbody">
+                            <tbody id="clusters-table-tbody">
                             </tbody>
                         </table>
-                        <div style="width: 100%; overflow-x: scroll;">
-                            <table id="clusters-table" class="table table-bordered dtr-inline">
-                                <thead>
-                                <tr>
-                                    <th>{{ __('Clusters') }}</th>
-                                    <th style="min-width: 400px;">{{ __('Competitors') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody id="clusters-table-tbody">
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
-
-                    <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
-
-                    <input type="hidden" id="progressId">
                 </div>
+
+                <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
+
+                <input type="hidden" id="progressId">
             </div>
+
         </div>
     </div>
     @slot('js')
+        <script>
+            function successCopiedMessage() {
+                $('.toast.toast-success').show(300)
+                $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
+                setTimeout(() => {
+                    $('.toast.toast-success').hide(300)
+                }, 3000)
+            }
+        </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
@@ -127,8 +168,20 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
             $(document).ready(function () {
+                $('#app > div > div > div.card-header').append($('#params').html())
+                $('#params').remove()
                 renderHiddenTable({!! $cluster['result'] !!})
                 renderResultTable({!! $cluster['result'] !!})
+
+                $('#copyUsedPhrases').click(function () {
+                    successCopiedMessage()
+                    $('#usedPhrases').css('display', 'block')
+
+                    let text = document.getElementById("usedPhrases");
+                    text.select();
+                    document.execCommand("copy");
+                    $('#usedPhrases').css('display', 'none')
+                })
             })
 
             let progressId

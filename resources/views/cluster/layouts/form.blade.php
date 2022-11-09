@@ -148,24 +148,38 @@
             <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
         </div>
     </div>
-    @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
-        <div class="col-md-6 mt-2">
-            <a href="{{ route('profile.index') }}" target="_blank">
-                {{ __('Want to') }}  {{ __('receive notifications from our telegram bot') }}
-            </a>
-        </div>
-    @else
-        <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
-        {!! Form::select('sendMessage', [
-            $config->send_message => $config->send_message,
-            true => __('Yes'),
-            false => __('No'),
-        ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
-    @endif
-
+    <div id="form">
+        @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
+            <div class="mt-2">
+                {{ __('Want to') }}
+                <a href="{{ route('profile.index') }}" target="_blank">
+                    {{ __('receive notifications from our telegram bot') }}
+                </a>
+                ?
+            </div>
+        @else
+            <div id="sendTelegramMessage">
+                <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                {!! Form::select('sendMessage', [
+                    $config->send_message => $config->send_message,
+                    true => __('Yes'),
+                    false => __('No'),
+                ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
+            </div>
+        @endif
+    </div>
 </div>
 
-<div class="form-group required">
+<div id="sendTelegramMessageConfig" style="display: none">
+    <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+    {!! Form::select('sendMessage', [
+        $config->send_message => $config->send_message,
+        true => __('Yes'),
+        false => __('No'),
+    ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
+</div>
+
+<div class="form-group required mt-2">
     <div>
         <label for="searchBased">{{ __('Base frequency analysis') }}</label>
         <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
@@ -181,3 +195,13 @@
 </div>
 
 <input type="button" class="btn btn-secondary" id="start-analysis" data-dismiss="modal" value="{{ __('Analyse') }}">
+
+<script>
+    let url = new URL(window.location.href)
+    if (url['pathname'] === '/cluster-configuration') {
+        $('#form').remove()
+        $('#sendTelegramMessageConfig').show()
+    } else {
+        $('#sendTelegramMessageConfig').remove()
+    }
+</script>

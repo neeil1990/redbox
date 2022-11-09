@@ -99,26 +99,26 @@ function renderResultTable(data) {
             '       </table>' +
             '   </td>' +
             '   <td>' +
-            '       <div class="row">' +
-            '              <p class="btn btn-secondary copy-based col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-            '                   <i class="fa fa-copy pr-1" style="color: white;"></i> базовую' +
-            '              </p>' +
-            '              <p class="btn btn-secondary copy-phrase col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-            '                   <i class="fa fa-copy pr-1" style="color: white;"></i> фразовую' +
-            '              </p>' +
-            '              <p class="btn btn-secondary copy-target col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-            '                   <i class="fa fa-copy pr-1" style="color: white;"></i> точную' +
-            '              </p>' +
-            '       </div>' +
-            '       <div class="row">' +
-            '            <p class="btn btn-secondary copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-            '                <i class="fa fa-copy pr-1" style="color: white;"></i> ключевой запрос' +
+            '       <div class="row" style="cursor: pointer">' +
+            '            <p class="copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                <i class="fa fa-copy pr-1"></i>ключевой запрос' +
             '            </p>' +
-            '            <p class="btn btn-secondary copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-            '                <i class="fa fa-copy pr-1" style="color: white;"></i> группу' +
+            '            <p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                <i class="fa fa-copy pr-1"></i>группу' +
             '            </p>' +
             '       </div>' +
-            '        <div class="row">' +
+            '       <div class="row" style="cursor: pointer">' +
+            '              <p class="copy-based col" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                   <i class="fa fa-copy pr-1"></i>базовую' +
+            '              </p>' +
+            '              <p class="copy-phrase col" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                   <i class="fa fa-copy pr-1"></i>фразовую' +
+            '              </p>' +
+            '              <p class="copy-target col" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '                   <i class="fa fa-copy pr-1"></i>точную' +
+            '              </p>' +
+            '       </div>' +
+            '        <div class="row" style="cursor: pointer">' +
             '            <p> ' +
             '              <a class="btn btn-secondary" data-toggle="collapse"' +
             '                href="#competitors' + key + '" role="button" aria-expanded="false"' +
@@ -273,10 +273,3 @@ function copyFullUrls() {
     })
 }
 
-function successCopiedMessage() {
-    $('.toast.toast-success').show(300)
-    $('.toast-message.success-msg').html("Successfully copied")
-    setTimeout(() => {
-        $('.toast.toast-success').hide(300)
-    }, 3000)
-}

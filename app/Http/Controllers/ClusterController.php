@@ -208,6 +208,7 @@ class ClusterController extends Controller
         $config->count = $request->input('count');
         $config->clustering_level = $request->input('clustering_level');
         $config->engine_version = $request->input('engine_version');
+        $config->send_message = $request->input('sendMessage');
         $config->save_results = $request->input('save');
         $config->search_phrased = $request->input('searchPhrases') === 'on';
         $config->search_target = $request->input('searchTarget') === 'on';
