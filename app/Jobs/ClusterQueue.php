@@ -70,13 +70,21 @@ class ClusterQueue implements ShouldQueue
         $clusterArrays->progress_id = $this->progressId;
         $clusterArrays->save();
 
-        // 0.2s - 1.5s
-        usleep(random_int(200000, 1500000));
+        $this->trySave();
+    }
 
-        ClusterProgress::where('id', '=', $this->progressId)->update([
-            'success' => DB::raw("success + 1"),
-            'percent' => DB::raw("percent + $this->percent")
-        ]);
+    protected function trySave()
+    {
+        try {
+            // 0.2s - 1.5s
+            usleep(random_int(200000, 1500000));
+            ClusterProgress::where('id', '=', $this->progressId)->update([
+                'success' => DB::raw("success + 1"),
+                'percent' => DB::raw("percent + $this->percent")
+            ]);
+        } catch (\Throwable $exception) {
+            $this->trySave();
+        }
     }
 
 }
