@@ -77,13 +77,22 @@ class SearchCompetitors extends Model
 
     public function getResult(): array
     {
-        return mb_convert_encoding([
-            'analysedSites' => $this->analysedSites,
-            'pagesCounter' => $this->pagesCounter,
-            'totalMetaTags' => $this->totalMetaTags,
-            'domainsPosition' => $this->domainsPosition,
-            'urls' => $this->urls,
-        ], 'UTF-8', 'auto');
+        return [
+            'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
+            'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
+            'totalMetaTags' => $this->tryConvertEncoding($this->totalMetaTags),
+            'domainsPosition' => $this->tryConvertEncoding($this->domainsPosition),
+            'urls' => $this->tryConvertEncoding($this->urls),
+        ];
+    }
+
+    protected function tryConvertEncoding($object)
+    {
+        try {
+            return mb_convert_encoding($object, 'UTF-8', 'auto');
+        } catch (Throwable $e) {
+            return $object;
+        }
     }
 
     /**

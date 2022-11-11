@@ -13,6 +13,7 @@
 
 use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\LinguaStem;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
@@ -305,52 +306,14 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/test', function () {
 
-        $alone = [
-            'https://m-strana.ru/articles/uteplenie-doma-snaruzhi-materialy-normativy/',
-            'https://journal.tinkoff.ru/guide/teplodom/',
-            'https://www.forumhouse.ru/journal/articles/6462-uteplenie-chastnogo-doma-ishem-universalnyj-uteplitel',
-            'https://www.youtube.com/playlist?list=plja-j8bdzueq1pzv1anfabllcur7pbnl-',
-            'https://uslugi.yandex.ru/213-moscow/category?text=%d1%84%d0%b8%d1%80%d0%bc%d1%8b+%d0%bf%d0%be+%d1%83%d1%82%d0%b5%d0%bf%d0%bb%d0%b5%d0%bd%d0%b8%d1%8e+%d0%b4%d0%be%d0%bc%d0%be%d0%b2+%d1%82%d0%b5%d0%bb',
-            'https://dzen.ru/media/rmnt/kak-uteplit-dom-pravilno-5e6a44074449f63aaa9bef7b',
-            'https://www.houzz.ru/statyi/tak-mozhno-uteplyaem-zagorodnyy-dom-i-ekonomim-na-otoplenii-stsetivw-vs~117034682',
-            'https://www.avito.ru/moskva/predlozheniya_uslug?q=%d1%83%d1%82%d0%b5%d0%bf%d0%bb%d0%b5%d0%bd%d0%b8%d0%b5+%d0%b4%d0%be%d0%bc%d0%b0',
-            'https://market.yandex.ru/journal/expertise/kak-pravilno-uteplit-fasad-i-vipolnit-finishnuju-otdelku',
-            'https://realty.rbc.ru/news/5f3676bd9a794761e14a0ae8',
-            'https://www.kp.ru/guide/uteplenie-doma.html',
-            'https://sovet-ingenera.com/otoplenie/uteplenie/uteplenie-chastnogo-doma-snaruzhi.html',
-            'https://profi.ru/remont/fasadnye-raboty/uteplenie-fasadov/price/',
-            'https://krrot.net/yteplenie-doma-svoimi-rykami/',
-            'https://7dach.ru/oleg_sanko/uteplenie-zagorodnogo-doma-ot-i-do-37487.html',
-            'https://domof.ru/articles/uteplenie-doma-snaruzhi-ili-iznutri/',
-            'https://ppugarant.ru/service/uteplenie-doma-ppu/',
-            'https://stroyday.ru/stroitelstvo-doma/yteplenie-doma',
-            'https://stroitelstvoproektirovanie.com/uteplenie-doma/',
-            'https://stroy-podskazka.ru/uteplenie/naruzhnoe/sten/',
-        ];
-
-        $cluster = [
-            'https://m-strana.ru/articles/uteplenie-doma-snaruzhi-materialy-normativy/',
-            'https://www.forumhouse.ru/journal/themes/128-kak-uteplit-fasad-bez-oshibok',
-            'https://sovet-ingenera.com/otoplenie/uteplenie/uteplenie-chastnogo-doma-snaruzhi.html',
-            'https://remont-book.com/uteplenie-sten-doma-snaruzhi/',
-            'https://uslugi.yandex.ru/213-moscow/category/remont-i-stroitelstvo/fasadnyie-rabotyi/uteplenie-fasadov--1995',
-            'https://journal.tinkoff.ru/guide/teplodom/',
-            'https://stroy-podskazka.ru/uteplenie/naruzhnoe/sten/',
-            'https://www.bazaznaniyst.ru/nedorogie-materialy-dlya-utepleniya-doma-snaruzhi/',
-            'https://market.yandex.ru/journal/expertise/kak-pravilno-uteplit-fasad-i-vipolnit-finishnuju-otdelku',
-            'https://kronotech.ru/publications/uteplenie-fasada-chastnogo-doma-snaruzhi',
-            'https://profi.ru/remont/fasadnye-raboty/uteplenie-fasadov/price/',
-            'https://stroyday.ru/stroitelstvo-doma/stroitelnye-materialy/naruzhnyj-uteplitel-dlya-sten.html',
-            'https://srbu.ru/stroitelnye-materialy/1948-chem-luchshe-uteplit-dom-snaruzhi.html',
-            'https://strir.ru/uteplenie/sten-snaruzhi',
-            'http://remoo.ru/fasad/uteplenie-fasada-doma-snaruzhi',
-            'https://everest-dom.com/blog/uteplenie-sten-doma-snaruzhi',
-            'https://www.houzz.ru/statyi/tak-mozhno-uteplyaem-zagorodnyy-dom-i-ekonomim-na-otoplenii-stsetivw-vs~117034682',
-            'https://www.kp.ru/guide/uteplenie-fasada.html',
-            'https://fasad-exp.ru/uteplenie/materialy-dlya-utepleniya-sten-snaruzhi.html',
-            'https://dzen.ru/media/rospena/chem-luchshe-uteplit-dom-snaruji-616fc760ac824a1319f64e38',
-        ];
-
-        dd(array_intersect($cluster, $alone));
+        $stemmer = new LinguaStem();
+        similar_text('стетоскоп', 'фонендоскоп', $percent);
+        dump($percent);
+        dump([
+            'стетоскоп' => $stemmer->getRootWord('стетоскоп')
+        ]);
+        dd([
+            'фонендоскоп' => $stemmer->getRootWord('фонендоскоп')
+        ]);
     });
 });
