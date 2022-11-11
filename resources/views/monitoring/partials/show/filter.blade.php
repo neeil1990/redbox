@@ -14,6 +14,7 @@
                             <div class="form-group">
                                 <label>{{ __('Search engine') }}:</label>
                                 <select name="region" class="custom-select" id="searchengines" onchange="this.form.submit()">
+                                    <option value="">{{ __('All search engine and regions') }}</option>
                                     @foreach($project->searchengines as $search)
                                         @if($search->id == request('region'))
                                             <option value="{{ $search->id }}" selected>{{ strtoupper($search->engine) }} {{ $search->location->name }} [{{$search->lr}}]</option>
@@ -28,6 +29,7 @@
                         </div>
                     </form>
 
+                    @if(request('region'))
                     <div class="col-4">
                         <div class="form-group">
                             <label>{{ __('Date range') }}:</label>
@@ -44,6 +46,7 @@
                             <!-- /.input group -->
                         </div>
                     </div>
+                    @endif
 
                     <form action="" id="filter" style="display: contents;" onchange='$("#filter").trigger("filtered")'>
                         <div class="col-4">

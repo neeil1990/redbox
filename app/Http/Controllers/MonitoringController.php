@@ -400,19 +400,21 @@ class MonitoringController extends Controller
 
     public function getTableKeywords(Request $request, $id)
     {
+
+        $mode = $request->input('mode_range');
+        $regionId = $request->input('region_id');
+        if(!$regionId)
+            $mode = 'main';
+
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
         $keywords = $project->keywords();
 
-        $region = $project->searchengines();
-
-        if($request->input('region_id'))
-            $region->where('id', $request->input('region_id'));
-
-        $region = $region->orderBy('id', 'asc')->first();
-        $region->load('location');
+        $region = $this->getRegion($project, $regionId);
+        if($mode === 'main')
+            $region = $this->getRegions($project);
 
         $this->filter($project, $keywords, $region, $request);
 
@@ -430,13 +432,12 @@ class MonitoringController extends Controller
             $dates = explode(' - ', $request->input('dates_range'), 2);
         }
 
-        $mode = $request->input('mode_range', 'range');
-
         $keywords->load('group');
 
         $keywords->load(['positions' => function($query) use ($region, $dates, $mode){
 
-            $query->where('monitoring_searchengine_id', $region->id);
+            if(isset($region->id))
+                $query->where('monitoring_searchengine_id', $region->id);
 
             if($mode === "datesFind")
                 $query->dateFind($dates);
@@ -444,7 +445,8 @@ class MonitoringController extends Controller
                 $query->dateRange($dates);
         }]);
 
-        $keywords = $this->setUrlsInKeywords($keywords, $region->id);
+        if(isset($region->id))
+            $keywords = $this->setUrlsInKeywords($keywords, $region->id);
 
         $columns = $this->getMainColumns();
 
@@ -501,10 +503,10 @@ class MonitoringController extends Controller
         foreach ($keywords as $keyword){
 
             $dynamics = 0;
-            $positions = $keyword->last_positions;
+            $model = $keyword->last_positions;
 
-            if($positions && $positions->count() > 1)
-                $dynamics = ($positions->last() - $positions->first());
+            if($model && $model->count() > 1)
+                $dynamics = ($model->last()->position - $model->first()->position);
 
             MonitoringKeyword::where('id', $keyword->id)->update(['dynamic' => $dynamics]);
         }
@@ -514,29 +516,23 @@ class MonitoringController extends Controller
     {
         switch ($mode){
             case "dates":
-                $dateColumns = collect([
-                    'data_0' => __('First of find'),
-                    'data_1' => __('Last of find'),
-                ]);
 
-                $columns = $columns->merge($dateColumns);
+                $columns = $columns->merge(collect([
+                    'col_0' => __('First of find'),
+                    'col_1' => __('Last of find'),
+                ]));
 
-                $keywords->transform(function($item) use ($mode){
+                $keywords->transform(function($item){
 
                     $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
                         return $item->created_at->format('d.m.Y');
                     });
 
-                    if($unique->count()) {
-                        $first = $unique->first();
-                        $last = $unique->last();
-                        $datesPosition = [
-                            $first->date => $first->position,
-                            $last->date => $last->position
-                        ];
-
-                        $item->last_positions = collect($datesPosition);
-                    }
+                    if($unique->count())
+                        $item->last_positions = collect([
+                            'col_0' => $unique->first(),
+                            'col_1' => $unique->last()
+                        ]);
 
                     return $item;
                 });
@@ -572,29 +568,70 @@ class MonitoringController extends Controller
                     return $item->format('d.m.Y');
                 });
 
-                foreach ($keywords as $keyword)
-                    $keyword->last_positions = $keyword->last_positions->pluck('position', 'date');
-
                 $dateOfColumns = collect([]);
                 foreach ($getDateForColumns as $i => $m)
-                    $dateOfColumns->put('data_' . $i, $m->format('d.m.Y'));
+                    $dateOfColumns->put('col_' . $i, $m->format('d.m.Y'));
 
                 $columns = $columns->merge($dateOfColumns);
 
+
+                foreach ($keywords as $keyword){
+
+                    $lastPosition = collect([]);
+                    foreach ($dateOfColumns as $col => $name){
+
+                        $modelPosition = $keyword->positions->where('date', $name)->sortByDesc('created_at')->first();
+                        if($modelPosition)
+                            $lastPosition->put($col, $modelPosition);
+                    }
+
+                    $keyword->last_positions = $lastPosition;
+                }
+
                 break;
 
+            case "main":
+
+                $mainColumns = collect([]);
+                $keywords->transform(function($item) use ($region, $mainColumns){
+
+                    $lastPosition = collect([]);
+                    foreach ($region as $reg){
+
+                        $model = $item->positions()
+                            ->where('position', '<', '100')
+                            ->where('monitoring_searchengine_id', $reg->id)->latest()->first();
+
+                        $col = 'engine_' . $reg->lr;
+                        if($model)
+                            $lastPosition->put($col, $model);
+
+                        $mainColumns->put($col, $reg->location->name);
+                    }
+                    $item->last_positions = $lastPosition;
+
+                    return $item;
+                });
+
+                $columns = $columns->merge($mainColumns);
+
+                break;
             default;
                 $dateRangeColumns = $this->getDateRangeForColumns($region, $dates, $mode);
 
                 $columns = $columns->merge($dateRangeColumns);
 
-                $keywords->transform(function($item) use ($mode){
+                $keywords->transform(function($item) use ($dateRangeColumns){
 
-                    $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
-                        return $item->created_at->format('d.m.Y');
-                    });
+                    $lastPosition = collect([]);
+                    foreach ($dateRangeColumns as $col => $name){
 
-                    $item->last_positions = $unique->pluck('position', 'date');
+                        $modelPosition = $item->positions->where('date', $name)->sortByDesc('created_at')->first();
+                        if($modelPosition)
+                            $lastPosition->put($col, $modelPosition);
+                    }
+
+                    $item->last_positions = $lastPosition;
 
                     return $item;
                 });
@@ -616,6 +653,7 @@ class MonitoringController extends Controller
     private function generateRowDataTable($columns, $keyword, $mode)
     {
         $row = collect([]);
+        $collectionPositions = $keyword->last_positions;
 
         foreach ($columns as $i => $v){
 
@@ -633,18 +671,20 @@ class MonitoringController extends Controller
                     $row->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
                     break;
                 case 'url':
+                    if(isset($keyword->urls)){
+                        $urls = $keyword->urls;
+                        $textClass = 'text-bold';
+                        if($keyword->page && $urls->count()){
+                            $lastUrl = $urls->first();
+                            if($lastUrl->url != $keyword->page)
+                                $textClass = 'text-danger';
+                            else
+                                $textClass = 'text-success';
+                        }
 
-                    $urls = $keyword->urls;
-                    $textClass = 'text-bold';
-                    if($keyword->page && $urls->count()){
-                        $lastUrl = $urls->first();
-                        if($lastUrl->url != $keyword->page)
-                            $textClass = 'text-danger';
-                        else
-                            $textClass = 'text-success';
-                    }
-
-                    $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
+                        $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
+                    }else
+                        $row->put($i, '-');
                     break;
                 case 'group':
                     $row->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
@@ -654,30 +694,22 @@ class MonitoringController extends Controller
                     break;
                 case 'dynamics':
                     $dynamics = 0;
-                    $positions = $keyword->last_positions;
-
-                    if($positions && $positions->count() > 1)
-                        $dynamics = ($positions->last() - $positions->first());
+                    if($collectionPositions && $collectionPositions->count() > 1)
+                        $dynamics = ($collectionPositions->last()->position - $collectionPositions->first()->position);
 
                     $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
                     break;
                 default:
-                    if($mode === "dates"){
-                        $position = $keyword->last_positions;
-                        $dates = $position->keys();
 
-                        if($position) {
-                            $position = $position->shift();
-                            if($position < 100)
-                                $row->put($i, view('monitoring.partials.show.position_with_date', ['position' => $position, 'date' => $dates->shift()])->render());
-                            else
-                                $row->put($i, '-');
-                        }else
+                    if($mode === "dates" || $mode === "main"){
+                        if(isset($collectionPositions[$i]) && $collectionPositions[$i]->position < 100)
+                            $row->put($i, view('monitoring.partials.show.position_with_date', ['position' => $collectionPositions[$i]->position, 'date' => $collectionPositions[$i]->date])->render());
+                        else
                             $row->put($i, '-');
 
                     }else{
-                        if(isset($keyword->last_positions[$v]) && $keyword->last_positions[$v] < 100) {
-                            $row->put($i, view('monitoring.partials.show.position', ['position' => $keyword->last_positions[$v]])->render());
+                        if(isset($collectionPositions[$i]) && $collectionPositions[$i]->position < 100) {
+                            $row->put($i, view('monitoring.partials.show.position', ['position' => $collectionPositions[$i]->position])->render());
                         }else
                             $row->put($i, '-');
                     }
@@ -725,7 +757,7 @@ class MonitoringController extends Controller
 
         $columns = collect([]);
         foreach ($model as $i => $m)
-            $columns->put('data_' . $i, $m->date);
+            $columns->put('col_' . $i, $m->date);
 
         return $columns;
     }
@@ -858,5 +890,40 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
         $user->monitoringProjects()->where('id', $id)->delete();
+    }
+
+    /**
+     * @param $id
+     * @param $project
+     * @return mixed
+     */
+    protected function getRegion($project, $regionId = null)
+    {
+        $searchEngines = $project->searchengines();
+
+        if ($regionId)
+            $searchEngines = $searchEngines->where('id', $regionId);
+
+        $region = $searchEngines->orderBy('id', 'asc')->first();
+
+        $region->load('location');
+
+        return $region;
+    }
+
+    /**
+     * @param $id
+     * @param $project
+     * @return mixed
+     */
+    protected function getRegions($project)
+    {
+        $searchEngines = $project->searchengines();
+
+        $region = $searchEngines->orderBy('id', 'asc')->get();
+
+        $region->load('location');
+
+        return $region;
     }
 }
