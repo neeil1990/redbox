@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <div id="toast-container" class="toast-top-right error-message">
+    <div id="toast-container" class="toast-top-right error-message" style="z-index: 99999 !important;">
         <div class="toast toast-error" aria-live="assertive" style="display:none;">
             <div class="toast-message error-msg">
                 {{ __('An unexpected error has occurred, please contact the administrator') }}
@@ -195,8 +195,10 @@
                         setProgressBarStyles(response.percent)
                         if (response.percent <= 50) {
                             $('#progress-bar-state').html("{{ __('Parse xml') }}")
+                        } else if (response.percent === 50) {
+                            $('#progress-bar-state').html("{{ __('Waiting for a queue') }}")
                         } else {
-                            $('#progress-bar-state').html("{{ __('Parse xml river') }}")
+                            $('#progress-bar-state').html("{{ __('Processing of the received information') }}")
                         }
                     }
                 })
@@ -216,7 +218,10 @@
                     error: function (error) {
                         destroyProgress(progressId, interval)
                         $('#start-analysis').attr('disabled', false)
+                        $('.dont-worry-notification').hide()
+                        $('.history-notification').hide()
                         $('.toast.toast-error').show(300)
+
                         setTimeout(function () {
                             $('.toast.toast-error').hide(300)
                         }, 5000)

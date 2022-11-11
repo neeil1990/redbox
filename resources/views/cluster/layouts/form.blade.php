@@ -1,7 +1,7 @@
 <div id="toast-container" class="toast-top-right success-message dont-worry-notification" style="display:none;">
     <div class="toast toast-info" aria-live="polite">
         <div class="toast-message">
-            {{ __("If your analysis is \"hanging\" at 50% for a long time, don't worry, it's just waiting in line to process xml requests river") }}
+            {{ __("If your analysis is \"hanging\" at 50% for a long time, don't worry, it's just waiting in line to process") }}
         </div>
     </div>
 </div>
@@ -118,7 +118,7 @@
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 
-<div class="form-group required">
+<div class="form-group required" id="saveResultBlock">
     <label>{{ __('Save results') }}</label>
     <span class="__helper-link ui_tooltip_w">
             <i class="fa fa-question-circle" style="color: grey"></i>

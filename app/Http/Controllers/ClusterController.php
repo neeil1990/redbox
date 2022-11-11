@@ -53,9 +53,11 @@ class ClusterController extends Controller
     {
         $cluster = new Cluster($request->all());
         $cluster->startAnalysis();
+        $result = $cluster->getNewCluster();
+        $result->region = Cluster::getRegionName($request->input('region'));
 
         return response()->json([
-            'cluster' => $cluster->getNewCluster()
+            'cluster' => $result->toArray()
         ]);
     }
 
@@ -174,8 +176,15 @@ class ClusterController extends Controller
             return abort(403);
         }
 
-        $file = Excel::download(new ClusterResultExport($cluster), 'cluster_result.' . $type);
-        Common::fileExport($file, $type, 'cluster_result');
+        if (isset($cluster->domain)) {
+            $domain = str_replace(['https://', 'http://'], '', $cluster->domain);
+            $fileName = Carbon::parse($cluster->created_at)->toDateString() . '-' . str_replace(['.', '/', ' '], '-', $domain);
+        } else {
+            $fileName = Carbon::parse($cluster->created_at)->toDateString() . '-' . $cluster->id;
+        }
+
+        $file = Excel::download(new ClusterResultExport($cluster), $fileName . '.' . $type);
+        Common::fileExport($file, $type, $fileName);
     }
 
     /**

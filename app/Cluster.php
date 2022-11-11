@@ -66,8 +66,6 @@ class Cluster
         }
 
         $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
-
-        Log::debug('cluster request', [$this->request]);
     }
 
     public function startAnalysis()
@@ -82,7 +80,7 @@ class Cluster
             if ($this->save) {
                 $this->saveResult();
 
-                if (filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+                if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
                     $this->sendNotification();
                 }
             }
