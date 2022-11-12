@@ -21,7 +21,7 @@ class MonitoringSettings extends Model
 
     public function scopeGetValue($query, $field = null)
     {
-        if($result = $query->where('name', $field)->first('value'))
+        if($result = $query->whereNotNull('value')->where('name', $field)->first('value'))
             return $result['value'];
 
         return false;
