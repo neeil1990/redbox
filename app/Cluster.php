@@ -125,8 +125,10 @@ class Cluster
 
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1($minimum);
-        } else {
+        } else if ($this->engineVersion === 'new') {
             $this->searchClustersEngineV2($minimum);
+        } else {
+            $this->searchClustersEngineV3($minimum);
         }
     }
 
@@ -147,6 +149,31 @@ class Cluster
     }
 
     protected function searchClustersEngineV2($minimum)
+    {
+        $willClustered = [];
+
+        foreach ($this->sites as $phrase => $item) {
+            foreach ($this->sites as $phrase2 => $item2) {
+                if (isset($willClustered[$phrase2])) {
+                    continue;
+                } else if (isset($this->clusters[$phrase])) {
+                    foreach ($this->clusters[$phrase] as $target => $elem) {
+                        if (count(array_intersect($item2['sites'], $elem['sites'])) >= $minimum) {
+                            $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
+                            $willClustered[$phrase2] = true;
+                            break;
+                        }
+                    }
+                } else if (count(array_intersect($item['sites'], $item2['sites'])) >= $minimum) {
+                    $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
+                    $willClustered[$phrase2] = true;
+                }
+            }
+        }
+    }
+
+
+    protected function searchClustersEngineV3($minimum)
     {
         $willClustered = [];
 
