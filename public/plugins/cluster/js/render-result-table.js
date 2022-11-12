@@ -90,9 +90,9 @@ function renderResultTable(data) {
             '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер в кластере">##</th>' +
             '               <th>Ключевой запрос</th>' +
             '               <th>Группа</i></th>' +
-            '               <th>Базовая</th>' +
-            '               <th>"Фразовая"</th>' +
-            '               <th>"!Точная"</th>' +
+            '               <th style="max-width: 93px; min-width: 93px;">Базовая</th>' +
+            '               <th style="max-width: 93px; min-width: 93px;">"Фразовая"</th>' +
+            '               <th style="max-width: 93px; min-width: 93px;">"!Точная"</th>' +
             '           </tr>' +
             '       </thead>' +
             '       <tbody>' + newTableRows + '</tbody>' +
