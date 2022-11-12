@@ -168,6 +168,24 @@ class Cluster
                 }
             }
         }
+
+        foreach ($this->clusters as $keyPhrase => $cluster) {
+            foreach ($this->clusters as $anotherKeyPhrase => $anotherCluster) {
+                if ($keyPhrase === $anotherKeyPhrase) {
+                    continue;
+                }
+
+                foreach ($cluster as $key1 => $elems) {
+                    foreach ($anotherCluster as $key2 => $anotherElems) {
+                        if (count(array_intersect($anotherElems['sites'], $elems['sites'])) >= $minimum) {
+                            $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
+                            unset($this->clusters[$anotherKeyPhrase]);
+                            break 2;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     protected function calculateClustersInfo()
