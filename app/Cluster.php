@@ -116,8 +116,6 @@ class Cluster
             }
 
         }
-
-        ksort($this->sites);
     }
 
     protected function searchClusters()
@@ -295,7 +293,10 @@ class Cluster
             $groupName = '';
             foreach ($cluster as $phrase => $info) {
                 if ($phrase !== 'finallyResult') {
-                    if ($info['based']['number'] > $maxRepeatPhrase) {
+                    if ($maxRepeatPhrase === 0) {
+                        $maxRepeatPhrase = $info['based']['number'];
+                        $groupName = $info['based']['phrase'];
+                    } else if ($info['based']['number'] > $maxRepeatPhrase) {
                         $maxRepeatPhrase = $info['based']['number'];
                         $groupName = $info['based']['phrase'];
                     }
