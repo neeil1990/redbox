@@ -10,7 +10,7 @@
     <div class="toast toast-info" aria-live="polite" style="top: 140px;">
         <div class="toast-message">
             {{ __('You can close the page or start a new analysis, when your results are ready, you can view them') }}
-            <a href="{{ route('cluster.configuration') }}"><u>{{ __('here') }}</u></a>
+            <a href="{{ route('cluster.configuration') }}" target="_blank"><u>{{ __('here') }}</u></a>
         </div>
     </div>
 </div>
