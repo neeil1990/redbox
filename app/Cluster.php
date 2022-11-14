@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\ClusterQueue;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -174,7 +175,6 @@ class Cluster
         }
     }
 
-
     protected function searchClustersEngineV3($minimum)
     {
         $willClustered = [];
@@ -204,15 +204,23 @@ class Cluster
                     continue;
                 }
 
-                foreach ($cluster as $key1 => $elems) {
-                    foreach ($anotherCluster as $key2 => $anotherElems) {
-                        if (count(array_intersect($anotherElems['sites'], $elems['sites'])) >= $minimum) {
-                            $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
-                            unset($this->clusters[$anotherKeyPhrase]);
-                            break 2;
+                try {
+                    foreach ($cluster as $key1 => $elems) {
+                        foreach ($anotherCluster as $key2 => $anotherElems) {
+                            if (count(array_intersect($anotherElems['sites'], $elems['sites'])) >= $minimum) {
+                                $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
+                                $this->clusters[$keyPhrase][$anotherKeyPhrase] = ['merge' => [$key1 => $key2]];
+                                unset($this->clusters[$anotherKeyPhrase]);
+                                break 2;
+                            }
                         }
                     }
+                } catch (Throwable $e) {
+                    Log::debug('cluster', [json_encode($cluster)]);
+                    Log::debug('$elems', [$elems]);
+                    Log::debug('$anotherElems', [$anotherElems]);
                 }
+
             }
         }
     }
@@ -268,25 +276,24 @@ class Cluster
 
     protected function tryInitJob($phrase, $key, $keyPhrase, $type, $attempt = 1)
     {
-        if ($attempt == 3) {
-            Log::debug('Превышен лимит попыток инициации очереди в кластеризаторе');
+        if ($attempt === 5) {
             die();
         }
-        try {
-            ClusterQueue::dispatch(
-                $this->region,
-                $this->progress->id,
-                $this->percent,
-                $phrase,
-                $key,
-                $keyPhrase,
-                $type
-            )->onQueue('cluster_high');
-        } catch (Throwable $e) {
+
+        if (DB::transactionLevel() !== 0) {
             sleep($attempt);
             $this->tryInitJob($phrase, $key, $keyPhrase, $type, $attempt + 1);
         }
 
+        ClusterQueue::dispatch(
+            $this->region,
+            $this->progress->id,
+            $this->percent,
+            $phrase,
+            $key,
+            $keyPhrase,
+            $type
+        )->onQueue('cluster_high');
     }
 
     protected function waitRiverResponses()

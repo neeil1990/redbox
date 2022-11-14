@@ -305,6 +305,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
 
     Route::get('/test', function () {
+        dd(Illuminate\Support\Facades\DB::transactionLevel());
 
         $jayParsedAry = [
             "Запрос" => [
