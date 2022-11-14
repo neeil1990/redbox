@@ -216,6 +216,7 @@ class Cluster
                         }
                     }
                 } catch (Throwable $e) {
+                    Log::debug('error', [$e->getMessage()]);
                     Log::debug('cluster', [json_encode($cluster)]);
                     Log::debug('$elems', [$elems]);
                     Log::debug('$anotherElems', [$anotherElems]);
