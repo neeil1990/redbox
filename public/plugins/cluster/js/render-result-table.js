@@ -46,13 +46,29 @@ function renderResultTable(data) {
                 phrased = "phrased" in information ? information['phrased']['number'] : '0'
                 target = "target" in information ? information['target']['number'] : '0'
                 based = information['based']['number']
+                let targetMerge = false
+                let concatMerge = false
+                if ("merge" in information) {
+                    $.each(information['merge'], function (key, value) {
+                        targetMerge = key
+                        concatMerge = value
+                    })
+                }
 
                 targetPhrase = changedBg ? information['basedNormal'] : phrase
                 let title = changedBg ? `title='Ваша фраза "${phrase}" была изменена'` : ''
 
                 newTableRows +=
                     '<tr>' +
-                    '   <td class="border-0">' + iterator + '</td> ' +
+                    '   <td class="border-0">'
+                    + iterator +
+                    '  <span class="__helper-link ui_tooltip_w">' +
+                    '      <i class="fa fa-paperclip"></i>' +
+                    '      <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
+                    '          <span class="ui_tooltip_content">' + targetMerge + ': ' + concatMerge + '</span>' +
+                    '      </span>' +
+                    '  </span>' +
+                    '</td> ' +
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
                     '       <div class="d-flex"> ' +
