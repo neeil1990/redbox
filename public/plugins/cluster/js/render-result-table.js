@@ -1,4 +1,5 @@
 function renderResultTable(data) {
+    console.log(data)
     let iterator = 0
     let style
     let phrased
