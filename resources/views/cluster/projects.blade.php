@@ -209,13 +209,13 @@
                             3: cluster['count_phrases'],
                             4: cluster['count_clusters'],
                             5: cluster['top'],
-                            6: cluster['clustering_level'],
+                            6: cluster['clustering_level'] + ' / ' + cluster['request']['engineVersion'],
                             7: cluster['region'],
                             8: '<div class="d-flex flex-column">' +
-                                '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">Повторить анализ</button> ' +
-                                '<a href="/show-cluster-result/' + cluster['id'] + '" target="_blank" class="btn btn-secondary mb-2">Просмотр результатов</a> ' +
-                                '<button class="btn btn-secondary mb-2">Скачать csv</button>' +
-                                '<button class="btn btn-secondary">Скачать xls</button></div>'
+                                '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">{{ __('Repeat the analysis') }}</button> ' +
+                                '<a href="/show-cluster-result/' + cluster['id'] + '" target="_blank" class="btn btn-secondary mb-2">{{ __('View results') }}</a> ' +
+                                '<button class="btn btn-secondary mb-2">{{ __('Download csv') }}</button>' +
+                                '<button class="btn btn-secondary">{{ __('Download xls') }}</button></div>'
                         });
                         table.draw()
                         refreshAll()

@@ -55,6 +55,7 @@ class ClusterController extends Controller
         $cluster->startAnalysis();
         $result = $cluster->getNewCluster();
         $result->region = Cluster::getRegionName($request->input('region'));
+        $result->request = json_decode($result->request, true);
 
         return response()->json([
             'cluster' => $result->toArray()
