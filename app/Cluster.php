@@ -204,24 +204,16 @@ class Cluster
                     continue;
                 }
 
-                try {
-                    foreach ($cluster as $key1 => $elems) {
-                        foreach ($anotherCluster as $key2 => $anotherElems) {
-                            if (count(array_intersect($anotherElems['sites'], $elems['sites'])) >= $minimum) {
-                                $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
-                                $this->clusters[$keyPhrase][$anotherKeyPhrase] = ['merge' => [$key1 => $key2]];
-                                unset($this->clusters[$anotherKeyPhrase]);
-                                break 2;
-                            }
+                foreach ($cluster as $key1 => $elems) {
+                    foreach ($anotherCluster as $key2 => $anotherElems) {
+                        if (count(array_intersect($anotherElems['sites'], $elems['sites'])) >= $minimum) {
+                            $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
+                            $this->clusters[$keyPhrase][$anotherKeyPhrase] = ['merge' => [$key1 => $key2]];
+                            unset($this->clusters[$anotherKeyPhrase]);
+                            break 2;
                         }
                     }
-                } catch (Throwable $e) {
-                    Log::debug('error', [$e->getMessage()]);
-                    Log::debug('cluster', [json_encode($cluster)]);
-                    Log::debug('$elems', [$elems]);
-                    Log::debug('$anotherElems', [$anotherElems]);
                 }
-
             }
         }
     }

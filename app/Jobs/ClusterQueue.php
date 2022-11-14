@@ -73,6 +73,15 @@ class ClusterQueue implements ShouldQueue
         $this->trySave();
     }
 
+    public function failed(\Throwable $exception)
+    {
+        Log::debug('cluster queue bug report', [
+            'message' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+        ]);
+    }
+
     protected function trySave()
     {
         try {
