@@ -84,6 +84,9 @@
                                 Уровень кластеризации: {{ $cluster['request']['clusteringLevel'] }}
                             </span>
                             <span>
+                                Версия кластеризатора: {{ $cluster['request']['engineVersion'] }}
+                            </span>
+                            <span>
                                 Фразы:
                                 <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-paperclip"></i>

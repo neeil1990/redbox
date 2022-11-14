@@ -111,7 +111,9 @@ class ClusterController extends Controller
         ]);
 
         foreach ($projects as $key => $project) {
-            $project->region = Cluster::getRegionName(json_decode($project->request, true)['region']);
+            $request = json_decode($project->request, true);
+            $project->region = Cluster::getRegionName($request['region']);
+            $project->request = $request;
         }
 
         return view('cluster.projects', ['projects' => $projects, 'admin' => $admin, 'config' => ClusterConfiguration::first()]);

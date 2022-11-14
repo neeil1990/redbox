@@ -42,6 +42,8 @@ class Cluster
 
     protected $sites_json;
 
+    protected $percent;
+
     public function __construct(array $request)
     {
         $this->count = $request['count'];
@@ -232,44 +234,30 @@ class Cluster
     {
         $this->progress->total = $this->calculateCountRequests();
         $this->progress->save();
-        $percent = 50 / $this->progress->total;
+        $this->percent = 50 / $this->progress->total;
 
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     if ($this->searchPhrases) {
-                        ClusterQueue::dispatch(
-                            $this->region,
-                            $this->progress->id,
-                            $percent,
+                        $this->tryInitJob(
                             '"' . $phrase . '"',
                             $key,
                             $phrase,
                             'phrased'
-                        )->onQueue('cluster_high');
+                        );
                     }
 
                     if ($this->searchTarget) {
-                        ClusterQueue::dispatch(
-                            $this->region,
-                            $this->progress->id,
-                            $percent,
+                        $this->tryInitJob(
                             '"!' . implode(' !', explode(' ', $phrase)) . '"',
                             $key,
                             $phrase,
                             'target'
-                        )->onQueue('cluster_high');
+                        );
                     }
 
-                    ClusterQueue::dispatch(
-                        $this->region,
-                        $this->progress->id,
-                        $percent,
-                        $phrase,
-                        $key,
-                        $phrase,
-                        'based'
-                    )->onQueue('cluster_high');
+                    $this->tryInitJob($phrase, $key, $phrase, 'based');
                 }
             }
         }
@@ -278,15 +266,34 @@ class Cluster
         $this->setRiverResults();
     }
 
+    protected function tryInitJob($phrase, $key, $keyPhrase, $type, $attempt = 1)
+    {
+        if ($attempt == 3) {
+            Log::debug('Превышен лимит попыток инициации очереди в кластеризаторе');
+            die();
+        }
+        try {
+            ClusterQueue::dispatch(
+                $this->region,
+                $this->progress->id,
+                $this->percent,
+                $phrase,
+                $key,
+                $keyPhrase,
+                $type
+            )->onQueue('cluster_high');
+        } catch (Throwable $e) {
+            sleep($attempt);
+            $this->tryInitJob($phrase, $key, $keyPhrase, $type, $attempt + 1);
+        }
+
+    }
+
     protected function waitRiverResponses()
     {
         $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
 
         while ($this->progress->total !== $count) {
-            if ($this->progress->total < $count) {
-                Log::debug('ошибка кластеризатора в очередях');
-                die();
-            }
             sleep(5);
             $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
         }

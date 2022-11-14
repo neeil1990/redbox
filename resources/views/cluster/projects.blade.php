@@ -98,7 +98,7 @@
                                 <td>{{ $project->count_phrases }}</td>
                                 <td>{{ $project->count_clusters }}</td>
                                 <td>{{ $project->top }}</td>
-                                <td>{{ $project->clustering_level }}</td>
+                                <td>{{ $project->clustering_level }} / {{ $project->request['engineVersion'] }}</td>
                                 <td class="project-region">{{ $project->region }}</td>
                                 <td>
                                     <div class="d-flex flex-column">
