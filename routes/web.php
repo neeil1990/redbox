@@ -305,8 +305,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
 
     Route::get('/test', function () {
-        dd(Illuminate\Support\Facades\DB::transactionLevel());
-
         $jayParsedAry = [
             "Запрос" => [
                 "sites" => [
@@ -9794,19 +9792,15 @@ Route::middleware(['verified'])->group(function () {
                 if ($keyPhrase === $anotherKeyPhrase) {
                     continue;
                 }
-
                 foreach ($cluster as $key1 => $elems) {
                     foreach ($anotherCluster as $key2 => $anotherElems) {
-                        if (count(array_intersect($anotherElems['sites'], $elems['sites'])) >= $minimum) {
-                            if($key2 === 'тонометр автоматический на запястье цена' || $key1 == 'тонометр автоматический на запястье цена'){
-                                dump(count(array_intersect($anotherElems['sites'], $elems['sites'])));
-                                dump($key2);
-                                dd($key1);
+                        if (isset($elems['sites']) && isset($anotherElems['sites'])) {
+                            if (count(array_intersect($elems['sites'], $anotherElems['sites'])) >= $minimum) {
+                                $clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
+                                $clusters[$keyPhrase][$anotherKeyPhrase]['merge'] = [$key1 => $key2];
+                                unset($clusters[$anotherKeyPhrase]);
+                                break 2;
                             }
-                            $clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
-//                            unset($clusters[$keyPhrase]);
-                            unset($clusters[$anotherKeyPhrase]);
-                            break 2;
                         }
                     }
                 }
@@ -9816,3 +9810,5 @@ Route::middleware(['verified'])->group(function () {
         dd($clusters);
     });
 });
+//"комплект инструментов для осмотра лор органов"
+//"набор инструментов для осмотра лор органов"
