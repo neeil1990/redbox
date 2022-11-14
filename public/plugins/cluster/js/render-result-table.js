@@ -1,5 +1,4 @@
 function renderResultTable(data) {
-    console.log(data)
     let iterator = 0
     let style
     let phrased
@@ -46,12 +45,15 @@ function renderResultTable(data) {
                 phrased = "phrased" in information ? information['phrased']['number'] : '0'
                 target = "target" in information ? information['target']['number'] : '0'
                 based = information['based']['number']
-                let targetMerge = false
-                let concatMerge = false
+                let merge = ''
                 if ("merge" in information) {
                     $.each(information['merge'], function (key, value) {
-                        targetMerge = key
-                        concatMerge = value
+                        merge = '<span class="__helper-link ui_tooltip_w">' +
+                            '      <i class="fa fa-question"></i>' +
+                            '      <span class="ui_tooltip __right" style="min-width: 550px;">' +
+                            '          <span class="ui_tooltip_content">' + key + '<br> ' + value + '</span>' +
+                            '      </span>' +
+                            '  </span>'
                     })
                 }
 
@@ -62,12 +64,6 @@ function renderResultTable(data) {
                     '<tr>' +
                     '   <td class="border-0">'
                     + iterator +
-                    '  <span class="__helper-link ui_tooltip_w">' +
-                    '      <i class="fa fa-paperclip"></i>' +
-                    '      <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
-                    '          <span class="ui_tooltip_content">' + targetMerge + ': ' + concatMerge + '</span>' +
-                    '      </span>' +
-                    '  </span>' +
                     '</td> ' +
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
@@ -82,6 +78,7 @@ function renderResultTable(data) {
                     '                     <span class="ui_tooltip_content">' + sites + '</span>' +
                     '                 </span>' +
                     '             </span>' +
+                                    merge +
                     '          </div> ' +
                     '       </div>' +
                     '   </td> ' +

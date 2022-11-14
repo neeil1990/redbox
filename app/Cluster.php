@@ -213,7 +213,7 @@ class Cluster
                         if (isset($elems['sites']) && isset($anotherElems['sites'])) {
                             if (count(array_intersect($elems['sites'], $anotherElems['sites'])) >= $minimum) {
                                 $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
-                                $this->clusters[$keyPhrase][$anotherKeyPhrase]['merge'] = [$key1 => $key2];
+                                $this->clusters[$keyPhrase][$anotherKeyPhrase]['merge'] = [$keyPhrase => $anotherKeyPhrase];
                                 unset($this->clusters[$anotherKeyPhrase]);
                                 break 2;
                             }
