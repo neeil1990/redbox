@@ -75,10 +75,15 @@ class Cluster
     {
         try {
             $this->setSites();
+            Log::debug('setSites');
             $this->searchClusters();
+            Log::debug('searchClusters');
             $this->calculateClustersInfo();
+            Log::debug('calculateClustersInfo');
             $this->wordStats();
+            Log::debug('wordStats');
             $this->searchGroupName();
+            Log::debug('searchGroupName');
             $this->setResult($this->clusters);
             if ($this->save) {
                 $this->saveResult();
@@ -269,6 +274,7 @@ class Cluster
 
     protected function tryInitJob($phrase, $key, $keyPhrase, $type, $attempt = 1)
     {
+        Log::debug('phrase', [$phrase => $attempt]);
         if ($attempt === 5) {
             die();
         }
