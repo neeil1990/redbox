@@ -136,7 +136,8 @@ class Cluster
         } else if ($this->engineVersion === 'new') {
             $this->searchClustersEngineV2($minimum);
         } else {
-            $this->searchClustersEngineV3($minimum);
+            $this->searchClustersEngineV2($minimum);
+            $this->brutForceClusters($minimum + 2);
         }
     }
 
@@ -180,29 +181,8 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngineV3($minimum)
+    protected function brutForceClusters($minimum)
     {
-        $willClustered = [];
-
-        foreach ($this->sites as $phrase => $item) {
-            foreach ($this->sites as $phrase2 => $item2) {
-                if (isset($willClustered[$phrase2])) {
-                    continue;
-                } else if (isset($this->clusters[$phrase])) {
-                    foreach ($this->clusters[$phrase] as $target => $elem) {
-                        if (count(array_intersect($item2['sites'], $elem['sites'])) >= $minimum) {
-                            $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
-                            $willClustered[$phrase2] = true;
-                            break;
-                        }
-                    }
-                } else if (count(array_intersect($item['sites'], $item2['sites'])) >= $minimum) {
-                    $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
-                    $willClustered[$phrase2] = true;
-                }
-            }
-        }
-
         foreach ($this->clusters as $keyPhrase => $cluster) {
             foreach ($this->clusters as $anotherKeyPhrase => $anotherCluster) {
                 if ($keyPhrase === $anotherKeyPhrase) {
