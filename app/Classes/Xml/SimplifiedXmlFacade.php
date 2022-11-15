@@ -46,11 +46,11 @@ class SimplifiedXmlFacade extends XmlFacade
                 $this->setPath('https://xmlstock.com/yandex/xml/');
                 $this->setUser('9371');
                 $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
-            } elseif ($attempt === 2) {
+            } elseif ($attempt === 3) {
                 $this->setPath('https://xmlproxy.ru/search/xml');
                 $this->setUser('sv@prime-ltd.su');
                 $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            } elseif ($attempt === 3) {
+            } elseif ($attempt === 5) {
                 $this->setPath('https://xmlriver.com/search/xml');
                 $this->setUser('6602');
                 $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
@@ -73,6 +73,9 @@ class SimplifiedXmlFacade extends XmlFacade
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
             ]);
+
+            sleep($attempt + 1);
+            return $this->getXMLResponse($attempt + 1);
         }
 
         return $this->getXMLResponse($attempt + 1);
