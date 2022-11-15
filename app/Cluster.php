@@ -251,7 +251,6 @@ class Cluster
 
     protected function tryInitJob($phrase, $key, $keyPhrase, $type)
     {
-        Log::debug('инициализирую джоб');
         ClusterQueue::dispatch(
             $this->region,
             $this->progress->id,
@@ -260,7 +259,7 @@ class Cluster
             $key,
             $keyPhrase,
             $type
-        )->onQueue('cluster_high');
+        )->onQueue('cluster_high')->onConnection('redis');
     }
 
     protected function waitRiverResponses()
