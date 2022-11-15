@@ -32,7 +32,7 @@ class Queue extends Model
                     $historyId,
                     trim($item[1]),
                     trim($item[0])
-                )->onQueue(UsersJobs::getPriority($userId));
+                )->onQueue(UsersJobs::getPriority($userId))->onConnection('database');
             }
         } catch (\Throwable $e) {
 

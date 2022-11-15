@@ -52,7 +52,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug('relevance job activate');
         $relevance = new Relevance($this->request, true);
         try {
         if ($this->type == 'full') {
