@@ -155,8 +155,8 @@
             var interval
 
             $(document).ready(function () {
+                refreshAll()
                 $('#saveResultBlock').remove()
-
                 $('#my-cluster-projects').dataTable({
                     "order": [[0, "desc"]],
                     "pageLength": 10,
@@ -165,7 +165,6 @@
                 $('.dt-button.buttons-copy.buttons-html5').addClass('ml-2')
                 $('.dt-button').addClass('btn btn-secondary')
 
-                refreshAll()
             })
 
             function successMessage(message = "{{ __('Text was successfully change') }}") {
