@@ -36,6 +36,7 @@ class ClusterQueue implements ShouldQueue
 
     public function __construct($region, $progressId, $percent, $targetPhrase, $key, $phrase, $type)
     {
+        Log::debug('job activate');
         $this->progressId = $progressId;
         $this->targetPhrase = $targetPhrase;
         $this->key = $key;
@@ -47,6 +48,7 @@ class ClusterQueue implements ShouldQueue
 
     public function handle()
     {
+        Log::debug('job handle');
         $river = new RiverFacade($this->region);
         $river->setQuery($this->targetPhrase);
         $clusterArrays = new \App\ClusterQueue();
