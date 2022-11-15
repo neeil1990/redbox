@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalysisQueue implements ShouldQueue
 {
@@ -51,6 +52,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
+        Log::debug('relevance job activate');
         $relevance = new Relevance($this->request, true);
         try {
         if ($this->type == 'full') {

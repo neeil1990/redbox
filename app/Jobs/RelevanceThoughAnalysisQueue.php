@@ -54,6 +54,7 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
+        Log::debug('relevance though job activate');
         if ($this->stage == 1) {
             ProjectRelevanceThough::thoughAnalyse($this->items, $this->mainId, $this->countRecords);
 

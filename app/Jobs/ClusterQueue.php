@@ -36,7 +36,7 @@ class ClusterQueue implements ShouldQueue
 
     public function __construct($region, $progressId, $percent, $targetPhrase, $key, $phrase, $type)
     {
-        Log::debug('job activate');
+        Log::debug('сluster job activate');
         $this->progressId = $progressId;
         $this->targetPhrase = $targetPhrase;
         $this->key = $key;
@@ -48,7 +48,6 @@ class ClusterQueue implements ShouldQueue
 
     public function handle()
     {
-        Log::debug('job handle');
         $river = new RiverFacade($this->region);
         $river->setQuery($this->targetPhrase);
         $clusterArrays = new \App\ClusterQueue();
@@ -63,7 +62,10 @@ class ClusterQueue implements ShouldQueue
         $clusterArrays->progress_id = $this->progressId;
         $clusterArrays->save();
 
-        $this->trySave();
+        ClusterProgress::where('id', '=', $this->progressId)->update([
+            'success' => DB::raw("success + 1"),
+            'percent' => DB::raw("percent + $this->percent")
+        ]);
     }
 
     public function failed(\Throwable $exception)
@@ -74,14 +76,4 @@ class ClusterQueue implements ShouldQueue
             'line' => $exception->getLine(),
         ]);
     }
-
-    protected function trySave()
-    {
-        Log::debug('job save');
-        ClusterProgress::where('id', '=', $this->progressId)->update([
-            'success' => DB::raw("success + 1"),
-            'percent' => DB::raw("percent + $this->percent")
-        ]);
-    }
-
 }
