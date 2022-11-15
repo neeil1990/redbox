@@ -249,17 +249,9 @@ class Cluster
         $this->setRiverResults();
     }
 
-    protected function tryInitJob($phrase, $key, $keyPhrase, $type, $attempt = 1)
+    protected function tryInitJob($phrase, $key, $keyPhrase, $type)
     {
-        if ($attempt === 5) {
-            die();
-        }
-
-        if (DB::transactionLevel() !== 0) {
-            sleep($attempt);
-            $this->tryInitJob($phrase, $key, $keyPhrase, $type, $attempt + 1);
-        }
-
+        Log::debug('инициализирую джоб');
         ClusterQueue::dispatch(
             $this->region,
             $this->progress->id,

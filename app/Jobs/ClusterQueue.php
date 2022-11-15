@@ -41,6 +41,7 @@ class ClusterQueue implements ShouldQueue
      */
     public function __construct($region, $progressId, $percent, $targetPhrase, $key, $phrase, $type)
     {
+        Log::debug('job activate');
         $this->progressId = $progressId;
         $this->targetPhrase = $targetPhrase;
         $this->key = $key;
