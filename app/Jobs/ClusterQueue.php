@@ -34,11 +34,6 @@ class ClusterQueue implements ShouldQueue
 
     protected $progressId;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
     public function __construct($region, $progressId, $percent, $targetPhrase, $key, $phrase, $type)
     {
         Log::debug('job activate');
@@ -49,12 +44,10 @@ class ClusterQueue implements ShouldQueue
         $this->region = $region;
         $this->type = $type;
         $this->percent = $percent;
+
+        $this->handle();
     }
 
-    /**
-     * @return void
-     * @throws \Exception
-     */
     public function handle()
     {
         Log::debug('job handle');
