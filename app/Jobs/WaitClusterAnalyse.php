@@ -35,8 +35,10 @@ class WaitClusterAnalyse implements ShouldQueue
     public function handle()
     {
         $count = $this->cluster->getProgressCurrentCount();
-
-        if ($this->cluster->getProgressTotal() !== $count) {
+        $total = $this->cluster->getProgressTotal();
+        if ($total === 0) {
+            return;
+        } else if ($this->cluster->getProgressTotal() !== $count) {
             dispatch(new WaitClusterAnalyse($this->cluster))->onQueue('wait_cluster')->delay(Carbon::now()->addSeconds(5));
         } else {
             $this->cluster->setRiverResults();

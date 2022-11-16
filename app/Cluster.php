@@ -309,6 +309,7 @@ class Cluster
 
         $this->progress->delete();
         \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+        $this->progress->total = 0;
     }
 
     /**
