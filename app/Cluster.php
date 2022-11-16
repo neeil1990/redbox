@@ -388,7 +388,7 @@ class Cluster
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/csv'>Скачать CSV</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
-        TelegramBot::sendMessage($message, Auth::user()->chat_id);
+        TelegramBot::sendMessage($message, $this->user->chat_id);
     }
 
     /**
