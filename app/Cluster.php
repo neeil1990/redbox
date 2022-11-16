@@ -74,6 +74,7 @@ class Cluster
     public function startAnalysis()
     {
         try {
+            Log::debug('request', $this->request);
             $this->setSites();
             $this->searchClusters();
             $this->calculateClustersInfo();
