@@ -247,7 +247,6 @@ class Cluster
         }
 
         dispatch(new WaitClusterAnalyse($this))->onConnection('redis')->onQueue('wait_cluster');
-
     }
 
     public function getProgressTotal(): int
