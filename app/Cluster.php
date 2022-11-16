@@ -368,6 +368,7 @@ class Cluster
 
     protected function sendNotification()
     {
+        Log::debug('cluster user', [$this->user]);
         if (!$this->user->telegram_bot_active) {
             return;
         }
