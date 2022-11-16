@@ -274,7 +274,6 @@ class Cluster
 
     public function setRiverResults()
     {
-        Log::debug('setRiverResults');
         $array = [];
         $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
         foreach ($results as $result) {

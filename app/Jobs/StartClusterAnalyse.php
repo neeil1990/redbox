@@ -17,6 +17,7 @@ class StartClusterAnalyse implements ShouldQueue
 
     private $user;
 
+
     /**
      * Create a new job instance.
      *
