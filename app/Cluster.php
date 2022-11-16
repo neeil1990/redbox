@@ -368,7 +368,7 @@ class Cluster
 
     protected function sendNotification()
     {
-        if (!Auth::user()->telegram_bot_active) {
+        if (!$this->user->telegram_bot_active) {
             return;
         }
 
