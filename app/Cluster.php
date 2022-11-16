@@ -246,7 +246,7 @@ class Cluster
             }
         }
 
-        dispatch(new WaitClusterAnalyse($this))->onConnection('redis')->onQueue('wait_cluster');
+        dispatch(new WaitClusterAnalyse($this))->onQueue('wait_cluster');
     }
 
     public function getProgressTotal(): int
@@ -269,7 +269,7 @@ class Cluster
             $key,
             $keyPhrase,
             $type
-        )->onQueue('child_cluster')->onConnection('redis');
+        )->onQueue('child_cluster');
     }
 
     public function setRiverResults()
