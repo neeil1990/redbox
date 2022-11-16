@@ -15,14 +15,17 @@ class StartClusterAnalyse implements ShouldQueue
 
     private $request;
 
+    private $user;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($request)
+    public function __construct($request, $user)
     {
         $this->request = $request;
+        $this->user = $user;
     }
 
     /**
@@ -32,7 +35,7 @@ class StartClusterAnalyse implements ShouldQueue
      */
     public function handle()
     {
-        $cluster = new Cluster($this->request);
+        $cluster = new Cluster($this->request, $this->user);
         $cluster->startAnalysis();
     }
 }

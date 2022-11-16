@@ -39,7 +39,8 @@ class ClusterController extends Controller
      */
     public function analysisCluster(Request $request): JsonResponse
     {
-        dispatch(new StartClusterAnalyse($request->all()))->onQueue('main_cluster');
+        $user = Auth::user();
+        dispatch(new StartClusterAnalyse($request->all(), $user))->onQueue('main_cluster');
 
         return response()->json([
             'result' => true

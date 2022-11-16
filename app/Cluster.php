@@ -44,8 +44,11 @@ class Cluster
 
     protected $percent;
 
-    public function __construct(array $request)
+    protected $user;
+
+    public function __construct(array $request, User $user)
     {
+        $this->user = $user;
         $this->count = $request['count'];
         $this->region = $request['region'];
         if ($request['clusteringLevel'] === 'light') {
@@ -346,7 +349,7 @@ class Cluster
     {
         $this->newCluster = new ClusterResults();
         $result = $this->getResult();
-        $this->newCluster->user_id = Auth::id();
+        $this->newCluster->user_id = $this->user->id;
         $this->newCluster->progress_id = $this->progress->id;
         $this->newCluster->result = base64_encode(gzcompress(json_encode($result), 9));
         $this->newCluster->count_phrases = $this->countPhrases;
