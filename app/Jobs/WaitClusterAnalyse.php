@@ -44,4 +44,16 @@ class WaitClusterAnalyse implements ShouldQueue
             $this->cluster->setRiverResults();
         }
     }
+
+    public function __sleep()
+    {
+        return [
+            'count', 'region', 'phrases',
+            'clusteringLevel', 'countPhrases', 'sites',
+            'result', 'clusters', 'engineVersion',
+            'user', 'percent', 'sites_json',
+            'newCluster', 'request', 'save',
+            'progress', 'searchTarget', 'searchPhrases'
+        ];
+    }
 }
