@@ -4,6 +4,7 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\ClusterQueue;
+use App\Jobs\WaitClusterAnalyse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -245,8 +246,20 @@ class Cluster
             }
         }
 
-        $this->waitRiverResponses();
-        $this->setRiverResults();
+        WaitClusterAnalyse::onConnection('redis')
+            ->onQueue('wait_cluster')
+            ->dispatch($this);
+
+    }
+
+    public function getProgressTotal() : int
+    {
+        return $this->progress->total;
+    }
+
+    public function getProgressCurrentCount() : int
+    {
+        return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
     }
 
     protected function tryInitJob($phrase, $key, $keyPhrase, $type)
@@ -272,7 +285,7 @@ class Cluster
         }
     }
 
-    protected function setRiverResults()
+    public function setRiverResults()
     {
         $array = [];
         $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
@@ -540,5 +553,4 @@ class Cluster
                 return 'Регион не опознан';
         }
     }
-
 }
