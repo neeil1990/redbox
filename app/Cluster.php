@@ -246,7 +246,6 @@ class Cluster
             }
         }
 
-        Log::debug('dispatch WaitClusterAnalyse');
         dispatch(new WaitClusterAnalyse($this))->onConnection('redis')->onQueue('wait_cluster');
 
     }
@@ -303,11 +302,8 @@ class Cluster
         }
 
         $this->searchGroupName();
-        Log::debug('searchGroupName');
         $this->setResult($this->clusters);
-        Log::debug('setResult');
         $this->saveResult();
-        Log::debug('saveResult');
 
         if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
             $this->sendNotification();
