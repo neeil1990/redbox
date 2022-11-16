@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\ClusterQueue;
 use App\Jobs\WaitClusterAnalyse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -70,6 +69,17 @@ class Cluster
         $this->request = $request;
 
         $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
+    }
+
+    public function __sleep()
+    {
+        return [
+            'count', 'region', 'phrases', 'clusteringLevel',
+            'countPhrases', 'sites', 'result', 'clusters',
+            'engineVersion', 'searchPhrases', 'searchTarget',
+            'progress', 'save', 'request', 'newCluster',
+            'sites_json', 'percent', 'user',
+        ];
     }
 
     public function startAnalysis()
@@ -241,12 +251,12 @@ class Cluster
 
     }
 
-    public function getProgressTotal() : int
+    public function getProgressTotal(): int
     {
         return $this->progress->total;
     }
 
-    public function getProgressCurrentCount() : int
+    public function getProgressCurrentCount(): int
     {
         return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
     }
