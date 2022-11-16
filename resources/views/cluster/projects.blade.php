@@ -159,7 +159,7 @@
                 $('#saveResultBlock').remove()
                 $('#my-cluster-projects').dataTable({
                     "order": [[0, "desc"]],
-                    "pageLength": 10,
+                    "pageLength": 25,
                     "searching": true,
                 })
                 $('.dt-button.buttons-copy.buttons-html5').addClass('ml-2')
@@ -185,7 +185,7 @@
                 }, 5000)
             }
 
-            function destroyProgress(progressId, interval) {
+            function destroyProgress(interval) {
                 clearInterval(interval)
                 setTimeout(() => {
                     setProgressBarStyles(0)
@@ -193,37 +193,14 @@
                 }, 3000)
             }
 
-            function startAnalysis() {
+            function startAnalysis(progressId) {
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('repeat.analysis.cluster') }}",
-                    data: getData(true),
+                    url: "{{ route('analysis.cluster') }}",
+                    data: getData(true, progressId),
                     success: function (response) {
-                        let cluster = response['cluster']
-                        let table = $('#my-cluster-projects').DataTable();
-                        table.row.add({
-                            0: cluster['created_at'],
-                            1: '<textarea data-target="' + cluster['id'] + '" name="domain" rows="7" class="action-edit project-domain form-control"></textarea>',
-                            2: '<textarea data-target="' + cluster['id'] + '" name="comment" rows="7" class="action-edit project-comment form-control"></textarea>',
-                            3: cluster['count_phrases'],
-                            4: cluster['count_clusters'],
-                            5: cluster['top'],
-                            6: cluster['clustering_level'] + ' / ' + cluster['request']['engineVersion'],
-                            7: cluster['region'],
-                            8: '<div class="d-flex flex-column">' +
-                                '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">{{ __('Repeat the analysis') }}</button> ' +
-                                '<a href="/show-cluster-result/' + cluster['id'] + '" target="_blank" class="btn btn-secondary mb-2">{{ __('View results') }}</a> ' +
-                                '<button class="btn btn-secondary mb-2">{{ __('Download csv') }}</button>' +
-                                '<button class="btn btn-secondary">{{ __('Download xls') }}</button></div>'
-                        });
-                        table.draw()
-                        refreshAll()
                     },
-                    error: function (error) {
-                    }
                 });
-
-                destroyProgress(progressId, interval)
             }
 
             function refreshAll() {
@@ -272,7 +249,11 @@
                                 successMessage("{{ __('The analysis has been successfully launched, the results will be automatically added to the table') }}")
                                 progressId = response.id
                                 $('#progressId').val(progressId)
-                                startAnalysis()
+                                startAnalysis(progressId)
+
+                                interval = setInterval(() => {
+                                    getProgressPercent(progressId, interval)
+                                }, 5000)
                             }
                         })
                     }
@@ -295,6 +276,46 @@
                         }
                     });
                 })
+
+                function getProgressPercent(id, interval) {
+                    $.ajax({
+                        type: "GET",
+                        url: `/get-cluster-progress/${id}/modify`,
+                        success: function (response) {
+                            // setProgressBarStyles(response.percent)
+                            // if (response.percent <= 50) {
+                            {{--    $('#progress-bar-state').html("{{ __('Parse xml') }}")--}}
+                            // } else if (response.percent === 50) {
+                            {{--    $('#progress-bar-state').html("{{ __('Waiting for a queue') }}")--}}
+                            // } else {
+                            {{--    $('#progress-bar-state').html("{{ __('Processing of the received information') }}")--}}
+                            // }
+
+                            if ('cluster' in response) {
+                                let cluster = response['cluster']
+                                let table = $('#my-cluster-projects').DataTable();
+                                table.row.add({
+                                    0: cluster['created_at'],
+                                    1: '<textarea data-target="' + cluster['id'] + '" name="domain" rows="7" class="action-edit project-domain form-control">' + cluster['domain'] + '</textarea>',
+                                    2: '<textarea data-target="' + cluster['id'] + '" name="comment" rows="7" class="action-edit project-comment form-control">' + cluster['comment'] + '</textarea>',
+                                    3: cluster['count_phrases'],
+                                    4: cluster['count_clusters'],
+                                    5: cluster['top'],
+                                    6: cluster['clustering_level'] + ' / ' + cluster['request']['engineVersion'],
+                                    7: cluster['region'],
+                                    8: '<div class="d-flex flex-column">' +
+                                        '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">{{ __('Repeat the analysis') }}</button> ' +
+                                        '<a href="/show-cluster-result/' + cluster['id'] + '" target="_blank" class="btn btn-secondary mb-2">{{ __('View results') }}</a> ' +
+                                        '<button class="btn btn-secondary mb-2">{{ __('Download csv') }}</button>' +
+                                        '<button class="btn btn-secondary">{{ __('Download xls') }}</button></div>'
+                                });
+                                table.draw()
+                                refreshAll()
+                                destroyProgress(interval)
+                            }
+                        }
+                    })
+                }
             }
         </script>
     @endslot

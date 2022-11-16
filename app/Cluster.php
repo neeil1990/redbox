@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\ClusterQueue;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -64,9 +63,7 @@ class Cluster
         $this->countPhrases = count($this->phrases);
 
         $this->save = filter_var($request['save'], FILTER_VALIDATE_BOOLEAN);
-        if ($this->save) {
-            $this->request = $request;
-        }
+        $this->request = $request;
 
         $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
     }
@@ -80,23 +77,23 @@ class Cluster
             $this->wordStats();
             $this->searchGroupName();
             $this->setResult($this->clusters);
-            if ($this->save) {
-                $this->saveResult();
+            $this->saveResult();
 
-                if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
-                    $this->sendNotification();
-                }
+            if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+                $this->sendNotification();
             }
+
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         } catch (Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
                 $e->getLine(),
                 $e->getFile()
             ]);
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
-
-        $this->progress->delete();
-        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
     protected function setSites()
@@ -259,7 +256,7 @@ class Cluster
             $key,
             $keyPhrase,
             $type
-        )->onQueue('cluster_high')->onConnection('redis');
+        )->onQueue('child_cluster');
     }
 
     protected function waitRiverResponses()
@@ -350,6 +347,7 @@ class Cluster
         $this->newCluster = new ClusterResults();
         $result = $this->getResult();
         $this->newCluster->user_id = Auth::id();
+        $this->newCluster->progress_id = $this->progress->id;
         $this->newCluster->result = base64_encode(gzcompress(json_encode($result), 9));
         $this->newCluster->count_phrases = $this->countPhrases;
         $this->newCluster->count_clusters = count($result);
@@ -359,6 +357,7 @@ class Cluster
         $this->newCluster->top = $this->count;
         $this->newCluster->request = json_encode($this->request);
         $this->newCluster->sites_json = $this->sites_json;
+        $this->newCluster->show = $this->save;
 
         $this->newCluster->save();
     }
@@ -538,6 +537,5 @@ class Cluster
                 return 'Регион не опознан';
         }
     }
-
 
 }

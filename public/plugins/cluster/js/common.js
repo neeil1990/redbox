@@ -1,7 +1,8 @@
-function getData(save = $('#save').val()) {
+function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
     return {
         _token: $('meta[name="csrf-token"]').attr('content'),
         save: save,
+        progressId: progressId,
         region: $('#region').val(),
         count: $('#count').val(),
         phrases: $('#phrases').val(),
@@ -10,7 +11,6 @@ function getData(save = $('#save').val()) {
         searchBased: $('#searchBased').is(':checked'),
         searchPhrases: $('#searchPhrases').is(':checked'),
         searchTarget: $('#searchTarget').is(':checked'),
-        progressId: $('#progressId').val(),
         domain: $('#domain-textarea').val(),
         comment: $('#comment-textarea').val(),
         sendMessage: $('#sendMessage').val()

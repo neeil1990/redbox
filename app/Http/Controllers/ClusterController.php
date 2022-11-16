@@ -8,12 +8,14 @@ use App\ClusterProgress;
 use App\ClusterResults;
 use App\Common;
 use App\Exports\ClusterResultExport;
+use App\Jobs\StartClusterAnalyse;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -37,11 +39,10 @@ class ClusterController extends Controller
      */
     public function analysisCluster(Request $request): JsonResponse
     {
-        $cluster = new Cluster($request->all());
-        $cluster->startAnalysis();
+        dispatch(new StartClusterAnalyse($request->all()))->onQueue('main_cluster');
 
         return response()->json([
-            'result' => $cluster->getAnalysisResult()
+            'result' => true
         ]);
     }
 
@@ -90,11 +91,42 @@ class ClusterController extends Controller
     }
 
     /**
-     * @param ClusterProgress $progress
+     * @param int $id
      * @return JsonResponse
      */
-    public function getProgress(ClusterProgress $progress): JsonResponse
+    public function getProgress(int $id): JsonResponse
     {
+        $cluster = ClusterResults::where('progress_id', '=', $id)->first();
+        if (isset($cluster)) {
+            return response()->json([
+                'percent' => 100,
+                'result' => json_decode(gzuncompress(base64_decode($cluster->result)), true),
+            ]);
+        }
+
+        $progress = ClusterProgress::where('id', '=', $id)->first();
+        return response()->json([
+            'percent' => $progress->percent,
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function getProgressModify(int $id): JsonResponse
+    {
+        $cluster = ClusterResults::where('progress_id', '=', $id)->first();
+        if (isset($cluster)) {
+            $cluster->request = json_decode($cluster->request, true);
+            $cluster->region = Cluster::getRegionName($cluster->request['region']);
+            return response()->json([
+                'percent' => 100,
+                'cluster' => $cluster,
+            ]);
+        }
+
+        $progress = ClusterProgress::where('id', '=', $id)->first();
         return response()->json([
             'percent' => $progress->percent,
         ]);
@@ -106,10 +138,11 @@ class ClusterController extends Controller
     public function clusterProjects(): View
     {
         $admin = User::isUserAdmin();
-        $projects = ClusterResults::where('user_id', '=', Auth::id())->get([
-            'id', 'user_id', 'comment', 'domain', 'count_phrases', 'count_clusters', 'clustering_level',
-            'top', 'created_at', 'request'
-        ]);
+        $projects = ClusterResults::where('user_id', '=', Auth::id())
+            ->where('show', '=', 1)->get([
+                'id', 'user_id', 'comment', 'domain', 'count_phrases', 'count_clusters', 'clustering_level',
+                'top', 'created_at', 'request'
+            ]);
 
         foreach ($projects as $key => $project) {
             $request = json_decode($project->request, true);

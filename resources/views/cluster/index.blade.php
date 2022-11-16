@@ -156,7 +156,7 @@
                             startAnalysis()
 
                             interval = setInterval(() => {
-                                getProgressPercent(response.id)
+                                getProgressPercent(response.id, interval)
                             }, 5000)
                         }
                     })
@@ -200,6 +200,13 @@
                         } else {
                             $('#progress-bar-state').html("{{ __('Processing of the received information') }}")
                         }
+
+                        if ('result' in response) {
+                            $('#start-analysis').attr('disabled', false)
+                            renderHiddenTable(response['result'])
+                            renderResultTable(response['result'])
+                            destroyProgress(interval)
+                        }
                     }
                 })
             }
@@ -210,26 +217,11 @@
                     url: "{{ route('analysis.cluster') }}",
                     data: getData(),
                     success: function (response) {
-                        destroyProgress(progressId, interval)
-                        $('#start-analysis').attr('disabled', false)
-                        renderHiddenTable(response['result'])
-                        renderResultTable(response['result'])
                     },
-                    error: function (error) {
-                        destroyProgress(progressId, interval)
-                        $('#start-analysis').attr('disabled', false)
-                        $('.dont-worry-notification').hide()
-                        $('.history-notification').hide()
-                        $('.toast.toast-error').show(300)
-
-                        setTimeout(function () {
-                            $('.toast.toast-error').hide(300)
-                        }, 5000)
-                    }
                 });
             }
 
-            function destroyProgress(progressId, interval) {
+            function destroyProgress(interval) {
                 clearInterval(interval)
                 setTimeout(() => {
                     setProgressBarStyles(0)
