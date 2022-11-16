@@ -74,7 +74,6 @@ class Cluster
     public function startAnalysis()
     {
         try {
-            Log::debug('request', $this->request);
             $this->setSites();
             $this->searchClusters();
             $this->calculateClustersInfo();
@@ -260,7 +259,7 @@ class Cluster
             $key,
             $keyPhrase,
             $type
-        )->onQueue('child_cluster');
+        )->onQueue('child_cluster')->onConnection('redis');
     }
 
     protected function waitRiverResponses()
