@@ -53,7 +53,8 @@ class ClusterController extends Controller
      */
     public function repeatAnalysisCluster(Request $request): JsonResponse
     {
-        $cluster = new Cluster($request->all());
+        $user = Auth::user();
+        $cluster = new Cluster($request->all(), $user);
         $cluster->startAnalysis();
         $result = $cluster->getNewCluster();
         $result->region = Cluster::getRegionName($request->input('region'));
