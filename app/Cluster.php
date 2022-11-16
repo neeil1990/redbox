@@ -79,16 +79,6 @@ class Cluster
             $this->searchClusters();
             $this->calculateClustersInfo();
             $this->wordStats();
-            $this->searchGroupName();
-            $this->setResult($this->clusters);
-            $this->saveResult();
-
-            if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
-                $this->sendNotification();
-            }
-
-            $this->progress->delete();
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         } catch (Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
@@ -273,16 +263,6 @@ class Cluster
         )->onQueue('child_cluster')->onConnection('redis');
     }
 
-    protected function waitRiverResponses()
-    {
-        $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
-
-        while ($this->progress->total !== $count) {
-            sleep(5);
-            $count = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
-        }
-    }
-
     public function setRiverResults()
     {
         $array = [];
@@ -309,6 +289,17 @@ class Cluster
                 }
             }
         }
+
+        $this->searchGroupName();
+        $this->setResult($this->clusters);
+        $this->saveResult();
+
+        if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+            $this->sendNotification();
+        }
+
+        $this->progress->delete();
+        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
     /**
