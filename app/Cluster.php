@@ -83,6 +83,9 @@ class Cluster
             $this->setResult($this->clusters);
             $this->saveResult();
 
+            Log::debug('cluster user', [$this->user]);
+            Log::debug('send message', [isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)]);
+
             if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
                 $this->sendNotification();
             }
@@ -368,7 +371,6 @@ class Cluster
 
     protected function sendNotification()
     {
-        Log::debug('cluster user', [$this->user]);
         if (!$this->user->telegram_bot_active) {
             return;
         }
