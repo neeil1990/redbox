@@ -23,6 +23,7 @@ class WaitClusterAnalyse implements ShouldQueue
      */
     public function __construct(Cluster $cluster)
     {
+        Log::debug('dispatch WaitClusterAnalyse __construct');
         $this->cluster = $cluster;
     }
 
@@ -33,6 +34,7 @@ class WaitClusterAnalyse implements ShouldQueue
      */
     public function handle()
     {
+        Log::debug('dispatch WaitClusterAnalyse handle');
         $count = $this->cluster->getProgressCurrentCount();
 
         if ($this->cluster->getProgressTotal() !== $count) {

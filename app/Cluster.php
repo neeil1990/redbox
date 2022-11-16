@@ -236,6 +236,7 @@ class Cluster
             }
         }
 
+        Log::debug('dispatch WaitClusterAnalyse');
         dispatch(new WaitClusterAnalyse($this))->onConnection('redis')->onQueue('wait_cluster');
 
     }
