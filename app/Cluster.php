@@ -265,6 +265,7 @@ class Cluster
 
     public function setRiverResults()
     {
+        Log::debug('setRiverResults');
         $array = [];
         $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
         foreach ($results as $result) {
@@ -291,8 +292,11 @@ class Cluster
         }
 
         $this->searchGroupName();
+        Log::debug('searchGroupName');
         $this->setResult($this->clusters);
+        Log::debug('setResult');
         $this->saveResult();
+        Log::debug('saveResult');
 
         if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
             $this->sendNotification();
