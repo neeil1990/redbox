@@ -291,7 +291,6 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/cluster', 'ClusterController@index')->name('cluster');
     Route::post('/analysis-cluster', 'ClusterController@analysisCluster')->name('analysis.cluster');
-    Route::post('/repeat-analysis-cluster', 'ClusterController@repeatAnalysisCluster')->name('repeat.analysis.cluster');
     Route::get('/start-cluster-progress', 'ClusterController@startProgress')->name('start.cluster.progress');
     Route::get('/get-cluster-progress/{id}', 'ClusterController@getProgress')->name('get.cluster.progress');
     Route::get('/get-cluster-progress/{id}/modify', 'ClusterController@getProgressModify')->name('get.cluster.progress.modify');
@@ -299,7 +298,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/cluster-projects', 'ClusterController@clusterProjects')->name('cluster.projects');
     Route::post('/edit-cluster-project', 'ClusterController@edit')->name('cluster.edit');
     Route::post('/get-cluster-request/', 'ClusterController@getClusterRequest')->name('get.cluster.request');
-    Route::post('/repeat-analysis', 'ClusterController@repeatAnalysis')->name('repeat.cluster.analysis');
     Route::get('/show-cluster-result/{cluster}', 'ClusterController@showResult')->name('show.cluster.result');
     Route::get('/wait-cluster-result/id', 'ClusterController@waitClusterResult')->name('wait.cluster.result');
     Route::get('/download-cluster-result/{cluster}/{type}', 'ClusterController@downloadClusterResult')->name('download.cluster.result');

@@ -48,38 +48,6 @@ class ClusterController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function repeatAnalysisCluster(Request $request): JsonResponse
-    {
-        $user = Auth::user();
-        $cluster = new Cluster($request->all(), $user);
-        $cluster->startAnalysis();
-        $result = $cluster->getNewCluster();
-        $result->region = Cluster::getRegionName($request->input('region'));
-        $result->request = json_decode($result->request, true);
-
-        return response()->json([
-            'cluster' => $result->toArray()
-        ]);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function repeatAnalysis(Request $request): JsonResponse
-    {
-        $cluster = new Cluster($request->all());
-        $cluster->startAnalysis();
-
-        return response()->json([
-            'result' => $cluster->getAnalysisResult()
-        ], 200);
-    }
-
-    /**
      * @return JsonResponse
      */
     public function startProgress(): JsonResponse
