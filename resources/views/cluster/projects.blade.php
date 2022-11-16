@@ -296,8 +296,8 @@
                                 let table = $('#my-cluster-projects').DataTable();
                                 table.row.add({
                                     0: cluster['created_at'],
-                                    1: '<textarea data-target="' + cluster['id'] + '" name="domain" rows="7" class="action-edit project-domain form-control">' + cluster['domain'] + '</textarea>',
-                                    2: '<textarea data-target="' + cluster['id'] + '" name="comment" rows="7" class="action-edit project-comment form-control">' + cluster['comment'] + '</textarea>',
+                                    1: '<textarea data-target="' + cluster['id'] + '" name="domain" rows="7" class="action-edit project-domain form-control">' + ('domain' in cluster) ? cluster['domain'] : '' + '</textarea>',
+                                    2: '<textarea data-target="' + cluster['id'] + '" name="comment" rows="7" class="action-edit project-comment form-control">' + ('comment' in cluster) ? cluster['comment'] : '' + '</textarea>',
                                     3: cluster['count_phrases'],
                                     4: cluster['count_clusters'],
                                     5: cluster['top'],
