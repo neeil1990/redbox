@@ -244,9 +244,9 @@
                                                                 </div>
                                                             </td>
                                                         </tr>
+                                                        @php($iterator++)
+                                                        @php($total++)
                                                     @endif
-                                                    @php($iterator++)
-                                                    @php($total++)
                                                 @endforeach
                                                 </tbody>
                                             </table>
