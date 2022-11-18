@@ -212,20 +212,21 @@
                                                         <tr>
                                                             <td>{{ $total }}</td>
                                                             <td>{{ $iterator }}</td>
-                                                            <td class="d-flex">
-                                                                <div class="mr-2">
-                                                                    {{ $phrase }}
-                                                                </div>
-                                                                <div>
-                                                                    <i class="fa fa-copy copy-full-urls" data-target="1"
-                                                                       title="{{ __('Copy') }}"></i>
-                                                                    <div style="display: none"
-                                                                         id="hidden-urls-block-{{ $phrase }}">
-                                                                        @foreach($item['sites'] as $site)
-                                                                            {{ parse_url($site)['host'] . "\n" }}
-                                                                        @endforeach
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <div class="mr-2">
+                                                                        {{ $phrase }}
                                                                     </div>
-                                                                    <span class="__helper-link ui_tooltip_w">
+                                                                    <div>
+                                                                        <i class="fa fa-copy copy-full-urls" data-target="1"
+                                                                           title="{{ __('Copy') }}"></i>
+                                                                        <div style="display: none"
+                                                                             id="hidden-urls-block-{{ $phrase }}">
+                                                                            @foreach($item['sites'] as $site)
+                                                                                {{ parse_url($site)['host'] . "\n" }}
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <span class="__helper-link ui_tooltip_w">
                                                                         <i class="fa fa-paperclip"></i>
                                                                         <span class="ui_tooltip __bottom"
                                                                               style="min-width: 250px;">
@@ -241,6 +242,7 @@
                                                                             </span>
                                                                         </span>
                                                                     </span>
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
