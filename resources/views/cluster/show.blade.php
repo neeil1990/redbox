@@ -246,8 +246,8 @@
                                                         </tr>
                                                     @endif
                                                     @php($iterator++)
+                                                    @php($total++)
                                                 @endforeach
-                                                @php($total++)
                                                 </tbody>
                                             </table>
                                         </td>
