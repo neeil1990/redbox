@@ -80,7 +80,7 @@ function renderResultTableFast(data, count, target) {
         newRow +=
             '<tr class="fast-render">' +
             '   <td class="p-0">' +
-            '       <table class="table table-hover text-nowrap no-footer dataTable render-table-fast" id="render-table' + key.replaceAll(' ', '-').substr(0, 30) + '" style="width: 100%">' +
+            '       <table class="table table-hover text-nowrap no-footer dataTable render-table-fast" id="' + key.replaceAll(' ', '-').substr(0, 30) + '" style="width: 100%">' +
             '       <thead>' +
             '           <tr>' +
             '               <th title="Порядковый номер">#</th>' +
@@ -99,14 +99,14 @@ function renderResultTableFast(data, count, target) {
         copyFullUrls()
     })
 
-    $(document).ready(function () {
-        $.each($('.render-table-fast'), function (key, value) {
-            $('#' + $(this).attr('id')).dataTable({
-                'order': [[0, "asc"]],
-                'bPaginate': false,
-                'orderCellsTop': true,
-                'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-            })
-        })
-    });
+    // $(document).ready(function () {
+    //     $.each($('.render-table-fast'), function (key, value) {
+    //         $('#' + $(this).attr('id')).dataTable({
+    //             'order': [[0, "asc"]],
+    //             'bPaginate': false,
+    //             'orderCellsTop': true,
+    //             'sDom': '<"top"i>rt<"bottom"lp><"clear">'
+    //         })
+    //     })
+    // });
 }

@@ -384,14 +384,14 @@
                 $('.dt-buttons').addClass('pb-3')
                 $('#default-hidden_filter').remove()
 
-                $.each($('.default-cluster'), function (key, value) {
-                    $('#' + $(this).attr('id')).dataTable({
-                        'order': [[0, "asc"]],
-                        'bPaginate': false,
-                        'orderCellsTop': true,
-                        'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-                    })
-                })
+                // $.each($('.default-cluster'), function (key, value) {
+                //     $('#' + $(this).attr('id')).dataTable({
+                //         'order': [[0, "asc"]],
+                //         'bPaginate': false,
+                //         'orderCellsTop': true,
+                //         'sDom': '<"top"i>rt<"bottom"lp><"clear">'
+                //     })
+                // })
 
                 $('#copyUsedPhrases').click(function () {
                     successCopiedMessage()
