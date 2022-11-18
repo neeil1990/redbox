@@ -80,7 +80,7 @@ function renderResultTableFast(data, count, target) {
         newRow +=
             '<tr class="fast-render">' +
             '   <td class="p-0">' +
-            '       <table class="table table-hover text-nowrap no-footer dataTable render-table-fast" id="render-table' + key + '" style="width: 100%">' +
+            '       <table class="table table-hover text-nowrap no-footer dataTable render-table-fast" id="render-table' + key.replaceAll(' ', '-') + '" style="width: 100%">' +
             '       <thead>' +
             '           <tr>' +
             '               <th title="Порядковый номер">#</th>' +
