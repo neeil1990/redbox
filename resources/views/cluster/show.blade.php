@@ -378,8 +378,9 @@
             </div>
         </div>
     </div>
-    <a href="#" id="scroll_top" title="Наверх"></a>
-    <a href="#" id="scroll_bottom" title="Наверх"></a>
+    <a href="#" id="scroll_top"></a>
+    <a href="#" id="scroll_button"></a>
+    <a href="#" id="scroll_bottom"></a>
     <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
     <input type="hidden" id="progressId">
     @slot('js')
@@ -401,6 +402,11 @@
                         $('#scroll_top').hide();
                         $('#scroll_bottom').hide();
                     }
+                });
+
+                $("#scroll_button").on("click", function () {
+                    $("html, body").animate({scrollTop: $('#brutForceFast').offset().top}, {duration: 600,});
+                    return false;
                 });
 
                 $('#scroll_top').click(function () {
