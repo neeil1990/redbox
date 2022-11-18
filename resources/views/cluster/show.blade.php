@@ -32,6 +32,37 @@
                 cursor: pointer;
                 color: black;
             }
+
+            #scroll_top {
+                display: none;
+                position: fixed;
+                bottom: 80px;
+                right: 30px;
+                z-index: 1000;
+                width: 32px;
+                height: 32px;
+                background: url(https://snipp.ru/img/scroll_top.png) 50% 50% no-repeat;
+                border-radius: 50%;
+                opacity: 0.5;
+            }
+
+            #scroll_bottom {
+                display: none;
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                z-index: 1000;
+                width: 32px;
+                height: 32px;
+                background: url(https://snipp.ru/img/scroll_top.png) 50% 50% no-repeat;
+                border-radius: 50%;
+                opacity: 0.5;
+                transform: rotate(180deg);
+            }
+
+            #scroll_top:hover, #scroll_bottom:hover {
+                opacity: 1;
+            }
         </style>
     @endslot
 
@@ -197,7 +228,8 @@
                                 @foreach (json_decode($cluster['result'], true) as $items)
                                     <tr>
                                         <td class="p-0">
-                                            <table class="default-cluster table table-hover text-nowrap no-footer" id="{{ Str::random() }}">
+                                            <table class="default-cluster table table-hover text-nowrap no-footer mb-0"
+                                                   id="{{ Str::random() }}">
                                                 <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -218,7 +250,8 @@
                                                                         {{ $phrase }}
                                                                     </div>
                                                                     <div>
-                                                                        <i class="fa fa-copy copy-full-urls" data-target="1"
+                                                                        <i class="fa fa-copy copy-full-urls"
+                                                                           data-target="1"
                                                                            title="{{ __('Copy') }}"></i>
                                                                         <div style="display: none"
                                                                              id="hidden-urls-block-{{ $phrase }}">
@@ -345,6 +378,8 @@
             </div>
         </div>
     </div>
+    <a href="#" id="scroll_top" title="Наверх"></a>
+    <a href="#" id="scroll_bottom" title="Наверх"></a>
     <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
     <input type="hidden" id="progressId">
     @slot('js')
@@ -356,6 +391,28 @@
                     $('.toast.toast-success').hide(300)
                 }, 3000)
             }
+
+            $(function () {
+                $(window).scroll(function () {
+                    if ($(window).scrollTop() > 100) {
+                        $('#scroll_top').show();
+                        $('#scroll_bottom').show();
+                    } else {
+                        $('#scroll_top').hide();
+                        $('#scroll_bottom').hide();
+                    }
+                });
+
+                $('#scroll_top').click(function () {
+                    $('html, body').animate({scrollTop: 0}, 600);
+                    return false;
+                });
+
+                $('#scroll_bottom').click(function () {
+                    $('html, body').animate({scrollTop: $(document).height() - $(window).height()}, 600);
+                    return false;
+                });
+            });
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
@@ -417,7 +474,16 @@
                             resultId: {{ $cluster['id'] }}
                         },
                         success: function (response) {
-                            refreshBrutForceTable(response)
+                            $('#clusters-table-default').show()
+                            $('#hidden-result-fast').dataTable().fnDestroy()
+                            $('.fast-render').remove()
+                            $.each($('.render-table-fast'), function (key, value) {
+                                $('#' + $(this).attr('id')).dataTable().fnDestroy()
+                                $('#' + $(this).attr('id')).remove()
+                            })
+
+                            renderResultTableFast(response['sites'], response['count'])
+                            renderHiddenFast(response['sites'])
                         },
                     });
                 })
@@ -496,18 +562,6 @@
                     setProgressBarStyles(0)
                     $('#progress-bar').hide(300)
                 }, 3000)
-            }
-
-            function refreshBrutForceTable(response) {
-                $('#clusters-table-default').show()
-                $('.fast-render').remove()
-                $.each($('.render-table-fast'), function (key, value) {
-                    $('#' + $(this).attr('id')).dataTable().fnDestroy()
-                    $('#' + $(this).attr('id')).remove()
-                })
-
-                renderResultTableFast(response['sites'], response['count'])
-                renderHiddenFast(response['sites'])
             }
         </script>
     @endslot

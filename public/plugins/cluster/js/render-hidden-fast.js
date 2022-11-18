@@ -8,7 +8,7 @@ function renderHiddenFast(data) {
                 clusterIterator++
 
                 $('#hidden-fast-table-tbody').append(
-                    '<tr class="render">' +
+                    '<tr class="render-fast">' +
                     '   <td class="border-0">' + iterator + '</td>' +
                     '   <td class="border-0">' + clusterIterator + '</td>' +
                     '   <td class="border-0">' + phrase + '</td>' +
