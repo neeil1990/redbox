@@ -415,9 +415,7 @@
                             resultId: {{ $cluster['id'] }}
                         },
                         success: function (response) {
-                            refreshBrutForceTable()
-                            renderResultTableFast(response['sites'], response['count'])
-                            renderHiddenFast(response['sites'])
+                            refreshBrutForceTable(response)
                         },
                     });
                 })
@@ -498,14 +496,16 @@
                 }, 3000)
             }
 
-            function refreshBrutForceTable() {
+            function refreshBrutForceTable(response) {
                 $('#clusters-table-default').show()
-                $('#clusters-table-fast').hide()
                 $('.fast-render').remove()
                 $.each($('.render-table-fast'), function (key, value) {
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
                     $('#' + $(this).attr('id')).remove()
                 })
+
+                renderResultTableFast(response['sites'], response['count'])
+                renderHiddenFast(response['sites'])
             }
         </script>
     @endslot

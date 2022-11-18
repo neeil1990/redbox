@@ -78,7 +78,7 @@ function renderResultTableFast(data, count, target) {
         })
 
         newRow +=
-            '<tr class="render fast-render">' +
+            '<tr class="fast-render">' +
             '   <td class="p-0">' +
             '       <table class="table table-hover text-nowrap no-footer dataTable render-table-fast" id="render-table' + key + '" style="width: 100%">' +
             '       <thead>' +
