@@ -107,7 +107,7 @@
         $config->clustering_level => $config->clustering_level,
         'light' => 'light - 40%',
         'soft' => 'soft - 50%',
-        'pre-hard' => 'soft - 60%',
+        'pre-hard' => 'pre-hard - 60%',
         'hard' => 'hard - 70%',
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
 </div>
