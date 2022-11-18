@@ -54,7 +54,7 @@ function renderResultTableFast(data, count, target) {
                 let title = changedBg ? `title='Ваша фраза "${phrase}" была изменена'` : ''
 
                 newTableRows +=
-                    '<tr>' +
+                    '<tr class="fast-render">' +
                     '   <td>' + iterator + '</td> ' +
                     '   <td> ' + clusterIterator + '</td> ' +
                     '   <td class="' + style + '" ' + title + '> ' +
@@ -80,7 +80,7 @@ function renderResultTableFast(data, count, target) {
         newRow +=
             '<tr class="render fast-render">' +
             '   <td class="p-0">' +
-            '       <table class="table table-hover text-nowrap no-footer dataTable" id="render-table' + key + '" style="width: 100%">' +
+            '       <table class="table table-hover text-nowrap no-footer dataTable render-table-fast" id="render-table' + key + '" style="width: 100%">' +
             '       <thead>' +
             '           <tr>' +
             '               <th title="Порядковый номер">#</th>' +
