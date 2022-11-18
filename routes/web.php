@@ -303,5 +303,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/download-cluster-result/{cluster}/{type}', 'ClusterController@downloadClusterResult')->name('download.cluster.result');
     Route::get('/cluster-configuration', 'ClusterController@clusterConfiguration')->name('cluster.configuration');
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
+    Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
 
 });

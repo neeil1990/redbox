@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Str; @endphp
 @component('component.card', ['title' =>  __('Analysis results') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
@@ -79,12 +80,18 @@
                     </div>
 
                     <div id="params">
-                        <span class="d-flex w-75 justify-content-around" style="margin-top: -1px;">
+                        <span class="d-flex w-100 justify-content-between" style="margin-top: -1px;">
                             <span>
                                 Уровень кластеризации: {{ $cluster['request']['clusteringLevel'] }}
                             </span>
                             <span>
-                                Версия кластеризатора: {{ $cluster['request']['engineVersion'] }}
+                                Версия: {{ $cluster['request']['engineVersion'] }}
+                            </span>
+                            <span>
+                                Количетсво фраз: {{ $cluster['count_phrases'] }}
+                            </span>
+                            <span>
+                                Количетсво кластеров: {{ $cluster['count_clusters'] }}
                             </span>
                             <span>
                                 Фразы:
@@ -142,15 +149,202 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-end">
+                        <div>
+                            Количетсво кластеров: {{ $cluster['count_clusters'] }}
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mt-5" data-toggle="modal" data-target="#fastScan">
+                        Пересобрать
+                    </button>
+                    <div class="brutForce mt-3 d-flex">
+                        <div id="clusters-table-default" class="col-6" style="display:none;">
+                            <h3>Изначальный вариант</h3>
+                            <table id="default-hidden" style="display: none">
+                                <thead>
+                                <tr>
+                                    <th class="border">порядковый номер</th>
+                                    <th class="border">порядковый номер в кластере</th>
+                                    <th class="border">Ключевой запрос</th>
+                                </tr>
+                                </thead>
+                                <tbody id="clusters-result-hidden">
+                                @php($total = 1)
+                                @foreach (json_decode($cluster['result'], true) as $items)
+                                    @php($iterator = 1)
+                                    @foreach ($items as $phrase => $item)
+                                        @if ($phrase !== 'finallyResult')
+                                            <tr class="border">
+                                                <td>{{ $total }}</td>
+                                                <td>{{ $iterator }}</td>
+                                                <td>{{ $phrase }}</td>
+                                            </tr>
+                                        @endif
+                                        @php($iterator++)
+                                    @endforeach
+                                    @php($total++)
+                                @endforeach
+                                </tbody>
+                            </table>
+                            <table class="table table-bordered dtr-inline">
+                                <thead>
+                                <tr>
+                                    <th>{{ __('Clusters') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody id="clusters-result-hidden">
+                                @php($total = 1)
+                                @foreach (json_decode($cluster['result'], true) as $items)
+                                    <tr>
+                                        <td class="p-0">
+                                            <table class="default-cluster table table-hover text-nowrap no-footer" id="{{ Str::random() }}">
+                                                <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>##</th>
+                                                    <th>Ключевой запрос</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @php($iterator = 1)
+                                                @foreach ($items as $phrase => $item)
+                                                    @if ($phrase !== 'finallyResult')
+                                                        <tr>
+                                                            <td>{{ $total }}</td>
+                                                            <td>{{ $iterator }}</td>
+                                                            <td class="d-flex">
+                                                                <div class="mr-2">
+                                                                    {{ $phrase }}
+                                                                </div>
+                                                                <div>
+                                                                    <i class="fa fa-copy copy-full-urls" data-target="1"
+                                                                       title="{{ __('Copy') }}"></i>
+                                                                    <div style="display: none"
+                                                                         id="hidden-urls-block-{{ $phrase }}">
+                                                                        @foreach($item['sites'] as $site)
+                                                                            {{ parse_url($site)['host'] . "\n" }}
+                                                                        @endforeach
+                                                                    </div>
+                                                                    <span class="__helper-link ui_tooltip_w">
+                                                                        <i class="fa fa-paperclip"></i>
+                                                                        <span class="ui_tooltip __bottom"
+                                                                              style="min-width: 250px;">
+                                                                            <span class="ui_tooltip_content">
+                                                                                @foreach($item['sites'] as $site)
+                                                                                    <div>
+                                                                                        <a href="{{$site}}"
+                                                                                           target="_blank">
+                                                                                            {{ parse_url($site)['host'] }}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                    @php($iterator++)
+                                                @endforeach
+                                                @php($total++)
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end">
+                                <div>
+                                    Количетсво кластеров: <span>{{ $cluster['count_clusters'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="clusters-table-fast" class="col-6" style="display:none;">
+                            <h3>Пересобранный вариант</h3>
+                            <table id="hidden-result-fast" style="display:none;">
+                                <thead>
+                                <tr>
+                                    <th>{{ __('Serial number') }}</th>
+                                    <th>{{ __('Sequence number in the cluster') }}</th>
+                                    <th>{{ __('Key query') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody id="hidden-fast-table-tbody">
+                                </tbody>
+                            </table>
+                            <table class="table table-bordered dtr-inline">
+                                <thead>
+                                <tr>
+                                    <th>{{ __('Clusters') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody id="clusters-fast-table-tbody">
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end">
+                                <div>
+                                    Количетсво кластеров: <span id="placeForCountClusters"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
-
-                <input type="hidden" id="progressId">
             </div>
-
         </div>
     </div>
+
+    <div class="modal fade" id="fastScan" tabindex="-1" aria-labelledby="fastScanLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fastScanLabel"> пересобрать кластер на основе ранее
+                        полученных данных</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group required">
+                        <label>{{ __('clustering level') }}</label>
+                        {!! Form::select('clusteringLevel', [
+                            'light' => 'light - 40%',
+                            'soft' => 'soft - 50%',
+                            'pre-hard' => 'pre-hard - 60%',
+                            'hard' => 'hard - 70%',
+                            ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
+                    </div>
+                    <div class="form-group required">
+                        <label>{{ __('Merging Clusters') }}</label>
+                        {!! Form::select('engineVersion', [
+                                'old' => __('Formation based on the first available phrase (old)'),
+                                'new' => __('Forming a cluster based on an array of links (new)'),
+                                'latest' => 'Дополнительная переборка (latest)',
+                        ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
+                    </div>
+                    <div class="d-none">
+                        {!! Form::select('count', array_unique([
+                            $cluster['request']['count'] => $cluster['request']['count']
+                        ]), null, ['class' => 'custom-select rounded-0', 'id' => 'countFast']) !!}
+                    </div>
+                    <div class="form-group required d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary mr-2"
+                                data-dismiss="modal"
+                                id="brutForceFast">
+                            Пересобрать
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            {{ __('Close') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
+    <input type="hidden" id="progressId">
     @slot('js')
         <script>
             function successCopiedMessage() {
@@ -164,6 +358,8 @@
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/common.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -176,6 +372,27 @@
                 renderHiddenTable({!! $cluster['result'] !!})
                 renderResultTable({!! $cluster['result'] !!})
 
+                $('#default-hidden').dataTable({
+                    'order': [[0, "asc"]],
+                    'bPaginate': false,
+                    'dom': 'lBfrtip',
+                    'buttons': [
+                        'copy', 'csv', 'excel'
+                    ]
+                })
+                $('.dt-button').addClass('btn btn-secondary')
+                $('.dt-buttons').addClass('pb-3')
+                $('#default-hidden_filter').remove()
+
+                $.each($('.default-cluster'), function (key, value) {
+                    $('#' + $(this).attr('id')).dataTable({
+                        'order': [[0, "asc"]],
+                        'bPaginate': false,
+                        'orderCellsTop': true,
+                        'sDom': '<"top"i>rt<"bottom"lp><"clear">'
+                    })
+                })
+
                 $('#copyUsedPhrases').click(function () {
                     successCopiedMessage()
                     $('#usedPhrases').css('display', 'block')
@@ -184,6 +401,25 @@
                     text.select();
                     document.execCommand("copy");
                     $('#usedPhrases').css('display', 'none')
+                })
+
+                $('#brutForceFast').on('click', function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('fast.scan.clusters') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            count: $('#countFast').val(),
+                            clusteringLevel: $('#clusteringLevelFast').val(),
+                            engineVersion: $('#engineVersionFast').val(),
+                            resultId: {{ $cluster['id'] }}
+                        },
+                        success: function (response) {
+                            refreshBrutForceTable()
+                            renderResultTableFast(response['sites'], response['count'])
+                            renderHiddenFast(response['sites'])
+                        },
+                    });
                 })
             })
 
@@ -260,6 +496,16 @@
                     setProgressBarStyles(0)
                     $('#progress-bar').hide(300)
                 }, 3000)
+            }
+
+            function refreshBrutForceTable() {
+                $('#clusters-table-default').show()
+                $('#clusters-table-fast').hide()
+                $('.fast-render').remove()
+                $.each($('.render-table-fast'), function (key, value) {
+                    $('#' + $(this).attr('id')).dataTable().fnDestroy()
+                    $('#' + $(this).attr('id')).remove()
+                })
             }
         </script>
     @endslot

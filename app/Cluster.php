@@ -46,29 +46,33 @@ class Cluster
 
     protected $user;
 
-    public function __construct(array $request, User $user)
+    public function __construct(array $request, $user, $default = true)
     {
-        $this->user = $user;
-        $this->count = $request['count'];
-        $this->region = $request['region'];
         if ($request['clusteringLevel'] === 'light') {
             $this->clusteringLevel = 0.4;
         } else if ($request['clusteringLevel'] === 'soft') {
             $this->clusteringLevel = 0.5;
+        } else if ($request['clusteringLevel'] === 'pre-hard') {
+            $this->clusteringLevel = 0.6;
         } else {
             $this->clusteringLevel = 0.7;
         }
-        $this->engineVersion = $request['engineVersion'];
-        $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
-        $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
+        $this->count = $request['count'];
 
-        $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
-        $this->countPhrases = count($this->phrases);
 
-        $this->save = filter_var($request['save'], FILTER_VALIDATE_BOOLEAN);
-        $this->request = $request;
+        if ($default) {
+            $this->engineVersion = $request['engineVersion'];
+            $this->user = $user;
+            $this->region = $request['region'];
+            $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
+            $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
+            $this->save = filter_var($request['save'], FILTER_VALIDATE_BOOLEAN);
+            $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
+            $this->countPhrases = count($this->phrases);
+            $this->request = $request;
 
-        $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
+            $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
+        }
     }
 
     public function __sleep()
@@ -85,7 +89,7 @@ class Cluster
     public function startAnalysis()
     {
         try {
-            $this->setSites();
+            $this->parseSites();
             $this->searchClusters();
             $this->calculateClustersInfo();
             $this->wordStats();
@@ -100,7 +104,7 @@ class Cluster
         }
     }
 
-    protected function setSites()
+    protected function parseSites()
     {
         $percent = 49 / $this->countPhrases;
         $iterator = 0;
@@ -122,7 +126,16 @@ class Cluster
         }
     }
 
-    protected function searchClusters()
+    /**
+     * @param $sites
+     * @return void
+     */
+    public function setSites($sites)
+    {
+        $this->sites = json_decode($sites, true);
+    }
+
+    public function searchClusters()
     {
         $this->sites_json = json_encode($this->sites);
         $minimum = $this->count * $this->clusteringLevel;
@@ -135,6 +148,14 @@ class Cluster
             $this->searchClustersEngineV2($minimum);
             $this->brutForceClusters($minimum + 2);
         }
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function getClusters()
+    {
+        return $this->clusters;
     }
 
     protected function searchClustersEngineV1($minimum)
@@ -201,7 +222,7 @@ class Cluster
 
     }
 
-    protected function calculateClustersInfo()
+    public function calculateClustersInfo()
     {
         foreach ($this->clusters as $key => $phrases) {
             $merge = [];
@@ -551,5 +572,10 @@ class Cluster
             default:
                 return 'Регион не опознан';
         }
+    }
+
+    public static function fastScanClusters()
+    {
+
     }
 }

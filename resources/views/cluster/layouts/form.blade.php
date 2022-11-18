@@ -91,6 +91,8 @@
         '10' => 10,
         '20' => 20,
         '30' => 30,
+        '40' => 40,
+        '50' => 50,
     ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
 </div>
 
@@ -105,6 +107,7 @@
         $config->clustering_level => $config->clustering_level,
         'light' => 'light - 40%',
         'soft' => 'soft - 50%',
+        'pre-hard' => 'soft - 60%',
         'hard' => 'hard - 70%',
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
 </div>
@@ -115,7 +118,7 @@
             $config->engine_version => $config->engine_version,
             'old' => __('Formation based on the first available phrase (old)'),
             'new' => __('Forming a cluster based on an array of links (new)'),
-            'latest' => 'дополнительная переборка (latest)',
+            'latest' => 'Дополнительная переборка (latest)',
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 

@@ -42,11 +42,11 @@ function renderResultTable(data) {
                     style = ''
                 }
 
-                phrased = "phrased" in information ? information['phrased']['number'] : '0'
-                target = "target" in information ? information['target']['number'] : '0'
-                based = information['based']['number']
+                phrased = 'phrased' in information ? information['phrased']['number'] : '0'
+                target = 'target' in information ? information['target']['number'] : '0'
+                based = 'based' in information ? information['based']['number'] : '0'
                 let merge = ''
-                if ("merge" in information) {
+                if ('merge' in information) {
                     $.each(information['merge'], function (key, value) {
                         merge = '<span class="__helper-link ui_tooltip_w">' +
                             '      <i class="fa fa-question"></i>' +
@@ -78,7 +78,7 @@ function renderResultTable(data) {
                     '                     <span class="ui_tooltip_content">' + sites + '</span>' +
                     '                 </span>' +
                     '             </span>' +
-                                    merge +
+                    merge +
                     '          </div> ' +
                     '       </div>' +
                     '   </td> ' +
@@ -286,4 +286,3 @@ function copyFullUrls() {
         copyInBuffer()
     })
 }
-
