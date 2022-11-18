@@ -34,9 +34,8 @@
             }
 
             #scroll_top {
-                display: none;
                 position: fixed;
-                bottom: 80px;
+                bottom: 100px;
                 right: 30px;
                 z-index: 1000;
                 width: 32px;
@@ -46,8 +45,20 @@
                 opacity: 0.5;
             }
 
+            #scroll_button {
+                position: fixed;
+                bottom: 65px;
+                right: 30px;
+                z-index: 1000;
+                width: 32px;
+                height: 32px;
+                background: #6c757d;
+                border-radius: 50%;
+                opacity: 0.5;
+                transform: rotate(180deg);
+            }
+
             #scroll_bottom {
-                display: none;
                 position: fixed;
                 bottom: 30px;
                 right: 30px;
@@ -60,7 +71,7 @@
                 transform: rotate(180deg);
             }
 
-            #scroll_top:hover, #scroll_bottom:hover {
+            #scroll_top:hover, #scroll_bottom:hover, #scroll_button:hover {
                 opacity: 1;
             }
         </style>
@@ -185,7 +196,8 @@
                             Количетсво кластеров: {{ $cluster['count_clusters'] }}
                         </div>
                     </div>
-                    <button type="button" class="btn btn-secondary mt-5" data-toggle="modal" data-target="#fastScan">
+                    <button type="button" class="btn btn-secondary mt-5" id="fastScanButton" data-toggle="modal"
+                            data-target="#fastScan">
                         Пересобрать
                     </button>
                     <div class="brutForce mt-3 d-flex">
@@ -379,7 +391,7 @@
         </div>
     </div>
     <a href="#" id="scroll_top"></a>
-    <a href="#" id="scroll_button"></a>
+    <a href="#brutForceFast" id="scroll_button"></a>
     <a href="#" id="scroll_bottom"></a>
     <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
     <input type="hidden" id="progressId">
@@ -394,18 +406,8 @@
             }
 
             $(function () {
-                $(window).scroll(function () {
-                    if ($(window).scrollTop() > 100) {
-                        $('#scroll_top').show();
-                        $('#scroll_bottom').show();
-                    } else {
-                        $('#scroll_top').hide();
-                        $('#scroll_bottom').hide();
-                    }
-                });
-
-                $("#scroll_button").on("click", function () {
-                    $("html, body").animate({scrollTop: $('#brutForceFast').offset().top}, {duration: 600,});
+                $("#scroll_button").click(function () {
+                    $("html, body").animate({scrollTop: $('#fastScanButton').offset().top}, {duration: 600,});
                     return false;
                 });
 
