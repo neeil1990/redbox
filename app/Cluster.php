@@ -81,11 +81,10 @@ class Cluster
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel',
-            'countPhrases', 'sites', 'result', 'clusters',
-            'engineVersion', 'searchPhrases', 'searchTarget',
-            'progress', 'save', 'request', 'newCluster',
-            'sites_json', 'percent', 'user',
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases',
+            'sites', 'result', 'clusters', 'engineVersion', 'searchPhrases',
+            'searchTarget', 'progress', 'save', 'request', 'newCluster',
+            'sites_json', 'percent', 'user', 'brutForce',
         ];
     }
 
