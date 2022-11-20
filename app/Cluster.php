@@ -153,8 +153,8 @@ class Cluster
 
         if ($this->brutForce) {
             $percent = $this->clusteringLevel;
-            while ($percent >= 0.3) {
-                $percent -= 0.1;
+            while ($percent > 0.3) {
+                $percent = $percent - 0.1;
                 $this->brutForceAlonePhrases($this->count * $percent);
                 Log::debug('percent', [$percent]);
             }
