@@ -108,17 +108,17 @@ class ClusterController extends Controller
      */
     public function fastScanClusters(Request $request): JsonResponse
     {
-        Log::debug('fastScanClusters', $request->all());
         $user = Auth::user();
         $cluster = new Cluster($request->all(), $user, false);
         $results = ClusterResults::findOrFail($request->input('resultId'));
         $cluster->setSites($results->sites_json);
         $cluster->searchClusters();
         $cluster->calculateClustersInfo();
+        $clusters = $cluster->getClusters();
 
         return response()->json([
-            'sites' => $cluster->getClusters(),
-            'count' => count($cluster->getClusters())
+            'sites' => $clusters,
+            'count' => count($clusters)
         ]);
     }
 

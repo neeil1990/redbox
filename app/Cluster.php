@@ -161,11 +161,13 @@ class Cluster
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
-    public function getClusters()
+    public function getClusters(): array
     {
-        return $this->clusters;
+        return collect($this->clusters)->sortByDesc(function ($item, $key) {
+            return count($item);
+        })->values()->all();
     }
 
     protected function searchClustersEngineV1($minimum)
@@ -464,14 +466,6 @@ class Cluster
     protected function getResult(): array
     {
         return $this->result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAnalysisResult(): array
-    {
-        return $this->getResult();
     }
 
     public static function getRegionName(string $id): string
