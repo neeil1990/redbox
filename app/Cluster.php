@@ -161,13 +161,11 @@ class Cluster
     }
 
     /**
-     * @return array
+     * @return array|mixed
      */
-    public function getClusters(): array
+    public function getClusters()
     {
-        return collect($this->clusters)->sortByDesc(function ($item, $key) {
-            return count($item);
-        })->values()->all();
+        return $this->clusters;
     }
 
     protected function searchClustersEngineV1($minimum)
