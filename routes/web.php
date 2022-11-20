@@ -306,6 +306,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
 
     Route::get('/test', function () {
-        dd(round(0.40000000000000004, 1, PHP_ROUND_HALF_ODD));
+
     });
 });
