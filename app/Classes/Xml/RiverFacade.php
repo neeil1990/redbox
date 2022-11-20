@@ -2,6 +2,7 @@
 
 namespace App\Classes\Xml;
 
+use App\TelegramBot;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -61,32 +62,39 @@ class RiverFacade
     {
         try {
             $url = str_replace(' ', '%20', $this->xmlRiwerPath . $this->query);
-            $riwerResponse = [];
+            $riverResponse = [];
 
             $attempt = 1;
-            while (!isset($riwerResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
-                $riwerResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
-                $attempt++;
+            while (!isset($riverResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
+                $riverResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
+                if (isset($riverResponse['error'])) {
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 938341087);
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 169011279);
+                    return [
+                        'number' => 0,
+                        'phrase' => $this->getQuery(),
+                    ];
+                }
             }
 
             if ($searchInItems) {
-                if (Str::length($riwerResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())) {
-                    $number = htmlentities($riwerResponse['content']['includingPhrases']['items'][0]['number']);
+                if (Str::length($riverResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())) {
+                    $number = htmlentities($riverResponse['content']['includingPhrases']['items'][0]['number']);
 
                     return [
                         'number' => str_replace("&nbsp;", '', $number),
-                        'phrase' => $riwerResponse['content']['includingPhrases']['items'][0]['phrase']
+                        'phrase' => $riverResponse['content']['includingPhrases']['items'][0]['phrase']
                     ];
                 } else {
                     return [
-                        'number' => $this->removeExtraSymbols($riwerResponse['content']['includingPhrases']['info'][2]),
+                        'number' => $this->removeExtraSymbols($riverResponse['content']['includingPhrases']['info'][2]),
                         'phrase' => $this->getQuery()
                     ];
                 }
             } else {
 
                 return [
-                    'number' => $this->removeExtraSymbols($riwerResponse['content']['includingPhrases']['info'][2]),
+                    'number' => $this->removeExtraSymbols($riverResponse['content']['includingPhrases']['info'][2]),
                     'phrase' => $this->getQuery()
                 ];
             }
