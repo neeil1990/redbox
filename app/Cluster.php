@@ -46,6 +46,8 @@ class Cluster
 
     protected $user;
 
+    protected $brutForce;
+
     public function __construct(array $request, $user, $default = true)
     {
         if ($request['clusteringLevel'] === 'light') {
@@ -58,6 +60,7 @@ class Cluster
             $this->clusteringLevel = 0.7;
         }
         $this->count = $request['count'];
+        $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
 
 
         if ($default) {
@@ -148,6 +151,15 @@ class Cluster
             $this->searchClustersEngineV2($minimum);
             $this->brutForceClusters($minimum + 2);
         }
+
+        if ($this->brutForce) {
+            for ($i = 1; $i <= 4; $i++) {
+                if (($this->clusteringLevel - (0.1 * $i)) >= 0.4) {
+                    Log::debug(($this->clusteringLevel - (0.1 * $i)) >= 0.4);
+                    $this->brutForceAlonePhrases($this->count * $this->clusteringLevel - (0.1 * $i));
+                }
+            }
+        }
     }
 
     /**
@@ -203,7 +215,7 @@ class Cluster
         foreach ($this->clusters as $keyPhrase => $cluster) {
             foreach ($this->clusters as $anotherKeyPhrase => $anotherCluster) {
                 if ($keyPhrase === $anotherKeyPhrase) {
-                    break;
+                    continue;
                 }
                 foreach ($cluster as $key1 => $elems) {
                     foreach ($anotherCluster as $key2 => $anotherElems) {
@@ -219,7 +231,27 @@ class Cluster
                 }
             }
         }
+    }
 
+    protected function brutForceAlonePhrases($minimum)
+    {
+        foreach ($this->clusters as $keyPhrase => $cluster) {
+            if (count($cluster) > 1) {
+                continue;
+            }
+            foreach ($this->clusters as $anotherKeyPhrase => $anotherCluster) {
+                if ($keyPhrase === $anotherKeyPhrase || count($anotherCluster) < 1) {
+                    continue;
+                }
+                foreach ($anotherCluster as $phrase => $item) {
+                    if (count(array_intersect($item['sites'], $cluster[array_key_first($cluster)]['sites'])) > $minimum) {
+                        $this->clusters[$anotherKeyPhrase] = array_merge_recursive($cluster, $anotherCluster);
+                        unset($this->clusters[$keyPhrase]);
+                        continue 3;
+                    }
+                }
+            }
+        }
     }
 
     public function calculateClustersInfo()

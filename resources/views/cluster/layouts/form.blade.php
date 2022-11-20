@@ -122,18 +122,32 @@
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 
+<div class="form-group required">
+    <label for="brutForce">Дополнительная переборка</label>
+    <span class="__helper-link ui_tooltip_w">
+        <i class="fa fa-question-circle" style="color: grey"></i>
+        <span class="ui_tooltip __right">
+            <span class="ui_tooltip_content" style="width: 300px">
+                Фразы которые, после кластеризации, не попали в кластер, будут дополнительно пересмотренны с уменьшенным порогом входа. <br><br>
+                Если уровень кластеризации "pre-hard", тогда порог входа для фраз будет уменьшен до "soft", если фраза всё равно никуда не попадает, тогда порог будет уменьшен до "light".
+            </span>
+        </span>
+    </span>
+    <input type="checkbox" name="brutForce" id="brutForce">
+</div>
+
 <div class="form-group required" id="saveResultBlock">
     <label>{{ __('Save results') }}</label>
     <span class="__helper-link ui_tooltip_w">
-            <i class="fa fa-question-circle" style="color: grey"></i>
-            <span class="ui_tooltip __right">
-                <span class="ui_tooltip_content" style="width: 300px">
-                {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
-                {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
-                    {{ __('data will be lost when starting the next analysis or when reloading the page') }}
-                </span>
+        <i class="fa fa-question-circle" style="color: grey"></i>
+        <span class="ui_tooltip __right">
+            <span class="ui_tooltip_content" style="width: 300px">
+            {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
+            {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
+                {{ __('data will be lost when starting the next analysis or when reloading the page') }}
             </span>
         </span>
+    </span>
     {!! Form::select('save', [
         $config->save_results => $config->save_results,
         '1' => __('Save'),

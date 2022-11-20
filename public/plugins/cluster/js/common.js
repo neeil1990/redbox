@@ -13,7 +13,8 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         searchTarget: $('#searchTarget').is(':checked'),
         domain: $('#domain-textarea').val(),
         comment: $('#comment-textarea').val(),
-        sendMessage: $('#sendMessage').val()
+        sendMessage: $('#sendMessage').val(),
+        brutForce: $('#brutForce').is(':checked')
     };
 }
 

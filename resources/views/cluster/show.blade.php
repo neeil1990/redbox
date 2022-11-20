@@ -376,6 +376,19 @@
                             $cluster['request']['count'] => $cluster['request']['count']
                         ]), null, ['class' => 'custom-select rounded-0', 'id' => 'countFast']) !!}
                     </div>
+                    <div class="form-group required">
+                        <label for="brutForce">Дополнительная переборка</label>
+                        <span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle" style="color: grey"></i>
+                            <span class="ui_tooltip __right">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    Фразы которые, после кластеризации, не попали в кластер, будут дополнительно пересмотренны с уменьшенным порогом входа. <br><br>
+                                    Если уровень кластеризации "pre-hard", тогда порог входа для фраз будет уменьшен до "soft", если фраза всё равно никуда не попадает, тогда порог будет уменьшен до "light".
+                                </span>
+                            </span>
+                        </span>
+                        <input type="checkbox" name="brutForce" id="brutForce">
+                    </div>
                     <div class="form-group required d-flex justify-content-end">
                         <button type="button" class="btn btn-secondary mr-2"
                                 data-dismiss="modal"
@@ -479,7 +492,8 @@
                             count: $('#countFast').val(),
                             clusteringLevel: $('#clusteringLevelFast').val(),
                             engineVersion: $('#engineVersionFast').val(),
-                            resultId: {{ $cluster['id'] }}
+                            resultId: {{ $cluster['id'] }},
+                            brutForce: $('#brutForce').is(':checked')
                         },
                         success: function (response) {
                             $('#clusters-table-default').show()
