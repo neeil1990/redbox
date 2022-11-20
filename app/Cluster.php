@@ -156,7 +156,6 @@ class Cluster
             while ($percent >= 0.4) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForceAlonePhrases($this->count * $percent);
-                Log::debug('percent', [$percent]);
             }
         }
     }
