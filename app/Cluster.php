@@ -152,11 +152,11 @@ class Cluster
         }
 
         if ($this->brutForce) {
-            for ($i = 1; $i <= 4; $i++) {
-                if (($this->clusteringLevel - (0.1 * $i)) >= 0.4) {
-                    Log::debug(($this->clusteringLevel - (0.1 * $i)));
-                    $this->brutForceAlonePhrases($this->count * $this->clusteringLevel - (0.1 * $i));
-                }
+            $percent = $this->clusteringLevel;
+            while ($percent >= 0.3) {
+                $percent -= 0.1;
+                $this->brutForceAlonePhrases($this->count * $percent);
+                Log::debug('percent', [$percent]);
             }
         }
     }

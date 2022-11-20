@@ -305,4 +305,11 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
 
+    Route::get('/test', function () {
+        $percent = 0.7;
+        while ($percent >= 0.3) {
+            dump($percent);
+            $percent-= 0.1;
+        }
+    });
 });
