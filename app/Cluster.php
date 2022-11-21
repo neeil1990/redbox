@@ -234,11 +234,11 @@ class Cluster
     protected function brutForceAlonePhrases($minimum)
     {
         foreach ($this->clusters as $keyPhrase => $cluster) {
-            if (count($cluster) > 1) {
+            if (count($cluster) !== 1) {
                 continue;
             }
             foreach ($this->clusters as $anotherKeyPhrase => $anotherCluster) {
-                if ($keyPhrase === $anotherKeyPhrase || count($anotherCluster) < 1) {
+                if (count($anotherCluster) <= 1) {
                     continue;
                 }
                 foreach ($anotherCluster as $phrase => $item) {
