@@ -3,6 +3,7 @@
 namespace App\Jobs\Cluster;
 
 use App\Classes\Xml\RiverFacade;
+use App\Cluster;
 use App\ClusterProgress;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -28,36 +29,57 @@ class ClusterQueue implements ShouldQueue
 
     protected $type;
 
-    protected $targetPhrase;
-
     protected $percent;
 
     protected $progressId;
 
-    public function __construct($region, $progressId, $percent, $targetPhrase, $key, $phrase, $type)
+    protected $cluster;
+
+    public function __construct(Cluster $cluster, $percent, $key, $phrase)
     {
-        $this->progressId = $progressId;
-        $this->targetPhrase = $targetPhrase;
+        $this->progressId = $cluster->getProgressId();
+        $this->region = $cluster->getRegion();
+        $this->cluster = $cluster;
+        $this->percent = $percent;
         $this->key = $key;
         $this->phrase = $phrase;
-        $this->region = $region;
-        $this->type = $type;
-        $this->percent = $percent;
     }
 
     public function handle()
     {
-        $river = new RiverFacade($this->region);
-        $river->setQuery($this->targetPhrase);
         $clusterArrays = new \App\ClusterQueue();
-        $response = $river->riverRequest($this->type === 'based');
+        $river = new RiverFacade($this->region);
+
+        if ($this->cluster->getSearchPhrases()) {
+            $river->setQuery('"' . $this->phrase . '"');
+            $phrase = $river->riverRequest(false);
+        }
+
+        if ($this->cluster->getSearchTarget()) {
+            $river->setQuery('"!' . implode(' !', explode(' ', $this->phrase)) . '"');
+            $target = $river->riverRequest(false);
+        }
+
+        $river->setQuery($this->phrase);
+        $based = $river->riverRequest();
+
+        if ($this->cluster->getSearchRelevance()) {
+            $this->cluster->getXml()->setQuery("$this->phrase site:" . $this->cluster->getHost());
+            $this->cluster->getXml()->setCount(3);
+            $relevance = $this->cluster->getXml()->getXMLResponse();
+        }
+
         $clusterArrays->json = json_encode([
             $this->key => [
                 $this->phrase => [
-                    $this->type => $response
+                    'based' => $based,
+                    'phrased' => $phrase ?? 0,
+                    'target' => $target ?? 0,
+                    'relevance' => $relevance ?? 0
                 ]
             ]
         ]);
+
         $clusterArrays->progress_id = $this->progressId;
         $clusterArrays->save();
 

@@ -4,7 +4,6 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
-use App\Jobs\Cluster\ClusterRelevanceQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -43,8 +42,6 @@ class Cluster
 
     protected $sites_json;
 
-    protected $percent;
-
     protected $user;
 
     protected $brutForce;
@@ -52,6 +49,8 @@ class Cluster
     protected $searchRelevance;
 
     protected $xml;
+
+    protected $host;
 
     public function __construct(array $request, $user, $default = true)
     {
@@ -64,6 +63,7 @@ class Cluster
         } else {
             $this->clusteringLevel = 0.7;
         }
+
         $this->count = $request['count'];
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
 
@@ -81,6 +81,8 @@ class Cluster
 
             $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
             $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
+
+            $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
     }
 
@@ -90,7 +92,7 @@ class Cluster
             'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases',
             'sites', 'result', 'clusters', 'engineVersion', 'searchPhrases',
             'searchTarget', 'progress', 'save', 'request', 'newCluster',
-            'sites_json', 'percent', 'user', 'brutForce', 'searchRelevance', 'xml'
+            'sites_json', 'user', 'brutForce', 'searchRelevance', 'xml', 'host'
         ];
     }
 
@@ -116,7 +118,7 @@ class Cluster
         $this->searchClusters();
         $this->calculateClustersInfo();
         $this->wordStats();
-        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_first_stage');
+        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
     }
 
     public function secondStage()
@@ -124,23 +126,6 @@ class Cluster
         Log::debug('second stage');
         $this->setRiverResults();
         $this->searchGroupName();
-
-        if ($this->searchRelevance) {
-            $this->searchRelevance();
-            dispatch(new WaitClusterAnalyseQueue($this, 2, $this->countPhrases))->onQueue('cluster_second_stage');
-        } else {
-            $this->finallyStage();
-        }
-    }
-
-    public function finallyStage()
-    {
-        Log::debug('finally stage');
-
-        if ($this->searchRelevance) {
-            $this->setRelevanceResults();
-        }
-
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -304,60 +289,14 @@ class Cluster
 
     protected function wordStats()
     {
-        $this->progress->total = $this->calculateCountRequests();
+        $this->progress->total = $this->countPhrases;
         $this->progress->save();
-        $this->percent = 50 / $this->progress->total;
+        $percent = 50 / $this->progress->total;
 
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
-                    if ($this->searchPhrases) {
-                        dispatch(new ClusterQueue(
-                            $this->region,
-                            $this->progress->id,
-                            $this->percent,
-                            '"' . $phrase . '"',
-                            $key,
-                            $phrase,
-                            'phrased'
-                        ))->onQueue('child_cluster');
-                    }
-
-                    if ($this->searchTarget) {
-                        dispatch(new ClusterQueue(
-                            $this->region,
-                            $this->progress->id,
-                            $this->percent,
-                            '"!' . implode(' !', explode(' ', $phrase)) . '"',
-                            $key,
-                            $phrase,
-                            'target'
-                        ))->onQueue('child_cluster');
-                    }
-
-                    dispatch(new ClusterQueue(
-                        $this->region,
-                        $this->progress->id,
-                        $this->percent,
-                        $phrase,
-                        $key,
-                        $phrase,
-                        'based'
-                    ))->onQueue('child_cluster');
-                }
-            }
-        }
-    }
-
-    protected function searchRelevance()
-    {
-        $domain = parse_url($this->request['domain'])['host'];
-
-        foreach ($this->clusters as $key => $cluster) {
-            foreach ($cluster as $phrase => $item) {
-                if ($phrase !== 'finallyResult') {
-                    $query = "$phrase site:$domain";
-                    dispatch(new ClusterRelevanceQueue($this, $query, $key, $phrase))->onQueue('cluster_relevance');
+                    dispatch(new ClusterQueue($this, $percent, $key, $phrase))->onQueue('child_cluster');
                 }
             }
         }
@@ -382,6 +321,10 @@ class Cluster
                         $this->clusters[$key][$phrase]['target'] = $array[$key][$phrase]['target'];
                     }
 
+                    if ($this->searchRelevance) {
+                        $this->clusters[$key][$phrase]['relevance'] = $array[$key][$phrase]['relevance'];
+                    }
+
                     $this->clusters[$key][$phrase]['based'] = $array[$key][$phrase]['based'];
                     if ($array[$key][$phrase]['based']['phrase'] !== $phrase) {
                         $this->clusters[$key][$phrase]['basedNormal'] = $array[$key][$phrase]['based']['phrase'];
@@ -389,35 +332,6 @@ class Cluster
                 }
             }
         }
-
-        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
-    }
-
-    public function setRelevanceResults()
-    {
-        $array = [];
-        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
-        foreach ($results as $result) {
-            $array = array_merge_recursive($array, json_decode($result->json, true));
-        }
-
-        foreach ($this->clusters as $key => $cluster) {
-            foreach ($cluster as $phrase => $sites) {
-                if ($phrase !== 'finallyResult') {
-                    $this->clusters[$key][$phrase]['relevance'] = $array[$key][$phrase]['relevance'];
-                }
-            }
-        }
-
-        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
-    }
-
-    protected function calculateCountRequests()
-    {
-        $first = $this->searchPhrases ? 1 : 0;
-        $second = $this->searchTarget ? 1 : 0;
-
-        return $this->countPhrases * (1 + $first + $second);
     }
 
     protected function searchGroupName()
@@ -527,6 +441,31 @@ class Cluster
     public function getProgressId(): int
     {
         return $this->progress->id;
+    }
+
+    public function getRegion()
+    {
+        return $this->request['region'];
+    }
+
+    public function getSearchPhrases()
+    {
+        return $this->searchPhrases;
+    }
+
+    public function getSearchTarget()
+    {
+        return $this->searchTarget;
+    }
+
+    public function getSearchRelevance()
+    {
+        return $this->searchRelevance;
+    }
+
+    public function getHost()
+    {
+        return $this->host;
     }
 
     public static function getRegionName(string $id): string
@@ -657,10 +596,5 @@ class Cluster
             default:
                 return 'Регион не опознан';
         }
-    }
-
-    public static function fastScanClusters()
-    {
-
     }
 }
