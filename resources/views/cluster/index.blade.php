@@ -152,12 +152,11 @@
                             progressId = response.id
                             $('#progress-bar').show()
                             $('#progressId').val(progressId)
-                            refreshAll()
-                            startAnalysis()
-
                             interval = setInterval(() => {
                                 getProgressPercent(response.id, interval)
                             }, 5000)
+
+                            startAnalysis(interval)
                         }
                     })
                 }
@@ -175,7 +174,6 @@
                         $('.history-notification').hide(300)
                     }, 15000)
                 }
-
                 $.each($('.render-table'), function (key, value) {
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
                 })
@@ -202,6 +200,7 @@
                         }
 
                         if ('result' in response) {
+                            console.log(response)
                             $('#start-analysis').attr('disabled', false)
                             renderHiddenTable(response['result'])
                             renderResultTable(response['result'])
@@ -211,12 +210,29 @@
                 })
             }
 
-            function startAnalysis() {
+            function startAnalysis(interval) {
                 $.ajax({
                     type: "POST",
                     url: "{{ route('analysis.cluster') }}",
                     data: getData(),
                     success: function (response) {
+                        refreshAll()
+                    },
+                    error: function (response) {
+                        destroyProgress(interval)
+                        let values = [];
+
+                        $('#start-analysis').attr('disabled', false)
+                        $('.toast.toast-error').show(300)
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            values.push(value)
+                        })
+
+                        $('.error-msg').html(values + "")
+
+                        setTimeout(() => {
+                            $('.toast.toast-error').hide(300)
+                        }, 10000)
                     },
                 });
             }

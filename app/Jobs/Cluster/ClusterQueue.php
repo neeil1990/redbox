@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Cluster;
 
 use App\Classes\Xml\RiverFacade;
 use App\ClusterProgress;

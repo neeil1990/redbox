@@ -14,7 +14,9 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         domain: $('#domain-textarea').val(),
         comment: $('#comment-textarea').val(),
         sendMessage: $('#sendMessage').val(),
-        brutForce: $('#brutForce').is(':checked')
+        brutForce: $('#brutForce').is(':checked'),
+        searchRelevance: $('#searchRelevance').is(':checked'),
+
     };
 }
 

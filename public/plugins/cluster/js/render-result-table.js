@@ -57,6 +57,15 @@ function renderResultTable(data) {
                     })
                 }
 
+                let relevance = ''
+                if ('relevance' in information) {
+                    $.each(information['relevance'], function (key, value) {
+                        relevance += '<option value="' + value + '">' + value + '</option>'
+                    })
+
+                    relevance = '<select style="max-width: 250px" class="custom-select" name="' + phrase.replaceAll(' ', '-') + '-select" data-order="' + phrase + '">' + relevance + '</select>'
+                }
+
                 targetPhrase = changedBg ? information['basedNormal'] : phrase
                 let title = changedBg ? `title='Ваша фраза "${phrase}" была изменена'` : ''
 
@@ -67,9 +76,9 @@ function renderResultTable(data) {
                     '</td> ' +
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
-                    '       <div class="d-flex"> ' +
-                    '          <div class="col-10  cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
-                    '          <div class="col-2">' +
+                    '       <div class="d-flex justify-content-around"> ' +
+                    '          <div class="cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
+                    '          <div>' +
                     '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
@@ -83,6 +92,7 @@ function renderResultTable(data) {
                     '       </div>' +
                     '   </td> ' +
                     '   <td class="border-0 group-' + clusterId + '">' + result['finallyResult']['groupName'] + '</td>' +
+                    '   <td class="border-0 relevance-' + clusterId + '">' + relevance + '</td>' +
                     '   <td class="border-0 base-' + clusterId + '" data-target="' + based + '">' + based + '</td>' +
                     '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phrased + '">' + phrased + '</td>' +
                     '   <td class="border-0 target-' + clusterId + '" data-target="' + target + '">' + target + '</td>' +
@@ -96,17 +106,18 @@ function renderResultTable(data) {
             '       <table class="table table-hover text-nowrap render-table" id="render-table' + key + '" style="width: 100%">' +
             '       <thead>' +
             '           <tr>' +
-            '               <th colspan="4"></th>' +
-            '               <th class="centered-text" colspan="3">Частотность</th>' +
+            '               <th colspan="4" style="border-bottom: 0; border-top: 0;"></th>' +
+            '               <th class="centered-text border-0" colspan="3">Частотность</th>' +
             '           </tr>' +
             '           <tr>' +
-            '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер">#</th>' +
-            '               <th style="min-width: 60px; max-width: 80px;" title="Порядковый номер в кластере">##</th>' +
-            '               <th>Ключевой запрос</th>' +
-            '               <th>Группа</i></th>' +
-            '               <th style="max-width: 93px; min-width: 93px;">Базовая</th>' +
-            '               <th style="max-width: 93px; min-width: 93px;">"Фразовая"</th>' +
-            '               <th style="max-width: 93px; min-width: 93px;">"!Точная"</th>' +
+            '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
+            '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
+            '               <th style="border-top-width: 2px;min-width: 450px;">Ключевой запрос</th>' +
+            '               <th style="border-top-width: 2px;min-width: 450px;">Группа</i></th>' +
+            '               <th style="border-top-width: 2px;min-width: 250px;">Релевантные url</i></th>' +
+            '               <th style="border-top-width: 2px;max-width: 65px;">Базовая</th>' +
+            '               <th style="border-top-width: 2px;max-width: 93px;">"Фразовая"</th>' +
+            '               <th style="border-top-width: 2px;max-width: 70px;">"!Точная"</th>' +
             '           </tr>' +
             '       </thead>' +
             '       <tbody>' + newTableRows + '</tbody>' +

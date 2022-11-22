@@ -8,15 +8,15 @@ use App\ClusterProgress;
 use App\ClusterResults;
 use App\Common;
 use App\Exports\ClusterResultExport;
-use App\Jobs\StartClusterAnalyse;
+use App\Jobs\Cluster\StartClusterAnalyseQueue;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -36,11 +36,27 @@ class ClusterController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws ValidationException
      */
-    public function analysisCluster(Request $request): JsonResponse
+    public function analyseCluster(Request $request): JsonResponse
     {
+        //TODO подключить гугл, переписать супервизор, затестить.
+        $this->validate($request, [
+            'domain' => 'sometimes|required_if:searchRelevance,==,true',
+        ], [
+            'domain.required_if' => __('the domain is required if the relevant page selection mode is selected')
+        ]);
+
+        if (filter_var($request->input('searchRelevance'), FILTER_VALIDATE_BOOL)) {
+            $link = parse_url($request->input('domain'));
+            if (empty($link['host'])) {
+                return response()->json([
+                    'errors' => ['domain' => __('url not valid')]
+                ], 422);
+            }
+        }
         $user = Auth::user();
-        dispatch(new StartClusterAnalyse($request->all(), $user))->onQueue('main_cluster');
+        dispatch(new StartClusterAnalyseQueue($request->all(), $user))->onQueue('main_cluster');
 
         return response()->json([
             'result' => true
@@ -114,7 +130,7 @@ class ClusterController extends Controller
         $cluster->setSites($results->sites_json);
         $cluster->searchClusters();
         $cluster->calculateClustersInfo();
-        $clusters =  collect($cluster->getClusters())->sortByDesc(function ($item, $key) {
+        $clusters = collect($cluster->getClusters())->sortByDesc(function ($item, $key) {
             return count($item);
         })->values()->all();
 

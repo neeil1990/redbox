@@ -3,8 +3,9 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use App\Jobs\ClusterQueue;
-use App\Jobs\WaitClusterAnalyse;
+use App\Jobs\Cluster\ClusterQueue;
+use App\Jobs\Cluster\ClusterRelevanceQueue;
+use App\Jobs\Cluster\WaitClusterAnalyseQueue;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -48,6 +49,10 @@ class Cluster
 
     protected $brutForce;
 
+    protected $searchRelevance;
+
+    protected $xml;
+
     public function __construct(array $request, $user, $default = true)
     {
         if ($request['clusteringLevel'] === 'light') {
@@ -62,11 +67,11 @@ class Cluster
         $this->count = $request['count'];
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
 
-
         if ($default) {
             $this->engineVersion = $request['engineVersion'];
             $this->user = $user;
             $this->region = $request['region'];
+            $this->searchRelevance = filter_var($request['searchRelevance'], FILTER_VALIDATE_BOOLEAN);
             $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
             $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
             $this->save = filter_var($request['save'], FILTER_VALIDATE_BOOLEAN);
@@ -75,6 +80,7 @@ class Cluster
             $this->request = $request;
 
             $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
+            $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
         }
     }
 
@@ -84,17 +90,14 @@ class Cluster
             'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases',
             'sites', 'result', 'clusters', 'engineVersion', 'searchPhrases',
             'searchTarget', 'progress', 'save', 'request', 'newCluster',
-            'sites_json', 'percent', 'user', 'brutForce',
+            'sites_json', 'percent', 'user', 'brutForce', 'searchRelevance', 'xml'
         ];
     }
 
     public function startAnalysis()
     {
         try {
-            $this->parseSites();
-            $this->searchClusters();
-            $this->calculateClustersInfo();
-            $this->wordStats();
+            $this->firstStage();
         } catch (Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
@@ -106,16 +109,58 @@ class Cluster
         }
     }
 
+    protected function firstStage()
+    {
+        Log::debug('first stage');
+        $this->parseSites();
+        $this->searchClusters();
+        $this->calculateClustersInfo();
+        $this->wordStats();
+        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('wait_cluster');
+    }
+
+    public function secondStage()
+    {
+        Log::debug('second stage');
+        $this->setRiverResults();
+        $this->searchGroupName();
+
+        if ($this->searchRelevance) {
+            $this->searchRelevance();
+            dispatch(new WaitClusterAnalyseQueue($this, 2, $this->countPhrases))->onQueue('wait_cluster');
+        } else {
+            $this->finallyStage();
+        }
+    }
+
+    public function finallyStage()
+    {
+        Log::debug('finally stage');
+
+        if ($this->searchRelevance) {
+            $this->setRelevanceResults();
+        }
+
+        $this->setResult($this->clusters);
+        $this->saveResult();
+
+        if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+            $this->sendNotification();
+        }
+
+        $this->progress->delete();
+        $this->progress->total = 0;
+    }
+
     protected function parseSites()
     {
         $percent = 49 / $this->countPhrases;
         $iterator = 0;
-        $xml = new SimplifiedXmlFacade($this->region, $this->count);
         foreach ($this->phrases as $key => $phrase) {
             $this->progress->percent += $percent;
             $iterator++;
-            $xml->setQuery($phrase);
-            $sites = $xml->getXMLResponse();
+            $this->xml->setQuery($phrase);
+            $sites = $this->xml->getXMLResponse();
             if ($sites !== null) {
                 $this->sites[$phrase]['sites'] = $sites;
             } else {
@@ -158,14 +203,6 @@ class Cluster
                 $this->brutForceAlonePhrases($this->count * $percent);
             }
         }
-    }
-
-    /**
-     * @return array|mixed
-     */
-    public function getClusters()
-    {
-        return $this->clusters;
     }
 
     protected function searchClustersEngineV1($minimum)
@@ -275,58 +312,61 @@ class Cluster
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
                     if ($this->searchPhrases) {
-                        $this->tryInitJob(
+                        dispatch(new ClusterQueue(
+                            $this->region,
+                            $this->progress->id,
+                            $this->percent,
                             '"' . $phrase . '"',
                             $key,
                             $phrase,
                             'phrased'
-                        );
+                        ))->onQueue('child_cluster');
                     }
 
                     if ($this->searchTarget) {
-                        $this->tryInitJob(
+                        dispatch(new ClusterQueue(
+                            $this->region,
+                            $this->progress->id,
+                            $this->percent,
                             '"!' . implode(' !', explode(' ', $phrase)) . '"',
                             $key,
                             $phrase,
                             'target'
-                        );
+                        ))->onQueue('child_cluster');
                     }
 
-                    $this->tryInitJob($phrase, $key, $phrase, 'based');
+                    dispatch(new ClusterQueue(
+                        $this->region,
+                        $this->progress->id,
+                        $this->percent,
+                        $phrase,
+                        $key,
+                        $phrase,
+                        'based'
+                    ))->onQueue('child_cluster');
                 }
             }
         }
-
-        dispatch(new WaitClusterAnalyse($this))->onQueue('wait_cluster');
     }
 
-    public function getProgressTotal(): int
+    protected function searchRelevance()
     {
-        return $this->progress->total;
+        $domain = parse_url($this->request['domain'])['host'];
+
+        foreach ($this->clusters as $key => $cluster) {
+            foreach ($cluster as $phrase => $item) {
+                if ($phrase !== 'finallyResult') {
+                    $query = "$phrase site:$domain";
+                    dispatch(new ClusterRelevanceQueue($this, $query, $key, $phrase))->onQueue('cluster_relevance');
+                }
+            }
+        }
     }
 
-    public function getProgressCurrentCount(): int
-    {
-        return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
-    }
-
-    protected function tryInitJob($phrase, $key, $keyPhrase, $type)
-    {
-        ClusterQueue::dispatch(
-            $this->region,
-            $this->progress->id,
-            $this->percent,
-            $phrase,
-            $key,
-            $keyPhrase,
-            $type
-        )->onQueue('child_cluster');
-    }
-
-    public function setRiverResults()
+    protected function setRiverResults()
     {
         $array = [];
-        $results = \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->get();
+        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
         foreach ($results as $result) {
             $array = array_merge_recursive($array, json_decode($result->json, true));
         }
@@ -350,23 +390,29 @@ class Cluster
             }
         }
 
-        $this->searchGroupName();
-        $this->setResult($this->clusters);
-        $this->saveResult();
-
-        if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
-            $this->sendNotification();
-        }
-
-        $this->progress->delete();
         \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
-        $this->progress->total = 0;
     }
 
-    /**
-     * @return int
-     */
-    protected function calculateCountRequests(): int
+    public function setRelevanceResults()
+    {
+        $array = [];
+        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
+        foreach ($results as $result) {
+            $array = array_merge_recursive($array, json_decode($result->json, true));
+        }
+
+        foreach ($this->clusters as $key => $cluster) {
+            foreach ($cluster as $phrase => $sites) {
+                if ($phrase !== 'finallyResult') {
+                    $this->clusters[$key][$phrase]['relevance'] = $array[$key][$phrase]['relevance'];
+                }
+            }
+        }
+
+        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+    }
+
+    protected function calculateCountRequests()
     {
         $first = $this->searchPhrases ? 1 : 0;
         $second = $this->searchTarget ? 1 : 0;
@@ -451,19 +497,36 @@ class Cluster
     }
 
     /**
-     * @return mixed
-     */
-    public function getNewCluster()
-    {
-        return $this->newCluster;
-    }
-
-    /**
      * @return array
      */
     protected function getResult(): array
     {
         return $this->result;
+    }
+
+    public function getProgressTotal(): int
+    {
+        return $this->progress->total;
+    }
+
+    public function getProgressCurrentCount(): int
+    {
+        return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
+    }
+
+    public function getClusters(): array
+    {
+        return $this->clusters;
+    }
+
+    public function getXml(): SimplifiedXmlFacade
+    {
+        return $this->xml;
+    }
+
+    public function getProgressId(): int
+    {
+        return $this->progress->id;
     }
 
     public static function getRegionName(string $id): string

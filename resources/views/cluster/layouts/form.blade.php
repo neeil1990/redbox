@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Facades\Auth; @endphp
+
 <div id="toast-container" class="toast-top-right success-message dont-worry-notification" style="display:none;">
     <div class="toast toast-info" aria-live="polite">
         <div class="toast-message">
@@ -124,6 +126,8 @@
 
 <div class="form-group required">
     <label for="brutForce">Дополнительная переборка</label>
+    <input type="checkbox" name="brutForce" id="brutForce">
+
     <span class="__helper-link ui_tooltip_w">
         <i class="fa fa-question-circle" style="color: grey"></i>
         <span class="ui_tooltip __right">
@@ -133,7 +137,6 @@
             </span>
         </span>
     </span>
-    <input type="checkbox" name="brutForce" id="brutForce">
 </div>
 
 <div class="form-group required" id="saveResultBlock">
@@ -166,14 +169,19 @@
             <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
         </div>
     </div>
+
+    <div class="form-group required">
+        <label for="searchRelevance">Подобрать релевантную страницу для домена</label>
+        <input type="checkbox" name="searchRelevance" id="searchRelevance">
+    </div>
+
     <div id="form">
-        @if(!\Illuminate\Support\Facades\Auth::user()->telegram_bot_active)
+        @if(!Auth::user()->telegram_bot_active)
             <div class="mt-2">
                 {{ __('Want to') }}
                 <a href="{{ route('profile.index') }}" target="_blank">
                     {{ __('receive notifications from our telegram bot') }}
-                </a>
-                ?
+                </a> ?
             </div>
         @else
             <div id="sendTelegramMessage">

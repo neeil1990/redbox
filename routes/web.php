@@ -11,10 +11,7 @@
 |
 */
 
-use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
-use App\LinguaStem;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -290,7 +287,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
     Route::get('/cluster', 'ClusterController@index')->name('cluster');
-    Route::post('/analysis-cluster', 'ClusterController@analysisCluster')->name('analysis.cluster');
+    Route::post('/analysis-cluster', 'ClusterController@analyseCluster')->name('analysis.cluster');
     Route::get('/start-cluster-progress', 'ClusterController@startProgress')->name('start.cluster.progress');
     Route::get('/get-cluster-progress/{id}', 'ClusterController@getProgress')->name('get.cluster.progress');
     Route::get('/get-cluster-progress/{id}/modify', 'ClusterController@getProgressModify')->name('get.cluster.progress.modify');
@@ -306,6 +303,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
 
     Route::get('/test', function () {
-
+        dd(parse_url('http://redbox.su/cluster'));
     });
 });

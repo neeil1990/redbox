@@ -35,6 +35,11 @@ class SimplifiedXmlFacade extends XmlFacade
         return $this;
     }
 
+    public function setCount($count)
+    {
+        $this->count = $count;
+    }
+
     /**
      * @param int $attempt
      * @return array|null
@@ -58,14 +63,14 @@ class SimplifiedXmlFacade extends XmlFacade
                 return null;
             }
 
-            $xml = $this->sendRequest();
+            $request = $this->sendRequest();
 
-            if (isset($xml['response']['results']['grouping']['group'])) {
-                return $this->parseResult($xml['response']['results']['grouping']['group']);
-            } else if (isset($xml['response']['error'])) {
-                Log::debug("$this->path: " . $xml['response']['error']);
-                TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 938341087);
-                TelegramBot::sendMessage("$this->path: " . $xml['response']['error'], 169011279);
+            if (isset($request['response']['results']['grouping']['group'])) {
+                return $this->parseResult($request['response']['results']['grouping']['group']);
+            } else if (isset($request['response']['error'])) {
+                Log::debug("$this->path: " . $request['response']['error']);
+                TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 938341087);
+                TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 169011279);
             }
         } catch (\Throwable $e) {
             Log::debug('xml facade error', [
