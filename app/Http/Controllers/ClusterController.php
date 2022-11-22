@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -40,6 +41,7 @@ class ClusterController extends Controller
      */
     public function analyseCluster(Request $request): JsonResponse
     {
+        Log::debug('кластер старт');
         //TODO подключить гугл, переписать супервизор, затестить.
         $this->validate($request, [
             'domain' => 'sometimes|required_if:searchRelevance,==,true',
