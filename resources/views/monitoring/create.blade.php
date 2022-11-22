@@ -434,6 +434,13 @@
                 let option = self.val();
                 let modes = $('.mode-scan').find('.form-group');
 
+                if(option === 'manually'){
+                    $('.mode-scan').addClass('d-none');
+                    modes.find('input, select').attr('disabled', 'disabled');
+                    return false;
+                }else
+                    $('.mode-scan').removeClass('d-none');
+
                 modes.addClass('d-none');
                 modes.find('code').remove();
                 modes.find('input, select').removeAttr('disabled');

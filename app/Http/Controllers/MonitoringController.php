@@ -606,7 +606,10 @@ class MonitoringController extends Controller
                         if($model)
                             $lastPosition->put($col, $model);
 
-                        $mainColumns->put($col, $reg->location->name);
+                        $city = stristr($reg->location->name, ',', true);
+                        $icon = '<i class="fab d-block fa-'. $reg->engine .' fa-sm"></i>';
+
+                        $mainColumns->put($col, implode(' ', [$icon, $city]));
                     }
                     $item->last_positions = $lastPosition;
 
