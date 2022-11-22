@@ -76,7 +76,7 @@ function renderResultTable(data) {
                     '</td> ' +
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
-                    '       <div class="d-flex justify-content-around"> ' +
+                    '       <div class="d-flex justify-content-between"> ' +
                     '          <div class="cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
                     '          <div>' +
                     '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
