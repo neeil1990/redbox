@@ -46,7 +46,12 @@ class WaitClusterAnalyseQueue implements ShouldQueue
         if ($this->total === 0) {
             return;
         } else if ($this->total !== $this->count) {
-            dispatch(new WaitClusterAnalyseQueue($this->cluster, $this->stage, $this->total))->onQueue('wait_cluster')->delay(Carbon::now()->addSeconds(5));
+            if ($this->stage === 1) {
+                $type = 'cluster_first_stage';
+            } else {
+                $type = 'cluster_second_stage';
+            }
+            dispatch(new WaitClusterAnalyseQueue($this->cluster, $this->stage, $this->total))->onQueue($type)->delay(Carbon::now()->addSeconds(5));
         } else if ($this->stage === 1) {
             $this->cluster->secondStage();
         } else if ($this->stage === 2) {

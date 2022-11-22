@@ -116,7 +116,7 @@ class Cluster
         $this->searchClusters();
         $this->calculateClustersInfo();
         $this->wordStats();
-        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('wait_cluster');
+        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_first_stage');
     }
 
     public function secondStage()
@@ -127,7 +127,7 @@ class Cluster
 
         if ($this->searchRelevance) {
             $this->searchRelevance();
-            dispatch(new WaitClusterAnalyseQueue($this, 2, $this->countPhrases))->onQueue('wait_cluster');
+            dispatch(new WaitClusterAnalyseQueue($this, 2, $this->countPhrases))->onQueue('cluster_second_stage');
         } else {
             $this->finallyStage();
         }
