@@ -41,7 +41,6 @@ class ClusterController extends Controller
      */
     public function analyseCluster(Request $request): JsonResponse
     {
-        Log::debug('кластер старт');
         //TODO подключить гугл, переписать супервизор, затестить.
         $this->validate($request, [
             'domain' => 'sometimes|required_if:searchRelevance,==,true',
