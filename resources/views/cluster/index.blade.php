@@ -164,14 +164,14 @@
             });
 
             function refreshAll() {
+                $('#hidden-table-tbody').html('')
+                $('#hidden-table-tbody').dataTable().fnDestroy()
+                $('#hidden-result-table').dataTable().fnDestroy()
+                $('#block-for-downloads-files').hide()
+
                 $.each($('.render-table'), function (key, value) {
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
                 })
-
-                $('#progress-bar-state').html("{{ __('Parse xml') }}")
-                $('.render').remove()
-                $('#hidden-result-table').dataTable().fnDestroy()
-                $('#block-for-downloads-files').hide()
                 $('.render-table').remove()
             }
 
@@ -220,6 +220,8 @@
                                     error: function (response) {
                                     }
                                 });
+
+                                $('#progress-bar-state').html("{{ __('Parse xml') }}")
                             })
                         }
                     }
