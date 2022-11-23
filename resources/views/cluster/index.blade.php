@@ -164,14 +164,17 @@
             });
 
             function refreshAll() {
-                $('#hidden-table-tbody').html('')
-                $('#hidden-result-table').dataTable().fnDestroy()
                 $('#block-for-downloads-files').hide()
 
                 $.each($('.render-table'), function (key, value) {
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
                 })
+                $('#hidden-result-table').dataTable().fnDestroy()
+
                 $('.render-table').remove()
+                $('.render').remove()
+
+                $('#start-analysis').attr('disabled', false)
             }
 
             function getProgressPercent(id) {
@@ -191,37 +194,37 @@
 
                         if ('result' in response) {
                             refreshAll()
-                            $('#start-analysis').attr('disabled', false)
-                            table = renderHiddenTable(response['result'])
-                            renderResultTable(response['result'])
-                            destroyProgress(interval)
+                            setTimeout(() => {
+                                table = renderHiddenTable(response['result'])
+                                renderResultTable(response['result'])
+                                destroyProgress(interval)
 
-                            $('.save-relevance-url').unbind().on('click', function () {
-                                let phrase = $(this).attr('data-order')
-                                let select = $('#' + phrase.replaceAll(' ', '-'))
-                                let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
-                                let targetColumn = 4
+                                $('.save-relevance-url').unbind().on('click', function () {
+                                    let phrase = $(this).attr('data-order')
+                                    let select = $('#' + phrase.replaceAll(' ', '-'))
+                                    let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
 
-                                $.ajax({
-                                    type: "POST",
-                                    url: "{{ route('set.cluster.relevance.url') }}",
-                                    data: {
-                                        _token: $('meta[name="csrf-token"]').attr('content'),
-                                        phrase: $(this).attr('data-order'),
-                                        url: select.val(),
-                                        projectId: response['objectId'],
-                                    },
-                                    success: function () {
-                                        select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                                        table.cell(targetRow, targetColumn).data(select.val())
-                                        table.draw()
-                                    },
-                                    error: function (response) {
-                                    }
-                                });
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "{{ route('set.cluster.relevance.url') }}",
+                                        data: {
+                                            _token: $('meta[name="csrf-token"]').attr('content'),
+                                            phrase: $(this).attr('data-order'),
+                                            url: select.val(),
+                                            projectId: response['objectId'],
+                                        },
+                                        success: function () {
+                                            select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
+                                            table.cell(targetRow, 4).data(select.val())
+                                            table.draw()
+                                        },
+                                        error: function (response) {
+                                        }
+                                    });
 
-                                $('#progress-bar-state').html("{{ __('Parse xml') }}")
-                            })
+                                    $('#progress-bar-state').html("{{ __('Parse xml') }}")
+                                })
+                            }, 1000)
                         }
                     }
                 })
