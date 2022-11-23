@@ -202,6 +202,7 @@
                         }
 
                         if ('result' in response) {
+                            console.log(response)
                             $('#start-analysis').attr('disabled', false)
                             table = renderHiddenTable(response['result'])
                             renderResultTable(response['result'])
@@ -220,7 +221,7 @@
                                         _token: $('meta[name="csrf-token"]').attr('content'),
                                         phrase: $(this).attr('data-order'),
                                         url: select.val(),
-                                        projectId: {{ $cluster['id'] }},
+                                        {{--projectId: {{ $cluster['id'] }},--}}
                                     },
                                     success: function () {
                                         select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
