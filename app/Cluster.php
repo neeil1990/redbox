@@ -184,7 +184,6 @@ class Cluster
 
             $this->progress->delete();
             $this->progress->total = 0;
-            $this->progress->delete();
             \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         } catch (Throwable $e) {
             Log::debug('cluster error', [
@@ -193,6 +192,7 @@ class Cluster
                 $e->getFile()
             ]);
             $this->progress->delete();
+            $this->progress->total = 0;
             \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
 

@@ -124,19 +124,19 @@
                     <div id="params">
                         <span class="d-flex w-100 justify-content-between" style="margin-top: -1px;">
                             <span>
-                                Уровень кластеризации: {{ $cluster['request']['clusteringLevel'] }}
+                                {{ __('Clustering level') }}: {{ $cluster['request']['clusteringLevel'] }}
                             </span>
                             <span>
-                                Версия: {{ $cluster['request']['engineVersion'] }}
+                                {{ __('Version') }}: {{ $cluster['request']['engineVersion'] }}
                             </span>
                             <span>
-                                Количетсво фраз: {{ $cluster['count_phrases'] }}
+                                {{ __('Number of phrases') }}: {{ $cluster['count_phrases'] }}
                             </span>
                             <span>
-                                Количетсво кластеров: {{ $cluster['count_clusters'] }}
+                                {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
                             </span>
                             <span>
-                                Фразы:
+                                {{ __('Phrases') }}:
                                 <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-paperclip"></i>
                                     <span class="ui_tooltip __bottom">
@@ -152,7 +152,7 @@
                                           style="display: none">{!! $cluster['request']['phrases'] !!}</textarea>
                             </span>
                             <span>
-                                Регион: {{ \App\Cluster::getRegionName($cluster['request']['region']) }}
+                                {{ __('Region') }}: {{ \App\Cluster::getRegionName($cluster['request']['region']) }}
                             </span>
                         </span>
                     </div>
@@ -169,8 +169,10 @@
                         <tr>
                             <th>{{ __('Serial number') }}</th>
                             <th>{{ __('Sequence number in the cluster') }}</th>
+
                             <th>{{ __('Key query') }}</th>
                             <th>{{ __('Group') }}</th>
+                            <th>{{ __('Relevant urls') }}</th>
                             <th>{{ __('Base') }}</th>
                             <th>"{{ __('Phrasal') }}"</th>
                             <th>"!{{ __('Target') }}"</th>
@@ -193,22 +195,25 @@
                     </div>
                     <div class="d-flex justify-content-end">
                         <div>
-                            Количетсво кластеров: {{ $cluster['count_clusters'] }}
+                            {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
                         </div>
                     </div>
-                    <button type="button" class="btn btn-secondary mt-5" id="fastScanButton" data-toggle="modal"
+                    <button class="btn btn-secondary mt-5"
+                            type="button"
+                            id="fastScanButton"
+                            data-toggle="modal"
                             data-target="#fastScan">
-                        Пересобрать
+                        {{ __('Rebuild') }}
                     </button>
                     <div class="brutForce mt-3 d-flex">
                         <div id="clusters-table-default" class="col-6" style="display:none;">
-                            <h3>Изначальный вариант</h3>
+                            <h3>{{ __('The original version') }}</h3>
                             <table id="default-hidden" style="display: none">
                                 <thead>
                                 <tr>
-                                    <th class="border">порядковый номер</th>
-                                    <th class="border">порядковый номер в кластере</th>
-                                    <th class="border">Ключевой запрос</th>
+                                    <th class="border">{{ __('Sequence number') }}</th>
+                                    <th class="border">{{ __('Sequence number in the cluster') }}</th>
+                                    <th class="border">{{ __('Key query') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody id="clusters-result-hidden">
@@ -246,7 +251,7 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>##</th>
-                                                    <th>Ключевой запрос</th>
+                                                    <th>{{ __('Key query') }}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -304,12 +309,12 @@
                             </table>
                             <div class="d-flex justify-content-end">
                                 <div>
-                                    Количетсво кластеров: <span>{{ $cluster['count_clusters'] }}</span>
+                                    {{ __('Number of clusters') }}: <span>{{ $cluster['count_clusters'] }}</span>
                                 </div>
                             </div>
                         </div>
                         <div id="clusters-table-fast" class="col-6" style="display:none;">
-                            <h3>Пересобранный вариант</h3>
+                            <h3>{{ __('Reassembled version') }}</h3>
                             <table id="hidden-result-fast" style="display:none;">
                                 <thead>
                                 <tr>
@@ -332,7 +337,7 @@
                             </table>
                             <div class="d-flex justify-content-end">
                                 <div>
-                                    Количетсво кластеров: <span id="placeForCountClusters"></span>
+                                    {{ __('Number of clusters') }}: <span id="placeForCountClusters"></span>
                                 </div>
                             </div>
                         </div>
@@ -347,8 +352,9 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="fastScanLabel"> пересобрать кластер на основе ранее
-                        полученных данных</h5>
+                    <h5 class="modal-title" id="fastScanLabel">
+                        {{ __('Rebuild the cluster based on previously received data') }}
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -368,7 +374,7 @@
                         {!! Form::select('engineVersion', [
                                 'old' => __('Formation based on the first available phrase (old)'),
                                 'new' => __('Forming a cluster based on an array of links (new)'),
-                                'latest' => 'Дополнительная переборка (latest)',
+                                'latest' => __('Additional bulkhead (latest)'),
                         ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                     </div>
                     <div class="d-none">
@@ -377,13 +383,14 @@
                         ]), null, ['class' => 'custom-select rounded-0', 'id' => 'countFast']) !!}
                     </div>
                     <div class="form-group required">
-                        <label for="brutForce">Дополнительная переборка</label>
+                        <label for="brutForce">{{ __('Additional bulkhead') }}</label>
                         <span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle" style="color: grey"></i>
                             <span class="ui_tooltip __right">
                                 <span class="ui_tooltip_content" style="width: 300px">
-                                    Фразы которые, после кластеризации, не попали в кластер, будут дополнительно пересмотренны с уменьшенным порогом входа. <br><br>
-                                    Если уровень кластеризации "pre-hard", тогда порог входа для фраз будет уменьшен до "soft", если фраза всё равно никуда не попадает, тогда порог будет уменьшен до "light".
+                                    {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                                    {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                                    {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
                                 </span>
                             </span>
                         </span>
@@ -393,7 +400,7 @@
                         <button type="button" class="btn btn-secondary mr-2"
                                 data-dismiss="modal"
                                 id="brutForceFast">
-                            Пересобрать
+                            {{ __('Rebuild') }}
                         </button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">
                             {{ __('Close') }}
@@ -464,15 +471,6 @@
                 $('.dt-buttons').addClass('pb-3')
                 $('#default-hidden_filter').remove()
 
-                // $.each($('.default-cluster'), function (key, value) {
-                //     $('#' + $(this).attr('id')).dataTable({
-                //         'order': [[0, "asc"]],
-                //         'bPaginate': false,
-                //         'orderCellsTop': true,
-                //         'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-                //     })
-                // })
-
                 $('#copyUsedPhrases').click(function () {
                     successCopiedMessage()
                     $('#usedPhrases').css('display', 'block')
@@ -508,6 +506,28 @@
                             renderResultTableFast(response['sites'], response['count'])
                             renderHiddenFast(response['sites'])
                         },
+                    });
+                })
+
+                $('.save-relevance-url').unbind().on('click', function () {
+                    let phrase = $(this).attr('data-order')
+                    let select = $('#' + phrase.replaceAll(' ', '-'))
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('set.cluster.relevance.url') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            phrase: $(this).attr('data-order'),
+                            url: select.val(),
+                            projectId: {{ $cluster['id'] }},
+                        },
+                        success: function () {
+                            select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
+                            $('#hidden-relevance-phrase-' + phrase.replaceAll(' ', '-')).html(select.val())
+                        },
+                        error: function (response) {
+                        }
                     });
                 })
             })

@@ -210,6 +210,39 @@ class ClusterController extends Controller
         return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
     }
 
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function setClusterRelevanceUrl(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))
+            ->where('user_id', '=', Auth::id())
+            ->first();
+
+        if (isset($cluster)) {
+            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            $results = $cluster->result;
+
+            foreach ($results as $key => $items) {
+                foreach ($items as $phrase => $item) {
+                    if ($phrase === $request->input('phrase')) {
+                        $results[$key][$phrase]['link'] = $request->input('url');
+                        unset($results[$key][$phrase]['relevance']);
+                    }
+                }
+            }
+
+            $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            $cluster->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 415);
+    }
+
     /**
      * @param ClusterResults $cluster
      * @param string $type

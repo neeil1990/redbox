@@ -120,20 +120,21 @@
             $config->engine_version => $config->engine_version,
             'old' => __('Formation based on the first available phrase (old)'),
             'new' => __('Forming a cluster based on an array of links (new)'),
-            'latest' => 'Дополнительная переборка (latest)',
+            'latest' => __('Additional bulkhead (latest)'),
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
 
 <div class="form-group required">
-    <label for="brutForce">Дополнительная переборка</label>
+    <label for="brutForce">{{ __('Additional bulkhead') }}</label>
     <input type="checkbox" name="brutForce" id="brutForce">
 
     <span class="__helper-link ui_tooltip_w">
         <i class="fa fa-question-circle" style="color: grey"></i>
         <span class="ui_tooltip __right">
             <span class="ui_tooltip_content" style="width: 300px">
-                Фразы которые, после кластеризации, не попали в кластер, будут дополнительно пересмотренны с уменьшенным порогом входа. <br><br>
-                Если уровень кластеризации "pre-hard", тогда порог входа для фраз будет уменьшен до "soft", если фраза всё равно никуда не попадает, тогда порог будет уменьшен до "light".
+                {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
             </span>
         </span>
     </span>
@@ -171,7 +172,7 @@
     </div>
 
     <div class="form-group required">
-        <label for="searchRelevance">Подобрать релевантную страницу для домена</label>
+        <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
         <input type="checkbox" name="searchRelevance" id="searchRelevance">
     </div>
 

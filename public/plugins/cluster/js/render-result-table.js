@@ -58,12 +58,17 @@ function renderResultTable(data) {
                 }
 
                 let relevance = ''
-                if ('relevance' in information) {
+                if ('link' in information) {
+                    relevance = '<a href="' + information['link'] + '" target="_blank">' + information['link'] + '</a>'
+                } else if ('relevance' in information) {
                     $.each(information['relevance'], function (key, value) {
                         relevance += '<option value="' + value + '">' + value + '</option>'
                     })
 
-                    relevance = '<select style="max-width: 250px" class="custom-select" name="' + phrase.replaceAll(' ', '-') + '-select" data-order="' + phrase + '">' + relevance + '</select>'
+                    relevance = '<div class="d-flex">' +
+                        '<select class="custom-select" id="' + phrase.replaceAll(' ', '-') + '">' + relevance + '</select>' +
+                        '<button class="btn btn-secondary save-relevance-url" data-order="' + phrase + '">Сохранить</button>' +
+                        '</div>'
                 }
 
                 targetPhrase = changedBg ? information['basedNormal'] : phrase
@@ -114,7 +119,7 @@ function renderResultTable(data) {
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 450px;">Ключевой запрос</th>' +
             '               <th style="border-top-width: 2px;min-width: 450px;">Группа</i></th>' +
-            '               <th style="border-top-width: 2px;min-width: 250px;">Релевантные url</i></th>' +
+            '               <th style="border-top-width: 2px;min-width: 350px;">Релевантные url</i></th>' +
             '               <th style="border-top-width: 2px;max-width: 65px;">Базовая</th>' +
             '               <th style="border-top-width: 2px;max-width: 93px;">"Фразовая"</th>' +
             '               <th style="border-top-width: 2px;max-width: 70px;">"!Точная"</th>' +
@@ -166,7 +171,6 @@ function renderResultTable(data) {
 
     copyGroup()
     copyFullUrls()
-
     $(document).ready(function () {
         $.each($('.render-table'), function (key, value) {
             $('#' + $(this).attr('id')).dataTable({

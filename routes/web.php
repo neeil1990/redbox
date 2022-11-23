@@ -12,6 +12,7 @@
 */
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\ClusterResults;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -301,8 +302,29 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/cluster-configuration', 'ClusterController@clusterConfiguration')->name('cluster.configuration');
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
+    Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
 
     Route::get('/test', function () {
-        dd(parse_url('http://redbox.su/cluster'));
+        $cluster = ClusterResults::where('id', '=', 97)->first();
+
+        if (isset($cluster)) {
+            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            dd($cluster->result);
+            $results = $cluster->result;
+
+            foreach ($results as $key => $items) {
+                foreach ($items as $phrase => $item) {
+                    if ($phrase === 'купить слона') {
+//                        dd($cluster['result'][$key][$phrase]['relevance']);
+                        $results[$key][$phrase]['link'] = 12;
+                        unset($results[$key][$phrase]['relevance']);
+
+                    }
+                }
+            }
+            $cluster->result = $results;
+            dd($cluster->result);
+        }
+
     });
 });
