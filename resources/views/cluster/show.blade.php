@@ -160,9 +160,7 @@
 
                 <div id="block-for-downloads-files" style="display: none">
                     <h3>{{ __('Cluster table') }}</h3>
-                    <table id="hidden-result-table"
-                        {{--                           style="display: none"--}}
-                    >
+                    <table id="hidden-result-table" style="display: none">
                         <thead>
                         <tr>
                             <th colspan="4"></th>
