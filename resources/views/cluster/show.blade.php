@@ -160,7 +160,9 @@
 
                 <div id="block-for-downloads-files" style="display: none">
                     <h3>{{ __('Cluster table') }}</h3>
-                    <table id="hidden-result-table" style="display: none">
+                    <table id="hidden-result-table"
+                        {{--                           style="display: none"--}}
+                    >
                         <thead>
                         <tr>
                             <th colspan="4"></th>
@@ -206,7 +208,8 @@
                         {{ __('Rebuild') }}
                     </button>
                     <div class="brutForce mt-3 d-flex">
-                        <div id="clusters-table-default" class="col-6" style="display:none;">
+                        <div id="clusters-table-default" class="col-6"
+                             style="display:none;">
                             <h3>{{ __('The original version') }}</h3>
                             <table id="default-hidden" style="display: none">
                                 <thead>
@@ -453,10 +456,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            let hiddenTable
             $(document).ready(function () {
                 $('#app > div > div > div.card-header').append($('#params').html())
                 $('#params').remove()
-                renderHiddenTable({!! $cluster['result'] !!})
+                hiddenTable = renderHiddenTable({!! $cluster['result'] !!})
                 renderResultTable({!! $cluster['result'] !!})
 
                 $('#default-hidden').dataTable({
@@ -494,7 +498,6 @@
                             brutForce: $('#brutForce').is(':checked')
                         },
                         success: function (response) {
-                            console.log(response)
                             $('#clusters-table-default').show()
                             $('#hidden-result-fast').dataTable().fnDestroy()
                             $('.fast-render').remove()
@@ -512,6 +515,8 @@
                 $('.save-relevance-url').unbind().on('click', function () {
                     let phrase = $(this).attr('data-order')
                     let select = $('#' + phrase.replaceAll(' ', '-'))
+                    let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
+                    let targetColumn = 4
 
                     $.ajax({
                         type: "POST",
@@ -524,7 +529,8 @@
                         },
                         success: function () {
                             select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                            $('#hidden-relevance-phrase-' + phrase.replaceAll(' ', '-')).html(select.val())
+                            hiddenTable.cell(targetRow, targetColumn).data(select.val())
+                            hiddenTable.draw()
                         },
                         error: function (response) {
                         }

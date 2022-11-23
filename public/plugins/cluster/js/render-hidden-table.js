@@ -4,7 +4,6 @@ function renderHiddenTable(data) {
         let clusterIterator = 0
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
-                console.log(information)
                 iterator++
                 clusterIterator++
 
@@ -38,7 +37,7 @@ function renderHiddenTable(data) {
 
     $('#block-for-downloads-files').show()
 
-    $('#hidden-result-table').dataTable({
+    let table = $('#hidden-result-table').DataTable({
         'order': [[5, "desc"]],
         'bPaginate': false,
         'orderCellsTop': true,
@@ -51,4 +50,6 @@ function renderHiddenTable(data) {
     $('#hidden-result-table_filter').remove()
     $('.dt-button').addClass('btn btn-secondary')
     $('.dt-buttons').addClass('pb-3')
+
+    return table;
 }
