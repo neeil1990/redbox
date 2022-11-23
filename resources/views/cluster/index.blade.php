@@ -165,7 +165,6 @@
 
             function refreshAll() {
                 $('#hidden-table-tbody').html('')
-                $('#hidden-table-tbody').dataTable().fnDestroy()
                 $('#hidden-result-table').dataTable().fnDestroy()
                 $('#block-for-downloads-files').hide()
 
