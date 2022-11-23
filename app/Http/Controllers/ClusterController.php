@@ -88,6 +88,7 @@ class ClusterController extends Controller
             return response()->json([
                 'percent' => 100,
                 'result' => json_decode(gzuncompress(base64_decode($cluster->result)), true),
+                'objectId' => $cluster->id,
             ]);
         }
 

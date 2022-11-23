@@ -221,7 +221,7 @@
                                         _token: $('meta[name="csrf-token"]').attr('content'),
                                         phrase: $(this).attr('data-order'),
                                         url: select.val(),
-                                        {{--projectId: {{ $cluster['id'] }},--}}
+                                        projectId: response['objectId'],
                                     },
                                     success: function () {
                                         select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
