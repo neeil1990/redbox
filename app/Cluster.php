@@ -96,10 +96,96 @@ class Cluster
         ];
     }
 
+    public function getResult(): array
+    {
+        return $this->result;
+    }
+
+    public function getProgressTotal(): int
+    {
+        return $this->progress->total;
+    }
+
+    public function getProgressCurrentCount(): int
+    {
+        return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
+    }
+
+    public function getClusters(): array
+    {
+        return $this->clusters;
+    }
+
+    public function getXml(): SimplifiedXmlFacade
+    {
+        return $this->xml;
+    }
+
+    public function getProgressId(): int
+    {
+        return $this->progress->id;
+    }
+
+    public function getRegion(): string
+    {
+        return $this->request['region'];
+    }
+
+    public function getSearchPhrases(): bool
+    {
+        return $this->searchPhrases;
+    }
+
+    public function getSearchTarget(): bool
+    {
+        return $this->searchTarget;
+    }
+
+    public function getSearchRelevance(): bool
+    {
+        return $this->searchRelevance;
+    }
+
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
     public function startAnalysis()
     {
         try {
-            $this->firstStage();
+            $this->parseSites();
+            $this->searchClusters();
+            $this->calculateClustersInfo();
+            $this->wordStats();
+            dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
+        } catch (Throwable $e) {
+            Log::debug('cluster error', [
+                $e->getMessage(),
+                $e->getLine(),
+                $e->getFile()
+            ]);
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
+        }
+    }
+
+    public function calculate()
+    {
+        try {
+            $this->setRiverResults();
+            $this->searchGroupName();
+            $this->setResult($this->clusters);
+            $this->saveResult();
+
+            if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+                $this->sendNotification();
+            }
+
+            $this->progress->delete();
+            $this->progress->total = 0;
+            $this->progress->delete();
+            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         } catch (Throwable $e) {
             Log::debug('cluster error', [
                 $e->getMessage(),
@@ -109,32 +195,7 @@ class Cluster
             $this->progress->delete();
             \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
         }
-    }
 
-    protected function firstStage()
-    {
-        Log::debug('first stage');
-        $this->parseSites();
-        $this->searchClusters();
-        $this->calculateClustersInfo();
-        $this->wordStats();
-        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
-    }
-
-    public function secondStage()
-    {
-        Log::debug('second stage');
-        $this->setRiverResults();
-        $this->searchGroupName();
-        $this->setResult($this->clusters);
-        $this->saveResult();
-
-        if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
-            $this->sendNotification();
-        }
-
-        $this->progress->delete();
-        $this->progress->total = 0;
     }
 
     protected function parseSites()
@@ -408,64 +469,6 @@ class Cluster
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
         TelegramBot::sendMessage($message, $this->user->chat_id);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getResult(): array
-    {
-        return $this->result;
-    }
-
-    public function getProgressTotal(): int
-    {
-        return $this->progress->total;
-    }
-
-    public function getProgressCurrentCount(): int
-    {
-        return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
-    }
-
-    public function getClusters(): array
-    {
-        return $this->clusters;
-    }
-
-    public function getXml(): SimplifiedXmlFacade
-    {
-        return $this->xml;
-    }
-
-    public function getProgressId(): int
-    {
-        return $this->progress->id;
-    }
-
-    public function getRegion()
-    {
-        return $this->request['region'];
-    }
-
-    public function getSearchPhrases()
-    {
-        return $this->searchPhrases;
-    }
-
-    public function getSearchTarget()
-    {
-        return $this->searchTarget;
-    }
-
-    public function getSearchRelevance()
-    {
-        return $this->searchRelevance;
-    }
-
-    public function getHost()
-    {
-        return $this->host;
     }
 
     public static function getRegionName(string $id): string
