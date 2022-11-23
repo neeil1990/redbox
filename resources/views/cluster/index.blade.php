@@ -91,6 +91,7 @@
                                 <th>{{ __('Sequence number in the cluster') }}</th>
                                 <th>{{ __('Key query') }}</th>
                                 <th>{{ __('Group') }}</th>
+                                <th>{{ __('Relevant urls') }}</th>
                                 <th>{{ __('Base') }}</th>
                                 <th>"{{ __('Phrasal') }}"</th>
                                 <th>"!{{ __('Target') }}"</th>
@@ -186,6 +187,7 @@
             }
 
             function getProgressPercent(id) {
+                let table
                 $.ajax({
                     type: "GET",
                     url: `/get-cluster-progress/${id}`,
@@ -200,11 +202,35 @@
                         }
 
                         if ('result' in response) {
-                            console.log(response)
                             $('#start-analysis').attr('disabled', false)
-                            renderHiddenTable(response['result'])
+                            table = renderHiddenTable(response['result'])
                             renderResultTable(response['result'])
                             destroyProgress(interval)
+
+                            $('.save-relevance-url').unbind().on('click', function () {
+                                let phrase = $(this).attr('data-order')
+                                let select = $('#' + phrase.replaceAll(' ', '-'))
+                                let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
+                                let targetColumn = 4
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{{ route('set.cluster.relevance.url') }}",
+                                    data: {
+                                        _token: $('meta[name="csrf-token"]').attr('content'),
+                                        phrase: $(this).attr('data-order'),
+                                        url: select.val(),
+                                        projectId: {{ $cluster['id'] }},
+                                    },
+                                    success: function () {
+                                        select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
+                                        table.cell(targetRow, targetColumn).data(select.val())
+                                        table.draw()
+                                    },
+                                    error: function (response) {
+                                    }
+                                });
+                            })
                         }
                     }
                 })

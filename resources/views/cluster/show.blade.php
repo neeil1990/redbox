@@ -169,7 +169,6 @@
                         <tr>
                             <th>{{ __('Serial number') }}</th>
                             <th>{{ __('Sequence number in the cluster') }}</th>
-
                             <th>{{ __('Key query') }}</th>
                             <th>{{ __('Group') }}</th>
                             <th>{{ __('Relevant urls') }}</th>
