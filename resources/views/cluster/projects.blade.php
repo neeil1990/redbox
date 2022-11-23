@@ -176,7 +176,7 @@
                 }, 6000)
             }
 
-            function errorMessage() {
+            function errorMessage(message) {
                 $('.toast.toast-error').show(300)
                 $('.toast-message.error-msg').html(message)
 
@@ -185,21 +185,18 @@
                 }, 5000)
             }
 
-            function destroyProgress(interval) {
-                clearInterval(interval)
-                setTimeout(() => {
-                    setProgressBarStyles(0)
-                    $('#progress-bar').hide(300)
-                }, 3000)
-            }
-
             function startAnalysis(progressId) {
                 $.ajax({
                     type: "POST",
                     url: "{{ route('analysis.cluster') }}",
                     data: getData(true, progressId),
-                    success: function (response) {
+                    success: function () {
+                        successMessage("{{ __('The analysis has been successfully launched, the results will be automatically added to the table') }}")
                     },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.message)
+                        clearInterval(interval)
+                    }
                 });
             }
 
@@ -246,14 +243,13 @@
                             type: "GET",
                             url: "/start-cluster-progress",
                             success: function (response) {
-                                successMessage("{{ __('The analysis has been successfully launched, the results will be automatically added to the table') }}")
                                 progressId = response.id
                                 $('#progressId').val(progressId)
-                                startAnalysis(progressId)
-
                                 interval = setInterval(() => {
                                     getProgressPercent(progressId, interval)
                                 }, 5000)
+
+                                startAnalysis(progressId, interval)
                             }
                         })
                     }
@@ -282,18 +278,10 @@
                         type: "GET",
                         url: `/get-cluster-progress/${id}/modify`,
                         success: function (response) {
-                            // setProgressBarStyles(response.percent)
-                            // if (response.percent <= 50) {
-                            {{--    $('#progress-bar-state').html("{{ __('Parse xml') }}")--}}
-                            // } else if (response.percent === 50) {
-                            {{--    $('#progress-bar-state').html("{{ __('Waiting for a queue') }}")--}}
-                            // } else {
-                            {{--    $('#progress-bar-state').html("{{ __('Processing of the received information') }}")--}}
-                            // }
                             if ('cluster' in response) {
                                 let cluster = response['cluster']
-                                let domain = 'domain' in cluster ? cluster['domain'] : ''
-                                let comment = 'comment' in cluster ? cluster['comment'] : ''
+                                let domain = cluster['domain'] === null ? '' : cluster['domain']
+                                let comment = cluster['comment'] === null ? '' : cluster['comment']
                                 let table = $('#my-cluster-projects').DataTable();
                                 table.row.add({
                                     0: cluster['created_at'],
@@ -312,7 +300,7 @@
                                 });
                                 table.draw()
                                 refreshAll()
-                                destroyProgress(interval)
+                                clearInterval(interval)
                             }
                         }
                     })
