@@ -177,7 +177,7 @@
                 $('#start-analysis').attr('disabled', false)
             }
 
-            function getProgressPercent(id) {
+            function getProgressPercent(id, interval) {
                 let table
                 $.ajax({
                     type: "GET",
@@ -226,6 +226,9 @@
                                 })
                             }, 1000)
                         }
+                    },
+                    error: function () {
+                        clearInterval(interval)
                     }
                 })
             }

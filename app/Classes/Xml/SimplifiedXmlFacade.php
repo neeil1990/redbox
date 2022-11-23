@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Ixudra\Curl\Facades\Curl;
+use Throwable;
 
 class SimplifiedXmlFacade extends XmlFacade
 {
@@ -46,41 +47,14 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     public function getXMLResponse(int $attempt = 1): ?array
     {
-        try {
-            if ($attempt === 1) {
-                $this->setPath('https://xmlstock.com/yandex/xml/');
-                $this->setUser('9371');
-                $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
-            } elseif ($attempt === 3) {
-                $this->setPath('https://xmlproxy.ru/search/xml');
-                $this->setUser('sv@prime-ltd.su');
-                $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-            } elseif ($attempt === 5) {
-                $this->setPath('https://xmlriver.com/search/xml');
-                $this->setUser('6602');
-                $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
-            } else {
-                return null;
-            }
+        $request = $this->sendRequest();
 
-            $request = $this->sendRequest();
-
-            if (isset($request['response']['results']['grouping']['group'])) {
-                return $this->parseResult($request['response']['results']['grouping']['group']);
-            } else if (isset($request['response']['error'])) {
-                Log::debug("$this->path: " . $request['response']['error']);
-                TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 938341087);
-                TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 169011279);
-            }
-        } catch (\Throwable $e) {
-            Log::debug('xml facade error', [
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ]);
-
-            sleep($attempt + 1);
-            return $this->getXMLResponse($attempt + 1);
+        if (isset($request['response']['results']['grouping']['group'])) {
+            return $this->parseResult($request['response']['results']['grouping']['group']);
+        } else if (isset($request['response']['error'])) {
+            Log::debug("$this->path: " . $request['response']['error']);
+            TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 938341087);
+            TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 169011279);
         }
 
         return $this->getXMLResponse($attempt + 1);
@@ -89,8 +63,24 @@ class SimplifiedXmlFacade extends XmlFacade
     /**
      * @return array|Exception
      */
-    protected function sendRequest()
+    protected function sendRequest($attempt)
     {
+        if ($attempt === 1) {
+            $this->setPath('https://xmlstock.com/yandex/xml/');
+            $this->setUser('9371');
+            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+        } elseif ($attempt === 3) {
+            $this->setPath('https://xmlproxy.ru/search/xml');
+            $this->setUser('sv@prime-ltd.su');
+            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
+        } elseif ($attempt === 5) {
+            $this->setPath('https://xmlriver.com/search/xml');
+            $this->setUser('6602');
+            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+        } else {
+            return null;
+        }
+
         $query = str_replace(' ', '%20', $this->query);
 
         if ($this->path === 'https://xmlriver.com/search/xml') {
@@ -102,11 +92,16 @@ class SimplifiedXmlFacade extends XmlFacade
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         }
 
-        $response = file_get_contents($url);
+        try {
+            $response = file_get_contents($url);
+        } catch (Exception|Throwable $exception){
+            $this->sendRequest($attempt + 1);
+        }
 
         $xml = $this->load($response);
 
         return json_decode(json_encode($xml), true);
+
     }
 
     /**
