@@ -47,7 +47,7 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     public function getXMLResponse(int $attempt = 1): ?array
     {
-        $request = $this->sendRequest();
+        $request = $this->sendRequest($attempt);
 
         if (isset($request['response']['results']['grouping']['group'])) {
             return $this->parseResult($request['response']['results']['grouping']['group']);
