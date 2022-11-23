@@ -164,17 +164,6 @@
             });
 
             function refreshAll() {
-                $('.dont-worry-notification').show(300)
-                setTimeout(() => {
-                    $('.dont-worry-notification').hide(300)
-                }, 15000)
-
-                if ($('#save').val() === '1') {
-                    $('.history-notification').show(300)
-                    setTimeout(() => {
-                        $('.history-notification').hide(300)
-                    }, 15000)
-                }
                 $.each($('.render-table'), function (key, value) {
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
                 })
@@ -202,7 +191,7 @@
                         }
 
                         if ('result' in response) {
-                            console.log(response)
+                            refreshAll()
                             $('#start-analysis').attr('disabled', false)
                             table = renderHiddenTable(response['result'])
                             renderResultTable(response['result'])
@@ -243,7 +232,17 @@
                     url: "{{ route('analysis.cluster') }}",
                     data: getData(),
                     success: function (response) {
-                        refreshAll()
+                        $('.dont-worry-notification').show(300)
+                        setTimeout(() => {
+                            $('.dont-worry-notification').hide(300)
+                        }, 15000)
+
+                        if ($('#save').val() === '1') {
+                            $('.history-notification').show(300)
+                            setTimeout(() => {
+                                $('.history-notification').hide(300)
+                            }, 15000)
+                        }
                     },
                     error: function (response) {
                         destroyProgress(interval)
