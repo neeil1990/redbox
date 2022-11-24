@@ -305,9 +305,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
 
     Route::get('/test', function () {
-        $test = new SimplifiedXmlFacade('213',14);
-        $test->setQuery('ларигоскоп купить');
-        $t = $test->getXMLResponse('yandex');
+        $test = new SimplifiedXmlFacade('213',4);
+        $test->setQuery('škoda karoq 2022 технические характеристики site:skoda-kr.ru');
+        $t = $test->getXMLResponse('google');
         dd($t);
     });
 });

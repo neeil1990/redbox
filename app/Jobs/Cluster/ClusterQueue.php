@@ -65,8 +65,11 @@ class ClusterQueue implements ShouldQueue
 
         if ($this->cluster->getSearchRelevance()) {
             $this->cluster->getXml()->setQuery("$this->phrase site:" . $this->cluster->getHost());
-            $this->cluster->getXml()->setCount(3);
+            $this->cluster->getXml()->setCount(10);
             $relevance = $this->cluster->getXml()->getXMLResponse($this->cluster->getSearchEngine());
+            if (count($relevance) > 3) {
+                $relevance = array_slice($relevance, 0, 3);
+            }
         }
 
         $clusterArrays->json = json_encode([

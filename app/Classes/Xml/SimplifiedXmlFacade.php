@@ -3,11 +3,9 @@
 namespace App\Classes\Xml;
 
 use App\TelegramBot;
-use App\TextAnalyzer;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Ixudra\Curl\Facades\Curl;
 use Throwable;
 
 class SimplifiedXmlFacade extends XmlFacade
@@ -51,9 +49,16 @@ class SimplifiedXmlFacade extends XmlFacade
         if (isset($result['response']['results']['grouping']['group'])) {
             return $this->parseResult($result['response']['results']['grouping']['group']);
         } else if (isset($result['response']['error'])) {
-            Log::debug("$this->path: " . $result['response']['error']);
-            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
-            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
+            if ($result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.') {
+                return [
+                    $result['response']['error'],
+                ];
+            } else {
+                Log::debug("$this->path: " . $result['response']['error']);
+                TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
+                TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
+            }
+
         }
 
         return $this->getXMLResponse($searchEngine, $attempt + 1);
@@ -91,12 +96,13 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&lr=$this->lr&sortby=$this->sortby";
+
         } elseif ($attempt >= 3 && $attempt <= 4) {
             $this->setPath('https://xmlriver.com/search/xml');
             $this->setUser('6602');
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
-
             $loc = $this->getRiverLocation();
+
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&loc=$loc";
         }
 
@@ -120,12 +126,13 @@ class SimplifiedXmlFacade extends XmlFacade
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         } elseif ($attempt >= 5 && $attempt <= 6) {
-            $this->setPath('https://xmlriver_search.com/search_yandex/xml');
+            $this->setPath('https://xmlriver.com/search_yandex/xml');
             $this->setUser('6602');
             $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
-
             $loc = $this->getRiverLocation();
-            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&loc=$loc";
+
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . "$this->count.docs-in-group%3D1&loc=$loc";
         }
 
         return null;
