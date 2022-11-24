@@ -20,7 +20,7 @@ class ClusterResultExport implements FromCollection
      */
     public function collection(): Collection
     {
-        $file[] = [__('Sequence number'), __('Sequence number in the cluster'), __('Key query'), __('Relevant Page'), __('Group'), __('Base'), __('Phrasal'), __('Target')];
+        $file[] = [__('Sequence number'), __('Sequence number in the cluster'), __('Key query'),__('Group'), __('Relevant Page'), __('Base'), __('Phrasal'), __('Target')];
         $results = json_decode(gzuncompress(base64_decode($this->cluster->result)), true);
         $clusterIterator = 1;
         $iterator = 1;
@@ -40,9 +40,9 @@ class ClusterResultExport implements FromCollection
                         $phrase,
                         $items['finallyResult']['groupName'],
                         $relevance,
-                        $item['based']['number'],
-                        isset($item['phrased']) ? $item['phrased']['number'] : '',
-                        isset($item['target']) ? $item['target']['number'] : '',
+                        $item['based']['number'] ?? 0,
+                        isset($item['phrased']) ? $item['phrased']['number'] : 0,
+                        isset($item['target']) ? $item['target']['number'] : 0,
                     ];
                     $iterator++;
                 }
