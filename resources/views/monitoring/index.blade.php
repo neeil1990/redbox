@@ -337,8 +337,6 @@
                 $.each(data, function(index, row){
                     deleteProject(row.id);
                 });
-
-                window.location.reload();
             });
 
             function onClickDeleteProject(id){
@@ -347,14 +345,15 @@
                     return false;
 
                 deleteProject(id);
-
-                window.location.reload();
             }
 
             function deleteProject(id)
             {
                 if(id)
-                    axios.delete(`monitoring/${id}`);
+                    axios.delete(`monitoring/${id}`)
+                        .then(function () {
+                            table.draw(false);
+                    });
                 else
                     alert('Delete error');
             }
