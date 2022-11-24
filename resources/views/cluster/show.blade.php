@@ -1,4 +1,4 @@
-@php use Illuminate\Support\Str; @endphp
+@php use App\Cluster;use Illuminate\Support\Str; @endphp
 @component('component.card', ['title' =>  __('Analysis results') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
@@ -152,7 +152,10 @@
                                           style="display: none">{!! $cluster['request']['phrases'] !!}</textarea>
                             </span>
                             <span>
-                                {{ __('Region') }}: {{ \App\Cluster::getRegionName($cluster['request']['region']) }}
+                                {{ __('Region') }}: {{ Cluster::getRegionName($cluster['request']['region']) }}
+                            </span>
+                            <span>
+                               {{ __('Search Engine') }}: {{ $cluster['request']['searchEngine'] ?? 'yandex' }}
                             </span>
                         </span>
                     </div>
