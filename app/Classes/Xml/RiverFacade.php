@@ -16,7 +16,7 @@ class RiverFacade
 
     protected $query;
 
-    protected $xmlRiwerPath;
+    protected $xmlRiverPath;
 
     protected $countAttempts;
 
@@ -24,7 +24,7 @@ class RiverFacade
     {
         $this->region = $region;
 
-        $this->xmlRiwerPath = "https://xmlriver.com/wordstat/json?user=$this->user&key=$this->key&regions=$this->region&query=";
+        $this->xmlRiverPath = "https://xmlriver.com/wordstat/json?user=$this->user&key=$this->key&regions=$this->region&query=";
 
         $this->countAttempts = 3;
     }
@@ -61,15 +61,15 @@ class RiverFacade
     public function riverRequest(bool $searchInItems = true): array
     {
         try {
-            $url = str_replace(' ', '%20', $this->xmlRiwerPath . $this->query);
+            $url = str_replace(' ', '%20', $this->xmlRiverPath . $this->query);
             $riverResponse = [];
 
             $attempt = 1;
             while (!isset($riverResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
                 $riverResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
                 if (isset($riverResponse['error'])) {
-//                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 938341087);
-//                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 169011279);
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 938341087);
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 169011279);
                     return [
                         'number' => 0,
                         'phrase' => $this->getQuery(),
@@ -103,8 +103,8 @@ class RiverFacade
                 $e->getMessage(),
                 $e->getLine(),
                 $e->getFile(),
-                $this->query,
-                $this->xmlRiwerPath
+                $this->xmlRiverPath . $this->query,
+                $riverResponse,
             ]);
             return [
                 'number' => 0,

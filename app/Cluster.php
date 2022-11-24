@@ -58,7 +58,6 @@ class Cluster
 
     public function __construct(array $request, $user, $default = true)
     {
-        Log::debug('req', $request);
         if ($request['clusteringLevel'] === 'light') {
             $this->clusteringLevel = 0.4;
         } else if ($request['clusteringLevel'] === 'soft') {

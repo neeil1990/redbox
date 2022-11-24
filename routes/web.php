@@ -11,6 +11,7 @@
 |
 */
 
+use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\ClusterResults;
 use Illuminate\Support\Facades\Auth;
@@ -303,5 +304,12 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
+
+    Route::get('/test', function () {
+        $river = new RiverFacade(213);
+        $river->setQuery('"škoda rapid 2022 характеристики"');
+        $phrase = $river->riverRequest(false);
+        dd($phrase);
+    });
 
 });
