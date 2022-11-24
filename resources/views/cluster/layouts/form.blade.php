@@ -174,7 +174,7 @@
             </div>
 
             <div>
-                <label for="domain-textarea">Поисковая система</label>
+                <label for="domain-textarea">{{ __('Search Engine') }}</label>
                 {!! Form::select('searchEngine', [
                     'yandex' => 'Yandex',
                     'google' => 'Google',
