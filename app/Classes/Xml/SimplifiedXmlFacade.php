@@ -163,6 +163,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
         } catch (Throwable $e) {
             Log::debug($this->query, [$item]);
+            Log::debug('items', [json_encode($xmlResult)]);
             return ['Для заданного поискового запроса отсутствуют результаты поиска.'];
         }
 
