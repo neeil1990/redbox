@@ -161,49 +161,27 @@ class Cluster
 
     public function startAnalysis()
     {
-        try {
-            $this->parseSites();
-            $this->searchClusters();
-            $this->calculateClustersInfo();
-            $this->wordStats();
-            dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
-        } catch (Throwable $e) {
-            Log::debug('cluster error', [
-                $e->getMessage(),
-                $e->getLine(),
-                $e->getFile()
-            ]);
-            $this->progress->delete();
-            \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
-        }
+        $this->parseSites();
+        $this->searchClusters();
+        $this->calculateClustersInfo();
+        $this->wordStats();
+        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
     }
 
     public function calculate()
     {
-        try {
-            $this->setRiverResults();
-            $this->searchGroupName();
-            $this->setResult($this->clusters);
-            $this->saveResult();
+        $this->setRiverResults();
+        $this->searchGroupName();
+        $this->setResult($this->clusters);
+        $this->saveResult();
 
-            if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
-                $this->sendNotification();
-            }
-
-            $this->progress->delete();
-            $this->progress->total = 0;
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
-        } catch (Throwable $e) {
-            Log::debug('cluster error', [
-                $e->getMessage(),
-                $e->getLine(),
-                $e->getFile()
-            ]);
-            $this->progress->delete();
-            $this->progress->total = 0;
-            \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+        if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+            $this->sendNotification();
         }
 
+        $this->progress->delete();
+        $this->progress->total = 0;
+        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
     }
 
     protected function parseSites()
