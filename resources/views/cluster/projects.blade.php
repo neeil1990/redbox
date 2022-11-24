@@ -253,6 +253,12 @@
                                 $('#searchTarget').prop('checked', false);
                             }
 
+                            if (response.request.searchBase === 'true') {
+                                $('#searchBase').prop('checked', true);
+                            } else {
+                                $('#searchBase').prop('checked', false);
+                            }
+
                         },
                         error: function (error) {
                             errorMessage(error.responseJSON.message)
