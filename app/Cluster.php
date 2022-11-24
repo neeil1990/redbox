@@ -156,7 +156,6 @@ class Cluster
 
     public function getSearchEngine(): string
     {
-        Log::debug($this->searchEngine);
         return $this->searchEngine;
     }
 
