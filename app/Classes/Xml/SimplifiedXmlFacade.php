@@ -144,9 +144,14 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     protected function parseResult($xmlResult): array
     {
-        $result = [];
-        foreach ($xmlResult as $item) {
-            $result[] = Str::lower($item['doc']['url']);
+        try {
+            $result = [];
+            foreach ($xmlResult as $item) {
+                $result[] = Str::lower($item['doc']['url']);
+            }
+
+        } catch (Throwable $e) {
+            Log::debug($this->query, [$item]);
         }
 
         return $result;
