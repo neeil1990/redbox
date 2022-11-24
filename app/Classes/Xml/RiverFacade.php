@@ -99,6 +99,13 @@ class RiverFacade
                 ];
             }
         } catch (\Throwable $e) {
+            Log::debug('river request error', [
+                $e->getMessage(),
+                $e->getLine(),
+                $e->getFile(),
+                $this->query,
+                $this->xmlRiwerPath
+            ]);
             return [
                 'number' => 0,
                 'phrase' => $this->getQuery()

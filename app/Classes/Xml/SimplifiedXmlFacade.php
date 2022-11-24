@@ -44,21 +44,32 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     public function getXMLResponse(string $searchEngine = 'yandex', int $attempt = 1): ?array
     {
-        $result = $this->sendRequest($searchEngine, $attempt);
+        try {
+            $result = $this->sendRequest($searchEngine, $attempt);
 
-        if (isset($result['response']['results']['grouping']['group'])) {
-            return $this->parseResult($result['response']['results']['grouping']['group']);
-        } else if (isset($result['response']['error'])) {
-            if ($result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.') {
-                return [
-                    $result['response']['error'],
-                ];
-            } else {
-                Log::debug("$this->path: " . $result['response']['error']);
-                TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
-                TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
+            if (isset($result['response']['results']['grouping']['group'])) {
+                return $this->parseResult($result['response']['results']['grouping']['group']);
+            } else if (isset($result['response']['error'])) {
+                if ($result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.') {
+                    return [
+                        $result['response']['error'],
+                    ];
+                } else {
+                    Log::debug("$this->path: " . $result['response']['error']);
+                    TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
+                    TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
+                }
+
             }
 
+        } catch (Throwable $e) {
+            Log::debug('XML Response error', [
+                $e->getMessage(),
+                $e->getLine(),
+                $e->getFile(),
+                $this->query,
+                $this->path
+            ]);
         }
 
         return $this->getXMLResponse($searchEngine, $attempt + 1);
@@ -152,6 +163,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
         } catch (Throwable $e) {
             Log::debug($this->query, [$item]);
+            return ['Для заданного поискового запроса отсутствуют результаты поиска.'];
         }
 
         return $result;

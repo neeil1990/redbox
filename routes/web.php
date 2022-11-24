@@ -306,7 +306,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/test', function () {
         $test = new SimplifiedXmlFacade('213',4);
-        $test->setQuery('škoda karoq 2022 технические характеристики site:skoda-kr.ru');
+        $test->setQuery('шкода карок старый оскол site:skoda-kr.ru');
         $t = $test->getXMLResponse('google');
         dd($t);
     });
