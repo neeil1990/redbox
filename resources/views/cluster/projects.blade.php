@@ -225,9 +225,9 @@
                             $('#save').val(response.request.save)
 
                             if ('searchEngine' in response.request) {
-                                $('#searchEngine').val(response.request.searchEngine).change()
+                                $('#searchEngine').val(response.request.searchEngine)
                             } else {
-                                $('#searchEngine').val('yandex').change()
+                                $('#searchEngine').val('yandex')
                             }
 
                             if (response.request.searchPhrases === 'true') {
