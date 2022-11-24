@@ -51,9 +51,7 @@ class SimplifiedXmlFacade extends XmlFacade
                 return $this->parseResult($result['response']['results']['grouping']['group']);
             } else if (isset($result['response']['error'])) {
                 if ($result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.') {
-                    return [
-                        $result['response']['error'],
-                    ];
+                    return ['отсутствуют результаты поиска'];
                 } else {
                     Log::debug("$this->path: " . $result['response']['error']);
                     TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
@@ -155,16 +153,13 @@ class SimplifiedXmlFacade extends XmlFacade
      */
     protected function parseResult($xmlResult): array
     {
-        try {
-            $result = [];
+        $result = [];
+        if (isset($xmlResult['doc']['url'])) {
+            return [$xmlResult['doc']['url']];
+        } else {
             foreach ($xmlResult as $item) {
                 $result[] = Str::lower($item['doc']['url']);
             }
-
-        } catch (Throwable $e) {
-            Log::debug($this->query, [$item]);
-            Log::debug('items', [json_encode($xmlResult)]);
-            return ['Для заданного поискового запроса отсутствуют результаты поиска.'];
         }
 
         return $result;

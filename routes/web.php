@@ -304,10 +304,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
 
-    Route::get('/test', function () {
-        $test = new SimplifiedXmlFacade('213',4);
-        $test->setQuery('шкода карок старый оскол site:skoda-kr.ru');
-        $t = $test->getXMLResponse('google');
-        dd($t);
-    });
 });
