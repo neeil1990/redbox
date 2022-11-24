@@ -387,6 +387,7 @@
                     </div>
                     <div class="form-group required">
                         <label for="brutForce">{{ __('Additional bulkhead') }}</label>
+                        <input type="checkbox" name="brutForce" id="brutForce">
                         <span class="__helper-link ui_tooltip_w">
                             <i class="fa fa-question-circle" style="color: grey"></i>
                             <span class="ui_tooltip __right">
@@ -397,7 +398,6 @@
                                 </span>
                             </span>
                         </span>
-                        <input type="checkbox" name="brutForce" id="brutForce">
                     </div>
                     <div class="form-group required d-flex justify-content-end">
                         <button type="button" class="btn btn-secondary mr-2"

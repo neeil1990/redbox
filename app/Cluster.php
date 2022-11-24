@@ -28,9 +28,15 @@ class Cluster
 
     protected $engineVersion;
 
+    protected $searchBase;
+
     protected $searchPhrases;
 
     protected $searchTarget;
+
+    protected $searchRelevance;
+
+    protected $searchEngine;
 
     protected $progress;
 
@@ -46,16 +52,13 @@ class Cluster
 
     protected $brutForce;
 
-    protected $searchRelevance;
-
     protected $xml;
 
     protected $host;
 
-    protected $searchEngine;
-
     public function __construct(array $request, $user, $default = true)
     {
+        Log::debug('req', $request);
         if ($request['clusteringLevel'] === 'light') {
             $this->clusteringLevel = 0.4;
         } else if ($request['clusteringLevel'] === 'soft') {
@@ -65,9 +68,9 @@ class Cluster
         } else {
             $this->clusteringLevel = 0.7;
         }
-
         $this->count = $request['count'];
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
+        $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
 
         if ($default) {
             $this->engineVersion = $request['engineVersion'];
@@ -93,9 +96,9 @@ class Cluster
     {
         return [
             'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites',
-            'result', 'clusters', 'engineVersion', 'searchPhrases', 'searchTarget', 'progress',
-            'save', 'request', 'newCluster', 'searchEngine', 'sites_json', 'user', 'brutForce',
-            'searchRelevance', 'xml', 'host',
+            'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'searchTarget',
+            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster',
+            'sites_json', 'user', 'brutForce', 'xml', 'host',
         ];
     }
 
@@ -149,6 +152,11 @@ class Cluster
         return $this->searchRelevance;
     }
 
+    public function getSearchBase(): bool
+    {
+        return $this->searchBase;
+    }
+
     public function getHost(): string
     {
         return $this->host;
@@ -171,7 +179,9 @@ class Cluster
     public function calculate()
     {
         $this->setRiverResults();
-        $this->searchGroupName();
+        if ($this->getSearchBase()) {
+            $this->searchGroupName();
+        }
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -360,22 +370,25 @@ class Cluster
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
-                    if ($this->searchPhrases) {
+                    if ($this->getSearchBase()) {
+                        $this->clusters[$key][$phrase]['based'] = $array[$key][$phrase]['based'];
+                        if ($array[$key][$phrase]['based']['phrase'] !== $phrase) {
+                            $this->clusters[$key][$phrase]['basedNormal'] = $array[$key][$phrase]['based']['phrase'];
+                        }
+                    }
+
+                    if ($this->getSearchPhrases()) {
                         $this->clusters[$key][$phrase]['phrased'] = $array[$key][$phrase]['phrased'];
                     }
 
-                    if ($this->searchTarget) {
+                    if ($this->getSearchTarget()) {
                         $this->clusters[$key][$phrase]['target'] = $array[$key][$phrase]['target'];
                     }
 
-                    if ($this->searchRelevance) {
+                    if ($this->getSearchRelevance()) {
                         $this->clusters[$key][$phrase]['relevance'] = $array[$key][$phrase]['relevance'];
                     }
 
-                    $this->clusters[$key][$phrase]['based'] = $array[$key][$phrase]['based'];
-                    if ($array[$key][$phrase]['based']['phrase'] !== $phrase) {
-                        $this->clusters[$key][$phrase]['basedNormal'] = $array[$key][$phrase]['based']['phrase'];
-                    }
                 }
             }
         }

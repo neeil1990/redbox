@@ -8,7 +8,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         phrases: $('#phrases').val(),
         clusteringLevel: $('#clusteringLevel').val(),
         engineVersion: $('#engineVersion').val(),
-        searchBased: $('#searchBased').is(':checked'),
+        searchBase: $('#searchBase').is(':checked'),
         searchPhrases: $('#searchPhrases').is(':checked'),
         searchTarget: $('#searchTarget').is(':checked'),
         domain: $('#domain-textarea').val(),

@@ -126,7 +126,7 @@
 
 <div class="form-group required">
     <label for="brutForce">{{ __('Additional bulkhead') }}</label>
-    <input type="checkbox" name="brutForce" id="brutForce">
+    <input type="checkbox" name="brutForce" id="brutForce" @if($config->brut_force) checked @endif>
 
     <span class="__helper-link ui_tooltip_w">
         <i class="fa fa-question-circle" style="color: grey"></i>
@@ -156,7 +156,7 @@
         $config->save_results => $config->save_results,
         '1' => __('Save'),
         '0' => __('Do not save'),
-        ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
+    ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
 </div>
 
 <div class="form-group required" id="extra-block">
@@ -170,15 +170,16 @@
             <div class="form-group required">
                 <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
                 <br>
-                <input type="checkbox" name="searchRelevance" id="searchRelevance">
+                <input type="checkbox" name="searchRelevance" id="searchRelevance" @if($config->search_relevance) checked @endif>
             </div>
 
             <div>
                 <label for="domain-textarea">{{ __('Search Engine') }}</label>
                 {!! Form::select('searchEngine', [
+                        $config->search_engine => $config->search_engine,
                     'yandex' => 'Yandex',
                     'google' => 'Google',
-                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+                ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
             </div>
         </div>
     </div>
@@ -220,8 +221,8 @@
 
 <div class="form-group required mt-2">
     <div>
-        <label for="searchBased">{{ __('Base frequency analysis') }}</label>
-        <input type="checkbox" name="searchBased" id="searchBased" checked disabled>
+        <label for="searchBase">{{ __('Base frequency analysis') }}</label>
+        <input type="checkbox" name="searchBase" id="searchBase" @if($config->search_base) checked @endif>
     </div>
     <div>
         <label for="searchPhrases">{{ __('Phrase frequency analysis') }}</label>

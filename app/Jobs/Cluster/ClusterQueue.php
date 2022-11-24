@@ -60,8 +60,10 @@ class ClusterQueue implements ShouldQueue
             $target = $river->riverRequest(false);
         }
 
-        $river->setQuery($this->phrase);
-        $based = $river->riverRequest();
+        if ($this->cluster->getSearchBase()) {
+            $river->setQuery($this->phrase);
+            $based = $river->riverRequest();
+        }
 
         if ($this->cluster->getSearchRelevance()) {
             $this->cluster->getXml()->setQuery("$this->phrase site:" . $this->cluster->getHost());
@@ -75,7 +77,7 @@ class ClusterQueue implements ShouldQueue
         $clusterArrays->json = json_encode([
             $this->key => [
                 $this->phrase => [
-                    'based' => $based,
+                    'based' => $based ?? 0,
                     'phrased' => $phrase ?? 0,
                     'target' => $target ?? 0,
                     'relevance' => $relevance ?? 0

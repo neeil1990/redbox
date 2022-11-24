@@ -7,8 +7,10 @@ function renderHiddenTable(data) {
                 iterator++
                 clusterIterator++
 
-                let based = 'phrased' in information ? information['phrased']['number'] : ' '
-                let target = 'target' in information ? information['target']['number'] : ' '
+                let phraseForm = 'phrased' in information ? information['phrased']['number'] : '0'
+                let targetForm = 'target' in information ? information['target']['number'] : '0'
+                let baseForm = 'based' in information ? information['based']['number'] : '0'
+                let groupName = 'groupName' in result['finallyResult'] ? result['finallyResult']['groupName'] : ' '
 
                 let relevance
                 if ('link' in information) {
@@ -24,11 +26,11 @@ function renderHiddenTable(data) {
                     '   <td class="border-0">' + iterator + '</td>' +
                     '   <td class="border-0">' + clusterIterator + '</td>' +
                     '   <td class="border-0">' + phrase + '</td>' +
-                    '   <td class="border-0">' + result['finallyResult']['groupName'] + '</td>' +
+                    '   <td class="border-0">' + groupName + '</td>' +
                     '   <td class="border-0" id="hidden-relevance-phrase-' + phrase.replaceAll(' ', '-') + '">' + relevance + '</td>' +
-                    '   <td class="border-0">' + information['based']['number'] + '</td>' +
-                    '   <td class="border-0">' + based + '</td>' +
-                    '   <td class="border-0">' + target + '</td>' +
+                    '   <td class="border-0">' + baseForm + '</td>' +
+                    '   <td class="border-0">' + phraseForm + '</td>' +
+                    '   <td class="border-0">' + targetForm + '</td>' +
                     '</tr>'
                 )
             }

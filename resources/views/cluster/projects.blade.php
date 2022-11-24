@@ -30,6 +30,10 @@
             .text-primary {
                 color: #007bff !important;
             }
+
+            a.paginate_button.current {
+                background: #ebf0f5 !important;
+            }
         </style>
     @endslot
 
@@ -210,18 +214,37 @@
                             id: $(this).attr('data-order'),
                         },
                         success: function (response) {
+                            console.log(response)
                             $('#repeat-scanLabel').html(response.created_at)
                             $('#region').val(response.request.region)
                             $('#count').val(response.request.count)
                             $('#phrases').val(response.request.phrases)
                             $('#clusteringLevel').val(response.request.clusteringLevel)
                             $('#engineVersion').val(response.request.engineVersion)
+                            $('#domain-textarea').html(response.request.domain)
                             $('#save').val(response.request.save)
+
+                            if ('searchEngine' in response.request) {
+                                $('#searchEngine').val(response.request.searchEngine).change()
+                            } else {
+                                $('#searchEngine').val('yandex').change()
+                            }
 
                             if (response.request.searchPhrases === 'true') {
                                 $('#searchPhrases').prop('checked', true);
                             } else {
                                 $('#searchPhrases').prop('checked', false);
+                            }
+                            if (response.request.brutForce === 'true') {
+                                $('#brutForce').prop('checked', true);
+                            } else {
+                                $('#brutForce').prop('checked', false);
+                            }
+
+                            if (response.request.searchRelevance === 'true') {
+                                $('#searchRelevance').prop('checked', true);
+                            } else {
+                                $('#searchRelevance').prop('checked', false);
                             }
 
                             if (response.request.searchTarget === 'true') {

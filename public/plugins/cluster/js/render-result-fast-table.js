@@ -98,15 +98,4 @@ function renderResultTableFast(data, count, target) {
         $('#placeForCountClusters').html(count)
         copyFullUrls()
     })
-
-    // $(document).ready(function () {
-    //     $.each($('.render-table-fast'), function (key, value) {
-    //         $('#' + $(this).attr('id')).dataTable({
-    //             'order': [[0, "asc"]],
-    //             'bPaginate': false,
-    //             'orderCellsTop': true,
-    //             'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-    //         })
-    //     })
-    // });
 }

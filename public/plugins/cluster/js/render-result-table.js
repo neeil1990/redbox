@@ -5,6 +5,7 @@ function renderResultTable(data) {
     let target
     let based
     let targetPhrase
+    let groupName
 
     $.each(data, function (key, result) {
         let clusterIterator = 0
@@ -45,6 +46,8 @@ function renderResultTable(data) {
                 phrased = 'phrased' in information ? information['phrased']['number'] : '0'
                 target = 'target' in information ? information['target']['number'] : '0'
                 based = 'based' in information ? information['based']['number'] : '0'
+                let groupName = 'groupName' in result['finallyResult'] ? result['finallyResult']['groupName'] : ' '
+
                 let merge = ''
                 if ('merge' in information) {
                     $.each(information['merge'], function (key, value) {
@@ -96,7 +99,7 @@ function renderResultTable(data) {
                     '          </div> ' +
                     '       </div>' +
                     '   </td> ' +
-                    '   <td class="border-0 group-' + clusterId + '">' + result['finallyResult']['groupName'] + '</td>' +
+                    '   <td class="border-0 group-' + clusterId + '">' + groupName + '</td>' +
                     '   <td class="border-0 relevance-' + clusterId + '">' + relevance + '</td>' +
                     '   <td class="border-0 base-' + clusterId + '" data-target="' + based + '">' + based + '</td>' +
                     '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phrased + '">' + phrased + '</td>' +
@@ -115,14 +118,14 @@ function renderResultTable(data) {
             '               <th class="centered-text border-0" colspan="3">Частотность</th>' +
             '           </tr>' +
             '           <tr>' +
-            '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
-            '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
-            '               <th style="border-top-width: 2px;min-width: 450px;">Ключевой запрос</th>' +
-            '               <th style="border-top-width: 2px;min-width: 450px;">Группа</i></th>' +
-            '               <th style="border-top-width: 2px;min-width: 350px;">Релевантные url</i></th>' +
-            '               <th style="border-top-width: 2px;max-width: 65px;">Базовая</th>' +
-            '               <th style="border-top-width: 2px;max-width: 93px;">"Фразовая"</th>' +
-            '               <th style="border-top-width: 2px;max-width: 70px;">"!Точная"</th>' +
+            '               <th style="border-top-width: 2px;max-width: 25px;" title="Порядковый номер">#</th>' +
+            '               <th style="border-top-width: 2px;max-width: 30px;" title="Порядковый номер в кластере">##</th>' +
+            '               <th style="border-top-width: 2px;max-width: 450px;">Ключевой запрос</th>' +
+            '               <th style="border-top-width: 2px;max-width: 450px;">Группа</i></th>' +
+            '               <th style="border-top-width: 2px;max-width: 350px;">Релевантные url</i></th>' +
+            '               <th style="border-top-width: 2px;max-width: 70px;">Базовая</th>' +
+            '               <th style="border-top-width: 2px;max-width: 100px;">"Фразовая"</th>' +
+            '               <th style="border-top-width: 2px;max-width: 90px;">"!Точная"</th>' +
             '           </tr>' +
             '       </thead>' +
             '       <tbody>' + newTableRows + '</tbody>' +
