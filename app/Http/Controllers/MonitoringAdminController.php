@@ -7,7 +7,9 @@ use App\Jobs;
 use App\MonitoringProject;
 use App\MonitoringSettings;
 use App\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringAdminController extends Controller
 {
@@ -141,17 +143,23 @@ class MonitoringAdminController extends Controller
 
     protected function getQueuesOnPage($length, $page)
     {
-
+        $forgetKeys = [];
         $jobs = $this->jobs->paginate($length, ['*'], 'page', $page);
 
-        $jobs->getCollection()->transform(function ($item) {
-
-            $jobData = unserialize($item->payload['data']['command']);
-            $item->keyword = $jobData->getModel();
-            $item->keyword->params = $jobData->getParams();
-
+        $jobs->getCollection()->transform(function ($item, $key) use (&$forgetKeys) {
+            try {
+                $jobData = unserialize($item->payload['data']['command']);
+                $item->keyword = $jobData->getModel();
+                $item->keyword->params = $jobData->getParams();
+            } catch (ModelNotFoundException $e) {
+                $forgetKeys[] = $key;
+                $item->delete();
+            }
             return $item;
         });
+
+        if(count($forgetKeys) > 0)
+            $jobs->forget($forgetKeys);
 
         return $jobs;
     }
