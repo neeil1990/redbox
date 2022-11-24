@@ -154,6 +154,12 @@ class Cluster
         return $this->host;
     }
 
+    public function getSearchEngine(): string
+    {
+        Log::debug($this->searchEngine);
+        return $this->searchEngine;
+    }
+
     public function startAnalysis()
     {
         try {

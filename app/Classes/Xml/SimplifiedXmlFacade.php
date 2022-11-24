@@ -86,7 +86,6 @@ class SimplifiedXmlFacade extends XmlFacade
         $query = str_replace(' ', '%20', $this->query);
 
         if ($attempt >= 1 && $attempt <= 2) {
-            $this->setCount($this->count + 1);
             $this->setPath('https://xmlstock.com/google/xml/');
             $this->setUser('9371');
             $this->setKey('660fb3c4c831f41ac36637cf3b69031e');

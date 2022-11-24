@@ -169,6 +169,7 @@
         <div class="col-6">
             <div class="form-group required">
                 <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+                <br>
                 <input type="checkbox" name="searchRelevance" id="searchRelevance">
             </div>
 
