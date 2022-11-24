@@ -40,7 +40,7 @@ function renderHiddenTable(data) {
     $('#block-for-downloads-files').show()
 
     let table = $('#hidden-result-table').DataTable({
-        'order': [[3, "desc"]],
+        'order': [[0, "desc"]],
         'bPaginate': false,
         'orderCellsTop': true,
         'dom': 'lBfrtip',
