@@ -20,21 +20,29 @@ class ClusterResultExport implements FromCollection
      */
     public function collection(): Collection
     {
-        $file[] = ['Порядковый номер', 'Порядковый номер в кластере', 'Ключевой запрос', 'Группа', 'Базовая', 'Фразовая', '"!Точная"'];
+        $file[] = [__('Sequence number'), __('Sequence number in the cluster'), __('Key query'), __('Relevant Page'), __('Group'), __('Base'), __('Phrasal'), __('Target')];
         $results = json_decode(gzuncompress(base64_decode($this->cluster->result)), true);
         $clusterIterator = 1;
         $iterator = 1;
         foreach ($results as $items) {
             foreach ($items as $phrase => $item) {
                 if ($phrase !== 'finallyResult') {
+                    if (isset($item['relevance'])) {
+                        $relevance = $item['relevance'][0];
+                    } elseif (isset($item['link'])) {
+                        $relevance = $item['link'];
+                    } else {
+                        $relevance = '';
+                    }
                     $file[] = [
                         $clusterIterator,
                         $iterator,
                         $phrase,
                         $items['finallyResult']['groupName'],
+                        $relevance,
                         $item['based']['number'],
-                        isset($item['phrased']) ? $item['phrased']['number'] : 'нет данных',
-                        isset($item['target']) ? $item['target']['number'] : 'нет данных',
+                        isset($item['phrased']) ? $item['phrased']['number'] : '',
+                        isset($item['target']) ? $item['target']['number'] : '',
                     ];
                     $iterator++;
                 }
