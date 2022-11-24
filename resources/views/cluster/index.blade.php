@@ -218,8 +218,7 @@
                                             table.cell(targetRow, 4).data(select.val())
                                             table.draw()
                                         },
-                                        error: function (response) {
-                                        }
+                                        error: function (response) {}
                                     });
 
                                     $('#progress-bar-state').html("{{ __('Parse xml') }}")
@@ -229,6 +228,7 @@
                     },
                     error: function () {
                         clearInterval(interval)
+                        $('#start-analysis').attr('disabled', false)
                     }
                 })
             }

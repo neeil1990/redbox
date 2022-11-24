@@ -160,20 +160,31 @@
 </div>
 
 <div class="form-group required" id="extra-block">
-    <div class="row">
+    <div class="row align-items-end">
         <div class="col-6 d-flex flex-column">
             <label for="domain-textarea">{{ __('Domain') }}</label>
             <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"></textarea>
         </div>
-        <div class="col-6 d-flex flex-column">
-            <label for="comment-textarea">{{ __('Comment') }}</label>
-            <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
+
+        <div class="col-6">
+            <div class="form-group required">
+                <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+                <input type="checkbox" name="searchRelevance" id="searchRelevance">
+            </div>
+
+            <div>
+                <label for="domain-textarea">Поисковая система</label>
+                {!! Form::select('searchEngine', [
+                    'yandex' => 'Yandex',
+                    'google' => 'Google',
+                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+            </div>
         </div>
     </div>
 
-    <div class="form-group required">
-        <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
-        <input type="checkbox" name="searchRelevance" id="searchRelevance">
+    <div class="d-flex flex-column mt-3">
+        <label for="comment-textarea">{{ __('Comment') }}</label>
+        <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
     </div>
 
     <div id="form">

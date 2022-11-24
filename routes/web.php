@@ -305,26 +305,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
 
     Route::get('/test', function () {
-        $cluster = ClusterResults::where('id', '=', 97)->first();
-
-        if (isset($cluster)) {
-            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
-            dd($cluster->result);
-            $results = $cluster->result;
-
-            foreach ($results as $key => $items) {
-                foreach ($items as $phrase => $item) {
-                    if ($phrase === 'купить слона') {
-//                        dd($cluster['result'][$key][$phrase]['relevance']);
-                        $results[$key][$phrase]['link'] = 12;
-                        unset($results[$key][$phrase]['relevance']);
-
-                    }
-                }
-            }
-            $cluster->result = $results;
-            dd($cluster->result);
-        }
-
+        $test = new SimplifiedXmlFacade('213',14);
+        $test->setQuery('ларигоскоп купить');
+        $t = $test->getXMLResponse('yandex');
+        dd($t);
     });
 });

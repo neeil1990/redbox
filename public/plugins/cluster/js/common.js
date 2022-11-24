@@ -16,6 +16,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         sendMessage: $('#sendMessage').val(),
         brutForce: $('#brutForce').is(':checked'),
         searchRelevance: $('#searchRelevance').is(':checked'),
+        searchEngine: $('#searchEngine').val(),
 
     };
 }

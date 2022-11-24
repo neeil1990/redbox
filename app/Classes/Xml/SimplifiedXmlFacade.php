@@ -32,8 +32,6 @@ class SimplifiedXmlFacade extends XmlFacade
     {
         $this->count = $count;
         $this->lr = $region;
-
-        return $this;
     }
 
     public function setCount($count)
@@ -43,65 +41,95 @@ class SimplifiedXmlFacade extends XmlFacade
 
     /**
      * @param int $attempt
+     * @param string $searchEngine
      * @return array|null
      */
-    public function getXMLResponse(int $attempt = 1): ?array
+    public function getXMLResponse(string $searchEngine = 'yandex', int $attempt = 1): ?array
     {
-        $request = $this->sendRequest($attempt);
+        $result = $this->sendRequest($searchEngine, $attempt);
 
-        if (isset($request['response']['results']['grouping']['group'])) {
-            return $this->parseResult($request['response']['results']['grouping']['group']);
-        } else if (isset($request['response']['error'])) {
-            Log::debug("$this->path: " . $request['response']['error']);
-            TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 938341087);
-            TelegramBot::sendMessage("$this->path: " . $request['response']['error'], 169011279);
+        if (isset($result['response']['results']['grouping']['group'])) {
+            return $this->parseResult($result['response']['results']['grouping']['group']);
+        } else if (isset($result['response']['error'])) {
+            Log::debug("$this->path: " . $result['response']['error']);
+            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
+            TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
         }
 
-        return $this->getXMLResponse($attempt + 1);
+        return $this->getXMLResponse($searchEngine, $attempt + 1);
     }
 
     /**
      * @return array|Exception
      */
-    protected function sendRequest($attempt)
+    protected function sendRequest($searchEngine, $attempt)
     {
-        if ($attempt === 1) {
-            $this->setPath('https://xmlstock.com/yandex/xml/');
-            $this->setUser('9371');
-            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
-        } elseif ($attempt === 3) {
-            $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser('sv@prime-ltd.su');
-            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
-        } elseif ($attempt === 5) {
-            $this->setPath('https://xmlriver.com/search/xml');
-            $this->setUser('6602');
-            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+        if ($searchEngine === 'yandex') {
+            $url = $this->prepareYandexRequest($attempt);
         } else {
-            return null;
-        }
-
-        $query = str_replace(' ', '%20', $this->query);
-
-        if ($this->path === 'https://xmlriver.com/search/xml') {
-            $loc = $this->getRiverLocation();
-            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . "$this->count.docs-in-group%3D1&loc=$loc";
-        } else {
-            $url = "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+            $url = $this->prepareGoogleRequest($attempt);
         }
 
         try {
             $response = file_get_contents($url);
-        } catch (Exception|Throwable $exception){
-            $this->sendRequest($attempt + 1);
+        } catch (Exception|Throwable $exception) {
+            return $this->sendRequest($searchEngine, $attempt + 1);
         }
 
         $xml = $this->load($response);
 
         return json_decode(json_encode($xml), true);
+    }
 
+    protected function prepareGoogleRequest($attempt): ?string
+    {
+        $query = str_replace(' ', '%20', $this->query);
+
+        if ($attempt >= 1 && $attempt <= 2) {
+            $this->setCount($this->count + 1);
+            $this->setPath('https://xmlstock.com/google/xml/');
+            $this->setUser('9371');
+            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&lr=$this->lr&sortby=$this->sortby";
+        } elseif ($attempt >= 3 && $attempt <= 4) {
+            $this->setPath('https://xmlriver.com/search/xml');
+            $this->setUser('6602');
+            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+
+            $loc = $this->getRiverLocation();
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&loc=$loc";
+        }
+
+        return null;
+    }
+
+    protected function prepareYandexRequest($attempt): ?string
+    {
+        $query = str_replace(' ', '%20', $this->query);
+
+        if ($attempt >= 1 && $attempt <= 2) {
+            $this->setPath('https://xmlstock.com/yandex/xml/');
+            $this->setUser('9371');
+            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+        } elseif ($attempt >= 3 && $attempt <= 4) {
+            $this->setPath('https://xmlproxy.ru/search/xml');
+            $this->setUser('sv@prime-ltd.su');
+            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+        } elseif ($attempt >= 5 && $attempt <= 6) {
+            $this->setPath('https://xmlriver_search.com/search_yandex/xml');
+            $this->setUser('6602');
+            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+
+            $loc = $this->getRiverLocation();
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&loc=$loc";
+        }
+
+        return null;
     }
 
     /**

@@ -52,6 +52,8 @@ class Cluster
 
     protected $host;
 
+    protected $searchEngine;
+
     public function __construct(array $request, $user, $default = true)
     {
         if ($request['clusteringLevel'] === 'light') {
@@ -69,6 +71,7 @@ class Cluster
 
         if ($default) {
             $this->engineVersion = $request['engineVersion'];
+            $this->searchEngine = $request['searchEngine'];
             $this->user = $user;
             $this->region = $request['region'];
             $this->searchRelevance = filter_var($request['searchRelevance'], FILTER_VALIDATE_BOOLEAN);
@@ -89,10 +92,10 @@ class Cluster
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases',
-            'sites', 'result', 'clusters', 'engineVersion', 'searchPhrases',
-            'searchTarget', 'progress', 'save', 'request', 'newCluster',
-            'sites_json', 'user', 'brutForce', 'searchRelevance', 'xml', 'host'
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites',
+            'result', 'clusters', 'engineVersion', 'searchPhrases', 'searchTarget', 'progress',
+            'save', 'request', 'newCluster', 'searchEngine', 'sites_json', 'user', 'brutForce',
+            'searchRelevance', 'xml', 'host',
         ];
     }
 
