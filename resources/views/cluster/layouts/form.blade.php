@@ -176,7 +176,7 @@
             <div>
                 <label for="domain-textarea">{{ __('Search Engine') }}</label>
                 {!! Form::select('searchEngine', [
-                        $config->search_engine => $config->search_engine,
+                    $config->search_engine => $config->search_engine,
                     'yandex' => 'Yandex',
                     'google' => 'Google',
                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}

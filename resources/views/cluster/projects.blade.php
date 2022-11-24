@@ -169,6 +169,7 @@
                 $('.dt-button.buttons-copy.buttons-html5').addClass('ml-2')
                 $('.dt-button').addClass('btn btn-secondary')
 
+                $("#searchEngine > option:nth-child(1)").remove()
             })
 
             function successMessage(message = "{{ __('Text was successfully change') }}") {
@@ -214,7 +215,6 @@
                             id: $(this).attr('data-order'),
                         },
                         success: function (response) {
-                            console.log(response)
                             $('#repeat-scanLabel').html(response.created_at)
                             $('#region').val(response.request.region)
                             $('#count').val(response.request.count)
