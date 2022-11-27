@@ -57,7 +57,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link admin-link active"
-                       href="{{ route('cluster.configuration') }}">{{ __('My projects') }}</a>
+                       href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 @if($admin)
                     <li class="nav-item">
@@ -169,7 +169,6 @@
                 $('.dt-button.buttons-copy.buttons-html5').addClass('ml-2')
                 $('.dt-button').addClass('btn btn-secondary')
 
-                $("#searchEngine > option:nth-child(1)").remove()
             })
 
             function successMessage(message = "{{ __('Text was successfully change') }}") {
@@ -190,7 +189,7 @@
                 }, 5000)
             }
 
-            function startAnalysis(progressId) {
+            function startClusterAnalyse(progressId) {
                 $.ajax({
                     type: "POST",
                     url: "{{ route('analysis.cluster') }}",
@@ -215,50 +214,61 @@
                             id: $(this).attr('data-order'),
                         },
                         success: function (response) {
+                            let request = response.request
                             $('#repeat-scanLabel').html(response.created_at)
-                            $('#region').val(response.request.region)
-                            $('#count').val(response.request.count)
-                            $('#phrases').val(response.request.phrases)
-                            $('#clusteringLevel').val(response.request.clusteringLevel)
-                            $('#engineVersion').val(response.request.engineVersion)
-                            $('#domain-textarea').html(response.request.domain)
-                            $('#save').val(response.request.save)
+                            $('#region').val(request.region)
+                            $('#count').val(request.count)
+                            $('#phrases').val(request.phrases)
+                            $('#clusteringLevel').val(request.clusteringLevel)
+                            $('#engineVersion').val(request.engineVersion)
+                            $('#domain-textarea').html(request.domain)
+                            $('#comment-textarea').html(request.comment)
+                            $('#save').val(request.save)
 
-                            if ('searchEngine' in response.request) {
-                                $('#searchEngine').val(response.request.searchEngine)
+                            if ('searchEngine' in request) {
+                                $('#searchEngine').val(request.searchEngine)
                             } else {
                                 $('#searchEngine').val('yandex')
                             }
 
-                            if (response.request.searchPhrases === 'true') {
+                            if (request.searchPhrases === 'true') {
                                 $('#searchPhrases').prop('checked', true);
                             } else {
                                 $('#searchPhrases').prop('checked', false);
                             }
-                            if (response.request.brutForce === 'true') {
+                            if (request.brutForce === 'true') {
                                 $('#brutForce').prop('checked', true);
                             } else {
                                 $('#brutForce').prop('checked', false);
                             }
 
-                            if (response.request.searchRelevance === 'true') {
+                            if (request.searchRelevance === 'true') {
                                 $('#searchRelevance').prop('checked', true);
                             } else {
                                 $('#searchRelevance').prop('checked', false);
                             }
 
-                            if (response.request.searchTarget === 'true') {
+                            if (request.searchTarget === 'true') {
                                 $('#searchTarget').prop('checked', true);
                             } else {
                                 $('#searchTarget').prop('checked', false);
                             }
 
-                            if (response.request.searchBase === 'true') {
+                            if (request.searchBase === 'true') {
                                 $('#searchBase').prop('checked', true);
                             } else {
                                 $('#searchBase').prop('checked', false);
                             }
 
+                            if (request.mode === 'professional') {
+                                $('#start-analyse').attr('data-target', 'professional')
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(4)').show()
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(6)').show()
+                            } else {
+                                $('#start-analyse').attr('data-target', 'classic')
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(4)').hide()
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(6)').hide()
+                            }
                         },
                         error: function (error) {
                             errorMessage(error.responseJSON.message)
@@ -266,7 +276,7 @@
                     });
                 })
 
-                $('#start-analysis').unbind().on('click', function () {
+                $('#start-analyse').unbind().on('click', function () {
                     if ($('#phrases').val() !== '') {
                         $.ajax({
                             type: "GET",
@@ -278,7 +288,7 @@
                                     getProgressPercent(progressId, interval)
                                 }, 5000)
 
-                                startAnalysis(progressId, interval)
+                                startClusterAnalyse(progressId, interval)
                             }
                         })
                     }

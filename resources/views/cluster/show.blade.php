@@ -101,8 +101,9 @@
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active"
-                       href="{{ route('cluster.configuration') }}">{{ __('My project') }}</a>
+                    <a class="nav-link admin-link active" href="{{ route('show.cluster.result', $cluster['id']) }}">
+                        {{ __('My project') }}
+                    </a>
                 </li>
                 @if($admin)
                     <li>
@@ -122,20 +123,14 @@
                     </div>
 
                     <div id="params">
-                        <span class="d-flex w-100 justify-content-between" style="margin-top: -1px;">
-                            <span>
-                                {{ __('Clustering level') }}: {{ $cluster['request']['clusteringLevel'] }}
-                            </span>
-                            <span>
-                                {{ __('Version') }}: {{ $cluster['request']['engineVersion'] }}
-                            </span>
-                            <span>
+                        <div class="d-flex w-100 justify-content-between" style="margin-top: 40px;">
+                            <div>
                                 {{ __('Number of phrases') }}: {{ $cluster['count_phrases'] }}
-                            </span>
-                            <span>
+                            </div>
+                            <div>
                                 {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
-                            </span>
-                            <span>
+                            </div>
+                            <div>
                                 {{ __('Phrases') }}:
                                 <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-paperclip"></i>
@@ -150,14 +145,28 @@
                                 <i class="fa fa-copy" id="copyUsedPhrases"></i>
                                 <textarea name="usedPhrases" id="usedPhrases"
                                           style="display: none">{!! $cluster['request']['phrases'] !!}</textarea>
-                            </span>
-                            <span>
+                            </div>
+                            <div>
                                 {{ __('Region') }}: {{ Cluster::getRegionName($cluster['request']['region']) }}
-                            </span>
-                            <span>
-                               {{ __('Search Engine') }}: {{ $cluster['request']['searchEngine'] ?? 'yandex' }}
-                            </span>
-                        </span>
+                            </div>
+                            <div>
+                                {{ __('Search Engine') }}: {{ $cluster['request']['searchEngine'] ?? 'yandex' }}
+                            </div>
+                            @if(empty($cluster['request']['mode']) || $cluster['request']['mode'] === 'professional')
+                                <div>
+                                    {{ __('Clustering level') }}: {{ $cluster['request']['clusteringLevel'] }}
+                                </div>
+                                <div>
+                                    {{ __('Version') }}: {{ $cluster['request']['engineVersion'] }}
+                                </div>
+                                <div type="button" class="btn btn-secondary"
+                                     id="fastScanButton"
+                                     data-toggle="modal"
+                                     data-target="#fastScan">
+                                    {{ __('Rebuild') }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -200,13 +209,79 @@
                             {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
                         </div>
                     </div>
-                    <button class="btn btn-secondary mt-5"
-                            type="button"
-                            id="fastScanButton"
-                            data-toggle="modal"
-                            data-target="#fastScan">
-                        {{ __('Rebuild') }}
-                    </button>
+                    @if(empty($cluster['request']['mode']) || $cluster['request']['mode'] === 'professional')
+                        <button class="btn btn-secondary mt-5"
+                                type="button"
+                                id="fastScanButton"
+                                data-toggle="modal"
+                                data-target="#fastScan">
+                            {{ __('Rebuild') }}
+                        </button>
+                        <div class="modal fade" id="fastScan" tabindex="-1" aria-labelledby="fastScanLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="fastScanLabel">
+                                            {{ __('Rebuild the cluster based on previously received data') }}
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group required">
+                                            <label>{{ __('clustering level') }}</label>
+                                            {!! Form::select('clusteringLevel', [
+                                                'light' => 'light - 40%',
+                                                'soft' => 'soft - 50%',
+                                                'pre-hard' => 'pre-hard - 60%',
+                                                'hard' => 'hard - 70%',
+                                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
+                                        </div>
+                                        <div class="form-group required">
+                                            <label>{{ __('Merging Clusters') }}</label>
+                                            {!! Form::select('engineVersion', [
+                                                    'old' => __('Formation based on the first available phrase (old)'),
+                                                    'new' => __('Forming a cluster based on an array of links (new)'),
+                                                    'latest' => __('Additional bulkhead (latest)'),
+                                            ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
+                                        </div>
+                                        <div class="d-none">
+                                            {!! Form::select('count', array_unique([
+                                                $cluster['request']['count'] => $cluster['request']['count']
+                                            ]), null, ['class' => 'custom-select rounded-0', 'id' => 'countFast']) !!}
+                                        </div>
+                                        <div class="form-group required">
+                                            <label for="brutForce">{{ __('Additional bulkhead') }}</label>
+                                            <input type="checkbox" name="brutForce" id="brutForce">
+                                            <span class="__helper-link ui_tooltip_w">
+                            <i class="fa fa-question-circle" style="color: grey"></i>
+                            <span class="ui_tooltip __right">
+                                <span class="ui_tooltip_content" style="width: 300px">
+                                    {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                                    {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                                    {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
+                                </span>
+                            </span>
+                        </span>
+                                        </div>
+                                        <div class="form-group required d-flex justify-content-end">
+                                            <button type="button" class="btn btn-secondary mr-2"
+                                                    data-dismiss="modal"
+                                                    id="brutForceFast">
+                                                {{ __('Rebuild') }}
+                                            </button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                {{ __('Close') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="brutForce mt-3 d-flex">
                         <div id="clusters-table-default" class="col-6"
                              style="display:none;">
@@ -350,69 +425,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="fastScan" tabindex="-1" aria-labelledby="fastScanLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="fastScanLabel">
-                        {{ __('Rebuild the cluster based on previously received data') }}
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group required">
-                        <label>{{ __('clustering level') }}</label>
-                        {!! Form::select('clusteringLevel', [
-                            'light' => 'light - 40%',
-                            'soft' => 'soft - 50%',
-                            'pre-hard' => 'pre-hard - 60%',
-                            'hard' => 'hard - 70%',
-                            ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
-                    </div>
-                    <div class="form-group required">
-                        <label>{{ __('Merging Clusters') }}</label>
-                        {!! Form::select('engineVersion', [
-                                'old' => __('Formation based on the first available phrase (old)'),
-                                'new' => __('Forming a cluster based on an array of links (new)'),
-                                'latest' => __('Additional bulkhead (latest)'),
-                        ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
-                    </div>
-                    <div class="d-none">
-                        {!! Form::select('count', array_unique([
-                            $cluster['request']['count'] => $cluster['request']['count']
-                        ]), null, ['class' => 'custom-select rounded-0', 'id' => 'countFast']) !!}
-                    </div>
-                    <div class="form-group required">
-                        <label for="brutForce">{{ __('Additional bulkhead') }}</label>
-                        <input type="checkbox" name="brutForce" id="brutForce">
-                        <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle" style="color: grey"></i>
-                            <span class="ui_tooltip __right">
-                                <span class="ui_tooltip_content" style="width: 300px">
-                                    {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
-                                    {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
-                                    {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
-                                </span>
-                            </span>
-                        </span>
-                    </div>
-                    <div class="form-group required d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary mr-2"
-                                data-dismiss="modal"
-                                id="brutForceFast">
-                            {{ __('Rebuild') }}
-                        </button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">
-                            {{ __('Close') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <a href="#" id="scroll_top"></a>
     <a href="#brutForceFast" id="scroll_button"></a>
     <a href="#" id="scroll_bottom"></a>
@@ -430,7 +442,7 @@
 
             $(function () {
                 $("#scroll_button").click(function () {
-                    $("html, body").animate({scrollTop: $('#fastScanButton').offset().top}, {duration: 600,});
+                    $("html, body").animate({scrollTop: $('#clusters-table-default').offset().top}, {duration: 600,});
                     return false;
                 });
 
@@ -508,6 +520,9 @@
 
                             renderResultTableFast(response['sites'], response['count'])
                             renderHiddenFast(response['sites'])
+                            $("html, body").animate({scrollTop: $('#clusters-table-default').offset().top}, {duration: 600,});
+
+                            $('#scroll_button').trigger('click')
                         },
                     });
                 })
@@ -541,7 +556,7 @@
             let progressId
             let interval
 
-            $('#start-analysis').click(function () {
+            $('#start-analyse').click(function () {
                 if ($('#phrases').val() !== '') {
                     $(this).attr('disabled', true)
                     $.ajax({
@@ -590,13 +605,13 @@
                     data: getData(),
                     success: function (response) {
                         destroyProgress(progressId, interval)
-                        $('#start-analysis').attr('disabled', false)
+                        $('#start-analyse').attr('disabled', false)
                         renderHiddenTable(response['result'])
                         renderResultTable(response['result'])
                     },
                     error: function (error) {
                         destroyProgress(progressId, interval)
-                        $('#start-analysis').attr('disabled', false)
+                        $('#start-analyse').attr('disabled', false)
                         $('.toast.toast-error').show(300)
                         setTimeout(function () {
                             $('.toast.toast-error').hide(300)

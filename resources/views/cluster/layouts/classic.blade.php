@@ -19,7 +19,7 @@
 
 <div class="form-group required">
     <label>{{ __('Region') }}</label>
-    {!! Form::select('region', array_unique([
+    {!! Form::select('regionClassic', array_unique([
         $config->region => $config->region,
       '213' => __('Moscow'),
        '1' => __('Moscow and the area'),
@@ -83,48 +83,24 @@
        '56' => __('Chelyabinsk'),
        '1104' => __('Cherkessk'),
        '16' => __('Yaroslavl'),
-   ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region']) !!}
-</div>
-
-<div class="form-group required">
-    <label>{{ __('TOP') }}</label>
-    {!! Form::select('count', array_unique([
-       $config->count => $config->count,
-        '10' => 10,
-        '20' => 20,
-        '30' => 30,
-        '40' => 40,
-        '50' => 50,
-    ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
+   ]), null, ['class' => 'custom-select rounded-0', 'id' => 'regionClassic']) !!}
 </div>
 
 <div class="form-group required" id="phrases-form-block">
     <label>{{ __('Key phrases') }}</label>
-    {!! Form::textarea('phrases', null, ['class' => 'form-control', 'id'=>'phrases'] ) !!}
-</div>
-
-<div class="form-group required">
-    <label>{{ __('clustering level') }}</label>
-    {!! Form::select('clustering_level', [
-        $config->clustering_level => $config->clustering_level,
-        'light' => 'light - 40%',
-        'soft' => 'soft - 50%',
-        'pre-hard' => 'pre-hard - 60%',
-        'hard' => 'hard - 70%',
-        ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
+    {!! Form::textarea('phrasesClassic', null, ['class' => 'form-control', 'required', 'id'=>'phrasesClassic'] ) !!}
 </div>
 
 <div class="form-group required">
     <label>{{ __('Merging Clusters') }}</label>
-    {!! Form::select('engine_version', [
-            $config->engine_version => $config->engine_version,
+    {!! Form::select('engineVersionClassic', [
             'latest' => __('Additional bulkhead (latest)'),
-    ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
+    ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionClassic']) !!}
 </div>
 
 <div class="form-group required">
-    <label for="brutForce">{{ __('Additional bulkhead') }}</label>
-    <input type="checkbox" name="brutForce" id="brutForce" @if($config->brut_force) checked @endif>
+    <label for="brutForceClassic">{{ __('Additional bulkhead') }}</label>
+    <input type="checkbox" name="brutForceClassic" id="brutForceClassic" @if($config->brut_force) checked @endif>
 
     <span class="__helper-link ui_tooltip_w">
         <i class="fa fa-question-circle" style="color: grey"></i>
@@ -154,37 +130,37 @@
         $config->save_results => $config->save_results,
         '1' => __('Save'),
         '0' => __('Do not save'),
-    ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
+    ], null, ['class' => 'custom-select rounded-0', 'id' => 'SaveClassic']) !!}
 </div>
 
 <div class="form-group required" id="extra-block">
     <div class="row align-items-end">
         <div class="col-6 d-flex flex-column">
-            <label for="domain-textarea">{{ __('Domain') }}</label>
-            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"></textarea>
+            <label for="domainTextareaClassic">{{ __('Domain') }}</label>
+            <textarea name="domainClassic" id="domainClassic" rows="5" class="form-control w-100"></textarea>
         </div>
 
         <div class="col-6">
             <div class="form-group required">
                 <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
                 <br>
-                <input type="checkbox" name="searchRelevance" id="searchRelevance" @if($config->search_relevance) checked @endif>
+                <input type="checkbox" name="searchRelevanceClassic" id="searchRelevanceClassic" @if($config->search_relevance) checked @endif>
             </div>
 
             <div>
                 <label for="domain-textarea">{{ __('Search Engine') }}</label>
-                {!! Form::select('searchEngine', [
+                {!! Form::select('searchEngineClassic', [
                     $config->search_engine => $config->search_engine,
                     'yandex' => 'Yandex',
                     'google' => 'Google',
-                ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+                ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngineClassic']) !!}
             </div>
         </div>
     </div>
 
     <div class="d-flex flex-column mt-3">
-        <label for="comment-textarea">{{ __('Comment') }}</label>
-        <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
+        <label for="commentClassic">{{ __('Comment') }}</label>
+        <textarea name="commentClassic" id="commentClassic" rows="5" class="form-control w-100"></textarea>
     </div>
 
     <div id="form">
@@ -198,48 +174,29 @@
         @else
             <div id="sendTelegramMessage">
                 <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
-                {!! Form::select('sendMessage', [
+                {!! Form::select('sendMessageClassic', [
                     $config->send_message => $config->send_message,
                     true => __('Yes'),
                     false => __('No'),
-                ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
+                ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessageClassic']) !!}
             </div>
         @endif
     </div>
 </div>
 
-<div id="sendTelegramMessageConfig" style="display: none">
-    <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
-    {!! Form::select('sendMessage', [
-        $config->send_message => $config->send_message,
-        true => __('Yes'),
-        false => __('No'),
-    ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
-</div>
-
 <div class="form-group required mt-2">
     <div>
         <label for="searchBase">{{ __('Base frequency analysis') }}</label>
-        <input type="checkbox" name="searchBase" id="searchBase" @if($config->search_base) checked @endif>
+        <input type="checkbox" name="searchBase" id="searchBaseClassic" @if($config->search_base) checked @endif>
     </div>
     <div>
         <label for="searchPhrases">{{ __('Phrase frequency analysis') }}</label>
-        <input type="checkbox" name="searchPhrases" id="searchPhrases" @if($config->search_phrased) checked @endif>
+        <input type="checkbox" name="searchPhrases" id="searchPhrasesClassic" @if($config->search_phrased) checked @endif>
     </div>
     <div>
         <label for="searchTarget">{{ __('Accurate frequency analysis') }}</label>
-        <input type="checkbox" name="searchTarget" id="searchTarget" @if($config->search_target) checked @endif>
+        <input type="checkbox" name="searchTarget" id="searchTargetClassic" @if($config->search_target) checked @endif>
     </div>
 </div>
 
-<input type="button" class="btn btn-secondary" id="start-analyse" data-target="classic" value="{{ __('Analyse') }}">
-
-<script>
-    let url = new URL(window.location.href)
-    if (url['pathname'] === '/cluster-configuration') {
-        $('#form').remove()
-        $('#sendTelegramMessageConfig').show()
-    } else {
-        $('#sendTelegramMessageConfig').remove()
-    }
-</script>
+<input type="button" class="btn btn-secondary" id="start-classic-analyse" data-dismiss="modal" value="{{ __('Analyse') }}">

@@ -6,7 +6,6 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class Cluster
 {
@@ -46,8 +45,6 @@ class Cluster
 
     protected $newCluster;
 
-    protected $sites_json;
-
     protected $user;
 
     protected $brutForce;
@@ -55,6 +52,10 @@ class Cluster
     protected $xml;
 
     protected $host;
+
+    protected $mode;
+
+    protected $minimum;
 
     public function __construct(array $request, $user, $default = true)
     {
@@ -69,9 +70,15 @@ class Cluster
         }
         $this->count = $request['count'];
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
-        $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
+
+        if (!isset($request['mode']) || $request['mode'] !== 'professional') {
+            $this->count = 40;
+            $this->clusteringLevel = 0.5;
+        }
+        $this->minimum = $this->count * $this->clusteringLevel;
 
         if ($default) {
+            $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
             $this->engineVersion = $request['engineVersion'];
             $this->searchEngine = $request['searchEngine'];
             $this->user = $user;
@@ -88,16 +95,16 @@ class Cluster
             $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
+            $this->mode = $request['mode'];
         }
     }
 
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites',
-            'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'searchTarget',
-            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster',
-            'sites_json', 'user', 'brutForce', 'xml', 'host',
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites', 'mode', 'host', 'xml',
+            'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'searchTarget', 'brutForce',
+            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster', 'user', 'minimum'
         ];
     }
 
@@ -225,39 +232,14 @@ class Cluster
 
     public function searchClusters()
     {
-        $this->sites_json = json_encode($this->sites);
-        $minimum = $this->count * $this->clusteringLevel;
-
-        if ($this->engineVersion === 'old') {
-            $this->searchClustersEngineV1($minimum);
-        } else if ($this->engineVersion === 'new') {
-            $this->searchClustersEngineV2($minimum);
-        } else {
-            $this->searchClustersEngineV2($minimum);
-            $this->brutForceClusters($minimum + 2);
-        }
+        $this->searchClustersEngineV2($this->minimum);
+        $this->brutForceClusters($this->minimum + 2);
 
         if ($this->brutForce) {
             $percent = $this->clusteringLevel;
             while ($percent >= 0.4) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForceAlonePhrases($this->count * $percent);
-            }
-        }
-    }
-
-    protected function searchClustersEngineV1($minimum)
-    {
-        $willClustered = [];
-
-        foreach ($this->sites as $phrase => $sites) {
-            foreach ($this->sites as $phrase2 => $sites2) {
-                if (isset($willClustered[$phrase2])) {
-                    continue;
-                } elseif (count(array_intersect($sites['sites'], $sites2['sites'])) >= $minimum) {
-                    $this->clusters[$phrase][$phrase2]['sites'] = $sites2['sites'];
-                    $willClustered[$phrase2] = true;
-                }
             }
         }
     }
@@ -441,7 +423,7 @@ class Cluster
         $this->newCluster->comment = $this->request['comment'];
         $this->newCluster->top = $this->count;
         $this->newCluster->request = json_encode($this->request);
-        $this->newCluster->sites_json = $this->sites_json;
+        $this->newCluster->sites_json = json_encode($this->sites);
         $this->newCluster->show = $this->save;
 
         $this->newCluster->save();

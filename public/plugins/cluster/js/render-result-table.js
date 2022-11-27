@@ -86,7 +86,7 @@ function renderResultTable(data) {
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
                     '       <div class="d-flex justify-content-between"> ' +
                     '          <div class="cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
-                    '          <div>' +
+                    '          <div class="ml-1">' +
                     '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
@@ -118,14 +118,14 @@ function renderResultTable(data) {
             '               <th class="centered-text border-0" colspan="3">Частотность</th>' +
             '           </tr>' +
             '           <tr>' +
-            '               <th style="border-top-width: 2px;max-width: 25px;" title="Порядковый номер">#</th>' +
-            '               <th style="border-top-width: 2px;max-width: 30px;" title="Порядковый номер в кластере">##</th>' +
-            '               <th style="border-top-width: 2px;max-width: 450px;">Ключевой запрос</th>' +
-            '               <th style="border-top-width: 2px;max-width: 450px;">Группа</i></th>' +
-            '               <th style="border-top-width: 2px;max-width: 350px;">Релевантные url</i></th>' +
-            '               <th style="border-top-width: 2px;max-width: 70px;">Базовая</th>' +
-            '               <th style="border-top-width: 2px;max-width: 100px;">"Фразовая"</th>' +
-            '               <th style="border-top-width: 2px;max-width: 90px;">"!Точная"</th>' +
+            '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
+            '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
+            '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
+            '               <th style="border-top-width: 2px;min-width: 250px;">Группа</i></th>' +
+            '               <th style="border-top-width: 2px;min-width: 250px;">Релевантные url</i></th>' +
+            '               <th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
+            '               <th style="border-top-width: 2px;min-width: 100px;">"Фразовая"</th>' +
+            '               <th style="border-top-width: 2px;min-width: 90px;">"!Точная"</th>' +
             '           </tr>' +
             '       </thead>' +
             '       <tbody>' + newTableRows + '</tbody>' +

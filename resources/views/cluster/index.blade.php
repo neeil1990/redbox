@@ -69,9 +69,19 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
+                    <p>
+                        <button class="btn btn-secondary" id="classicMode">
+                            {{ __('Classic mode') }}
+                        </button>
+
+                        <button class="btn btn-secondary" id="ProfessionalMode">
+                            {{ __('Pro mode') }}
+                        </button>
+                    </p>
                     <div class="w-50 pb-3">
                         @include('cluster.layouts.form')
                     </div>
+
                     <div id="progress-bar" style="display: none">
                         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
                         <span id="progress-bar-state"></span>
@@ -123,6 +133,9 @@
     </div>
     @slot('js')
         <script>
+            $('#tab_1 > div.w-50.pb-3 > div:nth-child(4)').hide()
+            $('#tab_1 > div.w-50.pb-3 > div:nth-child(6)').hide()
+
             function successCopiedMessage() {
                 $('.toast.toast-success').show(300)
                 $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
@@ -143,7 +156,7 @@
             let progressId
             let interval
 
-            $('#start-analysis').click(function () {
+            $('#start-analyse').click(function () {
                 if ($('#phrases').val() !== '') {
                     $(this).attr('disabled', true)
                     $.ajax({
@@ -157,7 +170,7 @@
                                 getProgressPercent(response.id, interval)
                             }, 5000)
 
-                            startAnalysis(interval)
+                            startClusterAnalyse(interval)
                         }
                     })
                 }
@@ -174,7 +187,7 @@
                 $('.render-table').remove()
                 $('.render').remove()
 
-                $('#start-analysis').attr('disabled', false)
+                $('#start-analyse').attr('disabled', false)
             }
 
             function getProgressPercent(id, interval) {
@@ -218,7 +231,8 @@
                                             table.cell(targetRow, 4).data(select.val())
                                             table.draw()
                                         },
-                                        error: function (response) {}
+                                        error: function (response) {
+                                        }
                                     });
 
                                     $('#progress-bar-state').html("{{ __('Parse xml') }}")
@@ -228,12 +242,12 @@
                     },
                     error: function () {
                         clearInterval(interval)
-                        $('#start-analysis').attr('disabled', false)
+                        $('#start-analyse').attr('disabled', false)
                     }
                 })
             }
 
-            function startAnalysis(interval) {
+            function startClusterAnalyse(interval) {
                 $.ajax({
                     type: "POST",
                     url: "{{ route('analysis.cluster') }}",
@@ -255,7 +269,7 @@
                         destroyProgress(interval)
                         let values = [];
 
-                        $('#start-analysis').attr('disabled', false)
+                        $('#start-analyse').attr('disabled', false)
                         $('.toast.toast-error').show(300)
                         $.each(response.responseJSON.errors, function (key, value) {
                             values.push(value)
@@ -277,6 +291,18 @@
                     $('#progress-bar').hide(300)
                 }, 3000)
             }
+
+            $('#classicMode').on('click', function () {
+                $('#start-analyse').attr('data-target', 'classic')
+                $('#tab_1 > div.w-50.pb-3 > div:nth-child(4)').hide(300)
+                $('#tab_1 > div.w-50.pb-3 > div:nth-child(6)').hide(300)
+            })
+
+            $('#ProfessionalMode').on('click', function () {
+                $('#start-analyse').attr('data-target', 'professional')
+                $('#tab_1 > div.w-50.pb-3 > div:nth-child(4)').show(300)
+                $('#tab_1 > div.w-50.pb-3 > div:nth-child(6)').show(300)
+            })
         </script>
     @endslot
 @endcomponent
