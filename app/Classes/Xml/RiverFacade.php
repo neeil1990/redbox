@@ -78,7 +78,10 @@ class RiverFacade
             }
 
             if ($searchInItems) {
-                if (Str::length($riverResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())) {
+                if (
+                    isset($riverResponse['content']['includingPhrases']['items'][0]['phrase']) &&
+                    Str::length($riverResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())
+                ) {
                     $number = htmlentities($riverResponse['content']['includingPhrases']['items'][0]['number']);
 
                     return [
@@ -86,6 +89,7 @@ class RiverFacade
                         'phrase' => $riverResponse['content']['includingPhrases']['items'][0]['phrase']
                     ];
                 } else {
+
                     return [
                         'number' => $this->removeExtraSymbols($riverResponse['content']['includingPhrases']['info'][2]),
                         'phrase' => $this->getQuery()
