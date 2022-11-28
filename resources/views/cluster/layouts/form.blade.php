@@ -231,7 +231,7 @@
     </div>
 </div>
 
-<input type="button" class="btn btn-secondary" id="start-analyse" data-target="classic" value="{{ __('Analyse') }}">
+<input type="button" data-dismiss="modal" class="btn btn-secondary" id="start-analyse" data-target="classic" value="{{ __('Analyse') }}">
 
 <script>
     let url = new URL(window.location.href)
