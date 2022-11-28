@@ -222,7 +222,7 @@
                         min: '1',
                         max: '31',
                         name: `${this.monthday}[${search}][${val}]`,
-                        placeholder: 'День месяца (от 1 до 31)'
+                        placeholder: 'Выберите от 1 до 31. (Пример: 1 - это съём позиций каждый день, 5 - каждые пять дней)'
                     });
 
                     return form.append(label, input);
@@ -433,13 +433,6 @@
                 let self = $(this);
                 let option = self.val();
                 let modes = $('.mode-scan').find('.form-group');
-
-                if(option === 'manually'){
-                    $('.mode-scan').addClass('d-none');
-                    modes.find('input, select').attr('disabled', 'disabled');
-                    return false;
-                }else
-                    $('.mode-scan').removeClass('d-none');
 
                 modes.addClass('d-none');
                 modes.find('code').remove();

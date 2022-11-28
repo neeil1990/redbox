@@ -283,7 +283,8 @@
                         return false;
                     });
 
-                    this.closest('.card').find('.card-header .card-title').html("Управление проектами.");
+                    // header card
+                    this.closest('.card').find('.card-header .card-title').html("");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
 
                     let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
@@ -293,7 +294,7 @@
                     }).html(updateCacheIcon);
 
                     let updateCacheText = $('<div />', {class: "card-title ml-2"})
-                        .html("{{ __('Actual data for') }}: " + json.cache.date + " ");
+                        .html("Сводные данные в таблице актуальны на дату: " + json.cache.date + " ");
                     updateCacheText.append(updateCacheButton);
                     let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
                     this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
