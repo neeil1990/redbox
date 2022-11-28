@@ -115,16 +115,15 @@
             </table>
         </div>
     </div>
-    <div style="margin-bottom: 70px;">
+    <div style="padding-bottom: 70px;">
         {{ $users->links() }}
     </div>
 @stop
 
 @section('js')
     <script>
-
         $('.page-item').children().css({
-            'font-size': '25px',
+            'font-size': '20px',
         })
 
         function agreeUser(event) {
