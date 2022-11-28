@@ -152,7 +152,7 @@
                             <div>
                                 {{ __('Search Engine') }}: {{ $cluster['request']['searchEngine'] ?? 'yandex' }}
                             </div>
-                            @if(empty($cluster['request']['mode']) || $cluster['request']['mode'] === 'professional')
+                            @if(isset($cluster['request']['mode']) || $cluster['request']['mode'] === 'professional')
                                 <div>
                                     {{ __('Clustering level') }}: {{ $cluster['request']['clusteringLevel'] }}
                                 </div>
