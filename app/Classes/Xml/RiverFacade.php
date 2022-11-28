@@ -66,39 +66,38 @@ class RiverFacade
 
             $attempt = 1;
             while (!isset($riverResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
+                sleep(1);
                 $riverResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
                 if (isset($riverResponse['error'])) {
-                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 938341087);
-                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'], 169011279);
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'] . ' ' . $this->getQuery(), 938341087);
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'] . ' ' . $this->getQuery(), 169011279);
                     return [
                         'number' => 0,
                         'phrase' => $this->getQuery(),
                     ];
                 }
+                $attempt = $attempt + 1;
             }
 
-            if ($searchInItems) {
-                if (
-                    isset($riverResponse['content']['includingPhrases']['items'][0]['phrase']) &&
-                    Str::length($riverResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())
-                ) {
-                    $number = htmlentities($riverResponse['content']['includingPhrases']['items'][0]['number']);
-
-                    return [
-                        'number' => str_replace("&nbsp;", '', $number),
-                        'phrase' => $riverResponse['content']['includingPhrases']['items'][0]['phrase']
-                    ];
-                } else {
-
-                    return [
-                        'number' => $this->removeExtraSymbols($riverResponse['content']['includingPhrases']['info'][2]),
-                        'phrase' => $this->getQuery()
-                    ];
-                }
-            } else {
+            if (
+                $searchInItems &&
+                isset($riverResponse['content']['includingPhrases']['items'][0]['phrase']) &&
+                Str::length($riverResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())
+            ) {
+                $number = htmlentities($riverResponse['content']['includingPhrases']['items'][0]['number']);
 
                 return [
+                    'number' => str_replace("&nbsp;", '', $number),
+                    'phrase' => $riverResponse['content']['includingPhrases']['items'][0]['phrase']
+                ];
+            } elseif (isset($riverResponse['content']['includingPhrases']['info'][2])) {
+                return [
                     'number' => $this->removeExtraSymbols($riverResponse['content']['includingPhrases']['info'][2]),
+                    'phrase' => $this->getQuery()
+                ];
+            } else {
+                return [
+                    'number' => 0,
                     'phrase' => $this->getQuery()
                 ];
             }
@@ -107,7 +106,7 @@ class RiverFacade
                 $e->getMessage(),
                 $e->getLine(),
                 $e->getFile(),
-                $this->xmlRiverPath . $this->query,
+                $this->getQuery(),
                 $riverResponse,
             ]);
             return [
