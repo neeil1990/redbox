@@ -209,7 +209,7 @@
                             {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
                         </div>
                     </div>
-                    @if(empty($cluster['request']['mode']) || $cluster['request']['mode'] === 'professional')
+                    @if(isset($cluster['request']['mode']) && $cluster['request']['mode'] === 'professional')
                         <button class="btn btn-secondary mt-5"
                                 type="button"
                                 id="fastScanButton"
