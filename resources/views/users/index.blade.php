@@ -115,7 +115,7 @@
             </table>
         </div>
     </div>
-    <div class="pb-5">
+    <div style="margin-bottom: 70px;">
         {{ $users->links() }}
     </div>
 @stop
@@ -124,7 +124,7 @@
     <script>
 
         $('.page-item').children().css({
-            'font-size': '30px',
+            'font-size': '25px',
         })
 
         function agreeUser(event) {
