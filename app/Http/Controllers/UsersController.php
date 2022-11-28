@@ -38,7 +38,6 @@ class UsersController extends Controller
     {
         $users = User::paginate(50);
 
-        dd($users);
         $users->map(function ($user) {
             if (!$user->session)
                 return true;
