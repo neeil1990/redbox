@@ -104,7 +104,6 @@
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 lengthMenu: LENGTH_MENU,
                 pageLength: PAGE_LENGTH,
-                "ordering": false,
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
@@ -124,8 +123,12 @@
                     url: '/monitoring/projects/get',
                 },
                 order: [
-                    [1, 'asc'],
                     [2, 'asc'],
+                ],
+                columnDefs: [
+                    { orderable: true, targets: 2 },
+                    { orderable: true, targets: 3 },
+                    { orderable: false, targets: '_all' },
                 ],
                 columns: [
                     {
@@ -155,11 +158,13 @@
                     },
                     {
                         title: 'Название проекта',
-                        data: 'name'
+                        data: 'name',
+                        name: 'name',
                     },
                     {
                         title: 'Домен',
-                        data: 'url'
+                        data: 'url',
+                        name: 'url',
                     },
                     {
                         title: 'Поисковики',
