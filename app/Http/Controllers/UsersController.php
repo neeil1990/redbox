@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -31,13 +32,11 @@ class UsersController extends Controller
     }
 
     /**
-     * Show all users
-     *
-     * @return Factory|View
+     * @return void
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::paginate(100);
 
         $users->map(function ($user) {
             if (!$user->session)
