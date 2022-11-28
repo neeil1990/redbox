@@ -68,15 +68,15 @@ class RiverFacade
             while (!isset($riverResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
                 sleep(1);
                 $riverResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
-                if (isset($riverResponse['error'])) {
-                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'] . ' ' . $this->getQuery(), 938341087);
+                $attempt = $attempt + 1;
+                if ($attempt === $this->countAttempts && isset($riverResponse['error'])) {
+                    TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'] . "\n Phrase:" . $this->getQuery(), 938341087);
                     TelegramBot::sendMessage('xmlRiver: ' . $riverResponse['error'] . ' ' . $this->getQuery(), 169011279);
                     return [
                         'number' => 0,
-                        'phrase' => $this->getQuery(),
+                        'phrase' => $this->getQuery()
                     ];
                 }
-                $attempt = $attempt + 1;
             }
 
             if (
