@@ -49,6 +49,7 @@ class ClusterController extends Controller
         if (filter_var($request->input('searchRelevance'), FILTER_VALIDATE_BOOL)) {
             $link = parse_url($request->input('domain'));
             if (empty($link['host'])) {
+                ClusterProgress::where('id', '=', $request['progressId'])->remove();
                 return response()->json([
                     'errors' => ['domain' => __('url not valid')]
                 ], 422);
