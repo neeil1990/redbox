@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Cluster;
 use App\ClusterConfiguration;
 use App\ClusterProgress;
+use App\ClusterQueue;
 use App\ClusterResults;
 use App\Common;
 use App\Exports\ClusterResultExport;
@@ -49,7 +50,6 @@ class ClusterController extends Controller
         if (filter_var($request->input('searchRelevance'), FILTER_VALIDATE_BOOL)) {
             $link = parse_url($request->input('domain'));
             if (empty($link['host'])) {
-                ClusterProgress::where('id', '=', $request['progressId'])->remove();
                 return response()->json([
                     'errors' => ['domain' => __('url not valid')]
                 ], 422);
@@ -68,32 +68,30 @@ class ClusterController extends Controller
      */
     public function startProgress(): JsonResponse
     {
-        $progress = new ClusterProgress();
-        $progress->save();
-
         return response()->json([
-            'id' => $progress->id
+            'id' => md5(microtime(true))
         ], 201);
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return JsonResponse
      */
-    public function getProgress(int $id): JsonResponse
+    public function getProgress(string $id): JsonResponse
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
         if (isset($cluster)) {
+            ClusterQueue::where('progress_id', '=', $id)->delete();
             return response()->json([
-                'percent' => 100,
+                'count' => $cluster->count_phrases,
                 'result' => json_decode(gzuncompress(base64_decode($cluster->result)), true),
                 'objectId' => $cluster->id,
             ]);
         }
 
-        $progress = ClusterProgress::where('id', '=', $id)->first();
+        $count = ClusterQueue::where('progress_id', '=', $id)->count();
         return response()->json([
-            'percent' => $progress->percent,
+            'count' => $count,
         ]);
     }
 
@@ -105,17 +103,17 @@ class ClusterController extends Controller
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
         if (isset($cluster)) {
+            ClusterQueue::where('progress_id', '=', $id)->delete();
             $cluster->request = json_decode($cluster->request, true);
             $cluster->region = Cluster::getRegionName($cluster->request['region']);
             return response()->json([
-                'percent' => 100,
                 'cluster' => $cluster,
             ]);
         }
 
-        $progress = ClusterProgress::where('id', '=', $id)->first();
+        $count = ClusterQueue::where('progress_id', '=', $id)->count();
         return response()->json([
-            'percent' => $progress->percent,
+            'count' => $count,
         ]);
     }
 

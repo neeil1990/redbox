@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -57,6 +56,8 @@ class Cluster
 
     protected $minimum;
 
+    protected $progressId;
+
     public function __construct(array $request, $user, $default = true)
     {
         if ($request['clusteringLevel'] === 'light') {
@@ -90,8 +91,8 @@ class Cluster
             $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
             $this->countPhrases = count($this->phrases);
             $this->request = $request;
+            $this->progressId = $request['progressId'];
 
-            $this->progress = ClusterProgress::where('id', '=', $request['progressId'])->first();
             $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
@@ -104,7 +105,8 @@ class Cluster
         return [
             'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites', 'mode', 'host', 'xml',
             'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'searchTarget', 'brutForce',
-            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster', 'user', 'minimum'
+            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster', 'user', 'minimum',
+            'progressId',
         ];
     }
 
@@ -115,12 +117,12 @@ class Cluster
 
     public function getProgressTotal(): int
     {
-        return $this->progress->total;
+        return $this->countPhrases;
     }
 
     public function getProgressCurrentCount(): int
     {
-        return \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->count();
+        return \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->count();
     }
 
     public function getClusters(): array
@@ -133,9 +135,9 @@ class Cluster
         return $this->xml;
     }
 
-    public function getProgressId(): int
+    public function getProgressId(): string
     {
-        return $this->progress->id;
+        return $this->progressId;
     }
 
     public function getRegion(): string
@@ -195,17 +197,13 @@ class Cluster
             $this->sendNotification();
         }
 
-        $this->progress->delete();
-        $this->progress->total = 0;
-        \App\ClusterQueue::where('progress_id', '=', $this->progress->id)->delete();
+        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
     }
 
     protected function parseSites()
     {
-        $percent = 49 / $this->countPhrases;
         $iterator = 0;
         foreach ($this->phrases as $key => $phrase) {
-            $this->progress->percent += $percent;
             $iterator++;
             $this->xml->setQuery($phrase);
             $sites = $this->xml->getXMLResponse();
@@ -214,10 +212,6 @@ class Cluster
             } else {
                 unset($this->phrases[$key]);
             }
-            if ($iterator % 3 === 0 || $phrase === end($this->phrases)) {
-                $this->progress->save();
-            }
-
         }
     }
 
@@ -327,14 +321,10 @@ class Cluster
 
     protected function wordStats()
     {
-        $this->progress->total = $this->countPhrases;
-        $this->progress->save();
-        $percent = 50 / $this->progress->total;
-
         foreach ($this->clusters as $key => $cluster) {
             foreach ($cluster as $phrase => $sites) {
                 if ($phrase !== 'finallyResult') {
-                    dispatch(new ClusterQueue($this, $percent, $key, $phrase))->onQueue('child_cluster');
+                    dispatch(new ClusterQueue($this, $key, $phrase))->onQueue('child_cluster');
                 }
             }
         }
@@ -414,7 +404,7 @@ class Cluster
         $this->newCluster = new ClusterResults();
         $result = $this->getResult();
         $this->newCluster->user_id = $this->user->id;
-        $this->newCluster->progress_id = $this->progress->id;
+        $this->newCluster->progress_id = $this->getProgressId();
         $this->newCluster->result = base64_encode(gzcompress(json_encode($result), 9));
         $this->newCluster->count_phrases = $this->countPhrases;
         $this->newCluster->count_clusters = count($result);

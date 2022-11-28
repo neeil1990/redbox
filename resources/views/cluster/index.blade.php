@@ -82,8 +82,7 @@
                         @include('cluster.layouts.form')
                     </div>
 
-                    <div id="progress-bar" style="display: none">
-                        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
+                    <div id="progress-bar" class="w-25" style="display: none">
                         <span id="progress-bar-state"></span>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
@@ -196,48 +195,39 @@
                     type: "GET",
                     url: `/get-cluster-progress/${id}`,
                     success: function (response) {
-                        setProgressBarStyles(response.percent)
-                        if (response.percent <= 50) {
-                            $('#progress-bar-state').html("{{ __('Parse xml') }}")
-                        } else if (response.percent === 50) {
-                            $('#progress-bar-state').html("{{ __('Waiting for a queue') }}")
-                        } else {
-                            $('#progress-bar-state').html("{{ __('Processing of the received information') }}")
-                        }
+                        setProgressBarStyles(response.count)
 
                         if ('result' in response) {
                             refreshAll()
-                            setTimeout(() => {
-                                table = renderHiddenTable(response['result'])
-                                renderResultTable(response['result'])
-                                destroyProgress(interval)
+                            table = renderHiddenTable(response['result'])
+                            renderResultTable(response['result'])
+                            destroyProgress(interval)
 
-                                $('.save-relevance-url').unbind().on('click', function () {
-                                    let phrase = $(this).attr('data-order')
-                                    let select = $('#' + phrase.replaceAll(' ', '-'))
-                                    let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
+                            $('.save-relevance-url').unbind().on('click', function () {
+                                let phrase = $(this).attr('data-order')
+                                let select = $('#' + phrase.replaceAll(' ', '-'))
+                                let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
 
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "{{ route('set.cluster.relevance.url') }}",
-                                        data: {
-                                            _token: $('meta[name="csrf-token"]').attr('content'),
-                                            phrase: $(this).attr('data-order'),
-                                            url: select.val(),
-                                            projectId: response['objectId'],
-                                        },
-                                        success: function () {
-                                            select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                                            table.cell(targetRow, 4).data(select.val())
-                                            table.draw()
-                                        },
-                                        error: function (response) {
-                                        }
-                                    });
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{{ route('set.cluster.relevance.url') }}",
+                                    data: {
+                                        _token: $('meta[name="csrf-token"]').attr('content'),
+                                        phrase: $(this).attr('data-order'),
+                                        url: select.val(),
+                                        projectId: response['objectId'],
+                                    },
+                                    success: function () {
+                                        select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
+                                        table.cell(targetRow, 4).data(select.val())
+                                        table.draw()
+                                    },
+                                    error: function (response) {
+                                    }
+                                });
 
-                                    $('#progress-bar-state').html("{{ __('Parse xml') }}")
-                                })
-                            }, 1000)
+                                $('#progress-bar-state').html("{{ __('Parse xml') }}")
+                            })
                         }
                     },
                     error: function () {

@@ -576,57 +576,6 @@
                     })
                 }
             });
-
-            function refreshAll() {
-                $.each($('.render-table'), function (key, value) {
-                    $('#' + $(this).attr('id')).dataTable().fnDestroy()
-                })
-
-                $('.render').remove()
-                $('#hidden-result-table').dataTable().fnDestroy()
-                $('#block-for-downloads-files').hide()
-                $('.render-table').remove()
-            }
-
-            function getProgressPercent(id) {
-                $.ajax({
-                    type: "GET",
-                    url: `/get-cluster-progress/${id}`,
-                    success: function (response) {
-                        setProgressBarStyles(response.percent)
-                    }
-                })
-            }
-
-            function startAnalysis() {
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('analysis.cluster') }}",
-                    data: getData(),
-                    success: function (response) {
-                        destroyProgress(progressId, interval)
-                        $('#start-analyse').attr('disabled', false)
-                        renderHiddenTable(response['result'])
-                        renderResultTable(response['result'])
-                    },
-                    error: function (error) {
-                        destroyProgress(progressId, interval)
-                        $('#start-analyse').attr('disabled', false)
-                        $('.toast.toast-error').show(300)
-                        setTimeout(function () {
-                            $('.toast.toast-error').hide(300)
-                        }, 5000)
-                    }
-                });
-            }
-
-            function destroyProgress(progressId, interval) {
-                clearInterval(interval)
-                setTimeout(() => {
-                    setProgressBarStyles(0)
-                    $('#progress-bar').hide(300)
-                }, 3000)
-            }
         </script>
     @endslot
 @endcomponent

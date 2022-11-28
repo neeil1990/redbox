@@ -4,13 +4,11 @@ namespace App\Jobs\Cluster;
 
 use App\Classes\Xml\RiverFacade;
 use App\Cluster;
-use App\ClusterProgress;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ClusterQueue implements ShouldQueue
@@ -25,22 +23,13 @@ class ClusterQueue implements ShouldQueue
 
     protected $phrase;
 
-    protected $region;
-
     protected $type;
-
-    protected $percent;
-
-    protected $progressId;
 
     protected $cluster;
 
-    public function __construct(Cluster $cluster, $percent, $key, $phrase)
+    public function __construct(Cluster $cluster, $key, $phrase)
     {
-        $this->progressId = $cluster->getProgressId();
-        $this->region = $cluster->getRegion();
         $this->cluster = $cluster;
-        $this->percent = $percent;
         $this->key = $key;
         $this->phrase = $phrase;
     }
@@ -48,7 +37,7 @@ class ClusterQueue implements ShouldQueue
     public function handle()
     {
         $clusterArrays = new \App\ClusterQueue();
-        $river = new RiverFacade($this->region);
+        $river = new RiverFacade($this->cluster->getRegion());
 
         if ($this->cluster->getSearchPhrases()) {
             $river->setQuery('"' . $this->phrase . '"');
@@ -85,13 +74,13 @@ class ClusterQueue implements ShouldQueue
             ]
         ]);
 
-        $clusterArrays->progress_id = $this->progressId;
+        $clusterArrays->progress_id = $this->cluster->getProgressId();
         $clusterArrays->save();
 
-        ClusterProgress::where('id', '=', $this->progressId)->update([
-            'success' => DB::raw("success + 1"),
-            'percent' => DB::raw("percent + $this->percent")
-        ]);
+//        ClusterProgress::where('id', '=', $this->progressId)->update([
+//            'success' => DB::raw("success + 1"),
+//            'percent' => DB::raw("percent + $this->percent")
+//        ]);
     }
 
     public function failed(\Throwable $exception)

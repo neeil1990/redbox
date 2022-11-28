@@ -21,13 +21,8 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
     };
 }
 
-function setProgressBarStyles(percent) {
-    percent = percent > 100 ? 100 : percent;
-
-    $('.progress-bar').css({
-        width: percent + '%'
-    })
-    $('.progress-bar').html(percent + '%');
+function setProgressBarStyles(count) {
+    $('#progress-bar-state').html('отсканированно: ' + count);
 }
 
 $('#save').on('change', function () {
