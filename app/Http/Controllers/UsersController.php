@@ -36,8 +36,9 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(100);
+        $users = User::paginate(50);
 
+        dd($users);
         $users->map(function ($user) {
             if (!$user->session)
                 return true;
