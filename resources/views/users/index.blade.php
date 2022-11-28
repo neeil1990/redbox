@@ -115,13 +115,17 @@
             </table>
         </div>
     </div>
-    <div>
+    <div class="pb-5">
         {{ $users->links() }}
     </div>
 @stop
 
 @section('js')
     <script>
+
+        $('#app > div > div:nth-child(2) > ul > li > span').css({
+            'font-size': '35px',
+        })
 
         function agreeUser(event) {
             if (window.confirm("Do you really want to delete?")) {
