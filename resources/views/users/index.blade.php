@@ -123,8 +123,8 @@
 @section('js')
     <script>
 
-        $('#app > div > div:nth-child(2) > ul > li > span').css({
-            'font-size': '35px',
+        $('.page-item').children().css({
+            'font-size': '30px',
         })
 
         function agreeUser(event) {
