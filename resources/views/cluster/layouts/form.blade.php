@@ -117,7 +117,6 @@
 <div class="form-group required">
     <label>{{ __('Merging Clusters') }}</label>
     {!! Form::select('engine_version', [
-            $config->engine_version => $config->engine_version,
             'latest' => __('Additional bulkhead (latest)'),
     ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
 </div>
