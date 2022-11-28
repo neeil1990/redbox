@@ -63,6 +63,8 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <!-- Moment js -->
+        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <!-- Papa parse -->
         <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
         <!-- Select2 -->
@@ -287,14 +289,25 @@
                     this.closest('.card').find('.card-header .card-title').html("");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
 
+                    let dataTimeCache = $('<span />', {class: "data-time-cache"}).text(json.cache.date);
+                    let CacheText = `Сводные данные в таблице актуальны на дату: ${dataTimeCache[0].outerHTML} `;
                     let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
                     let updateCacheButton = $('<a />', {
                         class: "text-muted",
-                        href: "/monitoring/project/remove/cache"
+                        href: "javascript:void(0)"
                     }).html(updateCacheIcon);
 
-                    let updateCacheText = $('<div />', {class: "card-title ml-2"})
-                        .html("Сводные данные в таблице актуальны на дату: " + json.cache.date + " ");
+                    updateCacheButton.click(function(){
+                        let btn = $(this);
+                        axios.get('/monitoring/project/remove/cache')
+                            .then(function () {
+                                table.draw(false);
+                                btn.prev('.data-time-cache').text(moment().format("DD.MM.YYYY H:m"))
+                            });
+                        return false;
+                    });
+
+                    let updateCacheText = $('<div />', {class: "card-title ml-2"}).html(CacheText);
                     updateCacheText.append(updateCacheButton);
                     let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
                     this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
