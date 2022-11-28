@@ -114,8 +114,9 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div>
         {{ $users->links() }}
-        <!-- /.card-body -->
     </div>
 @stop
 
