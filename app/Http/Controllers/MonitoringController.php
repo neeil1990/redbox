@@ -125,6 +125,11 @@ class MonitoringController extends Controller
         if($search = $search['value'])
             $projects = $projects->where('name', 'like', $search . '%');
 
+        if($order = Arr::first($request->input('order'))){
+            $columns = $request->input('columns');
+            $projects->orderBy($columns[$order['column']]['name'], $order['dir']);
+        }
+
         $projects = $projects->paginate($request->input('length', 1), ['*'], 'page', $page);
 
         $cacheDataTime = Carbon::now()->format('d.m.Y H:i');
