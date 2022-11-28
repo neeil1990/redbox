@@ -119,7 +119,13 @@ class MonitoringController extends Controller
         $page = $request->input('start', 0) + 1;
         /** @var User $user */
         $user = $this->user;
-        $projects = $user->monitoringProjects()->paginate($request->input('length', 1), ['*'], 'page', $page);
+        $projects = $user->monitoringProjects();
+
+        $search = $request->input('search');
+        if($search = $search['value'])
+            $projects = $projects->where('name', 'like', $search . '%');
+
+        $projects = $projects->paginate($request->input('length', 1), ['*'], 'page', $page);
 
         $cacheDataTime = Carbon::now()->format('d.m.Y H:i');
         if($projects->total())

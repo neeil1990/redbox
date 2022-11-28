@@ -109,7 +109,7 @@
                 language: {
                     lengthMenu: "_MENU_",
                     search: "_INPUT_",
-                    searchPlaceholder: "Search...",
+                    searchPlaceholder: "Search project",
                     paginate: {
                         "first":      "«",
                         "last":       "»",
