@@ -7,18 +7,39 @@ function renderHiddenTable(data) {
                 iterator++
                 clusterIterator++
 
-                let phraseForm = 'phrased' in information ? information['phrased']['number'] : '0'
-                let targetForm = 'target' in information ? information['target']['number'] : '0'
-                let baseForm = 'based' in information ? information['based']['number'] : '0'
+                let phraseForm = 0
+                if ('phrased' in information) {
+                    if (information['phrased'] === 0) {
+                        phraseForm = 0
+                    } else {
+                        phraseForm = information['phrased']['number']
+                    }
+                }
+
+                let targetForm = 0
+                if ('target' in information) {
+                    if (information['target'] === 0) {
+                        targetForm = 0
+                    } else {
+                        targetForm = information['target']['number']
+                    }
+                }
+
+                let baseForm = 0
+                if ('based' in information) {
+                    if (information['based'] === 0) {
+                        baseForm = 0
+                    } else {
+                        baseForm = information['based']['number']
+                    }
+                }
                 let groupName = 'groupName' in result['finallyResult'] ? result['finallyResult']['groupName'] : ' '
 
-                let relevance
+                let relevance = ''
                 if ('link' in information) {
                     relevance = information['link']
                 } else if ('relevance' in information && information['relevance'] !== null) {
                     relevance = information['relevance'][0]
-                } else {
-                    relevance = ''
                 }
 
                 $('#hidden-table-tbody').append(

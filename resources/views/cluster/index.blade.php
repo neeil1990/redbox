@@ -243,11 +243,6 @@
                     url: "{{ route('analysis.cluster') }}",
                     data: getData(),
                     success: function (response) {
-                        $('.dont-worry-notification').show(300)
-                        setTimeout(() => {
-                            $('.dont-worry-notification').hide(300)
-                        }, 15000)
-
                         if ($('#save').val() === '1') {
                             $('.history-notification').show(300)
                             setTimeout(() => {

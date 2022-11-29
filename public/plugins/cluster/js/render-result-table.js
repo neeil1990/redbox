@@ -1,11 +1,5 @@
 function renderResultTable(data) {
     let iterator = 0
-    let style
-    let phrased
-    let target
-    let based
-    let targetPhrase
-    let groupName
 
     $.each(data, function (key, result) {
         let clusterIterator = 0
@@ -13,6 +7,7 @@ function renderResultTable(data) {
         let clusterSites = ''
         let newRow = ''
         let clusterId = (Math.random() + 1).toString(36).substring(7)
+        let minWidth = '120px'
 
         $.each(result['finallyResult']['sites'], function (site, count) {
             clusterSites +=
@@ -26,7 +21,6 @@ function renderResultTable(data) {
                 iterator++
                 clusterIterator++
 
-                let changedBg = "basedNormal" in information;
                 let sites = ''
                 let fullUrls = information['sites'].join("\r")
 
@@ -37,15 +31,32 @@ function renderResultTable(data) {
                         '</div>'
                 })
 
-                if (changedBg) {
-                    style = 'bg-cluster-warning'
-                } else {
-                    style = ''
+                let phraseForm = 0
+                if ('phrased' in information) {
+                    if (information['phrased'] === 0) {
+                        phraseForm = 0
+                    } else {
+                        phraseForm = information['phrased']['number']
+                    }
                 }
 
-                phrased = 'phrased' in information ? information['phrased']['number'] : '0'
-                target = 'target' in information ? information['target']['number'] : '0'
-                based = 'based' in information ? information['based']['number'] : '0'
+                let targetForm = 0
+                if ('target' in information) {
+                    if (information['target'] === 0) {
+                        targetForm = 0
+                    } else {
+                        targetForm = information['target']['number']
+                    }
+                }
+
+                let baseForm = 0
+                if ('based' in information) {
+                    if (information['based'] === 0) {
+                        baseForm = 0
+                    } else {
+                        baseForm = information['based']['number']
+                    }
+                }
                 let groupName = 'groupName' in result['finallyResult'] ? result['finallyResult']['groupName'] : ' '
 
                 let merge = ''
@@ -62,20 +73,32 @@ function renderResultTable(data) {
 
                 let relevance = ''
                 if ('link' in information) {
+                    minWidth = '450px'
                     relevance = '<a href="' + information['link'] + '" target="_blank">' + information['link'] + '</a>'
-                } else if ('relevance' in information) {
+                } else if ('relevance' in information && information['relevance'] !== 0) {
+                    minWidth = '450px'
                     $.each(information['relevance'], function (key, value) {
                         relevance += '<option value="' + value + '">' + value + '</option>'
                     })
 
                     relevance = '<div class="d-flex">' +
-                        '<select class="custom-select" id="' + phrase.replaceAll(' ', '-') + '">' + relevance + '</select>' +
-                        '<button class="btn btn-secondary save-relevance-url" data-order="' + phrase + '">Сохранить</button>' +
+                        '<select style="border-radius: 0 !important;" class="custom-select" id="' + phrase.replaceAll(' ', '-') + '">' + relevance + '</select>' +
+                        '<button style="border-radius: 0 !important;" class="btn btn-secondary save-relevance-url" data-order="' + phrase + '"><i class="fa fa-save" style="color: white"></i></button>' +
                         '</div>'
                 }
 
-                targetPhrase = changedBg ? information['basedNormal'] : phrase
-                let title = changedBg ? `title='Ваша фраза "${phrase}" была изменена'` : ''
+                let title
+                let style
+                if (
+                    "basedNormal" in information &&
+                    (information["basedNormal"] === false || information["basedNormal"] !== true)
+                ) {
+                    style = 'bg-cluster-warning'
+                    title = `title='Ваша фраза "${phrase}" была изменена'`
+                } else {
+                    style = ''
+                    title = ''
+                }
 
                 newTableRows +=
                     '<tr>' +
@@ -85,7 +108,7 @@ function renderResultTable(data) {
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
                     '       <div class="d-flex justify-content-between"> ' +
-                    '          <div class="cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
+                    '          <div class="cluster-id-' + clusterId + '">' + phrase + '</div> ' +
                     '          <div class="ml-1">' +
                     '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
@@ -101,9 +124,9 @@ function renderResultTable(data) {
                     '   </td> ' +
                     '   <td class="border-0 group-' + clusterId + '">' + groupName + '</td>' +
                     '   <td class="border-0 relevance-' + clusterId + '">' + relevance + '</td>' +
-                    '   <td class="border-0 base-' + clusterId + '" data-target="' + based + '">' + based + '</td>' +
-                    '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phrased + '">' + phrased + '</td>' +
-                    '   <td class="border-0 target-' + clusterId + '" data-target="' + target + '">' + target + '</td>' +
+                    '   <td class="border-0 base-' + clusterId + '" data-target="' + baseForm + '">' + baseForm + '</td>' +
+                    '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phraseForm + '">' + phraseForm + '</td>' +
+                    '   <td class="border-0 target-' + clusterId + '" data-target="' + targetForm + '">' + targetForm + '</td>' +
                     '</tr>'
             }
         })
@@ -122,7 +145,7 @@ function renderResultTable(data) {
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">Группа</i></th>' +
-            '               <th style="border-top-width: 2px;min-width: 250px;">Релевантные url</i></th>' +
+            '               <th style="border-top-width: 2px;min-width: ' + minWidth + '">Релевантные url</i></th>' +
             '               <th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
             '               <th style="border-top-width: 2px;min-width: 100px;">"Фразовая"</th>' +
             '               <th style="border-top-width: 2px;min-width: 90px;">"!Точная"</th>' +

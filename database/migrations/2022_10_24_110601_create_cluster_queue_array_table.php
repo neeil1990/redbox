@@ -15,7 +15,7 @@ class CreateClusterQueueArrayTable extends Migration
     {
         Schema::create('cluster_queue_array', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('progress_id');
+            $table->string('progress_id', 255);
             $table->longText('json');
             $table->timestamps();
         });

@@ -306,8 +306,55 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
 
     Route::get('/test', function () {
-        $t = json_decode('{"content":{"hasNextPage":"no","includingPhrases":{"info":["Что искали со словом «шкода карок    цена и комплектация официальный сайт»"," — ","2 показа в месяц"],"numberCaption":["Показов в месяц",{"content":[{"content":"В результат   ах подбора выводится статистика запросов на Яндексе, включающих заданное вами слово или словосочетание (слева), и похожих запросов (спра   ва).","tag":"p"},{"content":"Цифры рядом с каждым запросом в результатах подбора слов дают предварительный прогноз числа показов в месяц   , которое вы получите, выбрав этот запрос в качестве ключевого слова. Так, цифра рядом со словом «телефон» обозначает число показов по в   сем запросам со словом «телефон»: «купить телефон», «сотовый телефон», «купить сотовый телефон», «купить новый сотовый телефон в крапинк   у» и т.п.","tag":"p"},{"content":"Если вы хотите узнать количество показов для пользователей из определенного региона, кликните по «Все    регионы».","tag":"p"}],"block":"b-tooltip"}],"phraseCaption":"Статистика по словам","items":[]},"statLimitText":"Статистика показов огра   ничена 41 страницей","statLimitReached":"","currentPage":"1","regions":"213","lastUpdate":"Последнее обновление: 27.11.2022","block":"b-   word-statistics","phrasesAssociations":{"info":"Запросы, похожие на «шкода карок цена и комплектация официальный сайт»","numberCaption":   ["Показов в месяц",{"content":[{"content":"В результатах подбора выводится статистика запросов на Яндексе, включающих заданное вами слов   о или словосочетание (слева), и похожих запросов (справа).","tag":"p"},{"content":"Цифры рядом с каждым запросом в результатах подбора с   лов дают предварительный прогноз числа показов в месяц, которое вы получите, выбрав этот запрос в качестве ключевого слова. Так, цифра р   ядом со словом «телефон» обозначает число показов по всем запросам со словом «телефон»: «купить телефон», «сотовый телефон», «купить сот   овый телефон», «купить новый сотовый телефон в крапинку» и т.п.","tag":"p"},{"content":"Если вы хотите узнать количество показов для пол   ьзователей из определенного региона, кликните по «Все регионы».","tag":"p"}],"block":"b-tooltip"}],"phraseCaption":"Статистика по словам   ","items":[]}},"block":"l-content"}', true);
-        dd($t);
+        $results = \App\ClusterQueue::where('progress_id', '=', '30285bf5e835cf98c3c4e19a6a710cde')->get();
+        $t = [];
+        foreach ($results as $result) {
+            $t = array_merge_recursive($t, json_decode($result->json, true));
+        }
+
+        $res = [];
+        foreach ($t as $key => $item) {
+            $res[array_key_first($item)] = $item[array_key_first($item)];
+        }
+        $willClustered = [];
+        $clusters = [];
+
+        foreach ($res as $phrase => $item) {
+            foreach ($res as $phrase2 => $item2) {
+                if (isset($willClustered[$phrase2])) {
+                    continue;
+                } else if (isset($clusters[$phrase])) {
+                    foreach ($clusters[$phrase] as $target => $elem) {
+                        if (count(array_intersect($item2['sites'], $elem['sites'])) >= 15) {
+                            $clusters[$phrase] = array_merge_recursive($item, $item2);
+                            dd($clusters);
+//                            $clusters[$phrase][$phrase2] = [
+//                                'based' => $item2['based'],
+//                                'phrased' => $item2['phrased'],
+//                                'target' => $item2['target'],
+//                                'relevance' => $item2['relevance'],
+//                                'sites' => $item2['sites'],
+//                            ];
+                            $willClustered[$phrase2] = true;
+                            break;
+                        }
+                    }
+                } else if (count(array_intersect($item['sites'], $item2['sites'])) >= 15) {
+                    $clusters[$phrase] = array_merge_recursive($item, $item2);
+                    dd($clusters);
+                    $clusters[$phrase][$phrase2] = [
+                        'based' => $item2['based'],
+                        'phrased' => $item2['phrased'],
+                        'target' => $item2['target'],
+                        'relevance' => $item2['relevance'],
+                        'sites' => $item2['sites'],
+                    ];
+                    $willClustered[$phrase2] = true;
+                }
+            }
+        }
+
+        dd($clusters);
     });
 
 });

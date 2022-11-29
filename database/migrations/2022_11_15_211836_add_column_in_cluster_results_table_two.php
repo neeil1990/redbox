@@ -14,7 +14,7 @@ class AddColumnInClusterResultsTableTwo extends Migration
     public function up()
     {
         Schema::table('cluster_results', function (Blueprint $table) {
-            $table->integer('progress_id');
+            $table->string('progress_id', 255);
             $table->boolean('show')->default(1);
         });
     }
