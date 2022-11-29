@@ -73,10 +73,6 @@
     </div>
 
     <div class="row">
-        <div class="col-12 alert-data"></div>
-    </div>
-
-    <div class="row">
         <div class="col-12 card-table">
             <div class="card processing">
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
@@ -141,15 +137,6 @@
                 dates_range: DATES,
                 mode_range: MODE,
             }).then(function (response) {
-
-                let tableWidth = Object.keys(response.data.columns).length;
-
-                if(tableWidth <= MAIN_COLUMNS_COUNT){
-
-                    $('.alert-data').append($('<div />', {
-                        class: "callout callout-danger"
-                    }).html($('<h5 />', { class: "mb-0" }).text('За данный период позиций нет')));
-                }
 
                 let columns = [];
                 $.each(response.data.columns, function (i, item) {
