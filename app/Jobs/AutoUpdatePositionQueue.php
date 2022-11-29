@@ -55,8 +55,8 @@ class AutoUpdatePositionQueue implements ShouldQueue
         $store->saveByQuery($this->model, $this->engine);
 
         MonitoringStat::create([
-            'queue' => (isset($this->job)) ? $this->job->getQueue() : null,
-            'queue_id' => (isset($this->job)) ? $this->job->getJobId() : null,
+            'queue' => $this->job->getQueue(),
+            'queue_id' => $this->job->getJobId(),
             'model_class' => (isset($this->model)) ? get_class($this->model) : null,
             'model_id' => (isset($this->model)) ? $this->model->id : null,
             'errors' => false,
@@ -73,7 +73,7 @@ class AutoUpdatePositionQueue implements ShouldQueue
     public function failed(Exception $exception)
     {
         MonitoringStat::create([
-            'queue' => (isset($this->job)) ? $this->job->getQueue() : null,
+            'queue' => (isset($this->job)) ? $this->job->getQueue() : "AutoUpdatePositionQueue",
             'queue_id' => (isset($this->job)) ? $this->job->getJobId() : null,
             'model_class' => (isset($this->model)) ? get_class($this->model) : null,
             'model_id' => (isset($this->model)) ? $this->model->id : null,
