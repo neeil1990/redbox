@@ -39,6 +39,9 @@ class ClusterQueue implements ShouldQueue
         $clusterArrays = new \App\ClusterQueue();
         $river = new RiverFacade($this->cluster->getRegion());
 
+        $this->cluster->getXml()->setQuery($this->phrase);
+        $sites = $this->cluster->getXml()->getXMLResponse();
+
         if ($this->cluster->getSearchPhrases()) {
             $river->setQuery('"' . $this->phrase . '"');
             $phrase = $river->riverRequest(false);
@@ -52,6 +55,9 @@ class ClusterQueue implements ShouldQueue
         if ($this->cluster->getSearchBase()) {
             $river->setQuery($this->phrase);
             $based = $river->riverRequest();
+            $baseFormEq = $based['phrase'] === $this->phrase;
+        } else {
+            $baseFormEq = true;
         }
 
         if ($this->cluster->getSearchRelevance()) {
@@ -69,7 +75,9 @@ class ClusterQueue implements ShouldQueue
                     'based' => $based ?? 0,
                     'phrased' => $phrase ?? 0,
                     'target' => $target ?? 0,
-                    'relevance' => $relevance ?? 0
+                    'relevance' => $relevance ?? 0,
+                    'basedNormal' => $baseFormEq,
+                    'sites' => $sites,
                 ]
             ]
         ]);
@@ -77,10 +85,6 @@ class ClusterQueue implements ShouldQueue
         $clusterArrays->progress_id = $this->cluster->getProgressId();
         $clusterArrays->save();
 
-//        ClusterProgress::where('id', '=', $this->progressId)->update([
-//            'success' => DB::raw("success + 1"),
-//            'percent' => DB::raw("percent + $this->percent")
-//        ]);
     }
 
     public function failed(\Throwable $exception)

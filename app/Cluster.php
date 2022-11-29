@@ -177,16 +177,27 @@ class Cluster
 
     public function startAnalysis()
     {
-        $this->parseSites();
-        $this->searchClusters();
-        $this->calculateClustersInfo();
-        $this->wordStats();
+        foreach ($this->phrases as $key => $phrase) {
+            dispatch(new ClusterQueue($this, $key, $phrase))->onQueue('child_cluster');
+        }
+
         dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
     }
 
     public function calculate()
     {
-        $this->setRiverResults();
+        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
+        $res = [];
+        foreach ($results as $result) {
+            $res = array_merge_recursive($res, json_decode($result->json, true));
+        }
+
+        foreach ($res as $item) {
+            $this->sites[array_key_first($item)] = $item[array_key_first($item)];
+        }
+
+        $this->searchClusters();
+        $this->calculateClustersInfo();
         if ($this->getSearchBase()) {
             $this->searchGroupName();
         }
@@ -200,21 +211,6 @@ class Cluster
         \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
     }
 
-    protected function parseSites()
-    {
-        $iterator = 0;
-        foreach ($this->phrases as $key => $phrase) {
-            $iterator++;
-            $this->xml->setQuery($phrase);
-            $sites = $this->xml->getXMLResponse();
-            if ($sites !== null) {
-                $this->sites[$phrase]['sites'] = $sites;
-            } else {
-                unset($this->phrases[$key]);
-            }
-        }
-    }
-
     /**
      * @param $sites
      * @return void
@@ -226,7 +222,7 @@ class Cluster
 
     public function searchClusters()
     {
-        $this->searchClustersEngineV2($this->minimum);
+        $this->searchClustersEngine($this->minimum);
         $this->brutForceClusters($this->minimum + 2);
 
         if ($this->brutForce) {
@@ -238,7 +234,7 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngineV2($minimum)
+    protected function searchClustersEngine($minimum)
     {
         $willClustered = [];
 
@@ -249,14 +245,12 @@ class Cluster
                 } else if (isset($this->clusters[$phrase])) {
                     foreach ($this->clusters[$phrase] as $target => $elem) {
                         if (count(array_intersect($item2['sites'], $elem['sites'])) >= $minimum) {
-                            $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
-                            $willClustered[$phrase2] = true;
+                            $willClustered = $this->mergeClusters($item2, $phrase, $phrase2, $willClustered);
                             break;
                         }
                     }
                 } else if (count(array_intersect($item['sites'], $item2['sites'])) >= $minimum) {
-                    $this->clusters[$phrase][$phrase2] = ['sites' => $item2['sites']];
-                    $willClustered[$phrase2] = true;
+                    $willClustered = $this->mergeClusters($item2, $phrase, $phrase2, $willClustered);
                 }
             }
         }
@@ -319,47 +313,23 @@ class Cluster
         }
     }
 
-    protected function wordStats()
-    {
-        foreach ($this->clusters as $key => $cluster) {
-            foreach ($cluster as $phrase => $sites) {
-                if ($phrase !== 'finallyResult') {
-                    dispatch(new ClusterQueue($this, $key, $phrase))->onQueue('child_cluster');
-                }
-            }
-        }
-    }
-
     protected function setRiverResults()
     {
-        $array = [];
-        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
-        foreach ($results as $result) {
-            $array = array_merge_recursive($array, json_decode($result->json, true));
-        }
+        if ($this->getSearchBase()) {
+            $array = [];
+            $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
+            foreach ($results as $result) {
+                $array = array_merge_recursive($array, json_decode($result->json, true));
+            }
 
-        foreach ($this->clusters as $key => $cluster) {
-            foreach ($cluster as $phrase => $sites) {
-                if ($phrase !== 'finallyResult') {
-                    if ($this->getSearchBase()) {
+            foreach ($this->clusters as $key => $cluster) {
+                foreach ($cluster as $phrase => $sites) {
+                    if ($phrase !== 'finallyResult') {
                         $this->clusters[$key][$phrase]['based'] = $array[$key][$phrase]['based'];
                         if ($array[$key][$phrase]['based']['phrase'] !== $phrase) {
                             $this->clusters[$key][$phrase]['basedNormal'] = $array[$key][$phrase]['based']['phrase'];
                         }
                     }
-
-                    if ($this->getSearchPhrases()) {
-                        $this->clusters[$key][$phrase]['phrased'] = $array[$key][$phrase]['phrased'];
-                    }
-
-                    if ($this->getSearchTarget()) {
-                        $this->clusters[$key][$phrase]['target'] = $array[$key][$phrase]['target'];
-                    }
-
-                    if ($this->getSearchRelevance()) {
-                        $this->clusters[$key][$phrase]['relevance'] = $array[$key][$phrase]['relevance'];
-                    }
-
                 }
             }
         }
@@ -569,5 +539,20 @@ class Cluster
             default:
                 return 'Регион не опознан';
         }
+    }
+
+    protected function mergeClusters($item2, $phrase, $phrase2, array $willClustered): array
+    {
+        $this->clusters[$phrase][$phrase2] = [
+            'based' => $item2['based'],
+            'phrased' => $item2['phrased'],
+            'target' => $item2['target'],
+            'relevance' => $item2['relevance'],
+            'sites' => $item2['sites'],
+            'basedNormal' => $item2['basedNormal'],
+        ];
+        $willClustered[$phrase2] = true;
+
+        return $willClustered;
     }
 }
