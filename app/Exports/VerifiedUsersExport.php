@@ -42,8 +42,8 @@ class VerifiedUsersExport implements FromCollection
                 $user->last_name,
                 $user->email,
                 $roles,
-                $user->created_at->format('d.m.Y H:m:s'),
-                $user->last_online_at->format('d.m.Y H:m:s'),
+                $user->created_at->format('d.m.Y'),
+                $user->last_online_at->format('d.m.Y'),
             ];
 
         }
