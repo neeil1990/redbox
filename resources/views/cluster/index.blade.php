@@ -169,6 +169,7 @@
                             progressId = response.id
                             $('#progress-bar').show()
                             $('#progressId').val(progressId)
+                            setProgressBarStyles(0)
                             interval = setInterval(() => {
                                 getProgressPercent(response.id, interval)
                             }, 5000)
