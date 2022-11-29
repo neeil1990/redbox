@@ -7,10 +7,9 @@
             <!-- /.card-header -->
             <div class="card-body">
                 <div class="callout callout-warning">
-                    <ul class="mb-0">
-                        <li class="text-success"> Lorem ipsum dolor sit amet, consectetur adipisicing elit. </li>
-                        <li class="text-danger">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </li>
-                    </ul>
+                    <p class="mb-0">
+                        Здесь Вы можете установить когда снимать позиции. Если Вы установите режим и не укажите время/дни, то проект будет обновляться только в ручном режиме. Обновить можно будет на главной странице с проектами или внутри самого проекта. Обновлять можно как все фразы сразу, так и выборочно.
+                    </p>
                 </div>
 
                 <div class="form-group">

@@ -303,7 +303,7 @@
 
                     $.each(data, function(index, value){
 
-                        if(value.group.length < 3)
+                        if(!value.group.trim().length)
                             value.group = selectedGroup.val();
 
                         let query = $('<input />', {
