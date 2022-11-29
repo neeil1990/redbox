@@ -297,10 +297,14 @@
                 keywords: function (event) {
 
                     let inputs = this.part.find('.input-keywords');
+                    let selectedGroup = this.part.find('#keyword-groups');
                     let html = "";
                     let data = table.rows().data();
 
                     $.each(data, function(index, value){
+
+                        if(value.group.length < 3)
+                            value.group = selectedGroup.val();
 
                         let query = $('<input />', {
                             type: "hidden",

@@ -253,13 +253,15 @@ class MonitoringController extends Controller
                 'name' => $group
             ]);
 
-            foreach ($keywords['query'] as $ind => $query){
-                $project->keywords()->create([
-                    'monitoring_group_id' => $group->id,
-                    'query' => $query,
-                    'page' => $keywords['page'][$ind],
-                    'target' => $keywords['target'][$ind],
-                ]);
+            if(Arr::has($keywords, 'query')) {
+                foreach ($keywords['query'] as $ind => $query){
+                    $project->keywords()->create([
+                        'monitoring_group_id' => $group->id,
+                        'query' => $query,
+                        'page' => $keywords['page'][$ind],
+                        'target' => $keywords['target'][$ind],
+                    ]);
+                }
             }
         }
 
