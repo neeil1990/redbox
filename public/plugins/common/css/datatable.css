@@ -414,3 +414,7 @@ table.dataTable thead .sorting_asc{
 table.dataTable thead .sorting_desc{
     background-image: url(../../../img/sort_desc.png);
 }
+
+a.paginate_button.current {
+    background: #ebf0f5 !important;
+}

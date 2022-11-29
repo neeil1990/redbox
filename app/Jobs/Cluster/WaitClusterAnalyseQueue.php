@@ -3,6 +3,7 @@
 namespace App\Jobs\Cluster;
 
 use App\Cluster;
+use App\ClusterResults;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -34,8 +35,9 @@ class WaitClusterAnalyseQueue implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->cluster->getProgressTotal() === 0) {
-            return;
+        $result = ClusterResults::where('progress_id', '=', $this->cluster->getProgressId())->first();
+        if (isset($result)) {
+            exit();
         } else if ($this->cluster->getProgressTotal() !== $this->cluster->getProgressCurrentCount()) {
             dispatch(new WaitClusterAnalyseQueue($this->cluster))->onQueue('cluster_wait')->delay(Carbon::now()->addSeconds(10));
         } else {

@@ -3,6 +3,7 @@
 @section('title', __('Users'))
 
 @section('content')
+    <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
     <div class="card">
         <div class="p-3 border-bottom d-flex justify-content-between w-100 align-items-center">
             <h3 class="card-title">{{ __('Users') }}</h3>
@@ -13,10 +14,10 @@
         </div>
 
         <div class="card-body table-responsive p-0">
-            <table class="table table-striped projects">
+            <table class="table table-striped projects" id="service-users">
                 <thead>
                 <tr>
-                    <th style="width: 1%">
+                    <th style="width: 55px">
                         {{ __('ID') }}
                     </th>
                     <th style="width: 20%">
@@ -40,46 +41,46 @@
                 @foreach($users as $user)
                     <tr>
                         <td>{{ $user->id }}</td>
-                        <td>
-                            <a>{{ $user->name }} {{ $user->last_name }}</a>
-                            @if($user->session)
-                                <br/>
-                                <small>
-                                    <div class="d-flex flex-row align-items-center">
-                                        <div>
-                                            @if ($user->session->agent->isDesktop())
-                                                <i class="fas fa-desktop fa-lg"></i>
-                                            @else
-                                                <i class="fas fa-mobile fa-lg"></i>
-                                            @endif
-                                        </div>
+                        <td data-target="{{ $user->name }}">
+                            {{ $user->name }} {{ $user->last_name }}
+                            {{--                            @if($user->session)--}}
+                            {{--                                <br/>--}}
+                            {{--                                <small>--}}
+                            {{--                                    <div class="d-flex flex-row align-items-center">--}}
+                            {{--                                        <div>--}}
+                            {{--                                            @if ($user->session->agent->isDesktop())--}}
+                            {{--                                                <i class="fas fa-desktop fa-lg"></i>--}}
+                            {{--                                            @else--}}
+                            {{--                                                <i class="fas fa-mobile fa-lg"></i>--}}
+                            {{--                                            @endif--}}
+                            {{--                                        </div>--}}
 
-                                        <div class="ml-2">
-                                            <div class="text-sm text-gray-600">
-                                                {{ $user->session->agent->platform() }}
-                                                - {{ $user->session->agent->browser() }}
-                                            </div>
-                                            <div class="text-xs text-gray-500">
-                                                {{ $user->session->ip_address }},
+                            {{--                                        <div class="ml-2">--}}
+                            {{--                                            <div class="text-sm text-gray-600">--}}
+                            {{--                                                {{ $user->session->agent->platform() }}--}}
+                            {{--                                                - {{ $user->session->agent->browser() }}--}}
+                            {{--                                            </div>--}}
+                            {{--                                            <div class="text-xs text-gray-500">--}}
+                            {{--                                                {{ $user->session->ip_address }},--}}
 
-                                                @if ($user->session->is_current_device)
-                                                    <span class="text-green">{{ __('This device') }}</span>
-                                                @else
-                                                    {{ __('Last active') }} {{ $user->session->last_active }}
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </small>
-                            @endif
+                            {{--                                                @if ($user->session->is_current_device)--}}
+                            {{--                                                    <span class="text-green">{{ __('This device') }}</span>--}}
+                            {{--                                                @else--}}
+                            {{--                                                    {{ __('Last active') }} {{ $user->session->last_active }}--}}
+                            {{--                                                @endif--}}
+                            {{--                                            </div>--}}
+                            {{--                                        </div>--}}
+                            {{--                                    </div>--}}
+                            {{--                                </small>--}}
+                            {{--                            @endif--}}
                         </td>
-                        <td>
+                        <td data-target="{{ $user->email }}">
                             {{ $user->email }}
                             @if($user->email_verified_at)
                                 <span class="badge bg-success">{{ __('VERIFIED') }}</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-target="{{ $user->created_at->format('d.m.Y') }}">
                             {{ $user->created_at->format('d.m.Y H:m:s') }}
                             <br/>
                             <small>{{ $user->created_at->diffForHumans() }}</small>
@@ -89,7 +90,7 @@
                                 <span class="badge badge-success">{{ __($role) }}</span>
                             @endforeach
                         </td>
-                        <td>
+                        <td data-target="{{ $user->last_online_at->format('d.m.Y') }}">
                             {{ $user->last_online_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
@@ -115,15 +116,36 @@
             </table>
         </div>
     </div>
-    <div style="padding-bottom: 70px;">
-        {{ $users->links() }}
-    </div>
 @stop
 
 @section('js')
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script>
-        $('.page-item').children().css({
-            'font-size': '20px',
+        $(document).ready(function () {
+            $('#service-users').DataTable({
+                "pageLength": 100,
+            })
+
+            $('#service-users_length').css({
+                'padding-left': '15px',
+                'padding-top': '15px',
+            })
+
+            $('#service-users_info ').css({
+                'padding-left': '15px',
+                'padding-top': '15px',
+            })
+
+            $('#service-users_filter ').css({
+                'padding-right': '15px',
+                'padding-top': '15px',
+            })
+
+            $('#service-users_paginate ').css({
+                'margin-right': '15px',
+                'margin-top': '15px',
+                'margin-bottom': '15px',
+            })
         })
 
         function agreeUser(event) {
