@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MonitoringStat extends Model
 {
-    protected $fillable = ['queue', 'queue_id', 'model_class', 'model_id', 'errors'];
+    protected $fillable = ['queue', 'queue_id', 'model_class', 'model_id', 'errors', 'msg'];
 
     public function scopeWithoutErrors($query)
     {

@@ -414,12 +414,17 @@ class MonitoringController extends Controller
 
         $mode = $request->input('mode_range');
         $regionId = $request->input('region_id');
-        if(!$regionId)
-            $mode = 'main';
 
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
+
+        if($project->searchengines->count() > 1 && empty($regionId))
+            $mode = 'main';
+        else{
+            if(empty($regionId))
+                $regionId = $project->searchengines->first()->id;
+        }
 
         $keywords = $project->keywords();
 
