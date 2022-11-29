@@ -42,4 +42,11 @@ class WaitClusterAnalyseQueue implements ShouldQueue
             $this->cluster->calculate();
         }
     }
+
+    public function __sleep()
+    {
+        return [
+            'cluster',
+        ];
+    }
 }
