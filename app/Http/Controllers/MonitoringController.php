@@ -635,6 +635,7 @@ class MonitoringController extends Controller
                 });
 
                 $columns = $columns->merge($mainColumns);
+                $columns->forget('url');
 
                 break;
             default;
