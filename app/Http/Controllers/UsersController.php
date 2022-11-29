@@ -37,17 +37,17 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::all();
-
-        $users->map(function ($user) {
-            if (!$user->session)
-                return true;
-
-//            $user->session->agent = $this->createAgent($user->session);
-//            $user->session->is_current_device = $user->session->id === request()->session()->getId();
-            $user->session->last_active = $user->session->last_activity->diffForHumans();
-
-            return $user;
-        });
+//
+//        $users->map(function ($user) {
+//            if (!$user->session)
+//                return true;
+//
+////            $user->session->agent = $this->createAgent($user->session);
+////            $user->session->is_current_device = $user->session->id === request()->session()->getId();
+////            $user->session->last_active = $user->session->last_activity->diffForHumans();
+//
+//            return $user;
+//        });
 
         return view('users.index', compact('users'));
     }
