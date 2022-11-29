@@ -7,7 +7,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         count: $('#count').val(),
         phrases: $('#phrases').val(),
         clusteringLevel: $('#clusteringLevel').val(),
-        engineVersion: $('#engineVersion').val(),
+        engineVersion: 'latest',
         searchBase: $('#searchBase').is(':checked'),
         searchPhrases: $('#searchPhrases').is(':checked'),
         searchTarget: $('#searchTarget').is(':checked'),

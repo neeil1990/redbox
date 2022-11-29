@@ -59,7 +59,8 @@ class ClusterController extends Controller
         dispatch(new StartClusterAnalyseQueue($request->all(), $user))->onQueue('main_cluster');
 
         return response()->json([
-            'result' => true
+            'result' => true,
+            'totalPhrases' => count(array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), [])))
         ]);
     }
 
@@ -81,7 +82,7 @@ class ClusterController extends Controller
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
         if (isset($cluster)) {
-            ClusterQueue::where('progress_id', '=', $id)->delete();
+//            ClusterQueue::where('progress_id', '=', $id)->delete();
             return response()->json([
                 'count' => $cluster->count_phrases,
                 'result' => json_decode(gzuncompress(base64_decode($cluster->result)), true),

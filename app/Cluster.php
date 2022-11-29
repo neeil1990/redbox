@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -60,23 +61,25 @@ class Cluster
 
     public function __construct(array $request, $user, $default = true)
     {
-        if ($request['clusteringLevel'] === 'light') {
-            $this->clusteringLevel = 0.4;
-        } else if ($request['clusteringLevel'] === 'soft') {
-            $this->clusteringLevel = 0.5;
-        } else if ($request['clusteringLevel'] === 'pre-hard') {
-            $this->clusteringLevel = 0.6;
-        } else {
-            $this->clusteringLevel = 0.7;
-        }
-        $this->count = $request['count'];
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
 
         if (!isset($request['mode']) || $request['mode'] !== 'professional') {
             $this->count = 40;
             $this->clusteringLevel = 0.5;
+        } else {
+            if ($request['clusteringLevel'] === 'light') {
+                $this->clusteringLevel = 0.4;
+            } else if ($request['clusteringLevel'] === 'soft') {
+                $this->clusteringLevel = 0.5;
+            } else if ($request['clusteringLevel'] === 'pre-hard') {
+                $this->clusteringLevel = 0.6;
+            } else {
+                $this->clusteringLevel = 0.7;
+            }
+            $this->count = $request['count'];
         }
         $this->minimum = $this->count * $this->clusteringLevel;
+        $this->mode = $request['mode'];
 
         if ($default) {
             $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
@@ -96,7 +99,6 @@ class Cluster
             $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
-            $this->mode = $request['mode'];
         }
     }
 
@@ -208,7 +210,7 @@ class Cluster
             $this->sendNotification();
         }
 
-        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
+//        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
     }
 
     /**
@@ -225,7 +227,7 @@ class Cluster
         $this->searchClustersEngine($this->minimum);
         $this->brutForceClusters($this->minimum + 2);
 
-        if ($this->brutForce) {
+        if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
             while ($percent >= 0.4) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
@@ -267,7 +269,7 @@ class Cluster
                     foreach ($anotherCluster as $key2 => $anotherElems) {
                         if (isset($elems['sites']) && isset($anotherElems['sites'])) {
                             if (count(array_intersect($elems['sites'], $anotherElems['sites'])) >= $minimum) {
-                                $this->clusters[$keyPhrase] = array_merge_recursive($cluster, $anotherCluster);
+                                $this->clusters[$keyPhrase] = array_merge($cluster, $anotherCluster);
                                 $this->clusters[$keyPhrase][$anotherKeyPhrase]['merge'] = [$key1 => $key2];
                                 unset($this->clusters[$anotherKeyPhrase]);
                                 break 2;

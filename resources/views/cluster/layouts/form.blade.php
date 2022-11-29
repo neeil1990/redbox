@@ -86,7 +86,7 @@
    ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region']) !!}
 </div>
 
-<div class="form-group required">
+<div class="form-group required pro">
     <label>{{ __('TOP') }}</label>
     {!! Form::select('count', array_unique([
        $config->count => $config->count,
@@ -103,29 +103,22 @@
     {!! Form::textarea('phrases', null, ['class' => 'form-control', 'id'=>'phrases'] ) !!}
 </div>
 
-<div class="form-group required">
-    <label>{{ __('clustering level') }}</label>
-    {!! Form::select('clustering_level', [
-        $config->clustering_level => $config->clustering_level,
-        'light' => 'light - 40%',
-        'soft' => 'soft - 50%',
-        'pre-hard' => 'pre-hard - 60%',
-        'hard' => 'hard - 70%',
-        ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
-</div>
+<div class="pro">
+    <div class="form-group required">
+        <label>{{ __('clustering level') }}</label>
+        {!! Form::select('clustering_level', [
+            $config->clustering_level => $config->clustering_level,
+            'light' => 'light - 40%',
+            'soft' => 'soft - 50%',
+            'pre-hard' => 'pre-hard - 60%',
+            'hard' => 'hard - 70%',
+            ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
+    </div>
+    <div class="form-group required">
+        <label for="brutForce">{{ __('Additional bulkhead') }}</label>
+        <input type="checkbox" name="brutForce" id="brutForce" @if($config->brut_force) checked @endif>
 
-<div class="form-group required">
-    <label>{{ __('Merging Clusters') }}</label>
-    {!! Form::select('engine_version', [
-            'latest' => __('Additional bulkhead (latest)'),
-    ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
-</div>
-
-<div class="form-group required">
-    <label for="brutForce">{{ __('Additional bulkhead') }}</label>
-    <input type="checkbox" name="brutForce" id="brutForce" @if($config->brut_force) checked @endif>
-
-    <span class="__helper-link ui_tooltip_w">
+        <span class="__helper-link ui_tooltip_w">
         <i class="fa fa-question-circle" style="color: grey"></i>
         <span class="ui_tooltip __right">
             <span class="ui_tooltip_content" style="width: 300px">
@@ -135,58 +128,50 @@
             </span>
         </span>
     </span>
-</div>
-
-<div class="form-group required" id="saveResultBlock">
-    <label>{{ __('Save results') }}</label>
-    <span class="__helper-link ui_tooltip_w">
-        <i class="fa fa-question-circle" style="color: grey"></i>
-        <span class="ui_tooltip __right">
-            <span class="ui_tooltip_content" style="width: 300px">
-            {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
-            {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
-                {{ __('data will be lost when starting the next analysis or when reloading the page') }}
-            </span>
-        </span>
-    </span>
-    {!! Form::select('save', [
-        $config->save_results => $config->save_results,
-        '1' => __('Save'),
-        '0' => __('Do not save'),
-    ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
+    </div>
 </div>
 
 <div class="form-group required" id="extra-block">
-    <div class="row align-items-end">
+    <div class="row">
         <div class="col-6 d-flex flex-column">
             <label for="domain-textarea">{{ __('Domain') }}</label>
-            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"></textarea>
+            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100" placeholder="https://site.ru"></textarea>
         </div>
 
         <div class="col-6">
-            <div class="form-group required">
-                <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
-                <br>
-                <input type="checkbox" name="searchRelevance" id="searchRelevance" @if($config->search_relevance) checked @endif>
-            </div>
-
-            <div>
-                <label for="domain-textarea">{{ __('Search Engine') }}</label>
-                {!! Form::select('searchEngine', [
-                    $config->search_engine => $config->search_engine,
-                    'yandex' => 'Yandex',
-                    'google' => 'Google',
-                ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+            <div class="d-flex flex-column">
+                <label for="comment-textarea">{{ __('Comment') }}</label>
+                <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
             </div>
         </div>
     </div>
 
-    <div class="d-flex flex-column mt-3">
-        <label for="comment-textarea">{{ __('Comment') }}</label>
-        <textarea name="comment-textarea" id="comment-textarea" rows="5" class="form-control w-100"></textarea>
+    <div class="form-group required">
+        <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+        <input type="checkbox" name="searchRelevance" id="searchRelevance"
+               @if($config->search_relevance) checked @endif>
+        <span class="__helper-link ui_tooltip_w">
+            <i class="fa fa-question-circle" style="color: grey"></i>
+            <span class="ui_tooltip __right">
+                <span class="ui_tooltip_content" style="width: 300px">
+                    Для каждой фразы будет произведён поиск релевантных страниц
+                    <br>
+                    Вам необходимо указать доменное имя в формате <b>http(s)://site.ru/</b>
+                </span>
+            </span>
+        </span>
     </div>
 
-    <div id="form">
+    <div id="searchEngineBlock">
+        <label for="domain-textarea">{{ __('Search Engine') }}</label>
+        {!! Form::select('searchEngine', [
+            $config->search_engine => $config->search_engine,
+            'yandex' => 'Yandex',
+            'google' => 'Google',
+        ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+    </div>
+
+    <div id="form" class="form-group required">
         @if(!Auth::user()->telegram_bot_active)
             <div class="mt-2">
                 {{ __('Want to') }}
@@ -231,7 +216,28 @@
     </div>
 </div>
 
-<input type="button" data-dismiss="modal" class="btn btn-secondary" id="start-analyse" data-target="classic" value="{{ __('Analyse') }}">
+<div class="form-group required" id="saveResultBlock">
+    <label>{{ __('Save results') }}</label>
+    <span class="__helper-link ui_tooltip_w">
+        <i class="fa fa-question-circle" style="color: grey"></i>
+        <span class="ui_tooltip __right">
+            <span class="ui_tooltip_content" style="width: 300px">
+            {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
+            {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
+                {{ __('data will be lost when starting the next analysis or when reloading the page') }}
+            </span>
+        </span>
+    </span>
+    {!! Form::select('save', [
+        $config->save_results => $config->save_results,
+        '1' => __('Save'),
+        '0' => __('Do not save'),
+    ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
+</div>
+
+<input type="button" data-dismiss="modal"
+       class="btn btn-secondary" id="start-analyse"
+       data-target="classic" value="{{ __('Analyse') }}">
 
 <script>
     let url = new URL(window.location.href)

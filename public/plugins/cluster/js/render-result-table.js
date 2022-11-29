@@ -1,4 +1,5 @@
 function renderResultTable(data) {
+    console.log(data)
     let iterator = 0
 
     $.each(data, function (key, result) {
@@ -89,15 +90,18 @@ function renderResultTable(data) {
 
                 let title
                 let style
+                let string
                 if (
                     "basedNormal" in information &&
                     (information["basedNormal"] === false || information["basedNormal"] !== true)
                 ) {
                     style = 'bg-cluster-warning'
                     title = `title='Ваша фраза "${phrase}" была изменена'`
+                    string = information['based']['phrase']
                 } else {
                     style = ''
                     title = ''
+                    string = phrase
                 }
 
                 newTableRows +=
@@ -108,9 +112,9 @@ function renderResultTable(data) {
                     '   <td class="border-0"> ' + clusterIterator + '</td> ' +
                     '   <td class="border-0 ' + style + '" ' + title + '> ' +
                     '       <div class="d-flex justify-content-between"> ' +
-                    '          <div class="cluster-id-' + clusterId + '">' + phrase + '</div> ' +
+                    '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                     '          <div class="ml-1">' +
-                    '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
+                    '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
                     '                 <i class="fa fa-paperclip"></i>' +

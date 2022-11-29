@@ -304,4 +304,87 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
+
+    Route::get('/test', function () {
+        $results = \App\ClusterQueue::where('progress_id', '=', 'b1e51b30049214c7f2fe080193d3ad36')->get();
+        $res = [];
+        foreach ($results as $result) {
+            $res = array_merge_recursive($res, json_decode($result->json, true));
+        }
+
+        $sites = [];
+        foreach ($res as $item) {
+            $sites[array_key_first($item)] = $item[array_key_first($item)];
+        }
+
+
+        $willClustered = [];
+
+        $clusters = [];
+        foreach ($sites as $phrase => $item) {
+            foreach ($sites as $phrase2 => $item2) {
+                if (isset($willClustered[$phrase2])) {
+                    continue;
+                } else if (isset($clusters[$phrase])) {
+                    foreach ($clusters[$phrase] as $target => $elem) {
+                        if (count(array_intersect($item2['sites'], $elem['sites'])) >= 25) {
+                            $clusters[$phrase][$phrase2] = [
+                                'based' => $item2['based'],
+                                'phrased' => $item2['phrased'],
+                                'target' => $item2['target'],
+                                'relevance' => $item2['relevance'],
+                                'sites' => $item2['sites'],
+                                'basedNormal' => $item2['basedNormal'],
+                            ];
+                            $willClustered[$phrase2] = true;
+                            break;
+                        }
+                    }
+                } else if (count(array_intersect($item['sites'], $item2['sites'])) >= 25) {
+                    $clusters[$phrase][$phrase2] = [
+                        'based' => $item2['based'],
+                        'phrased' => $item2['phrased'],
+                        'target' => $item2['target'],
+                        'relevance' => $item2['relevance'],
+                        'sites' => $item2['sites'],
+                        'basedNormal' => $item2['basedNormal'],
+                    ];
+                    $willClustered[$phrase2] = true;
+                }
+            }
+        }
+
+        dump($clusters);
+        foreach ($clusters as $keyPhrase => $cluster) {
+            foreach ($clusters as $anotherKeyPhrase => $anotherCluster) {
+                if ($keyPhrase === $anotherKeyPhrase) {
+                    continue;
+                }
+                foreach ($cluster as $key1 => $elems) {
+                    foreach ($anotherCluster as $key2 => $anotherElems) {
+                        if (isset($elems['sites']) && isset($anotherElems['sites'])) {
+                            if (count(array_intersect($elems['sites'], $anotherElems['sites'])) >= 10) {
+                                $clusters[$keyPhrase] = array_merge($cluster, $anotherCluster);
+                                $clusters[$keyPhrase][$anotherKeyPhrase]['merge'] = [$key1 => $key2];
+                                unset($clusters[$anotherKeyPhrase]);
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        dd($clusters);
+
+        foreach ($clusters as $key => $cluster) {
+            foreach ($cluster as $phrase => $items) {
+                dump($items);
+                if (isset($items['merge'])) {
+                    dd(3);
+                }
+                dump($phrase);
+                dd($items);
+            }
+        }
+    });
 });

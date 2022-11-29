@@ -66,7 +66,6 @@ class RiverFacade
 
             $attempt = 1;
             while (!isset($riverResponse['content']['includingPhrases']['items']) && $attempt <= $this->countAttempts) {
-                sleep(1);
                 $riverResponse = json_decode(file_get_contents(html_entity_decode($url)), true);
                 $attempt = $attempt + 1;
                 if ($attempt === $this->countAttempts && isset($riverResponse['error'])) {

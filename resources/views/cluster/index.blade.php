@@ -82,8 +82,8 @@
                         @include('cluster.layouts.form')
                     </div>
 
-                    <div id="progress-bar" class="w-25" style="display: none">
-                        <span id="progress-bar-state"></span>
+                    <div id="progress-bar" class="w-25 pt-3 pb-3" style="display: none">
+                        <span id="progress-bar-state"></span><span id="total-phrases"></span>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
@@ -154,6 +154,10 @@
         <script>
             let progressId
             let interval
+
+            $(document).ready(function () {
+                isSearchRelevance();
+            })
 
             $('#start-analyse').click(function () {
                 if ($('#phrases').val() !== '') {
@@ -249,6 +253,7 @@
                                 $('.history-notification').hide(300)
                             }, 15000)
                         }
+                        $('#total-phrases').html(' из ' + response.totalPhrases)
                     },
                     error: function (response) {
                         destroyProgress(interval)
@@ -279,15 +284,25 @@
 
             $('#classicMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'classic')
-                $('#tab_1 > div.w-50.pb-3 > div:nth-child(4)').hide(300)
-                $('#tab_1 > div.w-50.pb-3 > div:nth-child(6)').hide(300)
+                $('.pro').hide(300)
             })
 
             $('#ProfessionalMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'professional')
-                $('#tab_1 > div.w-50.pb-3 > div:nth-child(4)').show(300)
-                $('#tab_1 > div.w-50.pb-3 > div:nth-child(6)').show(300)
+                $('.pro').show(300)
             })
+
+            $('#searchRelevance').on('click', function () {
+                isSearchRelevance()
+            })
+
+            function isSearchRelevance() {
+                if ($('#searchRelevance').is(':checked')) {
+                    $('#searchEngineBlock').show(300)
+                } else {
+                    $('#searchEngineBlock').hide(300)
+                }
+            }
         </script>
     @endslot
 @endcomponent
