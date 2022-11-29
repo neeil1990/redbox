@@ -6,15 +6,16 @@
             </div>
 
             <div class="card-body">
-
                 <div class="row">
-
                     <form action="" style="display: contents;">
                         <div class="col-4">
                             <div class="form-group">
                                 <label>{{ __('Search engine') }}:</label>
                                 <select name="region" class="custom-select" id="searchengines" onchange="this.form.submit()">
-                                    <option value="">{{ __('All search engine and regions') }}</option>
+                                    @if($project->searchengines->count() > 1)
+                                        <option value="">{{ __('All search engine and regions') }}</option>
+                                    @endif
+
                                     @foreach($project->searchengines as $search)
                                         @if($search->id == request('region'))
                                             <option value="{{ $search->id }}" selected>{{ strtoupper($search->engine) }} {{ $search->location->name }} [{{$search->lr}}]</option>
