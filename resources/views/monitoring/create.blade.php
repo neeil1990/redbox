@@ -714,8 +714,10 @@
                                     index = index + 1;
 
                                     let group = groupInput.find('option:selected').text();
-                                    if(value[1])
+                                    if(value[1].trim())
                                         group = value[1];
+
+                                    group = group.replace(/[!\[\]]/g, '');
 
                                     if(duplicates.prop('checked')){
                                         let existed = $.grep(data, function(v) {
