@@ -22,7 +22,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
 }
 
 function setProgressBarStyles(count) {
-    $('#progress-bar-state').html('отсканированно: ' + count);
+    $('#progress-bar-state').html('отсканированно: ' + count + ' из');
 }
 
 $('#save').on('change', function () {

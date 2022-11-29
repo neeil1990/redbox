@@ -253,7 +253,7 @@
                                 $('.history-notification').hide(300)
                             }, 15000)
                         }
-                        $('#total-phrases').html(' из ' + response.totalPhrases)
+                        $('#total-phrases').html(response.totalPhrases)
                     },
                     error: function (response) {
                         destroyProgress(interval)
@@ -276,10 +276,10 @@
 
             function destroyProgress(interval) {
                 clearInterval(interval)
-                setTimeout(() => {
-                    setProgressBarStyles(0)
-                    $('#progress-bar').hide(300)
-                }, 3000)
+                // setTimeout(() => {
+                $('#progress-bar').hide(300)
+                setProgressBarStyles(0)
+                // }, 3000)
             }
 
             $('#classicMode').on('click', function () {
