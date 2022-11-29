@@ -1,5 +1,13 @@
 @php use Illuminate\Support\Facades\Auth; @endphp
 
+<div id="toast-container" class="toast-top-right success-message dont-worry-notification" style="display:none;">
+    <div class="toast toast-info" aria-live="polite">
+        <div class="toast-message">
+            {{ __("If your analysis is \"hanging\" at 50% for a long time, don't worry, it's just waiting in line to process") }}
+        </div>
+    </div>
+</div>
+
 <div id="toast-container" class="toast-top-right success-message history-notification" style="display: none">
     <div class="toast toast-info" aria-live="polite" style="top: 140px;">
         <div class="toast-message">
