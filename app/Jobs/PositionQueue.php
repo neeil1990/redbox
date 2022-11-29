@@ -61,6 +61,7 @@ class PositionQueue implements ShouldQueue
             'model_class' => get_class($this->model),
             'model_id' => $this->model->id,
             'errors' => false,
+            'msg' => null,
         ]);
     }
 
