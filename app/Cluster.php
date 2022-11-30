@@ -210,7 +210,7 @@ class Cluster
             $this->sendNotification();
         }
 
-//        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
+        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
     }
 
     /**

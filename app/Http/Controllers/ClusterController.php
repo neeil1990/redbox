@@ -82,7 +82,7 @@ class ClusterController extends Controller
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
         if (isset($cluster)) {
-//            ClusterQueue::where('progress_id', '=', $id)->delete();
+            ClusterQueue::where('progress_id', '=', $id)->delete();
             return response()->json([
                 'count' => $cluster->count_phrases,
                 'result' => json_decode(gzuncompress(base64_decode($cluster->result)), true),
