@@ -30,7 +30,7 @@
                         </div>
                     </form>
 
-                    @if(request('region'))
+                    @if(request('region') || $project->searchengines->count() === 1)
                     <div class="col-4">
                         <div class="form-group">
                             <label>{{ __('Date range') }}:</label>
