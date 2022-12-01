@@ -38,8 +38,9 @@ class UsersController extends Controller
     {
         $users = User::all();
         foreach ($users as $key => $user) {
-            if (json_decode($user['metrics'], true) !== null) {
-                $users[$key]['metrics'] = json_decode(json_decode($user['metrics']), true);
+            $metrics = json_decode(json_decode($user['metrics']), true);
+            if ($metrics !== null) {
+                $users[$key]['metrics'] = $metrics;
             }
         }
 //
