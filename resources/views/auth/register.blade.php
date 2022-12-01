@@ -13,6 +13,7 @@
             <div class="card-body">
                 <form action="{{ route('register') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="utm_metrics" id="utm-metrics">
                     <p class="login-box-msg">{{ __('Select your language') }}</p>
 
                     <div class="input-group mb-3">
@@ -219,6 +220,9 @@
                     $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-user mr-2"></i> Уже зарегистрирован')
                 }
             })
+
+            let url = window.location.href
+            $('#utm-metrics').val(new URL(url)['search'])
         })
     </script>
 @endsection

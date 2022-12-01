@@ -33,6 +33,9 @@
                     <th>
                         {{__('Was online')}}
                     </th>
+                    <th>
+                        {{__('Метрики')}}
+                    </th>
                     <th style="width: 20%"></th>
                 </tr>
                 </thead>
@@ -94,6 +97,17 @@
                             {{ $user->last_online_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
+                        </td>
+                        <td>
+                            @if(is_array($user->metrics))
+                                @foreach($user->metrics as $key => $value)
+                                    <div>{{ $key }}: {{ $value }}</div>
+                                @endforeach
+                            @else
+                                <div>
+                                    {{ $user->metrics }}
+                                </div>
+                            @endif
                         </td>
                         <td class="project-actions text-right">
                             <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">

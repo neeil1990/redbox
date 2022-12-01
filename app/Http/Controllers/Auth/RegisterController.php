@@ -51,7 +51,7 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        $lang = collect(Storage::disk('lang')->files())->map(function ($val){
+        $lang = collect(Storage::disk('lang')->files())->map(function ($val) {
             return Str::before($val, '.');
         });
 
@@ -61,7 +61,7 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -78,19 +78,38 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \App\User
      */
     protected function create(array $data)
     {
+        try {
+            $metrics = $data['utm_metrics'];
+            $metrics = str_replace('=', ':', $metrics);
+            $metrics = str_replace('?', '', $metrics);
+            $metrics = explode('&', $metrics);
+
+            $readyArray = [];
+
+            foreach ($metrics as $metric) {
+                $array = explode(':', $metric);
+                $readyArray[$array[0]] = $array[1];
+            }
+
+            $readyArray = json_encode($readyArray);
+        } catch (\Throwable $e) {
+            $readyArray = $data['utm_metrics'];
+        }
+
         $user = User::create([
-			'balance' => 0,
+            'balance' => 0,
             'name' => $data['name'],
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'lang' => $data['lang'],
             'password' => Hash::make($data['password']),
-            'telegram_token' => str_shuffle(Str::random(50) . Carbon::now())
+            'telegram_token' => str_shuffle(Str::random(50) . Carbon::now()),
+            'metrics' => json_encode($readyArray)
         ]);
 
         $user->assignRole('Free');

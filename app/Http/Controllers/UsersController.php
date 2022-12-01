@@ -37,6 +37,11 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::all();
+        foreach ($users as $key => $user) {
+            if (json_decode($user['metrics'], true) !== null) {
+                $users[$key]['metrics'] = json_decode(json_decode($user['metrics']), true);
+            }
+        }
 //
 //        $users->map(function ($user) {
 //            if (!$user->session)
