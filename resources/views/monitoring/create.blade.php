@@ -303,6 +303,9 @@
 
                     $.each(data, function(index, value){
 
+                        if(index > 3000)
+                            return false;
+
                         if(!value.group.trim().length)
                             value.group = selectedGroup.val();
 
@@ -705,6 +708,7 @@
 
                     csv.parse({
                         config: {
+                            delimiter: ";",
                             skipEmptyLines: 'greedy',
                             complete: function (result) {
 
@@ -714,7 +718,8 @@
                                     index = index + 1;
 
                                     let group = groupInput.find('option:selected').text();
-                                    if(value[1].trim())
+
+                                    if(value[1] && value[1].trim())
                                         group = value[1];
 
                                     group = group.replace(/[!\[\]]/g, '');
