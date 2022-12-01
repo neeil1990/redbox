@@ -101,7 +101,7 @@
                         <td>
                             @if(is_array($user->metrics))
                                 @foreach($user->metrics as $key => $value)
-                                    <div>{{ $key }}: {{ $value }}</div>
+                                    <div><b>{{ $key }}</b>: {{ $value }}</div>
                                 @endforeach
                             @else
                                 <div>
