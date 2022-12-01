@@ -5,9 +5,9 @@ namespace App\Classes\Position;
 
 
 use App\Classes\Xml\XmlFacade;
+use App\Exceptions\ErrorXmlPositionResponseException;
 use App\SearchIndex;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 abstract class Positions
 {
@@ -41,6 +41,7 @@ abstract class Positions
 
     /**
      * @return array|int|string|null
+     * @throws ErrorXmlPositionResponseException
      */
     protected function getSitePosition()
     {
@@ -67,16 +68,8 @@ abstract class Positions
             }else
                 return null;
 
-        }else{
-            $errors = [
-                'search' => $this->engine,
-                'region' => $this->lr,
-                'error' => $results['response']['error'],
-                'result' => $results,
-            ];
-
-            Log::error($errors);
-        }
+        }else
+            throw new ErrorXmlPositionResponseException($results['response']['error']);
     }
 
     private function store($positions)
