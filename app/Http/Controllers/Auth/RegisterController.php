@@ -96,7 +96,7 @@ class RegisterController extends Controller
                 $readyArray[$array[0]] = $array[1];
             }
 
-            $readyArray = json_encode($readyArray);
+            $readyArray = json_encode($readyArray) !== null ? json_encode($readyArray) : $data['utm_metrics'];
         } catch (\Throwable $e) {
             $readyArray = $data['utm_metrics'];
         }
