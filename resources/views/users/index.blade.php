@@ -103,7 +103,7 @@
                                 @foreach($user->metrics as $key => $value)
                                     <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
                                 @endforeach
-                            @elseif($user->metrics !== "")
+                            @elseif(strlen($user->metrics) > 0)
                                 <div>
                                     {{ $user->metrics }}
                                 </div>
