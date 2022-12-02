@@ -155,7 +155,7 @@ class MonitoringController extends Controller
         foreach ($projects as $project)
             (new CacheOfUserForPosition($project))->deleteCache();
 
-        return redirect()->back();
+        return response(200);
     }
 
     public function getChildRowsPageByProject(int $project_id)
