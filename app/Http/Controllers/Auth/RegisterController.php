@@ -98,7 +98,7 @@ class RegisterController extends Controller
 
             $readyArray = json_encode($readyArray);
         } catch (\Throwable $e) {
-            $readyArray = $data['utm_metrics'];
+            $readyArray = $data['utm_metrics'] ?? '';
         }
 
         $user = User::create([
