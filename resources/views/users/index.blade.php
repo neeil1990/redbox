@@ -98,7 +98,7 @@
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>
-                        <td>
+                        <td style="max-width: 450px">
                             @if(is_array($user->metrics))
                                 @foreach($user->metrics as $key => $value)
                                     <div><b>{{ $key }}</b>: {{ $value }}</div>
