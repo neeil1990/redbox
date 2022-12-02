@@ -1,7 +1,6 @@
 function renderResultTableFast(data, count, target) {
     let iterator = 0
     let style
-    let targetPhrase
 
     $.each(data, function (key, result) {
         let clusterId = (Math.random() + 1).toString(36).substring(7)
@@ -23,7 +22,6 @@ function renderResultTableFast(data, count, target) {
                 iterator++
 
                 let fullUrls = information['sites'].join("\r")
-                let changedBg = "basedNormal" in information;
                 let sites = ''
 
                 $.each(information['sites'], function (key, site) {
@@ -31,12 +29,6 @@ function renderResultTableFast(data, count, target) {
                         '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
                         '</div>'
                 })
-
-                if (changedBg) {
-                    style = 'bg-cluster-warning'
-                } else {
-                    style = ''
-                }
 
                 let merge = ''
                 if ('merge' in information) {
@@ -50,16 +42,13 @@ function renderResultTableFast(data, count, target) {
                     })
                 }
 
-                targetPhrase = changedBg ? information['basedNormal'] : phrase
-                let title = changedBg ? `title='Ваша фраза "${phrase}" была изменена'` : ''
-
                 newTableRows +=
                     '<tr class="fast-render">' +
                     '   <td>' + iterator + '</td> ' +
                     '   <td> ' + clusterIterator + '</td> ' +
-                    '   <td class="' + style + '" ' + title + '> ' +
+                    '   <td class="' + style + '"> ' +
                     '       <div class="d-flex"> ' +
-                    '          <div class="mr-2" id="cluster-id-' + clusterId + '">' + targetPhrase + '</div> ' +
+                    '          <div class="mr-2" id="cluster-id-' + clusterId + '">' + phrase + '</div> ' +
                     '          <div>' +
                     '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +

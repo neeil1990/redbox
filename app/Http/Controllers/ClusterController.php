@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -124,6 +125,7 @@ class ClusterController extends Controller
      */
     public function fastScanClusters(Request $request): JsonResponse
     {
+        Log::debug('d', [json_encode($request->all())]);
         $user = Auth::user();
         $cluster = new Cluster($request->all(), $user, false);
         $results = ClusterResults::findOrFail($request->input('resultId'));
@@ -199,12 +201,13 @@ class ClusterController extends Controller
      */
     public function showResult(ClusterResults $cluster): View
     {
-        if ($cluster->user_id !== Auth::id() && !User::isUserAdmin()) {
+        if ($cluster->user_id !== Auth::id() && !User::isUserAdmin() || $cluster->show === 0) {
             return abort(403);
         }
 
         $cluster->result = gzuncompress(base64_decode($cluster->result));
         $cluster->request = json_decode($cluster->request, true);
+        unset($cluster->sites_json);
 
         return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
     }
@@ -227,6 +230,39 @@ class ClusterController extends Controller
             foreach ($results as $key => $items) {
                 foreach ($items as $phrase => $item) {
                     if ($phrase === $request->input('phrase')) {
+                        $results[$key][$phrase]['link'] = $request->input('url');
+                        unset($results[$key][$phrase]['relevance']);
+                    }
+                }
+            }
+
+            $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            $cluster->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 415);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function setClusterRelevanceUrls(Request $request): JsonResponse
+    {
+        Log::debug('arr', $request->input('phrases'));
+        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))
+            ->where('user_id', '=', Auth::id())
+            ->first();
+
+        if (isset($cluster)) {
+            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            $results = $cluster->result;
+
+            foreach ($results as $key => $items) {
+                foreach ($items as $phrase => $item) {
+                    if (in_array($phrase, $request->input('phrases'))) {
                         $results[$key][$phrase]['link'] = $request->input('url');
                         unset($results[$key][$phrase]['relevance']);
                     }

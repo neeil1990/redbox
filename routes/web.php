@@ -13,7 +13,9 @@
 
 use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Cluster;
 use App\ClusterResults;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -304,5 +306,10 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-cluster-configuration', 'ClusterController@changeClusterConfiguration')->name('change.cluster.configuration');
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
+    Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
+
+    Route::get('/test', function () {
+        dd(json_decode("{\"3121\":\"12\"}", true));
+    });
 
 });

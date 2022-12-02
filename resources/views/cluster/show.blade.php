@@ -90,6 +90,29 @@
         </div>
     </div>
 
+    <div class="modal fade" id="saveUrlsModal" tabindex="-1" aria-labelledby="saveUrlsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveUrlsModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
+                        кластера</label>
+                    <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="save-cluster-url-button"
+                            data-dismiss="modal">{{ __('Save') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -172,26 +195,12 @@
 
                 <div id="block-for-downloads-files" style="display: none">
                     <h3>{{ __('Cluster table') }}</h3>
-                    <table id="hidden-result-table" style="display: none">
-                        <thead>
-                        <tr>
-                            <th colspan="4"></th>
-                            <th class="centered-text" colspan="3">{{ __('Frequency') }}</th>
-                        </tr>
-                        <tr>
-                            <th>{{ __('Serial number') }}</th>
-                            <th>{{ __('Sequence number in the cluster') }}</th>
-                            <th>{{ __('Key query') }}</th>
-                            <th>{{ __('Group') }}</th>
-                            <th>{{ __('Relevant urls') }}</th>
-                            <th>{{ __('Base') }}</th>
-                            <th>"{{ __('Phrasal') }}"</th>
-                            <th>"!{{ __('Target') }}"</th>
-                        </tr>
-                        </thead>
-                        <tbody id="hidden-table-tbody">
-                        </tbody>
-                    </table>
+                    <a class="btn btn-secondary mb-2"
+                       href="/download-cluster-result/{{ $cluster['id'] }}/csv"
+                       target="_blank">{{ __('Download csv') }}</a>
+                    <a class="btn btn-secondary mb-2"
+                       href="/download-cluster-result/{{ $cluster['id'] }}/xls"
+                       target="_blank">{{ __('Download xls') }}</a>
                     <div style="width: 100%; overflow-x: scroll;">
                         <table id="clusters-table" class="table table-bordered dtr-inline">
                             <thead>
@@ -248,23 +257,29 @@
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
                                         <div class="d-none">
-                                            {!! Form::select('count', array_unique([
-                                                $cluster['request']['count'] => $cluster['request']['count']
-                                            ]), null, ['class' => 'custom-select rounded-0', 'id' => 'countFast']) !!}
+                                            <input type="number" value="{{ $cluster['request']['count'] }}"
+                                                   id="countFast">
                                         </div>
                                         <div class="form-group required">
                                             <label for="brutForce">{{ __('Additional bulkhead') }}</label>
                                             <input type="checkbox" name="brutForce" id="brutForce">
                                             <span class="__helper-link ui_tooltip_w">
-                            <i class="fa fa-question-circle" style="color: grey"></i>
-                            <span class="ui_tooltip __right">
-                                <span class="ui_tooltip_content" style="width: 300px">
-                                    {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
-                                    {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
-                                    {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
-                                </span>
-                            </span>
-                        </span>
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right">
+                                                    <span class="ui_tooltip_content" style="width: 300px">
+                                                        {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                                                        {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                                                        {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="form-group required" id="brutForceCountBlock" style="display: none">
+                                            <label for="brutForceCount">
+                                                Минимальный порог для дополнительной переборки
+                                            </label>
+                                            <input type="number" name="brutForceCount" id="brutForceCount"
+                                                   class="form form-control" value="1">
                                         </div>
                                         <div class="form-group required d-flex justify-content-end">
                                             <button type="button" class="btn btn-secondary mr-2"
@@ -432,6 +447,54 @@
     <input type="hidden" id="progressId">
     @slot('js')
         <script>
+            function saveAllUrls() {
+                let button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {
+                    button = $(this)
+                    $('#relevanceUrls').html('')
+                    $.each($(this).attr('data-urls').split(','), function (key, value) {
+                        $('#relevanceUrls').append($('<option>', {
+                            value: value,
+                            text: value
+                        }));
+                    })
+                })
+
+                $('#save-cluster-url-button').unbind().on('click', function () {
+                    let phrases = []
+                    $.each(button.parent().parent().parent().parent().children('td').eq(0).children('div').eq(0).children('table').eq(0).children('tbody').children('tr'), function (key, value) {
+                        let thisElem = $(this)
+                        if (thisElem.children('td').eq(4).children('a').eq(0).length === 0) {
+                            if (thisElem.children('td').eq(2).attr('title') !== undefined) {
+                                let phrase = thisElem.children('td').eq(2).attr('title')
+                                phrase = phrase.replace('Ваша фраза "', '')
+                                phrase = phrase.replace('" была изменена', '')
+                                phrases.push(phrase)
+                            } else {
+                                phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
+                            }
+                            thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
+                        }
+                    })
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('set.cluster.relevance.urls') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            phrases: phrases,
+                            url: $('#relevanceUrls').val(),
+                            projectId: {{ $cluster['id'] }},
+                        },
+                        success: function () {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                })
+            }
+
             function successCopiedMessage() {
                 $('.toast.toast-success').show(300)
                 $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
@@ -458,7 +521,7 @@
             });
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
+{{--        <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>--}}
         <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.js') }}"></script>
@@ -468,11 +531,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            let hiddenTable
+            // let hiddenTable
             $(document).ready(function () {
                 $('#app > div > div > div.card-header').append($('#params').html())
                 $('#params').remove()
-                hiddenTable = renderHiddenTable({!! $cluster['result'] !!})
+                {{--hiddenTable = renderHiddenTable({!! $cluster['result'] !!})--}}
                 renderResultTable({!! $cluster['result'] !!})
 
                 $('#default-hidden').dataTable({
@@ -497,6 +560,18 @@
                     $('#usedPhrases').css('display', 'none')
                 })
 
+                let oldValue = 1
+                $('#brutForce').on('click', function () {
+                    if ($(this).is(':checked')) {
+                        $('#brutForceCount').val(oldValue)
+                        $('#brutForceCountBlock').show(300)
+                    } else {
+                        $('#brutForceCountBlock').hide(300)
+                        oldValue = $('#brutForceCount').val()
+                        $('#brutForceCount').val(1)
+                    }
+                })
+
                 $('#brutForceFast').on('click', function () {
                     $.ajax({
                         type: "POST",
@@ -507,7 +582,9 @@
                             clusteringLevel: $('#clusteringLevelFast').val(),
                             engineVersion: $('#engineVersionFast').val(),
                             resultId: {{ $cluster['id'] }},
-                            brutForce: $('#brutForce').is(':checked')
+                            brutForce: $('#brutForce').is(':checked'),
+                            mode: 'professional',
+                            brutForceCount: $('#brutForceCount').val()
                         },
                         success: function (response) {
                             $('#clusters-table-default').show()
@@ -544,38 +621,14 @@
                         },
                         success: function () {
                             select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                            hiddenTable.cell(targetRow, targetColumn).data(select.val())
-                            hiddenTable.draw()
+                            // hiddenTable.cell(targetRow, targetColumn).data(select.val())
+                            // hiddenTable.draw()
                         },
                         error: function (response) {
                         }
                     });
                 })
             })
-
-            let progressId
-            let interval
-
-            $('#start-analyse').click(function () {
-                if ($('#phrases').val() !== '') {
-                    $(this).attr('disabled', true)
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('start.cluster.progress') }}",
-                        success: function (response) {
-                            progressId = response.id
-                            $('#progress-bar').show()
-                            $('#progressId').val(progressId)
-                            refreshAll()
-                            startAnalysis()
-
-                            interval = setInterval(() => {
-                                getProgressPercent(response.id)
-                            }, 1000)
-                        }
-                    })
-                }
-            });
         </script>
     @endslot
 @endcomponent

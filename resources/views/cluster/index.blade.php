@@ -47,6 +47,29 @@
         </div>
     </div>
 
+    <div class="modal fade" id="saveUrlsModal" tabindex="-1" aria-labelledby="saveUrlsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveUrlsModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
+                        кластера</label>
+                    <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="save-cluster-url-button"
+                            data-dismiss="modal">{{ __('Save') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -89,38 +112,19 @@
 
                     <div id="block-for-downloads-files" style="display: none">
                         <h3>{{ __('Cluster table') }}</h3>
-                        <table id="hidden-result-table" style="display: none">
+                        <div id="files-downloads"></div>
+                    </div>
+                    <div id="result-table" style='width: 100%; overflow-x: scroll; display: none'>
+                        <table id="clusters-table" class="table table-bordered dtr-inline">
                             <thead>
                             <tr>
-                                <th colspan="4"></th>
-                                <th class="centered-text" colspan="3">{{ __('Frequency') }}</th>
-                            </tr>
-                            <tr>
-                                <th>{{ __('Serial number') }}</th>
-                                <th>{{ __('Sequence number in the cluster') }}</th>
-                                <th>{{ __('Key query') }}</th>
-                                <th>{{ __('Group') }}</th>
-                                <th>{{ __('Relevant urls') }}</th>
-                                <th>{{ __('Base') }}</th>
-                                <th>"{{ __('Phrasal') }}"</th>
-                                <th>"!{{ __('Target') }}"</th>
+                                <th>{{ __('Clusters') }}</th>
+                                <th style="min-width: 400px;">{{ __('Competitors') }}</th>
                             </tr>
                             </thead>
-                            <tbody id="hidden-table-tbody">
+                            <tbody id="clusters-table-tbody">
                             </tbody>
                         </table>
-                        <div style='width: 100%; overflow-x: scroll;'>
-                            <table id="clusters-table" class="table table-bordered dtr-inline">
-                                <thead>
-                                <tr>
-                                    <th>{{ __('Clusters') }}</th>
-                                    <th style="min-width: 400px;">{{ __('Competitors') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody id="clusters-table-tbody">
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
 
                     <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
@@ -144,7 +148,7 @@
             }
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>
+        {{--        <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>--}}
         <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/common.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
@@ -158,6 +162,54 @@
             $(document).ready(function () {
                 isSearchRelevance();
             })
+
+            function saveAllUrls(id) {
+                let button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {
+                    button = $(this)
+                    $('#relevanceUrls').html('')
+                    $.each($(this).attr('data-urls').split(','), function (key, value) {
+                        $('#relevanceUrls').append($('<option>', {
+                            value: value,
+                            text: value
+                        }));
+                    })
+                })
+
+                $('#save-cluster-url-button').unbind().on('click', function () {
+                    let phrases = []
+                    $.each(button.parent().parent().parent().parent().children('td').eq(0).children('div').eq(0).children('table').eq(0).children('tbody').children('tr'), function (key, value) {
+                        let thisElem = $(this)
+                        if (thisElem.children('td').eq(4).children('a').eq(0).length === 0) {
+                            if (thisElem.children('td').eq(2).attr('title') !== undefined) {
+                                let phrase = thisElem.children('td').eq(2).attr('title')
+                                phrase = phrase.replace('Ваша фраза "', '')
+                                phrase = phrase.replace('" была изменена', '')
+                                phrases.push(phrase)
+                            } else {
+                                phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
+                            }
+                            thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
+                        }
+                    })
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('set.cluster.relevance.urls') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            phrases: phrases,
+                            url: $('#relevanceUrls').val(),
+                            projectId: id,
+                        },
+                        success: function () {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                })
+            }
 
             $('#start-analyse').click(function () {
                 if ($('#phrases').val() !== '') {
@@ -182,6 +234,7 @@
 
             function refreshAll() {
                 $('#block-for-downloads-files').hide()
+                $('#result-table').hide()
 
                 $.each($('.render-table'), function (key, value) {
                     $('#' + $(this).attr('id')).dataTable().fnDestroy()
@@ -204,14 +257,19 @@
 
                         if ('result' in response) {
                             refreshAll()
-                            table = renderHiddenTable(response['result'])
+                            // table = renderHiddenTable(response['result'])
                             renderResultTable(response['result'])
                             destroyProgress(interval)
+
+                            $('#files-downloads').html(
+                                '<a class="btn btn-secondary mb-2" href="/download-cluster-result/' + response['objectId'] + '/csv" target="_blank">{{ __('Download csv') }}</a>' +
+                                ' <a class="btn btn-secondary mb-2" href="/download-cluster-result/' + response['objectId'] + '/xls" target="_blank">{{ __('Download xls') }}</a>'
+                            );
 
                             $('.save-relevance-url').unbind().on('click', function () {
                                 let phrase = $(this).attr('data-order')
                                 let select = $('#' + phrase.replaceAll(' ', '-'))
-                                let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
+                                // let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
 
                                 $.ajax({
                                     type: "POST",
@@ -224,8 +282,8 @@
                                     },
                                     success: function () {
                                         select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                                        table.cell(targetRow, 4).data(select.val())
-                                        table.draw()
+                                        // table.cell(targetRow, 4).data(select.val())
+                                        // table.draw()
                                     },
                                     error: function (response) {
                                     }
@@ -233,6 +291,8 @@
 
                                 $('#progress-bar-state').html("{{ __('Parse xml') }}")
                             })
+
+                            saveAllUrls(response['objectId'])
                         }
                     },
                     error: function () {

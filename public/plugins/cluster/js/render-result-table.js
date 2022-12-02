@@ -1,5 +1,4 @@
 function renderResultTable(data) {
-    console.log(data)
     let iterator = 0
 
     $.each(data, function (key, result) {
@@ -9,6 +8,7 @@ function renderResultTable(data) {
         let newRow = ''
         let clusterId = (Math.random() + 1).toString(36).substring(7)
         let minWidth = '120px'
+        let allRelevanceUrls = []
 
         $.each(result['finallyResult']['sites'], function (site, count) {
             clusterSites +=
@@ -80,6 +80,7 @@ function renderResultTable(data) {
                     minWidth = '450px'
                     $.each(information['relevance'], function (key, value) {
                         relevance += '<option value="' + value + '">' + value + '</option>'
+                        allRelevanceUrls.push(value)
                     })
 
                     relevance = '<div class="d-flex">' +
@@ -148,8 +149,10 @@ function renderResultTable(data) {
             '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
-            '               <th style="border-top-width: 2px;min-width: 250px;">Группа</i></th>' +
-            '               <th style="border-top-width: 2px;min-width: ' + minWidth + '">Релевантные url</i></th>' +
+            '               <th style="border-top-width: 2px;min-width: 250px;">Группа</th>' +
+            '               <th style="border-top-width: 2px;min-width: ' + minWidth + '">' +
+            '                   Релевантные url' +
+            '               </th>' +
             '               <th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
             '               <th style="border-top-width: 2px;min-width: 100px;">"Фразовая"</th>' +
             '               <th style="border-top-width: 2px;min-width: 90px;">"!Точная"</th>' +
@@ -179,13 +182,18 @@ function renderResultTable(data) {
             '              </p>' +
             '       </div>' +
             '        <div class="row" style="cursor: pointer">' +
-            '            <p> ' +
-            '              <a class="btn btn-secondary" data-toggle="collapse"' +
-            '                href="#competitors' + key + '" role="button" aria-expanded="false"' +
-            '                aria-controls="competitors' + key + '">' +
-            '                Конкуренты' +
+            '            <div class="col-6"> ' +
+            '                <a class="btn btn-secondary" data-toggle="collapse"' +
+            '                   href="#competitors' + key + '" role="button" aria-expanded="false"' +
+            '                   aria-controls="competitors' + key + '">' +
+            '                   Конкуренты' +
             '               </a>' +
-            '            </p>' +
+            '            </div>' +
+            '           <div class="col-6">' +
+            '               <button class="btn btn-secondary save-all-urls" data-toggle="modal" data-target="#saveUrlsModal" data-urls="' + [...new Set(allRelevanceUrls)] + '">' +
+            '                   Сохранить url' +
+            '               </button>' +
+            '           </div>' +
             '       </div>' +
             '       <div class="collapse" id="competitors' + key + '">' + clusterSites + '</div>' +
             '   </td>' +
@@ -210,6 +218,9 @@ function renderResultTable(data) {
                 'sDom': '<"top"i>rt<"bottom"lp><"clear">'
             })
         })
+
+        $('#result-table').show()
+        $('#block-for-downloads-files').show()
     });
 
 }
