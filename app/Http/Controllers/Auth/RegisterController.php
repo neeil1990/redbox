@@ -101,6 +101,7 @@ class RegisterController extends Controller
             $readyArray = $data['utm_metrics'];
         }
 
+        dd($readyArray);
         $user = User::create([
             'balance' => 0,
             'name' => $data['name'],
