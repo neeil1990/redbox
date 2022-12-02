@@ -1,10 +1,14 @@
-<div class="card card-charts d-none">
+<div class="card card-charts ">{{--d-none--}}
     <div class="card-header">
         <div class="card-title">
             <ul class="nav nav-pills">
-                <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">% Ключевых слов в ТОП</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Средняя позиция</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tab_3" data-toggle="tab">Распределение по ТОП-100</a></li>
+                @if($project->searchengines->count() > 1 && empty(request('region')))
+                    <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Средняя позиция по регионам</a></li>
+                @else
+                    <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">% Ключевых слов в ТОП</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Средняя позиция</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tab_3" data-toggle="tab">Распределение по ТОП-100</a></li>
+                @endif
             </ul>
         </div>
 
@@ -24,23 +28,31 @@
         </div>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="tab_1">
-                <div class="chart" style="position: relative; height:40vh; width:100%">
-                    <canvas id="topPercent"></canvas>
+            @if($project->searchengines->count() > 1 && empty(request('region')))
+                <div class="tab-pane active" id="tab_1">
+                    <div class="chart" style="position: relative; height:40vh; width:100%">
+                        <canvas id="middlePositionRegions"></canvas>
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="tab-pane active" id="tab_1">
+                    <div class="chart" style="position: relative; height:40vh; width:100%">
+                        <canvas id="topPercent"></canvas>
+                    </div>
+                </div>
 
-            <div class="tab-pane" id="tab_2">
-                <div class="chart" style="position: relative; height:40vh; width:100%">
-                    <canvas id="middlePosition"></canvas>
+                <div class="tab-pane" id="tab_2">
+                    <div class="chart" style="position: relative; height:40vh; width:100%">
+                        <canvas id="middlePosition"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <div class="tab-pane" id="tab_3">
-                <div class="chart" style="position: relative; height:40vh; width:100%">
-                    <canvas id="distributionByTop"></canvas>
+                <div class="tab-pane" id="tab_3">
+                    <div class="chart" style="position: relative; height:40vh; width:100%">
+                        <canvas id="distributionByTop"></canvas>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>

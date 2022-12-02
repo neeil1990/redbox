@@ -65,6 +65,10 @@ class MonitoringChartsController extends Controller
 
         switch ($request->input('chart')){
 
+            case "regions_middle":
+                return $this->getMiddlePositionAllRegions($request);
+                break;
+
             case "middle":
                 return $this->getMiddlePosition($request);
                 break;
@@ -136,11 +140,63 @@ class MonitoringChartsController extends Controller
         }
 
         $chart = new AreaChartData($response['labels']);
+
         $chart->setBackgroundColor('#28a745')
             ->setHidden(false)
             ->setBorderColor('#28a745')
             ->setLabel('Средняя позиция')
             ->setData($response['data']);
+
+        return $chart->get();
+    }
+
+    protected function getMiddlePositionAllRegions(Request $request)
+    {
+        if($this->project->searchengines->count() <= 1)
+            return false;
+
+        $response = [];
+
+        foreach($this->project->searchengines as $engine){
+
+            $this->region = $engine;
+            $this->positions = $this->getPositionsForRange($request->input('dateRange', null));
+            $positions = $this->getLastPositions($request->input('range'));
+
+            foreach ($positions as $label => $position){
+
+                $response['labels'][] = $label;
+                $response['data'][$engine->lr][$label] = round($position->sum() / $position->count());
+            }
+        }
+        $response['labels'] = array_unique($response['labels']);
+
+        foreach($response['labels'] as $label){
+
+            foreach ($response['data'] as &$data){
+                if(!array_key_exists($label, $data))
+                    $data[$label] = null;
+            }
+        }
+
+        $chart = new AreaChartData($response['labels']);
+
+        foreach ($response['data'] as $lr => &$data){
+
+            $order = $response['labels'];
+            uksort($data, function($key1, $key2) use ($order) {
+                return ((array_search($key1, $order) > array_search($key2, $order)) ? 1 : -1);
+            });
+
+            $region = $this->project->searchengines->where('lr', $lr)->first();
+            $color = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+
+            $chart->setBackgroundColor($color)
+                ->setHidden(false)
+                ->setBorderColor($color)
+                ->setLabel($region->location->name . ' [' . $lr . ']')
+                ->setData($data);
+        }
 
         return $chart->get();
     }

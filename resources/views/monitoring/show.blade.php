@@ -850,112 +850,180 @@
                 }
             });
 
-            let charts = {
-                'top' : {
-                    el: $('#topPercent').get(0).getContext('2d'),
-                    type: 'line',
-                    options: {
-                        title: {
-                            display: true,
-                            text: '% Ключевых слов в ТОП',
-                            position: 'left',
-                        },
-                        maintainAspectRatio : false,
-                        legend: {
-                            display: true
-                        },
-                        scales: {
-                            x: {
-                                grid : {
-                                    display : false,
-                                }
+            let charts = {};
+            if($('#topPercent').length){
+                $.extend( charts, {
+                    'top' : {
+                        el: $('#topPercent').get(0).getContext('2d'),
+                        type: 'line',
+                        chart: 'top',
+                        options: {
+                            title: {
+                                display: true,
+                                text: '% Ключевых слов в ТОП',
+                                position: 'left',
                             },
-                            y: {
-                                ticks: {
-                                    stepSize: 5
-                                }
-                            }
-                        },
-                        plugins: {
-                            crosshair: {
-                                sync: {
-                                    enabled: false
+                            maintainAspectRatio : false,
+                            legend: {
+                                display: true
+                            },
+                            scales: {
+                                x: {
+                                    grid : {
+                                        display : false,
+                                    }
                                 },
-                                snapping: {
-                                    enabled: true,
-                                },
-                                zoom: {
-                                    enabled: true,
-                                    zoomButtonText: 'Reset',
-                                    zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
-                                },
-                                callbacks: {
-                                    afterZoom: function() {
-                                        charts.top.options.plugins.crosshair.zoom.enabled = false;
+                                y: {
+                                    ticks: {
+                                        stepSize: 5
                                     }
                                 }
                             },
-                            tooltip: {
-                                animation: false,
-                                mode: "index",
-                                intersect: false,
+                            plugins: {
+                                crosshair: {
+                                    sync: {
+                                        enabled: false
+                                    },
+                                    snapping: {
+                                        enabled: true,
+                                    },
+                                    zoom: {
+                                        enabled: true,
+                                        zoomButtonText: 'Reset',
+                                        zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
+                                    },
+                                    callbacks: {
+                                        afterZoom: function() {
+                                            charts.top.options.plugins.crosshair.zoom.enabled = false;
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    animation: false,
+                                    mode: "index",
+                                    intersect: false,
+                                }
                             }
                         }
                     }
-                },
-                'middle' : {
-                    el: $('#middlePosition').get(0).getContext('2d'),
-                    type: 'line',
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Средняя позиция',
-                            position: 'left',
-                        },
-                        maintainAspectRatio : false,
-                        legend: {
-                            display: true
-                        },
-                        scales: {
-                            x: {
-                                grid : {
-                                    display : false,
-                                }
+                });
+            }
+
+            if($('#middlePosition').length){
+                $.extend( charts, {
+                    'middle' : {
+                        el: $('#middlePosition').get(0).getContext('2d'),
+                        type: 'line',
+                        chart: 'middle',
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Средняя позиция',
+                                position: 'left',
                             },
-                            y: {
-                                ticks: {
-                                    stepSize: 5
-                                }
-                            }
-                        },
-                        plugins: {
-                            crosshair: {
-                                sync: {
-                                    enabled: false
+                            maintainAspectRatio : false,
+                            legend: {
+                                display: true
+                            },
+                            scales: {
+                                x: {
+                                    grid : {
+                                        display : false,
+                                    }
                                 },
-                                snapping: {
-                                    enabled: true,
-                                },
-                                zoom: {
-                                    enabled: true,
-                                    zoomButtonText: 'Reset',
-                                    zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
-                                },
-                                callbacks: {
-                                    afterZoom: function() {
-                                        charts.middle.options.plugins.crosshair.zoom.enabled = false;
+                                y: {
+                                    ticks: {
+                                        stepSize: 5
                                     }
                                 }
                             },
-                            tooltip: {
-                                animation: false,
-                                mode: "index",
-                                intersect: false,
+                            plugins: {
+                                crosshair: {
+                                    sync: {
+                                        enabled: false
+                                    },
+                                    snapping: {
+                                        enabled: true,
+                                    },
+                                    zoom: {
+                                        enabled: true,
+                                        zoomButtonText: 'Reset',
+                                        zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
+                                    },
+                                    callbacks: {
+                                        afterZoom: function() {
+                                            charts.middle.options.plugins.crosshair.zoom.enabled = false;
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    animation: false,
+                                    mode: "index",
+                                    intersect: false,
+                                }
                             }
                         }
                     }
-                },
-            };
+                });
+            }
+
+            if($('#middlePositionRegions').length){
+                $.extend( charts, {
+                    'regions_middle' : {
+                        el: $('#middlePositionRegions').get(0).getContext('2d'),
+                        type: 'line',
+                        chart: 'regions_middle',
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Средняя позиция',
+                                position: 'left',
+                            },
+                            maintainAspectRatio : false,
+                            legend: {
+                                display: true
+                            },
+                            scales: {
+                                x: {
+                                    grid : {
+                                        display : false,
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        stepSize: 5
+                                    }
+                                }
+                            },
+                            plugins: {
+                                crosshair: {
+                                    sync: {
+                                        enabled: false
+                                    },
+                                    snapping: {
+                                        enabled: true,
+                                    },
+                                    zoom: {
+                                        enabled: true,
+                                        zoomButtonText: 'Reset',
+                                        zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
+                                    },
+                                    callbacks: {
+                                        afterZoom: function() {
+                                            charts.middle.options.plugins.crosshair.zoom.enabled = false;
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    animation: false,
+                                    mode: "index",
+                                    intersect: false,
+                                }
+                            }
+                        }
+                    }
+                });
+            }
 
             let chartFilterPeriod = $('#chartFilterPeriod');
 
@@ -974,9 +1042,10 @@
                     axios.get('/monitoring/charts', {
                         params: {
                             projectId: PROJECT_ID,
+                            regionId: REGION_ID,
                             dateRange: DATES,
                             range: range,
-                            chart: key,
+                            chart: obj.chart,
                         }
                     }).then(function (response) {
                         chart.data = response.data;
@@ -992,95 +1061,97 @@
             axios.get('/monitoring/charts', {
                 params: {
                     projectId: PROJECT_ID,
+                    regionId: REGION_ID,
                     dateRange: DATES,
                     chart: 'distribution',
                 }
             }).then(function (response) {
 
-                new Chart($('#distributionByTop').get(0).getContext('2d'), {
-                    type: 'doughnut',
-                    data: response.data,
-                    plugins: [ChartDataLabels],
-                    options: {
-                        maintainAspectRatio : false,
-                        title: {
-                            display: true,
-                            text: 'Распределение по ТОП-100',
-                            position: 'left',
-                        },
-                        plugins: {
-                            crosshair: false,
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label;
-                                        let data = context.dataset.data;
-                                        let dataItem = data[context.dataIndex];
-
-                                        let sum = 0;
-                                        data.map(data => { sum += data });
-                                        let percent = Math.round((dataItem * 100 / sum));
-
-                                        label += ': ' + dataItem + ' (' + percent + '%)';
-
-                                        return label;
-                                    }
-                                }
-                            },
-                            datalabels: {
-                                anchor: 'center',
-                                color: '#fff',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                formatter: (value, ctx) => {
-                                    let sum = 0;
-                                    let dataArr = ctx.chart.data.datasets[0].data;
-                                    dataArr.map(data => { sum += data });
-                                    let percent = Math.round((value * 100 / sum));
-                                    if(percent > 1)
-                                        return `${percent}%`;
-                                    else
-                                        return null;
-                                },
-                            },
-                            legend: {
+                if($('#distributionByTop').length){
+                    new Chart($('#distributionByTop').get(0).getContext('2d'), {
+                        type: 'doughnut',
+                        data: response.data,
+                        plugins: [ChartDataLabels],
+                        options: {
+                            maintainAspectRatio : false,
+                            title: {
+                                display: true,
+                                text: 'Распределение по ТОП-100',
                                 position: 'left',
-                                labels: {
-                                    font: {
-                                        size: 24,
-                                        style: "normal",
-                                    },
-                                    generateLabels: function(chart){
-                                        let data = chart.data;
-
-                                        return data.labels.map(function(label, i) {
-                                            let dsIndex = 0;
-                                            let ds = data.datasets[0];
+                            },
+                            plugins: {
+                                crosshair: false,
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.label;
+                                            let data = context.dataset.data;
+                                            let dataItem = data[context.dataIndex];
 
                                             let sum = 0;
-                                            ds.data.map(data => { sum += data });
+                                            data.map(data => { sum += data });
+                                            let percent = Math.round((dataItem * 100 / sum));
 
-                                            let value = chart.config.data.datasets[dsIndex].data[i];
-                                            let percent = Math.round((value * 100 / sum));
+                                            label += ': ' + dataItem + ' (' + percent + '%)';
 
-                                            return {
-                                                text: label + ": " + percent + "%",
-                                                fillStyle: ds.backgroundColor[i],
-                                                strokeStyle: ds.backgroundColor[i],
-                                                hidden: ds.hidden,
-                                                index: i
-                                            };
-                                        });
+                                            return label;
+                                        }
+                                    }
+                                },
+                                datalabels: {
+                                    anchor: 'center',
+                                    color: '#fff',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    },
+                                    formatter: (value, ctx) => {
+                                        let sum = 0;
+                                        let dataArr = ctx.chart.data.datasets[0].data;
+                                        dataArr.map(data => { sum += data });
+                                        let percent = Math.round((value * 100 / sum));
+                                        if(percent > 1)
+                                            return `${percent}%`;
+                                        else
+                                            return null;
                                     },
                                 },
-                            },
-                        }
-                    }
-                });
-            });
+                                legend: {
+                                    position: 'left',
+                                    labels: {
+                                        font: {
+                                            size: 24,
+                                            style: "normal",
+                                        },
+                                        generateLabels: function(chart){
+                                            let data = chart.data;
 
+                                            return data.labels.map(function(label, i) {
+                                                let dsIndex = 0;
+                                                let ds = data.datasets[0];
+
+                                                let sum = 0;
+                                                ds.data.map(data => { sum += data });
+
+                                                let value = chart.config.data.datasets[dsIndex].data[i];
+                                                let percent = Math.round((value * 100 / sum));
+
+                                                return {
+                                                    text: label + ": " + percent + "%",
+                                                    fillStyle: ds.backgroundColor[i],
+                                                    strokeStyle: ds.backgroundColor[i],
+                                                    hidden: ds.hidden,
+                                                    index: i
+                                                };
+                                            });
+                                        },
+                                    },
+                                },
+                            }
+                        }
+                    });
+                }
+            });
 
             $('#showChartsBlock').click(function () {
                 let btn = $(this);
