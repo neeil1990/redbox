@@ -103,11 +103,9 @@
                                 @foreach($user->metrics as $key => $value)
                                     <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
                                 @endforeach
-                            @elseif(strlen($user->metrics) > 0 && isset($user->metrics))
+                            @elseif(strlen($user->metrics) > 2 && $user->metrics != 'null')
                                 <div>
                                     {{ $user->metrics }}
-                                    {{ strlen($user->metrics) }}
-                                    {{ isset($user->metrics) }}
                                 </div>
                             @endif
                         </td>
