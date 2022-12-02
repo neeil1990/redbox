@@ -106,6 +106,8 @@
                             @elseif(strlen($user->metrics) > 0 && isset($user->metrics))
                                 <div>
                                     {{ $user->metrics }}
+                                    {{ strlen($user->metrics) }}
+                                    {{ isset($user->metrics) }}
                                 </div>
                             @endif
                         </td>
