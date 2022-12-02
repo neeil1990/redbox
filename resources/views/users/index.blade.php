@@ -101,9 +101,9 @@
                         <td style="max-width: 350px">
                             @if(is_array($user->metrics))
                                 @foreach($user->metrics as $key => $value)
-                                    <div><b>{{ $key }}</b>: {{ $value }}</div>
+                                    <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
                                 @endforeach
-                            @else
+                            @elseif($user->metrics !== "")
                                 <div>
                                     {{ $user->metrics }}
                                 </div>
