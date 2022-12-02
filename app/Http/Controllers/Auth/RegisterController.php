@@ -96,12 +96,11 @@ class RegisterController extends Controller
                 $readyArray[$array[0]] = $array[1];
             }
 
-            $readyArray = json_encode($readyArray) !== null ? json_encode($readyArray) : $data['utm_metrics'];
+            $readyArray = json_encode($readyArray);
         } catch (\Throwable $e) {
             $readyArray = $data['utm_metrics'];
         }
 
-        dd($readyArray);
         $user = User::create([
             'balance' => 0,
             'name' => $data['name'],
