@@ -33,7 +33,7 @@
                     <th>
                         {{__('Was online')}}
                     </th>
-                    <th style="width: 390px"></th>
+                    <th style="width: 355px"></th>
                 </tr>
                 </thead>
 
@@ -95,7 +95,7 @@
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>
-                        <td class="project-actions text-right">
+                        <td class="project-actions">
                             <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">
                                 <i class="fas fa-user-alt"></i>
                                 {{ __('Login') }}
