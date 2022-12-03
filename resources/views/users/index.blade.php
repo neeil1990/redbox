@@ -79,7 +79,7 @@
                                    href="#collapseExample{{ $user->id }}"
                                    role="button" aria-expanded="false" aria-controls="collapseExample{{ $user->id }}">
                                     <i class="fa fa-share-alt"></i>
-                                    utm metrics
+                                    {{ __('utm metrics') }}
                                 </a>
                             @endif
 
