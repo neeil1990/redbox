@@ -33,7 +33,7 @@
                     <th>
                         {{__('Was online')}}
                     </th>
-                    <th style="width: 30%"></th>
+                    <th style="width: 334px"></th>
                 </tr>
                 </thead>
 
@@ -118,8 +118,7 @@
                             {!! Form::close() !!}
 
                             @if(isset($user->metrics))
-                                <div class="collapse text-left mt-3" id="collapseExample{{ $user->id }}"
-                                     style="padding-left: 36px">
+                                <div class="collapse text-left mt-3" id="collapseExample{{ $user->id }}">
                                     @if(is_array($user->metrics))
                                         @foreach($user->metrics as $key => $value)
                                             <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
