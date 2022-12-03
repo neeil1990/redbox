@@ -83,7 +83,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $metrics = isset($data['utm_metrics']) ? $this->prepareMetrics($data['utm_metrics']) : '';
+        $metrics = isset($data['utm_metrics']) ? $this->prepareMetrics($data['utm_metrics']) : null;
 
         $user = User::create([
             'balance' => 0,
