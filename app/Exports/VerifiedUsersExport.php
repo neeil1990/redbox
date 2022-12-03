@@ -41,7 +41,7 @@ class VerifiedUsersExport implements FromCollection
                 if (strlen($metrics) < 2 && $user->metrics == 'null') {
                     $metrics = '';
                 } else {
-                    $arr = json_decode(json_decode($user['metrics']), true);;
+                    $arr = json_decode($user['metrics'], true);;
 
                     if ($arr !== null) {
                         $metrics = '';
