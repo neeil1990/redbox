@@ -17,7 +17,7 @@
             <table class="table table-striped projects" id="service-users">
                 <thead>
                 <tr>
-                    <th style="width: 55px">
+                    <th style="width: 6%">
                         {{ __('ID') }}
                     </th>
                     <th style="width: 20%">
@@ -33,7 +33,7 @@
                     <th>
                         {{__('Was online')}}
                     </th>
-                    <th></th>
+                    <th style="width: 30%"></th>
                 </tr>
                 </thead>
 
