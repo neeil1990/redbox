@@ -23,20 +23,17 @@
                     <th style="width: 20%">
                         {{ __('Name') }}
                     </th>
-                    <th style="width: 30%">
+                    <th>
                         {{ __('Email') }}
                     </th>
                     <th>{{__('Created')}}</th>
-                    <th style="width: 8%" class="text-center">
+                    <th class="text-center">
                         {{ __('Roles') }}
                     </th>
                     <th>
                         {{__('Was online')}}
                     </th>
-                    <th>
-                        {{__('Метрики')}}
-                    </th>
-                    <th style="width: 20%"></th>
+                    <th></th>
                 </tr>
                 </thead>
 
@@ -98,31 +95,43 @@
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>
-                        <td style="max-width: 350px">
-                            @if(is_array($user->metrics))
-                                @foreach($user->metrics as $key => $value)
-                                    <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
-                                @endforeach
-                            @elseif(strlen($user->metrics) > 2 && $user->metrics != 'null')
-                                <div>
-                                    {{ $user->metrics }}
-                                </div>
-                            @endif
-                        </td>
                         <td class="project-actions text-right">
                             <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">
-                                <i class="fas fa-user-alt">
-                                </i>
+                                <i class="fas fa-user-alt"></i>
                                 {{ __('Login') }}
                             </a>
                             <a class="btn btn-info btn-sm" href="{{ route('users.edit', $user->id) }}">
-                                <i class="fas fa-pencil-alt">
-                                </i>
+                                <i class="fas fa-pencil-alt"></i>
                                 {{ __('Edit') }}
                             </a>
+                            @if(isset($user->metrics))
+                                <a class="btn btn-info btn-sm" data-toggle="collapse"
+                                   href="#collapseExample{{ $user->id }}"
+                                   role="button" aria-expanded="false" aria-controls="collapseExample{{ $user->id }}">
+                                    <i class="fa fa-share-alt"></i>
+                                    utm metrics
+                                </a>
+                            @endif
+
                             {!! Form::open(['onSubmit' => 'agreeUser(event)', 'class' => 'd-inline', 'method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
                             {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) !!}
                             {!! Form::close() !!}
+
+                            @if(isset($user->metrics))
+                                <div class="collapse text-left mt-3" id="collapseExample{{ $user->id }}"
+                                     style="padding-left: 36px">
+                                    @if(is_array($user->metrics))
+                                        @foreach($user->metrics as $key => $value)
+                                            <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
+                                        @endforeach
+                                    @elseif(strlen($user->metrics) > 2 && $user->metrics != 'null')
+                                        <div>
+                                            {{ $user->metrics }}
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+
                         </td>
                     </tr>
                 @endforeach

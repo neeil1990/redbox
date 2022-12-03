@@ -83,8 +83,28 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $metrics = isset($data['utm_metrics']) ? $this->prepareMetrics($data['utm_metrics']) : '';
+
+        $user = User::create([
+            'balance' => 0,
+            'name' => $data['name'],
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+            'lang' => $data['lang'],
+            'password' => Hash::make($data['password']),
+            'telegram_token' => str_shuffle(Str::random(50) . Carbon::now()),
+            'metrics' => $metrics,
+        ]);
+
+        $user->assignRole('Free');
+        $user->assignRole('user');
+
+        return $user;
+    }
+
+    protected function prepareMetrics($metrics)
+    {
         try {
-            $metrics = $data['utm_metrics'];
             $metrics = str_replace('=', ':', $metrics);
             $metrics = str_replace('?', '', $metrics);
             $metrics = explode('&', $metrics);
@@ -98,23 +118,9 @@ class RegisterController extends Controller
 
             $readyArray = json_encode($readyArray);
         } catch (\Throwable $e) {
-            $readyArray = $data['utm_metrics'] ?? '';
+            $readyArray = $metrics;
         }
 
-        $user = User::create([
-            'balance' => 0,
-            'name' => $data['name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'lang' => $data['lang'],
-            'password' => Hash::make($data['password']),
-            'telegram_token' => str_shuffle(Str::random(50) . Carbon::now()),
-            'metrics' => json_encode($readyArray)
-        ]);
-
-        $user->assignRole('Free');
-        $user->assignRole('user');
-
-        return $user;
+        return $readyArray;
     }
 }

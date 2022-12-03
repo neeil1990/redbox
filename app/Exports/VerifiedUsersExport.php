@@ -14,7 +14,7 @@ class VerifiedUsersExport implements FromCollection
      */
     public function collection(): Collection
     {
-        $users = User::whereNotNull('email_verified_at')->get(['id', 'name', 'last_name', 'email', 'created_at', 'last_online_at']);
+        $users = User::whereNotNull('email_verified_at')->get(['id', 'name', 'last_name', 'email', 'created_at', 'last_online_at', 'metrics']);
 
         $rows[] = [
             '№',
@@ -25,6 +25,7 @@ class VerifiedUsersExport implements FromCollection
             'роли',
             'дата регистрации',
             'последний раз был в сети',
+            'метрики'
         ];
 
         $iterator = 1;
@@ -33,6 +34,18 @@ class VerifiedUsersExport implements FromCollection
 
             foreach ($user->getRoleNames() as $role) {
                 $roles .= __($role) . "\n";
+            }
+
+            $metrics = $user->metrics;
+            if (isset($metrics)) {
+                $arr = json_decode(json_decode($user['metrics']), true);;
+
+                if ($arr !== null) {
+                    $metrics = '';
+                    foreach ($arr as $key => $item) {
+                        $metrics .= "$key: $item\n";
+                    }
+                }
             }
 
             $rows[] = [
@@ -44,6 +57,7 @@ class VerifiedUsersExport implements FromCollection
                 $roles,
                 $user->created_at->format('d.m.Y'),
                 $user->last_online_at->format('d.m.Y'),
+                $metrics,
             ];
 
         }
