@@ -43,36 +43,6 @@
                         <td>{{ $user->id }}</td>
                         <td data-target="{{ $user->name }}">
                             {{ $user->name }} {{ $user->last_name }}
-                            {{--                            @if($user->session)--}}
-                            {{--                                <br/>--}}
-                            {{--                                <small>--}}
-                            {{--                                    <div class="d-flex flex-row align-items-center">--}}
-                            {{--                                        <div>--}}
-                            {{--                                            @if ($user->session->agent->isDesktop())--}}
-                            {{--                                                <i class="fas fa-desktop fa-lg"></i>--}}
-                            {{--                                            @else--}}
-                            {{--                                                <i class="fas fa-mobile fa-lg"></i>--}}
-                            {{--                                            @endif--}}
-                            {{--                                        </div>--}}
-
-                            {{--                                        <div class="ml-2">--}}
-                            {{--                                            <div class="text-sm text-gray-600">--}}
-                            {{--                                                {{ $user->session->agent->platform() }}--}}
-                            {{--                                                - {{ $user->session->agent->browser() }}--}}
-                            {{--                                            </div>--}}
-                            {{--                                            <div class="text-xs text-gray-500">--}}
-                            {{--                                                {{ $user->session->ip_address }},--}}
-
-                            {{--                                                @if ($user->session->is_current_device)--}}
-                            {{--                                                    <span class="text-green">{{ __('This device') }}</span>--}}
-                            {{--                                                @else--}}
-                            {{--                                                    {{ __('Last active') }} {{ $user->session->last_active }}--}}
-                            {{--                                                @endif--}}
-                            {{--                                            </div>--}}
-                            {{--                                        </div>--}}
-                            {{--                                    </div>--}}
-                            {{--                                </small>--}}
-                            {{--                            @endif--}}
                         </td>
                         <td data-target="{{ $user->email }}">
                             {{ $user->email }}
@@ -95,7 +65,7 @@
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>
-                        <td class="project-actions">
+                        <td class="project-actions @empty($user->metrics) text-right @endempty">
                             <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">
                                 <i class="fas fa-user-alt"></i>
                                 {{ __('Login') }}
