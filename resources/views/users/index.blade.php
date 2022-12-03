@@ -33,7 +33,7 @@
                     <th>
                         {{__('Was online')}}
                     </th>
-                    <th style="width: 340px"></th>
+                    <th style="width: 390px"></th>
                 </tr>
                 </thead>
 
