@@ -38,12 +38,16 @@ class VerifiedUsersExport implements FromCollection
 
             $metrics = $user->metrics;
             if (isset($metrics)) {
-                $arr = json_decode(json_decode($user['metrics']), true);;
-
-                if ($arr !== null) {
+                if (strlen($metrics) < 2 && $user->metrics == 'null') {
                     $metrics = '';
-                    foreach ($arr as $key => $item) {
-                        $metrics .= "$key: $item\n";
+                } else {
+                    $arr = json_decode(json_decode($user['metrics']), true);;
+
+                    if ($arr !== null) {
+                        $metrics = '';
+                        foreach ($arr as $key => $item) {
+                            $metrics .= "$key: $item\n";
+                        }
                     }
                 }
             }
