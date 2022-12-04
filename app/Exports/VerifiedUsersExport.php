@@ -30,7 +30,8 @@ class VerifiedUsersExport implements FromCollection
             'utm_medium',
             'utm_term_keyword',
             'utm_term_source',
-            'utm_content'
+            'utm_content',
+            'массив с метриками, на случай если что-то пошло не так'
         ];
 
         $iterator = 1;
@@ -101,6 +102,7 @@ class VerifiedUsersExport implements FromCollection
                 $rows[$iterator][13] = '';
             }
 
+            $rows[$iterator][14] = $user->metrics;
             $iterator++;
         }
 
