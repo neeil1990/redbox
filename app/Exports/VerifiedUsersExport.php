@@ -25,7 +25,12 @@ class VerifiedUsersExport implements FromCollection
             'роли',
             'дата регистрации',
             'последний раз был в сети',
-            'метрики'
+            'utm_source',
+            'utm_campaign',
+            'utm_medium',
+            'utm_term_keyword',
+            'utm_term_source',
+            'utm_content'
         ];
 
         $iterator = 1;
@@ -36,23 +41,7 @@ class VerifiedUsersExport implements FromCollection
                 $roles .= __($role) . "\n";
             }
 
-            $metrics = $user->metrics;
-            if (isset($metrics)) {
-                if (strlen($metrics) < 2 && $user->metrics == 'null') {
-                    $metrics = '';
-                } else {
-                    $arr = json_decode($user['metrics'], true);;
-
-                    if ($arr !== null) {
-                        $metrics = '';
-                        foreach ($arr as $key => $item) {
-                            $metrics .= "$key: $item\n";
-                        }
-                    }
-                }
-            }
-
-            $rows[] = [
+            $rows[$iterator] = [
                 $iterator,
                 $user->id,
                 $user->name,
@@ -61,9 +50,58 @@ class VerifiedUsersExport implements FromCollection
                 $roles,
                 $user->created_at->format('d.m.Y'),
                 $user->last_online_at->format('d.m.Y'),
-                $metrics,
             ];
 
+            $metrics = $user->metrics;
+            if (isset($metrics)) {
+                if ($user->metrics !== null) {
+                    $arr = json_decode($metrics, true);
+                    if (isset($arr['utm_campaign'])) {
+                        $rows[$iterator][8] = $arr['utm_campaign'];
+                    } else {
+                        $rows[$iterator][8] = '';
+                    }
+
+                    if (isset($arr['utm_source'])) {
+                        $rows[$iterator][9] = $arr['utm_source'];
+                    } else {
+                        $rows[$iterator][9] = '';
+                    }
+
+                    if (isset($arr['utm_medium'])) {
+                        $rows[$iterator][10] = $arr['utm_medium'];
+                    } else {
+                        $rows[$iterator][10] = '';
+                    }
+
+                    if (isset($arr['utm_term_keyword'])) {
+                        $rows[$iterator][11] = $arr['utm_term_keyword'];
+                    } else {
+                        $rows[$iterator][11] = '';
+                    }
+
+                    if (isset($arr['utm_term_source'])) {
+                        $rows[$iterator][12] = $arr['utm_term_source'];
+                    } else {
+                        $rows[$iterator][12] = '';
+                    }
+
+                    if (isset($arr['utm_content'])) {
+                        $rows[$iterator][13] = $arr['utm_content'];
+                    } else {
+                        $rows[$iterator][13] = '';
+                    }
+                }
+            } else {
+                $rows[$iterator][8] = '';
+                $rows[$iterator][9] = '';
+                $rows[$iterator][10] = '';
+                $rows[$iterator][11] = '';
+                $rows[$iterator][12] = '';
+                $rows[$iterator][13] = '';
+            }
+
+            $iterator++;
         }
 
         return collect($rows);

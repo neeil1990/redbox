@@ -6,6 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Storage;
@@ -109,18 +110,25 @@ class RegisterController extends Controller
             $metrics = str_replace('?', '', $metrics);
             $metrics = explode('&', $metrics);
 
-            $readyArray = [];
+            $utmMetrics = [];
 
             foreach ($metrics as $metric) {
                 $array = explode(':', $metric);
-                $readyArray[$array[0]] = $array[1];
+                if ($array[0] === 'utm_source' || $array[0] === 'utm_campaign' || $array[0] === 'utm_medium' || $array[0] === 'utm_content') {
+                    $utmMetrics[$array[0]] = $array[1];
+                } else if ($array[0] === 'utm_term') {
+                    $term = explode('_', $array[1]);
+                    $utmMetrics['utm_term_keyword'] = $term[0];
+                    $utmMetrics['utm_term_source'] = $term[1];
+                }
             }
 
-            $readyArray = json_encode($readyArray);
+            $utmMetrics = json_encode($utmMetrics);
         } catch (\Throwable $e) {
-            $readyArray = $metrics;
+            Log::debug('Произошёл сбой подготовки данных метрики', [$metrics]);
+            $utmMetrics = $metrics;
         }
 
-        return $readyArray;
+        return $utmMetrics;
     }
 }
