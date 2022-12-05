@@ -310,16 +310,17 @@ class Cluster
                     continue;
                 }
 
-                foreach ($this->clusters as $key1 => $cluster) {
-                    foreach ($cluster as $key2 => $clusterItem) {
+                foreach ($this->clusters as $key => $cluster) {
+                    foreach ($cluster as $clusterItem) {
                         if (count(array_intersect($item2['sites'], $clusterItem['sites'])) >= $this->minimum) {
-                            $this->clusters[$key1][$phrase2] = [
+                            $this->clusters[$key][$phrase2] = [
                                 'based' => $item2['based'],
                                 'phrased' => $item2['phrased'],
                                 'target' => $item2['target'],
                                 'relevance' => $item2['relevance'],
                                 'sites' => $item2['sites'],
                                 'basedNormal' => $item2['basedNormal'],
+                                'merge' => [$phrase2 => $key]
                             ];
                             $willClustered[$phrase2] = true;
                             break 3;
