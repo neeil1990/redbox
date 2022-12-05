@@ -304,6 +304,7 @@ class Cluster
     protected function searchClustersEngineV3()
     {
         Log::debug('minimum', [$this->minimum]);
+        Log::debug('$this->count', [$this->count]);
         $willClustered = [];
         foreach ($this->sites as $phrase => $item) {
             foreach ($this->sites as $phrase2 => $item2) {
