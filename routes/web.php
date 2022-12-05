@@ -309,8 +309,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
     Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
 
-    Route::get('/test', function () {
-        dd(json_decode("{\"3121\":\"12\"}", true));
-    });
-
 });

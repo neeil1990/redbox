@@ -346,27 +346,3 @@ function copyFullUrls() {
 if (new URL(window.location.href)['search'] !== '' && localStorage.getItem('_user_metrics_redbox') !== new URL(window.location.href)['search']) {
     localStorage.setItem('_user_metrics_redbox', new URL(window.location.href)['search'])
 }
-
-let intervalChangeLinks = setInterval(() => {
-    if (tryChangeLinks()) {
-        clearInterval(intervalChangeLinks)
-    }
-}, 1000)
-
-function tryChangeLinks() {
-    let firstRegisterLink = document.querySelector('#body > div.wrapper.tone-dark > header > div > div.container.top-line > div > table > tbody > tr > td.col-sm-4.col-xs-1.right > div > table > tbody > tr > td > div > div > a:nth-child(2)')
-    let secondRegisterLink = document.querySelector('#body > div.wrapper.tone-dark > header > div > div.wrap-main-menu.active.def.full.ready > div > div > div.nav-main-menu-wrap.more-four > nav > li.lvl1.view_1.section-menu-id-111.visible > a')
-
-    if (
-        firstRegisterLink.href !== null && firstRegisterLink.href !== '' &&
-        secondRegisterLink.href !== null && secondRegisterLink.href !== ''
-    ) {
-        if(localStorage.getItem('_user_metrics_redbox') !== null){
-            firstRegisterLink.href = firstRegisterLink.href + localStorage.getItem('_user_metrics_redbox');
-            secondRegisterLink.href = secondRegisterLink.href + localStorage.getItem('_user_metrics_redbox');
-        }
-        return true;
-    } else {
-        return false;
-    }
-}

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Cluster;
 use App\ClusterConfiguration;
-use App\ClusterProgress;
 use App\ClusterQueue;
 use App\ClusterResults;
 use App\Common;
@@ -125,7 +124,6 @@ class ClusterController extends Controller
      */
     public function fastScanClusters(Request $request): JsonResponse
     {
-        Log::debug('d', [json_encode($request->all())]);
         $user = Auth::user();
         $cluster = new Cluster($request->all(), $user, false);
         $results = ClusterResults::findOrFail($request->input('resultId'));
