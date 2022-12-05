@@ -57,8 +57,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
-                        кластера</label>
+                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого кластера</label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
