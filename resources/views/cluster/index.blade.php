@@ -164,8 +164,7 @@
 
             function saveAllUrls(id) {
                 let button = $(this)
-                $('.save-all-urls').unbind().on('click', function () {
-                    button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {button = $(this)
                     $('#relevanceUrls').html('')
                     $.each($(this).attr('data-urls').split(','), function (key, value) {
                         $('#relevanceUrls').append($('<option>', {

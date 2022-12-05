@@ -258,27 +258,27 @@
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 
-                                        {{--                                        <div class="form-group required">--}}
-                                        {{--                                            <label for="brutForce">{{ __('Additional bulkhead') }}</label>--}}
-                                        {{--                                            <input type="checkbox" name="brutForce" id="brutForce">--}}
-                                        {{--                                            <span class="__helper-link ui_tooltip_w">--}}
-                                        {{--                                                <i class="fa fa-question-circle" style="color: grey"></i>--}}
-                                        {{--                                                <span class="ui_tooltip __right">--}}
-                                        {{--                                                    <span class="ui_tooltip_content" style="width: 300px">--}}
-                                        {{--                                                        {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>--}}
-                                        {{--                                                        {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}--}}
-                                        {{--                                                        {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}--}}
-                                        {{--                                                    </span>--}}
-                                        {{--                                                </span>--}}
-                                        {{--                                            </span>--}}
-                                        {{--                                        </div>--}}
-                                        {{--                                        <div class="form-group required" id="brutForceCountBlock" style="display: none">--}}
-                                        {{--                                            <label for="brutForceCount">--}}
-                                        {{--                                                Минимальный порог для дополнительной переборки--}}
-                                        {{--                                            </label>--}}
-                                        {{--                                            <input type="number" name="brutForceCount" id="brutForceCount"--}}
-                                        {{--                                                   class="form form-control" value="1">--}}
-                                        {{--                                        </div>--}}
+{{--                                        <div class="form-group required">--}}
+{{--                                            <label for="brutForce">{{ __('Additional bulkhead') }}</label>--}}
+{{--                                            <input type="checkbox" name="brutForce" id="brutForce">--}}
+{{--                                            <span class="__helper-link ui_tooltip_w">--}}
+{{--                                                <i class="fa fa-question-circle" style="color: grey"></i>--}}
+{{--                                                <span class="ui_tooltip __right">--}}
+{{--                                                    <span class="ui_tooltip_content" style="width: 300px">--}}
+{{--                                                        {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>--}}
+{{--                                                        {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}--}}
+{{--                                                        {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}--}}
+{{--                                                    </span>--}}
+{{--                                                </span>--}}
+{{--                                            </span>--}}
+{{--                                        </div>--}}
+{{--                                        <div class="form-group required" id="brutForceCountBlock" style="display: none">--}}
+{{--                                            <label for="brutForceCount">--}}
+{{--                                                Минимальный порог для дополнительной переборки--}}
+{{--                                            </label>--}}
+{{--                                            <input type="number" name="brutForceCount" id="brutForceCount"--}}
+{{--                                                   class="form form-control" value="1">--}}
+{{--                                        </div>--}}
 
                                         <div class="form-group required d-flex justify-content-end">
                                             <button type="button" class="btn btn-secondary mr-2"
@@ -446,52 +446,6 @@
     <input type="hidden" id="progressId">
     @slot('js')
         <script>
-            let button = $(this)
-            $('.save-all-urls').unbind().on('click', function () {
-                button = $(this)
-                $('#relevanceUrls').html('')
-                $.each($(this).attr('data-urls').split(','), function (key, value) {
-                    $('#relevanceUrls').append($('<option>', {
-                        value: value,
-                        text: value
-                    }));
-                })
-            })
-
-            $('#save-cluster-url-button').unbind().on('click', function () {
-                let phrases = []
-                $.each(button.parent().parent().parent().parent().children('td').eq(0).children('div').eq(0).children('table').eq(0).children('tbody').children('tr'), function (key, value) {
-                    let thisElem = $(this)
-                    if (thisElem.children('td').eq(4).children('a').eq(0).length === 0) {
-                        if (thisElem.children('td').eq(2).attr('title') !== undefined) {
-                            let phrase = thisElem.children('td').eq(2).attr('title')
-                            phrase = phrase.replace('Ваша фраза "', '')
-                            phrase = phrase.replace('" была изменена', '')
-                            phrases.push(phrase)
-                        } else {
-                            phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
-                        }
-                        thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
-                    }
-                })
-
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('set.cluster.relevance.urls') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        phrases: phrases,
-                        url: $('#relevanceUrls').val(),
-                        projectId: {{ $cluster['id'] }},
-                    },
-                    success: function () {
-
-                    },
-                    error: function (response) {
-                    }
-                });
-            })
-
             function successCopiedMessage() {
                 $('.toast.toast-success').show(300)
                 $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
@@ -518,7 +472,6 @@
             });
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        {{--        <script src="{{ asset('/plugins/cluster/js/render-hidden-table.js') }}"></script>--}}
         <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.js') }}"></script>
@@ -528,7 +481,53 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-            // let hiddenTable
+            function saveAllUrls(id) {
+                let button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {button = $(this)
+                    $('#relevanceUrls').html('')
+                    $.each($(this).attr('data-urls').split(','), function (key, value) {
+                        $('#relevanceUrls').append($('<option>', {
+                            value: value,
+                            text: value
+                        }));
+                    })
+                })
+
+                $('#save-cluster-url-button').unbind().on('click', function () {
+                    let phrases = []
+                    $.each(button.parent().parent().parent().parent().children('td').eq(0).children('div').eq(0).children('table').eq(0).children('tbody').children('tr'), function (key, value) {
+                        let thisElem = $(this)
+                        if (thisElem.children('td').eq(4).children('a').eq(0).length === 0) {
+                            if (thisElem.children('td').eq(2).attr('title') !== undefined) {
+                                let phrase = thisElem.children('td').eq(2).attr('title')
+                                phrase = phrase.replace('Ваша фраза "', '')
+                                phrase = phrase.replace('" была изменена', '')
+                                phrases.push(phrase)
+                            } else {
+                                phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
+                            }
+                            thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
+                        }
+                    })
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('set.cluster.relevance.urls') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            phrases: phrases,
+                            url: $('#relevanceUrls').val(),
+                            projectId: id,
+                        },
+                        success: function () {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                })
+            }
+
             $(document).ready(function () {
                 $('#app > div > div > div.card-header').append($('#params').html())
                 $('#params').remove()
@@ -604,8 +603,8 @@
                 $('.save-relevance-url').unbind().on('click', function () {
                     let phrase = $(this).attr('data-order')
                     let select = $('#' + phrase.replaceAll(' ', '-'))
-                    let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
-                    let targetColumn = 4
+                    // let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
+                    // let targetColumn = 4
 
                     $.ajax({
                         type: "POST",
@@ -625,6 +624,8 @@
                         }
                     });
                 })
+
+                saveAllUrls({{ $cluster['id'] }})
             })
         </script>
     @endslot
