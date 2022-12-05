@@ -320,7 +320,7 @@ class Cluster
                                 'relevance' => $item2['relevance'],
                                 'sites' => $item2['sites'],
                                 'basedNormal' => $item2['basedNormal'],
-                                'merge' => [$phrase2 => $key]
+                                'merge' => [$key => count(array_intersect($item2['sites'], $clusterItem['sites']))]
                             ];
                             $willClustered[$phrase2] = true;
                             break 3;
