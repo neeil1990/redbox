@@ -342,6 +342,7 @@
             }
 
             $('#classicMode').on('click', function () {
+                $('#engineVersion').val('latest')
                 $('#start-analyse').attr('data-target', 'classic')
                 $('.pro').hide(300)
             })
