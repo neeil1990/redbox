@@ -151,6 +151,8 @@
                 let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
                     scrollX: true,
+                    scrollY: 600,
+                    scrollCollapse: true,
                     lengthMenu: LENGTH_MENU,
                     pageLength: PAGE_LENGTH,
                     pagingType: "simple_numbers",

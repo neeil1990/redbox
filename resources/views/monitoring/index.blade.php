@@ -102,6 +102,8 @@
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                scrollY: 600,
+                scrollCollapse: true,
                 lengthMenu: LENGTH_MENU,
                 pageLength: PAGE_LENGTH,
                 pagingType: "simple_numbers",
