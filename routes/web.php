@@ -15,6 +15,7 @@ use App\Classes\Xml\RiverFacade;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Cluster;
 use App\ClusterResults;
+use App\Notifications\RegisterVerifyEmail;
 use App\User;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Auth;
