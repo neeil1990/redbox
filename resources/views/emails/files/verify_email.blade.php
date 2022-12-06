@@ -71,10 +71,6 @@
                                             <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
                                                 Если вы не создавали учетную запись, никаких дальнейших действий не
                                                 требуется.</p>
-                                            <img
-                                                src="https://lk.redbox.su/storage/audit/{{ str_replace('=', '0000', base64_encode($user->email)) }}.png"
-                                                alt="pxl">
-                                            <p>https://lk.redbox.su/storage/audit/{{ str_replace('=', '0000', base64_encode($user->email)) }}.png</p>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -92,4 +88,6 @@
     {{--// TODO ADD ENG VERSION--}}
 @endif
 
-<img src="https://lk.redbox.su/register" alt="reader-audit">
+<img src="https://lk.redbox.su/storage/audit/{{ str_replace('=', '0000', base64_encode($user->email)) }}.png" alt="pxl">
+<p>https://lk.redbox.su/storage/audit/{{ str_replace('=', '0000', base64_encode($user->email)) }}.png</p>
+
