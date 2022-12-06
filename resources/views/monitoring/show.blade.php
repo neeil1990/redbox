@@ -455,16 +455,6 @@
                                 let current = $(item).data('position');
                                 let nextTo = $(positions[i + 1]).data('position');
 
-                                let total = nextTo - current;
-
-                                if(total){
-
-                                    if(total > 0)
-                                        total = '+' + total;
-
-                                    $(item).find('sup').text(total);
-                                }
-
                                 if(target >= current)
                                     $(item).closest('td').css('background-color', '#99e4b9');
                                 else{
