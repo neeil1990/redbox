@@ -227,8 +227,22 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @return string
      */
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
         return "{$this->name} {$this->last_name}";
+    }
+
+    /**
+     * @param array $get
+     * @return void
+     */
+    public static function testAudit(array $get)
+    {
+        $image = imagecreatetruecolor(1,1);
+        imagefill($image, 0, 0, 0xFFFFFF);
+        header('Content-type: image/png');
+        imagepng($image);
+        imagedestroy($image);
+        Log::debug('get', $get);
     }
 }
