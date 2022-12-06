@@ -58,37 +58,37 @@ class VerifiedUsersExport implements FromCollection
                 if ($user->metrics !== null) {
                     $arr = json_decode($metrics, true);
                     if (isset($arr['utm_campaign'])) {
-                        $rows[$iterator][8] = $arr['utm_campaign'];
+                        $rows[$iterator][8] = urldecode($arr['utm_campaign']);
                     } else {
                         $rows[$iterator][8] = '';
                     }
 
                     if (isset($arr['utm_source'])) {
-                        $rows[$iterator][9] = $arr['utm_source'];
+                        $rows[$iterator][9] = urldecode($arr['utm_source']);
                     } else {
                         $rows[$iterator][9] = '';
                     }
 
                     if (isset($arr['utm_medium'])) {
-                        $rows[$iterator][10] = $arr['utm_medium'];
+                        $rows[$iterator][10] = urldecode($arr['utm_medium']);
                     } else {
                         $rows[$iterator][10] = '';
                     }
 
                     if (isset($arr['utm_term_keyword'])) {
-                        $rows[$iterator][11] = $arr['utm_term_keyword'];
+                        $rows[$iterator][11] = urldecode($arr['utm_term_keyword']);
                     } else {
                         $rows[$iterator][11] = '';
                     }
 
                     if (isset($arr['utm_term_source'])) {
-                        $rows[$iterator][12] = $arr['utm_term_source'];
+                        $rows[$iterator][12] = urldecode($arr['utm_term_source']);
                     } else {
                         $rows[$iterator][12] = '';
                     }
 
                     if (isset($arr['utm_content'])) {
-                        $rows[$iterator][13] = $arr['utm_content'];
+                        $rows[$iterator][13] = urldecode($arr['utm_content']);
                     } else {
                         $rows[$iterator][13] = '';
                     }
