@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css') }}">
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
@@ -28,6 +29,9 @@
             }
             .shrink-color {
                 background-color: rgb(251, 225, 223);
+            }
+            .table td, .table th {
+                padding: 0.75rem!important;
             }
 
         </style>
@@ -63,6 +67,7 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
         <!-- Moment js -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <!-- Papa parse -->
@@ -102,8 +107,7 @@
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
-                scrollY: 600,
-                scrollCollapse: true,
+                fixedHeader: true,
                 lengthMenu: LENGTH_MENU,
                 pageLength: PAGE_LENGTH,
                 pagingType: "simple_numbers",
