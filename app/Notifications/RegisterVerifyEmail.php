@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Mail\VerifyEmail;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Spatie\Url\Url as SpatieUrl;
 
@@ -54,6 +56,8 @@ class RegisterVerifyEmail extends Notification
         $user = User::latest()->first();
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
+
+        Mail::to($user->email)->send(new VerifyEmail($user));
 
         if ($user->lang === 'ru') {
             return (new MailMessage)
