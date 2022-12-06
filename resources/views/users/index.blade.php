@@ -17,26 +17,23 @@
             <table class="table table-striped projects" id="service-users">
                 <thead>
                 <tr>
-                    <th style="width: 55px">
+                    <th style="width: 6%">
                         {{ __('ID') }}
                     </th>
                     <th style="width: 20%">
                         {{ __('Name') }}
                     </th>
-                    <th style="width: 30%">
+                    <th>
                         {{ __('Email') }}
                     </th>
                     <th>{{__('Created')}}</th>
-                    <th style="width: 8%" class="text-center">
+                    <th class="text-center">
                         {{ __('Roles') }}
                     </th>
                     <th>
                         {{__('Was online')}}
                     </th>
-                    <th>
-                        {{__('Метрики')}}
-                    </th>
-                    <th style="width: 20%"></th>
+                    <th style="width: 372px"></th>
                 </tr>
                 </thead>
 
@@ -46,41 +43,14 @@
                         <td>{{ $user->id }}</td>
                         <td data-target="{{ $user->name }}">
                             {{ $user->name }} {{ $user->last_name }}
-                            {{--                            @if($user->session)--}}
-                            {{--                                <br/>--}}
-                            {{--                                <small>--}}
-                            {{--                                    <div class="d-flex flex-row align-items-center">--}}
-                            {{--                                        <div>--}}
-                            {{--                                            @if ($user->session->agent->isDesktop())--}}
-                            {{--                                                <i class="fas fa-desktop fa-lg"></i>--}}
-                            {{--                                            @else--}}
-                            {{--                                                <i class="fas fa-mobile fa-lg"></i>--}}
-                            {{--                                            @endif--}}
-                            {{--                                        </div>--}}
-
-                            {{--                                        <div class="ml-2">--}}
-                            {{--                                            <div class="text-sm text-gray-600">--}}
-                            {{--                                                {{ $user->session->agent->platform() }}--}}
-                            {{--                                                - {{ $user->session->agent->browser() }}--}}
-                            {{--                                            </div>--}}
-                            {{--                                            <div class="text-xs text-gray-500">--}}
-                            {{--                                                {{ $user->session->ip_address }},--}}
-
-                            {{--                                                @if ($user->session->is_current_device)--}}
-                            {{--                                                    <span class="text-green">{{ __('This device') }}</span>--}}
-                            {{--                                                @else--}}
-                            {{--                                                    {{ __('Last active') }} {{ $user->session->last_active }}--}}
-                            {{--                                                @endif--}}
-                            {{--                                            </div>--}}
-                            {{--                                        </div>--}}
-                            {{--                                    </div>--}}
-                            {{--                                </small>--}}
-                            {{--                            @endif--}}
                         </td>
                         <td data-target="{{ $user->email }}">
                             {{ $user->email }}
                             @if($user->email_verified_at)
                                 <span class="badge bg-success">{{ __('VERIFIED') }}</span>
+                            @endif
+                            @if($user->read_letter)
+                                <span class="badge bg-primary">{{ __('The letter has been read') }}</span>
                             @endif
                         </td>
                         <td data-target="{{ $user->created_at->format('d.m.Y') }}">
@@ -98,31 +68,42 @@
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
                         </td>
-                        <td>
-                            @if(is_array($user->metrics))
-                                @foreach($user->metrics as $key => $value)
-                                    <div><b>{{ $key }}</b>: {{ $value }}</div>
-                                @endforeach
-                            @else
-                                <div>
-                                    {{ $user->metrics }}
-                                </div>
-                            @endif
-                        </td>
-                        <td class="project-actions text-right">
+                        <td class="project-actions @empty($user->metrics) text-right @endempty">
                             <a class="btn btn-info btn-sm" href="{{ route('users.login', $user->id) }}">
-                                <i class="fas fa-user-alt">
-                                </i>
+                                <i class="fas fa-user-alt"></i>
                                 {{ __('Login') }}
                             </a>
                             <a class="btn btn-info btn-sm" href="{{ route('users.edit', $user->id) }}">
-                                <i class="fas fa-pencil-alt">
-                                </i>
+                                <i class="fas fa-pencil-alt"></i>
                                 {{ __('Edit') }}
                             </a>
+                            @if(isset($user->metrics))
+                                <a class="btn btn-info btn-sm" data-toggle="collapse"
+                                   href="#collapseExample{{ $user->id }}"
+                                   role="button" aria-expanded="false" aria-controls="collapseExample{{ $user->id }}">
+                                    <i class="fa fa-share-alt"></i>
+                                    {{ __('utm metrics') }}
+                                </a>
+                            @endif
+
                             {!! Form::open(['onSubmit' => 'agreeUser(event)', 'class' => 'd-inline', 'method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
                             {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) !!}
                             {!! Form::close() !!}
+
+                            @if(isset($user->metrics))
+                                <div class="collapse text-left mt-3" id="collapseExample{{ $user->id }}">
+                                    @if(is_array($user->metrics))
+                                        @foreach($user->metrics as $key => $value)
+                                            <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
+                                        @endforeach
+                                    @elseif(strlen($user->metrics) > 2 && $user->metrics != 'null')
+                                        <div>
+                                            {{ $user->metrics }}
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+
                         </td>
                     </tr>
                 @endforeach

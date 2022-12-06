@@ -38,22 +38,11 @@ class UsersController extends Controller
     {
         $users = User::all();
         foreach ($users as $key => $user) {
-            $metrics = json_decode(json_decode($user['metrics']), true);
+            $metrics = json_decode($user['metrics'], true);
             if ($metrics !== null) {
                 $users[$key]['metrics'] = $metrics;
             }
         }
-//
-//        $users->map(function ($user) {
-//            if (!$user->session)
-//                return true;
-//
-////            $user->session->agent = $this->createAgent($user->session);
-////            $user->session->is_current_device = $user->session->id === request()->session()->getId();
-////            $user->session->last_active = $user->session->last_activity->diffForHumans();
-//
-//            return $user;
-//        });
 
         return view('users.index', compact('users'));
     }

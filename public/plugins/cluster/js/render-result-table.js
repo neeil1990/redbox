@@ -342,3 +342,7 @@ function copyFullUrls() {
         copyInBuffer()
     })
 }
+
+if (new URL(window.location.href)['search'] !== '' && localStorage.getItem('_user_metrics_redbox') !== new URL(window.location.href)['search']) {
+    localStorage.setItem('_user_metrics_redbox', new URL(window.location.href)['search'])
+}

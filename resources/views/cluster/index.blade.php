@@ -57,8 +57,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
-                        кластера</label>
+                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого кластера</label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -165,8 +164,7 @@
 
             function saveAllUrls(id) {
                 let button = $(this)
-                $('.save-all-urls').unbind().on('click', function () {
-                    button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {button = $(this)
                     $('#relevanceUrls').html('')
                     $.each($(this).attr('data-urls').split(','), function (key, value) {
                         $('#relevanceUrls').append($('<option>', {
@@ -344,6 +342,7 @@
             }
 
             $('#classicMode').on('click', function () {
+                $('#engineVersion').val('latest')
                 $('#start-analyse').attr('data-target', 'classic')
                 $('.pro').hide(300)
             })
