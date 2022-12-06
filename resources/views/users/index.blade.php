@@ -50,7 +50,7 @@
                                 <span class="badge bg-success">{{ __('VERIFIED') }}</span>
                             @endif
                             @if($user->read_letter)
-                                <span class="badge bg-success">{{ __('The letter has been read') }}</span>
+                                <span class="badge bg-primary">{{ __('The letter has been read') }}</span>
                             @endif
                         </td>
                         <td data-target="{{ $user->created_at->format('d.m.Y') }}">
