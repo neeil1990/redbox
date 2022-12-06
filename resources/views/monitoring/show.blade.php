@@ -181,11 +181,13 @@
                     },
                     columns: columns,
                     //rowReorder: true,
+                    order: [
+                        [2, 'asc'],
+                    ],
                     columnDefs: [
-                        { orderable: true, className: 'reorder', targets: 0 },
-                        { orderable: true, className: 'reorder', targets: 3 },
+                        { orderable: true, className: 'reorder', targets: 2 },
                         { orderable: false, targets: '_all' },
-                        { "width": "350px", "targets": 3 },
+                        { "width": "350px", "targets": 2 },
                     ],
                     initComplete: function(){
                         let api = this.api();

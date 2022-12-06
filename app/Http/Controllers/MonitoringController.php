@@ -487,8 +487,7 @@ class MonitoringController extends Controller
     private function orderTableKeywords(&$keywords, $order)
     {
         $columns = [
-            0 => 'id',
-            3 => 'query',
+            2 => 'query',
         ];
 
         if(array_key_exists($order[0]['column'], $columns))
@@ -840,7 +839,6 @@ class MonitoringController extends Controller
     private function getMainColumns()
     {
         $columns = collect([
-            'id' => 'ID',
             'checkbox' => '',
             'btn' => '',
             'query' => view('monitoring.partials.show.header.query')->render(),
