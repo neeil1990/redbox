@@ -89,3 +89,4 @@
 @endif
 
 <img src="https://lk.redbox.su/storage/audit/{{ str_replace('=', '0000', base64_encode($user->email)) }}.png" alt="pxl">
+https://lk.redbox.su/storage/audit/{{ str_replace('=', '0000', base64_encode($user->email)) }}.png
