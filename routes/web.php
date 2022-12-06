@@ -16,7 +16,9 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Cluster;
 use App\ClusterResults;
 use App\User;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 
 Route::get('info', function () {
     phpinfo();
@@ -309,4 +311,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
     Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
 
+    Route::get('/test', function (){
+        return (new MailMessage)
+            ->attach(app_path('img.php'))
+            ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
+    });
 });
