@@ -57,7 +57,7 @@ class RegisterVerifyEmail extends Notification
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
-        Mail::to($user->email)->send(new VerifyEmail($user));
+        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
 
         if ($user->lang === 'ru') {
             return (new MailMessage)
