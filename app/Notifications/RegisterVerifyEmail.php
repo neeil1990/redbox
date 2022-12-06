@@ -43,12 +43,10 @@ class RegisterVerifyEmail extends Notification
     }
 
     /**
-     * Get the mail representation of the notification.
-     *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param $notifiable
+     * @return void
      */
-    public function toMail($notifiable): MailMessage
+    public function toMail($notifiable)
     {
         /**
          * @var $user User
@@ -57,24 +55,10 @@ class RegisterVerifyEmail extends Notification
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
-        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
-
         if ($user->lang === 'ru') {
-            return (new MailMessage)
-                ->greeting('Привет, ' . $user->name . '.')
-                ->subject(Lang::getFromJson('Подтверждение регистрации'))
-                ->line(Lang::getFromJson('Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты.'))
-                ->line('Ваш верификационный код: ' . $verificationCode)
-                ->action(Lang::getFromJson('Нажмите сюда'), $verificationUrl)
-                ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
+            Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode))->subject('Верификация почты');
         } else {
-            return (new MailMessage)
-                ->greeting('Hello, ' . $user->name . '.')
-                ->subject(Lang::getFromJson('Verify Email Address'))
-                ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
-                ->line('Verify Input Code: ' . $verificationCode)
-                ->action(Lang::getFromJson('Verify Email Address'), $verificationUrl)
-                ->line(Lang::getFromJson('If you did not create an account, no further action is required.'));
+            Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode))->subject('Verify email');
         }
     }
 
