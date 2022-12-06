@@ -310,10 +310,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
     Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
-
-    Route::get('/test', function (){
-        return (new MailMessage)
-            ->attach(app_path('img.php'))
-            ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
-    });
 });
