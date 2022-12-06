@@ -55,23 +55,56 @@ class RegisterVerifyEmail extends Notification
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
-        if ($user->lang === 'ru') {
-            return (new MailMessage)
-                ->greeting('Привет, ' . $user->name . '.')
-                ->subject(Lang::getFromJson('Подтверждение регистрации'))
-                ->line(Lang::getFromJson('Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты.'))
-                ->line('Ваш верификационный код: ' . $verificationCode)
-                ->action(Lang::getFromJson('Нажмите сюда'), $verificationUrl)
-                ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
-        } else {
-            return (new MailMessage)
-                ->greeting('Hello, ' . $user->name . '.')
-                ->subject(Lang::getFromJson('Verify Email Address'))
-                ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
-                ->line('Verify Input Code: ' . $verificationCode)
-                ->action(Lang::getFromJson('Verify Email Address'), $verificationUrl)
-                ->line(Lang::getFromJson('If you did not create an account, no further action is required.'));
-        }
+        $to = 'receiver@test.com';
+        $subject = 'Тестовое письмо с HTML';
+
+        $message = '<html lang="ru">
+                        <head>
+                            <title>Тестовое письмо с HTML</title>
+                            <meta charset="utf8">
+                        </head>
+                        <body>
+                            <p>Пример таблицы</p>
+                            <table>
+                                <tr>
+                                    <th>Колонка 1</th><th>Колонка 2</th><th>Колонка 3</th><th>Колонка 4</th>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 1</td><td>Ячейка 2</td><td>Ячейка 3</td><td>Ячейка 4</td>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 5</td><td>Ячейка 6</td><td>Ячейка 7</td><td>Ячейка 8</td>
+                                </tr>
+                            </table>
+                        </body>
+                    </html>';
+
+        $headers[] = 'MIME-Version: 1.0';
+        $headers[] = 'Content-type: text/html; charset=utf8';
+        $headers[] = 'To: Receiver <receiver@test.com>';
+        $headers[] = 'From: Sender <sender@test.com>';
+        $headers[] = 'Cc: copy@test.com';
+
+        $result = mail($to, $subject, $message, implode("\r\n", $headers));
+        echo $result ? 'OK' : 'Error';
+
+//        if ($user->lang === 'ru') {
+//            return (new MailMessage)
+//                ->greeting('Привет, ' . $user->name . '.')
+//                ->subject(Lang::getFromJson('Подтверждение регистрации'))
+//                ->line(Lang::getFromJson('Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты.'))
+//                ->line('Ваш верификационный код: ' . $verificationCode)
+//                ->action(Lang::getFromJson('Нажмите сюда'), $verificationUrl)
+//                ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
+//        } else {
+//            return (new MailMessage)
+//                ->greeting('Hello, ' . $user->name . '.')
+//                ->subject(Lang::getFromJson('Verify Email Address'))
+//                ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
+//                ->line('Verify Input Code: ' . $verificationCode)
+//                ->action(Lang::getFromJson('Verify Email Address'), $verificationUrl)
+//                ->line(Lang::getFromJson('If you did not create an account, no further action is required.'));
+//        }
 
     }
 

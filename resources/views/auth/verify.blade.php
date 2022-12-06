@@ -35,7 +35,6 @@
                     </span>
                     @enderror
                 </div>
-                <img src="https://lk.redbox.su/img.php?t="/>
                 <div class="row">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary btn-block" onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')">{{ __('Send') }}</button>

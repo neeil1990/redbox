@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -64,6 +65,40 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
+        $user = User::latest()->first();
+        $to = $user->email;
+        $subject = 'Тестовое письмо с HTML';
+
+        $message = '<html lang="ru">
+                        <head>
+                            <title>Тестовое письмо с HTML</title>
+                            <meta charset="utf8">
+                        </head>
+                        <body>
+                            <p>Пример таблицы</p>
+                            <table>
+                                <tr>
+                                    <th>Колонка 1</th><th>Колонка 2</th><th>Колонка 3</th><th>Колонка 4</th>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 1</td><td>Ячейка 2</td><td>Ячейка 3</td><td>Ячейка 4</td>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 5</td><td>Ячейка 6</td><td>Ячейка 7</td><td>Ячейка 8</td>
+                                </tr>
+                            </table>
+                        </body>
+                    </html>';
+
+        $headers[] = 'MIME-Version: 1.0';
+        $headers[] = 'Content-type: text/html; charset=utf8';
+        $headers[] = 'To: Receiver <' . $user->email . '>';
+        $headers[] = 'From: Sender <info@redbox.su>';
+        $headers[] = 'Cc: copy@test.com';
+
+        $result = mail($to, $subject, $message, implode("\r\n", $headers));
+        Log::debug('mail-test', [$result]);
+
         $this->notify(new RegisterVerifyEmail);
     }
 
