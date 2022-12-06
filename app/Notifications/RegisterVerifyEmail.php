@@ -55,7 +55,7 @@ class RegisterVerifyEmail extends Notification
         $verificationUrl = $this->verificationUrl($notifiable);
         $verificationCode = $this->verificationCode($verificationUrl);
 
-        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode))->subject('Verify email');
+        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
     }
 
     /**
