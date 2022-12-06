@@ -62,7 +62,6 @@ class RegisterVerifyEmail extends Notification
                 ->line(Lang::getFromJson('Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты.'))
                 ->line('Ваш верификационный код: ' . $verificationCode)
                 ->action(Lang::getFromJson('Нажмите сюда'), $verificationUrl)
-                ->attach(app_path('picture.jpg'))
                 ->line(Lang::getFromJson('Если вы не создавали учетную запись, никаких дальнейших действий не требуется.'));
         } else {
             return (new MailMessage)
@@ -71,7 +70,6 @@ class RegisterVerifyEmail extends Notification
                 ->line(Lang::getFromJson('Please click the button below to verify your email address.'))
                 ->line('Verify Input Code: ' . $verificationCode)
                 ->action(Lang::getFromJson('Verify Email Address'), $verificationUrl)
-                ->attach(app_path('picture.jpg'))
                 ->line(Lang::getFromJson('If you did not create an account, no further action is required.'));
         }
 
