@@ -136,7 +136,7 @@ class TelegramBot extends Model
 " . __('Go to the website') . "
 <a href='$link' target='_blank'>" . $link . "</a>
 " . __('Go to the service:') . "
-<a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
+<a href='https://lk.redbox.su/site-monitoring' target='_blank'>https://lk.redbox.su/site-monitoring</a>";
 
         TelegramBot::sendMessage($text, $chatId);
     }
@@ -159,7 +159,7 @@ class TelegramBot extends Model
 " . __('Go to the website') . "
 <a href='$link' target='_blank'>" . $link . "</a>
 " . __('Go to the service:') . "
-<a href='https://lk.redbox.su/domain-monitoring' target='_blank'>https://lk.redbox.su/domain-monitoring</a>";
+<a href='https://lk.redbox.su/site-monitoring' target='_blank'>https://lk.redbox.su/site-monitoring</a>";
 
         TelegramBot::sendMessage($text, $chatId);
     }

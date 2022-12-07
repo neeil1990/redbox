@@ -35,7 +35,7 @@ class DomainMonitoringController extends Controller
             return $this->createView();
         }
 
-        return view('domain-monitoring.index', compact('projects', 'countProjects'));
+        return view('site-monitoring.index', compact('projects', 'countProjects'));
     }
 
     /**
@@ -43,7 +43,7 @@ class DomainMonitoringController extends Controller
      */
     public function createView()
     {
-        return view('domain-monitoring.create');
+        return view('site-monitoring.create');
     }
 
     /**
@@ -55,7 +55,7 @@ class DomainMonitoringController extends Controller
         if (TariffSetting::checkDomainMonitoringLimits()) {
             flash()->overlay(__('Your limits are exhausted this month'), ' ')->error();
 
-            return redirect()->route('domain.monitoring');
+            return redirect()->route('site.monitoring');
         }
 
         $monitoring = new DomainMonitoring($request->all());
@@ -64,7 +64,7 @@ class DomainMonitoringController extends Controller
 
         flash()->overlay(__('Monitoring was successfully created'), ' ')->success();
 
-        return Redirect::route('domain.monitoring');
+        return Redirect::route('site.monitoring');
     }
 
     /**
@@ -76,7 +76,7 @@ class DomainMonitoringController extends Controller
         DomainMonitoring::destroy($id);
         flash()->overlay(__('Monitoring was successfully deleted'), ' ')->success();
 
-        return Redirect::route('domain.monitoring');
+        return Redirect::route('site.monitoring');
     }
 
     /**

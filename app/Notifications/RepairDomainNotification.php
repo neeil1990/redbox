@@ -26,7 +26,7 @@ class RepairDomainNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -37,24 +37,34 @@ class RepairDomainNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return MailMessage
      */
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->line('This message is generated automatically and does not need to be answered.')
-            ->line('Domain ' . $this->project->link . ' repair')
-            ->line('Status code: ' . $this->project->status)
-            ->line('Uptime: ' . $this->project->uptime_percent . '%')
-            ->action('Check your projects', route('domain.monitoring'))
-            ->line('Thank you for using our application!');
+        if ($notifiable->lang === 'ru') {
+            return (new MailMessage)
+                ->line('Это сообщение было сгенерированно автоматически')
+                ->line('Домен ' . $this->project->link . ' восстановил свою работу')
+                ->line('Статус код: ' . $this->project->status)
+                ->line('Текущий аптайм: ' . $this->project->uptime_percent . '%')
+                ->action('Проверьте ваши проекты', route('site.monitoring'))
+                ->line('Спасибо, что используете наш сервис!');
+        } else {
+            return (new MailMessage)
+                ->line('This message is generated automatically and does not need to be answered.')
+                ->line('Domain ' . $this->project->link . ' repair')
+                ->line('Status code: ' . $this->project->status)
+                ->line('Uptime: ' . $this->project->uptime_percent . '%')
+                ->action('Check your projects', route('site.monitoring'))
+                ->line('Thank you for using our application!');
+        }
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)

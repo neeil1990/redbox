@@ -1,11 +1,10 @@
 @php use Illuminate\Support\Facades\Auth; @endphp
 @component('component.card', ['title' => __('Add a monitored domain')])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/site-monitoring/css/site-monitoring.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
     @endslot
     {!! Form::open(['action' =>'DomainMonitoringController@store', 'method' => 'POST'])!!}
     <div class='col-md-6 mt-3'>
@@ -43,12 +42,19 @@
             </div>
             <div class="form-group required keyword-phrase">
                 {!! Form::label(__('Keyword')) !!}
+                <span class="__helper-link ui_tooltip_w">
+                <i class="fa fa-question-circle" style="color: grey"></i>
+                    <span class="ui_tooltip __bottom">
+                        <span class="ui_tooltip_content" style="width: 300px">
+                           {{ __('It is better to take the keyword from the page code') }}
+                        </span>
+                    </span>
+                </span>
                 {!! Form::text('phrase', null, ['class' => 'form form-control', 'id' => 'phrase', 'required']) !!}
             </div>
         </div>
-        <div id="notification" style="display:none;">
-            <span
-                class="text-info">{{ __('If the phrase is not selected, the server will wait for the 200 response code') }}</span>
+        <div id="notification" style="display:none;" class="mt-3 mb-3">
+            <span class="text-info">{{ __('If the phrase is not selected, the server will wait for the 200 response code') }}</span>
         </div>
         @if(!Auth::user()->telegram_bot_active)
             <span>
@@ -60,11 +66,11 @@
         @endif
         <div class='pt-3'>
             <button class='btn btn-secondary mr-2' type='submit'>{{ __('Add to Tracking') }}</button>
-            <a href='{{ route('domain.monitoring') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
+            <a href='{{ route('site.monitoring') }}' class='btn btn-default'>{{ __('To my projects') }}</a>
         </div>
     </div>
     {!! Form::close() !!}
     @slot('js')
-        <script src="{{ asset('plugins/domain-monitoring/js/domain-monitoring.js') }}"></script>
+        <script src="{{ asset('plugins/site-monitoring/js/site-monitoring.js') }}"></script>
     @endslot
 @endcomponent

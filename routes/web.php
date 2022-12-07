@@ -133,13 +133,13 @@ Route::middleware(['verified'])->group(function () {
     Route::post('edit-backlink', 'BacklinkController@editBacklink')->name('edit.backlink');
     Route::post('add-link', 'BacklinkController@storeLink');
 
-    Route::get('domain-monitoring', 'DomainMonitoringController@index')->name('domain.monitoring');
-    Route::get('add-domain-monitoring', 'DomainMonitoringController@createView')->name('add.domain.monitoring.view');
-    Route::post('add-domain-monitoring', 'DomainMonitoringController@store')->name('add.domain.monitoring');
-    Route::get('delete-domain-monitoring/{id}', 'DomainMonitoringController@remove')->name('delete.domain.monitoring');
-    Route::get('check-domain-monitoring/{id}', 'DomainMonitoringController@checkLink')->name('check.domain');
-    Route::post('edit-domain-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
-    Route::post('delete-domains-monitoring', 'DomainMonitoringController@removeDomains')->name('delete.domains');
+    Route::get('site-monitoring', 'DomainMonitoringController@index')->name('site.monitoring');
+    Route::get('add-site-monitoring', 'DomainMonitoringController@createView')->name('add.site.monitoring.view');
+    Route::post('add-site-monitoring', 'DomainMonitoringController@store')->name('add.site.monitoring');
+    Route::get('delete-site-monitoring/{id}', 'DomainMonitoringController@remove')->name('delete.site.monitoring');
+    Route::get('check-site-monitoring/{id}', 'DomainMonitoringController@checkLink')->name('check.domain');
+    Route::post('edit-site-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
+    Route::post('delete-domains-monitoring', 'DomainMonitoringController@removeDomains')->name('delete.site.monitoring');
 
     Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
     Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');
