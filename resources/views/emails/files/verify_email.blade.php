@@ -65,11 +65,11 @@
                                                                             @if($user->lang === 'ru')
                                                                                 <a href="{{ $url }}"
                                                                                    style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;border-radius:3px;color:#fff;display:inline-block;text-decoration:none;background-color:#3490dc;border-top:10px solid #3490dc;border-right:18px solid #3490dc;border-bottom:10px solid #3490dc;border-left:18px solid #3490dc"
-                                                                                   target="_blank">Нажмите сюда</a>
+                                                                                   target="_blank" onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')">Нажмите сюда</a>
                                                                             @else
                                                                                 <a href="{{ $url }}"
                                                                                    style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;border-radius:3px;color:#fff;display:inline-block;text-decoration:none;background-color:#3490dc;border-top:10px solid #3490dc;border-right:18px solid #3490dc;border-bottom:10px solid #3490dc;border-left:18px solid #3490dc"
-                                                                                   target="_blank">Press button</a>
+                                                                                   target="_blank" onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')">Press button</a>
                                                                             @endif
                                                                         </td>
                                                                     </tr>
