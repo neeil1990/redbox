@@ -312,3 +312,54 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
     Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
 });
+
+Route::get('/test', function () {
+    $t = ClusterResults::find(240);
+    $sites = json_decode($t->sites_json, true);
+
+    $willClustered = [];
+    $clusters = [];
+
+    foreach ($sites as $phrase => $item) {
+        foreach ($sites as $phrase2 => $item2) {
+            if (isset($willClustered[$phrase2])) {
+                continue;
+            }
+
+            foreach ($clusters as $key => $cluster) {
+                foreach ($cluster as $key2 => $clusterItem) {
+                    if (count(array_intersect($item2['sites'], $clusterItem['sites'])) >= 14) {
+                        $clusters[$key][$phrase2] = [
+                            'based' => $item2['based'],
+                            'phrased' => $item2['phrased'],
+                            'target' => $item2['target'],
+                            'relevance' => $item2['relevance'],
+                            'sites' => $item2['sites'],
+                            'basedNormal' => $item2['basedNormal'],
+                            'merge' => [$key2 => count(array_intersect($item2['sites'], $clusterItem['sites']))]
+                        ];
+                        $willClustered[$phrase2] = true;
+                        break 3;
+                    }
+                }
+            }
+
+
+            if (count(array_intersect($item['sites'], $item2['sites'])) >= 14) {
+                $clusters[$phrase][$phrase2] = [
+                    'based' => $item2['based'],
+                    'phrased' => $item2['phrased'],
+                    'target' => $item2['target'],
+                    'relevance' => $item2['relevance'],
+                    'sites' => $item2['sites'],
+                    'basedNormal' => $item2['basedNormal'],
+                ];
+                $willClustered[$phrase2] = true;
+                break;
+            }
+        }
+    }
+
+    dd($clusters);
+});
+

@@ -303,8 +303,6 @@ class Cluster
 
     protected function searchClustersEngineV3()
     {
-        Log::debug('minimum', [$this->minimum]);
-        Log::debug('$this->count', [$this->count]);
         $willClustered = [];
         foreach ($this->sites as $phrase => $item) {
             foreach ($this->sites as $phrase2 => $item2) {
@@ -313,7 +311,7 @@ class Cluster
                 }
 
                 foreach ($this->clusters as $key => $cluster) {
-                    foreach ($cluster as $clusterItem) {
+                    foreach ($cluster as $key2 => $clusterItem) {
                         if (count(array_intersect($item2['sites'], $clusterItem['sites'])) >= $this->minimum) {
                             $this->clusters[$key][$phrase2] = [
                                 'based' => $item2['based'],
@@ -322,7 +320,7 @@ class Cluster
                                 'relevance' => $item2['relevance'],
                                 'sites' => $item2['sites'],
                                 'basedNormal' => $item2['basedNormal'],
-                                'merge' => [$key => count(array_intersect($item2['sites'], $clusterItem['sites']))]
+                                'merge' => [$key2 => count(array_intersect($item2['sites'], $clusterItem['sites']))]
                             ];
                             $willClustered[$phrase2] = true;
                             break 3;
