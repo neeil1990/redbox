@@ -71,6 +71,9 @@
                                                                                    style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;border-radius:3px;color:#fff;display:inline-block;text-decoration:none;background-color:#3490dc;border-top:10px solid #3490dc;border-right:18px solid #3490dc;border-bottom:10px solid #3490dc;border-left:18px solid #3490dc"
                                                                                    target="_blank" onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')">Press button</a>
                                                                             @endif
+                                                                                <a href="{{ $url }}"
+                                                                                   target="_blank" onclick="yaCounter89500732.reachGoal('verifikacija_po_majlu_1628'); return true;">Нажмите сюда</a>
+                                                                                <input type="button" onclick="ym(89500732, 'reachGoal', 'verifikacija_po_majlu_1628'); return true;" value="Заказать" />
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
