@@ -311,7 +311,7 @@ class Cluster
                 }
 
                 foreach ($this->clusters as $key => $cluster) {
-                    foreach ($this->clusters as $key2 => $clusterItem) {
+                    foreach ($cluster as $key2 => $clusterItem) {
                         if (count(array_intersect($item2['sites'], $clusterItem['sites'])) >= $this->minimum) {
                             $this->clusters[$key][$phrase2] = [
                                 'based' => $item2['based'],
