@@ -69,12 +69,12 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new RegisterVerifyEmail);
-//        $user = User::latest()->first();
-//        $verificationUrl = $this->verificationUrl($user);
-//        $verificationCode = $this->verificationCode($verificationUrl);
-//
-//        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
+//        $this->notify(new RegisterVerifyEmail);
+        $user = User::latest()->first();
+        $verificationUrl = $this->verificationUrl($user);
+        $verificationCode = $this->verificationCode($verificationUrl);
+
+        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
     }
 
     private function verificationUrl($notifiable): string
