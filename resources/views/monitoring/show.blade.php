@@ -7,8 +7,6 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css') }}">
-
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
@@ -45,11 +43,16 @@
                 top: 50px;
                 right: 30px;
             }
-
             .table td, .table th {
                 padding: 0.75rem!important;
             }
-
+            .dataTables_scrollHead {
+                position: sticky !important;
+                top: 0px;
+                z-index: 1;
+                background-color: white;
+                box-shadow: 0px 5px 5px 0px rgba(82, 63, 105, 0.08);
+            }
         </style>
     @endslot
 
@@ -90,7 +93,7 @@
         </div>
     </div>
 
-    @include('monitoring.testing')
+    {{--@include('monitoring.testing')--}}
 
     @include('monitoring.keywords.modal.main')
 
@@ -106,8 +109,6 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
-
         <!-- Select2 -->
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
         <!-- InputMask -->
@@ -130,7 +131,7 @@
             const MODE = '{{ request('mode', null) }}';
             const PAGE_LENGTH = '{{ $length }}';
             const LENGTH_MENU = JSON.parse('{{ $lengthMenu }}');
-            const MAIN_COLUMNS_COUNT = 8;
+            const MAIN_COLUMNS_COUNT = 7;
 
             let table = $('#monitoringTable');
 
@@ -159,8 +160,6 @@
                 let dTable = table.DataTable({
                     dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
                     scrollX: true,
-                    scrollCollapse: true,
-                    fixedHeader: true,
                     lengthMenu: LENGTH_MENU,
                     pageLength: PAGE_LENGTH,
                     pagingType: "simple_numbers",
@@ -451,10 +450,6 @@
 
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
-
-                        $(".dataTables_scrollBody").scroll(function() {
-                            $('.fixedHeader-floating').css('left', this.getBoundingClientRect().x - parseInt($(this).scrollLeft()) + 'px');
-                        });
                     },
                     drawCallback: function(){
                         let api = this.api();
