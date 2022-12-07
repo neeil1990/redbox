@@ -45,7 +45,7 @@ class BrokenDomainNotification extends Notification
             return (new MailMessage)
                 ->greeting('Здравствуйте!')
                 ->line('Это сообщение было сгенерированно автоматически, на него не нужно отвечать')
-                ->line('сайт ' . $this->project->link . ' отправил не корректный ответ')
+                ->line('Сайт ' . $this->project->link . ' отправил не корректный ответ')
                 ->line('Статус код: ' . $this->project->code)
                 ->line('Состояние: не ожиданный код ответа')
                 ->line('Текущий аптайм: ' . $this->project->uptime_percent . '%')
@@ -55,7 +55,7 @@ class BrokenDomainNotification extends Notification
         } else {
             return (new MailMessage)
                 ->line('This message is generated automatically and does not need to be answered.')
-                ->line('Domain ' . $this->project->link . ' broken')
+                ->line('Site ' . $this->project->link . ' broken')
                 ->line('Status code: ' . $this->project->code)
                 ->line('State:' . $this->project->status)
                 ->line('Uptime: ' . $this->project->uptime_percent . '%')

@@ -46,7 +46,7 @@ class RepairDomainNotification extends Notification
             return (new MailMessage)
                 ->greeting('Здравствуйте!')
                 ->line('Это сообщение было сгенерированно автоматически')
-                ->line('Домен ' . $this->project->link . ' восстановил свою работу')
+                ->line('Сайт ' . $this->project->link . ' восстановил свою работу')
                 ->line('Статус код: ' . $this->project->code)
                 ->line('Текущий аптайм: ' . $this->project->uptime_percent . '%')
                 ->action('Проверьте ваши проекты', route('site.monitoring'))
@@ -55,7 +55,7 @@ class RepairDomainNotification extends Notification
         } else {
             return (new MailMessage)
                 ->line('This message is generated automatically and does not need to be answered.')
-                ->line('Domain ' . $this->project->link . ' repair')
+                ->line('Site ' . $this->project->link . ' repair')
                 ->line('Status code: ' . $this->project->code)
                 ->line('Uptime: ' . $this->project->uptime_percent . '%')
                 ->action('Check your projects', route('site.monitoring'))
