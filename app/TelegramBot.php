@@ -23,7 +23,20 @@ class TelegramBot extends Model
      */
     public static function brokenDomainNotification($project, $chatId)
     {
-        TelegramBot::prepareBreakdownMessage($project, $chatId);
+        $link = TelegramBot::removeProtocol($project);
+        $uptimePercent = round($project->uptime_percent, 2);
+
+        $text = __('Project') . " <code>$project->project_name</code>  " . __('broken') . "
+" . __('Check time:') . " <code>$project->last_check</code>
+" . __('http code:') . " <code>$project->code</code>
+" . __('Condition:') . " <code>" . __($project->status) . "</code>
+" . __('Current uptime:') . " <code>$uptimePercent%</code>
+" . __('Go to the website') . "
+<a href='$link' target='_blank'>" . $link . "</a>
+" . __('Go to the service:') . "
+<a href='https://lk.redbox.su/site-monitoring' target='_blank'>https://lk.redbox.su/site-monitoring</a>";
+
+        TelegramBot::sendMessage($text, $chatId);
     }
 
     /**
@@ -33,7 +46,20 @@ class TelegramBot extends Model
      */
     public static function repairedDomainNotification($project, $chatId)
     {
-        TelegramBot::PrepareRecoveryMessage($project, $chatId);
+        $link = TelegramBot::removeProtocol($project);
+        $uptimePercent = round($project->uptime_percent, 2);
+
+        $text = __('Project') . " <code>$project->project_name</code>  " . __('repair') . "
+" . __('Check time:') . " <code>$project->last_check</code>
+" . __('Condition:') . " <code>" . __($project->status) . "</code>
+" . __('Current uptime:') . " <code>$uptimePercent%</code>
+" . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> " . __('min') . "
+" . __('Go to the website') . "
+<a href='$link' target='_blank'>" . $link . "</a>
+" . __('Go to the service:') . "
+<a href='https://lk.redbox.su/site-monitoring' target='_blank'>https://lk.redbox.su/site-monitoring</a>";
+
+        TelegramBot::sendMessage($text, $chatId);
     }
 
     /**
@@ -114,52 +140,6 @@ class TelegramBot extends Model
     public static function sendSuccessMessage($chatId)
     {
         $text = __('You have successfully subscribed to the notification newsletter');
-
-        TelegramBot::sendMessage($text, $chatId);
-    }
-
-    /**
-     * @param $project
-     * @param $chatId
-     * @return void
-     */
-    public static function prepareBreakdownMessage($project, $chatId)
-    {
-        $link = TelegramBot::removeProtocol($project);
-        $uptimePercent = round($project->uptime_percent, 2);
-
-        $text = __('Project') . " <code>$project->project_name</code>  " . __('broken') . "
-" . __('Check time:') . " <code>$project->last_check</code>
-" . __('http code:') . " <code>$project->code</code>
-" . __('Condition:') . " <code>" . __($project->status) . "</code>
-" . __('Current uptime:') . " <code>$uptimePercent%</code>
-" . __('Go to the website') . "
-<a href='$link' target='_blank'>" . $link . "</a>
-" . __('Go to the service:') . "
-<a href='https://lk.redbox.su/site-monitoring' target='_blank'>https://lk.redbox.su/site-monitoring</a>";
-
-        TelegramBot::sendMessage($text, $chatId);
-    }
-
-    /**
-     * @param $project
-     * @param $chatId
-     * @return void
-     */
-    public static function prepareRecoveryMessage($project, $chatId)
-    {
-        $link = TelegramBot::removeProtocol($project);
-        $uptimePercent = round($project->uptime_percent, 2);
-
-        $text = __('Project') . " <code>$project->project_name</code>  " . __('repair') . "
-" . __('Check time:') . " <code>$project->last_check</code>
-" . __('Condition:') . " <code>" . __($project->status) . "</code>
-" . __('Current uptime:') . " <code>$uptimePercent%</code>
-" . __('Total time of the last breakdown:') . " <code>$project->total_time_last_breakdown</code> " . __('min') . "
-" . __('Go to the website') . "
-<a href='$link' target='_blank'>" . $link . "</a>
-" . __('Go to the service:') . "
-<a href='https://lk.redbox.su/site-monitoring' target='_blank'>https://lk.redbox.su/site-monitoring</a>";
 
         TelegramBot::sendMessage($text, $chatId);
     }
