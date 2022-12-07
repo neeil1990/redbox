@@ -44,11 +44,13 @@ class RepairDomainNotification extends Notification
     {
         if ($notifiable->lang === 'ru') {
             return (new MailMessage)
+                ->greeting('Здравствуйте!')
                 ->line('Это сообщение было сгенерированно автоматически')
                 ->line('Домен ' . $this->project->link . ' восстановил свою работу')
                 ->line('Статус код: ' . $this->project->status)
                 ->line('Текущий аптайм: ' . $this->project->uptime_percent . '%')
                 ->action('Проверьте ваши проекты', route('site.monitoring'))
+                ->subject('Уведомление о восстановление работоспособности домена')
                 ->line('Спасибо, что используете наш сервис!');
         } else {
             return (new MailMessage)

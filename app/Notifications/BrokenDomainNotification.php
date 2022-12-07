@@ -43,11 +43,13 @@ class BrokenDomainNotification extends Notification
     {
         if ($notifiable->lang === 'ru') {
             return (new MailMessage)
+                ->greeting('Здравствуйте!')
                 ->line('Это сообщение было сгенерированно автоматически, на него не нужно отвечать')
                 ->line('сайт ' . $this->project->link . ' отправил не корректный ответ')
-                ->line('Статус код:' . $this->project->status)
+                ->line('Статус код: ' . $this->project->status)
                 ->line('Текущий аптайм: ' . $this->project->uptime_percent . '%')
                 ->action('Проверьте свои проекты', route('site.monitoring'))
+                ->subject('Уведомление о недоступности домена')
                 ->line('Спасибо, что пользуетесь нашим сервисом!');
         } else {
             return (new MailMessage)
