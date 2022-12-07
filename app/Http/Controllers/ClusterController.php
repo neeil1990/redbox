@@ -283,9 +283,9 @@ class ClusterController extends Controller
      */
     public function downloadClusterResult(ClusterResults $cluster, string $type)
     {
-        if ($cluster->user_id !== Auth::id() || !User::isUserAdmin() || !($type === 'xls' || $type === 'csv')) {
-            return abort(403);
-        }
+//        if ($cluster->user_id !== Auth::id() || !($type === 'xls' || $type === 'csv')) {
+//            return abort(403);
+//        }
 
         if (isset($cluster->domain)) {
             $domain = str_replace(['https://', 'http://'], '', $cluster->domain);

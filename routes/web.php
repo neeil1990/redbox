@@ -329,6 +329,7 @@ Route::get('/test', function () {
             foreach ($clusters as $key => $cluster) {
                 foreach ($cluster as $key2 => $clusterItem) {
                     if (count(array_intersect($item2['sites'], $clusterItem['sites'])) >= 14) {
+                        $count = count(array_intersect($item2['sites'], $clusterItem['sites']));
                         $clusters[$key][$phrase2] = [
                             'based' => $item2['based'],
                             'phrased' => $item2['phrased'],
@@ -336,14 +337,13 @@ Route::get('/test', function () {
                             'relevance' => $item2['relevance'],
                             'sites' => $item2['sites'],
                             'basedNormal' => $item2['basedNormal'],
-                            'merge' => [$key2 => count(array_intersect($item2['sites'], $clusterItem['sites']))]
+                            'merge' => [$key2 => $count],
                         ];
                         $willClustered[$phrase2] = true;
                         break 3;
                     }
                 }
             }
-
 
             if (count(array_intersect($item['sites'], $item2['sites'])) >= 14) {
                 $clusters[$phrase][$phrase2] = [
@@ -355,11 +355,8 @@ Route::get('/test', function () {
                     'basedNormal' => $item2['basedNormal'],
                 ];
                 $willClustered[$phrase2] = true;
-                break;
             }
         }
     }
-
-    dd($clusters);
 });
 
