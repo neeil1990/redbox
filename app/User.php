@@ -3,11 +3,11 @@
 namespace App;
 
 use App\Classes\Tariffs\Facades\Tariffs;
+use App\Mail\VerifyEmail;
 use App\Notifications\BrokenDomainNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\DomainInformationNotification;
 use App\Notifications\RegisterPasswordEmail;
-use App\Notifications\RegisterVerifyEmail;
 use App\Notifications\RepairDomainNotification;
 use App\Notifications\sendNotificationAboutChangeDNS;
 use App\Notifications\sendNotificationAboutExpirationRegistrationPeriod;
@@ -17,8 +17,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Url\Url as SpatieUrl;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -65,7 +68,29 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new RegisterVerifyEmail);
+        $user = User::latest()->first();
+        $verificationUrl = $this->verificationUrl($user);
+        $verificationCode = $this->verificationCode($verificationUrl);
+
+        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
+    }
+
+    private function verificationUrl($notifiable): string
+    {
+        return URL::temporarySignedRoute(
+            'verification.verify',
+            \Illuminate\Support\Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            ['id' => $notifiable->getKey()]
+        );
+    }
+
+    private function verificationCode($code)
+    {
+        $code = SpatieUrl::fromString($code);
+        $code = $code->getQueryParameter('expires');
+        session(['verificationCode' => $code]);
+
+        return $code;
     }
 
     /**

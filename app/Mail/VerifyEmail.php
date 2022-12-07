@@ -6,7 +6,6 @@ use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class VerifyEmail extends Mailable
 {
@@ -40,6 +39,6 @@ class VerifyEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.files.verify_email');
+        return $this->view('emails.files.verify_email')->subject($this->user->lang === 'ru' ? 'Верификация почты' : 'Verify mail');
     }
 }

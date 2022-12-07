@@ -4,10 +4,10 @@
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
+              href="{{ asset('plugins/site-monitoring/css/site-monitoring.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/domain-monitoring/css/domain-monitoring.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/site-monitoring/css/site-monitoring.css') }}"/>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -30,7 +30,7 @@
             <div class="toast-message error-msg">{{ __('You need to select the projects you want to delete') }}</div>
         </div>
     </div>
-    <a href="{{ route('add.domain.monitoring.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
+    <a href="{{ route('add.site.monitoring.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add a monitored domain') }}
     </a>
     <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
@@ -63,7 +63,7 @@
                             <p>{{__('Are you sure?')}}</p>
                         </div>
                         <div class="modal-footer">
-                            <a href="{{ route('delete.domain.monitoring', $project->id) }}" class="btn btn-secondary">
+                            <a href="{{ route('delete.site.monitoring', $project->id) }}" class="btn btn-secondary">
                                 {{__('Delete a project')}}
                             </a>
                             <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Back')}}</button>
@@ -249,7 +249,7 @@
                 $.ajax({
                     type: "post",
                     dataType: "json",
-                    url: "{{ route('delete.domains') }}",
+                    url: "{{ route('delete.site.monitoring') }}",
                     data: {
                         ids: $('.checked-projects').text(),
                         _token: $('meta[name="csrf-token"]').attr('content')
@@ -262,7 +262,7 @@
                         })
                         $('#count-projects').text($('#count-projects').text() - iterator)
                         if($('#count-projects').text() == 0){
-                            window.location.replace('https://lk.redbox.su/add-domain-monitoring');
+                            window.location.replace('https://lk.redbox.su/add-site-monitoring');
                         }
                         $('.toast-top-right.delete-success-message').show(300)
                         setTimeout(() => {
@@ -278,6 +278,6 @@
                 });
             });
         </script>
-        <script defer src="{{ asset('plugins/domain-monitoring/js/localstorage.js') }}"></script>
+        <script defer src="{{ asset('plugins/site-monitoring/js/localstorage.js') }}"></script>
     @endslot
 @endcomponent

@@ -23,9 +23,9 @@ class DomainMonitoring extends Model
 
     /**
      * @param $project
-     * @return float
+     * @return float|int|void
      */
-    public static function calculateUpTime($project): float
+    public static function calculateUpTime($project)
     {
         $created = new Carbon($project->created_at);
         $lastCheck = new Carbon($project->last_check);
@@ -43,7 +43,8 @@ class DomainMonitoring extends Model
         }
 
         $project->up_time += $lastCheck->diffInSeconds(Carbon::now());
-        return $project->uptime_percent = $project->up_time / ($totalTime / 100);
+        $project->uptime_percent = $project->up_time / ($totalTime / 100);
+        $project->save();
     }
 
     /**
@@ -52,12 +53,12 @@ class DomainMonitoring extends Model
      */
     public static function calculateTotalTimeLastBreakdown($project, $oldState)
     {
-        if ((boolean)$oldState == true && (boolean)$project->broken == false) {
+        if ($oldState && !$project->broken) {
             $timeLastBreakdown = new Carbon($project->time_last_breakdown);
             $project->total_time_last_breakdown = $timeLastBreakdown->diffInMinutes(Carbon::now());
         }
 
-        if ((boolean)$oldState == false && (boolean)$project->broken == true) {
+        if (!$oldState && $project->broken) {
             $project->time_last_breakdown = Carbon::now();
         }
     }
@@ -70,7 +71,7 @@ class DomainMonitoring extends Model
     {
         if ($project->send_notification) {
             $user = User::where('id', '=', $project->user_id)->first();
-            if ((boolean)$oldState == true && (boolean)$project->broken == false) {
+            if ($oldState && !$project->broken) {
                 $user->repairDomainNotification($project);
                 if ($user->telegram_bot_active) {
                     TelegramBot::repairedDomainNotification($project, $user->chat_id);
@@ -78,7 +79,7 @@ class DomainMonitoring extends Model
                 }
             }
 
-            if ((boolean)$oldState == false && (boolean)$project->broken == true) {
+            if (!$oldState && $project->broken) {
                 $user->brokenDomainNotification($project);
                 if ($user->telegram_bot_active) {
                     TelegramBot::brokenDomainNotification($project, $user->chat_id);
@@ -86,15 +87,13 @@ class DomainMonitoring extends Model
                 }
             }
 
-            if ((boolean)$oldState == true && (boolean)$project->broken == true) {
-                $lastNotification = new Carbon($project->time_last_notification);
-                if ($lastNotification->diffInMinutes(Carbon::now()) >= 360) {
-                    $user->brokenDomainNotification($project);
-                    if ($user->telegram_bot_active) {
-                        TelegramBot::brokenDomainNotification($project, $user->chat_id);
-                    }
-                    $project->time_last_notification = Carbon::now();
+            $lastNotification = new Carbon($project->time_last_notification);
+            if ($oldState && $project->broken && $lastNotification->diffInMinutes(Carbon::now()) >= 360) {
+                $user->brokenDomainNotification($project);
+                if ($user->telegram_bot_active) {
+                    TelegramBot::brokenDomainNotification($project, $user->chat_id);
                 }
+                $project->time_last_notification = Carbon::now();
             }
         }
     }
@@ -105,29 +104,27 @@ class DomainMonitoring extends Model
         $curl = DomainMonitoring::curlInit($project);
         if (isset($curl) && $curl[1]['http_code'] === 200) {
             if (isset($project->phrase)) {
-                DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
+                DomainMonitoring::searchPhrase($curl, $project);
             } else {
                 $project->status = 'Everything all right';
                 $project->broken = false;
             }
             $project->code = 200;
         } else {
-            $project->status = 'unexpected response code';
+            $project->status = 'Unexpected response code';
             $project->code = $curl[1]['http_code'];
             $project->broken = true;
         }
+
+        $project->last_check = Carbon::now();
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
         DomainMonitoring::calculateUpTime($project);
-        DomainMonitoring::sendNotifications($project, $oldState);
-        $project->last_check = Carbon::now();
         $project->save();
+
+        DomainMonitoring::sendNotifications($project, $oldState);
     }
 
-    /**
-     * @param $project
-     * @return array|null
-     */
-    public static function curlInit($project)
+    public static function curlInit($project): ?array
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $project->link);
@@ -156,7 +153,7 @@ class DomainMonitoring extends Model
             //Mozilla Firefox
             'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0',
             'Mozilla/5.0 (Windows NT 10.0; rv:87.0) Gecko/20100101 Firefox/87.0',
-            //opera
+//            opera
             'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/79.0.4143.72',
             'Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.43 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 OPR/79.0.4143.72',
             // chrome
@@ -172,7 +169,7 @@ class DomainMonitoring extends Model
                 curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
             }
 
-            if ($headers['http_code'] == 200 && $html != false) {
+            if ($headers['http_code'] == 200 && $html) {
                 $html = preg_replace('//i', '', $html);
                 break;
             }
@@ -183,19 +180,18 @@ class DomainMonitoring extends Model
 
     /**
      * @param $curl
-     * @param $phrase
      * @param $project
      */
-    public static function searchPhrase($curl, $phrase, $project)
+    public static function searchPhrase($curl, $project)
     {
         $body = $curl[0];
         $contentType = $curl[1]['content_type'];
         if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
             $contentType = str_replace(array("\r", "\n"), '', $contentType[1][0]);
-            $phrase = mb_convert_encoding($project->phrase, $contentType);
+            $project->phrase = mb_convert_encoding($project->phrase, $contentType);
         }
 
-        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('(' . $project->phrase . ')', $body, $matches, PREG_SET_ORDER)) {
             $project->status = 'Everything all right';
             $project->broken = false;
         } else {

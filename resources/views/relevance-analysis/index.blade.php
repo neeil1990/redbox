@@ -299,18 +299,18 @@
                                     <p>{{ __('Experimental mode') }} </p>
                                     <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 300px">
-                                            Происходит опрос первых 50ти сайтов конкурентов<br>
-                                            <span class="text-primary">Работает только с
-                                                <b>"Полным анализом"</b> <br>
-                                                и с типом проверки <b>"Клювевая фраза"</b>
+                                        <span class="ui_tooltip __bottom">
+                                            <span class="ui_tooltip_content" style="width: 300px">
+                                                Происходит опрос первых 50ти сайтов конкурентов<br>
+                                                <span class="text-primary">Работает только с
+                                                    <b>"Полным анализом"</b> <br>
+                                                    и с типом проверки <b>"Клювевая фраза"</b>
+                                                </span>
+                                                <br>
+                                                <span class="text-primary">Этот модуль доступен только админам</span>
                                             </span>
-                                            <br>
-                                            <span class="text-primary">Этот модуль доступен только админам</span>
                                         </span>
                                     </span>
-                                </span>
                                 </div>
                                 <div class="form-group required">
                                     <label>Способ подбора корней</label>
