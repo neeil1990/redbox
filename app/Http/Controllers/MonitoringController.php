@@ -487,8 +487,7 @@ class MonitoringController extends Controller
     private function orderTableKeywords(&$keywords, $order)
     {
         $columns = [
-            0 => 'id',
-            3 => 'query',
+            2 => 'query',
         ];
 
         if(array_key_exists($order[0]['column'], $columns))
@@ -617,18 +616,27 @@ class MonitoringController extends Controller
                     foreach ($region as $reg){
 
                         $model = $item->positions()
-                            ->where('position', '<', '100')
-                            ->where('monitoring_searchengine_id', $reg->id)->latest()->first();
+                            ->where('monitoring_searchengine_id', $reg->id)->latest()->get()->unique('date')->take(2);
 
                         $col = 'engine_' . $reg->lr;
-                        if($model)
-                            $lastPosition->put($col, $model);
+
+                        if($model->isNotEmpty()){
+                            $monitoringPosition = $model->first();
+
+                            if($monitoringPosition->id != $model->last()->id)
+                                $monitoringPosition->diffPosition = ($model->last()->position - $monitoringPosition->position);
+                            else
+                                $monitoringPosition->diffPosition = null;
+
+                            $lastPosition->put($col, $model->first());
+                        }
 
                         $city = stristr($reg->location->name, ',', true);
                         $icon = '<i class="fab d-block fa-'. $reg->engine .' fa-sm"></i>';
 
                         $mainColumns->put($col, implode(' ', [$icon, $city]));
                     }
+
                     $item->last_positions = $lastPosition;
 
                     return $item;
@@ -653,10 +661,29 @@ class MonitoringController extends Controller
                             $lastPosition->put($col, $modelPosition);
                     }
 
+                    $this->diffPositionExtension($lastPosition);
+
                     $item->last_positions = $lastPosition;
 
                     return $item;
                 });
+        }
+    }
+
+    private function diffPositionExtension(&$positions)
+    {
+        if($positions->isEmpty())
+            return false;
+
+        $pre = 0;
+
+        foreach($positions->reverse() as $p){
+            if($pre > 0)
+                $p->diffPosition = ($pre - $p->position);
+            else
+                $p->diffPosition = null;
+
+            $pre = $p->position;
         }
     }
 
@@ -724,14 +751,14 @@ class MonitoringController extends Controller
                 default:
 
                     if($mode === "dates" || $mode === "main"){
-                        if(isset($collectionPositions[$i]) && $collectionPositions[$i]->position < 100)
-                            $row->put($i, view('monitoring.partials.show.position_with_date', ['position' => $collectionPositions[$i]->position, 'date' => $collectionPositions[$i]->date])->render());
+                        if(isset($collectionPositions[$i]))
+                            $row->put($i, view('monitoring.partials.show.position_with_date', ['model' => $collectionPositions[$i]])->render());
                         else
                             $row->put($i, '-');
 
                     }else{
-                        if(isset($collectionPositions[$i]) && $collectionPositions[$i]->position < 100) {
-                            $row->put($i, view('monitoring.partials.show.position', ['position' => $collectionPositions[$i]->position])->render());
+                        if(isset($collectionPositions[$i])) {
+                            $row->put($i, view('monitoring.partials.show.position', ['model' => $collectionPositions[$i]])->render());
                         }else
                             $row->put($i, '-');
                     }
@@ -812,7 +839,6 @@ class MonitoringController extends Controller
     private function getMainColumns()
     {
         $columns = collect([
-            'id' => 'ID',
             'checkbox' => '',
             'btn' => '',
             'query' => view('monitoring.partials.show.header.query')->render(),

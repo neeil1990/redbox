@@ -163,6 +163,9 @@ class MonitoringChartsController extends Controller
             $this->positions = $this->getPositionsForRange($request->input('dateRange', null));
             $positions = $this->getLastPositions($request->input('range'));
 
+            if($positions->isEmpty())
+                return (new AreaChartData([]))->setData([])->get();
+
             foreach ($positions as $label => $position){
 
                 $response['labels'][] = $label;
