@@ -8,6 +8,7 @@ use App\Notifications\BrokenDomainNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\DomainInformationNotification;
 use App\Notifications\RegisterPasswordEmail;
+use App\Notifications\RegisterVerifyEmail;
 use App\Notifications\RepairDomainNotification;
 use App\Notifications\sendNotificationAboutChangeDNS;
 use App\Notifications\sendNotificationAboutExpirationRegistrationPeriod;
@@ -68,14 +69,15 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
-        $user = User::latest()->first();
-        $verificationUrl = $this->verificationUrl($user);
-        $verificationCode = $this->verificationCode($verificationUrl);
-
-        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
+        $this->notify(new RegisterVerifyEmail);
+//        $user = User::latest()->first();
+//        $verificationUrl = $this->verificationUrl($user);
+//        $verificationCode = $this->verificationCode($verificationUrl);
+//
+//        Mail::to($user->email)->send(new VerifyEmail($user, $verificationUrl, $verificationCode));
     }
 
-    protected function verificationUrl($notifiable): string
+    private function verificationUrl($notifiable): string
     {
         return URL::temporarySignedRoute(
             'verification.verify',
