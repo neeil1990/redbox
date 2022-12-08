@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Auth;
 use App\User;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 use function PHPSTORM_META\map;
 
 class RegisterController extends Controller
@@ -48,7 +52,7 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function showRegistrationForm()
     {
@@ -67,6 +71,7 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        Log::debug('data', $data);
         return Validator::make($data, [
             'lang' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],
@@ -76,11 +81,20 @@ class RegisterController extends Controller
         ]);
     }
 
+    public function validateData(Request $request): JsonResponse
+    {
+        $validator = $this->validator($request->all())->validate();
+
+        return response()->json([
+            'messages' => $validator
+        ]);
+    }
+
     /**
      * Create a new user instance after a valid registration.
      *
      * @param array $data
-     * @return \App\User
+     * @return User
      */
     protected function create(array $data)
     {
@@ -124,7 +138,7 @@ class RegisterController extends Controller
             }
 
             $utmMetrics = json_encode($utmMetrics);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::debug('Произошёл сбой подготовки данных метрики', [$metrics]);
             $utmMetrics = $metrics;
         }

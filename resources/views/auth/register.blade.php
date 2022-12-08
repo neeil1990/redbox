@@ -3,7 +3,7 @@
 @section('title', __('Register page'))
 
 @section('content')
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="register-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
@@ -113,24 +113,29 @@
                             </div>
                         </div>
                     </div>
+                    <ul id="validate-messages">
+                    </ul>
                     <div class="row">
                         <div class="col-12">
                             <div class="icheck-primary">
                                 <input type="checkbox" id="agreeTerms" name="terms" value="agree" required>
                                 <label for="agreeTerms">
                                     <span>{{ __('I give my consent to the processing') }}</span>
-                                    <a href="/personal-data/ru"
-                                       target="_blank">{{ __('personal data') }}</a>
+                                    <a href="/personal-data/ru" target="_blank">{{ __('personal data') }}</a>
 
                                     <span>{{ __('and agree to the terms') }}</span>
-                                    <a href="/privacy-policy/ru"
-                                       target="_blank">{{ __('privacy policy') }}</a>
+                                    <a href="/privacy-policy/ru" target="_blank">{{ __('privacy policy') }}</a>
                                 </label>
                             </div>
                         </div>
+
                         <div class="col-12 mt-2">
+                            <button type="button" class="btn btn-primary btn-block" id="fakeButton" disabled>
+                                <i class="fas fa-user-plus"></i> {{ __('Register') }}
+                            </button>
                             <button type="submit" class="btn btn-primary btn-block" id="sendFormButton"
-                                    onclick="ym(89500732, 'reachGoal', 'novaja_registracija_1231')">
+                                    onclick="ym(89500732, 'reachGoal', 'novaja_registracija_1231')"
+                                    style="display: none">
                                 <i class="fas fa-user-plus"></i> {{ __('Register') }}
                             </button>
                         </div>
@@ -180,8 +185,7 @@
                 return $state;
             }
         });
-    </script>
-    <script>
+
         $(document).ready(function () {
             $('#select-language').on('change', function () {
                 if ($(this).val() === 'en') {
@@ -226,12 +230,74 @@
             $('#utm-metrics').val(new URL(url)['search'])
         })
     </script>
+
     <script>
-        // setTimeout(() => {
-        //     $('#sendFormButton').click(function () {
-        //         console.log(322)
-        //         ym(89500732, 'reachGoal', 'novaja_registracija_1231')
-        //     })
-        // }, 1000)
+        let messages = [];
+
+        $('body > div.register-box > div > div.card-body').on('keyup', function () {
+            checkValid()
+        });
+
+        $('#agreeTerms').on('click', function () {
+            checkValid()
+        })
+
+        function isDataValid() {
+            let boolean = true;
+            boolean = $('#agreeTerms').is(':checked');
+
+            if (boolean) {
+                $.each(getData(), function (key, value) {
+                    if (value === '') {
+                        boolean = false;
+                    }
+                });
+            }
+
+            return boolean;
+        }
+
+        function getData() {
+            return {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                lang: $('#select-language').val(),
+                name: $('#name').val(),
+                last_name: $('#last_name').val(),
+                email: $('#email').val(),
+                password: $('#password').val(),
+                password_confirmation: $('#password-confirm').val(),
+            };
+        }
+
+        function checkValid() {
+            console.log('check')
+            if (isDataValid()) {
+                $.ajax({
+                    method: "post",
+                    dataType: "json",
+                    data: getData(),
+                    url: "{{ route('validate.registration.form') }}",
+                    error: function (response) {
+                        if (messages !== JSON.stringify(response.responseJSON.errors)) {
+                            messages = JSON.stringify(response.responseJSON.errors);
+                            $(".render-li").remove()
+                            $.each(response.responseJSON.errors, function (key, value) {
+                                $("#validate-messages").append('<li class="render-li alert p-0">' + value.join() + '</li>')
+                            })
+                        }
+                        $('#fakeButton').show();
+                        $('#sendFormButton').hide();
+                    },
+                    success: function (response) {
+                        $(".render-li").remove()
+                        $('#fakeButton').hide();
+                        $('#sendFormButton').show();
+                    }
+                })
+            } else {
+                $('#fakeButton').show();
+                $('#sendFormButton').hide();
+            }
+        }
     </script>
 @endsection
