@@ -26,10 +26,10 @@ class HomeController extends Controller
         $user_id = Auth::id();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user_id)->get('projects_positions');
         if (empty($projectsPositions[0])) {
-            $result = MainProject::where('show', '=', 1)->get();
+            $result = MainProject::where('show', '=', 1)->get()->toArray();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]->projects_positions, 0, -1));
-            $projects = MainProject::where('show', '=', 1)->get();
+            $projects = MainProject::where('show', '=', 1)->get()->toArray();
             $result = [];
 
             foreach ($projectsPositions as $projectsPosition) {
@@ -99,10 +99,10 @@ class HomeController extends Controller
         $user = Auth::user();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user->id)->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
-            $result = MainProject::where('show', '=', 1)->get();
+            $result = MainProject::where('show', '=', 1)->get()->toArray();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
-            $projects = MainProject::where('show', '=', 1)->get();
+            $projects = MainProject::where('show', '=', 1)->get()->toArray();
 
             foreach ($projectsPositions as $projectsPosition) {
                 foreach ($projects as $project) {
