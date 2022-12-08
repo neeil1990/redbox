@@ -129,7 +129,8 @@
                             </div>
                         </div>
                         <div class="col-12 mt-2">
-                            <button type="submit" class="btn btn-primary btn-block" id="sendFormButton">
+                            <button type="submit" class="btn btn-primary btn-block" id="sendFormButton"
+                                    onclick="ym(89500732, 'reachGoal', 'novaja_registracija_1231')">
                                 <i class="fas fa-user-plus"></i> {{ __('Register') }}
                             </button>
                         </div>
@@ -226,11 +227,11 @@
         })
     </script>
     <script>
-        setTimeout(() => {
-            $('#sendFormButton').click(function () {
-                console.log(322)
-                ym(89500732, 'reachGoal', 'novaja_registracija_1231')
-            })
-        }, 1000)
+        // setTimeout(() => {
+        //     $('#sendFormButton').click(function () {
+        //         console.log(322)
+        //         ym(89500732, 'reachGoal', 'novaja_registracija_1231')
+        //     })
+        // }, 1000)
     </script>
 @endsection
