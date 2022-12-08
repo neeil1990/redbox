@@ -6,13 +6,13 @@
                 <thead>
                 <tr>
                     <td>id</td>
-                    <td>access</td>
+                    <td>Уровни доступа</td>
                     <td>icon</td>
-                    <td>title</td>
-                    <td>description</td>
-                    <td>link</td>
-                    <td>show</td>
-                    <td style="width: 130px">action</td>
+                    <td>Заголовок</td>
+                    <td>Описание</td>
+                    <td>Ссылка</td>
+                    <td>Показывать обычным пользователям</td>
+                    <td style="min-width: 130px">action</td>
                 </tr>
                 </thead>
                 <tbody>
