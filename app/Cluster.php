@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -68,7 +67,7 @@ class Cluster
 
         if (!isset($request['mode']) || $request['mode'] !== 'professional') {
             $this->count = 40;
-            $this->clusteringLevel = 0.5;
+            $this->clusteringLevel = 0.6;
         } else {
             if ($request['clusteringLevel'] === 'light') {
                 $this->clusteringLevel = 0.4;
@@ -362,7 +361,7 @@ class Cluster
                         ) {
                             unset($this->clusters[$secondPhrase]);
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
-                            continue 4;
+                            break 3;
                         }
                     }
                 }
