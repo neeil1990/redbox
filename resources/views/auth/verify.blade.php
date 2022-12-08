@@ -57,26 +57,35 @@
 @endsection
 @section('js')
     <script>
-        $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('change', function () {
+        $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('keyup', function () {
             if ($(this).val().length > 0) {
-                $.ajax({
-                    method: "post",
-                    dataType: "json",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        code: $(this).val(),
-                    },
-                    url: "{{ route('validate.verify.code') }}",
-                    error: function (response) {
-                        $('#fakeButton').show()
-                        $('#verifyCodeButton').hide()
-                    },
-                    success: function (response) {
-                        $('#fakeButton').hide()
-                        $('#verifyCodeButton').show()
-                    }
-                })
+                validateCode($(this).val())
             }
         })
+        $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('paste', function () {
+            if ($(this).val().length > 0) {
+                validateCode($(this).val())
+            }
+        })
+
+        function validateCode(value) {
+            $.ajax({
+                method: "post",
+                dataType: "json",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    code: value,
+                },
+                url: "{{ route('validate.verify.code') }}",
+                error: function (response) {
+                    $('#fakeButton').show()
+                    $('#verifyCodeButton').hide()
+                },
+                success: function (response) {
+                    $('#fakeButton').hide()
+                    $('#verifyCodeButton').show()
+                }
+            })
+        }
     </script>
 @endsection
