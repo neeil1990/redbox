@@ -44,12 +44,14 @@ function renderResultTableFast(data, count, target) {
 
                 let minimum = ''
                 if ('minimum' in information) {
-                    minimum = '<span class="__helper-link ui_tooltip_w" style="background: brown">' +
-                        '      <i class="fa fa-question"></i>' +
-                        '      <span class="ui_tooltip __right" style="min-width: 550px;">' +
-                        '          <span class="ui_tooltip_content">' + information['minimum'] + '</span>' +
-                        '      </span>' +
-                        '  </span>'
+                    $.each(information['minimum'], function (key, value) {
+                        minimum = '<span class="__helper-link ui_tooltip_w" style="background: brown">' +
+                            '      <i class="fa fa-question"></i>' +
+                            '      <span class="ui_tooltip __right" style="min-width: 550px;">' +
+                            '          <span class="ui_tooltip_content">' + key + '<br> ' + value + '</span>' +
+                            '      </span>' +
+                            '  </span>'
+                    })
                 }
 
                 newTableRows +=
