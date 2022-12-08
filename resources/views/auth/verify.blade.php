@@ -63,6 +63,7 @@
                     method: "post",
                     dataType: "json",
                     data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
                         code: $(this).val(),
                     },
                     url: "{{ route('validate.verify.code') }}",
