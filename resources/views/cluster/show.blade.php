@@ -175,6 +175,9 @@
                             <div>
                                 {{ __('Search Engine') }}: {{ $cluster['request']['searchEngine'] ?? 'yandex' }}
                             </div>
+                            <div>
+                                {{ __('Top') }}: {{ $cluster['request']['count'] }}
+                            </div>
                             @if(isset($cluster['request']['mode']) && $cluster['request']['mode'] === 'professional')
                                 <div>
                                     {{ __('Clustering level') }}: {{ $cluster['request']['clusteringLevel'] }}
@@ -260,7 +263,7 @@
 
                                         <div class="form-group required">
                                             <label for="brutForce">{{ __('Additional bulkhead') }}</label>
-                                            <input type="checkbox" name="brutForce" id="brutForce">
+                                            <input type="checkbox" name=" brutForce" id="brutForce">
                                             <span class="__helper-link ui_tooltip_w">
                                                 <i class="fa fa-question-circle" style="color: grey"></i>
                                                 <span class="ui_tooltip __right">
