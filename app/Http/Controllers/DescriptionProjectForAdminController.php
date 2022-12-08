@@ -74,6 +74,7 @@ class DescriptionProjectForAdminController extends Controller
             'description' => $request->description,
             'link' => $request->link,
             'icon' => $request->icon,
+            'show' => $request->show === 'on'
         ]);
 
         return redirect()->route('main-projects.index');

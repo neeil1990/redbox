@@ -26,10 +26,10 @@ class HomeController extends Controller
         $user_id = Auth::id();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user_id)->get('projects_positions');
         if (empty($projectsPositions[0])) {
-            $result = MainProject::all()->toArray();
+            $result = MainProject::where('show', '=', 1)->get();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]->projects_positions, 0, -1));
-            $projects = MainProject::all()->toArray();
+            $projects = MainProject::where('show', '=', 1)->get();
             $result = [];
 
             foreach ($projectsPositions as $projectsPosition) {
@@ -94,15 +94,15 @@ class HomeController extends Controller
     public function getDescriptionProjects()
     {
         $response = [];
+        $result = [];
 
         $user = Auth::user();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user->id)->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
-            $result = MainProject::all()->toArray();
+            $result = MainProject::where('show', '=', 1)->get();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
-            $projects = MainProject::all()->toArray();
-            $result = [];
+            $projects = MainProject::where('show', '=', 1)->get();
 
             foreach ($projectsPositions as $projectsPosition) {
                 foreach ($projects as $project) {
@@ -111,8 +111,8 @@ class HomeController extends Controller
                     }
                 }
             }
-            $result = array_merge($result, $projects);
-            $result = array_unique($result, SORT_REGULAR);
+
+            $result = array_unique(array_merge($result, $projects), SORT_REGULAR);
         }
 
         foreach ($result as $item) {

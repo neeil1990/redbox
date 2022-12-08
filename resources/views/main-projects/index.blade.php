@@ -11,7 +11,8 @@
                     <td>title</td>
                     <td>description</td>
                     <td>link</td>
-                    <td>action</td>
+                    <td>show</td>
+                    <td style="width: 130px">action</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -23,11 +24,12 @@
                         <td>{{ $row->title }}</td>
                         <td class="w-50">{{ $row->description }}</td>
                         <td>{{ $row->link }}</td>
-                        <td class="d-flex flex-row">
-                            <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default mr-2">
+                        <td>{{ $row->show }}</td>
+                        <td>
+                            <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default mr-1" style="display: inline;">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <form action="{{ route('main-projects.destroy', $row->id)}}" method="post">
+                            <form action="{{ route('main-projects.destroy', $row->id)}}" method="post" style="display: inline;">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-default" type="submit">
                                     <i class="fa fa-trash"></i>

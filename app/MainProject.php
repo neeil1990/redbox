@@ -14,7 +14,7 @@ class MainProject extends Model
         'access' => 'array',
     ];
 
-    public function getAccessAsStringAttribute()
+    public function getAccessAsStringAttribute(): ?string
     {
         return (is_array($this->access)) ? implode(', ', $this->access) : null;
     }
