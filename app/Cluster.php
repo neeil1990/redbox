@@ -345,12 +345,19 @@ class Cluster
 
     protected function brutForceClusters($minimum, $extra = false)
     {
+        $willClustered = [];
         foreach ($this->clusters as $firstPhrase => $cluster) {
             if ($extra && count($cluster) > $this->brutForceCount) {
                 continue;
             }
+            if (isset($willClustered[$firstPhrase])) {
+                continue;
+            }
             foreach ($this->clusters as $secondPhrase => $cluster2) {
                 if ($firstPhrase === $secondPhrase) {
+                    continue;
+                }
+                if (isset($willClustered[$secondPhrase])) {
                     continue;
                 }
                 foreach ($cluster as $key => $item) {
@@ -361,6 +368,7 @@ class Cluster
                         ) {
                             unset($this->clusters[$secondPhrase]);
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
+                            $willClustered[$secondPhrase] = true;
                             break 3;
                         }
                     }
