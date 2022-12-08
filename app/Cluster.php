@@ -346,11 +346,12 @@ class Cluster
 
     protected function brutForceClusters($minimum, $extra = false)
     {
-        foreach ($this->clusters as $firstPhrase => $cluster) {
+        $test = $this->clusters;
+        foreach ($test as $firstPhrase => $cluster) {
             if ($extra && count($cluster) > $this->brutForceCount) {
                 continue;
             }
-            foreach ($this->clusters as $secondPhrase => $cluster2) {
+            foreach ($test as $secondPhrase => $cluster2) {
                 if ($cluster === $cluster2) {
                     continue;
                 }
@@ -360,10 +361,9 @@ class Cluster
                             isset($item['sites']) && isset($item2['sites']) &&
                             count(array_intersect($item['sites'], $item2['sites'])) >= $minimum
                         ) {
-                            unset($this->clusters[$firstPhrase]);
                             unset($this->clusters[$secondPhrase]);
-                            $this->clusters[$key] = array_merge($cluster, $cluster2);
-                            break 2;
+                            $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
+                            break 3;
                         }
                     }
                 }
