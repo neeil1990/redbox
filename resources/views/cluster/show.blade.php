@@ -258,27 +258,27 @@
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 
-{{--                                        <div class="form-group required">--}}
-{{--                                            <label for="brutForce">{{ __('Additional bulkhead') }}</label>--}}
-{{--                                            <input type="checkbox" name="brutForce" id="brutForce">--}}
-{{--                                            <span class="__helper-link ui_tooltip_w">--}}
-{{--                                                <i class="fa fa-question-circle" style="color: grey"></i>--}}
-{{--                                                <span class="ui_tooltip __right">--}}
-{{--                                                    <span class="ui_tooltip_content" style="width: 300px">--}}
-{{--                                                        {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>--}}
-{{--                                                        {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}--}}
-{{--                                                        {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}--}}
-{{--                                                    </span>--}}
-{{--                                                </span>--}}
-{{--                                            </span>--}}
-{{--                                        </div>--}}
-{{--                                        <div class="form-group required" id="brutForceCountBlock" style="display: none">--}}
-{{--                                            <label for="brutForceCount">--}}
-{{--                                                Минимальный порог для дополнительной переборки--}}
-{{--                                            </label>--}}
-{{--                                            <input type="number" name="brutForceCount" id="brutForceCount"--}}
-{{--                                                   class="form form-control" value="1">--}}
-{{--                                        </div>--}}
+                                        <div class="form-group required">
+                                            <label for="brutForce">{{ __('Additional bulkhead') }}</label>
+                                            <input type="checkbox" name="brutForce" id="brutForce">
+                                            <span class="__helper-link ui_tooltip_w">
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right">
+                                                    <span class="ui_tooltip_content" style="width: 300px">
+                                                        {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                                                        {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                                                        {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="form-group required" id="brutForceCountBlock" style="display: none">
+                                            <label for="brutForceCount">
+                                                Минимальный порог для дополнительной переборки
+                                            </label>
+                                            <input type="number" name="brutForceCount" id="brutForceCount"
+                                                   class="form form-control" value="1">
+                                        </div>
 
                                         <div class="form-group required d-flex justify-content-end">
                                             <button type="button" class="btn btn-secondary mr-2"
