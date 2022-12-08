@@ -367,6 +367,8 @@ class Cluster
                             count(array_intersect($item['sites'], $item2['sites'])) >= $minimum
                         ) {
                             unset($this->clusters[$secondPhrase]);
+                            $cluster2[$key2]['merge'] = [$key => count(array_intersect($item['sites'], $item2['sites']))];
+                            $cluster2[$key2]['minimum'] = $minimum;
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
                             $willClustered[$secondPhrase] = true;
                             break 3;

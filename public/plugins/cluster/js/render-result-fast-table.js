@@ -42,6 +42,16 @@ function renderResultTableFast(data, count, target) {
                     })
                 }
 
+                let minimum = ''
+                if ('minimum' in information) {
+                    minimum = '<span class="__helper-link ui_tooltip_w" style="background: brown">' +
+                        '      <i class="fa fa-question"></i>' +
+                        '      <span class="ui_tooltip __right" style="min-width: 550px;">' +
+                        '          <span class="ui_tooltip_content">' + information['minimum'] + '</span>' +
+                        '      </span>' +
+                        '  </span>'
+                }
+
                 newTableRows +=
                     '<tr class="fast-render">' +
                     '   <td>' + iterator + '</td> ' +
@@ -58,7 +68,7 @@ function renderResultTableFast(data, count, target) {
                     '                     <span class="ui_tooltip_content">' + sites + '</span>' +
                     '                 </span>' +
                     '             </span>' +
-                    merge +
+                    merge + ' ' + minimum +
                     '          </div> ' +
                     '       </div>' +
                     '   </td> ' +
