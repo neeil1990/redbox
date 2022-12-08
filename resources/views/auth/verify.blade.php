@@ -58,10 +58,9 @@
 @section('js')
     <script>
         $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('keyup', function () {
-            if ($(this).val().length > 0) {
-                validateCode($(this).val())
-            }
+            validateCode($(this).val())
         })
+
         $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('paste', function () {
             if ($(this).val().length > 0) {
                 validateCode($(this).val())
