@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\MainProject;
 use App\ProjectsPositions;
+use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 
@@ -26,10 +25,10 @@ class HomeController extends Controller
         $user_id = Auth::id();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user_id)->get('projects_positions');
         if (empty($projectsPositions[0])) {
-            $result = MainProject::where('show', '=', 1)->get()->toArray();
+            $result = $this->getProjets();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]->projects_positions, 0, -1));
-            $projects = MainProject::where('show', '=', 1)->get()->toArray();
+            $projects = $this->getProjets();
             $result = [];
 
             foreach ($projectsPositions as $projectsPosition) {
@@ -99,10 +98,10 @@ class HomeController extends Controller
         $user = Auth::user();
         $projectsPositions = ProjectsPositions::where('user_id', '=', $user->id)->get('menu_positions')->toArray();
         if (empty($projectsPositions[0]['menu_positions'])) {
-            $result = MainProject::where('show', '=', 1)->get()->toArray();
+            $result = $this->getProjets();
         } else {
             $projectsPositions = explode(',', substr($projectsPositions[0]['menu_positions'], 0, -1));
-            $projects = MainProject::where('show', '=', 1)->get()->toArray();
+            $projects = $this->getProjets();
 
             foreach ($projectsPositions as $projectsPosition) {
                 foreach ($projects as $project) {
@@ -131,4 +130,16 @@ class HomeController extends Controller
 
         return response($response);
     }
+
+    protected function getProjets(): array
+    {
+        if (User::isUserAdmin()) {
+            $result = MainProject::all()->toArray();
+        } else {
+            $result = MainProject::where('show', '=', 1)->get()->toArray();
+        }
+
+        return $result;
+    }
+
 }
