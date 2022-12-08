@@ -33,9 +33,11 @@
                                                           target="_blank">{{ $user->email }}</a>.
                                             @endif
                                         </h1>
+                                        @if($user->lang === 'ru')
                                             <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
-                                                Please click the button below to verify your email address.</p>
-                                            <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
+                                                Ваш верификационный код: <b> {{ $code }}</b>
+                                            </p>
+                                        @else
                                                 Verify Input Code: <b> {{ $code }}</b>
                                             </p>
                                         @endif

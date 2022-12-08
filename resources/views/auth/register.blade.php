@@ -90,7 +90,8 @@
                     <div class="input-group mb-3">
                         <input id="password" type="password"
                                class="form-control @error('password') is-invalid @enderror" name="password"
-                               placeholder="{{ __('Password') }}" autocomplete="new-password" required>
+                               placeholder="{{ __('Password') }}" autocomplete="new-password" required pattern=".{8,}"
+                               title="the password must be at least 8 characters long">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -104,7 +105,8 @@
                     </div>
                     <div class="input-group mb-3">
                         <input id="password-confirm" type="password" class="form-control" name="password_confirmation"
-                               placeholder="{{ __('Confirm Password') }}" autocomplete="new-password" required>
+                               placeholder="{{ __('Confirm Password') }}" autocomplete="new-password" required
+                               pattern=".{8,}" title="the password must be at least 8 characters long">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -127,8 +129,7 @@
                             </div>
                         </div>
                         <div class="col-12 mt-2">
-                            <button type="submit" class="btn btn-primary btn-block"
-                                    onclick="ym(89500732,'reachGoal','novaja_registracija_1231')">
+                            <button type="submit" class="btn btn-primary btn-block" id="sendFormButton">
                                 <i class="fas fa-user-plus"></i> {{ __('Register') }}
                             </button>
                         </div>
@@ -179,7 +180,6 @@
             }
         });
     </script>
-
     <script>
         $(document).ready(function () {
             $('#select-language').on('change', function () {
@@ -224,5 +224,13 @@
             let url = window.location.href
             $('#utm-metrics').val(new URL(url)['search'])
         })
+    </script>
+    <script>
+        setTimeout(() => {
+            $('#sendFormButton').click(function () {
+                console.log(322)
+                ym(89500732, 'reachGoal', 'novaja_registracija_1231')
+            })
+        }, 1000)
     </script>
 @endsection
