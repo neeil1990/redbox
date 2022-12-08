@@ -71,7 +71,6 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        Log::debug('data', $data);
         return Validator::make($data, [
             'lang' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],

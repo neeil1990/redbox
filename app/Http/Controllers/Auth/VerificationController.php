@@ -6,8 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 
 class VerificationController extends Controller
@@ -47,9 +52,9 @@ class VerificationController extends Controller
     /**
      * Mark the authenticated user's email address as verified.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @param Request $request
+     * @return Response
+     * @throws AuthorizationException
      */
     public function verify(Request $request)
     {
@@ -72,8 +77,8 @@ class VerificationController extends Controller
      * Mark the authenticated user's as verified for email code.
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     * @throws \Illuminate\Validation\ValidationException
+     * @return RedirectResponse|Redirector
+     * @throws ValidationException
      */
     public function verifyCode(Request $request)
     {
@@ -92,5 +97,16 @@ class VerificationController extends Controller
         session()->forget('verificationCode');
 
         return redirect($this->redirectPath())->with('verified', true);
+    }
+
+    protected function validateVerifyCode(Request $request): JsonResponse
+    {
+        $status = $this->validate($request, [
+            'code' => ['required', Rule::in([session('verificationCode')])],
+        ]);
+
+        return response()->json([
+            'status' => $status
+        ]);
     }
 }

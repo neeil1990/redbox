@@ -19,6 +19,7 @@ Route::get('info', function () {
 
 Auth::routes(['verify' => true]);
 Route::post('/validate-registration-form', 'Auth\RegisterController@validateData')->name('validate.registration.form');
+Route::post('/validate-verify-code', 'Auth\VerificationController@validateVerifyCode')->name('validate.verify.code');
 Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
 
 //Public method

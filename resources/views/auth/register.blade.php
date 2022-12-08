@@ -270,7 +270,6 @@
         }
 
         function checkValid() {
-            console.log('check')
             if (isDataValid()) {
                 $.ajax({
                     method: "post",
