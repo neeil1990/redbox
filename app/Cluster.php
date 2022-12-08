@@ -346,6 +346,7 @@ class Cluster
     protected function brutForceClusters($minimum, $extra = false)
     {
         $willClustered = [];
+        $percent = $minimum / $this->count;
         foreach ($this->clusters as $firstPhrase => $cluster) {
             if ($extra && count($cluster) > $this->brutForceCount) {
                 continue;
@@ -368,7 +369,7 @@ class Cluster
                         ) {
                             unset($this->clusters[$secondPhrase]);
                             $cluster2[$key2]['merge'] = [$key => count(array_intersect($item['sites'], $item2['sites']))];
-                            $cluster2[$key2]['minimum'] = $minimum;
+                            $cluster2[$key2]['minimum'] = [$percent => $minimum];
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
                             $willClustered[$secondPhrase] = true;
                             break 3;
