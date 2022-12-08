@@ -12,7 +12,7 @@
                     <td>Описание</td>
                     <td>Ссылка</td>
                     <td>Показывать обычным пользователям</td>
-                    <td style="min-width: 130px">action</td>
+                    <td style="min-width: 130px">Действия</td>
                 </tr>
                 </thead>
                 <tbody>
