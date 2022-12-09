@@ -51,7 +51,6 @@
                 top: 0px;
                 z-index: 1;
                 background-color: white;
-                box-shadow: 0px 5px 5px 0px rgba(82, 63, 105, 0.08);
             }
         </style>
     @endslot

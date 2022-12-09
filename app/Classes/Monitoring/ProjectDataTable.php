@@ -121,9 +121,9 @@ class ProjectDataTable
         if($keywords->isEmpty())
             return $positions;
 
-        foreach($keywords as $keyword){
+        $regions = $model->searchengines()->get();
 
-            $regions = $model->searchengines()->get();
+        foreach($keywords as $keyword){
 
             $lastPositions = $this->getLastPositionOfRegionsByKeyword($regions, $keyword);
 
@@ -162,9 +162,9 @@ class ProjectDataTable
         if($keywords->isEmpty())
             return $pre_positions;
 
-        foreach($keywords as $keyword){
+        $regions = $model->searchengines()->get();
 
-            $regions = $model->searchengines()->get();
+        foreach($keywords as $keyword){
 
             $positions = collect([]);
             foreach ($regions as $region){
@@ -181,15 +181,15 @@ class ProjectDataTable
 
     public function getPenultimatePositionOfRegionByKeyword($region, $keyword)
     {
-        $lastPosition = $this->getLastPositionOfRegionByKeyword($region, $keyword);
-
-        if(!$lastPosition)
-            return null;
-
-        return $region->positions()
+        $position = $region->positions()
+            ->whereNotNull('position')
             ->where('monitoring_keyword_id', $keyword->id)
-            ->where(DB::raw('DATE(created_at)'), '<', $lastPosition->created_at->format('Y-m-d'))
             ->orderBy('created_at', 'desc')
-            ->first();
+            ->take(2)->get();
+
+        if($position->count() < 2)
+          return null;
+
+        return $position->last();
     }
 }
