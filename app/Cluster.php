@@ -238,10 +238,9 @@ class Cluster
             $this->brutForceClusters($this->minimum);
         }
 
-        //TODO понижение 0.3, 0.2
         if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
-            while ($percent > 0.2) {
+            while ($percent > 0.3) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForceClusters($this->count * $percent, true);
             }
