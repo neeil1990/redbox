@@ -60,8 +60,8 @@ function renderResultTableFast(data, count, target) {
                     '       <div class="d-flex"> ' +
                     '          <div class="mr-2" id="cluster-id-' + clusterId + '">' + phrase + '</div> ' +
                     '          <div>' +
-                    '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
-                    '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
+                    '             <i class="fa fa-copy copy-fast-full-urls" data-target="' + iterator + '" title="копировать полные ссылки сайтов"></i>' +
+                    '             <div style="display: none" id="hidden-fast-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
                     '                 <i class="fa fa-paperclip"></i>' +
                     '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
@@ -95,6 +95,9 @@ function renderResultTableFast(data, count, target) {
         $('#clusters-fast-table-tbody').append(newRow)
         $('#clusters-table-fast').show()
         $('#placeForCountClusters').html(count)
-        copyFullUrls()
+        $('.copy-fast-full-urls').unbind().on('click', function () {
+            $('#hiddenForCopy').val($('#hidden-fast-urls-block-' + $(this).attr('data-target')).html())
+            copyInBuffer()
+        })
     })
 }
