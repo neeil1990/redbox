@@ -115,7 +115,7 @@ function renderResultTable(data) {
                     '       <div class="d-flex justify-content-between"> ' +
                     '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                     '          <div class="ml-1">' +
-                    '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '"></i>' +
+                    '             <i class="fa fa-copy copy-full-urls" data-copy-target="' + iterator + '"></i>' +
                     '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
                     '                 <i class="fa fa-paperclip"></i>' +
@@ -338,7 +338,7 @@ function copyInBuffer() {
 
 function copyFullUrls() {
     $('.copy-full-urls').unbind().on('click', function () {
-        $('#hiddenForCopy').val($('#hidden-urls-block-' + $(this).attr('data-target')).html())
+        $('#hiddenForCopy').val($('#hidden-urls-block-' + $(this).attr('data-copy-target')).html())
         copyInBuffer()
     })
 }
