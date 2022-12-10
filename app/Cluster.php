@@ -60,10 +60,13 @@ class Cluster
 
     protected $brutForceCount;
 
+    protected $reductionRatio;
+
     public function __construct(array $request, $user, $default = true)
     {
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         $this->brutForceCount = $request['brutForceCount'] ?? 1;
+        $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
 
         if (!isset($request['mode']) || $request['mode'] !== 'professional') {
             $this->count = 40;
@@ -108,10 +111,11 @@ class Cluster
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites', 'mode', 'host', 'xml',
-            'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'searchTarget', 'brutForce',
-            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster', 'user', 'minimum',
-            'progressId', 'brutForceCount',
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases',
+            'sites', 'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases',
+            'searchTarget', 'searchRelevance', 'searchEngine', 'progress', 'save', 'request',
+            'newCluster', 'user', 'brutForce', 'xml', 'host', 'mode', 'minimum', 'progressId',
+            'brutForceCount', 'reductionRatio',
         ];
     }
 
@@ -240,7 +244,7 @@ class Cluster
 
         if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
-            while ($percent > 0.3) {
+            while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForceClusters($this->count * $percent, true);
             }
@@ -347,17 +351,11 @@ class Cluster
     {
         $willClustered = [];
         foreach ($this->clusters as $firstPhrase => $cluster) {
-            if ($extra && count($cluster) > $this->brutForceCount) {
-                continue;
-            }
-            if (isset($willClustered[$firstPhrase])) {
+            if ($extra && count($cluster) > $this->brutForceCount || isset($willClustered[$firstPhrase])) {
                 continue;
             }
             foreach ($this->clusters as $secondPhrase => $cluster2) {
-                if ($firstPhrase === $secondPhrase) {
-                    continue;
-                }
-                if (isset($willClustered[$secondPhrase])) {
+                if ($firstPhrase === $secondPhrase || isset($willClustered[$secondPhrase])) {
                     continue;
                 }
                 foreach ($cluster as $key => $item) {

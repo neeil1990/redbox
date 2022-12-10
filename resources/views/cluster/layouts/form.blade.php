@@ -128,7 +128,6 @@
     <div class="form-group required">
         <label for="brutForce">{{ __('Additional bulkhead') }}</label>
         <input type="checkbox" name="brutForce" id="brutForce" @if($config->brut_force) checked @endif>
-
         <span class="__helper-link ui_tooltip_w">
         <i class="fa fa-question-circle" style="color: grey"></i>
         <span class="ui_tooltip __right">
@@ -139,6 +138,19 @@
             </span>
         </span>
     </span>
+
+        <div class="form-group required brut-force" style="display: none">
+            <label for="brutForceCount">Минимальный размер кластера для повторной переборки</label>
+            <input type="number" name="brutForceCount" id="brutForceCount" class="form form-control" value="1">
+        </div>
+        <div class="form-group required brut-force" style="display: none">
+            <label for="reductionRatio">Минимальный множитель</label>
+            <select name="reductionRatio" id="reductionRatio" class="select custom-select">
+                <option value="0.4">0.4</option>
+                <option value="0.3">0.3</option>
+                <option value="0.2">0.2</option>
+            </select>
+        </div>
     </div>
 </div>
 
@@ -146,7 +158,8 @@
     <div class="row">
         <div class="col-6 d-flex flex-column">
             <label for="domain-textarea">{{ __('Domain') }}</label>
-            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100" placeholder="https://site.ru"></textarea>
+            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"
+                      placeholder="https://site.ru"></textarea>
         </div>
 
         <div class="col-6">
@@ -258,4 +271,15 @@
     } else {
         $('#sendTelegramMessageConfig').remove()
     }
+
+    $(document).ready(function () {
+        $('#brutForce').on('click', function () {
+            if ($(this).is(':checked')) {
+                $('.brut-force').show(300)
+            } else {
+                $('.brut-force').hide(300)
+            }
+        })
+    })
+
 </script>

@@ -18,21 +18,19 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         searchRelevance: $('#searchRelevance').is(':checked'),
         searchEngine: $('#searchEngine').val(),
         mode: $('#start-analyse').attr('data-target'),
+        brutForceCount: $('#brutForceCount').val(),
+        reductionRatio: $('#reductionRatio').val(),
     };
 }
 
 function setProgressBarStyles(count) {
-    $('#progress-bar-state').html('отсканированно: ' + count + ' из ');
+    $('#progress-bar-state').html('Просканировано: ' + count + ' из ');
 }
 
 $('#save').on('change', function () {
-    renderExtraBlock()
-})
-
-function renderExtraBlock() {
     if ($('#save').val() === '1') {
         $('#extra-block').show()
     } else {
         $('#extra-block').hide()
     }
-}
+})

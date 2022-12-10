@@ -276,11 +276,24 @@
                                             </span>
                                         </div>
                                         <div class="form-group required" id="brutForceCountBlock" style="display: none">
-                                            <label for="brutForceCount">
-                                                Минимальный порог для дополнительной переборки
-                                            </label>
-                                            <input type="number" name="brutForceCount" id="brutForceCount"
-                                                   class="form form-control" value="1">
+                                            <div class="form-group required">
+                                                <label for="brutForceCount">
+                                                    Минимальный размер кластера для повторной переборки
+                                                </label>
+                                                <input type="number" name="brutForceCount" id="brutForceCount"
+                                                       class="form form-control" value="1">
+                                            </div>
+                                            <div>
+                                                <label for="reductionRatio">
+                                                    Минимальный множитель
+                                                </label>
+                                                <select name="reductionRatio" id="reductionRatio"
+                                                        class="select custom-select">
+                                                    <option value="0.4">0.4</option>
+                                                    <option value="0.3">0.3</option>
+                                                    <option value="0.2">0.2</option>
+                                                </select>
+                                            </div>
                                         </div>
 
                                         <div class="form-group required d-flex justify-content-end">
@@ -486,7 +499,8 @@
         <script>
             function saveAllUrls(id) {
                 let button = $(this)
-                $('.save-all-urls').unbind().on('click', function () {button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {
+                    button = $(this)
                     $('#relevanceUrls').html('')
                     $.each($(this).attr('data-urls').split(','), function (key, value) {
                         $('#relevanceUrls').append($('<option>', {
@@ -534,7 +548,6 @@
             $(document).ready(function () {
                 $('#app > div > div > div.card-header').append($('#params').html())
                 $('#params').remove()
-                {{--hiddenTable = renderHiddenTable({!! $cluster['result'] !!})--}}
                 renderResultTable({!! $cluster['result'] !!})
 
                 $('#default-hidden').dataTable({
@@ -583,7 +596,8 @@
                             resultId: {{ $cluster['id'] }},
                             brutForce: $('#brutForce').is(':checked'),
                             mode: 'professional',
-                            brutForceCount: $('#brutForceCount').val()
+                            brutForceCount: $('#brutForceCount').val(),
+                            reductionRatio: $('#reductionRatio').val()
                         },
                         success: function (response) {
                             $('#clusters-table-default').show()
