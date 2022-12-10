@@ -13,6 +13,9 @@ class ProjectDataTable
 {
     protected $model;
 
+    private $first;
+    private $last;
+
     public function __construct(Collection $project)
     {
         $this->model = $project;
@@ -90,11 +93,11 @@ class ProjectDataTable
         $positionCacheKey = $cache->getCacheKey();
 
         $positionsCache = Cache::remember($positionCacheKey, $cache->getCacheTime(), function () use ($keywords, $model) {
-            return collect([
-                'positions' => $this->getLastPositionsByKeywords($keywords, $model),
-                'pre_positions' => $this->getPreLastPositionsByKeywords($keywords, $model),
-            ]);
+            return $this->getLastPositionsByKeywords($keywords, $model);
         });
+
+        $positionsForLastDay = $positionsCache->first();
+        $positionsForPenultimateDay = $positionsCache->last();
 
         $percents = [
             'top_three' => 3,
@@ -105,91 +108,63 @@ class ProjectDataTable
         ];
 
         foreach ($percents as $name => $percent){
-
-            $last = Helper::calculateTopPercentByPositions($positionsCache['positions'], $percent);
-            $preLast = Helper::calculateTopPercentByPositions($positionsCache['pre_positions'], $percent);
+            $last = Helper::calculateTopPercentByPositions($positionsForLastDay, $percent);
+            $preLast = Helper::calculateTopPercentByPositions($positionsForPenultimateDay, $percent);
             $model->$name = $last . Helper::differentTopPercent($last, $preLast);
         }
 
-        $model->middle_position = ($positionsCache['positions']->isNotEmpty()) ? round($positionsCache['positions']->sum() / $positionsCache['positions']->count()) : 0;
+        $model->middle_position = ($positionsForLastDay->isNotEmpty()) ? round($positionsForLastDay->sum() / $positionsForLastDay->count()) : 0;
     }
 
     private function getLastPositionsByKeywords(Collection $keywords, $model)
     {
-        $positions = collect([]);
+        $first = collect([]);
+        $last = collect([]);
 
         if($keywords->isEmpty())
-            return $positions;
+            return collect([]);
+
+        $regions = $model->searchengines()->get();
 
         foreach($keywords as $keyword){
 
-            $regions = $model->searchengines()->get();
-
             $lastPositions = $this->getLastPositionOfRegionsByKeyword($regions, $keyword);
 
-            $positions = $positions->merge($lastPositions);
+            $first = $first->merge($lastPositions['first']);
+            $last = $last->merge($lastPositions['last']);
         }
 
-        return $positions;
+        return collect([$first, $last]);
     }
 
     private function getLastPositionOfRegionsByKeyword($regions, $keyword)
     {
-        $positions = collect([]);
+        $positions = collect([
+            'first' => collect([]),
+            'last' => collect([]),
+        ]);
 
         foreach ($regions as $region){
-            $positionModel = $this->getLastPositionOfRegionByKeyword($region, $keyword);
-            if($positionModel)
-                $positions->push($positionModel->position);
+            $collection = $this->getLastPositionsOfRegionByKeyword($region, $keyword);
+            if($collection->isNotEmpty()){
+                $positions['first']->push($collection->first()->position);
+
+                if($collection->count() > 1)
+                    $positions['last']->push($collection->last()->position);
+            }
         }
 
         return $positions;
     }
 
-    public function getLastPositionOfRegionByKeyword($region, $keyword)
+    public function getLastPositionsOfRegionByKeyword($region, $keyword)
     {
-        return $region->positions()
+        $positions = $region->positions()
             ->whereNotNull('position')
             ->where('monitoring_keyword_id', $keyword->id)
             ->orderBy('created_at', 'desc')
-            ->first();
-    }
+            ->take(2)->get();
 
-    private function getPreLastPositionsByKeywords(Collection $keywords, $model)
-    {
-        $pre_positions = collect([]);
-
-        if($keywords->isEmpty())
-            return $pre_positions;
-
-        foreach($keywords as $keyword){
-
-            $regions = $model->searchengines()->get();
-
-            $positions = collect([]);
-            foreach ($regions as $region){
-                $positionModel = $this->getPenultimatePositionOfRegionByKeyword($region, $keyword);
-                if($positionModel)
-                    $positions->push($positionModel->position);
-            }
-
-            $pre_positions = $pre_positions->merge($positions);
-        }
-
-        return $pre_positions;
-    }
-
-    public function getPenultimatePositionOfRegionByKeyword($region, $keyword)
-    {
-        $lastPosition = $this->getLastPositionOfRegionByKeyword($region, $keyword);
-
-        if(!$lastPosition)
-            return null;
-
-        return $region->positions()
-            ->where('monitoring_keyword_id', $keyword->id)
-            ->where(DB::raw('DATE(created_at)'), '<', $lastPosition->created_at->format('Y-m-d'))
-            ->orderBy('created_at', 'desc')
-            ->first();
+        return $positions;
     }
 }
