@@ -43,7 +43,7 @@
                             <button type="button" class="btn btn-primary btn-block" id="verifyCodeButton"
                                     onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')"
                                     style="display: none">{{ __('Send') }}</button>
-                            <button type="submit" class="btn btn-primary btn-block" id="fakeButton"
+                            <button type="button" class="btn btn-primary btn-block" id="fakeButton"
                                     disabled>{{ __('Send') }}</button>
                         </div>
                     </div>
