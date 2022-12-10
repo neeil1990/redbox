@@ -134,8 +134,12 @@ class BalanceAddController extends Controller
     public function calclateMetrics($invId)
     {
         Log::debug('calclateMetrics', [$invId]);
-        $user = User::where('id', '=', $invId)->first();
-        if (isset($user)) {
+        $balance = Balance::where('id', '=', $invId)->first();
+        $created = \Carbon\Carbon::parse($balance->created_at);
+        $now = \Carbon\Carbon::now();
+        Log::debug('diff', [$now->diffInHours($created)]);
+
+        if (isset($balance) && $now->diffInHours($created) <= 24) {
             return view('balance.metrics');
         }
     }
