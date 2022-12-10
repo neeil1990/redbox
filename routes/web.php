@@ -142,7 +142,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('delete-site-monitoring/{id}', 'DomainMonitoringController@remove')->name('delete.site.monitoring');
     Route::get('check-site-monitoring/{id}', 'DomainMonitoringController@checkLink')->name('check.domain');
     Route::post('edit-site-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
-    Route::post('delete-domains-monitoring', 'DomainMonitoringController@removeDomains')->name('delete.site.monitoring');
+    Route::post('delete-domains-monitoring', 'DomainMonitoringController@removeDomains')->name('delete.sites.monitoring');
 
     Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
     Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');

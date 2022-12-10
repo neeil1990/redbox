@@ -249,7 +249,7 @@
                 $.ajax({
                     type: "post",
                     dataType: "json",
-                    url: "{{ route('delete.site.monitoring') }}",
+                    url: "{{ route('delete.sites.monitoring') }}",
                     data: {
                         ids: $('.checked-projects').text(),
                         _token: $('meta[name="csrf-token"]').attr('content')
