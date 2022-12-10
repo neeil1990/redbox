@@ -32,7 +32,7 @@ Route::get('/personal-data/ru', 'AccessController@getRuPersonalData');
 Route::get('/personal-data/en', 'AccessController@getEnPersonalData');
 Route::get('/privacy-policy/ru', 'AccessController@getRuPrivacyPolicy');
 Route::get('/privacy-policy/en', 'AccessController@getEnPrivacyPolicy');
-Route::get('/success-payment-metrics/{invId}', 'BalanceAddController@calclateMetrics');
+Route::get('/success/payment/metrics/{invId}', 'BalanceAddController@calclateMetrics');
 
 Route::middleware(['verified'])->group(function () {
 
