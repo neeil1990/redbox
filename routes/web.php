@@ -232,6 +232,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/balance/{response?}', 'BalanceController@index')->name('balance.index');
     Route::resource('balance-add', 'BalanceAddController');
+    Route::get('/success-payment-metrics/{invId}', 'BalanceAddController@calclateMetrics');
 
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');
     Route::post('/tariff/total', 'TariffPayController@total')->name('tariff.total');

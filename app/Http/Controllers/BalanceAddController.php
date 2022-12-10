@@ -28,7 +28,7 @@ class BalanceAddController extends Controller
     {
         $params = $request->all();
 
-        if(!$this->robokassa->checkOut($params)){
+        if (!$this->robokassa->checkOut($params)) {
             echo "bad sign\n";
             exit();
         }
@@ -36,15 +36,17 @@ class BalanceAddController extends Controller
         $invId = $params["InvId"];
 
         $balance = Balance::where('id', $invId);
-        if($balance->count()){
+        if ($balance->count()) {
 
             $result = $balance->update([
                 'source' => $params["PaymentMethod"],
                 'status' => 1
             ]);
 
-            if($result){
+            if ($result) {
                 $this->addBalanceToUser($balance->first());
+                $resp = file_get_contents("https://lk.redbox.su/success-payment-metrics/$invId");
+                Log::debug('success payment resp', [$resp]);
                 echo "OK$invId\n";
             }
         }
@@ -86,7 +88,7 @@ class BalanceAddController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -97,7 +99,7 @@ class BalanceAddController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -108,8 +110,8 @@ class BalanceAddController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -120,11 +122,21 @@ class BalanceAddController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         //
+    }
+
+    public function calclateMetrics($invId)
+    {
+        Log::debug('Вызов подсчёта метрики');
+        $balance = Balance::where('id', $invId)->first();
+        Log::debug('$balance', [$balance]);
+        if (isset($balance)) {
+            return view('balance.metrics');
+        }
     }
 }
