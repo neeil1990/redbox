@@ -104,7 +104,7 @@ class DomainMonitoring extends Model
         $curl = DomainMonitoring::curlInit($project);
         if (isset($curl) && $curl[1]['http_code'] === 200) {
             if (isset($project->phrase)) {
-                DomainMonitoring::searchPhrase($curl, $project);
+                DomainMonitoring::searchPhrase($curl, $project->phrase, $project);
             } else {
                 $project->status = 'Everything all right';
                 $project->broken = false;
@@ -180,18 +180,19 @@ class DomainMonitoring extends Model
 
     /**
      * @param $curl
+     * @param $phrase
      * @param $project
      */
-    public static function searchPhrase($curl, $project)
+    public static function searchPhrase($curl, $phrase, $project)
     {
         $body = $curl[0];
         $contentType = $curl[1]['content_type'];
         if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
             $contentType = str_replace(array("\r", "\n"), '', $contentType[1][0]);
-            $project->phrase = mb_convert_encoding($project->phrase, $contentType);
+            $phrase = mb_convert_encoding($project->phrase, $contentType);
         }
 
-        if (preg_match_all('(' . $project->phrase . ')', $body, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
             $project->status = 'Everything all right';
             $project->broken = false;
         } else {
