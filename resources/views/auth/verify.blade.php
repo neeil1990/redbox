@@ -40,7 +40,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-block" id="verifyCodeButton"
+                            <button type="button" class="btn btn-primary btn-block" id="verifyCodeButton"
                                     onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')"
                                     style="display: none">{{ __('Send') }}</button>
                             <button type="submit" class="btn btn-primary btn-block" id="fakeButton"
@@ -79,10 +79,12 @@
                 error: function (response) {
                     $('#fakeButton').show()
                     $('#verifyCodeButton').hide()
+                    $('#verifyCodeButton').attr('type', 'button')
                 },
                 success: function (response) {
                     $('#fakeButton').hide()
                     $('#verifyCodeButton').show()
+                    $('#verifyCodeButton').attr('type', 'submit')
                 }
             })
         }

@@ -133,7 +133,7 @@
                             <button type="button" class="btn btn-primary btn-block" id="fakeButton" disabled>
                                 <i class="fas fa-user-plus"></i> {{ __('Register') }}
                             </button>
-                            <button type="submit" class="btn btn-primary btn-block" id="sendFormButton"
+                            <button type="button" class="btn btn-primary btn-block" id="sendFormButton"
                                     onclick="ym(89500732, 'reachGoal', 'novaja_registracija_1231')"
                                     style="display: none">
                                 <i class="fas fa-user-plus"></i> {{ __('Register') }}
@@ -284,18 +284,22 @@
                                 $("#validate-messages").append('<li class="render-li alert p-0">' + value.join() + '</li>')
                             })
                         }
+
                         $('#fakeButton').show();
                         $('#sendFormButton').hide();
+                        $('#sendFormButton').attr('type', 'button')
                     },
                     success: function (response) {
                         $(".render-li").remove()
                         $('#fakeButton').hide();
                         $('#sendFormButton').show();
+                        $('#sendFormButton').attr('type', 'submit')
                     }
                 })
             } else {
                 $('#fakeButton').show();
                 $('#sendFormButton').hide();
+                $('#sendFormButton').attr('type', 'button')
             }
         }
     </script>
