@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Balance;
 use App\Classes\Pay\Robokassa\RobokassaPay;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class BalanceAddController extends Controller
 {
@@ -45,9 +48,7 @@ class BalanceAddController extends Controller
 
             if ($result) {
                 $this->addBalanceToUser($balance->first());
-                Log::debug('$invId', [$invId]);
                 $json = json_decode(file_get_contents("https://lk.redbox.su/success/payment/metrics/$invId"), true);
-                Log::debug('success payment response', [$json]);
                 echo "OK$invId\n";
             }
         }
@@ -56,9 +57,9 @@ class BalanceAddController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
+     * @param Request $request
+     * @return Response
+     * @throws ValidationException
      */
     public function store(Request $request)
     {
@@ -90,7 +91,7 @@ class BalanceAddController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -101,7 +102,7 @@ class BalanceAddController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -111,9 +112,9 @@ class BalanceAddController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -124,7 +125,7 @@ class BalanceAddController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
@@ -133,12 +134,11 @@ class BalanceAddController extends Controller
 
     public function calclateMetrics($invId)
     {
-        Log::debug('calclateMetrics', [$invId]);
         $balance = Balance::where('id', '=', $invId)->first();
         if (isset($balance)) {
             Log::debug('balance find');
-            $created = \Carbon\Carbon::parse($balance->created_at);
-            $now = \Carbon\Carbon::now();
+            $created = Carbon::parse($balance->created_at);
+            $now = Carbon::now();
             if ($now->diffInHours($created) < 24) {
                 Log::debug('render view');
                 return view('balance.metrics');
