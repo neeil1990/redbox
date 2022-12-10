@@ -135,12 +135,13 @@ class BalanceAddController extends Controller
     {
         Log::debug('calclateMetrics', [$invId]);
         $balance = Balance::where('id', '=', $invId)->first();
-        $created = \Carbon\Carbon::parse($balance->created_at);
-        $now = \Carbon\Carbon::now();
-        Log::debug('diff', [$now->diffInHours($created)]);
+        if (isset($balance)) {
+            $created = \Carbon\Carbon::parse($balance->created_at);
+            $now = \Carbon\Carbon::now();
+            if ($now->diffInHours($created) < 24) {
+                return view('balance.metrics');
 
-        if (isset($balance) && $now->diffInHours($created) <= 24) {
-            return view('balance.metrics');
+            }
         }
     }
 }
