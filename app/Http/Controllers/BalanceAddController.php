@@ -45,8 +45,7 @@ class BalanceAddController extends Controller
 
             if ($result) {
                 $this->addBalanceToUser($balance->first());
-                $resp = file_get_contents("https://lk.redbox.su/success-payment-metrics/$invId");
-                Log::debug('success payment resp', [$resp]);
+                file_get_contents("https://lk.redbox.su/success-payment-metrics/$invId");
                 echo "OK$invId\n";
             }
         }
@@ -132,9 +131,9 @@ class BalanceAddController extends Controller
 
     public function calclateMetrics($invId)
     {
-        Log::debug('Вызов подсчёта метрики');
+        Log::debug('calclateMetrics');
         $balance = Balance::where('id', $invId)->first();
-        Log::debug('$balance', [$balance]);
+        Log::debug('123', [$balance]);
         if (isset($balance)) {
             return view('balance.metrics');
         }
