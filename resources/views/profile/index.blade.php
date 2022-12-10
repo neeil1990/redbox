@@ -18,7 +18,7 @@
                 <div class="inner">
                     <h3>{{ __('Balance') }}</h3>
 
-                    <p>{{ __('Your balance:') }} {{ $user->balance }}</p>
+                    <p>{{ __('Your balance') }}: {{ $user->balance }}</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-shopping-cart"></i>
@@ -42,7 +42,7 @@
                     <i class="ion ion-stats-bars"></i>
                 </div>
                 <a href="{{ route('tariff.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
+                    {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
