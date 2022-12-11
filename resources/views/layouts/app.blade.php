@@ -60,6 +60,7 @@
         <div class="content pt-3" id="app">
             <div class="container-fluid">
                 @yield('content')
+                <i class="fas fa-money-bill-trend-up"></i>
             </div>
             <!-- /.container-fluid -->
         </div>
