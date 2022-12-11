@@ -85,7 +85,7 @@ class TextAnalyzerController extends Controller
                 'textarea' => 'required|min:200',
             ], [
                 'textarea.required' => __("You didn't fill in the text field"),
-                'textarea.min' => 'Длинна текста минимум 200 символов',
+                'textarea.min' => __('The text length is at least 200 characters'),
             ]);
         } else {
             $this->validate($request, [
