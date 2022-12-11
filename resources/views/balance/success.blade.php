@@ -17,7 +17,7 @@
     </div>
 
     <form action="#" id="counting-metrics-block">
-        <input type="button" onclick="ym(89500732,'reachGoal','success_redbox_payment_1341'); return true;" value="Заказать"/>
+        <input type="submit" onclick="ym(89500732,'reachGoal','success_redbox_payment_1341'); return true;" value="Заказать"/>
     </form>
 </div>
 
