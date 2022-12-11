@@ -17,9 +17,17 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     @yield('css')
     <style>
-        .main-sidebar.sidebar-dark-primary.elevation-4{
+        .main-sidebar.sidebar-dark-primary.elevation-4 {
             position: fixed;
             height: 100vh;
+        }
+
+        .nav-sidebar > .nav-item .nav-icon {
+            margin-left: 0 !important;
+            font-size: 1.2rem !important;
+            margin-right: 0 !important;
+            text-align: center !important;
+            width: 1rem !important;
         }
     </style>
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
