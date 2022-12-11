@@ -48,7 +48,6 @@ class BalanceAddController extends Controller
 
             if ($result) {
                 $this->addBalanceToUser($balance->first());
-                json_decode(file_get_contents("https://lk.redbox.su/success/payment/yandex-metrics/$invId"), true);
                 echo "OK$invId\n";
             }
         }
@@ -130,19 +129,5 @@ class BalanceAddController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function calclateMetrics($invId)
-    {
-        $balance = Balance::where('id', '=', $invId)->first();
-        if (isset($balance)) {
-            Log::debug('balance find');
-            $created = Carbon::parse($balance->created_at);
-            $now = Carbon::now();
-            if ($now->diffInHours($created) < 24) {
-                Log::debug('render view');
-                return view('balance.metrics');
-            }
-        }
     }
 }

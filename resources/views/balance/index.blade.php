@@ -50,16 +50,22 @@
                                 <td>
                                     @switch($balance->status)
                                         @case(0)
-                                        <small class="badge badge-danger"><i class="far fa-clock"></i> {{ $balance->statuses[$balance->status] }}</small>
-                                        @break
+                                            <small class="badge badge-danger"><i
+                                                    class="far fa-clock"></i> {{ $balance->statuses[$balance->status] }}
+                                            </small>
+                                            @break
 
                                         @case(1)
-                                        <small class="badge badge-success"><i class="fas fa-plus-circle"></i> {{ $balance->statuses[$balance->status] }}</small>
-                                        @break
+                                            <small class="badge badge-success"><i
+                                                    class="fas fa-plus-circle"></i> {{ $balance->statuses[$balance->status] }}
+                                            </small>
+                                            @break
 
                                         @case(2)
-                                        <small class="badge badge-info"><i class="fas fa-minus-circle"></i> {{ $balance->statuses[$balance->status] }}</small>
-                                        @break
+                                            <small class="badge badge-info"><i
+                                                    class="fas fa-minus-circle"></i> {{ $balance->statuses[$balance->status] }}
+                                            </small>
+                                            @break
                                     @endswitch
                                 </td>
                                 <td>{{ $balance->sum }}</td>
@@ -90,12 +96,35 @@
     @slot('js')
 
         @if($response)
-        <script>
-            $('.modal').modal('show');
-        </script>
+            <script>
+                let url = new URL(window.location.href)
+                let invId = url.searchParams.get('InvId')
+                if (invId !== null) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "{{ route('counting.metrics') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id: invId,
+                        },
+                        success: function (response) {
+                            if (response.click) {
+                                $('.modal').modal('show');
+                                $('#counting-metrics').trigger('click')
+                            }
+
+                            $('#counting-metrics-block').remove()
+                        },
+                    });
+                }
+            </script>
+        @else
+            <script>
+                $('#counting-metrics-block').remove()
+            </script>
         @endif
 
     @endslot
-
 
 @endcomponent

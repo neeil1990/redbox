@@ -32,10 +32,8 @@ Route::get('/personal-data/ru', 'AccessController@getRuPersonalData');
 Route::get('/personal-data/en', 'AccessController@getEnPersonalData');
 Route::get('/privacy-policy/ru', 'AccessController@getRuPrivacyPolicy');
 Route::get('/privacy-policy/en', 'AccessController@getEnPrivacyPolicy');
-Route::get('/success/payment/yandex-metrics/{invId}', 'BalanceAddController@calclateMetrics');
 
 Route::middleware(['verified'])->group(function () {
-
     Route::get('test', 'TestController@index')->name('test');
 
     Route::get('/', 'HomeController@index')->name('home');
@@ -232,6 +230,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/get-policy-document', 'AdminController@getPolicyDocument')->name('get.policy.document');
 
     Route::get('/balance/{response?}', 'BalanceController@index')->name('balance.index');
+    Route::post('/counting/yandex-metrics/', 'BalanceController@countingMetrics')->name('counting.metrics');
     Route::resource('balance-add', 'BalanceAddController');
 
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');
