@@ -84,15 +84,15 @@ class TextAnalyzerController extends Controller
             $this->validate($request, [
                 'textarea' => 'required|min:200',
             ], [
-                'textarea.required' => 'Вы не заполнили поле с текстом',
+                'textarea.required' => __("You didn't fill in the text field"),
                 'textarea.min' => 'Длинна текста минимум 200 символов',
             ]);
         } else {
             $this->validate($request, [
                 'url' => 'required|website',
             ], [
-                'url.required' => 'Вы не заполнили поле с URL',
-                'url.website' => 'URL должен быть валидным'
+                'url.required' => __("You didn't fill in the URL field"),
+                'url.website' => __('The URL must be valid')
             ]);
         }
     }
