@@ -48,7 +48,7 @@ class BalanceAddController extends Controller
 
             if ($result) {
                 $this->addBalanceToUser($balance->first());
-                $json = json_decode(file_get_contents("https://lk.redbox.su/success/payment/metrics/$invId"), true);
+                json_decode(file_get_contents("/success/payment/yandex-metrics/$invId"), true);
                 echo "OK$invId\n";
             }
         }
