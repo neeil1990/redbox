@@ -1,4 +1,4 @@
-@component('component.card', ['title' => __('Text Analyzing')])
+@component('component.card', ['title' => __('Text Analyse')])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -14,13 +14,37 @@
         </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <button class="btn btn-secondary" id="set-text" type="button">Анилиз текста</button>
+    <button class="btn btn-outline-secondary" id="set-url" type="button">Анализ по URL</button>
+
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
-    <div class="form-group required">
-        {!! Form::select('type', ['url' => __('URL'),'text' => __('text/html')], isset($response['type'])?$response['type']:null, ['class' => 'form-control col-4 type-analyzing']) !!}
+
+    <input type="hidden" name="type" value="text" id="hiddenInput">
+
+    <div class="d-flex flex-column mt-3 mb-3">
+        <div class="collapse multi-collapse w-50 collapse show" id="analyse-text">
+            <div class="form-group required text-or-html">
+                <textarea name="textarea" class="form form-control" rows="10" placeholder="Ваш текст"
+                >@isset($request['textarea']){{ $request['textarea'] }}@endisset</textarea>
+            </div>
+        </div>
+        <div class="collapse multi-collapse w-50" id="analyse-url">
+            <div class="form-group required text-or-html">
+                <input type="text" class="form-control textarea-text-or-html" name="url" placeholder="https://site.ru"
+                       value="@isset($request['url'])) {{ $request['url'] }} @endisset">
+            </div>
+        </div>
     </div>
-    <div class="form-group required text-or-html">
-        {!! Form::textarea('text', isset($response['text']) ? $response['text'] : (isset($url) ? $url : null), ['class' => 'form-control textarea-text-or-html', 'required']) !!}
-    </div>
+
+    @if ($errors->any())
+        <div class="w-50">
+            @foreach ($errors->all() as $key => $error)
+                <div class="text-danger">{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="switch mt-3 mb-3">
         <div class="d-flex">
             <div class="__helper-link ui_tooltip_w">
@@ -29,9 +53,7 @@
                            class="custom-control-input"
                            id="switchNoindex"
                            name="noIndex"
-                           @isset($response['noIndex'])
-                               checked
-                        @endisset>
+                           @if(isset($request['noIndex']) && $request['noIndex']) checked @endif>
                     <label class="custom-control-label" for="switchNoindex"></label>
                 </div>
             </div>
@@ -44,9 +66,7 @@
                            class="custom-control-input"
                            id="switchAltAndTitle"
                            name="hiddenText"
-                           @isset($response['hiddenText'])
-                               checked
-                        @endisset>
+                           @if(isset($request['hiddenText']) && $request['hiddenText']) checked @endif>
                     <label class="custom-control-label" for="switchAltAndTitle"></label>
                 </div>
             </div>
@@ -59,9 +79,7 @@
                            class="custom-control-input"
                            id="switchConjunctionsPrepositionsPronouns"
                            name="conjunctionsPrepositionsPronouns"
-                           @isset($response['conjunctionsPrepositionsPronouns'])
-                               checked
-                        @endisset>
+                           @if(isset($request['conjunctionsPrepositionsPronouns']) && $request['conjunctionsPrepositionsPronouns']) checked @endif>
                     <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
                 </div>
             </div>
@@ -72,28 +90,21 @@
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
                            class="custom-control-input"
-                           id="switchMyListWords"
-                           name="switchMyListWords"
-                           @isset($response['listWords'])
-                               checked
-                        @endisset>
-                    <label class="custom-control-label" for="switchMyListWords"></label>
+                           id="removeWords"
+                           name="removeWords"
+                           @if(isset($request['removeWords']) && $request['removeWords']) checked @endif>
+                    <label class="custom-control-label" for="removeWords"></label>
                 </div>
             </div>
             <span>{{ __('Exclude') }}<span class="text-muted">{{ __('(your own list of words)') }}</span></span>
         </div>
     </div>
     <div class="form-group required list-words mt-1"
-         @if(empty($response['listWords']))
-             style="display: none"
-        @endif>
-        {!! Form::textarea(
-            'listWords',
-            isset($response['listWords'])? $response['listWords']: null,
-            ['class' => 'form-control listWords col-8', 'cols' => 8, 'rows' => 5]
-        ) !!}
+         @if(!(isset($request['removeWords']) && $request['removeWords'])) style="display: none" @endif>
+        <textarea class="form form-control w-50" name="listWords" id="listWords" cols="8" rows="5">@if(isset($request['listWords'])){{ $request['listWords'] }}@endif</textarea>
     </div>
     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
+
     {!! Form::close() !!}
     @if(isset($response))
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/text-analyzer/css/style.css') }}"/>
@@ -240,9 +251,29 @@
         @endisset
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>'
         <script>
-            $('input#switchMyListWords').click(function () {
+            $('#set-text').on('click', function () {
+                $('#hiddenInput').val('text')
+                if (!$('#analyse-text').is(':visible')) {
+                    $('#analyse-text').show(300)
+                    $('#analyse-url').hide(300)
+                    $('#set-text').attr('class', 'btn btn-secondary')
+                    $('#set-url').attr('class', 'btn btn-outline-secondary')
+                }
+            })
+
+            $('#set-url').on('click', function () {
+                $('#hiddenInput').val('url')
+                if (!$('#analyse-url').is(':visible')) {
+                    $('#analyse-text').hide(300)
+                    $('#analyse-url').show(300)
+                    $('#set-text').attr('class', 'btn btn-outline-secondary')
+                    $('#set-url').attr('class', 'btn btn-secondary')
+                }
+            })
+
+            $('#removeWords').click(function () {
                 if ($(this).is(':checked')) {
                     $('.form-group.required.list-words.mt-1').show(300)
                     $('.form-control.listWords').prop('required', true)
@@ -252,100 +283,102 @@
                 }
             })
         </script>
-        <script>
-            $(document).ready(function () {
-                var options = {
-                    animationEnabled: true,
-                    theme: "light2",
-                    data: [
-                        {
-                            type: "line",
-                            name: "Реальные значения",
-                            showInLegend: true,
-                            dataPoints: graph
-                        },
-                        {
-                            type: "line",
-                            name: "Идеальные значения",
-                            showInLegend: true,
-                            dataPoints: [
-                                {x: 5, y: graph[0]['y']},
-                                {x: 6, y: Math.round(graph[0]['y'] / 2)},
-                                {x: 7, y: Math.round(graph[0]['y'] / 3)},
-                                {x: 8, y: Math.round(graph[0]['y'] / 4)},
-                                {x: 9, y: Math.round(graph[0]['y'] / 5)},
-                                {x: 10, y: Math.round(graph[0]['y'] / 6)},
-                                {x: 11, y: Math.round(graph[0]['y'] / 7)},
-                                {x: 12, y: Math.round(graph[0]['y'] / 8)},
-                                {x: 13, y: Math.round(graph[0]['y'] / 8)},
-                                {x: 14, y: Math.round(graph[0]['y'] / 9)},
-                                {x: 15, y: Math.round(graph[0]['y'] / 9)},
-                                {x: 16, y: Math.round(graph[0]['y'] / 9)},
-                                {x: 17, y: Math.round(graph[0]['y'] / 9)},
-                                {x: 18, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 19, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 20, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 21, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 22, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 23, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 24, y: Math.round(graph[0]['y'] / 10)},
-                                {x: 25, y: Math.round(graph[0]['y'] / 10)},
-                            ]
-                        }]
-                };
 
-                $("#chartContainer").CanvasJSChart(options);
-            });
+        @if(isset($response))
+            <script>
+                $(document).ready(function () {
+                    var options = {
+                        animationEnabled: true,
+                        theme: "light2",
+                        data: [
+                            {
+                                type: "line",
+                                name: "Реальные значения",
+                                showInLegend: true,
+                                dataPoints: graph
+                            },
+                            {
+                                type: "line",
+                                name: "Идеальные значения",
+                                showInLegend: true,
+                                dataPoints: [
+                                    {x: 5, y: graph[0]['y']},
+                                    {x: 6, y: Math.round(graph[0]['y'] / 2)},
+                                    {x: 7, y: Math.round(graph[0]['y'] / 3)},
+                                    {x: 8, y: Math.round(graph[0]['y'] / 4)},
+                                    {x: 9, y: Math.round(graph[0]['y'] / 5)},
+                                    {x: 10, y: Math.round(graph[0]['y'] / 6)},
+                                    {x: 11, y: Math.round(graph[0]['y'] / 7)},
+                                    {x: 12, y: Math.round(graph[0]['y'] / 8)},
+                                    {x: 13, y: Math.round(graph[0]['y'] / 8)},
+                                    {x: 14, y: Math.round(graph[0]['y'] / 9)},
+                                    {x: 15, y: Math.round(graph[0]['y'] / 9)},
+                                    {x: 16, y: Math.round(graph[0]['y'] / 9)},
+                                    {x: 17, y: Math.round(graph[0]['y'] / 9)},
+                                    {x: 18, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 19, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 20, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 21, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 22, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 23, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 24, y: Math.round(graph[0]['y'] / 10)},
+                                    {x: 25, y: Math.round(graph[0]['y'] / 10)},
+                                ]
+                            }]
+                    };
 
-        </script>
-        <script>
-            $(document).ready(function () {
-                $(function () {
-                    if (typeof textWithoutLinks === 'object') {
-                        let a = arrayToObj(textWithoutLinks)
-                        $("#textWithoutLinks").jQCloud(a);
-                    }
-                    if (typeof linksText === 'object') {
-                        let c = arrayToObj(linksText)
-                        $("#links").jQCloud(c);
-                    }
-                    if (typeof textWithLinks === 'object') {
-                        let e = arrayToObj(textWithLinks)
-                        $("#textWithLinks").jQCloud(e);
-                    }
+                    $("#chartContainer").CanvasJSChart(options);
                 });
-
-                function arrayToObj(array) {
-                    let length;
-                    length = array.count
-                    let a = [], b = {};
-                    for (let i = 0; i < length; i++) {
-                        if (typeof array[i] != 'undefined') {
-                            b = array[i]
-                            a.push(b);
+            </script>
+            <script>
+                $(document).ready(function () {
+                    $(function () {
+                        if (typeof textWithoutLinks === 'object') {
+                            let a = arrayToObj(textWithoutLinks)
+                            $("#textWithoutLinks").jQCloud(a);
                         }
-                    }
-                    return a;
-                }
-            });
-        </script>
-        <script>
-            $(document).ready(function () {
-                $('#totalTable').DataTable({
-                    "order": [[2, "desc"]]
-                });
-                $('#phrasesTable').DataTable({
-                    "order": [[1, "desc"]]
-                });
-            });
+                        if (typeof linksText === 'object') {
+                            let c = arrayToObj(linksText)
+                            $("#links").jQCloud(c);
+                        }
+                        if (typeof textWithLinks === 'object') {
+                            let e = arrayToObj(textWithLinks)
+                            $("#textWithLinks").jQCloud(e);
+                        }
+                    });
 
-            $('.unique-word').click(function () {
-                if ($(this).parent().children('span').css('display') === 'none') {
-                    $(this).parent().children('span').show()
-                } else {
-                    $(this).parent().children('span').hide()
-                }
-            });
-        </script>
+                    function arrayToObj(array) {
+                        let length;
+                        length = array.count
+                        let a = [], b = {};
+                        for (let i = 0; i < length; i++) {
+                            if (typeof array[i] != 'undefined') {
+                                b = array[i]
+                                a.push(b);
+                            }
+                        }
+                        return a;
+                    }
+                });
+            </script>
+            <script>
+                $(document).ready(function () {
+                    $('#totalTable').DataTable({
+                        "order": [[2, "desc"]]
+                    });
+                    $('#phrasesTable').DataTable({
+                        "order": [[1, "desc"]]
+                    });
+                });
+
+                $('.unique-word').click(function () {
+                    if ($(this).parent().children('span').css('display') === 'none') {
+                        $(this).parent().children('span').show()
+                    } else {
+                        $(this).parent().children('span').hide()
+                    }
+                });
+            </script>
+        @endif
     @endslot
 @endcomponent

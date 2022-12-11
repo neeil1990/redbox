@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use JavaScript;
 
 class TextAnalyzer extends Model
@@ -87,39 +88,35 @@ class TextAnalyzer extends Model
         $alt = '';
         $title = '';
         $html = mb_strtolower($string);
-        if (isset($request->noIndex)) {
+
+        if ($request['noIndex'] ?? false) {
             $html = TextAnalyzer::removeNoindexText($html);
-        } else {
-            $response['noIndex'] = true;
         }
+
         $link = TextAnalyzer::getLinkText($html);
-        if (isset($request->hiddenText)) {
+        if ($request['hiddenText'] ?? false) {
             $title = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*>");
             $alt = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*>");
             $data = TextAnalyzer::getHiddenText($html, "<.*?data-text=\"(.*?)\".*>");
-            $response['hiddenText'] = true;
         }
 
         $html = TextAnalyzer::clearHTMLFromLinks($html);
         $text = TextAnalyzer::deleteEverythingExceptCharacters($html);
 
-        if (isset($request->conjunctionsPrepositionsPronouns)) {
+        if ($request['conjunctionsPrepositionsPronouns'] ?? false) {
             $text = TextAnalyzer::removeConjunctionsPrepositionsPronouns($text);
             $title = TextAnalyzer::removeConjunctionsPrepositionsPronouns($title);
             $alt = TextAnalyzer::removeConjunctionsPrepositionsPronouns($alt);
             $data = TextAnalyzer::removeConjunctionsPrepositionsPronouns($data);
             $link = TextAnalyzer::removeConjunctionsPrepositionsPronouns($link);
-        } else {
-            $response['conjunctionsPrepositionsPronouns'] = true;
         }
 
-        if (isset($request->switchMyListWords)) {
-            $text = TextAnalyzer::removeWords($request->listWords, $text);
-            $title = TextAnalyzer::removeWords($request->listWords, $title);
-            $alt = TextAnalyzer::removeWords($request->listWords, $alt);
-            $data = TextAnalyzer::removeWords($request->listWords, $data);
-            $link = TextAnalyzer::removeWords($request->listWords, $link);
-            $response['listWords'] = $request->listWords;
+        if (isset($request['removeWords']) && $request['removeWords'] === 'on' && $request['listWords'] !== "") {
+            $text = TextAnalyzer::removeWords(strtolower($request['listWords']), strtolower($text));
+            $title = TextAnalyzer::removeWords(strtolower($request['listWords']), strtolower($title));
+            $alt = TextAnalyzer::removeWords(strtolower($request['listWords']), strtolower($alt));
+            $data = TextAnalyzer::removeWords(strtolower($request['listWords']), strtolower($data));
+            $link = TextAnalyzer::removeWords(strtolower($request['listWords']), strtolower($link));
         }
 
         $total = trim($text . ' ' . $alt . ' ' . $title . ' ' . $data);
@@ -326,7 +323,7 @@ class TextAnalyzer extends Model
      */
     public static function removeWords($listWords, $text): string
     {
-        $listWords = str_replace("\r\n", "\n", $listWords);
+        $listWords = str_replace("\r\n", "\n", strtolower($listWords));
         $listWords = explode("\n", $listWords);
         foreach ($listWords as $listWord) {
             $text = TextAnalyzer::mbStrReplace([' ' . $listWord . ' '], ' ', $text);

@@ -96,7 +96,7 @@
                             {{ __('Classic mode') }}
                         </button>
 
-                        <button class="btn btn-secondary" id="ProfessionalMode">
+                        <button class="btn btn-outline-secondary" id="ProfessionalMode">
                             {{ __('Pro mode') }}
                         </button>
                     </p>
@@ -345,11 +345,15 @@
                 $('#engineVersion').val('latest')
                 $('#start-analyse').attr('data-target', 'classic')
                 $('.pro').hide(300)
+                $('#classicMode').attr('class', 'btn btn-secondary')
+                $('#ProfessionalMode').attr('class', 'btn btn-outline-secondary')
             })
 
             $('#ProfessionalMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'professional')
                 $('.pro').show(300)
+                $('#classicMode').attr('class', 'btn btn-outline-secondary')
+                $('#ProfessionalMode').attr('class', 'btn btn-secondary')
             })
 
             $('#searchRelevance').on('click', function () {

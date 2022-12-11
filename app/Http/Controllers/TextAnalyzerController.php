@@ -9,6 +9,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class TextAnalyzerController extends Controller
@@ -24,24 +26,26 @@ class TextAnalyzerController extends Controller
      */
     public function index()
     {
-        return view('text-analyzer.index');
+        return view('text-analyse.index');
     }
 
     /**
      * @param Request $request
-     * @return array|Application|Factory|RedirectResponse|View|mixed
+     * @return array|false|Application|Factory|RedirectResponse|View|mixed
+     * @throws ValidationException
      */
     public function analyze(Request $request)
     {
+        $this->validator($request);
+
         if (TariffSetting::checkTextAnalyserLimits()) {
             flash()->overlay(__('Your limits are exhausted this month'), ' ')->error();
             return Redirect::back();
         }
 
-        //отвратительный код нужно полностью переписать логику
-        if ($request->type === 'url') {
-
-            $html = TextAnalyzer::curlInit($request->text);
+        $request = $request->all();
+        if ($request['type'] === 'url') {
+            $html = TextAnalyzer::curlInit($request['url']);
             if (!$html) {
                 flash()->overlay(__('connection attempt failed'), ' ')->error();
 
@@ -52,18 +56,10 @@ class TextAnalyzerController extends Controller
             }
 
         } else {
-            if (strlen($request->text) < 200) {
-                flash()->overlay(__('The volume of the text should be from 200 characters'), ' ')->error();
-                return Redirect::back();
-            } else {
-                $response = TextAnalyzer::analyze($request->text, $request);
-            }
-
+            $response = TextAnalyzer::analyze($request['textarea'], $request);
         }
-        $response['text'] = $request->text;
-        $response['type'] = $request->type;
 
-        return view('text-analyzer.index', compact('response'));
+        return view('text-analyse.index', compact('response', 'request'));
     }
 
     /**
@@ -74,7 +70,31 @@ class TextAnalyzerController extends Controller
     {
         $url = str_replace('abc', '/', $url);
 
-        return view('text-analyzer.index', compact('url'));
+        return view('text-analyse.index', compact('url'));
+    }
+
+    /**
+     * @param Request $request
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validator(Request $request)
+    {
+        if ($request['type'] === 'text') {
+            $this->validate($request, [
+                'textarea' => 'required|min:200',
+            ], [
+                'textarea.required' => 'Вы не заполнили поле с текстом',
+                'textarea.min' => 'Длинна текста минимум 200 символов',
+            ]);
+        } else {
+            $this->validate($request, [
+                'url' => 'required|website',
+            ], [
+                'url.required' => 'Вы не заполнили поле с URL',
+                'url.website' => 'URL должен быть валидным'
+            ]);
+        }
     }
 
 }
