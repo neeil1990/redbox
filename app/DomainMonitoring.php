@@ -44,7 +44,6 @@ class DomainMonitoring extends Model
 
         $project->up_time += $lastCheck->diffInSeconds(Carbon::now());
         $project->uptime_percent = $project->up_time / ($totalTime / 100);
-        $project->last_check = Carbon::now();
         $project->save();
     }
 
@@ -119,9 +118,9 @@ class DomainMonitoring extends Model
 
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
         DomainMonitoring::calculateUpTime($project);
-        $project->save();
-
         DomainMonitoring::sendNotifications($project, $oldState);
+        $project->last_check = Carbon::now();
+        $project->save();
     }
 
     public static function curlInit($project): ?array
