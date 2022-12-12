@@ -192,16 +192,32 @@ class DomainMonitoring extends Model
             $phrase = $project->phrase;
         }
 
-        $body = TextAnalyzer::deleteEverythingExceptCharacters($curl[0]);
-        $phrase = TextAnalyzer::deleteEverythingExceptCharacters($phrase);
+        $html = str_replace('>', '> ', $curl[0]);
+        $text = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($html)));
+        $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
+        $text = preg_replace("/&#?[a-z]+;/i", "", $text);
+        $text = str_replace([
+            "\n", "\t", "\r",
+            "»", "«", ".", ",", "!", "?",
+            "(", ")", "+", ";", ":", "-",
+            "₽", "$", "/", "[", "]", "“"
+        ], ' ', $text);
+        $text = preg_replace("/\d/", "", $text);
+        $text = str_replace("ё", "е", $text);
+        $text = preg_replace('| +|', ' ', $text);
 
-        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            $project->status = 'Everything all right';
-            $project->broken = false;
-        } else {
+        try {
+            if (preg_match_all('(' . $phrase . ')', $text, $matches, PREG_SET_ORDER)) {
+                $project->status = 'Everything all right';
+                $project->broken = false;
+            } else {
+                $project->status = 'Keyword not found';
+                $project->broken = true;
+            }
+        } catch (\Throwable $e) {
+            Log::debug('domain monitoring search phrase error', [$project]);
             $project->status = 'Keyword not found';
             $project->broken = true;
         }
-
     }
 }
