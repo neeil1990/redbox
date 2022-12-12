@@ -335,10 +335,8 @@
 
             function destroyProgress(interval) {
                 clearInterval(interval)
-                // setTimeout(() => {
                 $('#progress-bar').hide(300)
                 setProgressBarStyles(0)
-                // }, 3000)
             }
 
             $('#classicMode').on('click', function () {

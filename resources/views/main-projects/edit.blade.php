@@ -23,6 +23,15 @@
 
             <div class="form-group required">
                 {!! Form::label("icon") !!}
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question"></i>
+                    <span class="ui_tooltip __right" style="min-width: 550px;">
+                        <span class="ui_tooltip_content">
+                            Если иконка оторбражается не корректно, попробуйте добавить в класс "fas" <br>
+                            было "fa-address-book"<br> стало "<b>fas</b> fa-address-book"
+                        </span>
+                    </span>
+                </span>
                 {!! Form::text("icon", $data->icon ,["class" => "form-control","required" => "required", 'placeholder' => '<i class="fas fa-address-book"></i>']) !!}
             </div>
 

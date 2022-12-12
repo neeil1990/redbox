@@ -184,7 +184,6 @@ class DomainMonitoring extends Model
      */
     public static function searchPhrase($curl, $project)
     {
-        $body = $curl[0];
         $contentType = $curl[1]['content_type'];
         if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
             $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
@@ -193,16 +192,13 @@ class DomainMonitoring extends Model
             $phrase = $project->phrase;
         }
 
-        try {
-            if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-                $project->status = 'Everything all right';
-                $project->broken = false;
-            } else {
-                $project->status = 'Keyword not found';
-                $project->broken = true;
-            }
-        } catch (\Throwable $e) {
-            Log::debug('domain monitoring search phrase error', [$project]);
+        $body = TextAnalyzer::deleteEverythingExceptCharacters($curl[0]);
+        $phrase = TextAnalyzer::deleteEverythingExceptCharacters($phrase);
+
+        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
+            $project->status = 'Everything all right';
+            $project->broken = false;
+        } else {
             $project->status = 'Keyword not found';
             $project->broken = true;
         }
