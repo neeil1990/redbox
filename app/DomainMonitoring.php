@@ -184,40 +184,22 @@ class DomainMonitoring extends Model
      */
     public static function searchPhrase($curl, $project)
     {
+        $body = $curl[0];
         $contentType = $curl[1]['content_type'];
         if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-            $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
+            $contentType = str_replace(array("\r", "\n"), '', $contentType[1][0]);
             $phrase = mb_convert_encoding($project->phrase, $contentType);
         } else {
             $phrase = $project->phrase;
         }
 
-        $html = str_replace('>', '> ', $curl[0]);
-        $text = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($html)));
-        $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
-        $text = preg_replace("/&#?[a-z]+;/i", "", $text);
-        $text = str_replace([
-            "\n", "\t", "\r",
-            "»", "«", ".", ",", "!", "?",
-            "(", ")", "+", ";", ":", "-",
-            "₽", "$", "/", "[", "]", "“"
-        ], ' ', $text);
-        $text = preg_replace("/\d/", "", $text);
-        $text = str_replace("ё", "е", $text);
-        $text = preg_replace('| +|', ' ', $text);
-
-        try {
-            if (preg_match_all('(' . $phrase . ')', $text, $matches, PREG_SET_ORDER)) {
-                $project->status = 'Everything all right';
-                $project->broken = false;
-            } else {
-                $project->status = 'Keyword not found';
-                $project->broken = true;
-            }
-        } catch (\Throwable $e) {
-            Log::debug('domain monitoring search phrase error', [$project]);
+        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
+            $project->status = 'Everything all right';
+            $project->broken = false;
+        } else {
             $project->status = 'Keyword not found';
             $project->broken = true;
+            Log::debug('keyword not found', [$project]);
         }
     }
 }
