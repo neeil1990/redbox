@@ -193,12 +193,19 @@ class DomainMonitoring extends Model
             $phrase = $project->phrase;
         }
 
-        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            $project->status = 'Everything all right';
-            $project->broken = false;
-        } else {
+        try {
+            if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
+                $project->status = 'Everything all right';
+                $project->broken = false;
+            } else {
+                $project->status = 'Keyword not found';
+                $project->broken = true;
+            }
+        } catch (\Throwable $e) {
+            Log::debug('domain monitoring search phrase error', [$project]);
             $project->status = 'Keyword not found';
             $project->broken = true;
         }
+
     }
 }
