@@ -16,8 +16,8 @@
         </div>
     </div>
 
-    <form action="#" id="counting-metrics-block">
-        <input type="submit" onclick="ym(89500732,'reachGoal','success_payment_1231'); return true;" value="Заказать"/>
+    <form action="#" id="counting-metrics-block" onsubmit="return false;">
+        <input id="counting-metrics" type="submit" onclick="ym(89500732,'reachGoal','success_payment_1231'); return true;" value="Заказать"/>
     </form>
 </div>
 
@@ -47,4 +47,3 @@
 <noscript>
     <div><img src="https://mc.yandex.ru/watch/89500732" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
-<!-- /Yandex.Metrika counter -->
