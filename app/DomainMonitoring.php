@@ -44,6 +44,7 @@ class DomainMonitoring extends Model
 
         $project->up_time += $lastCheck->diffInSeconds(Carbon::now());
         $project->uptime_percent = $project->up_time / ($totalTime / 100);
+        $project->last_check = Carbon::now();
         $project->save();
     }
 
@@ -116,7 +117,6 @@ class DomainMonitoring extends Model
             $project->broken = true;
         }
 
-        $project->last_check = Carbon::now();
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
         DomainMonitoring::calculateUpTime($project);
         $project->save();
@@ -184,7 +184,6 @@ class DomainMonitoring extends Model
      */
     public static function searchPhrase($curl, $project)
     {
-        $body = $curl[0];
         $contentType = $curl[1]['content_type'];
         if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
             $contentType = str_replace(array("\r", "\n"), '', $contentType[1][0]);
@@ -193,13 +192,19 @@ class DomainMonitoring extends Model
             $phrase = $project->phrase;
         }
 
-        if (preg_match_all('(' . $phrase . ')', $body, $matches, PREG_SET_ORDER)) {
-            $project->status = 'Everything all right';
-            $project->broken = false;
-        } else {
+        try {
+            if (strripos($curl[0], $phrase) !== false) {
+                $project->status = 'Everything all right';
+                $project->broken = false;
+            } else {
+                $project->status = 'Keyword not found';
+                $project->broken = true;
+            }
+        } catch (\Throwable $e) {
+            Log::debug('site monitoring error', [$project]);
             $project->status = 'Keyword not found';
             $project->broken = true;
-            Log::debug('keyword not found', [$project]);
         }
+
     }
 }
