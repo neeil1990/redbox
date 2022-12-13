@@ -59,9 +59,9 @@
             </div>
         @endif
 
-        <div class="col-md-12 d-flex flex-row flex-wrap">
+        <div class="col-md-12 d-flex flex-row flex-wrap justify-content-between">
             @foreach ($tariffsArray as $tariff)
-                <div class="card col-3 p-0">
+                <div class="card p-0" style="width: 24%">
                     <div class="card-header bg-primary">
                         Тариф: {{ $tariff['name'] }}
                     </div>
