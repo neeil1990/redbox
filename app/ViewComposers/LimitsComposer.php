@@ -258,16 +258,18 @@ class LimitsComposer
             case 'ROI':
                 return 16;
 
-            case 'BacklinkProject':
+            case 'behavior':
                 return 17;
 
-            case 'BacklinkLinks':
+            case 'HttpHeaders':
                 return 18;
 
-            case 'behavior':
+            case 'BacklinkProject':
                 return 19;
-            case 'HttpHeaders':
+
+            case 'BacklinkLinks':
                 return 20;
+
             default:
                 return 100;
         }
