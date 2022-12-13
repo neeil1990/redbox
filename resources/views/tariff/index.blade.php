@@ -72,6 +72,7 @@
                                     {{ $module['name'] }}:
                                     @if($module['value'] === 1000000)
                                         <b>{{ __('No restrictions') }}</b>
+                                    @elseif($module['value'] === 0)
                                     @else
                                         <b>{{ $module['value'] }}</b>
                                     @endif
@@ -87,7 +88,9 @@
 @stop
 
 @section('js')
-    document.title = "{{ __('Tariff') }}";
+    <script>
+        document.title = "{{ __('Tariff') }}";
+    </script>
 
     <!-- Toastr -->
     <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
