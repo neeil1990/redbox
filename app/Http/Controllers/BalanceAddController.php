@@ -20,7 +20,7 @@ class BalanceAddController extends Controller
     {
         $this->robokassa = new RobokassaPay();
 
-        $this->robokassa->setParams('IsTest', 1);
+        $this->robokassa->setParams('IsTest', 0);
         $this->robokassa->setParams('Description', 'Redbox.su');
     }
 
