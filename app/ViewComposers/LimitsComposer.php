@@ -228,10 +228,10 @@ class LimitsComposer
             case 'MetaTagsProject':
                 return 6;
 
-            case 'behavior':
+            case 'MetaTagsPages':
                 return 7;
 
-            case 'MetaTagsPages':
+            case 'behavior':
                 return 8;
 
             case 'GeneratorWords':
