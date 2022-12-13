@@ -35,20 +35,27 @@
                                         </h1>
                                         @if($user->lang === 'ru')
                                             <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
-                                                Ваш верификационный код: <b> {{ $code }}</b>
-                                            </p>
-                                        @else
-                                                Verify Input Code: <b> {{ $code }}</b>
-                                            </p>
-                                        @endif
-
-                                        @if($user->lang === 'ru')
-                                            <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
                                                 Если вы не создавали учетную запись, никаких дальнейших действий не
                                                 требуется.</p>
                                         @else
                                             <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
                                                 If you did not create an account, no further action is required.</p>
+                                        @endif
+
+                                        @if($user->lang === 'ru')
+                                            <p>
+                                                Благодарим вас за регистрацию
+                                            </p>
+                                            <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;color:#3d4852;font-size:16px;line-height:1.5em;margin-top:0;text-align:left">
+                                                Ваш верификационный код: <b> {{ $code }}</b>
+                                            </p>
+                                        @else
+                                            <p>
+                                                Thank you for registering
+                                            </p>
+                                            <p>
+                                                Verify Input Code: <b> {{ $code }}</b>
+                                            </p>
                                         @endif
                                     </td>
                                 </tr>
