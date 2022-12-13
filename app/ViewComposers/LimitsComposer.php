@@ -252,16 +252,16 @@ class LimitsComposer
             case 'RemoveDublicate':
                 return 14;
 
-            case 'UTM':
+            case 'behavior':
                 return 15;
 
-            case 'ROI':
+            case 'HttpHeaders':
                 return 16;
 
-            case 'behavior':
+            case 'UTM':
                 return 17;
 
-            case 'HttpHeaders':
+            case 'ROI':
                 return 18;
 
             case 'BacklinkProject':
