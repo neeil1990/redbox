@@ -110,12 +110,12 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('html-editor', 'TextEditorController@index')->name('HTML.editor');
     Route::get('create-project', 'TextEditorController@createView')->name('create.project');
-    Route::get('edit-project{id}', 'TextEditorController@editProjectView')->name('edit.project');
+    Route::get('edit-project/{id}', 'TextEditorController@editProjectView')->name('edit.project');
     Route::post('edit-project', 'TextEditorController@editProject')->name('save.edit.project');
-    Route::post('save-project', 'TextEditorController@saveProject')->name('save.project');
+    Route::post('save-project', 'TextEditorController@storeProject')->name('store.project');
     Route::get('project/delete{id}', 'TextEditorController@destroyProject')->name('delete.project');
 
-    Route::get('edit-description{id}', 'TextEditorController@editDescriptionView')->name('edit.description');
+    Route::get('edit-description/{id}', 'TextEditorController@editDescriptionView')->name('edit.description');
     Route::post('edit-description', 'TextEditorController@editDescription')->name('save.edit.description');
     Route::delete('description/delete{id}', 'TextEditorController@destroyDescription')->name('delete.description');
     Route::get('create-description', 'TextEditorController@createDescriptionView')->name('create.description');
