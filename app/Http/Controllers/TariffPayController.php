@@ -7,6 +7,7 @@ use App\Classes\Tariffs\Interfaces\Period;
 use App\Classes\Tariffs\Tariff;
 use App\TariffSetting;
 use App\User;
+use App\ViewComposers\LimitsComposer;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -73,6 +74,13 @@ class TariffPayController extends Controller
         $tariffsArray = [];
         foreach ($tariffs->getTariffs() as $tariff) {
             $tariffsArray[] = $tariff->getAsArray();
+        }
+
+        foreach ($tariffsArray as $tariffKey => $tariffValue) {
+            foreach ($tariffValue['settings'] as $key => $setting) {
+                $tariffsArray[$tariffKey]['settings'][$key]['position'] = LimitsComposer::getPosition($key);
+            }
+            $tariffsArray[$tariffKey]['settings'] = collect($tariffsArray[$tariffKey]['settings'])->sortBy('position')->toArray();
         }
 
         return view('tariff.index', compact('select', 'total', 'actual', 'tariffsArray'));

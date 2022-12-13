@@ -8,7 +8,11 @@
 
 <div class="form-group">
     {!! Form::label('period', 'Период') !!}
-    {!! Form::select('period', $select['periods'], null, ['class' => 'form-control']) !!}
+    <select name="period" id="period" class="form-control">
+        @foreach($select['periods'] as $key => $value)
+            <option value="{{ $key }}"> {{ __($value) }}</option>
+        @endforeach
+    </select>
     @error('period') <span class="error invalid-feedback">{{ $message }}</span> @enderror
     <span class="valid-feedback d-block">Выберите период.</span>
 </div>

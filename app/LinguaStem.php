@@ -4,8 +4,6 @@ namespace App;
 
 class LinguaStem
 {
-    public $Stem_Caching = 0;
-    public $Stem_Cache = [];
     public $perspectiveGround = '/((ив|ивши|ившись|ыв|ывши|ывшись)|((?<=[ая])(в|вши|вшись)))$/';
     public $reflexive = '/(с[яь])$/';
     public $adjective = '/(ее|ие|ые|ое|ими|ыми|ей|ий|ый|ой|ем|им|ым|ом|его|ого|еых|ую|юю|ая|яя|ою|ею|их)$/';

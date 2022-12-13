@@ -31,7 +31,7 @@ class LimitsComposer
 
         $limitsStatistics = [];
         foreach ($tariffLimits as $tariffKey => $tariffValue) {
-            $info = self::getUsedLimit($tariffKey, $user);;
+            $info = LimitsComposer::getUsedLimit($tariffKey, $user);
             $limitsStatistics[$tariffKey]['used'] = $info['count'];
             $limitsStatistics[$tariffKey]['position'] = $info['position'];
             $limitsStatistics[$tariffKey]['name'] = $tariffValue['name'];
@@ -48,7 +48,7 @@ class LimitsComposer
      * @param $user
      * @return array
      */
-    protected static function getUsedLimit(string $code, $user): array
+    public static function getUsedLimit(string $code, $user): array
     {
         $now = Carbon::now();
         $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
@@ -199,6 +199,77 @@ class LimitsComposer
                     'count' => 100000,
                     'position' => 100
                 ];
+        }
+    }
+
+    /**
+     * @param $code
+     * @return int
+     */
+    public static function getPosition($code): int
+    {
+        switch ($code) {
+
+            case 'RelevanceAnalysis':
+                return 1;
+
+            case 'TextAnalyzer':
+                return 2;
+
+            case 'CompetitorAnalysisPhrases':
+                return 3;
+
+            case 'domainMonitoringProject':
+                return 4;
+
+            case 'DomainInformation':
+                return 5;
+
+            case 'MetaTagsProject':
+                return 6;
+
+            case 'MetaTagsPages':
+                return 7;
+
+            case 'GeneratorWords':
+                return 8;
+
+            case 'PasswordGenerator':
+                return 9;
+
+            case 'TextLength':
+                return 10;
+
+            case 'ListComparison':
+                return 11;
+
+            case 'UniqueWords':
+                return 12;
+
+            case 'HtmlEditor':
+                return 13;
+
+            case 'RemoveDublicate':
+                return 14;
+
+            case 'UTM':
+                return 15;
+
+            case 'ROI':
+                return 16;
+
+            case 'BacklinkProject':
+                return 17;
+
+            case 'BacklinkLinks':
+                return 18;
+
+            case 'behavior':
+                return 19;
+            case 'HttpHeaders':
+                return 20;
+            default:
+                return 100;
         }
     }
 
