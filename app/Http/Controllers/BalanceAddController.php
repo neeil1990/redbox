@@ -20,7 +20,7 @@ class BalanceAddController extends Controller
     {
         $this->robokassa = new RobokassaPay();
 
-        $this->robokassa->setParams('IsTest', 0);
+        $this->robokassa->setParams('IsTest', 1);
         $this->robokassa->setParams('Description', 'Redbox.su');
     }
 
@@ -76,6 +76,7 @@ class BalanceAddController extends Controller
 
         $this->robokassa->setParams('InvId', $balance->id);
         $this->robokassa->setParams('OutSum', $sum);
+        $this->robokassa->setParams('Receipt', urlencode('{"items":[{"name":"Доступ к ПО сервиса RedBox.su","quantity":"1","sum":"'.$sum.'","tax":"none"}]}'));
 
         return redirect($this->robokassa->action());
     }
