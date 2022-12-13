@@ -72,7 +72,8 @@ class RobokassaPay extends Pay
 
         $OutSum = $params->get('OutSum');
         $InvId = $params->get('InvId');
+        $Receipt = $params->get('Receipt');
 
-        return md5("$this->login:$OutSum:$InvId:$this->password");
+        return md5("$this->login:$OutSum:$InvId:$Receipt:$this->password");
     }
 }
