@@ -228,31 +228,31 @@ class LimitsComposer
             case 'MetaTagsProject':
                 return 6;
 
-            case 'MetaTagsPages':
+            case 'behavior':
                 return 7;
 
-            case 'GeneratorWords':
+            case 'MetaTagsPages':
                 return 8;
 
-            case 'PasswordGenerator':
+            case 'GeneratorWords':
                 return 9;
 
-            case 'TextLength':
+            case 'PasswordGenerator':
                 return 10;
 
-            case 'ListComparison':
+            case 'TextLength':
                 return 11;
 
-            case 'UniqueWords':
+            case 'ListComparison':
                 return 12;
 
-            case 'HtmlEditor':
+            case 'UniqueWords':
                 return 13;
 
-            case 'RemoveDublicate':
+            case 'HtmlEditor':
                 return 14;
 
-            case 'behavior':
+            case 'RemoveDublicate':
                 return 15;
 
             case 'HttpHeaders':
