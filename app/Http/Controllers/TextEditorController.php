@@ -30,14 +30,17 @@ class TextEditorController extends Controller
      */
     public function index()
     {
-        $projects = Project::where('user_id', Auth::user()->id)
-            ->get()
-            ->sortByDesc('id');
+        $projects = Project::where('user_id', Auth::id())->get()->sortByDesc('id');
         if (count($projects) === 0) {
             return self::createView(false);
         }
 
-        return view('project-and-descriptions.projects', compact('projects'));
+        return view('html-editor.projects', compact('projects'));
+    }
+
+    public function test()
+    {
+        return view('html-editor.test');
     }
 
     /**
@@ -46,25 +49,24 @@ class TextEditorController extends Controller
      */
     public function createView(bool $showButton = true)
     {
-        $user_id = Auth::id();
-        if (self::isCountProjectsMoreTwenty($user_id)) {
+        $user = Auth::user();
+        if (self::isCountProjectsMoreTwenty($user->id)) {
             flash()->overlay(__('You have created the maximum number of projects(20), you need to delete something'), ' ')
                 ->error();
             return Redirect::route('HTML.editor');
         }
-        self::getLanguage();
 
-        return view('project-and-descriptions.create-project', compact('showButton'));
+        return view('html-editor.create-project', compact('showButton'));
     }
 
     /**
-     * @param string $id
+     * @param int $id
      * @return array|false|Application|Factory|View|mixed
      */
-    public function editProjectView(string $id)
+    public function editProjectView(int $id)
     {
-        $project = Project::where('id', $id)->first();
-        return view('project-and-descriptions.edit-project', compact('project'));
+        $project = Project::findOrFail($id);
+        return view('html-editor.edit-project', compact('project'));
     }
 
     /**
@@ -86,31 +88,23 @@ class TextEditorController extends Controller
 
     /**
      * @param CreateProjectRequest $request
-     * @return RedirectResponse
+     * @return array|false|Application|Factory|RedirectResponse|View|mixed
      */
-    public function saveProject(CreateProjectRequest $request): RedirectResponse
+    public function storeProject(CreateProjectRequest $request)
     {
         if (self::isDescriptionEmpty($request->description)) {
-            flash()->overlay(__('The text cannot be empty'), ' ')
-                ->error();
+            flash()->overlay(__('The text cannot be empty'), ' ')->error();
+
             return Redirect::back();
         }
-        $project = new Project();
-        $project->project_name = $request->project_name;
-        if (empty($request->short_description)) {
-            $project->short_description = Str::limit(strip_tags($request->description), 70);
-        } else {
-            $project->short_description = $request->short_description;
-        }
-        $project->user_id = Auth::id();
-        $project->save();
-        self::saveDescription($request->description, $project->id);
+        $showButton = true;
+        ProjectDescription::storeDescriptionProject($request->description, Project::createNewProject($request));
 
-        flash()->overlay(__('Project was successfully created'), $project->project_name)
-            ->success();
+        flash()->overlay(__('Project was successfully created'), $request->project_name)->success();
 
-        return Redirect::route('create.project');
+        return view('html-editor.create-project', compact('showButton', 'request'));
     }
+
 
     /**
      * @param string $id
@@ -131,10 +125,9 @@ class TextEditorController extends Controller
      */
     public function editDescriptionView(string $id)
     {
-        $description = ProjectDescription::where('id', $id)->first();
-        self::getLanguage();
+        $project = ProjectDescription::where('id', $id)->first();
 
-        return view('project-and-descriptions.edit-description', compact('description'));
+        return view('html-editor.edit-description', compact('project'));
     }
 
     /**
@@ -186,9 +179,8 @@ class TextEditorController extends Controller
         }
 
         $projects = Project::where('user_id', $user_id)->get();
-        self::getLanguage();
 
-        return view('project-and-descriptions.create-description')->with('projects', $projects);
+        return view('html-editor.create-description')->with('projects', $projects);
     }
 
     /**
@@ -198,8 +190,7 @@ class TextEditorController extends Controller
     public function createDescription(CreateProjectDescriptionRequest $request): RedirectResponse
     {
         if (self::isDescriptionEmpty($request->description)) {
-            flash()->overlay(__('The text cannot be empty'), ' ')
-                ->error();
+            flash()->overlay(__('The text cannot be empty'), ' ')->error();
 
             return Redirect::back();
         }
@@ -248,13 +239,6 @@ class TextEditorController extends Controller
         $projectDescription->description = $description;
         $projectDescription->project_id = $id;
         $projectDescription->save();
-    }
-
-    public static function getLanguage()
-    {
-        JavaScript::put([
-            'language' => __('en-US'),
-        ]);
     }
 
     /**
