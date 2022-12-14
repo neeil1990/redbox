@@ -255,11 +255,11 @@ class LimitsComposer
             case 'RemoveDublicate':
                 return 16;
 
-            case 'PasswordGenerator':
-                return 17;
-
             case 'UTM':
                 return 18;
+
+            case 'PasswordGenerator':
+                return 17;
 
             case 'HtmlEditor':
                 return 19;
