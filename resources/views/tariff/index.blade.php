@@ -108,6 +108,7 @@
                 let target = $(this).attr('data-target')
                 $('[data-target="' + target + '"]').css({
                     'background': 'rgba(184,184,184, 0.3)',
+                    'transition': 'background-color 0s',
                     'cursor': 'pointer'
                 })
             })
@@ -116,7 +117,7 @@
                 let target = $(this).attr('data-target')
                 $('[data-target="' + target + '"]').css({
                     'background': 'white',
-                    'cursor': 'pointer'
+                    'transition': 'background-color 0.6s',
                 })
             })
         });
