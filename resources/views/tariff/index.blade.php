@@ -78,7 +78,7 @@
                                          data-target="{{ Str::limit(md5($module['name']), 10) }}">
                                         {{ $module['name'] }}:
                                         @if($module['value'] === 1000000)
-                                            <b>{{ __('No restrictions') }}</b>
+                                            <b><i class="fas fa-infinity"></i></b>
                                         @else
                                             <b>{{ $module['value'] }}</b>
                                         @endif
