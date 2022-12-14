@@ -240,19 +240,19 @@ class LimitsComposer
             case 'BacklinkLinks':
                 return 11;
 
-            case 'TextLength':
+            case 'UniqueWords':
                 return 12;
 
-            case 'RemoveDublicate':
+            case 'ListComparison':
                 return 13;
 
-            case 'PasswordGenerator':
+            case 'TextLength':
                 return 14;
 
-            case 'ListComparison':
+            case 'RemoveDublicate':
                 return 15;
 
-            case 'UniqueWords':
+            case 'PasswordGenerator':
                 return 16;
 
             case 'HtmlEditor':
