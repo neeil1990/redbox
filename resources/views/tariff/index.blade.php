@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Str; @endphp
 @extends('layouts.app')
 
 @slot('css')
@@ -74,7 +75,7 @@
                             @if($module['name'] !== 'Цена тарифа')
                                 @if($module['value'] !== 0)
                                     <div class="tariff-item pl-3 pr-3 pt-2 pb-1"
-                                         data-target="{{ \Illuminate\Support\Str::limit(md5($module['name']), 10) }}">
+                                         data-target="{{ Str::limit(md5($module['name']), 10) }}">
                                         {{ $module['name'] }}:
                                         @if($module['value'] === 1000000)
                                             <b>{{ __('No restrictions') }}</b>
@@ -83,7 +84,8 @@
                                         @endif
                                     </div>
                                 @else
-                                    <div class="border-bottom pt-2">
+                                    <div class="tariff-item pl-3 pr-3 pt-2 pb-1"
+                                         data-target="{{ Str::limit(md5($module['name']), 10) }}">
                                         {{ $module['name'] }}: <b>{{ __('Not available') }}</b>
                                     </div>
                                 @endif
