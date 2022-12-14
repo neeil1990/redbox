@@ -246,22 +246,22 @@ class LimitsComposer
             case 'ListComparison':
                 return 13;
 
-            case 'TextLength':
+            case 'HttpHeaders':
                 return 14;
 
-            case 'RemoveDublicate':
+            case 'TextLength':
                 return 15;
 
-            case 'PasswordGenerator':
+            case 'RemoveDublicate':
                 return 16;
 
-            case 'HtmlEditor':
+            case 'PasswordGenerator':
                 return 17;
 
-            case 'HttpHeaders':
+            case 'UTM':
                 return 18;
 
-            case 'UTM':
+            case 'HtmlEditor':
                 return 19;
 
             case 'ROI':
