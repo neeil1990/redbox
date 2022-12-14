@@ -256,10 +256,10 @@ class LimitsComposer
                 return 16;
 
             case 'UTM':
-                return 18;
+                return 17;
 
             case 'PasswordGenerator':
-                return 17;
+                return 18;
 
             case 'HtmlEditor':
                 return 19;
