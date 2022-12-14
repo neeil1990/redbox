@@ -238,16 +238,16 @@ class LimitsComposer
                 return 90;
 
             case 'PasswordGenerator':
-                return 91;
+                return 13;
 
             case 'TextLength':
-                return 92;
+                return 12;
 
             case 'ListComparison':
-                return 93;
+                return 9;
 
             case 'UniqueWords':
-                return 94;
+                return 10;
 
             case 'HtmlEditor':
                 return 14;
@@ -256,10 +256,10 @@ class LimitsComposer
                 return 95;
 
             case 'HttpHeaders':
-                return 96;
+                return 11;
 
             case 'UTM':
-                return 97;
+                return 15;
 
             case 'ROI':
                 return 98;
