@@ -235,34 +235,34 @@ class LimitsComposer
                 return 8;
 
             case 'GeneratorWords':
-                return 9;
+                return 90;
 
             case 'PasswordGenerator':
-                return 10;
+                return 91;
 
             case 'TextLength':
-                return 11;
+                return 92;
 
             case 'ListComparison':
-                return 12;
+                return 93;
 
             case 'UniqueWords':
-                return 13;
+                return 94;
 
             case 'HtmlEditor':
                 return 14;
 
             case 'RemoveDublicate':
-                return 15;
+                return 95;
 
             case 'HttpHeaders':
-                return 16;
+                return 96;
 
             case 'UTM':
-                return 17;
+                return 97;
 
             case 'ROI':
-                return 18;
+                return 98;
 
             case 'BacklinkProject':
                 return 19;

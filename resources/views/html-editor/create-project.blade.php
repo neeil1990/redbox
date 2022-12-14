@@ -52,10 +52,10 @@
         <script src="{{ asset('/plugins/ckeditor/ckeditor.js') }}" type="text/javascript" charset="utf-8"></script>
         <script>
             let editor = CKEDITOR.replace('description');
-            $('#cke_93').remove()
             $(document).ready(function () {
                 setTimeout(() => {
                     console.clear()
+                    $('#cke_93').remove()
                 }, 300)
             })
         </script>

@@ -77,6 +77,10 @@
                                             <b>{{ $module['value'] }}</b>
                                         @endif
                                     </div>
+                                @else
+                                    <div class="border-bottom pt-2">
+                                        {{ $module['name'] }}: <b>{{ __('Not available') }}</b>
+                                    </div>
                                 @endif
                             @endif
                         @endforeach
