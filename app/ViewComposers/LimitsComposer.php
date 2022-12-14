@@ -234,41 +234,41 @@ class LimitsComposer
             case 'behavior':
                 return 8;
 
+            case 'BacklinkProject':
+                return 10;
+
+            case 'BacklinkLinks':
+                return 11;
+
             case 'TextLength':
                 return 12;
 
             case 'RemoveDublicate':
-                return 95;
-
-            case 'PasswordGenerator':
                 return 13;
 
-            case 'ListComparison':
-                return 9;
-
-            case 'UniqueWords':
-                return 10;
-
-            case 'HtmlEditor':
+            case 'PasswordGenerator':
                 return 14;
 
-            case 'HttpHeaders':
-                return 11;
-
-            case 'UTM':
+            case 'ListComparison':
                 return 15;
 
-            case 'ROI':
-                return 98;
+            case 'UniqueWords':
+                return 16;
 
-            case 'GeneratorWords':
-                return 99;
+            case 'HtmlEditor':
+                return 17;
 
-            case 'BacklinkProject':
+            case 'HttpHeaders':
+                return 18;
+
+            case 'UTM':
                 return 19;
 
-            case 'BacklinkLinks':
+            case 'ROI':
                 return 20;
+
+            case 'GeneratorWords':
+                return 21;
 
             default:
                 return 100;
