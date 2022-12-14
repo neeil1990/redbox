@@ -1,14 +1,18 @@
 @extends('layouts.app')
 
-@section('css')
+@slot('css')
     <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
     <style>
         #app > div > div > div.col-md-12.d-flex.flex-row.flex-wrap > div:nth-child(n) > div.card-body > div:nth-child(n):hover {
             background: oldlace;
             cursor: pointer;
         }
+
+        .tariff-item:hover {
+            cursor: pointer
+        }
     </style>
-@stop
+@endslot
 
 @section('content')
     <div class="row">
@@ -61,15 +65,16 @@
 
         <div class="col-md-12 d-flex flex-row flex-wrap justify-content-between">
             @foreach ($tariffsArray as $tariff)
-                <div class="card p-0" style="width: 24%">
+                <div class="card p-0" style="width: 24.5%">
                     <div class="card-header bg-primary">
                         Тариф: {{ $tariff['name'] }}
                     </div>
-                    <div class="card-body">
+                    <div>
                         @foreach ($tariff['settings'] as $module)
                             @if($module['name'] !== 'Цена тарифа')
                                 @if($module['value'] !== 0)
-                                    <div class="border-bottom pt-2">
+                                    <div class="tariff-item pl-3 pr-3 pt-2 pb-1"
+                                         data-target="{{ \Illuminate\Support\Str::limit(md5($module['name']), 10) }}">
                                         {{ $module['name'] }}:
                                         @if($module['value'] === 1000000)
                                             <b>{{ __('No restrictions') }}</b>
@@ -95,11 +100,28 @@
 @section('js')
     <script>
         document.title = "{{ __('Tariff') }}";
+
+        $(document).ready(function () {
+            $('.tariff-item').hover(function () {
+                let target = $(this).attr('data-target')
+                $('[data-target="' + target + '"]').css({
+                    'background': 'rgba(184,184,184, 0.3)',
+                    'cursor': 'pointer'
+                })
+            })
+
+            $('.tariff-item').mouseleave(function () {
+                let target = $(this).attr('data-target')
+                $('[data-target="' + target + '"]').css({
+                    'background': 'white',
+                    'cursor': 'pointer'
+                })
+            })
+        });
     </script>
 
     <!-- Toastr -->
     <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
-
     <script>
 
         toastr.options = {
