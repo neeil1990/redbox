@@ -35,6 +35,10 @@
                 setTimeout(() => {
                     console.clear()
                     $('#cke_93').remove()
+
+                    $('a.cke_button').css({
+                        'background': 'white !important'
+                    })
                 }, 300)
             })
         </script>
