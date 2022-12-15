@@ -237,6 +237,8 @@ class Cluster
             $this->searchClustersEngineV2();
         } elseif ($this->engineVersion === 'exp') {
             $this->searchClustersEngineV3();
+        } elseif ($this->engineVersion === 'exp_phrases') {
+            $this->searchClustersEngineV4();
         } else {
             $this->searchClustersEngineV2();
             $this->brutForceClusters($this->minimum);
@@ -347,6 +349,83 @@ class Cluster
         }
     }
 
+    protected function searchClustersEngineV4()
+    {
+        $m = new Morphy();
+        $result = [];
+        $cache = [];
+
+        foreach ($this->sites as $key1 => $site) {
+            foreach ($this->sites as $key2 => $site2) {
+                $first = explode(' ', $key1);
+                $second = explode(' ', $key2);
+
+                foreach ($first as $keyF => $item) {
+                    if (mb_strlen($item) < 2) {
+                        continue;
+                    } elseif (isset($cache[$item])) {
+                        $first[$keyF] = $cache[$item];
+                    } else {
+                        $base = $m->base($item);
+                        $first[$keyF] = $base;
+                        $cache[$item] = $base;
+                    }
+                }
+
+                foreach ($second as $keyS => $item) {
+                    if (mb_strlen($item) < 2) {
+                        continue;
+                    } elseif (isset($cache[$item])) {
+                        $second[$keyS] = $cache[$item];
+                    } else {
+                        $base = $m->base($item);
+                        $second[$keyS] = $base;
+                        $cache[$item] = $base;
+                    }
+                }
+
+                $count = count(array_intersect($first, $second));
+                if ($count > 0) {
+                    $result[$key1][$key2] = $count;
+                }
+            }
+        }
+
+        $willClustered = [];
+        foreach ($result as $mainPhrase => $items) {
+            foreach ($items as $phrase => $count) {
+                if (isset($willClustered[$phrase])) {
+                    continue;
+                } else if (isset($this->clusters[$mainPhrase])) {
+                    foreach ($this->clusters[$mainPhrase] as $target => $elem) {
+                        if (count(array_intersect($this->sites[$phrase]['sites'], $elem['sites'])) >= $this->minimum) {
+                            $this->clusters[$mainPhrase][$phrase] = [
+                                'based' => $this->sites[$phrase]['based'],
+                                'phrased' => $this->sites[$phrase]['phrased'],
+                                'target' => $this->sites[$phrase]['target'],
+                                'relevance' => $this->sites[$phrase]['relevance'],
+                                'sites' => $this->sites[$phrase]['sites'],
+                                'basedNormal' => $this->sites[$phrase]['basedNormal'],
+                            ];
+                            $willClustered[$phrase] = true;
+                            break;
+                        }
+                    }
+                } else if (count(array_intersect($this->sites[$phrase]['sites'], $this->sites[$mainPhrase]['sites'])) >= $this->minimum) {
+                    $this->clusters[$mainPhrase][$phrase] = [
+                        'based' => $this->sites[$phrase]['based'],
+                        'phrased' => $this->sites[$phrase]['phrased'],
+                        'target' => $this->sites[$phrase]['target'],
+                        'relevance' => $this->sites[$phrase]['relevance'],
+                        'sites' => $this->sites[$phrase]['sites'],
+                        'basedNormal' => $this->sites[$phrase]['basedNormal'],
+                    ];
+                    $willClustered[$phrase] = true;
+                }
+            }
+        }
+    }
+
     protected function brutForceClusters($minimum, $extra = false)
     {
         $willClustered = [];
@@ -410,10 +489,6 @@ class Cluster
         }
     }
 
-    /**
-     * @param array $results
-     * @return void
-     */
     protected function setResult(array $results)
     {
         $this->result = collect($results)->sortByDesc(function ($item, $key) {
@@ -421,9 +496,6 @@ class Cluster
         })->values()->all();
     }
 
-    /**
-     * @return void
-     */
     protected function saveResult()
     {
         $this->newCluster = new ClusterResults();
