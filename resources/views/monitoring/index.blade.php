@@ -33,7 +33,12 @@
             .table td, .table th {
                 padding: 0.75rem!important;
             }
-
+            table.dataTable>thead .sorting:before, table.dataTable>thead .sorting_asc:before, table.dataTable>thead .sorting_desc:before, table.dataTable>thead .sorting_asc_disabled:before, table.dataTable>thead .sorting_desc_disabled:before {
+                right: 0.5em;
+            }
+            table.dataTable>thead .sorting:after, table.dataTable>thead .sorting_asc:after, table.dataTable>thead .sorting_desc:after, table.dataTable>thead .sorting_asc_disabled:after, table.dataTable>thead .sorting_desc_disabled:after {
+                right: 0em;
+            }
         </style>
     @endslot
 
@@ -133,9 +138,9 @@
                     [2, 'asc'],
                 ],
                 columnDefs: [
-                    { orderable: true, targets: 2 },
+                    { orderable: true, "width": "150px", targets: 2 },
                     { orderable: true, targets: 3 },
-                    { orderable: false, targets: '_all' },
+                    { orderable: false, targets: [0,1,4,12,13] },
                 ],
                 columns: [
                     {
@@ -164,46 +169,66 @@
                         defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
                     },
                     {
-                        title: 'Название проекта',
-                        data: 'name',
+                        title: 'Проект',
                         name: 'name',
+                        data: function (row){
+                            return `<a href="/monitoring/${row.id}" class="text-bold">${row.name}</a>`;
+                        },
                     },
                     {
                         title: 'Домен',
-                        data: 'url',
                         name: 'url',
+                        data: function (row){
+                            return `<a href="https://${row.url}" target="_blank" class="text-muted">${row.url} <i class="fas fa-external-link-square"></i></a>`;
+                        },
                     },
                     {
-                        title: 'Поисковики',
-                        data: 'searches'
+                        data: 'engines',
                     },
                     {
                         title: 'Слов',
-                        data: 'count'
+                        name: 'words',
+                        data: 'words',
                     },
                     {
                         title: 'Ср.Позиция',
-                        data: 'middle_position',
+                        name: 'middle',
+                        data: 'middle',
                     },
                     {
-                        title: '% в ТОП 3',
-                        data: 'top_three',
+                        title: '% ТОП 3',
+                        name: 'top3',
+                        data: function (row){
+                            return row.top3 + row.diff_top3;
+                        },
                     },
                     {
-                        title: '% в ТОП 5',
-                        data: 'top_fifth',
+                        title: '% ТОП 5',
+                        name: 'top5',
+                        data: function (row){
+                            return row.top5 + row.diff_top5;
+                        },
                     },
                     {
-                        title: '% в ТОП 10',
-                        data: 'top_ten',
+                        title: '% ТОП 10',
+                        name: 'top10',
+                        data: function (row){
+                            return row.top10 + row.diff_top10;
+                        },
                     },
                     {
-                        title: '% в ТОП 30',
-                        data: 'top_thirty',
+                        title: '% ТОП 30',
+                        name: 'top30',
+                        data: function (row){
+                            return row.top30 + row.diff_top30;
+                        },
                     },
                     {
-                        title: '% в ТОП 100',
-                        data: 'top_one_hundred',
+                        title: '% ТОП 100',
+                        name: 'top100',
+                        data: function (row){
+                            return row.top100 + row.diff_top100;
+                        },
                     },
                     {
                         width: '120px',
@@ -238,7 +263,6 @@
                 ],
                 initComplete: function () {
                     let api = this.api();
-
                     let json = api.ajax.json();
 
                     this.find('tbody').on('click', 'tr.main', function(){
@@ -301,7 +325,8 @@
                     this.closest('.card').find('.card-header .card-title').html("");
                     this.closest('.card').find('.card-header label').css('margin-bottom', 0);
 
-                    let dataTimeCache = $('<span />', {class: "data-time-cache"}).text(json.cache.date);
+                    let updatedDateText = json.updatedDate;
+                    let dataTimeCache = $('<span />', {class: "data-time-cache"}).html(updatedDateText);
                     let CacheText = `Сводные данные в таблице актуальны на дату: ${dataTimeCache[0].outerHTML} `;
                     let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
                     let updateCacheButton = $('<a />', {
@@ -311,10 +336,11 @@
 
                     updateCacheButton.click(function(){
                         let btn = $(this);
-                        axios.get('/monitoring/project/remove/cache')
+                        btn.remove();
+                        axios.get('/monitoring/project/update-data-table')
                             .then(function () {
                                 table.draw(false);
-                                btn.prev('.data-time-cache').text(moment().format("DD.MM.YYYY H:m"))
+                                $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
                             });
                         return false;
                     });

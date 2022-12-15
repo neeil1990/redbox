@@ -255,7 +255,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/get-positions-for-calendars', 'MonitoringController@getPositionsForCalendars')->name('monitoring.projects.get.positions.for.calendars');
     Route::post('/monitoring/project/set/column/settings', 'MonitoringController@setColumnSettingsForProject');
     Route::post('/monitoring/project/get/column/settings', 'MonitoringController@getColumnSettingsForProject');
-    Route::get('/monitoring/project/remove/cache', 'MonitoringController@removeCache')->name('monitoring.projects.remove.cache');
+    Route::get('/monitoring/project/update-data-table', 'MonitoringController@updateDataTableProjects');
     Route::post('/monitoring/parse/positions/project', 'MonitoringController@parsePositionsInProject');
     Route::post('/monitoring/parse/positions/all/projects', 'MonitoringController@parsePositionsAllProject');
     Route::post('/monitoring/parse/positions/project/keys', 'MonitoringController@parsePositionsInProjectKeys');
