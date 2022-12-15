@@ -258,6 +258,7 @@
                                                     'new' => __('Forming a cluster based on an array of links (new)'),
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
+                                                    'exp_phrases' => 'Фразовый перебор',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 
