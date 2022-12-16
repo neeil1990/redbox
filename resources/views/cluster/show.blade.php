@@ -644,6 +644,20 @@
                 })
 
                 saveAllUrls({{ $cluster['id'] }})
+
+                $('.copy-full-urls').unbind().on('click', function () {
+                    let target = $(this).attr('data-action')
+                    downloadSites({{ $cluster['id'] }}, target, 'copy')
+                })
+
+                $('.fa.fa-paperclip').hover(function () {
+                    let target = $(this).attr('data-action')
+                    downloadSites({{ $cluster['id'] }}, target, 'download')
+                });
+
+                $('.all-competitors').unbind().on('click', function () {
+                    downloadAllCompetitors({{ $cluster['id'] }}, $(this).attr('data-action'))
+                })
             })
         </script>
     @endslot

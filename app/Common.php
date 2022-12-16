@@ -33,4 +33,13 @@ class Common
 
         unlink($newFileName);
     }
+
+    /**
+     * @param $string
+     * @return mixed
+     */
+    public static function uncompressArray($string): array
+    {
+        return json_decode(gzuncompress(base64_decode($string)), true);
+    }
 }

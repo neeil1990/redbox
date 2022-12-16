@@ -57,7 +57,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого кластера</label>
+                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
+                        кластера</label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -164,7 +165,8 @@
 
             function saveAllUrls(id) {
                 let button = $(this)
-                $('.save-all-urls').unbind().on('click', function () {button = $(this)
+                $('.save-all-urls').unbind().on('click', function () {
+                    button = $(this)
                     $('#relevanceUrls').html('')
                     $.each($(this).attr('data-urls').split(','), function (key, value) {
                         $('#relevanceUrls').append($('<option>', {
@@ -246,7 +248,6 @@
             }
 
             function getProgressPercent(id, interval) {
-                let table
                 $.ajax({
                     type: "GET",
                     url: `/get-cluster-progress/${id}`,
@@ -291,6 +292,20 @@
                             })
 
                             saveAllUrls(response['objectId'])
+
+                            $('.copy-full-urls').unbind().on('click', function () {
+                                let target = $(this).attr('data-action')
+                                downloadSites(response['objectId'], target, 'copy')
+                            })
+
+                            $('.fa.fa-paperclip').hover(function () {
+                                let target = $(this).attr('data-action')
+                                downloadSites(response['objectId'], target, 'download')
+                            });
+
+                            $('.all-competitors').unbind().on('click', function () {
+                                downloadAllCompetitors(response['objectId'], $(this).attr('data-action'))
+                            })
                         }
                     },
                     error: function () {

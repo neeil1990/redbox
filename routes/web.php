@@ -11,6 +11,7 @@
 |
 */
 
+use App\ClusterResults;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -305,85 +306,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/fast-scan-clusters', 'ClusterController@fastScanClusters')->name('fast.scan.clusters');
     Route::post('/set-cluster-relevance-url', 'ClusterController@setClusterRelevanceUrl')->name('set.cluster.relevance.url');
     Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
-});
-
-Route::get('/test', function () {
-    $m = new \App\Morphy();
-    $result = [];
-    $cache = [];
-
-    $cluster = \App\ClusterResults::where('id', 240)->first();
-    $sites = json_decode($cluster->sites_json, true);
-    foreach ($sites as $key1 => $site) {
-        foreach ($sites as $key2 => $site2) {
-            $first = explode(' ', $key1);
-            $second = explode(' ', $key2);
-
-            foreach ($first as $keyF => $item) {
-                if (mb_strlen($item) < 2) {
-                    continue;
-                } elseif (isset($cache[$item])) {
-                    $first[$keyF] = $cache[$item];
-                } else {
-                    $base = $m->base($item);
-                    $first[$keyF] = $base;
-                    $cache[$item] = $base;
-                }
-            }
-
-            foreach ($second as $keyS => $item) {
-                if (mb_strlen($item) < 2) {
-                    continue;
-                } elseif (isset($cache[$item])) {
-                    $second[$keyS] = $cache[$item];
-                } else {
-                    $base = $m->base($item);
-                    $second[$keyS] = $base;
-                    $cache[$item] = $base;
-                }
-            }
-
-            $count = count(array_intersect($first, $second));
-            if ($count > 0) {
-                $result[$key1][$key2] = $count;
-            }
-        }
-    }
-
-    $clusters = [];
-    $willClustered = [];
-    foreach ($result as $mainPhrase => $items) {
-        foreach ($items as $phrase => $count) {
-            if (isset($willClustered[$phrase])) {
-                continue;
-            } else if (isset($clusters[$mainPhrase])) {
-                foreach ($clusters[$mainPhrase] as $target => $elem) {
-                    if (count(array_intersect($sites[$phrase]['sites'], $elem['sites'])) >= 14) {
-                        $clusters[$mainPhrase][$phrase] = [
-                            'based' => $sites[$phrase]['based'],
-                            'phrased' => $sites[$phrase]['phrased'],
-                            'target' => $sites[$phrase]['target'],
-                            'relevance' => $sites[$phrase]['relevance'],
-                            'sites' => $sites[$phrase]['sites'],
-                            'basedNormal' => $sites[$phrase]['basedNormal'],
-                        ];
-                        $willClustered[$phrase] = true;
-                        break;
-                    }
-                }
-            } else if (count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites'])) >= 14) {
-                $clusters[$mainPhrase][$phrase] = [
-                    'based' => $sites[$phrase]['based'],
-                    'phrased' => $sites[$phrase]['phrased'],
-                    'target' => $sites[$phrase]['target'],
-                    'relevance' => $sites[$phrase]['relevance'],
-                    'sites' => $sites[$phrase]['sites'],
-                    'basedNormal' => $sites[$phrase]['basedNormal'],
-                ];
-                $willClustered[$phrase] = true;
-            }
-        }
-    }
-
-    dd($clusters);
+    Route::post('/download-cluster-sites', 'ClusterController@downloadClusterSites')->name('download.cluster.sites');
+    Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
 });
