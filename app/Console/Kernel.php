@@ -6,6 +6,8 @@ use App\Classes\Cron\AutoUpdateMonitoringPositions;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
+use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -34,9 +36,6 @@ class Kernel extends ConsoleKernel
         // Delete histories > 90 days
         $schedule->call(new MetaTagsHistoriesDelete())->cron('0 0 * * *');
 
-        //test call as 6
-        //$schedule->call(new MetaTags(6))->cron('* * * * *');
-
         $schedule->call(new MetaTags(6))->cron('0 */6 * * *');
         $schedule->call(new MetaTags(12))->cron('0 */12 * * *');
         $schedule->call(new MetaTags(24))->cron('0 0 * * *');
@@ -46,6 +45,10 @@ class Kernel extends ConsoleKernel
 
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);
+
+        $schedule->call(function (){
+            (new ProjectDataTableUpdateDB(MonitoringProject::all()))->save();
+        })->hourly();
 
         // $schedule->command('inspire')
         //          ->hourly();

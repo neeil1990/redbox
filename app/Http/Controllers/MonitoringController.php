@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\CacheOfUserForPosition;
 use App\Classes\Monitoring\Helper;
-use App\Classes\Monitoring\ProjectDataTable;
+use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Position\PositionStore;
 use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
+use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
@@ -119,26 +120,28 @@ class MonitoringController extends Controller
         $page = $request->input('start', 0) + 1;
         /** @var User $user */
         $user = $this->user;
-        $projects = $user->monitoringProjects();
+
+        if(!MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get('id')->pluck('id'))->count())
+            $this->updateDataTableProjects();
+
+        $model = $user->monitoringProjectsWithDataTable();
 
         $search = $request->input('search');
         if($search = $search['value'])
-            $projects = $projects->where('name', 'like', $search . '%');
+            $model = $model->where('name', 'like', $search . '%');
 
         if($order = Arr::first($request->input('order'))){
             $columns = $request->input('columns');
-            $projects->orderBy($columns[$order['column']]['name'], $order['dir']);
+            $model->orderBy($columns[$order['column']]['name'], $order['dir']);
         }
 
-        $projects = $projects->paginate($request->input('length', 1), ['*'], 'page', $page);
+        $projects = $this->loadSearchEnginesToProjects($model->paginate($request->input('length', 1), ['*'], 'page', $page));
 
-        $cacheDataTime = Carbon::now()->format('d.m.Y H:i');
-        if($projects->total())
-            $cacheDataTime = (new CacheOfUserForPosition($projects->first()))->getLastModified() ?? $cacheDataTime;
+        $lastUpdated = $model->orderBy('m_dt.updated_at', 'desc')->first();
 
         $data = collect([
-            'data' => (new ProjectDataTable(collect($projects->items())))->handle(),
-            'cache' => collect(['date' => $cacheDataTime]),
+            'data' => collect($projects->items()),
+            'updatedDate' => ($lastUpdated && $lastUpdated->updated_at) ? $lastUpdated->updated_at->format('d.m.Y H:i') : null,
             'draw' => $request->input('draw'),
             'recordsFiltered' => $projects->total(),
             'recordsTotal' => $projects->total(),
@@ -147,13 +150,29 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    public function removeCache()
+    protected function loadSearchEnginesToProjects($projects)
+    {
+        $projects->transform(function($item){
+            $item->load(['searchengines' => function ($query) {
+                $query->groupBy('engine');
+            }]);
+
+            $item->engines = $item->searchengines->pluck('engine')->map(function ($item){
+                return '<span class="badge badge-light"><i class="fab fa-'. $item .' fa-sm"></i></span>';
+            })->implode(' ');
+
+            return $item;
+        });
+
+        return $projects;
+    }
+
+    public function updateDataTableProjects()
     {
         /** @var User $user */
         $user = $this->user;
         $projects = $user->monitoringProjects()->get();
-        foreach ($projects as $project)
-            (new CacheOfUserForPosition($project))->deleteCache();
+        (new ProjectDataTableUpdateDB($projects))->save();
 
         return response(200);
     }

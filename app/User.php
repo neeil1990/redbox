@@ -18,6 +18,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Spatie\Permission\Traits\HasRoles;
@@ -190,6 +191,27 @@ class User extends Authenticatable implements MustVerifyEmail
     public function monitoringProjects()
     {
         return $this->hasMany(MonitoringProject::class);
+    }
+
+    public function monitoringProjectsWithDataTable()
+    {
+        return $this->hasMany(MonitoringProject::class)
+            ->leftJoin(DB::raw('monitoring_data_table_columns_projects as m_dt'), 'monitoring_projects.id', '=', 'm_dt.monitoring_project_id')
+            ->select('monitoring_projects.*',
+                'm_dt.words',
+                'm_dt.middle',
+                'm_dt.top3',
+                'm_dt.diff_top3',
+                'm_dt.top5',
+                'm_dt.diff_top5',
+                'm_dt.top10',
+                'm_dt.diff_top10',
+                'm_dt.top30',
+                'm_dt.diff_top30',
+                'm_dt.top100',
+                'm_dt.diff_top100',
+                'm_dt.updated_at'
+            );
     }
 
     public function behaviors()

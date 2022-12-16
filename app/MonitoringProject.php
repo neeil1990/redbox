@@ -13,23 +13,23 @@ class MonitoringProject extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function keywords(){
-
+    public function keywords()
+    {
         return $this->hasMany(MonitoringKeyword::class);
     }
 
-    public function competitors(){
-
+    public function competitors()
+    {
         return $this->hasMany(MonitoringCompetitor::class);
     }
 
-    public function searchengines(){
-
+    public function searchengines()
+    {
         return $this->hasMany(MonitoringSearchengine::class);
     }
 
-    public function groups(){
-
+    public function groups()
+    {
         return $this->hasMany(MonitoringGroup::class);
     }
 }
