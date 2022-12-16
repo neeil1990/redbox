@@ -81,6 +81,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('profile/', 'ProfilesController@index')->name('profile.index');
     Route::post('profile/', 'ProfilesController@update')->name('profile.update');
     Route::patch('profile/', 'ProfilesController@password')->name('profile.password');
+    Route::get('profile/limits/', 'ProfilesController@limits')->name('profile.limits');
 
     Route::get('description/{description}/edit/{position?}', 'DescriptionController@edit')->name('description.edit');
     Route::patch('description/{description}', 'DescriptionController@update')->name('description.update');

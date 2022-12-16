@@ -1,18 +1,17 @@
 @extends('layouts.app')
 
-@section('css')
+@slot('css')
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.css') }}">
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-@stop
+    <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
+@endslot
 
 @section('content')
 
     <div class="row">
-        <div class="col-lg-3 col-6">
+        <div class="col-lg-3 col-4">
             <!-- small card -->
             <div class="small-box bg-info">
                 <div class="inner">
@@ -30,7 +29,7 @@
         </div>
         <!-- ./col -->
         @if($name)
-        <div class="col-lg-3 col-6">
+        <div class="col-lg-3 col-4">
             <!-- small card -->
             <div class="small-box bg-success">
                 <div class="inner">
@@ -42,6 +41,21 @@
                     <i class="ion ion-stats-bars"></i>
                 </div>
                 <a href="{{ route('tariff.index') }}" class="small-box-footer">
+                    {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+            <div class="col-lg-3 col-4">
+            <!-- small card -->
+            <div class="small-box bg-primary text-white">
+                <div class="inner">
+                    <h3>{{ __('Your limits') }}</h3>
+                    <p style="opacity: 0">1</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-bolt"></i>
+                </div>
+                <a href="{{ route('profile.limits') }}" class="small-box-footer">
                     {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
