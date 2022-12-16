@@ -465,6 +465,8 @@
     "Registration date": "Дата регистрации ",
     "Add one domain": "Добавить один домен",
     "######################## https://lk.redbox.su/text-analyse ###############################": "",
+    "Text Analysis": "Анализ текста",
+    "URL Analysis": "Анализ по URL",
     "You didn't fill in the text field": "Вы не заполнили поле с текстом",
     "The text length is at least 200 characters": "Длинна текста минимум 200 символов",
     "You didn't fill in the URL field": "Вы не заполнили поле с URL",
