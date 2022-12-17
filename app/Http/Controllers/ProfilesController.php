@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\Tariff;
 use App\User;
-use App\ViewComposers\LimitsComposer;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
@@ -206,31 +204,5 @@ class ProfilesController extends Controller
             $user->telegram_token = str_shuffle(Str::random(50) . Carbon::now());
             $user->save();
         }
-    }
-
-    public function limits()
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $tariff = $user->tariff();
-
-        $tariffLimits = [];
-        if (isset($tariff)) {
-            $tariffLimits = $tariff->getAsArray()['settings'];
-        }
-
-        $limitsStatistics = [];
-        foreach ($tariffLimits as $tariffKey => $tariffValue) {
-            $info = LimitsComposer::getUsedLimit($tariffKey, $user);
-            $limitsStatistics[$tariffKey]['used'] = $info['count'];
-            $limitsStatistics[$tariffKey]['position'] = $info['position'];
-            $limitsStatistics[$tariffKey]['name'] = $tariffValue['name'];
-            $limitsStatistics[$tariffKey]['value'] = $tariffValue['value'];
-        }
-
-        $limitsStatistics = collect($limitsStatistics)->sortBy('position')->toArray();
-
-        return view('profile.limits', compact('limitsStatistics'));
     }
 }

@@ -16,6 +16,32 @@ use Illuminate\View\View;
 
 class LimitsComposer
 {
+    public function compose(View $view)
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $tariff = $user->tariff();
+
+        $tariffLimits = [];
+        if (isset($tariff)) {
+            $tariffLimits = $tariff->getAsArray()['settings'];
+        }
+
+        $limitsStatistics = [];
+        foreach ($tariffLimits as $tariffKey => $tariffValue) {
+            $info = LimitsComposer::getUsedLimit($tariffKey, $user);
+            $limitsStatistics[$tariffKey]['used'] = $info['count'];
+            $limitsStatistics[$tariffKey]['position'] = $info['position'];
+            $limitsStatistics[$tariffKey]['name'] = $tariffValue['name'];
+            $limitsStatistics[$tariffKey]['value'] = $tariffValue['value'];
+        }
+
+        $limitsStatistics = collect($limitsStatistics)->sortBy('position')->toArray();
+
+        $view->with(compact('limitsStatistics'));
+    }
+
     /**
      * @param string $code
      * @param $user
@@ -23,26 +49,10 @@ class LimitsComposer
      */
     public static function getUsedLimit(string $code, $user): array
     {
-        $now = Carbon::now();
-        $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
-
-        $metaTagsProjects = MetaTag::where('user_id', '=', Auth::id())->get();
-
-        $metaTagsHistoriesCount = 0;
-        foreach ($metaTagsProjects as $metaTagsProject) {
-            $metaTagsHistoriesCount += $metaTagsProject->histories()->where('id', '>', 0)->count();
-        }
-
-        $projectTracking = ProjectTracking::where('user_id', '=', $user->id)->with('link')->get();
-
-        $projectTrackingLinks = 0;
-        foreach ($projectTracking as $item) {
-            $projectTrackingLinks += count($item->link);
-        }
-
         switch ($code) {
-
             case 'RelevanceAnalysis':
+                $now = Carbon::now();
+                $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
                 return [
                     'count' => (int)RelevanceHistory::where('user_id', '=', $user->id)
                         ->where('last_check', 'like', '%' . $now->year . '-' . $month . '%')
@@ -51,6 +61,7 @@ class LimitsComposer
                 ];
 
             case 'TextAnalyzer':
+                $now = Carbon::now();
                 return [
                     'count' => (int)TextAnalyzer::where('user_id', '=', $user->id)
                         ->where('month', '=', $now->year . '-' . $now->month)
@@ -59,6 +70,7 @@ class LimitsComposer
                 ];
 
             case 'CompetitorAnalysisPhrases':
+                $now = Carbon::now();
                 return [
                     'count' => (int)SearchCompetitors::where('user_id', '=', $user->id)
                         ->where('month', '=', $now->year . '-' . $now->month)
@@ -80,11 +92,17 @@ class LimitsComposer
 
             case 'MetaTagsProject':
                 return [
-                    'count' => count($metaTagsProjects->toArray()),
+                    'count' => MetaTag::where('user_id', '=', Auth::id())->count(),
                     'position' => 6,
                 ];
 
             case 'MetaTagsPages':
+                $metaTagsProjects = MetaTag::where('user_id', '=', Auth::id())->get();
+
+                $metaTagsHistoriesCount = 0;
+                foreach ($metaTagsProjects as $metaTagsProject) {
+                    $metaTagsHistoriesCount += $metaTagsProject->histories()->where('id', '>', 0)->count();
+                }
                 return [
                     'count' => $metaTagsHistoriesCount,
                     'position' => 7
@@ -146,11 +164,18 @@ class LimitsComposer
 
             case 'BacklinkProject':
                 return [
-                    'count' => count($projectTracking),
+                    'count' => ProjectTracking::where('user_id', '=', $user->id)->count(),
                     'position' => 17
                 ];
 
             case 'BacklinkLinks':
+                $projectTracking = ProjectTracking::where('user_id', '=', $user->id)->with('link')->get();
+
+                $projectTrackingLinks = 0;
+                foreach ($projectTracking as $item) {
+                    $projectTrackingLinks += count($item->link);
+                }
+
                 return [
                     'count' => $projectTrackingLinks,
                     'position' => 18
