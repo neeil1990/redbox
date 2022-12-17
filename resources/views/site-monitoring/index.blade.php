@@ -8,6 +8,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/site-monitoring/css/site-monitoring.css') }}"/>
+        <style>
+            .domainMonitoringProject {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
@@ -261,7 +266,7 @@
                             $(this).remove();
                         })
                         $('#count-projects').text($('#count-projects').text() - iterator)
-                        if($('#count-projects').text() == 0){
+                        if ($('#count-projects').text() == 0) {
                             window.location.replace('https://lk.redbox.su/add-site-monitoring');
                         }
                         $('.toast-top-right.delete-success-message').show(300)

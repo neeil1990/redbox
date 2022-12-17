@@ -5,6 +5,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/site-monitoring/css/site-monitoring.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
+        <style>
+            .domainMonitoringProject {
+                background: oldlace;
+            }
+        </style>
     @endslot
     {!! Form::open(['action' =>'DomainMonitoringController@store', 'method' => 'POST'])!!}
     <div class='col-md-6 mt-3'>

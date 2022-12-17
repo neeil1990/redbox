@@ -3,6 +3,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/summernote/summernote.css') }}"/>
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <style>
+            .HtmlEditor {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <form action="{{ route('save.edit.description') }}" method="POST" class="col-12 mb-5">
         @csrf

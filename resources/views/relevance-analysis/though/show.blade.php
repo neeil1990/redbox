@@ -48,6 +48,10 @@
             #though-table > tbody > tr > td:nth-child(10)::after {
                 content: " / {{ $countUniqueScanned }}";
             }
+
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
         </style>
     @endslot
 

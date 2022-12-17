@@ -1,4 +1,11 @@
 @component('component.card', ['title' => __('Edit a project')])
+    @slot('css')
+        <style>
+            .HtmlEditor {
+                background: oldlace;
+            }
+        </style>
+    @endslot
     <form action="{{route('save.edit.project')}}" method="POST" class="col-lg-12 col-sm-12 mb-5">
         @csrf
         <input type="hidden" name="project_id" value="{{$project->id}}">
