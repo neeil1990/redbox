@@ -1,10 +1,12 @@
 @component('component.card', ['title' => __('Remove Duplicates')])
 
-    <style>
-        .Duplicates {
-            background: oldlace;
-        }
-    </style>
+    @slot('css')
+        <style>
+            .Duplicates {
+                background: oldlace;
+            }
+        </style>
+    @endslot
 
     <remove-duplicates :names="{{ $options }}"
                        start="{{ __('remove characters at the beginning of a word') }}: +-!"
