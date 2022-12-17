@@ -6,7 +6,7 @@
     ></remove-duplicates>
 
     <script>
-        $('.Duplicates').css({
+        $('.removeDuplicates').css({
             'background': 'oldlace'
         })
     </script>
