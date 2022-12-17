@@ -1,7 +1,7 @@
 @component('component.card', ['title' => __('Remove Duplicates')])
 
     <style>
-        .RemoveDublicate {
+        .Duplicates {
             background: oldlace;
         }
     </style>
