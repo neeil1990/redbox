@@ -235,6 +235,12 @@
                                                 '0' => __('No'),
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'search_target']) !!}
                                         </div>
+
+                                        <div class="form-group required">
+                                            <label for="warning_limit">При каком количестве фраз выводить предупреждение о весе страницы?</label>
+                                            <input type="number" name="warning_limit" class="form form-control"
+                                                   value="{{ $config->warning_limit }}">
+                                        </div>
                                         <input type="submit" class="btn btn-secondary" value="{{ __('Save changes') }}">
                                     </form>
                                 </div>
