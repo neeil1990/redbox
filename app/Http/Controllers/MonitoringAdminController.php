@@ -59,7 +59,7 @@ class MonitoringAdminController extends Controller
             ['type' => 'text', 'name' => 'pagination_items', 'label' => 'Меню постраничной навигации', 'placeholder' => '10,20,30,50,100,200,500,1000'],
             ['type' => 'number', 'name' => 'pagination_project', 'label' => 'Количество элементов на странице проекты', 'placeholder' => '10'],
             ['type' => 'number', 'name' => 'pagination_query', 'label' => 'Количество элементов на странице запросы', 'placeholder' => '100'],
-            ['type' => 'number', 'name' => 'cache_time_positions', 'label' => 'Время хранения кеша проекты (секунды)', 'placeholder' => '21600'],
+            ['type' => 'time', 'name' => 'data_projects', 'label' => 'Обновление данных проекты', 'placeholder' => 'Format time 24Hr'],
         ]);
     }
 

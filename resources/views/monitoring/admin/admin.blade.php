@@ -32,12 +32,19 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <!-- InputMask -->
+        <script src="{{ asset('plugins/inputmask/jquery.inputmask.bundle.js') }}"></script>
+        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
 
         <script>
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "5000"
             };
+
+            $('.time').inputmask("hh:mm", {
+                placeholder: moment().format('H:mm'),
+            });
 
         </script>
     @endslot
