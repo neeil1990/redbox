@@ -121,7 +121,8 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        if(!MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get('id')->pluck('id'))->count())
+        $dataTable = MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get('id')->pluck('id'));
+        if(!$dataTable->count())
             $this->updateDataTableProjects();
 
         $model = $user->monitoringProjectsWithDataTable();
@@ -137,7 +138,7 @@ class MonitoringController extends Controller
 
         $projects = $this->loadSearchEnginesToProjects($model->paginate($request->input('length', 1), ['*'], 'page', $page));
 
-        $lastUpdated = $model->orderBy('m_dt.updated_at', 'desc')->first();
+        $lastUpdated = $dataTable->orderBy('updated_at', 'desc')->first();
 
         $data = collect([
             'data' => collect($projects->items()),
