@@ -9,6 +9,7 @@ use App\Classes\Cron\RelevanceCleaningResults;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
+use App\MonitoringSettings;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use DB;
@@ -41,14 +42,14 @@ class Kernel extends ConsoleKernel
         $schedule->call(new MetaTags(24))->cron('0 0 * * *');
 
         // Delete relevance histories > 30 days (see relevance_analysis_config table)
-        $schedule->call(new RelevanceCleaningResults())->dailyAt('00:00');
+        $schedule->call(new RelevanceCleaningResults())->daily();
 
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);
 
         $schedule->call(function (){
             (new ProjectDataTableUpdateDB(MonitoringProject::all()))->save();
-        })->hourly();
+        })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
 
         // $schedule->command('inspire')
         //          ->hourly();

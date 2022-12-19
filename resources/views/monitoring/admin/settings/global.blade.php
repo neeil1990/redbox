@@ -12,6 +12,8 @@
                     <div class="input-group">
                         @if($field['type'] == 'number')
                             {!! Form::number($field['name'], $settings['request'][$field['name']], ['class' => 'form-control', 'placeholder' => $field['placeholder']]) !!}
+                        @elseif($field['type'] == 'time')
+                            {!! Form::text($field['name'], $settings['request'][$field['name']], ['class' => 'form-control time', 'placeholder' => $field['placeholder']]) !!}
                         @else
                             {!! Form::text($field['name'], $settings['request'][$field['name']], ['class' => 'form-control', 'placeholder' => $field['placeholder']]) !!}
                         @endif
