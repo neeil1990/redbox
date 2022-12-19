@@ -8,6 +8,10 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
         <style>
+            #app > div > div > div.card-header {
+                display: block;
+            }
+
             .project-info {
                 padding-right: 0.5rem;
                 padding-left: 0.5rem;
@@ -78,6 +82,32 @@
         </div>
     </div>
 
+    <div id="params" style="display:none;">
+        <div class="d-flex w-100 justify-content-between" style="margin-top: 40px;">
+            <div style="cursor:pointer;" class="pl-1 pr-1">
+                {{ __('Date') }}:
+                <span class="project-info">
+                    {{ $object->last_check }}
+                </span>
+            </div>
+            <div style="cursor:pointer;" class="pl-1 pr-1">
+                {{ __('Phrase') }}:
+                <span class="project-info copyInBuffer" data-target="{{ $object->phrase }}">
+                    {{ $object->phrase }}
+                    <i class="fa fa-copy"></i>
+                </span>
+            </div>
+            <div style="cursor:pointer;" class="pl-1 pr-1">
+                {{ __('Landing page') }}:
+                <span class="project-info copyInBuffer" data-target="{{ $object->main_link }}">
+                    {{ $object->main_link }}
+                    <i class="fa fa-copy"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+
     <div class="card">
         <div class="alert alert-primary pb-3" role="alert" id="primaryAlert" style="display: none"></div>
         <div class="border-bottom d-flex p-0 justify-content-between w-100">
@@ -131,29 +161,6 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <span id="project-info" class="d-flex">
-                        <span style="cursor:pointer;" class="pl-1 pr-1">
-                            {{ __('Date') }}:
-                            <span class="project-info">
-                                {{ $object->last_check }}
-                            </span>
-                        </span>
-                        <span style="cursor:pointer;" class="pl-1 pr-1">
-                            {{ __('Phrase') }}:
-                            <span class="project-info copyInBuffer" data-target="{{ $object->phrase }}">
-                                {{ $object->phrase }}
-                                <i class="fa fa-copy"></i>
-                            </span>
-                        </span>
-                        <span style="cursor:pointer;" class="pl-1 pr-1">
-                            {{ __('Landing page') }}:
-                            <span class="project-info copyInBuffer" data-target="{{ $object->main_link }}">
-                                {{ $object->main_link }}
-                                <i class="fa fa-copy"></i>
-                            </span>
-                        </span>
-                    </span>
-
                     <div class="text-center" id="preloaderBlock">
                         <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
                         <p>{{ __("Load..") }}</p>
@@ -1019,7 +1026,8 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
             $(document).ready(function () {
-                $('#project-info').insertAfter('.card-title')
+                $('#app > div > div > div.card-header').append($('#params').html())
+                $('#params').remove()
             })
 
             $('#recButton').click(function () {

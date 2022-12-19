@@ -51,14 +51,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="saveUrlsModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="saveUrlsModalLabel"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
-                        кластера</label>
+                    <label for="relevanceUrls">{{ __('Select the url that will be saved for each phrase of this cluster') }}</label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -255,7 +254,6 @@
 
                         if ('result' in response) {
                             refreshAll()
-                            // table = renderHiddenTable(response['result'])
                             renderResultTable(response['result'])
                             destroyProgress(interval)
 
@@ -305,6 +303,12 @@
                             $('.all-competitors').unbind().on('click', function () {
                                 downloadAllCompetitors(response['objectId'], $(this).attr('data-action'))
                             })
+
+
+                            setTimeout(() => {
+                                $('#result-table').show()
+                                $('#block-for-downloads-files').show()
+                            }, 1000)
                         }
                     },
                     error: function () {

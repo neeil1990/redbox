@@ -4,34 +4,15 @@ function renderResultTable(data) {
     $.each(data, function (key, result) {
         let clusterIterator = 0
         let newTableRows = ''
-        // let clusterSites = ''
         let newRow = ''
         let clusterId = (Math.random() + 1).toString(36).substring(7)
         let minWidth = '120px'
         let allRelevanceUrls = []
 
-        // $.each(result['finallyResult']['sites'], function (site, count) {
-        //     clusterSites +=
-        //         '<div>' +
-        //         '   <a href="' + site + '">' + new URL(site)['host'] + '</a> :' + count +
-        //         '</div>'
-        // })
-
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
                 iterator++
                 clusterIterator++
-
-                // let sites = ''
-                // let fullUrls = information['sites'].join("\r")
-
-                // $.each(information['sites'], function (key, site) {
-                //     sites +=
-                //         '<div>' +
-                //         '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
-                //         '</div>'
-                // })
-
                 let phraseForm = 0
                 if ('phrased' in information) {
                     if (information['phrased'] === 0) {
@@ -216,9 +197,6 @@ function renderResultTable(data) {
                 'sDom': '<"top"i>rt<"bottom"lp><"clear">'
             })
         })
-
-        $('#result-table').show()
-        $('#block-for-downloads-files').show()
     });
 }
 
@@ -332,10 +310,3 @@ function copyInBuffer() {
     document.execCommand("copy");
     $('#hiddenForCopy').css('display', 'none')
 }
-
-// function copyFullUrls() {
-//     $('.copy-full-urls').unbind().on('click', function () {
-//         $('#hiddenForCopy').val($('#hidden-urls-block-' + $(this).attr('data-target')).html())
-//         copyInBuffer()
-//     })
-// }

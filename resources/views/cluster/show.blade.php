@@ -146,7 +146,7 @@
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
-                    <div id="params">
+                    <div id="params" style="display: none">
                         <div class="d-flex w-100 justify-content-between" style="margin-top: 40px;">
                             <div>
                                 {{ __('Number of phrases') }}: {{ $cluster['count_phrases'] }}
@@ -191,6 +191,11 @@
                                 </div>
                             @endif
                         </div>
+                    </div>
+
+                    <div id="loader-block" class="text-center">
+                        <img src="/img/1485.gif" alt="preloader_gif">
+                        <p>{{ __('Load..') }}</p>
                     </div>
                 </div>
 
@@ -469,6 +474,9 @@
                 }, 3000)
             }
 
+            $('#app > div > div > div.card-header').append($('#params').html())
+            $('#params').remove()
+
             $(function () {
                 $("#scroll_button").click(function () {
                     $("html, body").animate({scrollTop: $('#clusters-table-default').offset().top}, {duration: 600,});
@@ -545,8 +553,6 @@
             }
 
             $(document).ready(function () {
-                $('#app > div > div > div.card-header').append($('#params').html())
-                $('#params').remove()
                 renderResultTable({!! $cluster['result'] !!})
 
                 $('#default-hidden').dataTable({
@@ -563,7 +569,7 @@
 
                 $('#copyUsedPhrases').click(function () {
                     let object = $('#usedPhrases')
-                    if ($('#usedPhrases').html() === '') {
+                    if (object.html() === '') {
                         $.ajax({
                             type: "POST",
                             url: "/download-cluster-phrases",
@@ -699,6 +705,12 @@
                         });
                     }
                 })
+
+                setTimeout(() => {
+                    $('#loader-block').hide(300)
+                    $('#result-table').show()
+                    $('#block-for-downloads-files').show()
+                }, 1000)
             })
         </script>
     @endslot
