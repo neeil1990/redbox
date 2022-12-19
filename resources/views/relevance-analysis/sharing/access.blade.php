@@ -12,6 +12,10 @@
                 opacity: 1 !important;
                 transition: .3s;
             }
+
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
         </style>
     @endslot
 

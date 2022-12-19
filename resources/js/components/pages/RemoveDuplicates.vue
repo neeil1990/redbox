@@ -1,5 +1,4 @@
 <template>
-
     <form @submit.prevent="CalculateDuplicates">
         <div class="form-group">
             <textarea type="text" class="form-control" rows="10" v-model="text"></textarea>

@@ -59,6 +59,10 @@
             #scanned-sites {
                 width: 100% !important;
             }
+
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
         </style>
     @endslot
 

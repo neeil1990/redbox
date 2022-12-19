@@ -4,33 +4,33 @@ function renderResultTable(data) {
     $.each(data, function (key, result) {
         let clusterIterator = 0
         let newTableRows = ''
-        let clusterSites = ''
+        // let clusterSites = ''
         let newRow = ''
         let clusterId = (Math.random() + 1).toString(36).substring(7)
         let minWidth = '120px'
         let allRelevanceUrls = []
 
-        $.each(result['finallyResult']['sites'], function (site, count) {
-            clusterSites +=
-                '<div>' +
-                '   <a href="' + site + '">' + new URL(site)['host'] + '</a> :' + count +
-                '</div>'
-        })
+        // $.each(result['finallyResult']['sites'], function (site, count) {
+        //     clusterSites +=
+        //         '<div>' +
+        //         '   <a href="' + site + '">' + new URL(site)['host'] + '</a> :' + count +
+        //         '</div>'
+        // })
 
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
                 iterator++
                 clusterIterator++
 
-                let sites = ''
-                let fullUrls = information['sites'].join("\r")
+                // let sites = ''
+                // let fullUrls = information['sites'].join("\r")
 
-                $.each(information['sites'], function (key, site) {
-                    sites +=
-                        '<div>' +
-                        '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
-                        '</div>'
-                })
+                // $.each(information['sites'], function (key, site) {
+                //     sites +=
+                //         '<div>' +
+                //         '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                //         '</div>'
+                // })
 
                 let phraseForm = 0
                 if ('phrased' in information) {
@@ -115,12 +115,11 @@ function renderResultTable(data) {
                     '       <div class="d-flex justify-content-between"> ' +
                     '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                     '          <div class="ml-1">' +
-                    '             <i class="fa fa-copy copy-full-urls" data-target="' + iterator + '"></i>' +
-                    '             <div style="display: none" id="hidden-urls-block-' + iterator + '">' + fullUrls + '</div>' +
+                    '             <i class="fa fa-copy copy-full-urls" data-action="' + string + '"></i>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
-                    '                 <i class="fa fa-paperclip"></i>' +
+                    '                 <i class="fa fa-paperclip" data-action="' + string + '"></i>' +
                     '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
-                    '                     <span class="ui_tooltip_content">' + sites + '</span>' +
+                    '                     <span class="ui_tooltip_content" data-action="' + string + '"> </span>' +
                     '                 </span>' +
                     '             </span>' +
                     merge +
@@ -183,7 +182,7 @@ function renderResultTable(data) {
             '       </div>' +
             '        <div class="row" style="cursor: pointer">' +
             '            <div class="col-6"> ' +
-            '                <a class="btn btn-secondary" data-toggle="collapse"' +
+            '                <a class="btn btn-secondary all-competitors" data-action="' + key + '" data-toggle="collapse"' +
             '                   href="#competitors' + key + '" role="button" aria-expanded="false"' +
             '                   aria-controls="competitors' + key + '">' +
             '                   Конкуренты' +
@@ -195,7 +194,7 @@ function renderResultTable(data) {
             '               </button>' +
             '           </div>' +
             '       </div>' +
-            '       <div class="collapse" id="competitors' + key + '">' + clusterSites + '</div>' +
+            '       <div class="collapse" id="competitors' + key + '"> </div>' +
             '   </td>' +
             '</tr>'
 
@@ -208,7 +207,6 @@ function renderResultTable(data) {
     copyCluster()
 
     copyGroup()
-    copyFullUrls()
     $(document).ready(function () {
         $.each($('.render-table'), function (key, value) {
             $('#' + $(this).attr('id')).dataTable({
@@ -222,7 +220,6 @@ function renderResultTable(data) {
         $('#result-table').show()
         $('#block-for-downloads-files').show()
     });
-
 }
 
 function copyCluster() {
@@ -336,13 +333,9 @@ function copyInBuffer() {
     $('#hiddenForCopy').css('display', 'none')
 }
 
-function copyFullUrls() {
-    $('.copy-full-urls').unbind().on('click', function () {
-        $('#hiddenForCopy').val($('#hidden-urls-block-' + $(this).attr('data-target')).html())
-        copyInBuffer()
-    })
-}
-
-if (new URL(window.location.href)['search'] !== '' && localStorage.getItem('_user_metrics_redbox') !== new URL(window.location.href)['search']) {
-    localStorage.setItem('_user_metrics_redbox', new URL(window.location.href)['search'])
-}
+// function copyFullUrls() {
+//     $('.copy-full-urls').unbind().on('click', function () {
+//         $('#hiddenForCopy').val($('#hidden-urls-block-' + $(this).attr('data-target')).html())
+//         copyInBuffer()
+//     })
+// }

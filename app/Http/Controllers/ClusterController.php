@@ -23,10 +23,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ClusterController extends Controller
 {
-    /**
-     * @param $result
-     * @return View
-     */
+
     public function index($result = null): View
     {
         $admin = User::isUserAdmin();
@@ -34,11 +31,6 @@ class ClusterController extends Controller
         return view('cluster.index', ['admin' => $admin, 'results' => $result, 'config' => ClusterConfiguration::first()]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws ValidationException
-     */
     public function analyseCluster(Request $request): JsonResponse
     {
         $this->validate($request, [
@@ -64,9 +56,6 @@ class ClusterController extends Controller
         ]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     public function startProgress(): JsonResponse
     {
         return response()->json([
@@ -74,10 +63,6 @@ class ClusterController extends Controller
         ], 201);
     }
 
-    /**
-     * @param string $id
-     * @return JsonResponse
-     */
     public function getProgress(string $id): JsonResponse
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
@@ -96,10 +81,6 @@ class ClusterController extends Controller
         ]);
     }
 
-    /**
-     * @param int $id
-     * @return JsonResponse
-     */
     public function getProgressModify(int $id): JsonResponse
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
@@ -118,10 +99,6 @@ class ClusterController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function fastScanClusters(Request $request): JsonResponse
     {
         $user = Auth::user();
@@ -140,9 +117,6 @@ class ClusterController extends Controller
         ]);
     }
 
-    /**
-     * @return View
-     */
     public function clusterProjects(): View
     {
         $admin = User::isUserAdmin();
@@ -161,10 +135,6 @@ class ClusterController extends Controller
         return view('cluster.projects', ['projects' => $projects, 'admin' => $admin, 'config' => ClusterConfiguration::first()]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function edit(Request $request): JsonResponse
     {
         ClusterResults::where('id', $request->id)
@@ -173,10 +143,6 @@ class ClusterController extends Controller
         return response()->json([]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function getClusterRequest(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->id)->first();
@@ -193,10 +159,6 @@ class ClusterController extends Controller
         ]);
     }
 
-    /**
-     * @param ClusterResults $cluster
-     * @return View
-     */
     public function showResult(ClusterResults $cluster): View
     {
         if ($cluster->user_id !== Auth::id() && !User::isUserAdmin() || $cluster->show === 0) {
@@ -211,10 +173,6 @@ class ClusterController extends Controller
     }
 
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function setClusterRelevanceUrl(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))
@@ -243,10 +201,6 @@ class ClusterController extends Controller
         return response()->json(['success' => false], 415);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function setClusterRelevanceUrls(Request $request): JsonResponse
     {
         Log::debug('arr', $request->input('phrases'));
@@ -276,11 +230,6 @@ class ClusterController extends Controller
         return response()->json(['success' => false], 415);
     }
 
-    /**
-     * @param ClusterResults $cluster
-     * @param string $type
-     * @return void|null
-     */
     public function downloadClusterResult(ClusterResults $cluster, string $type)
     {
         if ($cluster->user_id !== Auth::id() || !($type === 'xls' || $type === 'csv')) {
@@ -298,9 +247,6 @@ class ClusterController extends Controller
         Common::fileExport($file, $type, $fileName);
     }
 
-    /**
-     * @return View
-     */
     public function clusterConfiguration(): View
     {
         if (!User::isUserAdmin()) {
@@ -312,10 +258,6 @@ class ClusterController extends Controller
         return view('cluster.config', ['config' => $config, 'admin' => User::isUserAdmin()]);
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function changeClusterConfiguration(Request $request): RedirectResponse
     {
         if (!User::isUserAdmin()) {
@@ -327,6 +269,33 @@ class ClusterController extends Controller
 
 
         return Redirect::route('cluster.configuration');
+    }
+
+    public function downloadClusterSites(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('result');
+        $results = Common::uncompressArray($cluster->result);
+
+        foreach ($results as $result) {
+            if (key_exists($request->phrase, $result)) {
+                return response()->json([
+                    'sites' => $result[$request->phrase]['sites']
+                ]);
+            }
+        }
+
+        return response()->json([], 404);
+    }
+
+    public function downloadClusterCompetitors(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('result');
+        $results = Common::uncompressArray($cluster->result);
+        arsort($results[$request->key]['finallyResult']['sites']);
+
+        return response()->json([
+            'competitors' => $results[$request->key]['finallyResult']['sites']
+        ]);
     }
 
 }

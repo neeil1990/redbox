@@ -37,6 +37,10 @@
                 content: "{{ __(' Exclude from ignored domains') }}";
                 font-weight: normal;
             }
+
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">

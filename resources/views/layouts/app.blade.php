@@ -113,7 +113,6 @@
         let visible = true;
         let token = $('meta[name="csrf-token"]').attr('content');
         getCountNewNews()
-        getProjects()
 
         $('#show-and-hide').click(() => {
             if (visible) {
@@ -134,71 +133,6 @@
                 })
             }
         })
-
-        function getProjects() {
-            $.ajax({
-                type: "post",
-                dataType: "json",
-                url: "{{ route('get.description.projects') }}",
-                data: {
-                    _token: token
-                },
-                success: function (response) {
-                    response.forEach((el) => {
-                        var item = '';
-                        if (el.link === 'https://lk.redbox.su/') {
-                            item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
-                                "<a class='nav-link search-link' href=" + el.link + ">" + el.icon +
-                                "<p class='ml-2'>" + el.title + "</p> " +
-                                "</a></li>"
-                        } else {
-                            item = "<li class='nav-item menu-item' data-id='" + el.id + "'> " +
-                                "<a href=" + el.link + " target='_blank' class='nav-link search-link'> " +
-                                el.icon +
-                                "<p class='ml-2'>" + el.title + "</p> " +
-                                "</a></li>"
-                        }
-
-                        if (window.location.href === el.link) {
-                            item = $(item).addClass('menu-open');
-                        }
-
-                        $(".nav.nav-pills.nav-sidebar.flex-column").append(item);
-                    })
-
-                    // $(function () {
-                    //     $(".nav.nav-pills.nav-sidebar.flex-column").sortable();
-                    //     $(".nav.nav-pills.nav-sidebar.flex-column").mouseup(function () {
-                    //         setTimeout(() => {
-                    //             let array = [];
-                    //             $.each($('.nav-item.menu-item'), function (key, value) {
-                    //                 if ($(this).attr('data-id') !== null) {
-                    //                     array.push($(this).attr('data-id'))
-                    //                 }
-                    //             })
-                    //
-                    //             $.ajax({
-                    //                 type: "POST",
-                    //                 dataType: "json",
-                    //                 url: "/menu-item-sortable",
-                    //                 data: {
-                    //                     '_token': token,
-                    //                     'positions': array,
-                    //                 },
-                    //                 success: function (response) {
-                    //                     if (response.code === 200) {
-                    //                         console.log(response.code)
-                    //                     } else if (response.code === 415) {
-                    //                         console.log(response.code)
-                    //                     }
-                    //                 },
-                    //             });
-                    //         }, 300)
-                    //     });
-                    // });
-                },
-            });
-        }
 
         function getCountNewNews() {
             $.ajax({

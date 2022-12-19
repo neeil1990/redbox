@@ -34,3 +34,66 @@ $('#save').on('change', function () {
         $('#extra-block').hide()
     }
 })
+
+function downloadSites(id, target, type) {
+    if (type === 'download' && $("span[data-action='" + target + "']").html() !== ' ') {
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/download-cluster-sites",
+        dataType: 'json',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            phrase: target,
+            projectId: id,
+        },
+        success: function (response) {
+            if (type === 'download') {
+                let sitesBlock = ''
+                $.each(response['sites'], function (key, site) {
+                    sitesBlock +=
+                        '<div>' +
+                        '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                        '</div>'
+                })
+                $("span[data-action='" + target + "']").html('')
+                $("span[data-action='" + target + "']").append(sitesBlock)
+            } else {
+                $('#hiddenForCopy').val(response['sites'].join("\r"))
+                copyInBuffer()
+            }
+        },
+        error: function (response) {
+        }
+    });
+}
+
+function downloadAllCompetitors(id, key) {
+    if ($('#competitors' + key).html() === ' ') {
+        $.ajax({
+            type: "POST",
+            url: "/download-cluster-competitors",
+            dataType: 'json',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                key: key,
+                projectId: id,
+            },
+            success: function (response) {
+                let resultBlock = ''
+                $.each(response['competitors'], function (site, count) {
+                    resultBlock +=
+                        '<div>' +
+                        '   <a href="' + site + '">' + new URL(site)['host'] + '</a> :' + count +
+                        '</div>'
+                })
+                $('#competitors' + key).html('')
+                $('#competitors' + key).html(resultBlock)
+            },
+            error: function (response) {
+            }
+        });
+    }
+}

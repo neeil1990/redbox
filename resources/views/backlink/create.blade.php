@@ -5,6 +5,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
+        <style>
+            .BacklinkProject, .BacklinkLinks {
+                background: oldlace;
+            }
+        </style>
     @endslot
     {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST', 'class' => 'express-form'])!!}
     <div class='col-md-6 mt-3'>

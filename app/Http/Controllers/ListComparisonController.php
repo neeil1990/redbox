@@ -22,7 +22,7 @@ class ListComparisonController extends Controller
      */
     public function index(): View
     {
-        return view('comparison.comparison');
+        return view('comparison.index');
     }
 
     /**

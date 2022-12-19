@@ -15,8 +15,8 @@
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <button class="btn btn-secondary" id="set-text" type="button">Анилиз текста</button>
-    <button class="btn btn-outline-secondary" id="set-url" type="button">Анализ по URL</button>
+    <button class="btn btn-secondary" id="set-text" type="button">{{ __('Text Analysis') }}</button>
+    <button class="btn btn-outline-secondary" id="set-url" type="button">{{ __('URL Analysis') }}</button>
 
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
 

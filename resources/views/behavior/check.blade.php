@@ -1,5 +1,11 @@
 @extends('layouts.auth')
-
+@slot('css')
+    <style>
+        .behavior {
+            background: oldlace;
+        }
+    </style>
+@endslot
 @section('content')
 
     <div class="login-box">
@@ -26,7 +32,9 @@
                     <div class="form-group">
                         <label>{{ __('Enter the site visit code') }}</label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" placeholder="{{ __('Promo code') }}" autocomplete="email" autofocus>
+                            <input type="text" class="form-control @error('code') is-invalid @enderror" name="code"
+                                   value="{{ old('code') }}" placeholder="{{ __('Promo code') }}" autocomplete="email"
+                                   autofocus>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-key"></span>

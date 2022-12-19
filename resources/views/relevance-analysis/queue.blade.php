@@ -7,6 +7,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <style>
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">
         <div class="toast toast-success" aria-live="polite">

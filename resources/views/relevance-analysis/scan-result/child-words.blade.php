@@ -15,6 +15,10 @@
             #unigram > tbody > tr > td:nth-child(11) {
                 background: #ebf0f5;
             }
+
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">

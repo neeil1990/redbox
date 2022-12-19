@@ -3,6 +3,11 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <style>
+            .BacklinkProject, .BacklinkLinks {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <a href="{{ route('add.backlink.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add link tracking') }}

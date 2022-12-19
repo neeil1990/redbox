@@ -23,6 +23,10 @@
             .fixed-width {
                 max-width: 50px !important;
             }
+
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
         </style>
     @endslot
 

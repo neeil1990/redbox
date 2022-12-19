@@ -10,6 +10,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css') }}"/>
+        <style>
+            .RelevanceAnalysis {
+                background: oldlace;
+            }
+        </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message" style="display:none;">

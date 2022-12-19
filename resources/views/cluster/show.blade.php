@@ -489,10 +489,10 @@
             });
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/common.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -644,6 +644,20 @@
                 })
 
                 saveAllUrls({{ $cluster['id'] }})
+
+                $('.copy-full-urls').unbind().on('click', function () {
+                    let target = $(this).attr('data-action')
+                    downloadSites({{ $cluster['id'] }}, target, 'copy')
+                })
+
+                $('.fa.fa-paperclip').hover(function () {
+                    let target = $(this).attr('data-action')
+                    downloadSites({{ $cluster['id'] }}, target, 'download')
+                });
+
+                $('.all-competitors').unbind().on('click', function () {
+                    downloadAllCompetitors({{ $cluster['id'] }}, $(this).attr('data-action'))
+                })
             })
         </script>
     @endslot

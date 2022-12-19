@@ -4,6 +4,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/list-comparison/css/style.css') }}"/>
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <style>
+            .HtmlEditor {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <form action="{{ route('store.project') }}" method="POST" class="col-lg-12 col-sm-12 mb-5" id="summernote-form">
         @csrf

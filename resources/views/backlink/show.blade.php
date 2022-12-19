@@ -4,6 +4,11 @@
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
+        <style>
+            .BacklinkProject, .BacklinkLinks {
+                background: oldlace;
+            }
+        </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message">

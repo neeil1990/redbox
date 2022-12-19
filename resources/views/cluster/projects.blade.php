@@ -153,7 +153,7 @@
     </div>
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/common.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
         <script>
             var progressId
             var interval

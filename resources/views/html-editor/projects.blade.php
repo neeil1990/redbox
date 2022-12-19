@@ -11,6 +11,10 @@
                 color: #4b545c;
                 cursor: pointer !important;
             }
+
+            .HtmlEditor {
+                background: oldlace;
+            }
         </style>
     @endslot
     <div class="d-flex mt-3 mb-3">

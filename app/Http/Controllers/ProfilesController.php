@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\Tariff;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
