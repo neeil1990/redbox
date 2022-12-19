@@ -27,6 +27,7 @@ class MenuComposer
                 ];
         }
 
+        $modules = collect($modules)->sortBy('title')->toArray();
         $view->with(compact('modules'));
     }
 
