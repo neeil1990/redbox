@@ -137,7 +137,7 @@ class MonitoringController extends Controller
 
         $projects = $this->loadSearchEnginesToProjects($model->paginate($request->input('length', 1), ['*'], 'page', $page));
 
-        dd($model->get());
+        $lastUpdated = $model->orderBy('m_dt.updated_at', 'desc')->first();
 
         $data = collect([
             'data' => collect($projects->items()),
