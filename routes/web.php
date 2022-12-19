@@ -37,9 +37,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('test', 'TestController@index')->name('test');
 
     Route::get('/', 'HomeController@index')->name('home');
-    Route::post('/project-sortable', 'HomeController@projectSort');
-    Route::post('/menu-item-sortable', 'HomeController@menuItemSort')->name('menu.item.sort');
-    Route::post('/get-description-projects', 'HomeController@getDescriptionProjects')->name('get.description.projects');
 
     Route::resource('main-projects', 'DescriptionProjectForAdminController');
 

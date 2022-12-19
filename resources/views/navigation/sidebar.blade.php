@@ -21,10 +21,15 @@
             </div>
         </div>
     </div>
-    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false"
-        style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px">
-        {{-- Cписок пунктов меню подргружается при помощи скрипта app.blade.php -> js -> getProjects() --}}
-        {{-- Добавить пункт меню и вывод сервиса на главную можно тут /main-projects --}}
+    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false" style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px">
+        @foreach($modules as $module)
+            <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
+                <a class="nav-link search-link" href="{{ $module['link'] }}">
+                    {!! $module['icon'] !!}
+                    <span class="ml-2"> {{ $module['title'] }}</span>
+                </a>
+            </li>
+        @endforeach
         {{-- Контроллер с CRUD DescriptionProjectForAdminController--}}
     </ul>
 </nav>
