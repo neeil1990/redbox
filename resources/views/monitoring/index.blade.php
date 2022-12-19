@@ -264,6 +264,7 @@
                 initComplete: function () {
                     let api = this.api();
                     let json = api.ajax.json();
+                    let loading = $('#projects_processing');
 
                     this.find('tbody').on('click', 'tr.main', function(){
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
@@ -290,7 +291,6 @@
                         } else {
                             // Open this row
                             let data = row.data();
-                            let loading = $('#projects_processing');
 
                             loading.css('display', 'block');
                             axios.get(`/monitoring/${data.id}/child-rows/get`).then(function(response){
@@ -335,10 +335,11 @@
                     }).html(updateCacheIcon);
 
                     updateCacheButton.click(function(){
-                        let btn = $(this);
-                        btn.remove();
+                        $(this).hide();
+                        loading.css('display', 'block');
                         axios.get('/monitoring/project/update-data-table')
                             .then(function () {
+                                loading.css('display', 'none');
                                 table.draw(false);
                                 $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
                             });
