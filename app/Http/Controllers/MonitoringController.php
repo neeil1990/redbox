@@ -139,7 +139,7 @@ class MonitoringController extends Controller
 
         $lastUpdated = $model->orderBy('m_dt.updated_at', 'desc')->first();
 
-        dd($model->orderBy('m_dt.updated_at', 'desc')->get());
+        dd($model->get());
 
         $data = collect([
             'data' => collect($projects->items()),
