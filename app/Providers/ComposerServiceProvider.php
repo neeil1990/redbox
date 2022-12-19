@@ -29,5 +29,6 @@ class ComposerServiceProvider extends ServiceProvider
         view()->composer('navigation.menu-right', '\App\ViewComposers\UserPanelComposer');
         view()->composer('navigation.menu-right', '\App\ViewComposers\LimitsComposer');
         view()->composer('navigation.sidebar', '\App\ViewComposers\MenuComposer');
+        view()->composer('navigation.menu', '\App\ViewComposers\CountUnreadNewsComposer');
     }
 }

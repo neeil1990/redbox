@@ -106,13 +106,11 @@
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-{{--<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>--}}
 
 <script>
     $(document).ready(function () {
         let visible = true;
         let token = $('meta[name="csrf-token"]').attr('content');
-        getCountNewNews()
 
         $('#show-and-hide').click(() => {
             if (visible) {
