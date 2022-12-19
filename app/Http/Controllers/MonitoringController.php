@@ -139,6 +139,8 @@ class MonitoringController extends Controller
 
         $lastUpdated = $model->orderBy('m_dt.updated_at', 'desc')->first();
 
+        dd($lastUpdated);
+
         $data = collect([
             'data' => collect($projects->items()),
             'updatedDate' => ($lastUpdated && $lastUpdated->updated_at) ? $lastUpdated->updated_at->format('d.m.Y H:i') : null,
