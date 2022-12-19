@@ -100,8 +100,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">Выбирите url который будет сохранён для каждой фразы этого
-                        кластера</label>
+                    <label for="relevanceUrls">
+                        {{ __('Select the url that will be saved for each phrase of this cluster') }}
+                    </label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -155,19 +156,16 @@
                             </div>
                             <div>
                                 {{ __('Phrases') }}:
-                                <span class="__helper-link ui_tooltip_w">
+                                <span class="__helper-link ui_tooltip_w" id="show-all-phrases">
                                     <i class="fa fa-paperclip"></i>
                                     <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 450px !important;">
-                                            @foreach(explode("\n", $cluster['request']['phrases']) as $phrase)
-                                                <div>{{ $phrase }}</div>
-                                            @endforeach
-                                        </span>
+                                        <span class="ui_tooltip_content" style="width: 450px !important;"
+                                              id="all-phrases"></span>
                                     </span>
                                 </span>
                                 <i class="fa fa-copy" id="copyUsedPhrases"></i>
                                 <textarea name="usedPhrases" id="usedPhrases"
-                                          style="display: none">{!! $cluster['request']['phrases'] !!}</textarea>
+                                          style="display: none"></textarea>
                             </div>
                             <div>
                                 {{ __('Region') }}: {{ Cluster::getRegionName($cluster['request']['region']) }}
@@ -564,13 +562,39 @@
                 $('#default-hidden_filter').remove()
 
                 $('#copyUsedPhrases').click(function () {
-                    successCopiedMessage()
-                    $('#usedPhrases').css('display', 'block')
+                    let object = $('#usedPhrases')
+                    if ($('#usedPhrases').html() === '') {
+                        $.ajax({
+                            type: "POST",
+                            url: "/download-cluster-phrases",
+                            dataType: 'json',
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                projectId: {{ $cluster['id'] }},
+                            },
+                            success: function (response) {
+                                let phrases = response.phrases
+                                object.html(' ')
+                                object.html(phrases.join("\n"))
+                                object.css('display', 'block')
+                                let text = document.getElementById("usedPhrases");
+                                text.select();
+                                document.execCommand("copy");
+                                object.css('display', 'none')
+                                successCopiedMessage()
+                            },
+                            error: function (response) {
+                            }
+                        });
+                    } else {
+                        object.css('display', 'block')
+                        let text = document.getElementById("usedPhrases");
+                        text.select();
+                        document.execCommand("copy");
+                        object.css('display', 'none')
+                        successCopiedMessage()
+                    }
 
-                    let text = document.getElementById("usedPhrases");
-                    text.select();
-                    document.execCommand("copy");
-                    $('#usedPhrases').css('display', 'none')
                 })
 
                 let oldValue = 1
@@ -621,8 +645,6 @@
                 $('.save-relevance-url').unbind().on('click', function () {
                     let phrase = $(this).attr('data-order')
                     let select = $('#' + phrase.replaceAll(' ', '-'))
-                    // let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
-                    // let targetColumn = 4
 
                     $.ajax({
                         type: "POST",
@@ -635,8 +657,6 @@
                         },
                         success: function () {
                             select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                            // hiddenTable.cell(targetRow, targetColumn).data(select.val())
-                            // hiddenTable.draw()
                         },
                         error: function (response) {
                         }
@@ -657,6 +677,27 @@
 
                 $('.all-competitors').unbind().on('click', function () {
                     downloadAllCompetitors({{ $cluster['id'] }}, $(this).attr('data-action'))
+                })
+
+                $("#show-all-phrases").unbind().hover(function () {
+                    if ($('#all-phrases').html() === '') {
+                        $.ajax({
+                            type: "POST",
+                            url: "/download-cluster-phrases",
+                            dataType: 'json',
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                projectId: {{ $cluster['id'] }},
+                            },
+                            success: function (response) {
+                                let phrases = response.phrases
+                                $('#all-phrases').html(' ')
+                                $('#all-phrases').html(phrases.join("<br>"))
+                            },
+                            error: function (response) {
+                            }
+                        });
+                    }
                 })
             })
         </script>

@@ -11,6 +11,7 @@
 |
 */
 
+use App\ClusterResults;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -304,4 +305,5 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/set-cluster-relevance-urls', 'ClusterController@setClusterRelevanceUrls')->name('set.cluster.relevance.urls');
     Route::post('/download-cluster-sites', 'ClusterController@downloadClusterSites')->name('download.cluster.sites');
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
+    Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
 });

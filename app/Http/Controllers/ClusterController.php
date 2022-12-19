@@ -298,4 +298,13 @@ class ClusterController extends Controller
         ]);
     }
 
+    public function downloadClusterPhrases(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('request');
+        $phrases = json_decode($cluster->request, true)['phrases'];
+
+        return response()->json([
+            'phrases' => explode("\n", $phrases)
+        ]);
+    }
 }
