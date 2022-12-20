@@ -17,6 +17,9 @@ class AreaChartData
 
     public function __construct(array $labels)
     {
+        if(is_array($labels))
+            $labels = collect($labels)->values();
+
         $this->labels = $labels;
     }
 
