@@ -233,7 +233,7 @@ class Cluster
     public function searchClusters()
     {
         Log::debug($this->engineVersion);
-        Log::debug($this->brutForce && $this->mode === 'professional');
+        Log::debug((int)$this->brutForce && $this->mode === 'professional');
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1();
         } else if ($this->engineVersion === 'new') {
