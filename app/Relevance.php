@@ -1,13 +1,8 @@
 <?php
 
-namespace App\Models\Relevance;
+namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use App\LinguaStem;
-use App\Morphy;
-use App\TelegramBot;
-use App\TextAnalyzer;
-use App\UsersJobs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;

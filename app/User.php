@@ -4,7 +4,6 @@ namespace App;
 
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\Mail\VerifyEmail;
-use App\Models\Relevance\ProjectRelevanceHistory;
 use App\Notifications\BrokenDomainNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\DomainInformationNotification;

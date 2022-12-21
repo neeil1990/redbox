@@ -17,10 +17,10 @@ class AddColumnCountChecksInProjectRelevanceHistoryTable extends Migration
             $table->integer('count_checks')->default(0);
         });
 
-        $projects = \App\Models\Relevance\ProjectRelevanceHistory::all();
+        $projects = App\ProjectRelevanceHistory::all();
 
         foreach ($projects as $project) {
-            $project->count_checks = \App\Models\Relevance\RelevanceHistory::where('project_relevance_history_id', '=', $project->id)
+            $project->count_checks = App\RelevanceHistory::where('project_relevance_history_id', '=', $project->id)
                 ->count();
 
             $project->save();

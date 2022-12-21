@@ -3,8 +3,8 @@
 
 namespace App\Classes\Cron;
 
-use App\Models\Relevance\RelevanceAnalysisConfig;
-use App\Models\Relevance\RelevanceHistoryResult;
+use App\RelevanceAnalysisConfig;
+use App\RelevanceHistoryResult;
 use Carbon\Carbon;
 
 

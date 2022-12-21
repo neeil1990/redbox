@@ -3,7 +3,7 @@
 namespace App\Jobs\Cluster;
 
 use App\Classes\Xml\RiverFacade;
-use App\Models\Cluster\Cluster;
+use App\Cluster;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,7 +36,7 @@ class ClusterQueue implements ShouldQueue
 
     public function handle()
     {
-        $clusterArrays = new \App\Models\Cluster\ClusterQueue();
+        $clusterArrays = new \App\ClusterQueue();
         $river = new RiverFacade($this->cluster->getRegion());
 
         $this->cluster->getXml()->setQuery($this->phrase);

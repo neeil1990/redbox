@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Relevance\ProjectRelevanceHistory;
+use App\ProjectRelevanceHistory;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 

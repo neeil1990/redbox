@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\RelevanceThoughAnalysisQueue;
-use App\Models\Relevance\ProjectRelevanceThough;
+use App\ProjectRelevanceThough;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

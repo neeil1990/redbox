@@ -17,7 +17,7 @@ class AddColumnInRelevanceHistoryTable2 extends Migration
             $table->boolean('state')->default(0);
         });
 
-        $stories = \App\Models\Relevance\RelevanceHistory::all();
+        $stories = App\RelevanceHistory::all();
         foreach ($stories as $story) {
             $story->state = 1;
             $story->save();

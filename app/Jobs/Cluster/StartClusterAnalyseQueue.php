@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Cluster;
 
-use App\Models\Cluster\Cluster;
+use App\Cluster;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

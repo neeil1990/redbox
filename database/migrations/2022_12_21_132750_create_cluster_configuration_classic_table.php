@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Cluster\ClusterConfigurationClassic;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\ClusterConfigurationClassic;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateClusterConfigurationClassicTable extends Migration
 {

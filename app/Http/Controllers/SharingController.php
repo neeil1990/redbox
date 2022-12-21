@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Relevance\ProjectRelevanceHistory;
-use App\Models\Relevance\RelevanceAnalysisConfig;
-use App\Models\Relevance\RelevanceSharing;
+use App\ProjectRelevanceHistory;
+use App\RelevanceAnalysisConfig;
+use App\RelevanceSharing;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

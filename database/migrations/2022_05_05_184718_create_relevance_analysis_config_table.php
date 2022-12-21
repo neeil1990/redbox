@@ -32,7 +32,7 @@ class CreateRelevanceAnalysisConfigTable extends Migration
             $table->integer('boostPercent')->nullable();
         });
 
-        $config = new \App\Models\Relevance\RelevanceAnalysisConfig([
+        $config = new App\RelevanceAnalysisConfig([
             'count_sites' => 10,
             'region' => 1,
             'separator' => 3,

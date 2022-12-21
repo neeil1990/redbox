@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Relevance;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;

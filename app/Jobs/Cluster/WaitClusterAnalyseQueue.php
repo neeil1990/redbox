@@ -2,8 +2,8 @@
 
 namespace App\Jobs\Cluster;
 
-use App\Models\Cluster\Cluster;
-use App\Models\Cluster\ClusterResults;
+use App\Cluster;
+use App\ClusterResults;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

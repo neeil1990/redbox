@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Cluster;
+use App\ClusterConfiguration;
+use App\ClusterConfigurationClassic;
+use App\ClusterQueue;
+use App\ClusterResults;
 use App\Common;
 use App\Exports\ClusterResultExport;
 use App\Jobs\Cluster\StartClusterAnalyseQueue;
-use App\Models\Cluster\Cluster;
-use App\Models\Cluster\ClusterConfiguration;
-use App\Models\Cluster\ClusterConfigurationClassic;
-use App\Models\Cluster\ClusterQueue;
-use App\Models\Cluster\ClusterResults;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;

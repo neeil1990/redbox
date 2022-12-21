@@ -3,8 +3,6 @@
 namespace App;
 
 use App\Jobs\RelevanceAnalysisQueue;
-use App\Models\Relevance\ProjectRelevanceHistory;
-use App\Models\Relevance\RelevanceHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;

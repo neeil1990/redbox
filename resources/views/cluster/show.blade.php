@@ -1,4 +1,4 @@
-@php use App\Models\Cluster\Cluster;use Illuminate\Support\Str; @endphp
+@php use App\Cluster;use Illuminate\Support\Str; @endphp
 @component('component.card', ['title' =>  __('Analysis results') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"

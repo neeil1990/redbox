@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Relevance\Relevance;
-use App\Models\Relevance\RelevanceHistory;
+use App\Relevance;
+use App\RelevanceHistory;
 use App\TelegramBot;
 use App\UsersJobs;
 use Illuminate\Bus\Queueable;
