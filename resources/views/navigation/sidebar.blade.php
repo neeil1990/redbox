@@ -26,7 +26,7 @@
             <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
                 <a class="nav-link search-link" href="{{ $module['link'] }}">
                     {!! $module['icon'] !!}
-                    <span class="ml-2"> {{ $module['title'] }}</span>
+                    <span class="ml-2 module-name"> {{ $module['title'] }}</span>
                 </a>
             </li>
         @endforeach

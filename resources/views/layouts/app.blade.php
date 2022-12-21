@@ -29,6 +29,10 @@
             text-align: center !important;
             width: 1rem !important;
         }
+
+        .main-sidebar.sidebar-dark-primary.elevation-4:hover .module-name {
+            opacity: 1 !important;
+        }
     </style>
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 </head>
@@ -110,8 +114,6 @@
 <script>
     $(document).ready(function () {
         let visible = true;
-        let token = $('meta[name="csrf-token"]').attr('content');
-
         $('#show-and-hide').click(() => {
             if (visible) {
                 visible = false;
@@ -121,6 +123,10 @@
                 $('.brand-link').css({
                     'display': "none"
                 })
+
+                $('.module-name').css({
+                    'opacity': 0
+                })
             } else {
                 visible = true;
                 $('div.info').css({
@@ -129,23 +135,12 @@
                 $('.brand-link').css({
                     'display': "block"
                 })
+
+                $('.module-name').css({
+                    'opacity': 1
+                })
             }
         })
-
-        function getCountNewNews() {
-            $.ajax({
-                type: "post",
-                dataType: "json",
-                url: "{{ route('get.count.new.news') }}",
-                data: {
-                    _token: token
-                },
-                success: function (response) {
-                    $('.badge.badge-warning.navbar-badge.news').text(response.count)
-                },
-            });
-
-        }
 
         $(".x-drop-down__value").click(function (event) {
             toggleMenu();
