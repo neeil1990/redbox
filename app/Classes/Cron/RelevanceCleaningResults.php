@@ -3,10 +3,9 @@
 
 namespace App\Classes\Cron;
 
-use App\RelevanceAnalysisConfig;
-use App\RelevanceHistoryResult;
+use App\Models\Relevance\RelevanceAnalysisConfig;
+use App\Models\Relevance\RelevanceHistoryResult;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 
 class RelevanceCleaningResults

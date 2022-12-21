@@ -1,13 +1,22 @@
 <?php
 
-namespace App;
+namespace App\Models\Relevance;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use App\Http\Controllers\TextLengthController;
+use App\LinguaStem;
+use App\Morphy;
+use App\TelegramBot;
+use App\TextAnalyzer;
+use App\UsersJobs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use function App\array_key_first;
+use function App\iconv;
+use function App\mb_detect_encoding;
+use function App\mb_strlen;
+use function App\mb_substr_count;
 
 class Relevance
 {

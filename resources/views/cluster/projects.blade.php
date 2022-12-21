@@ -124,7 +124,7 @@
                                            href="/download-cluster-result/{{$project->id}}/xls"
                                            target="_blank">{{ __('Download xls') }}</a>
                                         @if($project->count_phrases >= $config->warning_limit)
-                                            <span class="text-info">{{ __('A page can weigh a lot,') }}<br> {{ __('and work slowly') }}</span>
+                                            <span class="text-info">{{ __('A page can weigh a lot') }}<br> {{ __('and work slowly') }}</span>
                                         @endif
                                     </div>
                                 </td>

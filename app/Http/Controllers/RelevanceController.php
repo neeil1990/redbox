@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Relevance\Relevance;
+use App\Models\Relevance\RelevanceAnalyseResults;
+use App\Models\Relevance\RelevanceAnalysisConfig;
+use App\Models\Relevance\RelevanceHistory;
+use App\Models\Relevance\RelevanceProgress;
 use App\Queue;
-use App\Relevance;
-use App\RelevanceAnalyseResults;
-use App\RelevanceAnalysisConfig;
-use App\RelevanceHistory;
-use App\RelevanceProgress;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

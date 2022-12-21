@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs;
+use App\Models\Relevance\ProjectRelevanceHistory;
+use App\Models\Relevance\RelevanceAllUniqueDomains;
+use App\Models\Relevance\RelevanceAllUniquePages;
+use App\Models\Relevance\RelevanceAnalysisConfig;
+use App\Models\Relevance\RelevanceHistory;
+use App\Models\Relevance\RelevanceStatistics;
+use App\Models\Relevance\RelevanceUniqueDomains;
+use App\Models\Relevance\RelevanceUniquePages;
 use App\PolicyTermsDocs;
-use App\ProjectRelevanceHistory;
-use App\RelevanceAllUniqueDomains;
-use App\RelevanceAllUniquePages;
-use App\RelevanceAnalysisConfig;
-use App\RelevanceHistory;
-use App\RelevanceStatistics;
-use App\RelevanceUniqueDomains;
-use App\RelevanceUniquePages;
 use App\UsersJobs;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 

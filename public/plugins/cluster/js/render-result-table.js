@@ -8,6 +8,7 @@ function renderResultTable(data) {
         let clusterId = (Math.random() + 1).toString(36).substring(7)
         let minWidth = '120px'
         let allRelevanceUrls = []
+        let groupWidth
 
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
@@ -39,7 +40,15 @@ function renderResultTable(data) {
                         baseForm = information['based']['number']
                     }
                 }
-                let groupName = 'groupName' in result['finallyResult'] ? result['finallyResult']['groupName'] : ' '
+
+                let groupName
+                if ('groupName' in result['finallyResult']) {
+                    groupName = result['finallyResult']['groupName'];
+                    groupWidth = '250px'
+                } else {
+                    groupName = ' ';
+                    groupWidth = '50px';
+                }
 
                 let merge = ''
                 if ('merge' in information) {
@@ -129,7 +138,7 @@ function renderResultTable(data) {
             '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
-            '               <th style="border-top-width: 2px;min-width: 250px;">Группа</th>' +
+            '               <th style="border-top-width: 2px;min-width: ' + groupWidth + '">Группа</th>' +
             '               <th style="border-top-width: 2px;min-width: ' + minWidth + '">' +
             '                   Релевантные url' +
             '               </th>' +

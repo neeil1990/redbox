@@ -57,7 +57,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">{{ __('Select the url that will be saved for each phrase of this cluster') }}</label>
+                    <label
+                        for="relevanceUrls">{{ __('Select the url that will be saved for each phrase of this cluster') }}</label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -158,6 +159,10 @@
             let interval
 
             $(document).ready(function () {
+                $('#engineVersion').val('{{ $config_classic->engine_version }}')
+                $('#count').val({{ $config_classic->count }})
+                $('#clusteringLevel').val('{{ $config_classic->clustering_level }}')
+
                 isSearchRelevance();
             })
 
@@ -357,17 +362,39 @@
                 setProgressBarStyles(0)
             }
 
+            let classicEngine = $('#engineVersion').val()
+            let classicCount = $('#count').val()
+            let classicLevel = $('#clusteringLevel').val()
+
+            let proEngine = '{{ $config->engine_version }}'
+            let proCount = '{{ $config->count }}'
+            let proLevel = '{{ $config->clustering_level }}'
+
             $('#classicMode').on('click', function () {
-                $('#engineVersion').val('latest')
                 $('#start-analyse').attr('data-target', 'classic')
-                $('.pro').hide(300)
+                $('.pro').hide()
+
+                proEngine = $('#engineVersion').val()
+                proCount = $('#count').val()
+                proLevel = $('#clusteringLevel').val()
+
+                $('#engineVersion').val(classicEngine)
+                $('#count').val(classicCount)
+                $('#clusteringLevel').val(classicLevel)
+
                 $('#classicMode').attr('class', 'btn btn-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-outline-secondary')
             })
 
+
             $('#ProfessionalMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'professional')
-                $('.pro').show(300)
+                $('.pro').show()
+
+                $('#engineVersion').val(proEngine)
+                $('#count').val(proCount)
+                $('#clusteringLevel').val(proLevel)
+
                 $('#classicMode').attr('class', 'btn btn-outline-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-secondary')
             })
@@ -378,9 +405,9 @@
 
             function isSearchRelevance() {
                 if ($('#searchRelevance').is(':checked')) {
-                    $('#searchEngineBlock').show(300)
+                    $('#searchEngineBlock').show()
                 } else {
-                    $('#searchEngineBlock').hide(300)
+                    $('#searchEngineBlock').hide()
                 }
             }
         </script>

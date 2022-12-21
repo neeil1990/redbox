@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models\Relevance;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;

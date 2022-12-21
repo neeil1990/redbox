@@ -2,15 +2,14 @@
 
 namespace App\Jobs\Cluster;
 
-use App\Cluster;
-use App\ClusterResults;
+use App\Models\Cluster\Cluster;
+use App\Models\Cluster\ClusterResults;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class WaitClusterAnalyseQueue implements ShouldQueue
 {

@@ -1,10 +1,13 @@
 <?php
 
-namespace App;
+namespace App\Models\Cluster;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use App\Models;
+use App\Morphy;
+use App\TelegramBot;
 
 class Cluster
 {
@@ -131,7 +134,7 @@ class Cluster
 
     public function getProgressCurrentCount(): int
     {
-        return \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->count();
+        return Models\Cluster\ClusterQueue::where('progress_id', '=', $this->getProgressId())->count();
     }
 
     public function getClusters(): array
@@ -195,7 +198,7 @@ class Cluster
 
     public function calculate()
     {
-        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
+        $results = Models\Cluster\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
         $res = [];
         foreach ($results as $result) {
             $res = array_merge_recursive($res, json_decode($result->json, true));
@@ -217,7 +220,7 @@ class Cluster
             $this->sendNotification();
         }
 
-        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
+        Models\Cluster\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
     }
 
     /**

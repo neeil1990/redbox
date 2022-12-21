@@ -3,12 +3,12 @@
 namespace App\Jobs\Cluster;
 
 use App\Classes\Xml\RiverFacade;
-use App\Cluster;
+use App\Models\Cluster\Cluster;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
 class ClusterQueue implements ShouldQueue
@@ -36,7 +36,7 @@ class ClusterQueue implements ShouldQueue
 
     public function handle()
     {
-        $clusterArrays = new \App\ClusterQueue();
+        $clusterArrays = new \App\Models\Cluster\ClusterQueue();
         $river = new RiverFacade($this->cluster->getRegion());
 
         $this->cluster->getXml()->setQuery($this->phrase);

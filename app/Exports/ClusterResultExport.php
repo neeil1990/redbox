@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\ClusterResults;
+use App\Models\Cluster\ClusterResults;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 

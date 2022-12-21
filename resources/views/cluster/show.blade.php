@@ -1,4 +1,4 @@
-@php use App\Cluster;use Illuminate\Support\Str; @endphp
+@php use App\Models\Cluster\Cluster;use Illuminate\Support\Str; @endphp
 @component('component.card', ['title' =>  __('Analysis results') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
@@ -248,10 +248,10 @@
                                         <div class="form-group required">
                                             <label>{{ __('clustering level') }}</label>
                                             {!! Form::select('clusteringLevel', [
-                                                'light' => 'light - 40%',
-                                                'soft' => 'soft - 50%',
-                                                'pre-hard' => 'pre-hard - 60%',
-                                                'hard' => 'hard - 70%',
+                                                'light' => 'light',
+                                                'soft' => 'soft',
+                                                'pre-hard' => 'pre-hard',
+                                                'hard' => 'hard',
                                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
                                         </div>
                                         <div class="form-group required">

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\RelevanceProgress;
+use App\Models\Relevance\RelevanceProgress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

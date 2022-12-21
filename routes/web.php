@@ -11,7 +11,6 @@
 |
 */
 
-use App\ClusterResults;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {

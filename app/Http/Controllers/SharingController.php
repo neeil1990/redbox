@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\ProjectRelevanceHistory;
-use App\RelevanceAnalysisConfig;
-use App\RelevanceSharing;
+use App\Models\Relevance\ProjectRelevanceHistory;
+use App\Models\Relevance\RelevanceAnalysisConfig;
+use App\Models\Relevance\RelevanceSharing;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class SharingController extends Controller

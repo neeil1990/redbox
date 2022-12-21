@@ -107,11 +107,12 @@
     <div class="form-group required">
         <label>{{ __('Merging Clusters') }}</label>
         {!! Form::select('engine_version', [
-                $config->engine_version => $config->engine_version,
-                'old' => __('Formation based on the first available phrase (old)'),
-                'new' => __('Forming a cluster based on an array of links (new)'),
-                'latest' => 'Дополнительная переборка (latest)',
-                'exp' => 'эксперимент',
+            $config->engine_version => $config->engine_version,
+            'old' => __('Formation based on the first available phrase (old)'),
+            'new' => __('Forming a cluster based on an array of links (new)'),
+            'latest' => __('Additional bulkhead (latest)'),
+            'exp' => 'эксперимент',
+            'exp_phrases' => 'Фразовый перебор',
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
     </div>
 
@@ -119,10 +120,10 @@
         <label>{{ __('clustering level') }}</label>
         {!! Form::select('clustering_level', [
             $config->clustering_level => $config->clustering_level,
-            'light' => 'light - 40%',
-            'soft' => 'soft - 50%',
-            'pre-hard' => 'pre-hard - 60%',
-            'hard' => 'hard - 70%',
+            'light' => 'light',
+            'soft' => 'soft',
+            'pre-hard' => 'pre-hard',
+            'hard' => 'hard',
             ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
     </div>
     <div class="form-group required">

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddColumnCountChecksInProjectRelevanceHistoryTable extends Migration
 {
@@ -17,10 +17,10 @@ class AddColumnCountChecksInProjectRelevanceHistoryTable extends Migration
             $table->integer('count_checks')->default(0);
         });
 
-        $projects = \App\ProjectRelevanceHistory::all();
+        $projects = \App\Models\Relevance\ProjectRelevanceHistory::all();
 
         foreach ($projects as $project) {
-            $project->count_checks = \App\RelevanceHistory::where('project_relevance_history_id', '=', $project->id)
+            $project->count_checks = \App\Models\Relevance\RelevanceHistory::where('project_relevance_history_id', '=', $project->id)
                 ->count();
 
             $project->save();
