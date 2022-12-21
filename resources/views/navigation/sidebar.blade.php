@@ -26,8 +26,7 @@
         @foreach($modules as $module)
             <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
                 <a class="nav-link search-link" href="{{ $module['link'] }}" style="white-space: inherit !important;">
-                    {!! $module['icon'] !!}
-                    <span class="ml-1 module-name">{{ $module['title'] }}</span>
+                    <span class="ml-1 module-name">{!! $module['icon'] !!} {{ $module['title'] }}</span>
                 </a>
             </li>
         @endforeach
