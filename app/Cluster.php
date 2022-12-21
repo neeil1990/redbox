@@ -398,7 +398,8 @@ class Cluster
                     continue;
                 } else if (isset($this->clusters[$mainPhrase])) {
                     foreach ($this->clusters[$mainPhrase] as $target => $elem) {
-                        if (count(array_intersect($this->sites[$phrase]['sites'], $elem['sites'])) >= $this->minimum) {
+                        $count = count(array_intersect($this->sites[$phrase]['sites'], $elem['sites']));
+                        if ($count >= $this->minimum) {
                             $this->clusters[$mainPhrase][$phrase] = [
                                 'based' => $this->sites[$phrase]['based'],
                                 'phrased' => $this->sites[$phrase]['phrased'],
@@ -406,6 +407,7 @@ class Cluster
                                 'relevance' => $this->sites[$phrase]['relevance'],
                                 'sites' => $this->sites[$phrase]['sites'],
                                 'basedNormal' => $this->sites[$phrase]['basedNormal'],
+                                'merge' => [$target => $count]
                             ];
                             $willClustered[$phrase] = true;
                             break;
@@ -419,6 +421,7 @@ class Cluster
                         'relevance' => $this->sites[$phrase]['relevance'],
                         'sites' => $this->sites[$phrase]['sites'],
                         'basedNormal' => $this->sites[$phrase]['basedNormal'],
+                        'merge' => [$mainPhrase => count(array_intersect($this->sites[$phrase]['sites'], $this->sites[$mainPhrase]['sites']))]
                     ];
                     $willClustered[$phrase] = true;
                 }
