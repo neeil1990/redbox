@@ -308,7 +308,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
 });
 
-Route::get('/test/{id}', function ($id) {
+Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $cluster = \App\ClusterResults::findOrFail($id);
     $sites = json_decode($cluster->sites_json, true);
     $m = new Morphy();
@@ -362,7 +362,7 @@ Route::get('/test/{id}', function ($id) {
                 continue;
             } else if (isset($clusters[$mainPhrase])) {
                 foreach ($clusters[$mainPhrase] as $target => $elem) {
-                    if (count(array_intersect($sites[$phrase]['sites'], $elem['sites'])) >= 30) {
+                    if (count(array_intersect($sites[$phrase]['sites'], $elem['sites'])) >= $minimum) {
                         $clusters[$mainPhrase][$phrase] = [
                             'based' => $sites[$phrase]['based'],
                             'phrased' => $sites[$phrase]['phrased'],
@@ -375,7 +375,7 @@ Route::get('/test/{id}', function ($id) {
                         break;
                     }
                 }
-            } else if (count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites'])) >= 30) {
+            } else if (count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites'])) >= $minimum) {
                 $clusters[$mainPhrase][$phrase] = [
                     'based' => $sites[$phrase]['based'],
                     'phrased' => $sites[$phrase]['phrased'],
