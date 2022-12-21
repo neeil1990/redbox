@@ -113,35 +113,6 @@
 
 <script>
     $(document).ready(function () {
-        let visible = true;
-        $('#show-and-hide').click(() => {
-            if (visible) {
-                visible = false;
-                $('div.info').css({
-                    'margin-top': '10px'
-                })
-                $('.brand-link').css({
-                    'display': "none"
-                })
-
-                $('.module-name').css({
-                    'display': 'none'
-                })
-            } else {
-                visible = true;
-                $('div.info').css({
-                    'margin-top': '0'
-                })
-                $('.brand-link').css({
-                    'display': "block"
-                })
-
-                $('.module-name').css({
-                    'display': 'inline'
-                })
-            }
-        })
-
         $(".x-drop-down__value").click(function (event) {
             toggleMenu();
             event.stopPropagation();

@@ -26,10 +26,41 @@
         @foreach($modules as $module)
             <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
                 <a class="nav-link search-link" href="{{ $module['link'] }}" style="white-space: inherit !important;">
-                    <span class="ml-1 module-name">{!! $module['icon'] !!} {{ $module['title'] }}</span>
+                    <span class="ml-2">{!! $module['icon'] !!} <span
+                            class="module-name">{{ $module['title'] }}</span></span>
                 </a>
             </li>
         @endforeach
         {{-- Контроллер с CRUD DescriptionProjectForAdminController--}}
     </ul>
 </nav>
+<script>
+    let visible = true;
+    $('#show-and-hide').click(() => {
+        if (visible) {
+            visible = false;
+            $('div.info').css({
+                'margin-top': '10px'
+            })
+            $('.brand-link').css({
+                'display': "none"
+            })
+
+            $('.module-name').css({
+                'display': 'none'
+            })
+        } else {
+            visible = true;
+            $('div.info').css({
+                'margin-top': '0'
+            })
+            $('.brand-link').css({
+                'display': "block"
+            })
+
+            $('.module-name').css({
+                'display': 'inline'
+            })
+        }
+    })
+</script>
