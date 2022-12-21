@@ -197,16 +197,16 @@ function renderResultTable(data) {
     copyCluster()
 
     copyGroup()
-    // $(document).ready(function () {
-    //     $.each($('.render-table'), function (key, value) {
-    //         $('#' + $(this).attr('id')).dataTable({
-    //             'order': [[0, "asc"]],
-    //             'bPaginate': false,
-    //             'orderCellsTop': true,
-    //             'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-    //         })
-    //     })
-    // });
+    $(document).ready(function () {
+        $.each($('.render-table'), function (key, value) {
+            $('#' + $(this).attr('id')).dataTable({
+                'order': [[0, "asc"]],
+                'bPaginate': false,
+                'orderCellsTop': true,
+                'sDom': '<"top"i>rt<"bottom"lp><"clear">'
+            })
+        })
+    });
 }
 
 function copyCluster() {

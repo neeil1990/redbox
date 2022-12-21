@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -231,6 +232,8 @@ class Cluster
 
     public function searchClusters()
     {
+        Log::debug($this->engineVersion);
+        Log::debug($this->brutForce && $this->mode === 'professional');
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1();
         } else if ($this->engineVersion === 'new') {
