@@ -15,7 +15,6 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
-use function PHPSTORM_META\map;
 
 class RegisterController extends Controller
 {

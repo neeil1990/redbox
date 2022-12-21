@@ -5,9 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use App\Models;
-use function App\Models\Cluster\array_key_first;
-use function App\Models\Cluster\mb_strlen;
 
 class Cluster
 {
