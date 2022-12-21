@@ -11,6 +11,7 @@
 |
 */
 
+use App\Morphy;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -305,4 +306,88 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-sites', 'ClusterController@downloadClusterSites')->name('download.cluster.sites');
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
+});
+
+Route::get('/test/{id}', function ($id) {
+    $cluster = \App\ClusterResults::findOrFail($id);
+    $sites = json_decode($cluster->sites_json, true);
+    $m = new Morphy();
+    $result = [];
+    $cache = [];
+
+    dump($sites);
+    foreach ($sites as $key1 => $site) {
+        foreach ($sites as $key2 => $site2) {
+            $first = explode(' ', $key1);
+            $second = explode(' ', $key2);
+
+            foreach ($first as $keyF => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } elseif (isset($cache[$item])) {
+                    $first[$keyF] = $cache[$item];
+                } else {
+                    $base = $m->base($item);
+                    $first[$keyF] = $base;
+                    $cache[$item] = $base;
+                }
+            }
+
+            foreach ($second as $keyS => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } elseif (isset($cache[$item])) {
+                    $second[$keyS] = $cache[$item];
+                } else {
+                    $base = $m->base($item);
+                    $second[$keyS] = $base;
+                    $cache[$item] = $base;
+                }
+            }
+
+            $count = count(array_intersect($first, $second));
+            if ($count > 0) {
+                $result[$key1][$key2] = $count;
+            }
+        }
+    }
+
+    dump($result);
+
+    $willClustered = [];
+    $clusters = [];
+    foreach ($result as $mainPhrase => $items) {
+        foreach ($items as $phrase => $count) {
+            if (isset($willClustered[$phrase])) {
+                continue;
+            } else if (isset($clusters[$mainPhrase])) {
+                foreach ($clusters[$mainPhrase] as $target => $elem) {
+                    if (count(array_intersect($sites[$phrase]['sites'], $elem['sites'])) >= 30) {
+                        $clusters[$mainPhrase][$phrase] = [
+                            'based' => $sites[$phrase]['based'],
+                            'phrased' => $sites[$phrase]['phrased'],
+                            'target' => $sites[$phrase]['target'],
+                            'relevance' => $sites[$phrase]['relevance'],
+                            'sites' => $sites[$phrase]['sites'],
+                            'basedNormal' => $sites[$phrase]['basedNormal'],
+                        ];
+                        $willClustered[$phrase] = true;
+                        break;
+                    }
+                }
+            } else if (count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites'])) >= 30) {
+                $clusters[$mainPhrase][$phrase] = [
+                    'based' => $sites[$phrase]['based'],
+                    'phrased' => $sites[$phrase]['phrased'],
+                    'target' => $sites[$phrase]['target'],
+                    'relevance' => $sites[$phrase]['relevance'],
+                    'sites' => $sites[$phrase]['sites'],
+                    'basedNormal' => $sites[$phrase]['basedNormal'],
+                ];
+                $willClustered[$phrase] = true;
+            }
+        }
+    }
+
+    dd($clusters);
 });
