@@ -31,7 +31,7 @@
         }
 
         .main-sidebar.sidebar-dark-primary.elevation-4:hover .module-name {
-            opacity: 1 !important;
+            display: inline !important;
         }
     </style>
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
@@ -125,7 +125,7 @@
                 })
 
                 $('.module-name').css({
-                    'opacity': 0
+                    'display': 'none'
                 })
             } else {
                 visible = true;
@@ -137,7 +137,7 @@
                 })
 
                 $('.module-name').css({
-                    'opacity': 1
+                    'display': 'inline'
                 })
             }
         })
