@@ -242,12 +242,12 @@ class Cluster
             $this->searchClustersEngineV4();
         } else {
             $this->searchClustersEngineV2();
-            $this->brutForceClusters($this->minimum);
         }
+        $this->brutForceClusters($this->minimum);
 
         if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
-            while ($percent > $this->reductionRatio || $percent === $this->reductionRatio) {
+            while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForceClusters($this->count * $percent, true);
             }
