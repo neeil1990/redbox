@@ -315,12 +315,13 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $result = [];
     $cache = [];
 
-    dump($sites);
     foreach ($sites as $key1 => $site) {
+        $first = explode(' ', $key1);
+        if (count($first) === 1) {
+            continue;
+        }
         foreach ($sites as $key2 => $site2) {
-            $first = explode(' ', $key1);
             $second = explode(' ', $key2);
-
             foreach ($first as $keyF => $item) {
                 if (mb_strlen($item) < 2) {
                     continue;
@@ -352,8 +353,6 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
         }
     }
 
-    dump($result);
-
     $willClustered = [];
     $clusters = [];
     foreach ($result as $mainPhrase => $items) {
@@ -364,12 +363,9 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
                 foreach ($clusters[$mainPhrase] as $target => $elem) {
                     if (count(array_intersect($sites[$phrase]['sites'], $elem['sites'])) >= $minimum) {
                         $clusters[$mainPhrase][$phrase] = [
-                            'based' => $sites[$phrase]['based'],
-                            'phrased' => $sites[$phrase]['phrased'],
-                            'target' => $sites[$phrase]['target'],
-                            'relevance' => $sites[$phrase]['relevance'],
                             'sites' => $sites[$phrase]['sites'],
                             'basedNormal' => $sites[$phrase]['basedNormal'],
+                            'merge' => [count(array_intersect($sites[$phrase]['sites'], $elem['sites']))]
                         ];
                         $willClustered[$phrase] = true;
                         break;
@@ -377,12 +373,9 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
                 }
             } else if (count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites'])) >= $minimum) {
                 $clusters[$mainPhrase][$phrase] = [
-                    'based' => $sites[$phrase]['based'],
-                    'phrased' => $sites[$phrase]['phrased'],
-                    'target' => $sites[$phrase]['target'],
-                    'relevance' => $sites[$phrase]['relevance'],
                     'sites' => $sites[$phrase]['sites'],
                     'basedNormal' => $sites[$phrase]['basedNormal'],
+                    'merge' => [count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites']))]
                 ];
                 $willClustered[$phrase] = true;
             }

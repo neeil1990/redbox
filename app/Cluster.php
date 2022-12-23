@@ -234,15 +234,14 @@ class Cluster
     {
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1();
-        } else if ($this->engineVersion === 'new') {
+        } else if ($this->engineVersion === 'latest') {
             $this->searchClustersEngineV2();
         } elseif ($this->engineVersion === 'exp') {
             $this->searchClustersEngineV3();
         } elseif ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
-        } else {
-            $this->searchClustersEngineV2();
         }
+
         $this->brutForceClusters($this->minimum);
 
         if ($this->brutForce && $this->mode === 'professional') {
@@ -357,8 +356,11 @@ class Cluster
         $cache = [];
 
         foreach ($this->sites as $key1 => $site) {
+            $first = explode(' ', $key1);
+            if (count($first) === 1) {
+                continue;
+            }
             foreach ($this->sites as $key2 => $site2) {
-                $first = explode(' ', $key1);
                 $second = explode(' ', $key2);
 
                 foreach ($first as $keyF => $item) {

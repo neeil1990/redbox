@@ -109,7 +109,6 @@
         {!! Form::select('engine_version', [
             $config->engine_version => $config->engine_version,
             'old' => __('Formation based on the first available phrase (old)'),
-            'new' => __('Forming a cluster based on an array of links (new)'),
             'latest' => __('Additional bulkhead (latest)'),
             'exp' => 'эксперимент',
             'exp_phrases' => 'Фразовый перебор',
