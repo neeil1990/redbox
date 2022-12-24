@@ -243,8 +243,7 @@ class Cluster
         } elseif ($this->engineVersion === 'maximum') {
             $this->searchClustersEngineV5();
         }
-
-//        $this->brutForceClusters($this->minimum);
+        $this->brutForceClusters($this->minimum);
 
         if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
