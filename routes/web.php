@@ -311,76 +311,26 @@ Route::middleware(['verified'])->group(function () {
 Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $cluster = \App\ClusterResults::findOrFail($id);
     $sites = json_decode($cluster->sites_json, true);
-    $m = new Morphy();
-    $result = [];
-    $cache = [];
-
-    foreach ($sites as $key1 => $site) {
-        $first = explode(' ', $key1);
-        if (count($first) === 1) {
-            continue;
-        }
-        foreach ($sites as $key2 => $site2) {
-            $second = explode(' ', $key2);
-            foreach ($first as $keyF => $item) {
-                if (mb_strlen($item) < 2) {
-                    continue;
-                } elseif (isset($cache[$item])) {
-                    $first[$keyF] = $cache[$item];
-                } else {
-                    $base = $m->base($item);
-                    $first[$keyF] = $base;
-                    $cache[$item] = $base;
-                }
-            }
-
-            foreach ($second as $keyS => $item) {
-                if (mb_strlen($item) < 2) {
-                    continue;
-                } elseif (isset($cache[$item])) {
-                    $second[$keyS] = $cache[$item];
-                } else {
-                    $base = $m->base($item);
-                    $second[$keyS] = $base;
-                    $cache[$item] = $base;
-                }
-            }
-
-            $count = count(array_intersect($first, $second));
-            if ($count > 0) {
-                $result[$key1][$key2] = $count;
-            }
-        }
-    }
-
-    $willClustered = [];
     $clusters = [];
-    foreach ($result as $mainPhrase => $items) {
-        foreach ($items as $phrase => $count) {
-            if (isset($willClustered[$phrase])) {
-                continue;
-            } else if (isset($clusters[$mainPhrase])) {
-                foreach ($clusters[$mainPhrase] as $target => $elem) {
-                    if (count(array_intersect($sites[$phrase]['sites'], $elem['sites'])) >= $minimum) {
-                        $clusters[$mainPhrase][$phrase] = [
-                            'sites' => $sites[$phrase]['sites'],
-                            'basedNormal' => $sites[$phrase]['basedNormal'],
-                            'merge' => [count(array_intersect($sites[$phrase]['sites'], $elem['sites']))]
-                        ];
-                        $willClustered[$phrase] = true;
-                        break;
-                    }
+    $pre = [];
+    foreach ($sites as $phrase => $item) {
+        foreach ($clusters as $cluster) {
+            foreach ($cluster as $key => $value) {
+                $intersect = count(array_intersect($item['sites'], $value['sites']));
+                if ($intersect >= $minimum) {
+                    $pre[$phrase][$key] = $intersect;
                 }
-            } else if (count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites'])) >= $minimum) {
-                $clusters[$mainPhrase][$phrase] = [
-                    'sites' => $sites[$phrase]['sites'],
-                    'basedNormal' => $sites[$phrase]['basedNormal'],
-                    'merge' => [count(array_intersect($sites[$phrase]['sites'], $sites[$mainPhrase]['sites']))]
-                ];
-                $willClustered[$phrase] = true;
             }
         }
-    }
 
-    dd($clusters);
+        foreach ($sites as $phrase2 => $item2) {
+            $intersect = count(array_intersect($item['sites'], $item2['sites']));
+            if ($intersect >= $minimum) {
+                $pre[$phrase][$phrase2] = $intersect;
+            }
+        }
+        arsort($pre[$phrase]);
+    }
+    dd($pre);
+    //TODO у меня есть количество вхождений для каждой фразы, нужно перебрать и найти максимальное для каждой отдельной
 });

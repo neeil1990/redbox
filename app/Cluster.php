@@ -240,9 +240,11 @@ class Cluster
             $this->searchClustersEngineV3();
         } elseif ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
+        } elseif ($this->engineVersion === 'maximum') {
+            $this->searchClustersEngineV5();
         }
 
-        $this->brutForceClusters($this->minimum);
+//        $this->brutForceClusters($this->minimum);
 
         if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
@@ -358,23 +360,24 @@ class Cluster
         foreach ($this->sites as $key1 => $site) {
             $first = explode(' ', $key1);
             if (count($first) === 1) {
+                $result[$key1][$key1] = 1;
                 continue;
             }
+
+            foreach ($first as $keyF => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } elseif (isset($cache[$item])) {
+                    $first[$keyF] = $cache[$item];
+                } else {
+                    $base = $m->base($item);
+                    $first[$keyF] = $base;
+                    $cache[$item] = $base;
+                }
+            }
+
             foreach ($this->sites as $key2 => $site2) {
                 $second = explode(' ', $key2);
-
-                foreach ($first as $keyF => $item) {
-                    if (mb_strlen($item) < 2) {
-                        continue;
-                    } elseif (isset($cache[$item])) {
-                        $first[$keyF] = $cache[$item];
-                    } else {
-                        $base = $m->base($item);
-                        $first[$keyF] = $base;
-                        $cache[$item] = $base;
-                    }
-                }
-
                 foreach ($second as $keyS => $item) {
                     if (mb_strlen($item) < 2) {
                         continue;
@@ -427,6 +430,40 @@ class Cluster
                         'merge' => [$mainPhrase => count(array_intersect($this->sites[$phrase]['sites'], $this->sites[$mainPhrase]['sites']))]
                     ];
                     $willClustered[$phrase] = true;
+                }
+            }
+        }
+    }
+
+    protected function searchClustersEngineV5()
+    {
+        $willClustered = [];
+        foreach ($this->sites as $phrase => $item) {
+            if (isset($willClustered[$phrase])) {
+                continue;
+            }
+            foreach ($this->clusters as $cluster) {
+                foreach ($cluster as $key => $value) {
+                    if (isset($willClustered[$key])) {
+                        continue;
+                    }
+                    $intersect = count(array_intersect($item['sites'], $value['sites']));
+                    if ($intersect >= $this->minimum) {
+                        $this->clusters[$phrase][$key] = $this->sites[$key];
+                        $this->clusters[$phrase][$key]['merge'] = [$key => $intersect];
+                        $willClustered[$key] = true;
+                    }
+                }
+            }
+
+            foreach ($this->sites as $phrase2 => $item2) {
+                if (isset($willClustered[$phrase2])) {
+                    continue;
+                }
+                $intersect = count(array_intersect($item['sites'], $item2['sites']));
+                if ($intersect >= $this->minimum) {
+                    $this->clusters[$phrase][$phrase2] = $this->sites[$phrase2];
+                    $willClustered[$phrase2] = true;
                 }
             }
         }

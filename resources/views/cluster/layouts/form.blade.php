@@ -263,6 +263,8 @@
        class="btn btn-secondary" id="start-analyse"
        data-target="classic" value="{{ __('Analyse') }}">
 
+<script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
+
 <script>
     let url = new URL(window.location.href)
     if (url['pathname'] === '/cluster-configuration') {
@@ -281,5 +283,4 @@
             }
         })
     })
-
 </script>

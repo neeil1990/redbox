@@ -261,6 +261,7 @@
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
+                                                    'maximum' => 'Поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 
@@ -292,7 +293,6 @@
                                                 </label>
                                                 <select name="reductionRatio" id="reductionRatio"
                                                         class="select custom-select">
-                                                    <option value="0.5">0.5</option>
                                                     <option value="0.4">0.4</option>
                                                     <option value="0.3">0.3</option>
                                                     <option value="0.2">0.2</option>
