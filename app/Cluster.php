@@ -234,16 +234,18 @@ class Cluster
     {
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1();
+            $this->brutForceClusters($this->minimum);
         } else if ($this->engineVersion === 'latest') {
             $this->searchClustersEngineV2();
+            $this->brutForceClusters($this->minimum);
         } elseif ($this->engineVersion === 'exp') {
+            $this->brutForceClusters($this->minimum);
             $this->searchClustersEngineV3();
         } elseif ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
         } elseif ($this->engineVersion === 'maximum') {
             $this->searchClustersEngineV5();
         }
-        $this->brutForceClusters($this->minimum);
 
         if ($this->brutForce && $this->mode === 'professional') {
             $percent = $this->clusteringLevel;
