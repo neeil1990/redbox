@@ -242,6 +242,11 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/admin/settings/delete/{name}', 'MonitoringSettingsController@destroy')->name('monitoring.admin.settings.delete');
     Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
 
+    //Monitoring query groups
+    Route::post('monitoring/groups', 'MonitoringGroupsController@store');
+    Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
+    Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
+
     Route::resource('monitoring', 'MonitoringController');
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
@@ -266,7 +271,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/keywords/update-plural', 'MonitoringKeywordsController@updatePlural')->name('keywords.update.plural');
     Route::patch('/monitoring/keywords/{project_id}/set-test-positions', 'MonitoringKeywordsController@setTestPositions')->name('keywords.set.test.positions');
 
-    Route::resource('monitoring/groups', 'MonitoringGroupsController');
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 
     Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');

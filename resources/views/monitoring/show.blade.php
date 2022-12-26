@@ -81,6 +81,12 @@
     </div>
 
     <div class="row">
+        <div class="col-12 mb-3">
+            <a href="{{ route('groups.index', $project->id) }}" class="btn btn-outline-success">Управление группами проекта</a>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-12 card-table">
             <div class="card processing">
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
@@ -197,6 +203,8 @@
                     ],
                     initComplete: function(){
                         let api = this.api();
+                        let url = new URL(window.location.href);
+                        let params = new URLSearchParams(url.search);
 
                         axios.get(`/monitoring/keywords/show/controls`).then(function (response) {
 
@@ -323,6 +331,9 @@
                                 api.column(col + ':name').search(val).draw();
                             });
                         });
+
+                        if(params.has('group'))
+                            setTimeout(() => api.column('group:name').search(params.get('group')).draw(), 1000);
 
                         let notValidateUrl = $('<div />', {
                             class: 'custom-control custom-switch'
