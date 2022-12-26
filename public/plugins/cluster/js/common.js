@@ -97,3 +97,19 @@ function downloadAllCompetitors(id, key) {
         });
     }
 }
+
+
+
+$(document).ready(function () {
+    $('#searchRelevance').on('click', function () {
+        isSearchRelevance()
+    })
+    isSearchRelevance()
+})
+function isSearchRelevance() {
+    if ($('#searchRelevance').is(':checked')) {
+        $('#searchEngineBlock').show(300)
+    } else {
+        $('#searchEngineBlock').hide(300)
+    }
+}

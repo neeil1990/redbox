@@ -21,15 +21,46 @@
             </div>
         </div>
     </div>
-    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false" style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px">
+    <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false"
+        style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px; white-space: inherit !important;">
         @foreach($modules as $module)
             <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
-                <a class="nav-link search-link" href="{{ $module['link'] }}">
-                    {!! $module['icon'] !!}
-                    <span class="ml-2"> {{ $module['title'] }}</span>
+                <a class="nav-link search-link" href="{{ $module['link'] }}" style="white-space: inherit !important;">
+                    <span class="ml-2">{!! $module['icon'] !!} <span
+                            class="module-name">{{ $module['title'] }}</span></span>
                 </a>
             </li>
         @endforeach
         {{-- Контроллер с CRUD DescriptionProjectForAdminController--}}
     </ul>
 </nav>
+<script>
+    let visible = true;
+    $('#show-and-hide').click(() => {
+        if (visible) {
+            visible = false;
+            $('div.info').css({
+                'margin-top': '10px'
+            })
+            $('.brand-link').css({
+                'display': "none"
+            })
+
+            $('.module-name').css({
+                'display': 'none'
+            })
+        } else {
+            visible = true;
+            $('div.info').css({
+                'margin-top': '0'
+            })
+            $('.brand-link').css({
+                'display': "block"
+            })
+
+            $('.module-name').css({
+                'display': 'inline'
+            })
+        }
+    })
+</script>

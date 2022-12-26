@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddColumnInRelevanceHistoryTable2 extends Migration
 {
@@ -17,7 +17,7 @@ class AddColumnInRelevanceHistoryTable2 extends Migration
             $table->boolean('state')->default(0);
         });
 
-        $stories = \App\RelevanceHistory::all();
+        $stories = App\RelevanceHistory::all();
         foreach ($stories as $story) {
             $story->state = 1;
             $story->save();

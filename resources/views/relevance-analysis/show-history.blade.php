@@ -107,7 +107,6 @@
         </div>
     </div>
 
-
     <div class="card">
         <div class="alert alert-primary pb-3" role="alert" id="primaryAlert" style="display: none"></div>
         <div class="border-bottom d-flex p-0 justify-content-between w-100">
@@ -1152,6 +1151,22 @@
                     });
                 });
 
+                $('.copyInBuffer').click(function () {
+                    console.log('click')
+                    let area = document.createElement('textarea');
+                    area.style.opasity = 0
+                    document.body.appendChild(area);
+                    area.value = $(this).attr('data-target');
+                    area.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(area);
+
+                    $('.toast-top-right.success-message').show(300)
+                    $('#toast-message').html("{{ __('Success') }}")
+                    setTimeout(() => {
+                        $('.toast-top-right.success-message').hide(300)
+                    }, 5000)
+                })
             });
 
             function getData() {
@@ -1263,23 +1278,6 @@
                     $('#preloaderBlock').hide(300)
                 }, 1500)
             }
-
-            $('.copyInBuffer').click(function () {
-                let area = document.createElement('textarea');
-                area.style.opasity = 0
-                document.body.appendChild(area);
-                area.value = $(this).attr('data-target');
-                area.select();
-                document.execCommand("copy");
-                document.body.removeChild(area);
-
-                $('.toast-top-right.success-message').show(300)
-                $('#toast-message').html("{{ __('Success') }}")
-                setTimeout(() => {
-                    $('.toast-top-right.success-message').hide(300)
-                }, 5000)
-            })
-
         </script>
     @endslot
 @endcomponent

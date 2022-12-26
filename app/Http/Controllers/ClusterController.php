@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cluster;
 use App\ClusterConfiguration;
+use App\ClusterConfigurationClassic;
 use App\ClusterQueue;
 use App\ClusterResults;
 use App\Common;
@@ -17,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -28,7 +28,12 @@ class ClusterController extends Controller
     {
         $admin = User::isUserAdmin();
 
-        return view('cluster.index', ['admin' => $admin, 'results' => $result, 'config' => ClusterConfiguration::first()]);
+        return view('cluster.index', [
+            'admin' => $admin,
+            'results' => $result,
+            'config' => ClusterConfiguration::first(),
+            'config_classic' => ClusterConfigurationClassic::first()
+        ]);
     }
 
     public function analyseCluster(Request $request): JsonResponse
@@ -253,9 +258,12 @@ class ClusterController extends Controller
             return abort(403);
         }
 
-        $config = ClusterConfiguration::first();
 
-        return view('cluster.config', ['config' => $config, 'admin' => User::isUserAdmin()]);
+        return view('cluster.config', [
+            'config' => ClusterConfiguration::first(),
+            'config_classic' => ClusterConfigurationClassic::first(),
+            'admin' => User::isUserAdmin()
+        ]);
     }
 
     public function changeClusterConfiguration(Request $request): RedirectResponse
@@ -264,9 +272,16 @@ class ClusterController extends Controller
             return abort(403);
         }
 
-        $config = ClusterConfiguration::first();
-        $config->update($request->all());
+        if ($request->input('type') === 'pro') {
+            $config = ClusterConfiguration::first();
+        } else {
+            $config = ClusterConfigurationClassic::first();
+        }
 
+        $params = $request->all();
+        unset($params['type']);
+
+        $config->update($params);
 
         return Redirect::route('cluster.configuration');
     }

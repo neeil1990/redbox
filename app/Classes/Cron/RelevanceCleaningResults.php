@@ -6,7 +6,6 @@ namespace App\Classes\Cron;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistoryResult;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 
 class RelevanceCleaningResults

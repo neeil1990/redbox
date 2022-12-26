@@ -248,20 +248,20 @@
                                         <div class="form-group required">
                                             <label>{{ __('clustering level') }}</label>
                                             {!! Form::select('clusteringLevel', [
-                                                'light' => 'light - 40%',
-                                                'soft' => 'soft - 50%',
-                                                'pre-hard' => 'pre-hard - 60%',
-                                                'hard' => 'hard - 70%',
+                                                'light' => 'light',
+                                                'soft' => 'soft',
+                                                'pre-hard' => 'pre-hard',
+                                                'hard' => 'hard',
                                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
                                         </div>
                                         <div class="form-group required">
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engineVersion', [
                                                     'old' => __('Formation based on the first available phrase (old)'),
-                                                    'new' => __('Forming a cluster based on an array of links (new)'),
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
+                                                    'maximum' => 'Поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 

@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -233,15 +234,17 @@ class Cluster
     {
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1();
-        } else if ($this->engineVersion === 'new') {
+            $this->brutForceClusters($this->minimum);
+        } else if ($this->engineVersion === 'latest') {
             $this->searchClustersEngineV2();
+            $this->brutForceClusters($this->minimum);
         } elseif ($this->engineVersion === 'exp') {
+            $this->brutForceClusters($this->minimum);
             $this->searchClustersEngineV3();
         } elseif ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
-        } else {
-            $this->searchClustersEngineV2();
-            $this->brutForceClusters($this->minimum);
+        } elseif ($this->engineVersion === 'maximum') {
+            $this->searchClustersEngineV5();
         }
 
         if ($this->brutForce && $this->mode === 'professional') {
@@ -356,22 +359,26 @@ class Cluster
         $cache = [];
 
         foreach ($this->sites as $key1 => $site) {
-            foreach ($this->sites as $key2 => $site2) {
-                $first = explode(' ', $key1);
-                $second = explode(' ', $key2);
+            $first = explode(' ', $key1);
+            if (count($first) === 1) {
+                $result[$key1][$key1] = 1;
+                continue;
+            }
 
-                foreach ($first as $keyF => $item) {
-                    if (mb_strlen($item) < 2) {
-                        continue;
-                    } elseif (isset($cache[$item])) {
-                        $first[$keyF] = $cache[$item];
-                    } else {
-                        $base = $m->base($item);
-                        $first[$keyF] = $base;
-                        $cache[$item] = $base;
-                    }
+            foreach ($first as $keyF => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } elseif (isset($cache[$item])) {
+                    $first[$keyF] = $cache[$item];
+                } else {
+                    $base = $m->base($item);
+                    $first[$keyF] = $base;
+                    $cache[$item] = $base;
                 }
+            }
 
+            foreach ($this->sites as $key2 => $site2) {
+                $second = explode(' ', $key2);
                 foreach ($second as $keyS => $item) {
                     if (mb_strlen($item) < 2) {
                         continue;
@@ -398,7 +405,8 @@ class Cluster
                     continue;
                 } else if (isset($this->clusters[$mainPhrase])) {
                     foreach ($this->clusters[$mainPhrase] as $target => $elem) {
-                        if (count(array_intersect($this->sites[$phrase]['sites'], $elem['sites'])) >= $this->minimum) {
+                        $count = count(array_intersect($this->sites[$phrase]['sites'], $elem['sites']));
+                        if ($count >= $this->minimum) {
                             $this->clusters[$mainPhrase][$phrase] = [
                                 'based' => $this->sites[$phrase]['based'],
                                 'phrased' => $this->sites[$phrase]['phrased'],
@@ -406,6 +414,7 @@ class Cluster
                                 'relevance' => $this->sites[$phrase]['relevance'],
                                 'sites' => $this->sites[$phrase]['sites'],
                                 'basedNormal' => $this->sites[$phrase]['basedNormal'],
+                                'merge' => [$target => $count]
                             ];
                             $willClustered[$phrase] = true;
                             break;
@@ -419,8 +428,43 @@ class Cluster
                         'relevance' => $this->sites[$phrase]['relevance'],
                         'sites' => $this->sites[$phrase]['sites'],
                         'basedNormal' => $this->sites[$phrase]['basedNormal'],
+                        'merge' => [$mainPhrase => count(array_intersect($this->sites[$phrase]['sites'], $this->sites[$mainPhrase]['sites']))]
                     ];
                     $willClustered[$phrase] = true;
+                }
+            }
+        }
+    }
+
+    protected function searchClustersEngineV5()
+    {
+        $willClustered = [];
+        foreach ($this->sites as $phrase => $item) {
+            if (isset($willClustered[$phrase])) {
+                continue;
+            }
+            foreach ($this->clusters as $cluster) {
+                foreach ($cluster as $key => $value) {
+                    if (isset($willClustered[$key])) {
+                        continue;
+                    }
+                    $intersect = count(array_intersect($item['sites'], $value['sites']));
+                    if ($intersect >= $this->minimum) {
+                        $this->clusters[$phrase][$key] = $this->sites[$key];
+                        $this->clusters[$phrase][$key]['merge'] = [$key => $intersect];
+                        $willClustered[$key] = true;
+                    }
+                }
+            }
+
+            foreach ($this->sites as $phrase2 => $item2) {
+                if (isset($willClustered[$phrase2])) {
+                    continue;
+                }
+                $intersect = count(array_intersect($item['sites'], $item2['sites']));
+                if ($intersect >= $this->minimum) {
+                    $this->clusters[$phrase][$phrase2] = $this->sites[$phrase2];
+                    $willClustered[$phrase2] = true;
                 }
             }
         }
@@ -445,7 +489,6 @@ class Cluster
                         ) {
                             unset($this->clusters[$secondPhrase]);
                             $cluster2[$key2]['merge'] = [$key => count(array_intersect($item['sites'], $item2['sites']))];
-                            $cluster2[$key2]['minimum'] = $minimum;
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
                             $willClustered[$secondPhrase] = true;
                             break 3;

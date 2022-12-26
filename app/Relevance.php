@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
-use App\Http\Controllers\TextLengthController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;

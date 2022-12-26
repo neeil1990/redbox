@@ -57,7 +57,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">{{ __('Select the url that will be saved for each phrase of this cluster') }}</label>
+                    <label
+                        for="relevanceUrls">{{ __('Select the url that will be saved for each phrase of this cluster') }}</label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -148,7 +149,6 @@
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-table.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -158,6 +158,10 @@
             let interval
 
             $(document).ready(function () {
+                $('#engineVersion').val('{{ $config_classic->engine_version }}')
+                $('#count').val({{ $config_classic->count }})
+                $('#clusteringLevel').val('{{ $config_classic->clustering_level }}')
+
                 isSearchRelevance();
             })
 
@@ -357,32 +361,42 @@
                 setProgressBarStyles(0)
             }
 
+            let classicEngine = $('#engineVersion').val()
+            let classicCount = $('#count').val()
+            let classicLevel = $('#clusteringLevel').val()
+
+            let proEngine = '{{ $config->engine_version }}'
+            let proCount = '{{ $config->count }}'
+            let proLevel = '{{ $config->clustering_level }}'
+
             $('#classicMode').on('click', function () {
-                $('#engineVersion').val('latest')
                 $('#start-analyse').attr('data-target', 'classic')
                 $('.pro').hide(300)
+
+                proEngine = $('#engineVersion').val()
+                proCount = $('#count').val()
+                proLevel = $('#clusteringLevel').val()
+
+                $('#engineVersion').val(classicEngine)
+                $('#count').val(classicCount)
+                $('#clusteringLevel').val(classicLevel)
+
                 $('#classicMode').attr('class', 'btn btn-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-outline-secondary')
             })
 
+
             $('#ProfessionalMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'professional')
                 $('.pro').show(300)
+
+                $('#engineVersion').val(proEngine)
+                $('#count').val(proCount)
+                $('#clusteringLevel').val(proLevel)
+
                 $('#classicMode').attr('class', 'btn btn-outline-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-secondary')
             })
-
-            $('#searchRelevance').on('click', function () {
-                isSearchRelevance()
-            })
-
-            function isSearchRelevance() {
-                if ($('#searchRelevance').is(':checked')) {
-                    $('#searchEngineBlock').show(300)
-                } else {
-                    $('#searchEngineBlock').hide(300)
-                }
-            }
         </script>
     @endslot
 @endcomponent

@@ -2,31 +2,21 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Classes\Monitoring\CacheOfUserForPosition;
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
-use App\Classes\Position\PositionStore;
-use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
-use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
-use App\MonitoringSearchengine;
 use App\MonitoringSettings;
 use App\User;
-use Carbon\Carbon;
-use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {

@@ -29,6 +29,10 @@
             text-align: center !important;
             width: 1rem !important;
         }
+
+        .main-sidebar.sidebar-dark-primary.elevation-4:hover .module-name {
+            display: inline !important;
+        }
     </style>
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 </head>
@@ -109,44 +113,6 @@
 
 <script>
     $(document).ready(function () {
-        let visible = true;
-        let token = $('meta[name="csrf-token"]').attr('content');
-
-        $('#show-and-hide').click(() => {
-            if (visible) {
-                visible = false;
-                $('div.info').css({
-                    'margin-top': '10px'
-                })
-                $('.brand-link').css({
-                    'display': "none"
-                })
-            } else {
-                visible = true;
-                $('div.info').css({
-                    'margin-top': '0'
-                })
-                $('.brand-link').css({
-                    'display': "block"
-                })
-            }
-        })
-
-        function getCountNewNews() {
-            $.ajax({
-                type: "post",
-                dataType: "json",
-                url: "{{ route('get.count.new.news') }}",
-                data: {
-                    _token: token
-                },
-                success: function (response) {
-                    $('.badge.badge-warning.navbar-badge.news').text(response.count)
-                },
-            });
-
-        }
-
         $(".x-drop-down__value").click(function (event) {
             toggleMenu();
             event.stopPropagation();
