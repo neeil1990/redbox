@@ -497,9 +497,15 @@ class Cluster
             }
 
             arsort($intersects);
-            $key = count($intersects) === 0 ? $mainPhrase : array_key_first($intersects);
+            if (count($intersects) === 0) {
+                $key = $mainPhrase;
+            } else {
+                $key = array_key_first($intersects);
+            }
             $this->clusters[$key][$mainPhrase] = $item;
-            $this->clusters[$key][$mainPhrase]['merge'] = [$key => array_shift($intersects)];
+            if (count($intersects) !== 0) {
+                $this->clusters[$key][$mainPhrase]['merge'] = [$key => array_shift($intersects)];
+            }
             $willClustered[$mainPhrase] = true;
         }
     }
