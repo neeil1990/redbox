@@ -82,7 +82,7 @@
 
     <div class="row">
         <div class="col-12 mb-3">
-            <a href="{{ route('groups.index', $project->id) }}" class="btn btn-outline-success">Управление группами проекта</a>
+            <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
         </div>
     </div>
 

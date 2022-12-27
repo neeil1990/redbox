@@ -68,15 +68,6 @@ class MonitoringGroupsController extends Controller
 
         $options->put('groups', $this->getGroupsOptions($this->project->groups));
 
-        $this->groups->transform(function($item){
-
-            $item->DT_RowId = "row_" . $item->id;
-            $item->queries = $item->keywords->count();
-            $item->created = $item->created_at->diffForHumans();
-
-            return $item;
-        });
-
         $collection->put('data', $this->groups);
         $collection->put('options', $options);
 
@@ -109,14 +100,26 @@ class MonitoringGroupsController extends Controller
                 $model->where('name', 'like', '%' . $search . '%');
         }
 
+        $this->groups = $model->get();
+
+        $this->groups->transform(function($item){
+
+            $item->DT_RowId = "row_" . $item->id;
+            $item->queries = $item->keywords->count();
+            $item->created = $item->created_at->diffForHumans();
+
+            return $item;
+        });
+
         if($request->has('order')){
             $order = collect($request->input('order'))->first();
             $column = $request->input('columns')[$order['column']]['name'];
 
-            $model->orderBy($column, $order['dir']);
+            if($order['dir'] == 'asc')
+                $this->groups = $this->groups->sortBy($column)->values();
+            else
+                $this->groups = $this->groups->sortByDesc($column)->values();
         }
-
-        $this->groups = $model->get();
     }
 
     private function create(Collection $data)

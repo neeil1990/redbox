@@ -18,16 +18,22 @@
             .dataTables_filter label {
                 margin-bottom: 0;
             }
+            .dt-center {
+                text-align: center;
+            }
             .help-block {
                 color: #b11f1f;
                 font-size: 12px;
+            }
+            .btn-secondary:hover {
+                border-color: #ddd;
             }
         </style>
     @endslot
 
     <div class="row">
         <div class="col-12 mb-3">
-            <a href="{{ route('monitoring.show', request('id')) }}" class="btn btn-outline-success">Вернутся в проект</a>
+            <a href="{{ route('monitoring.show', request('id')) }}" class="btn btn-default">Вернутся в проект</a>
         </div>
     </div>
 
@@ -131,7 +137,7 @@
                     [1, 'asc'],
                 ],
                 columnDefs: [
-                    { orderable: true, targets: [0, 1, 3] },
+                    { orderable: true, targets: [0, 1, 2, 3] },
                     { orderable: false, targets: '_all' },
                 ],
                 columns: [
@@ -148,6 +154,7 @@
                     {
                         title: 'Запросы',
                         data: 'queries',
+                        name: 'queries',
                     },
                     {
                         title: 'Добавлено',
@@ -155,23 +162,30 @@
                         name: 'created_at',
                     },
                     {
+                        title: 'Открыть группу',
                         data: function(row) {
                             let icon = '<i class="fa fa-folder-open" />';
-                            return '<a href="/monitoring/'+ row.monitoring_project_id +'?group='+ row.id +'" style="color: #212529">'+ icon +'</a>';
+                            return '<a href="/monitoring/'+ row.monitoring_project_id +'?group='+ row.id +'" class="btn btn-sm btn-default" title="Открыть">'+ icon +'</a>';
                         },
                         className: "dt-center",
                         orderable: false
                     },
                     {
-                        data: null,
+                        title: 'Редактировать',
+                        data: function(row) {
+                            let icon = '<i class="fas fa-pen" />';
+                            return '<a href="javascript:void(0)" class="btn btn-sm btn-default" title="Редактировать">'+ icon +'</a>';
+                        },
                         className: "dt-center editor-edit",
-                        defaultContent: '<i class="fa fa-pencil"/>',
                         orderable: false
                     },
                     {
-                        data: null,
+                        title: 'Удалить',
+                        data: function(row) {
+                            let icon = '<i class="fas fa-trash" />';
+                            return '<a href="javascript:void(0)" class="btn btn-sm btn-default" title="Удалить">'+ icon +'</a>';
+                        },
                         className: "dt-center editor-delete",
-                        defaultContent: '<i class="fa fa-trash"/>',
                         orderable: false
                     }
                 ],
@@ -179,7 +193,7 @@
                     {
                         extend: "create",
                         editor: editor,
-                        className: "btn-sm",
+                        className: "btn-default btn-sm",
                         action: function() {
                             dynamicHideFields.map(obj => editor.field(obj.name).hide());
                             editor.create({
