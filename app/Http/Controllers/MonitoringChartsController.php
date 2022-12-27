@@ -252,11 +252,17 @@ class MonitoringChartsController extends Controller
 
     protected function getLastPositionsByWeeks(Collection $positionByDays)
     {
-        $days = -1;
-        $filtered = $positionByDays->filter(function () use (&$days) {
-            $days++;
-            return !($days % 7);
-        });
+        $filtered = collect([]);
+
+        $currentWeek = null;
+        foreach($positionByDays as $date => $positions){
+
+            $week = Carbon::parse($date)->week();
+            if($currentWeek === null || $currentWeek !== $week)
+                $filtered->put($date, $positions);
+
+            $currentWeek = $week;
+        }
 
         return $filtered;
     }
