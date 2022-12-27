@@ -466,7 +466,6 @@ class Cluster
 
                 if ($keysOf[1] === $phrase) {
                     $this->clusters[$phrase][$keys[1]] = $this->sites[$keys[1]];
-                    $this->clusters[$phrase][$keys[1]]['merge'] = [$phrase => $pre[$keys[1]][$phrase]];
                     $this->clusters[$phrase][$phrase] = $this->sites[$phrase];
                     $this->clusters[$phrase][$phrase]['merge'] = [$keys[1] => $pre[$phrase][$keys[1]]];
                     $willClustered[$phrase] = true;
