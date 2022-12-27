@@ -446,9 +446,7 @@ class MonitoringController extends Controller
 
         $this->filter($project, $keywords, $region, $request);
 
-        $order = $request->input('order');
-        if($order)
-            $this->orderTableKeywords($keywords, $order);
+        $this->orderTableKeywords($keywords, $request->input('order'));
 
         $page = ($request->input('start') / $request->input('length')) + 1;
         $keywords = $keywords->paginate($request->input('length', 1), ['*'], 'page', $page);
@@ -494,14 +492,18 @@ class MonitoringController extends Controller
         return $data;
     }
 
-    private function orderTableKeywords(&$keywords, $order)
+    private function orderTableKeywords(&$keywords, $order = null)
     {
-        $columns = [
-            2 => 'query',
-        ];
+        $dir = 'asc';
 
-        if(array_key_exists($order[0]['column'], $columns))
-            $keywords->orderBy($columns[$order[0]['column']], $order[0]['dir']);
+        if($order && is_array($order)){
+            $order = collect($order)->collapse();
+
+            if($order->has('dir') && $order['dir'] != $dir)
+                $dir = $order['dir'];
+        }
+
+        $keywords->orderBy('query', $dir);
     }
 
     private function updateKeywordsDynamic($keywords, $region, $request)

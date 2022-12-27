@@ -53,7 +53,7 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label>{{ __('Groups') }}:</label>
-                                {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), null, ['class' => 'custom-select']) }}
+                                {{ Form::select('group', $project->groups->prepend(collect(['name' => __('Selected group'), 'id' => null]))->pluck('name', 'id'), request('group', null), ['class' => 'custom-select']) }}
                             </div>
                         </div>
                     </form>

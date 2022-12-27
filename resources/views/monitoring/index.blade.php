@@ -251,12 +251,11 @@
                                 title: 'Добавить запрос',
                             });
 
-                            let edit = $('<a />', { class: 'btn btn-sm btn-info'}).append($('<i />', { class: 'fas fa-save'}));
                             let trash = $('<a />', { class: 'btn btn-sm btn-danger'}).append($('<i />', { class: 'fas fa-trash'}));
 
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return create[0].outerHTML + " " + edit[0].outerHTML + " " + trash[0].outerHTML;
+                            return create[0].outerHTML + " " + trash[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
