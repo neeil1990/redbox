@@ -311,30 +311,90 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
 });
-
 Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $cluster = \App\ClusterResults::findOrFail($id);
     $sites = json_decode($cluster->sites_json, true);
-    $clusters = [];
     $pre = [];
-    foreach ($sites as $phrase => $item) {
-        foreach ($clusters as $cluster) {
-            foreach ($cluster as $key => $value) {
-                $intersect = count(array_intersect($item['sites'], $value['sites']));
-                if ($intersect >= $minimum) {
-                    $pre[$phrase][$key] = $intersect;
-                }
-            }
-        }
-
-        foreach ($sites as $phrase2 => $item2) {
-            $intersect = count(array_intersect($item['sites'], $item2['sites']));
-            if ($intersect >= $minimum) {
-                $pre[$phrase][$phrase2] = $intersect;
+    $clusters = [];
+    foreach ($sites as $phrase => $items) {
+        foreach ($sites as $ph => $its) {
+            $count = count(array_intersect($items['sites'], $its['sites']));
+            if ($count >= $minimum) {
+                $pre[$phrase][$ph] = count(array_intersect($items['sites'], $its['sites']));
             }
         }
         arsort($pre[$phrase]);
     }
-    dd($pre);
-    //TODO у меня есть количество вхождений для каждой фразы, нужно перебрать и найти максимальное для каждой отдельной
+
+    $willClustered = [];
+    foreach ($pre as $items) {
+        foreach ($items as $phrase => $count) {
+            if (isset($willClustered[$phrase])) {
+                continue;
+            }
+            if ($phrase === array_key_first($items)) {
+                continue;
+            }
+
+            $keys = array_keys($pre[$phrase]);
+            $keysOf = array_keys($pre[$keys[1]]);
+
+            if ($keysOf[1] === $phrase) {
+                $clusters[$phrase][$keys[1]] = $sites[$keys[1]];
+                $clusters[$phrase][$keys[1]]['merge'] = [$phrase => $pre[$keys[1]][$phrase]];
+                $clusters[$phrase][$phrase] = $sites[$phrase];
+                $clusters[$phrase][$phrase]['merge'] = [$keys[1] => $pre[$phrase][$keys[1]]];
+                $willClustered[$phrase] = true;
+                $willClustered[$keys[1]] = true;
+            }
+        }
+    }
+
+    foreach ($sites as $mainPhrase => $item) {
+        if (isset($willClustered[$mainPhrase])) {
+            continue;
+        }
+
+        $intersects = [];
+        foreach ($clusters as $ph => $cluster) {
+            $count = 0;
+            foreach ($cluster as $phrase => $val) {
+                $intersect = count(array_intersect($item['sites'], $sites[$phrase]['sites']));
+                if (count($cluster) > 1) {
+                    if ($count < $intersect && $intersect > $minimum) {
+                        $count = $intersect;
+                        $intersects[$ph] = $intersect;
+                    }
+                } else if ($count < $intersect) {
+                    $count = $intersect;
+                    $intersects[$ph] = $intersect;
+                }
+            }
+        }
+
+        arsort($intersects);
+        $key = count($intersects) === 0 ? $mainPhrase : array_key_first($intersects);
+        $clusters[$key][$mainPhrase] = $item;
+        $clusters[$key][$mainPhrase]['merge'] = [$key => array_shift($intersects)];
+        $willClustered[$mainPhrase] = true;
+    }
+
+    dd($clusters);
+    $willClustered = [];
+    foreach ($clusters as $mainPhrase => $cluster) {
+        foreach ($cluster as $phrase => $info) {
+            dump($cluster);
+            dump($phrase);
+            dd($info);
+        }
+    }
+    $count = 0;
+    foreach ($clusters as $cluster) {
+        $count += count($cluster);
+    }
+
+    //TODO перенести + протестить с брут форсом (Cluster 537)
+
+    dump($count);
+    dd($clusters);
 });

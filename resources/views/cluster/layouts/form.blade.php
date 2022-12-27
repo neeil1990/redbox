@@ -112,6 +112,7 @@
             'latest' => __('Additional bulkhead (latest)'),
             'exp' => 'эксперимент',
             'exp_phrases' => 'Фразовый перебор',
+            'maximum' => 'Поиск максимального',
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
     </div>
 
