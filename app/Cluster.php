@@ -244,7 +244,8 @@ class Cluster
         } elseif ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
         } elseif ($this->engineVersion === 'maximum') {
-            $this->searchClustersEngineV5();
+            $this->searchClustersEngineV6();
+            $this->brutForceClusters($this->minimum);
         }
 
         if ($this->brutForce && $this->mode === 'professional') {
@@ -436,37 +437,71 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngineV5()
+    protected function searchClustersEngineV6()
     {
+        $pre = [];
+
+        foreach ($this->sites as $phrase => $items) {
+            foreach ($this->sites as $ph => $its) {
+                $count = count(array_intersect($items['sites'], $its['sites']));
+                if ($count >= $this->minimum) {
+                    $pre[$phrase][$ph] = count(array_intersect($items['sites'], $its['sites']));
+                }
+            }
+            arsort($pre[$phrase]);
+        }
+
         $willClustered = [];
-        foreach ($this->sites as $phrase => $item) {
-            if (isset($willClustered[$phrase])) {
+        foreach ($pre as $items) {
+            foreach ($items as $phrase => $count) {
+                if (isset($willClustered[$phrase])) {
+                    continue;
+                }
+                if ($phrase === array_key_first($items)) {
+                    continue;
+                }
+
+                $keys = array_keys($pre[$phrase]);
+                $keysOf = array_keys($pre[$keys[1]]);
+
+                if ($keysOf[1] === $phrase) {
+                    $this->clusters[$phrase][$keys[1]] = $this->sites[$keys[1]];
+                    $this->clusters[$phrase][$keys[1]]['merge'] = [$phrase => $pre[$keys[1]][$phrase]];
+                    $this->clusters[$phrase][$phrase] = $this->sites[$phrase];
+                    $this->clusters[$phrase][$phrase]['merge'] = [$keys[1] => $pre[$phrase][$keys[1]]];
+                    $willClustered[$phrase] = true;
+                    $willClustered[$keys[1]] = true;
+                }
+            }
+        }
+
+        foreach ($this->sites as $mainPhrase => $item) {
+            if (isset($willClustered[$mainPhrase])) {
                 continue;
             }
-            foreach ($this->clusters as $cluster) {
-                foreach ($cluster as $key => $value) {
-                    if (isset($willClustered[$key])) {
-                        continue;
-                    }
-                    $intersect = count(array_intersect($item['sites'], $value['sites']));
-                    if ($intersect >= $this->minimum) {
-                        $this->clusters[$phrase][$key] = $this->sites[$key];
-                        $this->clusters[$phrase][$key]['merge'] = [$key => $intersect];
-                        $willClustered[$key] = true;
+
+            $intersects = [];
+            foreach ($this->clusters as $ph => $cluster) {
+                $count = 0;
+                foreach ($cluster as $phrase => $val) {
+                    $intersect = count(array_intersect($item['sites'], $this->sites[$phrase]['sites']));
+                    if (count($cluster) > 1) {
+                        if ($count < $intersect && $intersect > $this->minimum) {
+                            $count = $intersect;
+                            $intersects[$ph] = $intersect;
+                        }
+                    } else if ($count < $intersect) {
+                        $count = $intersect;
+                        $intersects[$ph] = $intersect;
                     }
                 }
             }
 
-            foreach ($this->sites as $phrase2 => $item2) {
-                if (isset($willClustered[$phrase2])) {
-                    continue;
-                }
-                $intersect = count(array_intersect($item['sites'], $item2['sites']));
-                if ($intersect >= $this->minimum) {
-                    $this->clusters[$phrase][$phrase2] = $this->sites[$phrase2];
-                    $willClustered[$phrase2] = true;
-                }
-            }
+            arsort($intersects);
+            $key = count($intersects) === 0 ? $mainPhrase : array_key_first($intersects);
+            $this->clusters[$key][$mainPhrase] = $item;
+            $this->clusters[$key][$mainPhrase]['merge'] = [$key => array_shift($intersects)];
+            $willClustered[$mainPhrase] = true;
         }
     }
 

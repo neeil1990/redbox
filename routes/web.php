@@ -307,30 +307,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
 });
-
-Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
-    $cluster = \App\ClusterResults::findOrFail($id);
-    $sites = json_decode($cluster->sites_json, true);
-    $clusters = [];
-    $pre = [];
-    foreach ($sites as $phrase => $item) {
-        foreach ($clusters as $cluster) {
-            foreach ($cluster as $key => $value) {
-                $intersect = count(array_intersect($item['sites'], $value['sites']));
-                if ($intersect >= $minimum) {
-                    $pre[$phrase][$key] = $intersect;
-                }
-            }
-        }
-
-        foreach ($sites as $phrase2 => $item2) {
-            $intersect = count(array_intersect($item['sites'], $item2['sites']));
-            if ($intersect >= $minimum) {
-                $pre[$phrase][$phrase2] = $intersect;
-            }
-        }
-        arsort($pre[$phrase]);
-    }
-    dd($pre);
-    //TODO у меня есть количество вхождений для каждой фразы, нужно перебрать и найти максимальное для каждой отдельной
-});
