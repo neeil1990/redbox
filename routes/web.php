@@ -379,22 +379,48 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
         $willClustered[$mainPhrase] = true;
     }
 
-    dd($clusters);
     $willClustered = [];
     foreach ($clusters as $mainPhrase => $cluster) {
-        foreach ($cluster as $phrase => $info) {
-            dump($cluster);
-            dump($phrase);
-            dd($info);
+        if (isset($willClustered[$mainPhrase])) {
+            continue;
+        }
+        foreach ($cluster as $info) {
+            $intersects = [];
+            foreach ($clusters as $offPhrase => $offCluster) {
+                if ($mainPhrase === $offPhrase || isset($willClustered[$offPhrase])) {
+                    continue;
+                }
+                foreach ($offCluster as $clusterPhrase => $offInfo) {
+                    $count = count(array_intersect($info['sites'], $offInfo['sites']));
+                    if ($count >= $minimum) {
+                        $intersects[$offPhrase] = $count;
+                    }
+                }
+            }
+            arsort($intersects);
+            if (count($intersects) > 0) {
+                foreach ($intersects as $intersectPhrase => $intersectCount) {
+                    foreach ($clusters[$intersectPhrase] as $ph => $items) {
+                        $intersects2 = [];
+                        foreach ($clusters as $op => $oc) {
+                            if ($op === $intersectPhrase || isset($willClustered[$intersectPhrase])) {
+                                continue;
+                            }
+                            foreach ($oc as $phrase => $clusterInfo) {
+                                $count2 = count(array_intersect($items['sites'], $clusterInfo['sites']));
+                                if ($count2 >= $minimum)
+                                    $intersects2[$op] = $count2;
+                            }
+                        }
+                    }
+                    arsort($intersects2);
+                    if (array_key_first($intersects2) === $mainPhrase) {
+                        $clusters[$mainPhrase] = array_merge($clusters[$mainPhrase], $clusters[$intersectPhrase]);
+                        unset($clusters[$intersectPhrase]);
+                        $willClustered[$intersectPhrase] = true;
+                    }
+                }
+            }
         }
     }
-    $count = 0;
-    foreach ($clusters as $cluster) {
-        $count += count($cluster);
-    }
-
-    //TODO перенести + протестить с брут форсом (Cluster 537)
-
-    dump($count);
-    dd($clusters);
 });

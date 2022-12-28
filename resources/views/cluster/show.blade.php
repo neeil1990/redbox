@@ -299,6 +299,10 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="form-group required">
+                                            <label for="defaultBrutForce">Дополнительная переборка без понижения порога</label>
+                                            <input type="checkbox" name="defaultBrutForce" id="defaultBrutForce">
+                                        </div>
 
                                         <div class="form-group required d-flex justify-content-end">
                                             <button type="button" class="btn btn-secondary mr-2"
@@ -628,7 +632,8 @@
                             brutForce: $('#brutForce').is(':checked'),
                             mode: 'professional',
                             brutForceCount: $('#brutForceCount').val(),
-                            reductionRatio: $('#reductionRatio').val()
+                            reductionRatio: $('#reductionRatio').val(),
+                            defaultBrutForce: $('#defaultBrutForce').is(':checked')
                         },
                         success: function (response) {
                             $('#clusters-table-default').show()

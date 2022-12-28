@@ -61,6 +61,8 @@ class Cluster
 
     protected $brutForceCount;
 
+    protected $defaultBrutForce;
+
     protected $reductionRatio;
 
     public function __construct(array $request, $user, $default = true)
@@ -68,6 +70,7 @@ class Cluster
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         $this->brutForceCount = $request['brutForceCount'] ?? 1;
         $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
+        $this->defaultBrutForce = isset($request['defaultBrutForce']) ? filter_var($request['defaultBrutForce'], FILTER_VALIDATE_BOOLEAN) : false;
 
         if (!isset($request['mode']) || $request['mode'] !== 'professional') {
             $this->count = 40;
@@ -116,7 +119,7 @@ class Cluster
             'sites', 'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases',
             'searchTarget', 'searchRelevance', 'searchEngine', 'progress', 'save', 'request',
             'newCluster', 'user', 'brutForce', 'xml', 'host', 'mode', 'minimum', 'progressId',
-            'brutForceCount', 'reductionRatio',
+            'brutForceCount', 'reductionRatio', 'defaultBrutForce'
         ];
     }
 
@@ -234,17 +237,17 @@ class Cluster
     {
         if ($this->engineVersion === 'old') {
             $this->searchClustersEngineV1();
-            $this->brutForceClusters($this->minimum);
         } else if ($this->engineVersion === 'latest') {
             $this->searchClustersEngineV2();
-            $this->brutForceClusters($this->minimum);
         } elseif ($this->engineVersion === 'exp') {
-            $this->brutForceClusters($this->minimum);
             $this->searchClustersEngineV3();
         } elseif ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
         } elseif ($this->engineVersion === 'maximum') {
             $this->searchClustersEngineV6();
+        }
+
+        if ($this->defaultBrutForce) {
             $this->brutForceClusters($this->minimum);
         }
 
@@ -440,7 +443,6 @@ class Cluster
     protected function searchClustersEngineV6()
     {
         $pre = [];
-
         foreach ($this->sites as $phrase => $items) {
             foreach ($this->sites as $ph => $its) {
                 $count = count(array_intersect($items['sites'], $its['sites']));
@@ -507,6 +509,51 @@ class Cluster
                 $this->clusters[$key][$mainPhrase]['merge'] = [$key => array_shift($intersects)];
             }
             $willClustered[$mainPhrase] = true;
+        }
+
+        $willClustered = [];
+        foreach ($this->clusters as $mainPhrase => $cluster) {
+            if (isset($willClustered[$mainPhrase])) {
+                continue;
+            }
+            foreach ($cluster as $info) {
+                $intersects = [];
+                foreach ($this->clusters as $offPhrase => $offCluster) {
+                    if ($mainPhrase === $offPhrase || isset($willClustered[$offPhrase])) {
+                        continue;
+                    }
+                    foreach ($offCluster as $clusterPhrase => $offInfo) {
+                        $count = count(array_intersect($info['sites'], $offInfo['sites']));
+                        if ($count >= $this->minimum) {
+                            $intersects[$offPhrase] = $count;
+                        }
+                    }
+                }
+                arsort($intersects);
+                if (count($intersects) > 0) {
+                    foreach ($intersects as $intersectPhrase => $intersectCount) {
+                        foreach ($this->clusters[$intersectPhrase] as $ph => $items) {
+                            $intersects2 = [];
+                            foreach ($this->clusters as $op => $oc) {
+                                if ($op === $intersectPhrase || isset($willClustered[$intersectPhrase])) {
+                                    continue;
+                                }
+                                foreach ($oc as $phrase => $clusterInfo) {
+                                    $count2 = count(array_intersect($items['sites'], $clusterInfo['sites']));
+                                    if ($count2 >= $this->minimum)
+                                        $intersects2[$op] = $count2;
+                                }
+                            }
+                        }
+                        arsort($intersects2);
+                        if (array_key_first($intersects2) === $mainPhrase) {
+                            $this->clusters[$mainPhrase] = array_merge($this->clusters[$mainPhrase], $this->clusters[$intersectPhrase]);
+                            unset($this->clusters[$intersectPhrase]);
+                            $willClustered[$intersectPhrase] = true;
+                        }
+                    }
+                }
+            }
         }
     }
 

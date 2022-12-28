@@ -155,12 +155,16 @@
     </div>
 </div>
 
+<div class="form-group required">
+    <label for="defaultBrutForce">Дополнительная переборка без понижения порога</label>
+    <input type="checkbox" name="defaultBrutForce" id="defaultBrutForce">
+</div>
+
 <div class="form-group required" id="extra-block">
     <div class="row">
         <div class="col-6 d-flex flex-column">
             <label for="domain-textarea">{{ __('Domain') }}</label>
-            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"
-                      placeholder="https://site.ru"></textarea>
+            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100" placeholder="https://site.ru"></textarea>
         </div>
 
         <div class="col-6">
