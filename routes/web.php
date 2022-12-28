@@ -350,6 +350,7 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
         }
     }
 
+    ksort($sites);
     foreach ($sites as $mainPhrase => $item) {
         if (isset($willClustered[$mainPhrase])) {
             continue;
