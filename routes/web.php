@@ -356,12 +356,12 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
             continue;
         }
 
-        $intersects = [];
         foreach ($clusters as $ph => $cluster) {
             foreach ($cluster as $phrase => $val) {
-                if (count(array_intersect($item['sites'], $sites[$phrase]['sites'])) >= $minimum) {
+                $count = count(array_intersect($item['sites'], $sites[$phrase]['sites']));
+                if ($count >= $minimum) {
                     $clusters[$ph][$mainPhrase] = $item;
-                    $clusters[$ph][$mainPhrase]['merge'] = [$phrase => array_shift($intersects)];
+                    $clusters[$ph][$mainPhrase]['merge'] = [$phrase => $count];
                     $willClustered[$mainPhrase] = true;
                     continue 3;
                 }
