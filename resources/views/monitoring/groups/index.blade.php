@@ -147,7 +147,7 @@
                         name: 'id',
                     },
                     {
-                        title: 'Группа',
+                        title: 'Группы',
                         data: 'name',
                         name: 'name',
                     },
@@ -203,6 +203,14 @@
                         }
                     },
                 ],
+                headerCallback: function(thead, data, start, end, display) {
+                    let api = this.api();
+
+                    let count = data.reduce((s, c) => s + c.queries, 0);
+
+                    $( api.column( 1 ).header() ).html('Группы: ' + (end-start));
+                    $( api.column( 2 ).header() ).html('Запросы: ' + count);
+                },
             });
 
             // Edit record

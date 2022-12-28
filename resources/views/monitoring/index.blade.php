@@ -251,11 +251,16 @@
                                 title: 'Добавить запрос',
                             });
 
+                            let folder = $('<a />', {
+                                class: 'btn btn-sm btn-info',
+                                href: '/monitoring/'+ row.id +'/groups',
+                            }).append($('<i />', { class: 'fa fa-folder-open'}));
+
                             let trash = $('<a />', { class: 'btn btn-sm btn-danger'}).append($('<i />', { class: 'fas fa-trash'}));
 
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return create[0].outerHTML + " " + trash[0].outerHTML;
+                            return create[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
