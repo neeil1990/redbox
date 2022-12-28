@@ -486,12 +486,7 @@ class Cluster
                 $count = 0;
                 foreach ($cluster as $phrase => $val) {
                     $intersect = count(array_intersect($item['sites'], $this->sites[$phrase]['sites']));
-                    if (count($cluster) > 1) {
-                        if ($count < $intersect && $intersect > $this->minimum) {
-                            $count = $intersect;
-                            $intersects[$ph] = $intersect;
-                        }
-                    } else if ($count < $intersect) {
+                    if ($count < $intersect && $intersect > $this->minimum) {
                         $count = $intersect;
                         $intersects[$ph] = $intersect;
                     }
