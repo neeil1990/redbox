@@ -489,9 +489,12 @@ class Cluster
                         $this->clusters[$ph][$mainPhrase] = $item;
                         $this->clusters[$ph][$mainPhrase]['merge'] = [$phrase => array_shift($intersects)];
                         $willClustered[$mainPhrase] = true;
+                        continue 3;
                     }
                 }
             }
+            $this->clusters[$mainPhrase][$mainPhrase] = $item;
+            $willClustered[$mainPhrase] = true;
         }
 
         $willClustered = [];

@@ -358,28 +358,20 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
 
         $intersects = [];
         foreach ($clusters as $ph => $cluster) {
-            $count = 0;
             foreach ($cluster as $phrase => $val) {
-                $intersect = count(array_intersect($item['sites'], $sites[$phrase]['sites']));
-                if (count($cluster) > 1) {
-                    if ($count < $intersect && $intersect > $minimum) {
-                        $count = $intersect;
-                        $intersects[$ph] = $intersect;
-                    }
-                } else if ($count < $intersect) {
-                    $count = $intersect;
-                    $intersects[$ph] = $intersect;
+                if (count(array_intersect($item['sites'], $sites[$phrase]['sites'])) >= $minimum) {
+                    $clusters[$ph][$mainPhrase] = $item;
+                    $clusters[$ph][$mainPhrase]['merge'] = [$phrase => array_shift($intersects)];
+                    $willClustered[$mainPhrase] = true;
+                    continue 3;
                 }
             }
         }
-
-        arsort($intersects);
-        $key = count($intersects) === 0 ? $mainPhrase : array_key_first($intersects);
-        $clusters[$key][$mainPhrase] = $item;
-        $clusters[$key][$mainPhrase]['merge'] = [$key => array_shift($intersects)];
+        $clusters[$mainPhrase][$mainPhrase] = $item;
         $willClustered[$mainPhrase] = true;
     }
 
+    dd($willClustered);
     $willClustered = [];
     foreach ($clusters as $mainPhrase => $cluster) {
         if (isset($willClustered[$mainPhrase])) {
