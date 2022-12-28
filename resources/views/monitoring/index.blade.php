@@ -199,35 +199,45 @@
                         title: '% ТОП 3',
                         name: 'top3',
                         data: function (row){
-                            return row.top3 + row.diff_top3;
+                            let sup = subColorTag(row.diff_top3);
+
+                            return row.top3 + sup;
                         },
                     },
                     {
                         title: '% ТОП 5',
                         name: 'top5',
                         data: function (row){
-                            return row.top5 + row.diff_top5;
+                            let sup = subColorTag(row.diff_top5);
+
+                            return row.top5 + sup;
                         },
                     },
                     {
                         title: '% ТОП 10',
                         name: 'top10',
                         data: function (row){
-                            return row.top10 + row.diff_top10;
+                            let sup = subColorTag(row.diff_top10);
+
+                            return row.top10 + sup;
                         },
                     },
                     {
                         title: '% ТОП 30',
                         name: 'top30',
                         data: function (row){
-                            return row.top30 + row.diff_top30;
+                            let sup = subColorTag(row.diff_top30);
+
+                            return row.top30 + sup;
                         },
                     },
                     {
                         title: '% ТОП 100',
                         name: 'top100',
                         data: function (row){
-                            return row.top100 + row.diff_top100;
+                            let sup = subColorTag(row.diff_top100);
+
+                            return row.top100 + sup;
                         },
                     },
                     {
@@ -522,6 +532,16 @@
                 }
             });
 
+            function subColorTag(content)
+            {
+                if(!content)
+                    return '';
+
+                let color = (content.indexOf('+') > -1) ? 'green' : 'red';
+                let sup = $('<sup />').css('color', color).text(content);
+
+                return sup.prop('outerHTML');
+            }
         </script>
     @endslot
 
