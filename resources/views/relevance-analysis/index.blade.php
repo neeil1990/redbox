@@ -697,7 +697,7 @@
                                     <span class="__helper-link ui_tooltip_w">
                                         <i class="fa fa-question-circle"></i>
                                         <span class="ui_tooltip __left">
-                                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page') }}
                                             </span>
                                         </span>
                                     </span>
@@ -805,7 +805,7 @@
                                 <th>{{ __('Average number of repetitions in the text and links') }}</th>
                                 <th>{{ __('The total number of repetitions in the text and links') }}</th>
                                 <th>{{ __('Average number of repetitions in the text and links') }}</th>
-                                <th>{{ __('The number of repetitions in the text on your page.') }}</th>
+                                <th>{{ __('The number of repetitions in the text on your page') }}</th>
                                 <th>{{ __('Average number of repetitions in links') }}</th>
                                 <th>{{ __('Number of repetitions in links') }}</th>
                             </tr>

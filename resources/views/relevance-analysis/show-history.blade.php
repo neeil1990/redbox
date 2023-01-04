@@ -483,7 +483,7 @@
                                     <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-question-circle"></i>
                                         <span class="ui_tooltip __left">
-                                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page.') }}
+                                            <span class="ui_tooltip_content">{{ __('The number of repetitions in the text on your page') }}
                                             </span>
                                         </span>
                                     </span>
