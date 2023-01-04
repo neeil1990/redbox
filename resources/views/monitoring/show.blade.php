@@ -17,9 +17,6 @@
             .dTable {
                 display: none;
             }
-            .table tr td:nth-child(4) {
-               text-align: left;
-            }
             .dataTables_processing {
                 margin: 10px auto;
                 z-index: 4;
@@ -33,7 +30,7 @@
             }
             .progress-spinner{
                 position: absolute;
-                top: 20%;
+                top: 10%;
                 width: 100%;
                 text-align: center;
                 z-index: 1;
@@ -42,9 +39,6 @@
                 position: absolute;
                 top: 50px;
                 right: 30px;
-            }
-            .table td, .table th {
-                padding: 0.75rem!important;
             }
             .dataTables_scrollHead {
                 position: sticky !important;
