@@ -383,10 +383,6 @@
                 <script>
                     $('#set-url').trigger('click')
                 </script>
-            @else
-                <script>
-                    $('#set-text').trigger('click')
-                </script>
             @endif
         @endif
 
