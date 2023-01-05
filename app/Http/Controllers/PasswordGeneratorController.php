@@ -32,100 +32,34 @@ class PasswordGeneratorController extends Controller
      */
     public function createPassword(Request $request)
     {
-        if ($this->isErrors($request)) {
+        if (PasswordsGenerator::isErrors($request->all())) {
             flash()->overlay(__('This combination of parameters is not allowed'), ' ')->error();
             return Redirect::back();
         }
         if (isset($request->savePassword)) {
             $userPassword = new PasswordsGenerator();
-            $userPassword->password = $this->generatePassword($request);
+            $userPassword->password = PasswordsGenerator::generatePassword($request->all());
             $userPassword->user_id = Auth::id();
             $userPassword->save();
         } else {
             $passwords = array();
             for ($i = 0; $i < 5; $i++) {
-                $passwords[] = $this->generatePassword($request);
+                $passwords[] = PasswordsGenerator::generatePassword($request->all());
             }
             return view('pages.password', ['user' => Auth::user(), 'passwords' => $passwords]);
         }
         return Redirect::route('pages.password');
     }
 
-    /**
-     * @param $request
-     * @return string
-     */
-    public function generatePassword($request): string
+    public function editComment(Request $request): \Illuminate\Http\JsonResponse
     {
-        $password = '';
-        $enums = [
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-        ];
-        $symbols = [
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-            'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z'
-        ];
-        $specialSymbols = [
-            '%', '*', ')', '?', '@', '#', '$', '~'
-        ];
+        PasswordsGenerator::where('id', '=', $request->input('id'))
+            ->where('user_id', '=', Auth::id())
+            ->update(['comment' => $request->input('comment')]);
 
-        $i = 0;
-        while ($i < $request->countSymbols) {
-            if ($request->enums) {
-                $password .= $enums[rand(0, count($enums) - 1)];
-                $i++;
-            }
-            if ($request->lowerCase) {
-                if ($i < $request->countSymbols) {
-                    $password .= $symbols[rand(0, count($symbols) - 1)];
-                    $i++;
-                }
-            }
-            if ($request->upperCase) {
-                if ($i < $request->countSymbols) {
-                    $password .= strtoupper($symbols[rand(0, count($symbols) - 1)]);
-                    $i++;
-                }
-            }
-            if ($request->specialSymbols) {
-                if ($i < $request->countSymbols) {
-                    $password .= $specialSymbols[rand(0, count($specialSymbols) - 1)];
-                    $i++;
-                }
-            }
-        }
-
-        return str_shuffle($password);
-    }
-
-    /**
-     * @param $request
-     * @return bool
-     */
-    public function isErrors($request): bool
-    {
-        if (empty($request->specialSymbols) &&
-            empty($request->countSymbols) &&
-            empty($request->lowerCase) &&
-            empty($request->upperCase) &&
-            empty($request->enums)
-        ) {
-            return true;
-        }
-
-        if (empty($request->specialSymbols) &&
-            empty($request->lowerCase) &&
-            empty($request->upperCase) &&
-            empty($request->enums)
-        ) {
-            return true;
-        }
-
-        if (empty($request->countSymbols)) {
-            return true;
-        }
-
-        return false;
+        return response()->json([
+            'success' => true
+        ]);
     }
 
 }

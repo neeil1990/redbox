@@ -184,15 +184,7 @@ class TextAnalyzer extends Model
     {
         $html = mb_strtolower($html);
 
-        $withHeader = preg_replace([
-            "'<style[^>]*?>.*?</style>'si",
-            "'<script[^>]*?>.*?</script>'si",
-            "'<i [^>]*?>.*?</i>'si",
-            "'array\n\(\n.*?\n\)\n'si",
-            "'array.*?\(.*?\)'si",
-        ], "", $html);
-
-        $withHeaderFix = preg_replace([
+        return preg_replace([
             "'<style[^>]*?>.*?</style>'si",
             "'<script[^>]*?>.*?</script>'si",
             "'<i [^>]*?>.*?</i>'si",
@@ -200,24 +192,6 @@ class TextAnalyzer extends Model
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ], "", $html);
-
-        $withoutHeader = preg_replace([
-            "'<head[^>]*?>.*?</head>'si"
-        ], "", $withHeader);
-
-        $withoutHeaderFix = preg_replace([
-            "'<head[^>]*?>.*?</head>'si"
-        ], "", $withHeaderFix);
-
-        if (!empty($withoutHeaderFix)) {
-            return $withoutHeaderFix;
-        } else if (!empty($withoutHeader)) {
-            return $withoutHeader;
-        } else if (!empty($withHeaderFix)) {
-            return $withHeaderFix;
-        }
-
-        return $withHeader;
     }
 
     /**

@@ -410,6 +410,7 @@ class Cluster
                 } else if (isset($this->clusters[$mainPhrase])) {
                     foreach ($this->clusters[$mainPhrase] as $target => $elem) {
                         $count = count(array_intersect($this->sites[$phrase]['sites'], $elem['sites']));
+                        //TODO фразовый + максимальный, но обрезать слова, идти от длинных фраз к коротким + обрезание игнорируемых слов
                         if ($count >= $this->minimum) {
                             $this->clusters[$mainPhrase][$phrase] = [
                                 'based' => $this->sites[$phrase]['based'],

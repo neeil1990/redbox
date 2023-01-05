@@ -12,6 +12,7 @@
 */
 
 use App\Morphy;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -92,6 +93,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/generate-password', 'PasswordGeneratorController@createPassword')->name('generate.password');
     Route::get('/password-generator', 'PasswordGeneratorController@index')->name('pages.password');
+    Route::post('/edit-password-comment', 'PasswordGeneratorController@editComment')->name('edit.password.comment');
 
     Route::post('counting-text-length', 'TextLengthController@countingTextLength')->name('counting.text.length');
     Route::get('counting-text-length', 'TextLengthController@index')->name('pages.length');
