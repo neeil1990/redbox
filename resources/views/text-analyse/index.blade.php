@@ -26,13 +26,15 @@
         <div class="collapse multi-collapse w-50 collapse show" id="analyse-text">
             <div class="form-group required text-or-html">
                 <textarea name="textarea" class="form form-control" rows="10" placeholder="Ваш текст"
-                >@isset($request['textarea']){{ $request['textarea'] }}@endisset</textarea>
+                >@isset($request['textarea'])
+                        {{ $request['textarea'] }}
+                    @endisset</textarea>
             </div>
         </div>
         <div class="collapse multi-collapse w-50" id="analyse-url">
             <div class="form-group required text-or-html">
                 <input type="text" class="form-control textarea-text-or-html" name="url" placeholder="https://site.ru"
-                       value="@isset($request['url'])) {{ $request['url'] }} @endisset">
+                       value="@isset($request['url']){{ $request['url'] }}@endisset">
             </div>
         </div>
     </div>
@@ -101,7 +103,9 @@
     </div>
     <div class="form-group required list-words mt-1"
          @if(!(isset($request['removeWords']) && $request['removeWords'])) style="display: none" @endif>
-        <textarea class="form form-control w-50" name="listWords" id="listWords" cols="8" rows="5">@if(isset($request['listWords'])){{ $request['listWords'] }}@endif</textarea>
+        <textarea class="form form-control w-50" name="listWords" id="listWords" cols="8" rows="5">@if(isset($request['listWords']))
+                {{ $request['listWords'] }}
+            @endif</textarea>
     </div>
     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
 
@@ -246,9 +250,6 @@
         </div>
     @endif
     @slot('js')
-        @isset($url)
-            <script src="{{ asset('plugins/text-analyzer/js/run-script.js') }}"></script>
-        @endisset
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>'
@@ -283,7 +284,6 @@
                 }
             })
         </script>
-
         @if(isset($response))
             <script>
                 $(document).ready(function () {
@@ -379,6 +379,29 @@
                     }
                 });
             </script>
+            @if(isset($request['url']))
+                <script>
+                    $('#set-url').trigger('click')
+                </script>
+            @else
+                <script>
+                    $('#set-text').trigger('click')
+                </script>
+            @endif
         @endif
+
+        @isset($url)
+            <script>
+                $('#set-url').trigger('click')
+
+                setTimeout(() => {
+                    $('#analyse-url > div > input').val("{{ $url }}")
+                }, 500)
+
+                setTimeout(() => {
+                    $('#app > div > div > div.card-body > form > input.btn.btn-secondary.mt-2').trigger('click')
+                }, 1000)
+            </script>
+        @endisset
     @endslot
 @endcomponent
