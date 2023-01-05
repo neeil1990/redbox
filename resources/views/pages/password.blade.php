@@ -14,7 +14,7 @@
     @endslot
     <div id="toast-container" class="toast-top-right success-message" style="display: none">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">{{ __('Comment successfully changed') }}</div>
+            <div class="toast-message">{{ __('Success') }}</div>
         </div>
     </div>
 
@@ -82,6 +82,29 @@
         </div>
     </div>
 
+    <div class="modal fade" id="removePasswordWindow" tabindex="-1" aria-labelledby="removePasswordWindowLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removePasswordWindowLabel">Подтвердите удаление</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button"
+                            data-dismiss="modal"
+                            id="success-remove-password"
+                            class="btn btn-secondary">
+                        {{ __('Remove') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="my-passwords mt-5">
         <h2>{{__('Your generated passwords')}}</h2>
         <table id="me-passwords-table" class="table table-bordered table-striped dataTable dtr-inline" role="grid"
@@ -96,7 +119,7 @@
             </thead>
             <tbody>
             @foreach($user->passwords as $password)
-                <tr>
+                <tr id="tr-{{ $password->id }}">
                     <td class="align-baseline">{{ $password->password }}</td>
                     <td class="align-baseline">
                         <textarea class="form form-control password-comment" name="comment" id="{{$password->id}}"
@@ -117,51 +140,90 @@
                                 <span class="ui_tooltip_content">{{ __('Copy to Clipboard') }}</span>
                             </span>
                         </div>
-                        <div class="__helper-link ui_tooltip_w btn btn-default">
+                        <button class="btn btn-default remove-password" data-order="{{ $password->id }}"
+                                data-toggle="modal" data-target="#removePasswordWindow">
                             <i aria-hidden="true" class="fa fa-trash"></i>
-                            <span class="ui_tooltip __left __l">
-                                <span class="ui_tooltip_content">{{ __('Remove') }}</span>
-                            </span>
-                        </div>
+                        </button>
                     </td>
                 </tr>
             @endforeach
             </tbody>
         </table>
     </div>
+    <input type="hidden" name="passwordId" id="passwordId">
     @slot('js')
         <script src="{{ asset('plugins/password-generator/js/password-generator.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
             $(document).ready(function () {
-                $('#me-passwords-table').dataTable({
-                    pageLength: 10,
+                $('.password-comment').change(function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.password.comment') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id: $(this).attr('id'),
+                            comment: $(this).val(),
+                        },
+                        success: function (response) {
+                            $('.success-message .toast-message').html("{{ __('Comment successfully changed') }}")
+                            $('.toast-top-right.success-message').show(300)
+                            setTimeout(() => {
+                                $('.toast-top-right.success-message').hide(300)
+                            }, 5000)
+                        },
+                        error: function () {
+                            $('.toast-top-right.error-message').show(300)
+                            setTimeout(() => {
+                                $('.toast-top-right.error-message').hide(300)
+                            }, 5000)
+                        }
+                    });
                 })
-            })
 
-            $('.password-comment').change(function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('edit.password.comment') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: $(this).attr('id'),
-                        comment: $(this).val(),
-                    },
-                    success: function (response) {
-                        $('.toast-top-right.success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.success-message').hide(300)
-                        }, 5000)
-                    },
-                    error: function () {
-                        $('.toast-top-right.error-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message').hide(300)
-                        }, 5000)
-                    }
+                $('.__helper-link.ui_tooltip_w.btn.btn-default').click(function () {
+                    let text = $(this).find(':first-child.hidden-password').text()
+                    let textarea = document.createElement('textarea');
+                    document.body.appendChild(textarea);
+                    textarea.value = text.trim();
+                    textarea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textarea);
+
+                    $('.success-message .toast-message').html("{{ __('Successfully copied') }}")
+                    $('.success-message').show(300)
+                    setTimeout(() => {
+                        $('.success-message').hide(300)
+                    }, 5000)
                 });
+
+                $('.remove-password').click(function () {
+                    $('#passwordId').val($(this).attr('data-order'))
+                })
+
+                $('#success-remove-password').click(function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('remove.password') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id: $('#passwordId').val(),
+                        },
+                        success: function (response) {
+                            $('#tr-' + $('#passwordId').val()).remove()
+                            $('.success-message .toast-message').html("{{ __('Successfully deleted') }}")
+                            $('.success-message').show(300)
+                            setTimeout(() => {
+                                $('.success-message').hide(300)
+                            }, 5000)
+                        },
+                        error: function () {
+
+                        }
+                    });
+                })
             })
         </script>
     @endslot

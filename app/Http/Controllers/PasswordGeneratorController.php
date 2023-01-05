@@ -62,4 +62,15 @@ class PasswordGeneratorController extends Controller
         ]);
     }
 
+    public function remove(Request $request): \Illuminate\Http\JsonResponse
+    {
+        PasswordsGenerator::where('id', '=', $request->input('id'))
+            ->where('user_id', '=', Auth::id())
+            ->delete();
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
 }
