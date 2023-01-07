@@ -233,6 +233,12 @@
                                 $('#searchEngine').val('yandex')
                             }
 
+                            if (request.engineVersion === 'max_phrases') {
+                                $('#ignoredWordsBlock').show(300)
+                            } else {
+                                $('#ignoredWordsBlock').hide(300)
+                            }
+
                             if (request.searchPhrases === 'true') {
                                 $('#searchPhrases').prop('checked', true);
                             } else {
@@ -264,6 +270,7 @@
                             } else {
                                 $('#searchBase').prop('checked', false);
                             }
+
 
                             if (request.mode === 'professional') {
                                 $('#start-analyse').attr('data-target', 'professional')
