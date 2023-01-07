@@ -262,7 +262,13 @@
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
                                                     'maximum' => 'Поиск максимального',
+                                                    'max_phrases' => 'Фразовый перебор и поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
+                                        </div>
+
+                                        <div class="form-group required" id="ignoredWordsBlock" style="display: none">
+                                            <label for="ignoredWords">Исключаемые слова</label>
+                                            <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8" rows="8"></textarea>
                                         </div>
 
                                         <div class="form-group required">
@@ -633,6 +639,7 @@
                             mode: 'professional',
                             brutForceCount: $('#brutForceCount').val(),
                             reductionRatio: $('#reductionRatio').val(),
+                            ignoredWords: $('#ignoredWords').val(),
                             defaultBrutForce: $('#defaultBrutForce').is(':checked')
                         },
                         success: function (response) {
@@ -716,6 +723,16 @@
                     $('#result-table').show()
                     $('#block-for-downloads-files').show()
                 }, 1000)
+
+                $('#engineVersionFast').change(function () {
+                    if ($(this).val() === 'max_phrases') {
+                        $('#ignoredWordsBlock').show(300)
+                    } else {
+                        if ($('#ignoredWordsBlock').is(':visible')) {
+                            $('#ignoredWordsBlock').hide(300)
+                        }
+                    }
+                })
             })
         </script>
     @endslot

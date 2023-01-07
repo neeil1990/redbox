@@ -21,6 +21,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         brutForceCount: $('#brutForceCount').val(),
         reductionRatio: $('#reductionRatio').val(),
         defaultBrutForce:$('#defaultBrutForce').is(':checked'),
+        ignoredWords: $('#ignoredWords').val()
     };
 }
 
