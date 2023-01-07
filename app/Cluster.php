@@ -69,6 +69,7 @@ class Cluster
 
     public function __construct(array $request, $user, $default = true)
     {
+        Log::debug('d', [$this->request['ignoredWords']]);
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         $this->brutForceCount = $request['brutForceCount'] ?? 1;
         $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
@@ -113,8 +114,6 @@ class Cluster
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
             $this->ignoredWords = isset($this->request['ignoredWords']) ? explode("\n", $this->request['ignoredWords']) : [];
         }
-
-        Log::debug('ignoredWords', $this->ignoredWords);
     }
 
     public function __sleep()
