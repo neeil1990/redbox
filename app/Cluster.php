@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -550,6 +551,7 @@ class Cluster
 
     protected function searchClustersEngineV7()
     {
+        Log::debug('ignored', $this->ignoredWords);
         $m = new Morphy();
         $result = [];
         $cache = [];
