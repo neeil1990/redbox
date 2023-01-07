@@ -113,7 +113,13 @@
             'exp' => 'эксперимент',
             'exp_phrases' => 'Фразовый перебор',
             'maximum' => 'Поиск максимального',
+            'max_phrases' => 'Фразовый перебор и поиск максимального',
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
+    </div>
+
+    <div class="form-group required" id="ignoredWordsBlock" style="display: none">
+        <label for="ignoredWords">Исключаемые слова</label>
+        <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8" rows="8"></textarea>
     </div>
 
     <div class="form-group required">
@@ -164,7 +170,8 @@
     <div class="row">
         <div class="col-6 d-flex flex-column">
             <label for="domain-textarea">{{ __('Domain') }}</label>
-            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100" placeholder="https://site.ru"></textarea>
+            <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"
+                      placeholder="https://site.ru"></textarea>
         </div>
 
         <div class="col-6">
@@ -285,6 +292,16 @@
                 $('.brut-force').show(300)
             } else {
                 $('.brut-force').hide(300)
+            }
+        })
+
+        $('#engineVersion').change(function () {
+            if ($(this).val() === 'max_phrases') {
+                $('#ignoredWordsBlock').show(300)
+            } else {
+                if ($('#ignoredWordsBlock').is(':visible')) {
+                    $('#ignoredWordsBlock').hide(300)
+                }
             }
         })
     })

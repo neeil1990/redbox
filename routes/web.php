@@ -316,21 +316,72 @@ Route::middleware(['verified'])->group(function () {
 });
 Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $cluster = \App\ClusterResults::findOrFail($id);
-    $sites = json_decode($cluster->sites_json, true);
-    $pre = [];
-    $clusters = [];
-    foreach ($sites as $phrase => $items) {
-        foreach ($sites as $ph => $its) {
-            $count = count(array_intersect($items['sites'], $its['sites']));
-            if ($count >= $minimum) {
-                $pre[$phrase][$ph] = count(array_intersect($items['sites'], $its['sites']));
+    $this->sites = json_decode($cluster->sites_json, true);
+    $this->minimum = $minimum;
+    $m = new Morphy();
+    $result = [];
+    $cache = [];
+
+    $ignoredWords = ['для', 'цена', 'купить', 'с', 'устройство'];
+
+    function sortByLengthReverse($a, $b)
+    {
+        return strlen($b) - strlen($a);
+    }
+
+    uksort($this->sites, "sortByLengthReverse");
+
+    foreach ($this->sites as $key1 => $site) {
+        $first = explode(' ', $key1);
+        if (count($first) === 1) {
+            $result[$key1][$key1] = 1;
+            continue;
+        }
+
+        foreach ($first as $keyF => $item) {
+            if (mb_strlen($item) < 2) {
+                continue;
+            } elseif (isset($cache[$item])) {
+                $first[$keyF] = $cache[$item];
+            } else {
+                $base = $m->base($item);
+                $first[$keyF] = $base;
+                $cache[$item] = $base;
             }
         }
-        arsort($pre[$phrase]);
+
+        foreach ($this->sites as $key2 => $site2) {
+            $second = explode(' ', $key2);
+            foreach ($second as $keyS => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } elseif (isset($cache[$item])) {
+                    $second[$keyS] = $cache[$item];
+                } else {
+                    $base = $m->base($item);
+                    $second[$keyS] = $base;
+                    $cache[$item] = $base;
+                }
+            }
+            foreach ($second as $key => $phrase) {
+                if (in_array($phrase, $ignoredWords)) {
+                    unset($second[$key]);
+                }
+            }
+
+            if (count($second) === 1) {
+                continue;
+            }
+
+            $count = count(array_intersect($first, $second));
+            if ($count > 0) {
+                $result[$key1][$key2] = $count;
+            }
+        }
     }
 
     $willClustered = [];
-    foreach ($pre as $items) {
+    foreach ($result as $items) {
         foreach ($items as $phrase => $count) {
             if (isset($willClustered[$phrase])) {
                 continue;
@@ -339,56 +390,54 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
                 continue;
             }
 
-            $keys = array_keys($pre[$phrase]);
-            $keysOf = array_keys($pre[$keys[1]]);
+            $keys = array_keys($result[$phrase]);
+            $keysOf = array_keys($result[$keys[1]]);
 
             if ($keysOf[1] === $phrase) {
-                $clusters[$phrase][$keys[1]] = $sites[$keys[1]];
-                $clusters[$phrase][$keys[1]]['merge'] = [$phrase => $pre[$keys[1]][$phrase]];
-                $clusters[$phrase][$phrase] = $sites[$phrase];
-                $clusters[$phrase][$phrase]['merge'] = [$keys[1] => $pre[$phrase][$keys[1]]];
+                $this->clusters[$phrase][$keys[1]] = $this->sites[$keys[1]];
+                $this->clusters[$phrase][$phrase] = $this->sites[$phrase];
+                $this->clusters[$phrase][$phrase]['merge'] = [$keys[1] => $result[$phrase][$keys[1]]];
                 $willClustered[$phrase] = true;
                 $willClustered[$keys[1]] = true;
             }
         }
     }
 
-    ksort($sites);
-    foreach ($sites as $mainPhrase => $item) {
+    ksort($this->sites);
+    foreach ($this->sites as $mainPhrase => $item) {
         if (isset($willClustered[$mainPhrase])) {
             continue;
         }
 
-        foreach ($clusters as $ph => $cluster) {
+        foreach ($this->clusters as $ph => $cluster) {
             foreach ($cluster as $phrase => $val) {
-                $count = count(array_intersect($item['sites'], $sites[$phrase]['sites']));
-                if ($count >= $minimum) {
-                    $clusters[$ph][$mainPhrase] = $item;
-                    $clusters[$ph][$mainPhrase]['merge'] = [$phrase => $count];
+                $count = count(array_intersect($item['sites'], $this->sites[$phrase]['sites']));
+                if ($count >= $this->minimum) {
+                    $this->clusters[$ph][$mainPhrase] = $item;
+                    $this->clusters[$ph][$mainPhrase]['merge'] = [$phrase => $count];
                     $willClustered[$mainPhrase] = true;
                     continue 3;
                 }
             }
         }
-        $clusters[$mainPhrase][$mainPhrase] = $item;
+        $this->clusters[$mainPhrase][$mainPhrase] = $item;
         $willClustered[$mainPhrase] = true;
     }
 
-    dd($willClustered);
     $willClustered = [];
-    foreach ($clusters as $mainPhrase => $cluster) {
+    foreach ($this->clusters as $mainPhrase => $cluster) {
         if (isset($willClustered[$mainPhrase])) {
             continue;
         }
         foreach ($cluster as $info) {
             $intersects = [];
-            foreach ($clusters as $offPhrase => $offCluster) {
+            foreach ($this->clusters as $offPhrase => $offCluster) {
                 if ($mainPhrase === $offPhrase || isset($willClustered[$offPhrase])) {
                     continue;
                 }
                 foreach ($offCluster as $clusterPhrase => $offInfo) {
                     $count = count(array_intersect($info['sites'], $offInfo['sites']));
-                    if ($count >= $minimum) {
+                    if ($count >= $this->minimum) {
                         $intersects[$offPhrase] = $count;
                     }
                 }
@@ -396,27 +445,34 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
             arsort($intersects);
             if (count($intersects) > 0) {
                 foreach ($intersects as $intersectPhrase => $intersectCount) {
-                    foreach ($clusters[$intersectPhrase] as $ph => $items) {
+                    foreach ($this->clusters[$intersectPhrase] as $ph => $items) {
                         $intersects2 = [];
-                        foreach ($clusters as $op => $oc) {
+                        foreach ($this->clusters as $op => $oc) {
                             if ($op === $intersectPhrase || isset($willClustered[$intersectPhrase])) {
                                 continue;
                             }
                             foreach ($oc as $phrase => $clusterInfo) {
                                 $count2 = count(array_intersect($items['sites'], $clusterInfo['sites']));
-                                if ($count2 >= $minimum)
+                                if ($count2 >= $this->minimum)
                                     $intersects2[$op] = $count2;
                             }
                         }
                     }
                     arsort($intersects2);
                     if (array_key_first($intersects2) === $mainPhrase) {
-                        $clusters[$mainPhrase] = array_merge($clusters[$mainPhrase], $clusters[$intersectPhrase]);
-                        unset($clusters[$intersectPhrase]);
+                        $this->clusters[$mainPhrase] = array_merge($this->clusters[$mainPhrase], $this->clusters[$intersectPhrase]);
+                        unset($this->clusters[$intersectPhrase]);
                         $willClustered[$intersectPhrase] = true;
                     }
                 }
             }
         }
     }
+
+    $count = 0;
+    foreach ($this->clusters as $cluster) {
+        $count += count($cluster);
+    }
+    dump($count);
+    dd($this->clusters);
 });

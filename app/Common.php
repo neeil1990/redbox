@@ -42,4 +42,9 @@ class Common
     {
         return json_decode(gzuncompress(base64_decode($string)), true);
     }
+
+    public static function sortByLengthReverse($a, $b)
+    {
+        return strlen($b) - strlen($a);
+    }
 }

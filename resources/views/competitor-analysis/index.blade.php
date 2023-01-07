@@ -110,8 +110,12 @@
         <div class="card-body">
             <div class="col-md-6">
                 <div class="form-group required">
-                    <label>{{ __('List of phrases') }}</label>
-                    {!! Form::textarea("phrases", null ,["class"=>"form-control phrases","required"=>"required"]) !!}
+                    <div class="d-flex justify-content-between">
+                        <label>{{ __('List of phrases') }}</label>
+                        <div class="text-muted">{{__('count phrases')}}: <span id="countAddedPhrases">0</span></div>
+                    </div>
+                    {!! Form::textarea("phrases", null ,["class" => "form-control phrases","required" => "required", 'id' => 'phrasesList']) !!}
+                    <span class="text-muted">Максимальное количество фраз - 40.</span>
                 </div>
                 <div class="form-group required">
                     <label>{{ __('Top 10/20') }}</label>
@@ -667,6 +671,31 @@
             function stringGoToAnalyse() {
                 return "{{ __('Analyze the text') }}"
             }
+
+            document.getElementById('phrasesList').addEventListener('keyup', function () {
+                let countAddedPhrases = $('#countAddedPhrases')
+                let numberLineBreaksInFirstList = 0;
+                let phrasesList = $('#phrasesList').val().split('\n');
+                for (let i = 0; i < phrasesList.length; i++) {
+                    if (phrasesList[i] !== '') {
+                        numberLineBreaksInFirstList++
+                    }
+                }
+
+                countAddedPhrases.html(numberLineBreaksInFirstList)
+
+                if (numberLineBreaksInFirstList >= 40) {
+                    countAddedPhrases.css({
+                        'color': '#dc3545 !important'
+                    })
+                } else {
+                    countAddedPhrases.css({
+                        'color': '#6c757d !important'
+                    })
+                }
+            });
+
+            console.clear()
         </script>
     @endslot
 @endcomponent
