@@ -73,6 +73,7 @@ class Cluster
         $this->brutForceCount = $request['brutForceCount'] ?? 1;
         $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
         $this->defaultBrutForce = isset($request['defaultBrutForce']) ? filter_var($request['defaultBrutForce'], FILTER_VALIDATE_BOOLEAN) : false;
+        $this->ignoredWords = isset($this->request['ignoredWords']) ? explode("\n", $this->request['ignoredWords']) : [];
 
         if (!isset($request['mode']) || $request['mode'] !== 'professional') {
             $this->count = 40;
@@ -111,7 +112,6 @@ class Cluster
             $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
-            $this->ignoredWords = isset($this->request['ignoredWords']) ? explode("\n", $this->request['ignoredWords']) : [];
         }
     }
 
