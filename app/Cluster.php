@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -69,11 +68,11 @@ class Cluster
 
     public function __construct(array $request, $user, $default = true)
     {
+        $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         $this->brutForceCount = $request['brutForceCount'] ?? 1;
         $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
         $this->defaultBrutForce = isset($request['defaultBrutForce']) ? filter_var($request['defaultBrutForce'], FILTER_VALIDATE_BOOLEAN) : false;
-        $this->ignoredWords = isset($this->request['ignoredWords']) ? explode("\n", $this->request['ignoredWords']) : [];
 
         if (!isset($request['mode']) || $request['mode'] !== 'professional') {
             $this->count = 40;
@@ -95,6 +94,7 @@ class Cluster
         $this->engineVersion = $request['engineVersion'];
 
         if ($default) {
+            $this->request = $request;
             $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
             $this->engineVersion = $request['engineVersion'];
             $this->searchEngine = $request['searchEngine'];
@@ -106,7 +106,6 @@ class Cluster
             $this->save = filter_var($request['save'], FILTER_VALIDATE_BOOLEAN);
             $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
             $this->countPhrases = count($this->phrases);
-            $this->request = $request;
             $this->progressId = $request['progressId'];
 
             $this->xml = new SimplifiedXmlFacade($this->region, $this->count);
