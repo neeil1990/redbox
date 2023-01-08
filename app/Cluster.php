@@ -551,13 +551,12 @@ class Cluster
 
     protected function searchClustersEngineV7()
     {
-        Log::debug('ignored', $this->ignoredWords);
         $m = new Morphy();
         $result = [];
         $cache = [];
 
         uksort($this->sites, function ($a, $b) {
-            return strlen($b) - strlen($a);
+            return mb_strlen($b) - mb_strlen($a);
         });
 
         foreach ($this->sites as $key1 => $site) {
@@ -607,6 +606,9 @@ class Cluster
                     $result[$key1][$key2] = $count;
                 }
             }
+            if (isset($result[$key1])) {
+                arsort($result[$key1]);
+            }
         }
 
         $willClustered = [];
@@ -620,19 +622,17 @@ class Cluster
                 }
 
                 $keys = array_keys($result[$phrase]);
-                $keysOf = array_keys($result[$keys[1]]);
 
-                if ($keysOf[1] === $phrase) {
-                    $this->clusters[$phrase][$keys[1]] = $this->sites[$keys[1]];
-                    $this->clusters[$phrase][$phrase] = $this->sites[$phrase];
-                    $this->clusters[$phrase][$phrase]['merge'] = [$keys[1] => $result[$phrase][$keys[1]]];
+                if (array_key_first($items) === $keys[0]) {
+                    $this->clusters[$keys[0]][$keys[0]] = $this->sites[$keys[0]];
+                    $this->clusters[$keys[0]][$phrase] = $this->sites[$phrase];
+                    $this->clusters[$keys[0]][$phrase]['merge'] = [$keys[0] => $result[$phrase][$keys[0]]];
                     $willClustered[$phrase] = true;
-                    $willClustered[$keys[1]] = true;
+                    $willClustered[$keys[0]] = true;
                 }
             }
         }
 
-        ksort($this->sites);
         foreach ($this->sites as $mainPhrase => $item) {
             if (isset($willClustered[$mainPhrase])) {
                 continue;
