@@ -689,6 +689,9 @@ class Cluster
                         }
                         arsort($intersects2);
                         if (array_key_first($intersects2) === $mainPhrase) {
+                            $inter = count(array_intersect($this->sites[$mainPhrase]['sites'], $this->sites[$intersectPhrase]['sites']));
+                            $this->clusters[$mainPhrase][$mainPhrase]['merge'] = [$inter => $intersectPhrase];
+                            $this->clusters[$intersectPhrase][$intersectPhrase]['merge'] = [$inter => $mainPhrase];
                             $this->clusters[$mainPhrase] = array_merge($this->clusters[$mainPhrase], $this->clusters[$intersectPhrase]);
                             unset($this->clusters[$intersectPhrase]);
                             $willClustered[$intersectPhrase] = true;
