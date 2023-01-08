@@ -15,10 +15,6 @@
                 vertical-align: inherit;
             }
 
-            .ui_tooltip_content {
-                width: 325px;
-            }
-
             .dataTables_info, .hidden-result-table_filter {
                 display: none;
             }
