@@ -415,7 +415,6 @@ class Cluster
                 } else if (isset($this->clusters[$mainPhrase])) {
                     foreach ($this->clusters[$mainPhrase] as $target => $elem) {
                         $count = count(array_intersect($this->sites[$phrase]['sites'], $elem['sites']));
-                        //TODO фразовый + максимальный, но обрезать слова, идти от длинных фраз к коротким + обрезание игнорируемых слов
                         if ($count >= $this->minimum) {
                             $this->clusters[$mainPhrase][$phrase] = [
                                 'based' => $this->sites[$phrase]['based'],
@@ -603,7 +602,7 @@ class Cluster
 
                 $count = count(array_intersect($first, $second));
                 if ($count > 0) {
-                    $result[$key1][$key2] = $count;
+                    $result[$key1][$key2] = $this->minimum - (($this->minimum / 100) * (min($count, 100) * 10));
                 }
             }
             if (isset($result[$key1])) {
@@ -612,23 +611,37 @@ class Cluster
         }
 
         $willClustered = [];
-        foreach ($result as $items) {
-            foreach ($items as $phrase => $count) {
+        foreach ($result as $mainPhrase => $phrases) {
+            if (isset($willClustered[$mainPhrase])) {
+                continue;
+            }
+            foreach ($phrases as $phrase => $minimum) {
                 if (isset($willClustered[$phrase])) {
                     continue;
                 }
-                if ($phrase === array_key_first($items)) {
+                if ($mainPhrase === $phrase) {
+                    $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
+                    $willClustered[$mainPhrase] = true;
                     continue;
                 }
-
-                $keys = array_keys($result[$phrase]);
-
-                if (array_key_first($items) === $keys[0]) {
-                    $this->clusters[$keys[0]][$keys[0]] = $this->sites[$keys[0]];
-                    $this->clusters[$keys[0]][$phrase] = $this->sites[$phrase];
-                    $this->clusters[$keys[0]][$phrase]['merge'] = [$keys[0] => $result[$phrase][$keys[0]]];
+                $ideal = count(array_intersect($this->sites[$mainPhrase]['sites'], $this->sites[$phrase]['sites']));
+                if ($ideal < $minimum) {
+                    continue;
+                }
+                $intersect = [];
+                foreach ($result[$phrase] as $ph => $checked) {
+                    if ($ph === $phrase || isset($willClustered[$ph])) {
+                        continue;
+                    }
+                    $c = count(array_intersect($this->sites[$ph]['sites'], $this->sites[$phrase]['sites']));
+                    if ($c > $checked) {
+                        $intersect[$ph] = $c;
+                    }
+                }
+                if (array_key_first($intersect) === $mainPhrase) {
+                    $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
+                    $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
                     $willClustered[$phrase] = true;
-                    $willClustered[$keys[0]] = true;
                 }
             }
         }
@@ -651,54 +664,6 @@ class Cluster
             }
             $this->clusters[$mainPhrase][$mainPhrase] = $item;
             $willClustered[$mainPhrase] = true;
-        }
-
-        $willClustered = [];
-        foreach ($this->clusters as $mainPhrase => $cluster) {
-            if (isset($willClustered[$mainPhrase])) {
-                continue;
-            }
-            foreach ($cluster as $info) {
-                $intersects = [];
-                foreach ($this->clusters as $offPhrase => $offCluster) {
-                    if ($mainPhrase === $offPhrase || isset($willClustered[$offPhrase])) {
-                        continue;
-                    }
-                    foreach ($offCluster as $clusterPhrase => $offInfo) {
-                        $count = count(array_intersect($info['sites'], $offInfo['sites']));
-                        if ($count >= $this->minimum) {
-                            $intersects[$offPhrase] = $count;
-                        }
-                    }
-                }
-                arsort($intersects);
-                if (count($intersects) > 0) {
-                    foreach ($intersects as $intersectPhrase => $intersectCount) {
-                        foreach ($this->clusters[$intersectPhrase] as $ph => $items) {
-                            $intersects2 = [];
-                            foreach ($this->clusters as $op => $oc) {
-                                if ($op === $intersectPhrase || isset($willClustered[$intersectPhrase])) {
-                                    continue;
-                                }
-                                foreach ($oc as $phrase => $clusterInfo) {
-                                    $count2 = count(array_intersect($items['sites'], $clusterInfo['sites']));
-                                    if ($count2 >= $this->minimum)
-                                        $intersects2[$op] = $count2;
-                                }
-                            }
-                        }
-                        arsort($intersects2);
-                        if (array_key_first($intersects2) === $mainPhrase) {
-                            $inter = count(array_intersect($this->sites[$mainPhrase]['sites'], $this->sites[$intersectPhrase]['sites']));
-                            $this->clusters[$mainPhrase][$mainPhrase]['merge'] = [$inter => $intersectPhrase];
-                            $this->clusters[$intersectPhrase][$intersectPhrase]['merge'] = [$inter => $mainPhrase];
-                            $this->clusters[$mainPhrase] = array_merge($this->clusters[$mainPhrase], $this->clusters[$intersectPhrase]);
-                            unset($this->clusters[$intersectPhrase]);
-                            $willClustered[$intersectPhrase] = true;
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -805,142 +770,12 @@ class Cluster
 Количество групп: " . count($this->clusters) . "
 Топ: $this->count
 Режим: " . $this->request['clusteringLevel'] . "
-Регион: " . Cluster::getRegionName($this->request['region']) . "
+Регион: " . Common::getRegionName($this->request['region']) . "
 <a href='https://lk.redbox.su/show-cluster-result/" . $this->newCluster->id . "'>Просмотр результатов</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/csv'>Скачать CSV</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
         TelegramBot::sendMessage($message, $this->user->chat_id);
-    }
-
-    public static function getRegionName(string $id): string
-    {
-        switch ($id) {
-            case '1' :
-                return __('Moscow');
-            case '20' :
-                return __('Arkhangelsk');
-            case '37' :
-                return __('Astrakhan');
-            case '197' :
-                return __('Barnaul');
-            case '4' :
-                return __('Belgorod');
-            case '77' :
-                return __('Blagoveshchensk');
-            case '191' :
-                return __('Bryansk');
-            case '24' :
-                return __('Veliky Novgorod');
-            case '75' :
-                return __('Vladivostok');
-            case '33' :
-                return __('Vladikavkaz');
-            case '192' :
-                return __('Vladimir');
-            case '38' :
-                return __('Volgograd');
-            case '21' :
-                return __('Vologda');
-            case '193' :
-                return __('Voronezh');
-            case '1106' :
-                return __('Grozny');
-            case '54' :
-                return __('Ekaterinburg');
-            case '5' :
-                return __('Ivanovo');
-            case '63' :
-                return __('Irkutsk');
-            case '41' :
-                return __('Yoshkar-ola');
-            case '43' :
-                return __('Kazan');
-            case '22' :
-                return __('Kaliningrad');
-            case '64' :
-                return __('Kemerovo');
-            case '7' :
-                return __('Kostroma');
-            case '35' :
-                return __('Krasnodar');
-            case '62' :
-                return __('Krasnoyarsk');
-            case '53' :
-                return __('Kurgan');
-            case '8' :
-                return __('Kursk');
-            case '9' :
-                return __('Lipetsk');
-            case '28' :
-                return __('Makhachkala');
-            case '213' :
-                return __('Moscow');
-            case '23' :
-                return __('Murmansk');
-            case '1092' :
-                return __('Nazran');
-            case '30' :
-                return __('Nalchik');
-            case '47' :
-                return __('Nizhniy Novgorod');
-            case '65' :
-                return __('Novosibirsk');
-            case '66' :
-                return __('Omsk');
-            case '10' :
-                return __('Eagle');
-            case '48' :
-                return __('Orenburg');
-            case '49' :
-                return __('Penza');
-            case '50' :
-                return __('Perm');
-            case '25' :
-                return __('Pskov');
-            case '39' :
-                return __('Rostov-on');
-            case '11' :
-                return __('Ryazan');
-            case '51' :
-                return __('Samara');
-            case '42' :
-                return __('Saransk');
-            case '2' :
-                return __('Saint-Petersburg');
-            case '12' :
-                return __('Smolensk');
-            case '239' :
-                return __('Sochi');
-            case '36' :
-                return __('Stavropol');
-            case '973' :
-                return __('Surgut');
-            case '13' :
-                return __('Tambov');
-            case '14' :
-                return __('Tver');
-            case '67' :
-                return __('Tomsk');
-            case '15' :
-                return __('Tula');
-            case '195' :
-                return __('Ulyanovsk');
-            case '172' :
-                return __('Ufa');
-            case '76' :
-                return __('Khabarovsk');
-            case '45' :
-                return __('Cheboksary');
-            case '56' :
-                return __('Chelyabinsk');
-            case '1104' :
-                return __('Cherkessk');
-            case '16' :
-                return __('Yaroslavl');
-            default:
-                return 'Регион не опознан';
-        }
     }
 
     protected function mergeClusters($item2, $phrase, $phrase2, array $willClustered = []): array

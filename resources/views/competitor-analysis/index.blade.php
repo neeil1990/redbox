@@ -191,7 +191,7 @@
                             ], $region ?? null, ['class' => 'custom-select rounded-0 region']) !!}
                 </div>
                 <div class="well well-sm clearfix">
-                    <button class="btn btn-secondary pull-left" type="button">{{ __('Analyze') }}</button>
+                    <button class="btn btn-secondary pull-left" type="button" id="start-analyse">{{ __('Analyze') }}</button>
                 </div>
             </div>
 
@@ -684,14 +684,16 @@
 
                 countAddedPhrases.html(numberLineBreaksInFirstList)
 
-                if (numberLineBreaksInFirstList >= 40) {
+                if (numberLineBreaksInFirstList > 40) {
                     countAddedPhrases.css({
-                        'color': '#dc3545 !important'
+                        'color': '#dc3545'
                     })
+                    $('#start-analyse').attr('disabled', true);
                 } else {
                     countAddedPhrases.css({
-                        'color': '#6c757d !important'
+                        'color': '#6c757d'
                     })
+                    $('#start-analyse').attr('disabled', false);
                 }
             });
 
