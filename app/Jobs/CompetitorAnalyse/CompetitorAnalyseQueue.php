@@ -36,7 +36,8 @@ class CompetitorAnalyseQueue implements ShouldQueue
      */
     public function handle()
     {
-        $analysis = new SearchCompetitors($this->userId);
+        $analysis = new SearchCompetitors();
+        $analysis->setUserId($this->userId);
         $analysis->setPhrases($this->request['phrases']);
         $analysis->setRegion($this->request['region']);
         $analysis->setCount($this->request['count']);

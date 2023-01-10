@@ -45,16 +45,19 @@ class SearchCompetitors extends Model
 
     protected $userId;
 
-    public function __construct($userId)
-    {
-        $this->userId = $userId;
-
-        parent::__construct();
-    }
-
     public function getCountPhrases()
     {
         return $this->countPhrases;
+    }
+
+    public function setUserId(int $id): int
+    {
+        return $this->userId = $id;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
     }
 
     public function setPageHash(string $pageHash)
@@ -136,7 +139,7 @@ class SearchCompetitors extends Model
         } catch (Throwable $e) {
             $now = Carbon::now();
 
-            SearchCompetitors::where('user_id', '=', Auth::id())
+            SearchCompetitors::where('user_id', '=', $this->getUserId())
                 ->where('month', '=', $now->year . '-' . $now->month)
                 ->decriment('counter', $this->getCountPhrases());
 
