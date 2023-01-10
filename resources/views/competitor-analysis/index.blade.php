@@ -115,7 +115,7 @@
                         <div class="text-muted">{{__('count phrases')}}: <span id="countAddedPhrases">0</span></div>
                     </div>
                     {!! Form::textarea("phrases", null ,["class" => "form-control phrases","required" => "required", 'id' => 'phrasesList']) !!}
-                    <span class="text-muted">Максимальное количество фраз - 40.</span>
+                    <span class="text-muted">{{ __('The maximum number of phrases is 40') }}</span>
                 </div>
                 <div class="form-group required">
                     <label>{{ __('Top 10/20') }}</label>
