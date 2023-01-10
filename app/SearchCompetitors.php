@@ -76,15 +76,15 @@ class SearchCompetitors extends Model
         $this->count = $count;
     }
 
-    public function getResult(): array
+    public function getResult()
     {
-        return [
+        return json_encode([
             'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
             'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
             'totalMetaTags' => $this->tryConvertEncoding($this->totalMetaTags),
             'domainsPosition' => $this->tryConvertEncoding($this->domainsPosition),
             'urls' => $this->tryConvertEncoding($this->urls),
-        ];
+        ]);
     }
 
     protected function tryConvertEncoding($object)
@@ -386,7 +386,8 @@ class SearchCompetitors extends Model
         }
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
-            'percent' => 100
+            'percent' => 100,
+            'result' => $this->getResult()
         ]);
     }
 

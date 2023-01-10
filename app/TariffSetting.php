@@ -100,14 +100,11 @@ class TariffSetting extends Model
 
 
     /**
-     * @param string $phrases
+     * @param int $newCount
      * @return bool
      */
-    public static function checkSearchCompetitorsLimits(string $phrases): bool
+    public static function checkSearchCompetitorsLimits(int $newCount): bool
     {
-        $newRequest = explode("\n", $phrases);
-        $newRequest = count(array_unique(array_diff($newRequest, [''])));
-
         $now = Carbon::now();
 
         $count = SearchCompetitors::where('user_id', '=', Auth::id())
@@ -122,7 +119,7 @@ class TariffSetting extends Model
 
         if (isset($tariff['settings']['CompetitorAnalysisPhrases']) && $tariff['settings']['CompetitorAnalysisPhrases']['value'] > 0) {
 
-            if ($newRequest + $count > $tariff['settings']['CompetitorAnalysisPhrases']['value']) {
+            if ($newCount + $count > $tariff['settings']['CompetitorAnalysisPhrases']['value']) {
                 return true;
             }
         }

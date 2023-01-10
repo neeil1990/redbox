@@ -191,7 +191,8 @@
                             ], $region ?? null, ['class' => 'custom-select rounded-0 region']) !!}
                 </div>
                 <div class="well well-sm clearfix">
-                    <button class="btn btn-secondary pull-left" type="button" id="start-analyse">{{ __('Analyze') }}</button>
+                    <button class="btn btn-secondary pull-left" type="button"
+                            id="start-analyse">{{ __('Analyze') }}</button>
                 </div>
             </div>
 
@@ -544,26 +545,11 @@
                         beforeSend: function () {
                             refreshAll()
                             interval = setInterval(() => {
-                                getProgressPercent(token)
+                                getProgressPercent(token, interval)
                             }, 5000)
                         },
-                        success: async function (response) {
-                            setProgressBarStyles(100)
-                            setTimeout(() => {
-                                $("#progress-bar").hide(300)
-                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                                $('#render-bar').show(300)
-                            }, 1000)
-                            removeProgressPercent(token)
-                            clearInterval(interval)
+                        success: function () {
 
-                            await renderTopSites(response.result.analysedSites)
-                            await renderTopSitesV2(response.result.analysedSites)
-                            await renderNestingTable(response.result.pagesCounter)
-                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
-                            await renderTagsTable(response.result.totalMetaTags)
-                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                            await duallboxBlockRender(response.result.totalMetaTags, count)
                         },
                         error: function (response) {
                             setTimeout(() => {
@@ -578,7 +564,7 @@
                 }
             });
 
-            function getProgressPercent(token) {
+            function getProgressPercent(token, interval) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -587,8 +573,27 @@
                         _token: token,
                         pageHash: window.session,
                     },
-                    success: function (response) {
-                        setProgressBarStyles(response.percent.percent)
+                    success: async function (response) {
+                        if (response.percent.percent === 100) {
+                            clearInterval(interval)
+                            setProgressBarStyles(100)
+                            setTimeout(() => {
+                                $("#progress-bar").hide(300)
+                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                                $('#render-bar').show(300)
+                            }, 1000)
+                            removeProgressPercent(token)
+
+                            await renderTopSites(response.result.analysedSites)
+                            await renderTopSitesV2(response.result.analysedSites)
+                            await renderNestingTable(response.result.pagesCounter)
+                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
+                            await renderTagsTable(response.result.totalMetaTags)
+                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
+                            await duallboxBlockRender(response.result.totalMetaTags, count)
+                        } else {
+                            setProgressBarStyles(response.percent.percent)
+                        }
                     }
                 });
             }
