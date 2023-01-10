@@ -48,22 +48,20 @@ class SearchCompetitorsController extends Controller
      */
     public function analyseSites(Request $request): JsonResponse
     {
-        $countPhrases = explode("\n", $request->input('phrases'));
-        $countPhrases = count(array_unique(array_diff($countPhrases, [''])));
+        $countPhrases = count(array_unique(array_diff(explode("\n", $request->input('phrases')), [''])));
+
         try {
             if (TariffSetting::checkSearchCompetitorsLimits($countPhrases)) {
                 return response()->json([
                     'message' => __('Exceeding the limit')
                 ], 500);
-            }
-
-            if ($countPhrases > 40) {
+            } else if ($countPhrases > 40) {
                 return response()->json([
                     'message' => __('The maximum number of keywords is 40, and you have - ') . $countPhrases
                 ], 500);
             }
 
-            dispatch((new CompetitorAnalyseQueue($request->all()))->onQueue('competitor_analyse'));
+            dispatch((new CompetitorAnalyseQueue($request->all(), Auth::id()))->onQueue('competitor_analyse'));
 
             return response()->json([
                 'success' => true,

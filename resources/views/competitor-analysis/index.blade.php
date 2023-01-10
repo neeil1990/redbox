@@ -543,13 +543,12 @@
                             pageHash: window.session,
                         },
                         beforeSend: function () {
-                            refreshAll()
                             interval = setInterval(() => {
                                 getProgressPercent(token, interval)
                             }, 5000)
                         },
                         success: function () {
-
+                            refreshAll()
                         },
                         error: function (response) {
                             setTimeout(() => {
