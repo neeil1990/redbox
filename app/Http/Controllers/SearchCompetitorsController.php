@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\CompetitorConfig;
 use App\CompetitorsProgressBar;
+use App\Jobs\CompetitorAnalyse\CompetitorAnalyseQueue;
 use App\SearchCompetitors;
 use App\TariffSetting;
 use App\TextAnalyzer;
@@ -47,28 +48,23 @@ class SearchCompetitorsController extends Controller
      */
     public function analyseSites(Request $request): JsonResponse
     {
+        $countPhrases = count(array_unique(array_diff(explode("\n", $request->input('phrases')), [''])));
+
         try {
-            if (TariffSetting::checkSearchCompetitorsLimits($request->input('phrases'))) {
+            if (TariffSetting::checkSearchCompetitorsLimits($countPhrases)) {
                 return response()->json([
                     'message' => __('Exceeding the limit')
                 ], 500);
-            }
-            $analysis = new SearchCompetitors();
-            $analysis->setPhrases($request->input('phrases'));
-            if (count($analysis->getPhrases()) > 40) {
+            } else if ($countPhrases > 40) {
                 return response()->json([
-                    'message' => __('The maximum number of keywords is 40, and you have - ') . count($analysis->getPhrases())
+                    'message' => __('The maximum number of keywords is 40, and you have - ') . $countPhrases
                 ], 500);
             }
 
-            $analysis->setRegion($request->input('region'));
-            $analysis->setCount($request->input('count'));
-            $analysis->setPageHash($request->input('pageHash'));
-
-            $analysis->analyzeList();
+            dispatch((new CompetitorAnalyseQueue($request->all(), Auth::id()))->onQueue('competitor_analyse'));
 
             return response()->json([
-                'result' => $analysis->getResult(),
+                'success' => true,
             ]);
         } catch (Throwable $e) {
             Log::debug('competitor error', [
@@ -108,10 +104,22 @@ class SearchCompetitorsController extends Controller
      */
     public function getProgressBar(Request $request): JsonResponse
     {
-        return response()->json([
-            'percent' => CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->first(['percent']),
-            'code' => 200,
-        ]);
+        $progress = CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->first();
+
+        if ($progress->percent === 100) {
+            $progress->delete();
+            return response()->json([
+                'percent' => $progress->percent,
+                'result' => json_decode($progress->result, true),
+                'code' => 200,
+            ]);
+        } else {
+            return response()->json([
+                'percent' => $progress->percent,
+                'code' => 200,
+            ]);
+        }
+
     }
 
     /**

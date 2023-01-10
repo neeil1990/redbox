@@ -115,7 +115,7 @@
                         <div class="text-muted">{{__('count phrases')}}: <span id="countAddedPhrases">0</span></div>
                     </div>
                     {!! Form::textarea("phrases", null ,["class" => "form-control phrases","required" => "required", 'id' => 'phrasesList']) !!}
-                    <span class="text-muted">Максимальное количество фраз - 40.</span>
+                    <span class="text-muted">{{ __('The maximum number of phrases is 40') }}</span>
                 </div>
                 <div class="form-group required">
                     <label>{{ __('Top 10/20') }}</label>
@@ -191,7 +191,8 @@
                             ], $region ?? null, ['class' => 'custom-select rounded-0 region']) !!}
                 </div>
                 <div class="well well-sm clearfix">
-                    <button class="btn btn-secondary pull-left" type="button">{{ __('Analyze') }}</button>
+                    <button class="btn btn-secondary pull-left" type="button"
+                            id="start-analyse">{{ __('Analyze') }}</button>
                 </div>
             </div>
 
@@ -542,28 +543,12 @@
                             pageHash: window.session,
                         },
                         beforeSend: function () {
-                            refreshAll()
                             interval = setInterval(() => {
-                                getProgressPercent(token)
-                            }, 500)
+                                getProgressPercent(token, interval)
+                            }, 5000)
                         },
-                        success: async function (response) {
-                            setProgressBarStyles(100)
-                            setTimeout(() => {
-                                $("#progress-bar").hide(300)
-                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                                $('#render-bar').show(300)
-                            }, 1000)
-                            removeProgressPercent(token)
-                            clearInterval(interval)
-
-                            await renderTopSites(response.result.analysedSites)
-                            await renderTopSitesV2(response.result.analysedSites)
-                            await renderNestingTable(response.result.pagesCounter)
-                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
-                            await renderTagsTable(response.result.totalMetaTags)
-                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                            await duallboxBlockRender(response.result.totalMetaTags, count)
+                        success: function () {
+                            refreshAll()
                         },
                         error: function (response) {
                             setTimeout(() => {
@@ -578,7 +563,7 @@
                 }
             });
 
-            function getProgressPercent(token) {
+            function getProgressPercent(token, interval) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -587,8 +572,27 @@
                         _token: token,
                         pageHash: window.session,
                     },
-                    success: function (response) {
-                        setProgressBarStyles(response.percent.percent)
+                    success: async function (response) {
+                        if (response.percent === 100) {
+                            clearInterval(interval)
+                            setProgressBarStyles(100)
+                            setTimeout(() => {
+                                $("#progress-bar").hide(300)
+                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                                $('#render-bar').show(300)
+                            }, 1000)
+                            removeProgressPercent(token)
+
+                            await renderTopSites(response.result.analysedSites)
+                            await renderTopSitesV2(response.result.analysedSites)
+                            await renderNestingTable(response.result.pagesCounter)
+                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
+                            await renderTagsTable(response.result.totalMetaTags)
+                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
+                            await duallboxBlockRender(response.result.totalMetaTags, count)
+                        } else {
+                            setProgressBarStyles(response.percent)
+                        }
                     }
                 });
             }
@@ -684,14 +688,16 @@
 
                 countAddedPhrases.html(numberLineBreaksInFirstList)
 
-                if (numberLineBreaksInFirstList >= 40) {
+                if (numberLineBreaksInFirstList > 40) {
                     countAddedPhrases.css({
-                        'color': '#dc3545 !important'
+                        'color': '#dc3545'
                     })
+                    $('#start-analyse').attr('disabled', true);
                 } else {
                     countAddedPhrases.css({
-                        'color': '#6c757d !important'
+                        'color': '#6c757d'
                     })
+                    $('#start-analyse').attr('disabled', false);
                 }
             });
 

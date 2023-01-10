@@ -43,9 +43,21 @@ class SearchCompetitors extends Model
 
     public $pageHash;
 
+    protected $userId;
+
     public function getCountPhrases()
     {
         return $this->countPhrases;
+    }
+
+    public function setUserId(int $id): int
+    {
+        return $this->userId = $id;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
     }
 
     public function setPageHash(string $pageHash)
@@ -75,15 +87,15 @@ class SearchCompetitors extends Model
         $this->count = $count;
     }
 
-    public function getResult(): array
+    public function getResult()
     {
-        return [
+        return json_encode([
             'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
             'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
             'totalMetaTags' => $this->tryConvertEncoding($this->totalMetaTags),
             'domainsPosition' => $this->tryConvertEncoding($this->domainsPosition),
             'urls' => $this->tryConvertEncoding($this->urls),
-        ];
+        ]);
     }
 
     protected function tryConvertEncoding($object)
@@ -98,7 +110,7 @@ class SearchCompetitors extends Model
     /**
      * @return Exception|void
      */
-    public function analyzeList()
+    public function analyseList()
     {
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
 
@@ -119,7 +131,7 @@ class SearchCompetitors extends Model
             }
         }
 
-        TariffSetting::saveStatistics(SearchCompetitors::class, $this->countPhrases);
+        TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
             $this->searchDuplicates();
@@ -127,7 +139,7 @@ class SearchCompetitors extends Model
         } catch (Throwable $e) {
             $now = Carbon::now();
 
-            SearchCompetitors::where('user_id', '=', Auth::id())
+            SearchCompetitors::where('user_id', '=', $this->getUserId())
                 ->where('month', '=', $now->year . '-' . $now->month)
                 ->decriment('counter', $this->getCountPhrases());
 
@@ -385,7 +397,8 @@ class SearchCompetitors extends Model
         }
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
-            'percent' => 100
+            'percent' => 100,
+            'result' => $this->getResult()
         ]);
     }
 

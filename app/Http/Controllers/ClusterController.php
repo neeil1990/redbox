@@ -92,7 +92,7 @@ class ClusterController extends Controller
         if (isset($cluster)) {
             ClusterQueue::where('progress_id', '=', $id)->delete();
             $cluster->request = json_decode($cluster->request, true);
-            $cluster->region = Cluster::getRegionName($cluster->request['region']);
+            $cluster->region = Common::getRegionName($cluster->request['region']);
             return response()->json([
                 'cluster' => $cluster,
             ]);
@@ -133,7 +133,7 @@ class ClusterController extends Controller
 
         foreach ($projects as $key => $project) {
             $request = json_decode($project->request, true);
-            $project->region = Cluster::getRegionName($request['region']);
+            $project->region = Common::getRegionName($request['region']);
             $project->request = $request;
         }
 
