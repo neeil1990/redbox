@@ -130,12 +130,12 @@ class TariffSetting extends Model
     /**
      * @return void
      */
-    public static function saveStatistics(string $class, $count = 1)
+    public static function saveStatistics(string $class, $userId, $count = 1)
     {
         if ($count > 0) {
             $now = Carbon::now();
 
-            $record = $class::where('user_id', '=', Auth::id())
+            $record = $class::where('user_id', '=', $userId)
                 ->where('month', '=', $now->year . '-' . $now->month)
                 ->first();
 

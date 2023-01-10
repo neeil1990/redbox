@@ -131,7 +131,7 @@ class SearchCompetitors extends Model
             }
         }
 
-        TariffSetting::saveStatistics(SearchCompetitors::class, $this->countPhrases);
+        TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
             $this->searchDuplicates();

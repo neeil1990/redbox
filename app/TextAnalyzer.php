@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use JavaScript;
 
@@ -145,7 +146,7 @@ class TextAnalyzer extends Model
             'graph' => TextAnalyzer::prepareDataGraph($response['totalWords']),
         ]);
 
-        TariffSetting::saveStatistics(TextAnalyzer::class);
+        TariffSetting::saveStatistics(TextAnalyzer::class, Auth::id());
 
         return $response;
     }
