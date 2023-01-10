@@ -573,6 +573,7 @@
                         pageHash: window.session,
                     },
                     success: async function (response) {
+                        console.log(response)
                         if (response.percent.percent === 100) {
                             clearInterval(interval)
                             setProgressBarStyles(100)
