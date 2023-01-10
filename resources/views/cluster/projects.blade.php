@@ -290,13 +290,12 @@
                             type: "GET",
                             url: "/start-cluster-progress",
                             success: function (response) {
-                                progressId = response.id
-                                $('#progressId').val(progressId)
+                                $('#progressId').val(response.id)
                                 interval = setInterval(() => {
-                                    getProgressPercent(progressId, interval)
+                                    getProgressPercent(response.id, interval)
                                 }, 5000)
 
-                                startClusterAnalyse(progressId, interval)
+                                startClusterAnalyse(response.id, interval)
                             }
                         })
                     }

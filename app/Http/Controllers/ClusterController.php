@@ -86,9 +86,11 @@ class ClusterController extends Controller
         ]);
     }
 
-    public function getProgressModify(int $id): JsonResponse
+    public function getProgressModify($id): JsonResponse
     {
+        Log::debug('p', [$id]);
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
+        Log::debug('$cluster', [$cluster]);
         if (isset($cluster)) {
             ClusterQueue::where('progress_id', '=', $id)->delete();
             $cluster->request = json_decode($cluster->request, true);
