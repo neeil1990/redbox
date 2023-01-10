@@ -602,7 +602,7 @@ class Cluster
 
                 $count = count(array_intersect($first, $second));
                 if ($count > 0) {
-                    $result[$key1][$key2] = $this->minimum - (($this->minimum / 100) * (min($count, 100) * 10));
+                    $result[$key1][$key2] = $this->minimum - (($this->minimum / 100) * (min($count, 100) * 20));
                 }
             }
             if (isset($result[$key1])) {
