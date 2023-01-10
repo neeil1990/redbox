@@ -13,10 +13,9 @@ class CompetitorAnalyseQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var mixed
-     */
     private $request;
+
+    private $userId;
 
 
     /**
@@ -24,9 +23,10 @@ class CompetitorAnalyseQueue implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(array $request)
+    public function __construct(array $request, int $userId)
     {
         $this->request = $request;
+        $this->userId = $userId;
     }
 
     /**
@@ -36,7 +36,7 @@ class CompetitorAnalyseQueue implements ShouldQueue
      */
     public function handle()
     {
-        $analysis = new SearchCompetitors();
+        $analysis = new SearchCompetitors($this->userId);
         $analysis->setPhrases($this->request['phrases']);
         $analysis->setRegion($this->request['region']);
         $analysis->setCount($this->request['count']);
