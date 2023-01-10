@@ -545,7 +545,7 @@
                             refreshAll()
                             interval = setInterval(() => {
                                 getProgressPercent(token)
-                            }, 500)
+                            }, 5000)
                         },
                         success: async function (response) {
                             setProgressBarStyles(100)

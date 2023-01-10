@@ -105,7 +105,8 @@ class TariffSetting extends Model
      */
     public static function checkSearchCompetitorsLimits(string $phrases): bool
     {
-        $newRequest = count(explode("\n", $phrases));
+        $newRequest = explode("\n", $phrases);
+        $newRequest = count(array_unique(array_diff($newRequest, [''])));
 
         $now = Carbon::now();
 

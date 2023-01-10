@@ -65,7 +65,7 @@ class SearchCompetitorsController extends Controller
             $analysis->setCount($request->input('count'));
             $analysis->setPageHash($request->input('pageHash'));
 
-            $analysis->analyzeList();
+            $analysis->analyseList();
 
             return response()->json([
                 'result' => $analysis->getResult(),

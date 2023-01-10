@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SearchCompetitors extends Model
@@ -98,7 +99,7 @@ class SearchCompetitors extends Model
     /**
      * @return Exception|void
      */
-    public function analyzeList()
+    public function analyseList()
     {
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
 
