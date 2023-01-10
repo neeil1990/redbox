@@ -573,8 +573,7 @@
                         pageHash: window.session,
                     },
                     success: async function (response) {
-                        console.log(response)
-                        if (response.percent.percent === 100) {
+                        if (response.percent === 100) {
                             clearInterval(interval)
                             setProgressBarStyles(100)
                             setTimeout(() => {
@@ -592,7 +591,7 @@
                             await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
                             await duallboxBlockRender(response.result.totalMetaTags, count)
                         } else {
-                            setProgressBarStyles(response.percent.percent)
+                            setProgressBarStyles(response.percent)
                         }
                     }
                 });
