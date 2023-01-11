@@ -629,6 +629,7 @@ class Cluster
                 if ($ideal < $minimum) {
                     continue;
                 }
+                $intersect = [];
                 foreach ($result[$phrase] as $ph => $checked) {
                     if ($ph === $phrase || isset($willClustered[$ph])) {
                         continue;
