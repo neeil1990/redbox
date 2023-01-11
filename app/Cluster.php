@@ -638,18 +638,11 @@ class Cluster
                         $intersect[$ph] = $c;
                     }
                 }
-
                 arsort($intersect);
-                foreach ($intersect as $phr => $cou) {
-                    if ($cou === $intersect[array_key_first($intersect)]) {
-                        if ($phr === $mainPhrase) {
-                            $this->clusters[$mainPhrase][$phr] = $this->sites[$phr];
-                            $this->clusters[$mainPhrase][$phr]['merge'] = [$cou => $mainPhrase];
-                            $willClustered[$phrase] = true;
-                            break;
-                        }
-                    }
-
+                if (array_key_first($intersect) === $mainPhrase) {
+                    $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
+                    $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
+                    $willClustered[$phrase] = true;
                 }
             }
         }
