@@ -615,6 +615,7 @@ class Cluster
             if (isset($willClustered[$mainPhrase])) {
                 continue;
             }
+            $intersect = [];
             foreach ($phrases as $phrase => $minimum) {
                 if (isset($willClustered[$phrase])) {
                     continue;
@@ -628,7 +629,6 @@ class Cluster
                 if ($ideal < $minimum) {
                     continue;
                 }
-                $intersect = [];
                 foreach ($result[$phrase] as $ph => $checked) {
                     if ($ph === $phrase || isset($willClustered[$ph])) {
                         continue;
@@ -638,10 +638,18 @@ class Cluster
                         $intersect[$ph] = $c;
                     }
                 }
-                if (array_key_first($intersect) === $mainPhrase) {
-                    $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
-                    $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
-                    $willClustered[$phrase] = true;
+
+                arsort($intersect);
+                foreach ($intersect as $phr => $cou) {
+                    if ($cou === $intersect[array_key_first($intersect)]) {
+                        if ($phr === $mainPhrase) {
+                            $this->clusters[$mainPhrase][$phr] = $this->sites[$phr];
+                            $this->clusters[$mainPhrase][$phr]['merge'] = [$cou => $mainPhrase];
+                            $willClustered[$phrase] = true;
+                            break;
+                        }
+                    }
+
                 }
             }
         }
