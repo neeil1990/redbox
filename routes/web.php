@@ -317,6 +317,8 @@ Route::middleware(['verified'])->group(function () {
 Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $cluster = \App\ClusterResults::findOrFail($id);
     $this->sites = json_decode($cluster->sites_json, true);
+    $this->ignoredDomains = ['www.ozon.ru'];
+    dd($this->sites);
     $this->minimum = $minimum;
     $m = new Morphy();
     $result = [];
@@ -369,7 +371,7 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
                 }
             }
 
-            if (count($second) === 1) {
+            if (count($second) < 2) {
                 continue;
             }
 
@@ -383,11 +385,17 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
         }
     }
 
+//    dump($result['купить тонометр для измерения артериального давления']);
+//    dd($result['тонометр механический цена']);
+
+    //todo продумать логику алгоритма ещё раз и сравнить с тем что есть на самом деле.
+    dd($result);
     $willClustered = [];
     foreach ($result as $mainPhrase => $phrases) {
         if (isset($willClustered[$mainPhrase])) {
             continue;
         }
+        $intersect = [];
         foreach ($phrases as $phrase => $minimum) {
             if (isset($willClustered[$phrase])) {
                 continue;
@@ -411,9 +419,10 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
                     $intersect[$ph] = $c;
                 }
             }
+            arsort($intersect);
             if (array_key_first($intersect) === $mainPhrase) {
                 $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
-                $this->clusters[$mainPhrase][$phrase]['merge'] = [$intersect[array_key_first($intersect)] => $mainPhrase];
+                $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
                 $willClustered[$phrase] = true;
             }
         }
@@ -438,4 +447,7 @@ Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
         $this->clusters[$mainPhrase][$mainPhrase] = $item;
         $willClustered[$mainPhrase] = true;
     }
+
+    dump(count($willClustered));
+    dd($this->clusters);
 });
