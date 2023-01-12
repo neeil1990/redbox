@@ -58,7 +58,9 @@ function downloadSites(id, target, type) {
             if (type === 'download') {
                 let sitesBlock = ''
                 if ('mark' in response && response['mark'] !== 0) {
+                    console.log('mark isset')
                     $.each(response['mark'], function (site, boolean) {
+                        console.log(boolean)
                         if (boolean) {
                             sitesBlock +=
                                 '<div class="text-muted">' +
@@ -70,7 +72,6 @@ function downloadSites(id, target, type) {
                                 '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
                                 '</div>'
                         }
-
                     })
                 } else {
                     $.each(response['sites'], function (key, site) {
