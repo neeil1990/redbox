@@ -54,10 +54,9 @@ function downloadSites(id, target, type) {
             projectId: id,
         },
         success: function (response) {
-            console.log(response)
             if (type === 'download') {
                 let sitesBlock = ''
-                if ('mark' in response) {
+                if ('mark' in response && response['mark'] !== 0) {
                     $.each(response['mark'], function (site, boolean) {
                         if (boolean) {
                             sitesBlock +=
@@ -84,7 +83,16 @@ function downloadSites(id, target, type) {
                 $("span[data-action='" + target + "']").html('')
                 $("span[data-action='" + target + "']").append(sitesBlock)
             } else {
-                $('#hiddenForCopy').val(response['sites'].join("\r"))
+                if ('mark' in response && response['mark'] !== 0) {
+                    let mark = [];
+                    $.each(response['mark'], function (site, boolean) {
+                        mark.push(site)
+                    })
+
+                    $('#hiddenForCopy').val(mark.join("\r"))
+                } else {
+                    $('#hiddenForCopy').val(response['sites'].join("\r"))
+                }
                 copyInBuffer()
             }
         },

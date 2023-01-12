@@ -24,11 +24,28 @@ function renderResultTableFast(data, count, target) {
                 let fullUrls = information['sites'].join("\r")
                 let sites = ''
 
-                $.each(information['sites'], function (key, site) {
-                    sites += '<div>' +
-                        '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
-                        '</div>'
-                })
+                if ('mark' in information && information['mark'] !== 0) {
+                    $.each(information['mark'], function (site, boolean) {
+                        if (boolean) {
+                            sites +=
+                                '<div class="text-muted">' +
+                                '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a> (игнорируемый)' +
+                                '</div>'
+                        } else {
+                            sites +=
+                                '<div>' +
+                                '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                                '</div>'
+                        }
+
+                    })
+                } else {
+                    $.each(information['sites'], function (key, site) {
+                        sites += '<div>' +
+                            '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                            '</div>'
+                    })
+                }
 
                 let merge = ''
                 if ('merge' in information) {

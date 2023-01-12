@@ -11,9 +11,11 @@
 |
 */
 
+use App\Common;
 use App\Morphy;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -316,8 +318,41 @@ Route::middleware(['verified'])->group(function () {
 });
 Route::get('/test/{id}/{minimum}', function ($id, $minimum) {
     $cluster = \App\ClusterResults::findOrFail($id);
+    dd(Common::uncompressArray($cluster->result));
     $this->sites = json_decode($cluster->sites_json, true);
-    $this->ignoredDomains = ['www.ozon.ru'];
+    $this->ignoredDomains = [
+        'ozon.ru',
+        'yandex.ru',
+        'wildberries.ru',
+        'apteka.ru',
+        'sbermegamarket.ru',
+        'gorzdrav.org',
+        'pleer.ru',
+        'uteka.ru',
+        'joom.com',
+        'aliexpress.ru',
+        'aliexpress.com'
+    ];
+
+    $this->count = 10;
+    foreach ($this->sites as $phrase => $item) {
+        $count = 0;
+        foreach ($item['sites'] as $key => $site) {
+            if ($count < $this->count) {
+                foreach ($this->ignoredDomains as $ignoredDomain) {
+                    if (strpos($site, $ignoredDomain)) {
+                        $this->sites[$phrase]['mark'][$site] = true;
+                        continue 2;
+                    }
+                }
+                $this->sites[$phrase]['mark'][$site] = false;
+                $count++;
+            } else {
+                break;
+            }
+        }
+    }
+
     dd($this->sites);
     $this->minimum = $minimum;
     $m = new Morphy();

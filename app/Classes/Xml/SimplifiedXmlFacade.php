@@ -50,6 +50,7 @@ class SimplifiedXmlFacade extends XmlFacade
             if (isset($result['response']['results']['grouping']['group'])) {
                 return $this->parseResult($result['response']['results']['grouping']['group']);
             } else if (isset($result['response']['error'])) {
+
                 if ($result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.') {
                     return ['отсутствуют результаты поиска'];
                 } else {

@@ -157,7 +157,6 @@
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engine_version', [
                                                     $config->engine_version => $config->engine_version,
-                                                    'old' => __('Formation based on the first available phrase (old)'),
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
@@ -348,7 +347,6 @@
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engine_version', [
                                                     $config_classic->engine_version => $config_classic->engine_version,
-                                                    'old' => __('Formation based on the first available phrase (old)'),
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
