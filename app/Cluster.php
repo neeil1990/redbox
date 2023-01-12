@@ -246,7 +246,7 @@ class Cluster
                 $url = parse_url($site);
                 $this->sites[$phrase]['mark'][$site] = in_array($url['host'], $this->ignoredDomains);
             }
-            Log::debug('marked', $this->sites[$phrase]['sites']);
+            Log::debug('marked', $this->sites[$phrase]['mark']);
         }
     }
 
