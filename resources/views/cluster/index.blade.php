@@ -265,7 +265,6 @@
                             $('.save-relevance-url').unbind().on('click', function () {
                                 let phrase = $(this).attr('data-order')
                                 let select = $('#' + phrase.replaceAll(' ', '-'))
-                                // let targetRow = Number(select.parent().parent().parent().children('td').eq(0).html()) - 1
 
                                 $.ajax({
                                     type: "POST",
@@ -278,8 +277,6 @@
                                     },
                                     success: function () {
                                         select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                                        // table.cell(targetRow, 4).data(select.val())
-                                        // table.draw()
                                     },
                                     error: function (response) {
                                     }

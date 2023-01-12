@@ -246,7 +246,6 @@ class Cluster
                 $url = parse_url($site);
                 $this->sites[$phrase]['mark'][$site] = in_array($url['host'], $this->ignoredDomains);
             }
-            Log::debug('marked', $this->sites[$phrase]['mark']);
         }
     }
 
@@ -574,7 +573,6 @@ class Cluster
 
     protected function searchClustersEngineV7()
     {
-        Log::debug('gainfactor', [$this->gainFactor]);
         $m = new Morphy();
         $result = [];
         $cache = [];
@@ -642,7 +640,6 @@ class Cluster
             }
             $intersect = [];
             $mainSites = $this->getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
-            Log::debug('mainsites', $mainSites);
             foreach ($phrases as $phrase => $minimum) {
                 if (isset($willClustered[$phrase])) {
                     continue;

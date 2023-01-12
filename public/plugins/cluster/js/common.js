@@ -20,7 +20,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         mode: $('#start-analyse').attr('data-target'),
         brutForceCount: $('#brutForceCount').val(),
         reductionRatio: $('#reductionRatio').val(),
-        defaultBrutForce:$('#defaultBrutForce').is(':checked'),
+        defaultBrutForce: $('#defaultBrutForce').is(':checked'),
         ignoredWords: $('#ignoredWords').val(),
         ignoredDomains: $('#ignoredDomains').val(),
         gainFactor: $('#gainFactor').val(),
@@ -54,14 +54,33 @@ function downloadSites(id, target, type) {
             projectId: id,
         },
         success: function (response) {
+            console.log(response)
             if (type === 'download') {
                 let sitesBlock = ''
-                $.each(response['sites'], function (key, site) {
-                    sitesBlock +=
-                        '<div>' +
-                        '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
-                        '</div>'
-                })
+                if ('mark' in response) {
+                    $.each(response['mark'], function (site, boolean) {
+                        if (boolean) {
+                            sitesBlock +=
+                                '<div class="text-muted">' +
+                                '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a> (игнорируемый)' +
+                                '</div>'
+                        } else {
+                            sitesBlock +=
+                                '<div>' +
+                                '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                                '</div>'
+                        }
+
+                    })
+                } else {
+                    $.each(response['sites'], function (key, site) {
+                        sitesBlock +=
+                            '<div>' +
+                            '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                            '</div>'
+                    })
+                }
+
                 $("span[data-action='" + target + "']").html('')
                 $("span[data-action='" + target + "']").append(sitesBlock)
             } else {
@@ -102,7 +121,6 @@ function downloadAllCompetitors(id, key) {
     }
 }
 
-
 $(document).ready(function () {
     $('#searchRelevance').on('click', function () {
         isSearchRelevance()
@@ -115,6 +133,7 @@ $(document).ready(function () {
         $('.brut-force').hide(300)
     }
 })
+
 function isSearchRelevance() {
     if ($('#searchRelevance').is(':checked')) {
         $('#searchEngineBlock').show(300)
