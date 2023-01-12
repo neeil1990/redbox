@@ -54,6 +54,7 @@ function downloadSites(id, target, type) {
             projectId: id,
         },
         success: function (response) {
+            console.log(response)
             if (type === 'download') {
                 let sitesBlock = ''
                 if ('mark' in response && response['mark'] !== 0) {

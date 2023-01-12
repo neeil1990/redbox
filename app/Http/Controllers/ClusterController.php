@@ -293,7 +293,6 @@ class ClusterController extends Controller
 
         foreach ($results as $result) {
             if (key_exists($request->phrase, $result)) {
-                Log::debug('s', [$result[$request->phrase]]);
                 return response()->json([
                     'sites' => $result[$request->phrase]['sites'],
                     'mark' => $result[$request->phrase]['mark'] ?? 0
