@@ -67,9 +67,15 @@ class Cluster
 
     protected $ignoredWords;
 
+    protected $ignoredDomains;
+
+    protected $gainFactor;
+
     public function __construct(array $request, $user, $default = true)
     {
         $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
+        $this->ignoredDomains = isset($request['ignoredDomains']) ? explode("\n", $request['ignoredDomains']) : [];
+        $this->gainFactor = $request['gainFactor'] ?? 10;
         $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         $this->brutForceCount = $request['brutForceCount'] ?? 1;
         $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
@@ -79,16 +85,22 @@ class Cluster
             $this->count = 40;
             $this->clusteringLevel = 0.6;
         } else {
-            if ($request['clusteringLevel'] === 'light') {
-                $this->clusteringLevel = 0.4;
-            } else if ($request['clusteringLevel'] === 'soft') {
-                $this->clusteringLevel = 0.5;
-            } else if ($request['clusteringLevel'] === 'pre-hard') {
-                $this->clusteringLevel = 0.6;
-            } else {
-                $this->clusteringLevel = 0.7;
-            }
             $this->count = $request['count'];
+
+            switch ($request['clusteringLevel']) {
+                case 'light':
+                    $this->clusteringLevel = 0.4;
+                    break;
+                case 'soft':
+                    $this->clusteringLevel = 0.5;
+                    break;
+                case 'pre-hard':
+                    $this->clusteringLevel = 0.6;
+                    break;
+                case 'hard':
+                    $this->clusteringLevel = 0.7;
+                    break;
+            }
         }
         $this->minimum = $this->count * $this->clusteringLevel;
         $this->mode = $request['mode'];
@@ -118,11 +130,11 @@ class Cluster
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases',
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'gainFactor',
             'sites', 'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases',
             'searchTarget', 'searchRelevance', 'searchEngine', 'progress', 'save', 'request',
             'newCluster', 'user', 'brutForce', 'xml', 'host', 'mode', 'minimum', 'progressId',
-            'brutForceCount', 'reductionRatio', 'defaultBrutForce', 'ignoredWords'
+            'brutForceCount', 'reductionRatio', 'defaultBrutForce', 'ignoredWords', 'ignoredDomains'
         ];
     }
 
@@ -227,6 +239,16 @@ class Cluster
         \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
     }
 
+    protected function markIgnoredDomains()
+    {
+        foreach ($this->sites as $phrase => $item) {
+            foreach ($item['sites'] as $key => $site) {
+                $url = parse_url($site);
+                $this->sites[$phrase]['mark'][$site] = in_array($url['host'], $this->ignoredDomains);
+            }
+        }
+    }
+
     /**
      * @param $sites
      * @return void
@@ -249,6 +271,7 @@ class Cluster
         } elseif ($this->engineVersion === 'maximum') {
             $this->searchClustersEngineV6();
         } else if ($this->engineVersion === 'max_phrases') {
+            $this->markIgnoredDomains();
             $this->searchClustersEngineV7();
         }
 
@@ -602,7 +625,7 @@ class Cluster
 
                 $count = count(array_intersect($first, $second));
                 if ($count > 0) {
-                    $result[$key1][$key2] = $this->minimum - (($this->minimum / 100) * (min($count, 100) * 10));
+                    $result[$key1][$key2] = $this->minimum - (($this->minimum / 100) * (min($count, 100) * $this->gainFactor));
                 }
             }
             if (isset($result[$key1])) {
@@ -616,6 +639,7 @@ class Cluster
                 continue;
             }
             $intersect = [];
+            $mainSites = $this->getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
             foreach ($phrases as $phrase => $minimum) {
                 if (isset($willClustered[$phrase])) {
                     continue;
@@ -625,7 +649,9 @@ class Cluster
                     $willClustered[$mainPhrase] = true;
                     continue;
                 }
-                $ideal = count(array_intersect($this->sites[$mainPhrase]['sites'], $this->sites[$phrase]['sites']));
+
+                $phraseSites = $this->getNotIgnoredDomains($this->sites[$phrase]['mark']);
+                $ideal = count(array_intersect($mainSites, $phraseSites));
                 if ($ideal < $minimum) {
                     continue;
                 }
@@ -634,7 +660,9 @@ class Cluster
                     if ($ph === $phrase || isset($willClustered[$ph])) {
                         continue;
                     }
-                    $c = count(array_intersect($this->sites[$ph]['sites'], $this->sites[$phrase]['sites']));
+
+                    $phSites = $this->getNotIgnoredDomains($this->sites[$ph]['mark']);
+                    $c = count(array_intersect($phSites, $phraseSites));
                     if ($c > $checked) {
                         $intersect[$ph] = $c;
                     }
@@ -667,6 +695,24 @@ class Cluster
             $this->clusters[$mainPhrase][$mainPhrase] = $item;
             $willClustered[$mainPhrase] = true;
         }
+    }
+
+    /**
+     * @param $sites
+     * @return array
+     */
+    protected function getNotIgnoredDomains($sites): array
+    {
+        $result = [];
+
+        foreach ($sites as $site => $boolean) {
+            if ($boolean) {
+                continue;
+            }
+            $result[] = $site;
+        }
+
+        return $result;
     }
 
     protected function brutForceClusters($minimum, $extra = false)
