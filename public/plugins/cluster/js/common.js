@@ -54,13 +54,10 @@ function downloadSites(id, target, type) {
             projectId: id,
         },
         success: function (response) {
-            console.log(response)
             if (type === 'download') {
                 let sitesBlock = ''
                 if ('mark' in response && response['mark'] !== 0) {
-                    console.log('mark isset')
                     $.each(response['mark'], function (site, boolean) {
-                        console.log(boolean)
                         if (boolean) {
                             sitesBlock +=
                                 '<div class="text-muted">' +
