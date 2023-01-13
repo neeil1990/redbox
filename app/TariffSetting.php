@@ -144,7 +144,7 @@ class TariffSetting extends Model
             } else {
                 $record = new $class();
                 $record->month = $now->year . '-' . $now->month;
-                $record->user_id = Auth::id();
+                $record->user_id = $userId;
                 $record->counter = $count;
             }
 
