@@ -225,8 +225,6 @@ class MonitoringController extends Controller
         $model->middle_position = round($last_positions->sum('position') / $last_positions->count(), 2);
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -234,7 +232,6 @@ class MonitoringController extends Controller
      */
     public function create()
     {
-
         return view('monitoring.create');
     }
 
@@ -246,84 +243,7 @@ class MonitoringController extends Controller
      */
     public function store(Request $request)
     {
-        /** @var User $user */
-        $user = $this->user;
-        $project = $user->monitoringProjects()->create([
-            'status' => 1,
-            'name' => $request->input('name'),
-            'url' => $request->input('url'),
-        ]);
-
-        $groups = $request->input('keywords');
-
-        foreach ($groups as $group => $keywords){
-
-            $group = $project->groups()->create([
-                'type' => 'keyword',
-                'name' => $group
-            ]);
-
-            if(Arr::has($keywords, 'query')) {
-                foreach ($keywords['query'] as $ind => $query){
-                    $project->keywords()->create([
-                        'monitoring_group_id' => $group->id,
-                        'query' => $query,
-                        'page' => $keywords['page'][$ind],
-                        'target' => $keywords['target'][$ind],
-                    ]);
-                }
-            }
-        }
-
-        $competitors = preg_split("/\r\n|\n|\r/", $request->input('competitors'));
-        foreach ($competitors as $competitor){
-
-            $project->competitors()->create([
-                'url' => $competitor,
-            ]);
-        }
-
-        $searches = $request->input('lr');
-        $autoupdate = $request->input('cron');
-        foreach($searches as $engine => $dates){
-
-            foreach ($dates as $data){
-
-                $time = null;
-                if(isset($autoupdate['time']))
-                    $time = $this->checkCronFields($autoupdate['time'], [$engine, $data]);
-
-                $weekdays = null;
-                if(isset($autoupdate['weekdays']))
-                    $weekdays = $this->checkCronFields($autoupdate['weekdays'], [$engine, $data]);
-
-                $monthday = null;
-                if(isset($autoupdate['monthday']))
-                    $monthday = $this->checkCronFields($autoupdate['monthday'], [$engine, $data]);
-
-                $auto_update_status = ($time || $weekdays || $monthday);
-
-                $project->searchengines()->create([
-                    'engine' => $engine,
-                    'lr' => $data,
-                    'auto_update' => $auto_update_status,
-                    'time' => $time,
-                    'weekdays' => $weekdays,
-                    'monthday' => $monthday,
-                ]);
-            }
-        }
-
-        return redirect()->route('monitoring.index');
-    }
-
-    private function checkCronFields($array, $keys)
-    {
-        $result = null;
-        if(Arr::has($array, implode('.', $keys)))
-            $result = $array[$keys[0]][$keys[1]];
-
-        return $result;
+        //
     }
 
     /**
