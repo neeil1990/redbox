@@ -115,7 +115,7 @@ class SearchCompetitorsController extends Controller
             ]);
         } else {
             return response()->json([
-                'percent' => $progress->percent,
+                'percent' => 0,
                 'code' => 200,
             ]);
         }
