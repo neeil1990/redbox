@@ -119,7 +119,6 @@ class SearchCompetitors extends Model
             if ($phrase != '') {
                 $xml->setQuery($phrase);
                 $this->sites[$phrase] = $xml->getXMLResponse();
-                Log::debug('пропаршено');
             }
         }
 
@@ -132,7 +131,6 @@ class SearchCompetitors extends Model
             }
         }
 
-        Log::debug('user_id', [$this->getUserId()]);
         TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
