@@ -139,6 +139,12 @@ class SearchCompetitors extends Model
             $this->searchDuplicates();
             $this->scanSites();
         } catch (Throwable $e) {
+            Log::debug('search competitors exception', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
+
             $now = Carbon::now();
 
             SearchCompetitors::where('user_id', '=', $this->getUserId())
