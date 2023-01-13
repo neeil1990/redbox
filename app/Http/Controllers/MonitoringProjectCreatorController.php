@@ -242,6 +242,8 @@ class MonitoringProjectCreatorController extends Controller
             $this->project->keywords()->find($queryId)->delete();
         }
 
+        $this->deleteEmptyGroups();
+
         return $this->emptyDataCollection();
     }
 
@@ -285,6 +287,17 @@ class MonitoringProjectCreatorController extends Controller
         ]);
 
         return $group['id'];
+    }
+
+    private function deleteEmptyGroups()
+    {
+        if(!$this->project)
+            throw new ModelNotFoundException("Not exist MonitoringProject model");
+
+        foreach ($this->project->groups as $group){
+            if(!$group->keywords->count())
+                $group->delete();
+        }
     }
 
     private function stringToInt(string $str)
