@@ -317,3 +317,183 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
 });
+Route::get('/test/{id}/', function ($id) {
+    $this->minimum = 28;
+    $this->ignoredWords = ['купить', 'цена'];
+    $this->ignoredDomains = [
+        'ozon.ru',
+        'yandex.ru',
+        'wildberries.ru',
+        'apteka.ru',
+        'sbermegamarket.ru',
+        'gorzdrav.org',
+        'pleer.ru',
+        'uteka.ru',
+        'joom.com',
+        'aliexpress.ru',
+        'aliexpress.com',
+    ];
+    $this->gainFactor = 10;
+    $this->count = 40;
+
+    $result = \App\ClusterResults::find($id);
+    $this->sites = json_decode($result->sites_json, true);
+
+    foreach ($this->sites as $phrase => $item) {
+        $count = 0;
+        foreach ($item['sites'] as $key => $site) {
+            if ($count < $this->count) {
+                foreach ($this->ignoredDomains as $ignoredDomain) {
+                    if (strpos($site, $ignoredDomain)) {
+                        $this->sites[$phrase]['mark'][$site] = true;
+                        continue 2;
+                    }
+                }
+                $this->sites[$phrase]['mark'][$site] = false;
+                $count++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    $m = new Morphy();
+    $result = [];
+    $cache = [];
+
+    uksort($this->sites, function ($a, $b) {
+        return mb_strlen($b) - mb_strlen($a);
+    });
+
+    foreach ($this->sites as $key1 => $site) {
+        $first = explode(' ', $key1);
+        if (count($first) === 1) {
+            $result[$key1][$key1] = 1;
+            continue;
+        }
+
+        foreach ($first as $keyF => $item) {
+            if (mb_strlen($item) < 2) {
+                continue;
+            } elseif (isset($cache[$item])) {
+                $first[$keyF] = $cache[$item];
+            } else {
+                $base = $m->base($item);
+                $first[$keyF] = $base;
+                $cache[$item] = $base;
+            }
+        }
+
+        foreach ($this->sites as $key2 => $site2) {
+            $second = explode(' ', $key2);
+            foreach ($second as $keyS => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } elseif (isset($cache[$item])) {
+                    $second[$keyS] = $cache[$item];
+                } else {
+                    $base = $m->base($item);
+                    $second[$keyS] = $base;
+                    $cache[$item] = $base;
+                }
+            }
+            foreach ($second as $key => $phrase) {
+                if (in_array($phrase, $this->ignoredWords)) {
+                    unset($second[$key]);
+                }
+            }
+
+            if (count($second) === 1) {
+                continue;
+            }
+
+            $count = count(array_intersect($first, $second));
+            if ($count > 0) {
+                $result[$key1][$key2] = $this->minimum - (($this->minimum / 100) * (min($count, 100) * $this->gainFactor));
+            }
+        }
+        if (isset($result[$key1])) {
+            arsort($result[$key1]);
+        }
+    }
+
+    $willClustered = [];
+    foreach ($result as $mainPhrase => $phrases) {
+        if (isset($willClustered[$mainPhrase])) {
+            continue;
+        }
+        $intersect = [];
+        $mainSites = Cluster::getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
+        foreach ($phrases as $phrase => $minimum) {
+            if (isset($willClustered[$phrase])) {
+                continue;
+            }
+            if ($mainPhrase === $phrase) {
+                continue;
+            }
+
+            $phraseSites = Cluster::getNotIgnoredDomains($this->sites[$phrase]['mark']);
+            $ideal = count(array_intersect($mainSites, $phraseSites));
+            if ($ideal < $minimum) {
+                continue;
+            }
+            $intersect = [];
+            foreach ($result[$phrase] as $ph => $checked) {
+                if ($ph === $phrase || isset($willClustered[$ph])) {
+                    continue;
+                }
+
+                $phSites = Cluster::getNotIgnoredDomains($this->sites[$ph]['mark']);
+                $c = count(array_intersect($phSites, $phraseSites));
+                if ($c > $checked) {
+                    $intersect[$ph] = $c;
+                }
+            }
+            arsort($intersect);
+            if (array_key_first($intersect) === $mainPhrase) {
+                $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
+                $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
+                $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
+                $willClustered[$phrase] = true;
+                $willClustered[$mainPhrase] = true;
+            }
+        }
+    }
+
+    foreach ($this->sites as $mainPhrase => $item) {
+        if (isset($willClustered[$mainPhrase])) {
+            continue;
+        }
+
+        $intersect = [];
+        foreach ($this->clusters as $ph => $cluster) {
+            $max = 0;
+            foreach ($cluster as $phrase => $val) {
+                $count = count(array_intersect(Cluster::getNotIgnoredDomains($item['mark']), Cluster::getNotIgnoredDomains($this->sites[$phrase]['mark'])));
+                if ($count >= $this->minimum && $count > $max) {
+                    $max = $count;
+                    $intersect[$ph] = [$phrase => $count];
+                }
+            }
+        }
+
+        if (count($intersect) === 0) {
+            $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
+        } else {
+            uasort($intersect, function ($l, $r) {
+                $first = array_shift($r);
+                $second = array_shift($l);
+
+                if ($first == $second) return 0;
+
+                return ($first < $second) ? -1 : 1;
+            });
+            $t = array_shift($intersect);
+            $this->clusters[array_key_first($intersect)][$mainPhrase] = $item;
+            $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($t) => array_shift($t)];
+        }
+        $willClustered[$mainPhrase] = true;
+    }
+
+    dd($this->clusters);
+});

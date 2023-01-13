@@ -693,7 +693,7 @@ class Cluster
                     $count = count(array_intersect(Cluster::getNotIgnoredDomains($item['mark']), Cluster::getNotIgnoredDomains($this->sites[$phrase]['mark'])));
                     if ($count >= $this->minimum && $count > $max) {
                         $max = $count;
-                        $intersect[$ph] = $count;
+                        $intersect[$ph] = [$phrase => $count];
                     }
                 }
             }
@@ -701,9 +701,18 @@ class Cluster
             if (count($intersect) === 0) {
                 $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
             } else {
-                arsort($intersect);
+                uasort($intersect, function ($l, $r) {
+                    $first = array_shift($r);
+                    $second = array_shift($l);
+
+                    if ($first == $second) return 0;
+
+                    return ($first < $second) ? -1 : 1;
+                });
+
+                $t = array_shift($intersect);
                 $this->clusters[array_key_first($intersect)][$mainPhrase] = $item;
-                $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($intersect) => array_shift($intersect)];
+                $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($t) => array_shift($t)];
             }
             $willClustered[$mainPhrase] = true;
         }
