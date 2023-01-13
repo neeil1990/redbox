@@ -687,20 +687,20 @@ class Cluster
             if (isset($willClustered[$mainPhrase])) {
                 continue;
             }
-            $mainSites = $this->getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
+
+            $intersect = [];
             foreach ($this->clusters as $ph => $cluster) {
                 foreach ($cluster as $phrase => $val) {
-                    $phraseSites = $this->getNotIgnoredDomains($this->sites[$phrase]['sites']);
-                    $count = count(array_intersect($mainSites, $phraseSites));
-                    if ($count >= $this->minimum) {
-                        $this->clusters[$ph][$mainPhrase] = $item;
-                        $this->clusters[$ph][$mainPhrase]['merge'] = [$phrase => $count];
-                        $willClustered[$mainPhrase] = true;
-                        continue 3;
+                    $count = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($this->sites[$phrase]['mark'])));
+                    if ($count > 0) {
+                        $intersect[$ph] = $count;
                     }
                 }
             }
-            $this->clusters[$mainPhrase][$mainPhrase] = $item;
+
+            arsort($intersect);
+            $this->clusters[array_key_first($intersect)][$mainPhrase] = $item;
+            $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($intersect) => $intersect[array_key_first($intersect)]];
             $willClustered[$mainPhrase] = true;
         }
     }
@@ -737,13 +737,11 @@ class Cluster
                 foreach ($cluster as $key => $item) {
                     foreach ($cluster2 as $key2 => $item2) {
                         $inter = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])));
-                        if (
-                            isset($item['sites']) && isset($item2['sites']) &&
-                            $inter >= $minimum
-                        ) {
+                        if ($inter >= $minimum) {
                             unset($this->clusters[$secondPhrase]);
-                            $cluster2[$key2]['merge'] = [$key => $inter];
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
+                            $this->clusters[$firstPhrase][$secondPhrase]['merge'] = [$key => $inter];
+                            $this->clusters[$firstPhrase][$firstPhrase]['merge'] = [$key => $inter];
                             $willClustered[$secondPhrase] = true;
                             break 3;
                         }

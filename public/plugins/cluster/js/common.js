@@ -55,6 +55,7 @@ function downloadSites(id, target, type) {
         },
         success: function (response) {
             if (type === 'download') {
+                let element = $("span[data-action='" + target + "']")
                 let sitesBlock = ''
                 if ('mark' in response && response['mark'] !== 0) {
                     $.each(response['mark'], function (site, boolean) {
@@ -79,13 +80,15 @@ function downloadSites(id, target, type) {
                     })
                 }
 
-                $("span[data-action='" + target + "']").html('')
-                $("span[data-action='" + target + "']").append(sitesBlock)
+                element.html('')
+                element.append(sitesBlock)
             } else {
                 if ('mark' in response && response['mark'] !== 0) {
                     let mark = [];
                     $.each(response['mark'], function (site, boolean) {
-                        mark.push(site)
+                        if (!boolean) {
+                            mark.push(site)
+                        }
                     })
 
                     $('#hiddenForCopy').val(mark.join("\r"))
