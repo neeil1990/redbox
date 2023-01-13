@@ -298,6 +298,10 @@
     }
 
     $(document).ready(function () {
+        if ($('#engineVersion').val() === 'max_phrases') {
+            $('#ignoredWordsBlock').show(300)
+        }
+
         $('#brutForce').on('click', function () {
             if ($(this).is(':checked')) {
                 $('.brut-force').show(300)

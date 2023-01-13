@@ -739,7 +739,7 @@ class Cluster
                     foreach ($cluster2 as $key2 => $item2) {
                         if (
                             isset($item['sites']) && isset($item2['sites']) &&
-                            count(array_intersect($item['sites'], $item2['sites'])) >= $minimum
+                            count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark']))) >= $minimum
                         ) {
                             unset($this->clusters[$secondPhrase]);
                             $cluster2[$key2]['merge'] = [$key => count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])))];

@@ -160,6 +160,8 @@
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
+                                                    'maximum' => 'Поиск максимального',
+                                                    'max_phrases' => 'Фразовый перебор и поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
                                         </div>
                                         <div class="form-group required">
@@ -350,6 +352,8 @@
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
+                                                    'maximum' => 'Поиск максимального',
+                                                    'max_phrases' => 'Фразовый перебор и поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
                                         </div>
                                         <div class="form-group required">
