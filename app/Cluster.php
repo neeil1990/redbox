@@ -737,12 +737,13 @@ class Cluster
                 }
                 foreach ($cluster as $key => $item) {
                     foreach ($cluster2 as $key2 => $item2) {
+                        $inter = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])));
                         if (
                             isset($item['sites']) && isset($item2['sites']) &&
-                            count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark']))) >= $minimum
+                            $inter >= $minimum
                         ) {
                             unset($this->clusters[$secondPhrase]);
-                            $cluster2[$key2]['merge'] = [$key => count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])))];
+                            $cluster2[$key2]['merge'] = [$key => $inter];
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
                             $willClustered[$secondPhrase] = true;
                             break 3;
