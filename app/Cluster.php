@@ -710,9 +710,11 @@ class Cluster
                     return ($first < $second) ? -1 : 1;
                 });
 
+                $mergePhrase = array_key_first($intersect);
                 $t = array_shift($intersect);
-                $this->clusters[array_key_first($intersect)][$mainPhrase] = $item;
-                $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($t) => array_shift($t)];
+
+                $this->clusters[$mergePhrase][$mainPhrase] = $item;
+                $this->clusters[$mergePhrase][$mainPhrase]['merge'] = [array_key_first($t) => array_shift($t)];
             }
             $willClustered[$mainPhrase] = true;
         }
