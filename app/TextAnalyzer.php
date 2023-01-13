@@ -192,6 +192,7 @@ class TextAnalyzer extends Model
             "'array\n\(\n.*?\n\)\n'si",
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+            '/<!--(.|\s)*?-->/',
         ], "", $html);
     }
 

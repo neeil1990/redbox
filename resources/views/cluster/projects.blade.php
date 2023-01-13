@@ -213,6 +213,8 @@
                         },
                         success: function (response) {
                             let request = response.request
+
+                            console.log(request)
                             $('#repeat-scanLabel').html(response.created_at)
                             $('#region').val(request.region)
                             $('#count').val(request.count)
@@ -227,6 +229,24 @@
                                 $('#searchEngine').val(request.searchEngine)
                             } else {
                                 $('#searchEngine').val('yandex')
+                            }
+
+                            if ('ignoredWords' in request) {
+                                $('#ignoredWords').val(request.ignoredWords)
+                            } else {
+                                $('#ignoredDomains').val('')
+                            }
+
+                            if ('ignoredDomains' in request) {
+                                $('#ignoredDomains').val(request.ignoredDomains)
+                            } else {
+                                $('#ignoredDomains').val('')
+                            }
+
+                            if ('gainFactor' in request) {
+                                $('#gainFactor').val(request.gainFactor)
+                            } else {
+                                $('#gainFactor').val(10)
                             }
 
                             if (request.engineVersion === 'max_phrases') {
@@ -290,13 +310,12 @@
                             type: "GET",
                             url: "/start-cluster-progress",
                             success: function (response) {
-                                progressId = response.id
-                                $('#progressId').val(progressId)
+                                $('#progressId').val(response.id)
                                 interval = setInterval(() => {
-                                    getProgressPercent(progressId, interval)
+                                    getProgressPercent(response.id, interval)
                                 }, 5000)
 
-                                startClusterAnalyse(progressId, interval)
+                                startClusterAnalyse(response.id, interval)
                             }
                         })
                     }

@@ -82,8 +82,7 @@ function renderResultTable(data) {
                 let title
                 let style
                 let string
-                if (
-                    "basedNormal" in information &&
+                if ("basedNormal" in information &&
                     (information["basedNormal"] === false || information["basedNormal"] !== true)
                 ) {
                     style = 'bg-cluster-warning'

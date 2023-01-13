@@ -157,10 +157,11 @@
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engine_version', [
                                                     $config->engine_version => $config->engine_version,
-                                                    'old' => __('Formation based on the first available phrase (old)'),
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
+                                                    'maximum' => 'Поиск максимального',
+                                                    'max_phrases' => 'Фразовый перебор и поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
                                         </div>
                                         <div class="form-group required">
@@ -348,10 +349,11 @@
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engine_version', [
                                                     $config_classic->engine_version => $config_classic->engine_version,
-                                                    'old' => __('Formation based on the first available phrase (old)'),
                                                     'latest' => __('Additional bulkhead (latest)'),
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
+                                                    'maximum' => 'Поиск максимального',
+                                                    'max_phrases' => 'Фразовый перебор и поиск максимального',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
                                         </div>
                                         <div class="form-group required">

@@ -21,14 +21,32 @@ function renderResultTableFast(data, count, target) {
                 clusterIterator++
                 iterator++
 
-                let fullUrls = information['sites'].join("\r")
+                let fullUrls = []
                 let sites = ''
 
-                $.each(information['sites'], function (key, site) {
-                    sites += '<div>' +
-                        '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
-                        '</div>'
-                })
+                if ('mark' in information && information['mark'] !== 0) {
+                    $.each(information['mark'], function (site, boolean) {
+                        if (boolean) {
+                            sites +=
+                                '<div class="text-muted">' +
+                                '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a> (игнорируемый)' +
+                                '</div>'
+                        } else {
+                            sites +=
+                                '<div>' +
+                                '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                                '</div>'
+                            fullUrls.push(site)
+                        }
+
+                    })
+                } else {
+                    $.each(information['sites'], function (key, site) {
+                        sites += '<div>' +
+                            '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a>' +
+                            '</div>'
+                    })
+                }
 
                 let merge = ''
                 if ('merge' in information) {
@@ -51,7 +69,7 @@ function renderResultTableFast(data, count, target) {
                     '          <div class="mr-2" id="cluster-id-' + clusterId + '">' + phrase + '</div> ' +
                     '          <div>' +
                     '             <i class="fa fa-copy copy-fast-full-urls" data-target="' + iterator + '"></i>' +
-                    '             <div style="display: none" id="hidden-fast-urls-block-' + iterator + '">' + fullUrls + '</div>' +
+                    '             <div style="display: none" id="hidden-fast-urls-block-' + iterator + '">' + fullUrls.join("\r") + '</div>' +
                     '             <span class="__helper-link ui_tooltip_w">' +
                     '                 <i class="fa fa-paperclip"></i>' +
                     '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +

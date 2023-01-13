@@ -108,7 +108,6 @@
         <label>{{ __('Merging Clusters') }}</label>
         {!! Form::select('engine_version', [
             $config->engine_version => $config->engine_version,
-            'old' => __('Formation based on the first available phrase (old)'),
             'latest' => __('Additional bulkhead (latest)'),
             'exp' => 'эксперимент',
             'exp_phrases' => 'Фразовый перебор',
@@ -117,9 +116,21 @@
         ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
     </div>
 
-    <div class="form-group required" id="ignoredWordsBlock" style="display: none">
-        <label for="ignoredWords">Исключаемые слова</label>
-        <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8" rows="8"></textarea>
+    <div class="form-group required">
+        <label for="ignoredDomains">Игнорируемые домены</label>
+        <textarea class="form form-control" name="ignoredDomains" id="ignoredDomains" cols="8" rows="8"></textarea>
+    </div>
+
+    <div id="ignoredWordsBlock" style="display: none">
+        <div class="form-group required">
+            <label for="ignoredWords">Исключаемые слова</label>
+            <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8" rows="8"></textarea>
+        </div>
+
+        <div class="form-group required">
+            <label for="gainFactor">Коэфиент усиления(%)</label>
+            <input class="form form-control" type="number" id="gainFactor" name="gainFactor" value="" placeholder="default 10">
+        </div>
     </div>
 
     <div class="form-group required">
@@ -287,6 +298,10 @@
     }
 
     $(document).ready(function () {
+        if ($('#engineVersion').val() === 'max_phrases') {
+            $('#ignoredWordsBlock').show(300)
+        }
+
         $('#brutForce').on('click', function () {
             if ($(this).is(':checked')) {
                 $('.brut-force').show(300)

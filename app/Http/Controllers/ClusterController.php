@@ -86,7 +86,7 @@ class ClusterController extends Controller
         ]);
     }
 
-    public function getProgressModify(int $id): JsonResponse
+    public function getProgressModify($id): JsonResponse
     {
         $cluster = ClusterResults::where('progress_id', '=', $id)->first();
         if (isset($cluster)) {
@@ -208,7 +208,6 @@ class ClusterController extends Controller
 
     public function setClusterRelevanceUrls(Request $request): JsonResponse
     {
-        Log::debug('arr', $request->input('phrases'));
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))
             ->where('user_id', '=', Auth::id())
             ->first();
@@ -294,7 +293,8 @@ class ClusterController extends Controller
         foreach ($results as $result) {
             if (key_exists($request->phrase, $result)) {
                 return response()->json([
-                    'sites' => $result[$request->phrase]['sites']
+                    'sites' => $result[$request->phrase]['sites'],
+                    'mark' => $result[$request->phrase]['mark'] ?? 0
                 ]);
             }
         }
