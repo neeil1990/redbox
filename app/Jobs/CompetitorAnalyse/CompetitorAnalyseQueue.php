@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class CompetitorAnalyseQueue implements ShouldQueue
 {
@@ -25,6 +26,7 @@ class CompetitorAnalyseQueue implements ShouldQueue
      */
     public function __construct(array $request, int $userId)
     {
+        Log::debug('start queue', [$userId]);
         $this->request = $request;
         $this->userId = $userId;
     }

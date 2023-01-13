@@ -6,7 +6,7 @@ use App\Classes\Xml\SimplifiedXmlFacade;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SearchCompetitors extends Model
@@ -50,9 +50,9 @@ class SearchCompetitors extends Model
         return $this->countPhrases;
     }
 
-    public function setUserId(int $id): int
+    public function setUserId(int $id)
     {
-        return $this->userId = $id;
+        $this->userId = $id;
     }
 
     public function getUserId(): int
@@ -119,6 +119,7 @@ class SearchCompetitors extends Model
             if ($phrase != '') {
                 $xml->setQuery($phrase);
                 $this->sites[$phrase] = $xml->getXMLResponse();
+                Log::debug('пропаршено');
             }
         }
 
@@ -131,6 +132,7 @@ class SearchCompetitors extends Model
             }
         }
 
+        Log::debug('user_id', [$this->getUserId()]);
         TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
