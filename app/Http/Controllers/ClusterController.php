@@ -208,7 +208,6 @@ class ClusterController extends Controller
 
     public function setClusterRelevanceUrls(Request $request): JsonResponse
     {
-        Log::debug('arr', $request->input('phrases'));
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))
             ->where('user_id', '=', Auth::id())
             ->first();

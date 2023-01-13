@@ -274,7 +274,6 @@ class Cluster
     {
         $this->markIgnoredDomains();
 
-        Log::debug('sites', [$this->sites]);
         if ($this->engineVersion === 'latest') {
             $this->searchClustersEngineV2();
         } elseif ($this->engineVersion === 'exp') {
