@@ -7,5 +7,5 @@
 @endif
 
 @if(in_array('action', $buttons))
-    <button type="submit" class="btn btn-success">Сохранить</button>
+    <a href="{{ route('monitoring.index') }}" class="btn btn-success">Ваши проекты</a>
 @endif

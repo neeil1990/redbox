@@ -245,7 +245,17 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/admin/settings/delete/{name}', 'MonitoringSettingsController@destroy')->name('monitoring.admin.settings.delete');
     Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
 
-    //Monitoring query groups
+    // Monitoring project creator
+    Route::post('monitoring/creator/create', 'MonitoringProjectCreatorController@createProject');
+    Route::post('monitoring/creator/update', 'MonitoringProjectCreatorController@updateProject');
+    Route::post('monitoring/creator/edit', 'MonitoringProjectCreatorController@editProject');
+    Route::post('monitoring/creator/queries', 'MonitoringProjectCreatorController@actionQueries');
+    Route::get('monitoring/creator/queries', 'MonitoringProjectCreatorController@getQueries');
+    Route::get('monitoring/creator/competitors', 'MonitoringProjectCreatorController@getCompetitors');
+    Route::post('monitoring/creator/competitors', 'MonitoringProjectCreatorController@createCompetitors');
+    Route::post('monitoring/creator/regions', 'MonitoringProjectCreatorController@actionRegion');
+
+    // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
     Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');

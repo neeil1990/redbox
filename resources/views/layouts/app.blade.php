@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
+    <!-- Node modules style -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @yield('css')
     <style>
         .main-sidebar.sidebar-dark-primary.elevation-4 {

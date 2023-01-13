@@ -26,7 +26,10 @@
     "dependencies": {
         "copy-to-clipboard": "^3.3.1",
         "generate-password": "^1.6.1",
+        "hash.subscribe": "^2.2.0",
         "js-cookie": "^3.0.0",
+        "please-wait": "0.0.5",
+        "spinkit": "^2.0.1",
         "vue-cookie": "^1.1.4"
     }
 }

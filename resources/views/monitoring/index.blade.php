@@ -248,7 +248,7 @@
                         defaultContent: '<a class="btn btn-info btn-sm" href="#">{{ __('In progress') }}</a>',
                     },
                     {
-                        width: '120px',
+                        width: '145px',
                         data: function(row) {
 
                             let create = $('<a />', { class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', { class: 'fas fa-plus'}));
@@ -261,6 +261,11 @@
                                 title: 'Добавить запрос',
                             });
 
+                            let edit = $('<a />', {
+                                class: 'btn btn-sm btn-success',
+                                href: `/monitoring/create#id=${row.id}`,
+                            }).append($('<i />', { class: 'fas fa-edit'}));
+
                             let folder = $('<a />', {
                                 class: 'btn btn-sm btn-info',
                                 href: '/monitoring/'+ row.id +'/groups',
@@ -270,7 +275,7 @@
 
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return create[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
+                            return create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
