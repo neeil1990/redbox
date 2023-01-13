@@ -106,8 +106,6 @@ class SearchCompetitorsController extends Controller
     {
         $progress = CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->first();
 
-        Log::debug('pageHash', [$request->input('pageHash')]);
-        Log::debug('$progress', [$progress]);
         if (isset($progress->percent) && $progress->percent === 100) {
             $progress->delete();
             return response()->json([
