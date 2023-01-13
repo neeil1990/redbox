@@ -741,7 +741,7 @@ class Cluster
                             unset($this->clusters[$secondPhrase]);
                             $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
                             $this->clusters[$firstPhrase][$secondPhrase]['merge'] = [$key => $inter];
-                            $this->clusters[$firstPhrase][$firstPhrase]['merge'] = [$key => $inter];
+                            $this->clusters[$firstPhrase][$firstPhrase]['merge'] = [$key2 => $inter];
                             $willClustered[$secondPhrase] = true;
                             break 3;
                         }
