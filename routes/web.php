@@ -11,6 +11,7 @@
 |
 */
 
+use App\Cluster;
 use App\Common;
 use App\Morphy;
 use App\TextAnalyzer;

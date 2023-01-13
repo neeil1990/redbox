@@ -120,7 +120,6 @@ class Cluster
             $this->countPhrases = count($this->phrases);
             $this->progressId = $request['progressId'];
 
-            //todo нужно парсить 100 сайтов, после проверять на игнорируемые и оставлять $this->count + количество игнорируемых для каждой фразы + отображение
             $this->xml = new SimplifiedXmlFacade($this->region, 100);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
@@ -645,18 +644,16 @@ class Cluster
                 continue;
             }
             $intersect = [];
-            $mainSites = $this->getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
+            $mainSites = Cluster::getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
             foreach ($phrases as $phrase => $minimum) {
                 if (isset($willClustered[$phrase])) {
                     continue;
                 }
                 if ($mainPhrase === $phrase) {
-                    $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
-                    $willClustered[$mainPhrase] = true;
                     continue;
                 }
 
-                $phraseSites = $this->getNotIgnoredDomains($this->sites[$phrase]['mark']);
+                $phraseSites = Cluster::getNotIgnoredDomains($this->sites[$phrase]['mark']);
                 $ideal = count(array_intersect($mainSites, $phraseSites));
                 if ($ideal < $minimum) {
                     continue;
@@ -667,7 +664,7 @@ class Cluster
                         continue;
                     }
 
-                    $phSites = $this->getNotIgnoredDomains($this->sites[$ph]['mark']);
+                    $phSites = Cluster::getNotIgnoredDomains($this->sites[$ph]['mark']);
                     $c = count(array_intersect($phSites, $phraseSites));
                     if ($c > $checked) {
                         $intersect[$ph] = $c;
@@ -675,9 +672,11 @@ class Cluster
                 }
                 arsort($intersect);
                 if (array_key_first($intersect) === $mainPhrase) {
+                    $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
                     $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
                     $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
                     $willClustered[$phrase] = true;
+                    $willClustered[$mainPhrase] = true;
                 }
             }
         }
@@ -690,25 +689,26 @@ class Cluster
             $intersect = [];
             foreach ($this->clusters as $ph => $cluster) {
                 foreach ($cluster as $phrase => $val) {
-                    $count = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($this->sites[$phrase]['mark'])));
-                    if ($count > 0) {
+                    $count = count(array_intersect(Cluster::getNotIgnoredDomains($item['mark']), Cluster::getNotIgnoredDomains($this->sites[$phrase]['mark'])));
+                    if ($count >= $this->minimum) {
                         $intersect[$ph] = $count;
                     }
                 }
             }
 
-            arsort($intersect);
-            $this->clusters[array_key_first($intersect)][$mainPhrase] = $item;
-            $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($intersect) => $intersect[array_key_first($intersect)]];
+            if (count($intersect) === 0) {
+                $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
+            } else {
+                arsort($intersect);
+
+                $this->clusters[array_key_first($intersect)][$mainPhrase] = $item;
+                $this->clusters[array_key_first($intersect)][$mainPhrase]['merge'] = [array_key_first($intersect) => $intersect[array_key_first($intersect)]];
+            }
             $willClustered[$mainPhrase] = true;
         }
     }
 
-    /**
-     * @param $sites
-     * @return array
-     */
-    protected function getNotIgnoredDomains($sites): array
+    public static function getNotIgnoredDomains($sites): array
     {
         $result = [];
 

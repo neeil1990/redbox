@@ -262,18 +262,21 @@
 
                                         <div class="form-group required">
                                             <label for="ignoredDomains">Игнорируемые домены</label>
-                                            <textarea class="form form-control" name="ignoredDomains" id="ignoredDomains" cols="8" rows="8"></textarea>
+                                            <textarea class="form form-control" name="ignoredDomains"
+                                                      id="ignoredDomains" cols="8" rows="8"></textarea>
                                         </div>
 
                                         <div id="ignoredWordsBlock" style="display: none">
                                             <div class="form-group required">
                                                 <label for="ignoredWords">Исключаемые слова</label>
-                                                <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8" rows="8"></textarea>
+                                                <textarea class="form form-control" name="ignoredWords"
+                                                          id="ignoredWords" cols="8" rows="8"></textarea>
                                             </div>
 
                                             <div class="form-group required">
                                                 <label for="gainFactor">Коэфиент усиления(%)</label>
-                                                <input class="form form-control" type="number" id="gainFactor" name="gainFactor" value="" placeholder="default 10">
+                                                <input class="form form-control" type="number" id="gainFactor"
+                                                       name="gainFactor" value="" placeholder="default 10">
                                             </div>
                                         </div>
 
@@ -314,7 +317,8 @@
                                             </div>
                                         </div>
                                         <div class="form-group required">
-                                            <label for="defaultBrutForce">Дополнительная переборка без понижения порога</label>
+                                            <label for="defaultBrutForce">Дополнительная переборка без понижения
+                                                порога</label>
                                             <input type="checkbox" name="defaultBrutForce" id="defaultBrutForce">
                                         </div>
 
@@ -392,38 +396,7 @@
                                                             <td>{{ $total }}</td>
                                                             <td>{{ $iterator }}</td>
                                                             <td>
-                                                                <div class="d-flex">
-                                                                    <div class="mr-2">
-                                                                        {{ $phrase }}
-                                                                    </div>
-                                                                    <div>
-                                                                        <i class="fa fa-copy copy-full-urls"
-                                                                           data-target="1"
-                                                                           title="{{ __('Copy') }}"></i>
-                                                                        <div style="display: none"
-                                                                             id="hidden-urls-block-{{ $phrase }}">
-                                                                            @foreach($item['sites'] as $site)
-                                                                                {{ parse_url($site)['host'] . "\n" }}
-                                                                            @endforeach
-                                                                        </div>
-                                                                        <span class="__helper-link ui_tooltip_w">
-                                                                        <i class="fa fa-paperclip"></i>
-                                                                        <span class="ui_tooltip __bottom"
-                                                                              style="min-width: 250px;">
-                                                                            <span class="ui_tooltip_content">
-                                                                                @foreach($item['sites'] as $site)
-                                                                                    <div>
-                                                                                        <a href="{{$site}}"
-                                                                                           target="_blank">
-                                                                                            {{ parse_url($site)['host'] }}
-                                                                                        </a>
-                                                                                    </div>
-                                                                                @endforeach
-                                                                            </span>
-                                                                        </span>
-                                                                    </span>
-                                                                    </div>
-                                                                </div>
+                                                                {{ $phrase }}
                                                             </td>
                                                         </tr>
                                                         @php($iterator++)
