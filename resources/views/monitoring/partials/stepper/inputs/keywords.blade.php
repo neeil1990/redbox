@@ -69,7 +69,7 @@
                     <!-- /.card-body -->
 
                     <div class="card-footer">
-                        <button type="submit" id="add-keywords" class="btn btn-success float-right">Добавить запросы</button>
+                        <a href="javascript:void(0)" id="add-keywords" class="btn btn-success float-right">Добавить запросы</a>
                     </div>
                 </div>
                 <!-- /.card -->

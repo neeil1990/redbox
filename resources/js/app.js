@@ -50,3 +50,31 @@ $.ajaxSetup({
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
+
+window.loading = function () {
+    let loading = require('please-wait');
+
+    let string = 'A good day to you fine user!';
+
+    let msg = $('<p />').css({
+        "font-size": '20px',
+        "margin-bottom": '80px',
+        color: '#FFF',
+    }).addClass('loading-message').text(string);
+
+    let sc = 'fold';
+
+    let spinner = $('<div />', {
+        class: 'sk-spinner sk-' + sc
+    }).css('margin', '0 auto').append($('<div />').addClass(`sk-${sc}-cube`)[0].outerHTML.repeat(4));
+
+    let loadingParams = {
+        logo: "/img/logo.svg",
+        backgroundColor: 'rgb(0 0 0 / 60%)',
+        loadingHtml: msg[0].outerHTML + spinner[0].outerHTML
+    };
+
+    window.pleaseWait = loading.pleaseWait(loadingParams);
+
+    return window.pleaseWait;
+};
