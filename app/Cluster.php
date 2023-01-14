@@ -618,11 +618,7 @@ class Cluster
                         $cache[$item] = $base;
                     }
                 }
-                foreach ($second as $key => $phrase) {
-                    if (in_array($phrase, $this->ignoredWords)) {
-                        unset($second[$key]);
-                    }
-                }
+                $second = array_diff($second, $this->ignoredWords);
 
                 if (count($second) === 1) {
                     continue;
@@ -646,10 +642,7 @@ class Cluster
             $intersect = [];
             $mainSites = Cluster::getNotIgnoredDomains($this->sites[$mainPhrase]['mark']);
             foreach ($phrases as $phrase => $minimum) {
-                if (isset($willClustered[$phrase])) {
-                    continue;
-                }
-                if ($mainPhrase === $phrase) {
+                if (isset($willClustered[$phrase]) || $mainPhrase === $phrase) {
                     continue;
                 }
 
@@ -658,7 +651,6 @@ class Cluster
                 if ($ideal < $minimum) {
                     continue;
                 }
-                $intersect = [];
                 foreach ($result[$phrase] as $ph => $checked) {
                     if ($ph === $phrase || isset($willClustered[$ph])) {
                         continue;
@@ -670,11 +662,12 @@ class Cluster
                         $intersect[$ph] = $c;
                     }
                 }
+
                 arsort($intersect);
                 if (array_key_first($intersect) === $mainPhrase) {
-                    $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
                     $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
                     $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
+                    $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
                     $willClustered[$phrase] = true;
                     $willClustered[$mainPhrase] = true;
                 }
@@ -718,6 +711,38 @@ class Cluster
             }
             $willClustered[$mainPhrase] = true;
         }
+
+        //brut force
+        $willClustered = [];
+        foreach ($this->clusters as $firstPhrase => $cluster) {
+            if (isset($willClustered[$firstPhrase])) {
+                continue;
+            }
+            foreach ($this->clusters as $secondPhrase => $cluster2) {
+                if ($firstPhrase === $secondPhrase || isset($willClustered[$secondPhrase])) {
+                    continue;
+                }
+                $intersects = [];
+                foreach ($cluster as $key => $item) {
+                    foreach ($cluster2 as $key2 => $item2) {
+                        $inter = count(array_intersect(Cluster::getNotIgnoredDomains($item['mark']), Cluster::getNotIgnoredDomains($item2['mark'])));
+                        if (isset($result[$key][$key2]) && $inter >= $result[$key][$key2]) {
+                            $intersects[$secondPhrase] = [$key => $inter];
+                        }
+                    }
+                }
+                if (count($intersects) > 0) {
+                    $ph = array_key_first($intersects);
+
+                    $this->clusters[$firstPhrase] = array_merge($this->clusters[$firstPhrase], $this->clusters[$ph]);
+                    $this->clusters[$firstPhrase][$ph]['merge'] = array_shift($intersects);
+                    $willClustered[$ph] = true;
+                    $willClustered[$firstPhrase] = true;
+                    unset($this->clusters[$ph]);
+                    continue 2;
+                }
+            }
+        }
     }
 
     public static function getNotIgnoredDomains($sites): array
@@ -737,6 +762,7 @@ class Cluster
     protected function brutForceClusters($minimum, $extra = false)
     {
         $willClustered = [];
+
         foreach ($this->clusters as $firstPhrase => $cluster) {
             if ($extra && count($cluster) > $this->brutForceCount || isset($willClustered[$firstPhrase])) {
                 continue;
@@ -745,18 +771,32 @@ class Cluster
                 if ($firstPhrase === $secondPhrase || isset($willClustered[$secondPhrase])) {
                     continue;
                 }
+                $intersects = [];
                 foreach ($cluster as $key => $item) {
                     foreach ($cluster2 as $key2 => $item2) {
-                        $inter = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])));
-                        if ($inter >= $minimum) {
-                            unset($this->clusters[$secondPhrase]);
-                            $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
-                            $this->clusters[$firstPhrase][$secondPhrase]['merge'] = [$key => $inter];
-                            $this->clusters[$firstPhrase][$firstPhrase]['merge'] = [$key2 => $inter];
-                            $willClustered[$secondPhrase] = true;
-                            break 3;
+                        $inter = count(array_intersect(Cluster::getNotIgnoredDomains($item['mark']), Cluster::getNotIgnoredDomains($item2['mark'])));
+                        if (isset($result[$key][$key2]) && $inter >= $result[$key][$key2] || $inter > $minimum) {
+                            $intersects[$secondPhrase][$key2] = $inter;
                         }
                     }
+                }
+
+                if (count($intersects) > 0) {
+                    $max = 0;
+                    $k = '';
+                    foreach ($intersects as $key => $items) {
+                        arsort($intersects[$key]);
+                        $c = array_shift($intersects[$key]);
+                        if ($max < $c) {
+                            $max = $c;
+                            $k = $key;
+                        }
+                    }
+
+                    unset($this->clusters[$k]);
+                    $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
+                    $this->clusters[$firstPhrase][$k]['merge'] = [$k => $max];
+                    $willClustered[$k] = true;
                 }
             }
         }
