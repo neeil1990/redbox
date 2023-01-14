@@ -727,7 +727,7 @@ class Cluster
                     foreach ($cluster2 as $key2 => $item2) {
                         $inter = count(array_intersect(Cluster::getNotIgnoredDomains($item['mark']), Cluster::getNotIgnoredDomains($item2['mark'])));
                         if (isset($result[$key][$key2]) && $inter >= $result[$key][$key2]) {
-                            $intersects[$secondPhrase] = [$key => $inter];
+                            $intersects[$secondPhrase] = [$key => $key2];
                         }
                     }
                 }
