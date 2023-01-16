@@ -12,6 +12,7 @@
 */
 
 use App\Cluster;
+use App\ClusterResults;
 use App\Common;
 use App\Morphy;
 use App\TextAnalyzer;
@@ -539,4 +540,11 @@ Route::get('/test/{id}/', function ($id) {
         $ff += count($cluster);
     }
     dd($ff);
+});
+
+Route::get('/test2/{id}', function ($id) {
+    $results = ClusterResults::findOrFail($id);
+    dump($results);
+    dump($results->sites_json);
+    dump(json_decode($results->sites_json, true));
 });
