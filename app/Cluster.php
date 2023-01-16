@@ -241,7 +241,6 @@ class Cluster
 
     protected function markIgnoredDomains()
     {
-        Log::debug('sites', [$this->sites]);
         foreach ($this->sites as $phrase => $item) {
             $count = 0;
             foreach ($item['sites'] as $key => $site) {
