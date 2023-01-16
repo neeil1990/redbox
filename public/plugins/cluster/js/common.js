@@ -20,7 +20,7 @@ function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
         mode: $('#start-analyse').attr('data-target'),
         brutForceCount: $('#brutForceCount').val(),
         reductionRatio: $('#reductionRatio').val(),
-        defaultBrutForce: $('#defaultBrutForce').is(':checked'),
+        brutForceType: $('#brutForceType').val(),
         ignoredWords: $('#ignoredWords').val(),
         ignoredDomains: $('#ignoredDomains').val(),
         gainFactor: $('#gainFactor').val(),

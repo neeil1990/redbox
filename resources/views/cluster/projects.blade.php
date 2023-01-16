@@ -263,7 +263,6 @@
                             if (request.brutForce === 'true') {
                                 $('#brutForce').prop('checked', true);
                                 $('.brut-force').show(300)
-
                             } else {
                                 $('#brutForce').prop('checked', false);
                                 $('.brut-force').hide(300)

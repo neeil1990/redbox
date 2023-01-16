@@ -124,13 +124,14 @@
 
     <div id="ignoredWordsBlock" style="display: none">
         <div class="form-group required">
-            <label for="ignoredWords">Исключаемые слова</label>
+            <label for="ignoredWords">Игнорируемые слова</label>
             <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8" rows="8"></textarea>
         </div>
 
         <div class="form-group required">
             <label for="gainFactor">Коэфиент усиления(%)</label>
-            <input class="form form-control" type="number" id="gainFactor" name="gainFactor" value="" placeholder="default 10">
+            <input class="form form-control" type="number" id="gainFactor" name="gainFactor" value=""
+                   placeholder="default 10">
         </div>
     </div>
 
@@ -144,38 +145,44 @@
             'hard' => 'hard',
             ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
     </div>
+
     <div class="form-group required">
         <label for="brutForce">{{ __('Additional bulkhead') }}</label>
         <input type="checkbox" name="brutForce" id="brutForce" @if($config->brut_force) checked @endif>
         <span class="__helper-link ui_tooltip_w">
-        <i class="fa fa-question-circle" style="color: grey"></i>
-        <span class="ui_tooltip __right">
-            <span class="ui_tooltip_content" style="width: 300px">
-                {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
-                {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
-                {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
+            <i class="fa fa-question-circle" style="color: grey"></i>
+            <span class="ui_tooltip __right">
+                <span class="ui_tooltip_content" style="width: 300px">
+                    {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                    {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                    {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
+                </span>
             </span>
         </span>
-    </span>
+        <div class="brut-force" style="display: none">
+            <div class="form-group required">
+                <label for="brutForceType">Тип дополнительной переборки</label>
+                <select name="brutForceType" id="brutForceType" class="custom-select">
+                    <option value="new">new</option>
+                    <option value="old">old</option>
+                </select>
+            </div>
 
-        <div class="form-group required brut-force" style="display: none">
-            <label for="brutForceCount">Минимальный размер кластера для повторной переборки</label>
-            <input type="number" name="brutForceCount" id="brutForceCount" class="form form-control" value="1">
-        </div>
-        <div class="form-group required brut-force" style="display: none">
-            <label for="reductionRatio">Минимальный множитель</label>
-            <select name="reductionRatio" id="reductionRatio" class="select custom-select">
-                <option value="0.4">0.4</option>
-                <option value="0.3">0.3</option>
-                <option value="0.2">0.2</option>
-            </select>
+            <div class="form-group required">
+                <label for="brutForceCount">Минимальный размер кластера для повторной переборки</label>
+                <input type="number" name="brutForceCount" id="brutForceCount" class="form form-control" value="1">
+            </div>
+
+            <div class="form-group required">
+                <label for="reductionRatio">Минимальный множитель</label>
+                <select name="reductionRatio" id="reductionRatio" class="select custom-select">
+                    <option value="0.4">0.4</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.2">0.2</option>
+                </select>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="form-group required">
-    <label for="defaultBrutForce">Дополнительная переборка без понижения порога</label>
-    <input type="checkbox" name="defaultBrutForce" id="defaultBrutForce">
 </div>
 
 <div class="form-group required" id="extra-block">
@@ -312,7 +319,7 @@
         })
 
         $('#engineVersion').change(function () {
-            if ($(this).val() === 'max_phrases') {
+            if ($(this).val() === 'max_phrases' || $(this).val() === '1601') {
                 $('#ignoredWordsBlock').show(300)
             } else {
                 if ($('#ignoredWordsBlock').is(':visible')) {
