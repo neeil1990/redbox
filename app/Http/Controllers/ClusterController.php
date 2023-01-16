@@ -109,6 +109,7 @@ class ClusterController extends Controller
         $user = Auth::user();
         $cluster = new Cluster($request->all(), $user, false);
         $results = ClusterResults::findOrFail($request->input('resultId'));
+        Log::debug('results', [$results]);
         $cluster->setSites($results->sites_json);
         $cluster->searchClusters();
         $cluster->calculateClustersInfo();
