@@ -64,7 +64,7 @@
             <form class="needs-validation" method="post" action="{{ route('monitoring.store') }}" novalidate>
                 @csrf
                 <!-- your steps content here -->
-                @include('monitoring.partials.stepper._content', ['target' => 'project', 'buttons' => ['next']])
+                @include('monitoring.partials.stepper._content', ['target' => 'project', 'buttons' => ['next', 'back']])
 
                 @include('monitoring.partials.stepper._content', ['target' => 'keywords', 'buttons' => ['previous', 'next']])
 
