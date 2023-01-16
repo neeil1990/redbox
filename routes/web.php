@@ -541,9 +541,3 @@ Route::get('/test/{id}/', function ($id) {
     }
     dd($ff);
 });
-
-Route::get('/test2/{id}', function ($id) {
-    $results = ClusterResults::findOrFail($id);
-    dump($results->sites_json);
-    dump(json_decode($results->sites_json, true));
-});

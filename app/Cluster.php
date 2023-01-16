@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -241,7 +240,6 @@ class Cluster
 
     protected function markIgnoredDomains()
     {
-        Log::debug('markIgnoredDomains', [count($this->sites)]);
         foreach ($this->sites as $phrase => $item) {
             $count = 0;
             foreach ($item['sites'] as $key => $site) {
