@@ -267,6 +267,7 @@ class Cluster
      */
     public function setSites($sites)
     {
+        Log::debug('set sites', [$sites]);
         $this->sites = json_decode($sites, true);
         Log::debug('set sites', [count($this->sites)]);
     }
