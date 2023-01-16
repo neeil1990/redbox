@@ -256,7 +256,8 @@
                                                     'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
                                                     'maximum' => 'Поиск максимального',
-                                                    'max_phrases' => 'Фразовый перебор и поиск максимального',
+                                                    'max_phrases' => 'Фразовый перебор и поиск максимального (13.01)',
+                                                    '1601' => 'Фразовый перебор и поиск максимального (15.01)',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 
@@ -296,6 +297,14 @@
                                         </div>
                                         <div class="form-group required" id="brutForceCountBlock" style="display: none">
                                             <div class="form-group required">
+                                                <label for="brutForceType">Тип дополнительной переборки</label>
+                                                <select name="brutForceType" id="brutForceType" class="custom-select">
+                                                    <option value="new">new</option>
+                                                    <option value="old">old</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group required">
                                                 <label for="brutForceCount">
                                                     Минимальный размер кластера для повторной переборки
                                                 </label>
@@ -315,11 +324,6 @@
                                                     <option value="0.2">0.2</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="form-group required">
-                                            <label for="defaultBrutForce">Дополнительная переборка без понижения
-                                                порога</label>
-                                            <input type="checkbox" name="defaultBrutForce" id="defaultBrutForce">
                                         </div>
 
                                         <div class="form-group required d-flex justify-content-end">
@@ -623,7 +627,7 @@
                             ignoredDomains: $('#ignoredDomains').val(),
                             gainFactor: $('#gainFactor').val(),
                             ignoredWords: $('#ignoredWords').val(),
-                            defaultBrutForce: $('#defaultBrutForce').is(':checked')
+                            brutForceType: $('#brutForceType').val(),
                         },
                         success: function (response) {
                             $('#clusters-table-default').show()
