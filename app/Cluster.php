@@ -241,6 +241,7 @@ class Cluster
 
     protected function markIgnoredDomains()
     {
+        Log::debug('markIgnoredDomains', [count($this->sites)]);
         foreach ($this->sites as $phrase => $item) {
             $count = 0;
             foreach ($item['sites'] as $key => $site) {
@@ -266,8 +267,8 @@ class Cluster
      */
     public function setSites($sites)
     {
-        Log::debug('results', [$sites]);
         $this->sites = json_decode($sites, true);
+        Log::debug('set sites', [count($this->sites)]);
     }
 
     public function searchClusters()
