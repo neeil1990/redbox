@@ -1,3 +1,7 @@
+@if(in_array('back', $buttons))
+    <a href="{{ route('monitoring.index') }}" class="btn btn-secondary">Вернутся в проекты</a>
+@endif
+
 @if(in_array('previous', $buttons))
     <a class="btn btn-secondary" onclick="stepper.previous()">Назад</a>
 @endif
