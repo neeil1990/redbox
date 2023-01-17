@@ -172,7 +172,6 @@ class ClusterController extends Controller
 
         $cluster->result = gzuncompress(base64_decode($cluster->result));
         $cluster->request = json_decode($cluster->request, true);
-        unset($cluster->sites_json);
 
         return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
     }

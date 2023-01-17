@@ -252,32 +252,34 @@
                                         <div class="form-group required">
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engineVersion', [
-                                                    'latest' => __('Additional bulkhead (latest)'),
-                                                    'exp' => 'эксперимент',
                                                     'exp_phrases' => 'Фразовый перебор',
                                                     'maximum' => 'Поиск максимального',
                                                     'max_phrases' => 'Фразовый перебор и поиск максимального (13.01)',
-                                                    '1601' => 'Фразовый перебор и поиск максимального (15.01)',
+                                                    '1501' => 'Фразовый перебор и поиск максимального (15.01)',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
                                         </div>
 
                                         <div class="form-group required">
                                             <label for="ignoredDomains">Игнорируемые домены</label>
                                             <textarea class="form form-control" name="ignoredDomains"
-                                                      id="ignoredDomains" cols="8" rows="8"></textarea>
+                                                      id="ignoredDomains" cols="8"
+                                                      rows="8">{{ $cluster['request']['ignoredDomains'] }}</textarea>
                                         </div>
 
                                         <div id="ignoredWordsBlock" style="display: none">
                                             <div class="form-group required">
-                                                <label for="ignoredWords">Исключаемые слова</label>
+                                                <label for="ignoredWords">Игнорируемые слова</label>
                                                 <textarea class="form form-control" name="ignoredWords"
-                                                          id="ignoredWords" cols="8" rows="8"></textarea>
+                                                          id="ignoredWords" cols="8"
+                                                          rows="8">{{ $cluster['request']['ignoredWords'] }}</textarea>
                                             </div>
 
                                             <div class="form-group required">
                                                 <label for="gainFactor">Коэфиент усиления(%)</label>
                                                 <input class="form form-control" type="number" id="gainFactor"
-                                                       name="gainFactor" value="" placeholder="default 10">
+                                                       name="gainFactor"
+                                                       value="{{ $cluster['request']['gainFactor']?? 10 }}"
+                                                       placeholder="default 10">
                                             </div>
                                         </div>
 
@@ -317,9 +319,9 @@
                                                 </label>
                                                 <select name="reductionRatio" id="reductionRatio"
                                                         class="select custom-select">
-                                                    <option value="0.6">0.6</option>
-                                                    <option value="0.5">0.5</option>
-                                                    <option value="0.4">0.4</option>
+                                                    <option value="0.6">pre-hard</option>
+                                                    <option value="0.5">soft</option>
+                                                    <option value="0.4">light</option>
                                                     <option value="0.3">0.3</option>
                                                     <option value="0.2">0.2</option>
                                                 </select>

@@ -1,14 +1,18 @@
 function renderResultTable(data) {
     let iterator = 0
+    let copyGroupBool = true
+    let copyRelevanceBool = false;
 
     $.each(data, function (key, result) {
         let clusterIterator = 0
         let newTableRows = ''
         let newRow = ''
         let clusterId = (Math.random() + 1).toString(36).substring(7)
-        let minWidth = '120px'
         let allRelevanceUrls = []
-        let groupWidth
+        let groupHeader = ''
+        let groupName = ''
+        let relevanceHeader = ''
+        let saveUrlButton = ''
 
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
@@ -41,13 +45,12 @@ function renderResultTable(data) {
                     }
                 }
 
-                let groupName
+
                 if ('groupName' in result['finallyResult']) {
-                    groupName = result['finallyResult']['groupName'];
-                    groupWidth = '250px'
+                    groupHeader = '<th style="border-top-width: 2px;min-width: 250px">Группа</th>'
+                    groupName = '<td class="border-0 group-' + clusterId + '">' + result['finallyResult']['groupName'] + '</td>'
                 } else {
-                    groupName = ' ';
-                    groupWidth = '50px';
+                    copyGroupBool = false
                 }
 
                 let merge = ''
@@ -64,10 +67,10 @@ function renderResultTable(data) {
 
                 let relevance = ''
                 if ('link' in information) {
-                    minWidth = '450px'
-                    relevance = '<a href="' + information['link'] + '" target="_blank">' + information['link'] + '</a>'
+                    relevance = '<td class="border-0 relevance-' + clusterId + '"> <a href="' + information['link'] + '" target="_blank">' + information['link'] + ' </a></td>'
+                    relevanceHeader = '<th style="border-top-width: 2px;">Релевантные url </th>'
+                    copyRelevanceBool = true
                 } else if ('relevance' in information && information['relevance'] !== 0) {
-                    minWidth = '450px'
                     $.each(information['relevance'], function (key, value) {
                         relevance += '<option value="' + value + '">' + value + '</option>'
                         allRelevanceUrls.push(value)
@@ -77,6 +80,18 @@ function renderResultTable(data) {
                         '<select style="border-radius: 0 !important;" class="custom-select" id="' + phrase.replaceAll(' ', '-') + '">' + relevance + '</select>' +
                         '<button style="border-radius: 0 !important;" class="btn btn-secondary save-relevance-url" data-order="' + phrase + '"><i class="fa fa-save" style="color: white"></i></button>' +
                         '</div>'
+
+                    relevance = '<td class="border-0 relevance-' + clusterId + '"> ' + relevance + '</td>'
+                    relevanceHeader = '<th style="border-top-width: 2px;">Релевантные url </th>'
+                    copyRelevanceBool = true
+                }
+
+                if (allRelevanceUrls.length > 0) {
+                    saveUrlButton = '<button class="btn btn-secondary save-all-urls" ' +
+                        'data-toggle="modal" data-target="#saveUrlsModal" ' +
+                        'data-urls="' + [...new Set(allRelevanceUrls)] + '">' +
+                        '   Сохранить url ' +
+                        '</button>'
                 }
 
                 let title
@@ -115,14 +130,24 @@ function renderResultTable(data) {
                     '          </div> ' +
                     '       </div>' +
                     '   </td> ' +
-                    '   <td class="border-0 group-' + clusterId + '">' + groupName + '</td>' +
-                    '   <td class="border-0 relevance-' + clusterId + '">' + relevance + '</td>' +
+                    groupName +
+                    relevance +
                     '   <td class="border-0 base-' + clusterId + '" data-target="' + baseForm + '">' + baseForm + '</td>' +
                     '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phraseForm + '">' + phraseForm + '</td>' +
                     '   <td class="border-0 target-' + clusterId + '" data-target="' + targetForm + '">' + targetForm + '</td>' +
                     '</tr>'
             }
         })
+
+        let groupButton
+
+        if (copyGroupBool) {
+            groupButton = '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+                '   <i class="fa fa-copy pr-1"></i>группу' +
+                '</p>'
+        } else {
+            groupButton = ''
+        }
 
         newRow +=
             '<tr class="render">' +
@@ -137,10 +162,8 @@ function renderResultTable(data) {
             '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
-            '               <th style="border-top-width: 2px;min-width: ' + groupWidth + '">Группа</th>' +
-            '               <th style="border-top-width: 2px;min-width: ' + minWidth + '">' +
-            '                   Релевантные url' +
-            '               </th>' +
+            groupHeader +
+            relevanceHeader +
             '               <th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
             '               <th style="border-top-width: 2px;min-width: 100px;">"Фразовая"</th>' +
             '               <th style="border-top-width: 2px;min-width: 90px;">"!Точная"</th>' +
@@ -153,10 +176,8 @@ function renderResultTable(data) {
             '       <div class="row" style="cursor: pointer">' +
             '            <p class="copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
             '                <i class="fa fa-copy pr-1"></i>ключевой запрос' +
-            '            </p>' +
-            '            <p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-            '                <i class="fa fa-copy pr-1"></i>группу' +
-            '            </p>' +
+            '            </p>'
+            + groupButton +
             '       </div>' +
             '       <div class="row" style="cursor: pointer">' +
             '              <p class="copy-based col" data-target="' + clusterId + '" data-toggle="collapse">' +
@@ -177,10 +198,7 @@ function renderResultTable(data) {
             '                   Конкуренты' +
             '               </a>' +
             '            </div>' +
-            '           <div class="col-6">' +
-            '               <button class="btn btn-secondary save-all-urls" data-toggle="modal" data-target="#saveUrlsModal" data-urls="' + [...new Set(allRelevanceUrls)] + '">' +
-            '                   Сохранить url' +
-            '               </button>' +
+            '           <div class="col-6">' + saveUrlButton +
             '           </div>' +
             '       </div>' +
             '       <div class="collapse" id="competitors' + key + '"> </div>' +
@@ -195,7 +213,10 @@ function renderResultTable(data) {
     copyTarget()
     copyCluster()
 
-    copyGroup()
+    if (copyGroupBool) {
+        copyGroup()
+    }
+
     $(document).ready(function () {
         $.each($('.render-table'), function (key, value) {
             $('#' + $(this).attr('id')).dataTable({

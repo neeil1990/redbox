@@ -108,8 +108,6 @@
         <label>{{ __('Merging Clusters') }}</label>
         {!! Form::select('engine_version', [
             $config->engine_version => $config->engine_version,
-            'latest' => __('Additional bulkhead (latest)'),
-            'exp' => 'эксперимент',
             'exp_phrases' => 'Фразовый перебор',
             'maximum' => 'Поиск максимального',
             'max_phrases' => 'Фразовый перебор и поиск максимального (13.01)',
@@ -176,7 +174,9 @@
             <div class="form-group required">
                 <label for="reductionRatio">Минимальный множитель</label>
                 <select name="reductionRatio" id="reductionRatio" class="select custom-select">
-                    <option value="0.4">0.4</option>
+                    <option value="0.6">pre-hard</option>
+                    <option value="0.5">soft</option>
+                    <option value="0.4">light</option>
                     <option value="0.3">0.3</option>
                     <option value="0.2">0.2</option>
                 </select>

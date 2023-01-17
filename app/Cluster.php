@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -61,7 +60,6 @@ class Cluster
 
     protected $brutForceCount;
 
-
     protected $reductionRatio;
 
     protected $ignoredWords;
@@ -107,12 +105,11 @@ class Cluster
         }
         $this->minimum = $this->count * $this->clusteringLevel;
         $this->mode = $request['mode'];
-        $this->engineVersion = $request['engineVersion'];
+        $this->engineVersion = $request['engineVersion'] ?? 'max_phrases';
 
         if ($default) {
             $this->request = $request;
             $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
-            $this->engineVersion = $request['engineVersion'];
             $this->searchEngine = $request['searchEngine'];
             $this->user = $user;
             $this->region = $request['region'];
@@ -276,19 +273,14 @@ class Cluster
     {
         $this->markIgnoredDomains();
 
-        // у старых методов не корректно считываются игнорируемые
-        if ($this->engineVersion === 'latest') {
-            $this->searchClustersEngineV2();
-        } elseif ($this->engineVersion === 'exp') {
-            $this->searchClustersEngineV3();
-        } elseif ($this->engineVersion === 'exp_phrases') {
+        if ($this->engineVersion === 'exp_phrases') {
             $this->searchClustersEngineV4();
         } elseif ($this->engineVersion === 'maximum') {
             $this->searchClustersEngineV6();
         } else if ($this->engineVersion === 'max_phrases') {
             $this->searchClustersEngine1401();
-        } else if ($this->engineVersion === '1601') {
-            $this->searchClustersEngine1601();
+        } else if ($this->engineVersion === '1501') {
+            $this->searchClustersEngine1501();
         }
 
         if ($this->brutForce && $this->mode === 'professional') {
@@ -296,7 +288,7 @@ class Cluster
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 if ($this->brutForceType === 'new') {
-                    $this->brutForceNew(true);
+                    $this->brutForceNew($this->count * $percent, true);
                 } else {
                     $this->brutForceOld($this->count * $percent, true);
                 }
@@ -587,7 +579,7 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngine1601()
+    protected function searchClustersEngine1501()
     {
         $m = new Morphy();
         $cache = [];
@@ -880,7 +872,7 @@ class Cluster
         return $result;
     }
 
-    protected function brutForceNew($extra = false)
+    protected function brutForceNew($minimum, $extra = false)
     {
         $willClustered = [];
         foreach ($this->clusters as $firstPhrase => $cluster) {
@@ -896,7 +888,7 @@ class Cluster
                 foreach ($cluster as $key => $item) {
                     foreach ($cluster2 as $key2 => $item2) {
                         $inter = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])));
-                        if (isset($this->wordRatio[$key][$key2]) && $inter >= $this->wordRatio[$key][$key2]) {
+                        if (isset($this->wordRatio[$key][$key2]) && $inter >= $this->wordRatio[$key][$key2] || $inter > $minimum) {
                             $intersects[$secondPhrase] = [$key => $key2];
                         }
                     }
