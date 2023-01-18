@@ -101,6 +101,7 @@
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- Bootstrap 4 -->
         <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap-modal-form-templates/bootstrap-modal-form-templates.js') }}"></script>
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -246,24 +247,58 @@
                                 }
                             });
 
-                            let parsePositions = container.find('.parse-positions');
-                            parsePositions.click(function () {
+                            container.find('.parse-positions').click(function () {
+                                let select = $('#searchengines');
 
-                                if (window.confirm("Вы собираетесь добавить в очередь все запросы, подтвердите ваше действие")) {
+                                let params = [];
+                                select.find('option[value!=""]').map((i, item) => {
+                                    let region = $(item);
+                                    params.push({val: region.val(), text: region.text(), checked: region.prop('selected')});
+                                });
 
-                                    axios.post('/monitoring/parse/positions/project', {
-                                        projectId: PROJECT_ID,
-                                    }).then(function () {
-                                        toastr.success('Задание добавленно в очередь.');
-                                    });
-                                }
+                                $('.modal').modal('show').BootstrapModalFormTemplates({
+                                    title: "Обновить регионы",
+                                    fields: [
+                                        {
+                                            type: 'checkbox',
+                                            name: 'regions',
+                                            label: '',
+                                            params: params
+                                        },
+                                    ],
+                                    onAgree: function(m){
+                                        const formData = new FormData(m.find('form').get(0));
+                                        let regions = formData.getAll('regions');
+
+                                        if (!regions.length || !window.confirm("Вы собираетесь добавить в очередь все запросы, подтвердите ваше действие")){
+                                            m.modal('hide');
+                                            return false;
+                                        }
+
+                                        axios.post('/monitoring/parse/positions/project', {
+                                            projectId: PROJECT_ID,
+                                            regions: regions,
+                                        }).then(function (response) {
+                                            m.modal('hide');
+                                            if(response.data.status)
+                                                toastr.success('Задание добавленно в очередь');
+                                            else
+                                                toastr.error('Something went wrong!');
+                                        });
+                                    }
+                                });
                             });
 
-                            let parsePositionsKeys = container.find('.parse-positions-keys');
-                            parsePositionsKeys.click(function () {
+                            container.find('.parse-positions-keys').click(function () {
 
                                 let arrKeys = [];
                                 let keys = $('.table tbody tr').find('input[type="checkbox"]:checked');
+                                let region = $('#searchengines').val();
+
+                                if(!region.length){
+                                    toastr.error('Нужно выбрать регион!');
+                                    return false;
+                                }
 
                                 $.each(keys, function (i, item) {
                                     arrKeys.push($(item).val())
@@ -272,8 +307,10 @@
                                 axios.post('/monitoring/parse/positions/project/keys', {
                                     projectId: PROJECT_ID,
                                     keys: arrKeys,
+                                    region: region,
                                 }).then(function (response) {
                                     toastr.success('Задание добавленно в очередь.');
+                                    keys.prop('checked', false);
                                 });
                             });
 
@@ -549,7 +586,6 @@
                                 });
                             }
                             break;
-
                         case "create_keywords":
 
                             request = axios.get(`/monitoring/keywords/${PROJECT_ID}/create`).then(function (response) {
@@ -594,7 +630,6 @@
                     }
 
                     if(request){
-
                         request.then(function () {
 
                             let group = modal.find('.custom-select[name="monitoring_group_id"]');
