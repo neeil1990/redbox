@@ -73,7 +73,7 @@ class Cluster
 
     public function __construct(array $request, $user, $default = true)
     {
-        if (!isset($request['mode']) || $request['mode'] !== 'professional') {
+        if ($request['mode'] === 'classic') {
             $config = ClusterConfigurationClassic::first();
             $this->searchEngine = $config->search_engine;
             $this->gainFactor = $config->gain_factor;
@@ -87,7 +87,7 @@ class Cluster
             $config = ClusterConfiguration::first();
             $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
             $this->ignoredDomains = isset($request['ignoredDomains']) ? explode("\n", $request['ignoredDomains']) : [];
-            $this->searchEngine = $request['searchEngine'];
+            $this->searchEngine = $request['searchEngine'] ?? 'yandex';
             $this->gainFactor = $request['gainFactor'];
             $this->count = $request['count'];
             $this->setReductionRatio($request['reductionRatio']);
@@ -134,28 +134,6 @@ class Cluster
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
 
-        Log::debug('searchEngine', [$this->searchEngine]);
-        Log::debug('gainFactor', [$this->gainFactor]);
-        Log::debug('count', [$this->count]);
-        Log::debug('reductionRatio', [$this->reductionRatio]);
-        Log::debug('brutForceCount', [$this->brutForceCount]);
-        Log::debug('brutForce', [$this->brutForce]);
-        Log::debug('ignoredWords', [$this->ignoredWords]);
-        Log::debug('ignoredDomains', [$this->ignoredDomains]);
-        Log::debug('engineVersion', [$this->engineVersion]);
-        Log::debug('clusteringLevel', [$this->clusteringLevel]);
-        Log::debug('minimum', [$this->minimum]);
-        Log::debug('user', [$this->user]);
-        Log::debug('request', [$this->request]);
-        Log::debug('searchBase', [$this->searchBase]);
-        Log::debug('searchRelevance', [$this->searchRelevance]);
-        Log::debug('searchPhrases', [$this->searchPhrases]);
-        Log::debug('searchTarget', [$this->searchTarget]);
-        Log::debug('save', [$this->save]);
-        Log::debug('phrases', [$this->phrases]);
-        Log::debug('countPhrases', [$this->countPhrases]);
-        Log::debug('progressId', [$this->progressId]);
-        Log::debug('region', [$this->region]);
     }
 
     protected function setReductionRatio(string $ratio)
@@ -311,9 +289,6 @@ class Cluster
 
     public function searchClusters()
     {
-        Log::debug('engineVersion', [$this->engineVersion]);
-        Log::debug('count', [$this->count]);
-        Log::debug('searchEngine', [$this->searchEngine]);
         $this->markIgnoredDomains();
 
         if ($this->engineVersion === 'max_phrases') {
@@ -323,9 +298,6 @@ class Cluster
         }
 
         if ($this->brutForce) {
-            Log::debug('brutForce', [$this->brutForce]);
-            Log::debug('clusteringLevel', [$this->clusteringLevel]);
-            Log::debug('reductionRatio', [$this->reductionRatio]);
             $percent = $this->clusteringLevel;
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
