@@ -714,7 +714,7 @@
                 }, 1000)
 
                 $('#engineVersionFast').change(function () {
-                    if ($(this).val() === 'max_phrases') {
+                    if ($(this).val() === 'max_phrases' || $(this).val() === '1501') {
                         $('#ignoredWordsBlock').show(300)
                     } else {
                         if ($('#ignoredWordsBlock').is(':visible')) {
