@@ -5,81 +5,80 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
     public $count;
 
-    protected $region;
+    public $region;
 
-    protected $phrases;
+    public $phrases;
 
-    protected $clusteringLevel;
+    public $clusteringLevel;
 
-    protected $countPhrases;
+    public $countPhrases;
 
-    protected $sites;
+    public $sites;
 
-    protected $result;
+    public $result;
 
-    protected $clusters = [];
+    public $clusters = [];
 
-    protected $engineVersion;
+    public $engineVersion;
 
-    protected $searchBase;
+    public $searchBase;
 
-    protected $searchPhrases;
+    public $searchPhrases;
 
-    protected $searchTarget;
+    public $searchTarget;
 
-    protected $searchRelevance;
+    public $searchRelevance;
 
-    protected $searchEngine;
+    public $searchEngine;
 
-    protected $progress;
+    public $progress;
 
-    protected $save;
+    public $save;
 
-    protected $request;
+    public $request;
 
-    protected $newCluster;
+    public $newCluster;
 
     protected $user;
 
-    protected $brutForce;
+    public $brutForce;
 
-    protected $xml;
+    public $xml;
 
-    protected $host;
+    public $host;
 
-    protected $mode;
+    public $mode;
 
-    protected $minimum;
+    public $minimum;
 
-    protected $progressId;
+    public $progressId;
 
-    protected $brutForceCount;
+    public $brutForceCount;
 
-    protected $reductionRatio;
+    public $reductionRatio;
 
-    protected $ignoredWords;
+    public $ignoredWords;
 
     public $ignoredDomains;
 
-    protected $gainFactor;
+    public $gainFactor;
 
-    protected $wordRatio = [];
+    public $wordRatio = [];
 
     public function __construct(array $request, $user, $default = true)
     {
         if ($request['mode'] === 'classic') {
             $config = ClusterConfigurationClassic::first();
             $this->searchEngine = $config->search_engine;
-            $this->gainFactor = $config->gain_factor;
-            $this->count = $config->count;
+            $this->gainFactor = (int)$config->gain_factor;
+            $this->count = (int)$config->count;
             $this->setReductionRatio($config->reduction_ratio);
-            $this->brutForceCount = $config->brut_force_count;
+            $this->brutForceCount = (int)$config->brut_force_count;
             $this->brutForce = $config->brut_force;
             $this->ignoredWords = explode("\r\n", $config->ignored_words);
             $this->ignoredDomains = explode("\r\n", $config->ignored_domains);
@@ -88,10 +87,10 @@ class Cluster
             $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
             $this->ignoredDomains = isset($request['ignoredDomains']) ? explode("\n", $request['ignoredDomains']) : [];
             $this->searchEngine = $request['searchEngine'] ?? 'yandex';
-            $this->gainFactor = $request['gainFactor'];
-            $this->count = $request['count'];
+            $this->gainFactor = (int)$request['gainFactor'];
+            $this->count = (int)$request['count'];
             $this->setReductionRatio($request['reductionRatio']);
-            $this->brutForceCount = $request['brutForceCount'];
+            $this->brutForceCount = (int)$request['brutForceCount'];
             $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         }
 
@@ -133,7 +132,7 @@ class Cluster
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
-
+//        Log::debug('this', [$this]);
     }
 
     protected function setReductionRatio(string $ratio)
@@ -615,7 +614,11 @@ class Cluster
                 foreach ($cluster as $key => $item) {
                     foreach ($cluster2 as $key2 => $item2) {
                         $inter = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])));
-                        if (isset($this->wordRatio[$key][$key2]) && $inter >= $this->wordRatio[$key][$key2] || $inter > $minimum) {
+                        if (
+                            isset($this->wordRatio[$key][$key2]) &&
+                            $inter >= $this->wordRatio[$key][$key2] ||
+                            $inter > $minimum
+                        ) {
                             $intersects[$secondPhrase] = [$key => $key2];
                         }
                     }
@@ -714,20 +717,5 @@ class Cluster
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
         TelegramBot::sendMessage($message, $this->user->chat_id);
-    }
-
-    protected function mergeClusters($item2, $phrase, $phrase2, array $willClustered = []): array
-    {
-        $this->clusters[$phrase][$phrase2] = [
-            'based' => $item2['based'],
-            'phrased' => $item2['phrased'],
-            'target' => $item2['target'],
-            'relevance' => $item2['relevance'],
-            'sites' => $item2['sites'],
-            'basedNormal' => $item2['basedNormal'],
-        ];
-        $willClustered[$phrase2] = true;
-
-        return $willClustered;
     }
 }

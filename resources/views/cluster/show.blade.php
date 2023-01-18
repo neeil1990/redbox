@@ -247,7 +247,7 @@
                                                 'soft' => 'soft',
                                                 'pre-hard' => 'pre-hard',
                                                 'hard' => 'hard',
-                                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
+                                            ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevelFast']) !!}
                                         </div>
                                         <div class="form-group required">
                                             <label>{{ __('Merging Clusters') }}</label>
@@ -309,8 +309,8 @@
                                                 </label>
                                                 <select name="reductionRatio" id="reductionRatio"
                                                         class="select custom-select">
-                                                    <option value="0.6">pre-hard</option>
-                                                    <option value="0.5">soft</option>
+                                                    <option value="pre-hard">pre-hard</option>
+                                                    <option value="soft">soft</option>
                                                 </select>
                                             </div>
                                         </div>
