@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
@@ -58,11 +59,20 @@ class MonitoringController extends Controller
 
     public function parsePositionsInProject(Request $request)
     {
-        $this->parsePositionsOfKeywordsByProjectQueue($request->input('projectId'));
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->find($request->input('projectId'));
+        if(!$project)
+            return collect(['status' => false]);
 
-        return collect([
-            'status' => true
-        ]);
+        $engines = $project->searchengines()->whereIn('id', $request->input('regions'))->get();
+
+        foreach ($engines as $engine){
+            foreach ($project->keywords as $query)
+                dispatch((new AutoUpdatePositionQueue($query, $engine))->onQueue('position_high'));
+        }
+
+        return collect(['status' => true]);
     }
 
     public function parsePositionsInProjectKeys(Request $request)
@@ -71,9 +81,10 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $request->input('projectId'))->first();
         $keywords = $project->keywords()->whereIn('id', $request->input('keys'))->get();
+        $engine = $project->searchengines()->find($request->input('region'));
 
         foreach ($keywords as $keyword)
-            dispatch((new PositionQueue($keyword))->onQueue('position_high'));
+            dispatch((new AutoUpdatePositionQueue($keyword, $engine))->onQueue('position_high'));
 
         return collect([
             'status' => true
