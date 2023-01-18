@@ -81,8 +81,8 @@ class Cluster
             $this->reductionRatio = $config->reduction_ratio;
             $this->brutForceCount = $config->brut_force_count;
             $this->brutForce = $config->brut_force;
-            $this->ignoredWords = explode("\n", $config->ignored_words);
-            $this->ignoredDomains = explode("\n", $config->ignored_domains);
+            $this->ignoredWords = explode("\r\n", $config->ignored_words);
+            $this->ignoredDomains = explode("\r\n", $config->ignored_domains);
         } else {
             $config = ClusterConfiguration::first();
             $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
