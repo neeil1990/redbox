@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -86,7 +87,7 @@ class Cluster
             $config = ClusterConfiguration::first();
             $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
             $this->ignoredDomains = isset($request['ignoredDomains']) ? explode("\n", $request['ignoredDomains']) : [];
-            $this->searchEngine = $request['searchEngine'] ?? 'yandex';
+            $this->searchEngine = $request['searchEngine'] ?? $config->search_engine;
             $this->gainFactor = (int)$request['gainFactor'];
             $this->count = (int)$request['count'];
             $this->setReductionRatio($request['reductionRatio']);
@@ -132,7 +133,6 @@ class Cluster
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
-//        Log::debug('this', [$this]);
     }
 
     protected function setReductionRatio(string $ratio)
@@ -142,16 +142,18 @@ class Cluster
         } else if ($ratio === 'soft') {
             $this->reductionRatio = 0.5;
         }
+
+        Log::debug('$this->reductionRatio', [$this->reductionRatio]);
     }
 
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'gainFactor',
-            'sites', 'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'wordRatio',
-            'searchTarget', 'searchRelevance', 'searchEngine', 'progress', 'save', 'request',
-            'newCluster', 'user', 'brutForce', 'xml', 'host', 'mode', 'minimum', 'progressId',
-            'brutForceCount', 'reductionRatio', 'ignoredWords', 'ignoredDomains'
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'sites', 'result',
+            'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'searchTarget',
+            'searchRelevance', 'searchEngine', 'progress', 'save', 'request', 'newCluster',
+            'user', 'brutForce', 'xml', 'host', 'mode', 'minimum', 'progressId', 'brutForceCount',
+            'reductionRatio', 'ignoredWords', 'ignoredDomains', 'gainFactor', 'wordRatio',
         ];
     }
 
@@ -346,7 +348,12 @@ class Cluster
                         $cache[$item] = $base;
                     }
                 }
-                $second = array_diff($second, $this->ignoredWords);
+
+                foreach ($second as $key => $phrase) {
+                    if (in_array($phrase, $this->ignoredWords)) {
+                        unset($second[$key]);
+                    }
+                }
 
                 if (count($second) === 1) {
                     continue;
@@ -401,6 +408,9 @@ class Cluster
                 }
             }
         }
+
+        Log::debug('will', $willClustered);
+        Log::debug('will', [count($willClustered)]);
 
         foreach ($this->sites as $mainPhrase => $item) {
             if (isset($willClustered[$mainPhrase])) {
