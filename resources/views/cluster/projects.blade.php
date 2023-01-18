@@ -140,7 +140,452 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    @include('cluster.layouts.form')
+                                    <div id="pro" style="display: none">
+                                        <div class="form-group required">
+                                            <label>{{ __('Region') }}</label>
+                                            {!! Form::select('region', array_unique([
+                                              '213' => __('Moscow'),
+                                               '1' => __('Moscow and the area'),
+                                               '20' => __('Arkhangelsk'),
+                                               '37' => __('Astrakhan'),
+                                               '197' => __('Barnaul'),
+                                               '4' => __('Belgorod'),
+                                               '77' => __('Blagoveshchensk'),
+                                               '191' => __('Bryansk'),
+                                               '24' => __('Veliky Novgorod'),
+                                               '75' => __('Vladivostok'),
+                                               '33' => __('Vladikavkaz'),
+                                               '192' => __('Vladimir'),
+                                               '38' => __('Volgograd'),
+                                               '21' => __('Vologda'),
+                                               '193' => __('Voronezh'),
+                                               '1106' => __('Grozny'),
+                                               '54' => __('Ekaterinburg'),
+                                               '5' => __('Ivanovo'),
+                                               '63' => __('Irkutsk'),
+                                               '41' => __('Yoshkar-ola'),
+                                               '43' => __('Kazan'),
+                                               '22' => __('Kaliningrad'),
+                                               '64' => __('Kemerovo'),
+                                               '7' => __('Kostroma'),
+                                               '35' => __('Krasnodar'),
+                                               '62' => __('Krasnoyarsk'),
+                                               '53' => __('Kurgan'),
+                                               '8' => __('Kursk'),
+                                               '9' => __('Lipetsk'),
+                                               '28' => __('Makhachkala'),
+                                               '23' => __('Murmansk'),
+                                               '1092' => __('Nazran'),
+                                               '30' => __('Nalchik'),
+                                               '47' => __('Nizhniy Novgorod'),
+                                               '65' => __('Novosibirsk'),
+                                               '66' => __('Omsk'),
+                                               '10' => __('Eagle'),
+                                               '48' => __('Orenburg'),
+                                               '49' => __('Penza'),
+                                               '50' => __('Perm'),
+                                               '25' => __('Pskov'),
+                                               '39' => __('Rostov-on-Don'),
+                                               '11' => __('Ryazan'),
+                                               '51' => __('Samara'),
+                                               '42' => __('Saransk'),
+                                               '2' => __('Saint-Petersburg'),
+                                               '12' => __('Smolensk'),
+                                               '239' => __('Sochi'),
+                                               '36' => __('Stavropol'),
+                                               '10649' => __('Stary Oskol'),
+                                               '973' => __('Surgut'),
+                                               '13' => __('Tambov'),
+                                               '14' => __('Tver'),
+                                               '67' => __('Tomsk'),
+                                               '15' => __('Tula'),
+                                               '195' => __('Ulyanovsk'),
+                                               '172' => __('Ufa'),
+                                               '76' => __('Khabarovsk'),
+                                               '45' => __('Cheboksary'),
+                                               '56' => __('Chelyabinsk'),
+                                               '1104' => __('Cherkessk'),
+                                               '16' => __('Yaroslavl'),
+                                           ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region']) !!}
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label>{{ __('TOP') }}</label>
+                                            {!! Form::select('count', array_unique([
+                                                '10' => 10,
+                                                '20' => 20,
+                                                '30' => 30,
+                                                '40' => 40,
+                                                '50' => 50,
+                                            ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
+                                        </div>
+
+                                        <div class="form-group required" id="phrases-form-block">
+                                            <label>{{ __('Key phrases') }}</label>
+                                            {!! Form::textarea('phrases', null, ['class' => 'form-control', 'id'=>'phrases'] ) !!}
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="ignoredDomains">Игнорируемые домены</label>
+                                            <textarea class="form form-control" name="ignoredDomains"
+                                                      id="ignoredDomains" cols="8"
+                                                      rows="8"></textarea>
+                                        </div>
+
+                                        <div id="ignoredWordsBlock">
+                                            <div class="form-group required">
+                                                <label for="ignoredWords">Игнорируемые слова</label>
+                                                <textarea class="form form-control" name="ignoredWords"
+                                                          id="ignoredWords" cols="8"
+                                                          rows="8"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label>{{ __('clustering level') }}</label>
+                                            {!! Form::select('clustering_level', [
+                                                'light' => 'light',
+                                                'soft' => 'soft',
+                                                'pre-hard' => 'pre-hard',
+                                                'hard' => 'hard',
+                                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="brutForce">{{ __('Additional bulkhead') }}</label>
+                                            <input type="checkbox" name="brutForce" id="brutForce">
+                                            <span class="__helper-link ui_tooltip_w">
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right">
+                                                    <span class="ui_tooltip_content" style="width: 300px">
+                                                        {{ __('Phrases that, after clustering, did not get into the cluster will be further revised with a reduced entry threshold.') }} <br><br>
+                                                        {{ __('If the clustering level is "pre-hard", then the entry threshold for phrases will be reduced to "soft",') }}
+                                                        {{ __('if the phrase still doesnt get anywhere, then the threshold will be reduced to "light".') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            <div class="brut-force" style="display: none">
+                                                <div class="form-group required">
+                                                    <label for="gainFactor">коэффициент усиления(%)</label>
+                                                    <input class="form form-control" type="number" id="gainFactor"
+                                                           name="gainFactor"
+                                                           value="">
+                                                </div>
+
+                                                <div class="form-group required">
+                                                    <label for="brutForceCount">Минимальный размер кластера для
+                                                        повторной переборки</label>
+                                                    <input type="number" name="brutForceCount" id="brutForceCount"
+                                                           class="form form-control"
+                                                           value="">
+                                                </div>
+
+                                                <div class="form-group required">
+                                                    <label for="reductionRatio">Минимальный множитель</label>
+                                                    {!! Form::select('reductionRatio', [
+                                                        'pre-hard' => 'pre-hard',
+                                                        'soft' => 'soft',
+                                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'reductionRatio']) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required" id="extra-block">
+                                            <div class="row">
+                                                <div class="col-6 d-flex flex-column">
+                                                    <label for="domain-textarea">{{ __('Domain') }}</label>
+                                                    <textarea name="domain-textarea" id="domain-textarea" rows="5"
+                                                              class="form-control w-100"
+                                                              placeholder="https://site.ru"></textarea>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <div class="d-flex flex-column">
+                                                        <label for="comment-textarea">{{ __('Comment') }}</label>
+                                                        <textarea name="comment-textarea" id="comment-textarea" rows="5"
+                                                                  class="form-control w-100"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group required">
+                                                <label
+                                                    for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+                                                <input type="checkbox" name="searchRelevance" id="searchRelevance">
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                                    <span class="ui_tooltip __right">
+                                                        <span class="ui_tooltip_content" style="width: 300px">
+                                                            Для каждой фразы будет произведён поиск релевантных страниц
+                                                            <br>
+                                                            Вам необходимо указать доменное имя в формате <b>http(s)://site.ru/</b>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </div>
+
+                                            <div id="searchEngineBlock">
+                                                <label for="domain-textarea">{{ __('Search Engine') }}</label>
+                                                {!! Form::select('searchEngine', [
+                                                    'yandex' => 'Yandex',
+                                                    'google' => 'Google',
+                                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+                                            </div>
+
+                                            @if(!Auth::user()->telegram_bot_active)
+                                                <div class="mt-2">
+                                                    {{ __('Want to') }}
+                                                    <a href="{{ route('profile.index') }}" target="_blank">
+                                                        {{ __('receive notifications from our telegram bot') }}
+                                                    </a> ?
+                                                </div>
+                                            @else
+                                                <div id="sendTelegramMessage">
+                                                    <label for="sendMessage"
+                                                           class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                                                    {!! Form::select('sendMessage', [
+                                                        true => __('Yes'),
+                                                        false => __('No'),
+                                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage']) !!}
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <div class="form-group required mt-2">
+                                            <div>
+                                                <label for="searchBase">{{ __('Base frequency analysis') }}</label>
+                                                <input type="checkbox" name="searchBase" id="searchBase">
+                                            </div>
+                                            <div>
+                                                <label for="searchPhrases">{{ __('Phrase frequency analysis') }}</label>
+                                                <input type="checkbox" name="searchPhrases" id="searchPhrases">
+                                            </div>
+                                            <div>
+                                                <label
+                                                    for="searchTarget">{{ __('Accurate frequency analysis') }}</label>
+                                                <input type="checkbox" name="searchTarget" id="searchTarget">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required" id="saveResultBlock">
+                                            <label>{{ __('Save results') }}</label>
+                                            <span class="__helper-link ui_tooltip_w">
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right">
+                                                    <span class="ui_tooltip_content" style="width: 300px">
+                                                    {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
+                                                    {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
+                                                        {{ __('data will be lost when starting the next analysis or when reloading the page') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            {!! Form::select('save', [
+                                                '1' => __('Save'),
+                                                '0' => __('Do not save'),
+                                            ], null, ['class' => 'custom-select rounded-0', 'id' => 'save']) !!}
+                                        </div>
+                                    </div>
+
+                                    <div id="classic" style="display: block">
+                                        <div class="form-group required">
+                                            <label>{{ __('Region') }}</label>
+                                            {!! Form::select('region_classic', array_unique([
+                                              '213' => __('Moscow'),
+                                               '1' => __('Moscow and the area'),
+                                               '20' => __('Arkhangelsk'),
+                                               '37' => __('Astrakhan'),
+                                               '197' => __('Barnaul'),
+                                               '4' => __('Belgorod'),
+                                               '77' => __('Blagoveshchensk'),
+                                               '191' => __('Bryansk'),
+                                               '24' => __('Veliky Novgorod'),
+                                               '75' => __('Vladivostok'),
+                                               '33' => __('Vladikavkaz'),
+                                               '192' => __('Vladimir'),
+                                               '38' => __('Volgograd'),
+                                               '21' => __('Vologda'),
+                                               '193' => __('Voronezh'),
+                                               '1106' => __('Grozny'),
+                                               '54' => __('Ekaterinburg'),
+                                               '5' => __('Ivanovo'),
+                                               '63' => __('Irkutsk'),
+                                               '41' => __('Yoshkar-ola'),
+                                               '43' => __('Kazan'),
+                                               '22' => __('Kaliningrad'),
+                                               '64' => __('Kemerovo'),
+                                               '7' => __('Kostroma'),
+                                               '35' => __('Krasnodar'),
+                                               '62' => __('Krasnoyarsk'),
+                                               '53' => __('Kurgan'),
+                                               '8' => __('Kursk'),
+                                               '9' => __('Lipetsk'),
+                                               '28' => __('Makhachkala'),
+                                               '23' => __('Murmansk'),
+                                               '1092' => __('Nazran'),
+                                               '30' => __('Nalchik'),
+                                               '47' => __('Nizhniy Novgorod'),
+                                               '65' => __('Novosibirsk'),
+                                               '66' => __('Omsk'),
+                                               '10' => __('Eagle'),
+                                               '48' => __('Orenburg'),
+                                               '49' => __('Penza'),
+                                               '50' => __('Perm'),
+                                               '25' => __('Pskov'),
+                                               '39' => __('Rostov-on-Don'),
+                                               '11' => __('Ryazan'),
+                                               '51' => __('Samara'),
+                                               '42' => __('Saransk'),
+                                               '2' => __('Saint-Petersburg'),
+                                               '12' => __('Smolensk'),
+                                               '239' => __('Sochi'),
+                                               '36' => __('Stavropol'),
+                                               '10649' => __('Stary Oskol'),
+                                               '973' => __('Surgut'),
+                                               '13' => __('Tambov'),
+                                               '14' => __('Tver'),
+                                               '67' => __('Tomsk'),
+                                               '15' => __('Tula'),
+                                               '195' => __('Ulyanovsk'),
+                                               '172' => __('Ufa'),
+                                               '76' => __('Khabarovsk'),
+                                               '45' => __('Cheboksary'),
+                                               '56' => __('Chelyabinsk'),
+                                               '1104' => __('Cherkessk'),
+                                               '16' => __('Yaroslavl'),
+                                           ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region_classic']) !!}
+                                        </div>
+
+                                        <div class="form-group required" id="phrases-form-block">
+                                            <label>{{ __('Key phrases') }}</label>
+                                            {!! Form::textarea('phrases_classic', null, ['class' => 'form-control', 'id' => 'phrases_classic'] ) !!}
+                                        </div>
+
+                                        <div class="form-group required" style="display: none">
+                                            <label for="ignoredDomains">Игнорируемые домены</label>
+                                            <textarea class="form form-control" name="ignoredDomains"
+                                                      id="ignoredDomains_classic" cols="8"
+                                                      rows="8"></textarea>
+                                        </div>
+
+                                        <div style="display: none">
+                                            <div class="form-group required">
+                                                <label for="ignoredWords">Игнорируемые слова</label>
+                                                <textarea class="form form-control" name="ignoredWords"
+                                                          id="ignoredWords_classic" cols="8"
+                                                          rows="8"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label>{{ __('clustering level') }}</label>
+                                            {!! Form::select('clustering_level_classic', [
+                                                'light' => 'light',
+                                                'soft' => 'soft',
+                                                'pre-hard' => 'pre-hard',
+                                                'hard' => 'hard',
+                                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel_classic']) !!}
+                                        </div>
+
+                                        <div class="form-group required" id="extra-block">
+                                            <div class="row">
+                                                <div class="col-6 d-flex flex-column">
+                                                    <label for="domain-textarea">{{ __('Domain') }}</label>
+                                                    <textarea name="domain-textarea" id="domain-textarea_classic"
+                                                              rows="5" class="form-control w-100"
+                                                              placeholder="https://site.ru"></textarea>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <div class="d-flex flex-column">
+                                                        <label for="comment-textarea">{{ __('Comment') }}</label>
+                                                        <textarea name="comment-textarea" id="comment-textarea_classic"
+                                                                  rows="5"
+                                                                  class="form-control w-100"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group required">
+                                                <label
+                                                    for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+                                                <input type="checkbox" name="searchRelevance"
+                                                       id="searchRelevance_classic">
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                                    <span class="ui_tooltip __right">
+                                                        <span class="ui_tooltip_content" style="width: 300px">
+                                                            Для каждой фразы будет произведён поиск релевантных страниц
+                                                            <br>
+                                                            Вам необходимо указать доменное имя в формате <b>http(s)://site.ru/</b>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </div>
+
+                                            <div id="searchEngineBlock_classic">
+                                                <label for="domain-textarea">{{ __('Search Engine') }}</label>
+                                                {!! Form::select('searchEngine_classic', [
+                                                    'yandex' => 'Yandex',
+                                                    'google' => 'Google',
+                                                ], null, ['class' => 'custom-select rounded-0', 'id' => 'searchEngine']) !!}
+                                            </div>
+
+                                            @if(!Auth::user()->telegram_bot_active)
+                                                <div class="mt-2">
+                                                    {{ __('Want to') }}
+                                                    <a href="{{ route('profile.index') }}" target="_blank">
+                                                        {{ __('receive notifications from our telegram bot') }}
+                                                    </a> ?
+                                                </div>
+                                            @else
+                                                <div id="sendTelegramMessage">
+                                                    <label for="sendMessage"
+                                                           class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                                                    {!! Form::select('sendMessage', [
+                                                        true => __('Yes'),
+                                                        false => __('No'),
+                                                    ], null, ['class' => 'custom-select rounded-0', 'id' => 'sendMessage_classic']) !!}
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <div class="form-group required mt-2">
+                                            <div>
+                                                <label for="searchBase">{{ __('Base frequency analysis') }}</label>
+                                                <input type="checkbox" name="searchBase" id="searchBase_classic">
+                                            </div>
+                                            <div>
+                                                <label for="searchPhrases">{{ __('Phrase frequency analysis') }}</label>
+                                                <input type="checkbox" name="searchPhrases" id="searchPhrases_classic">
+                                            </div>
+                                            <div>
+                                                <label
+                                                    for="searchTarget">{{ __('Accurate frequency analysis') }}</label>
+                                                <input type="checkbox" name="searchTarget" id="searchTarget_classic">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required" id="saveResultBlock">
+                                            <label>{{ __('Save results') }}</label>
+                                            <span class="__helper-link ui_tooltip_w">
+                                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                                <span class="ui_tooltip __right">
+                                                    <span class="ui_tooltip_content" style="width: 300px">
+                                                    {{ __("If you save the results then you can view the results in the 'my projects' tab") }} <br><br>
+                                                    {{ __('If you do not save the results, then you can view the result only after the analysis is completed,') }}
+                                                        {{ __('data will be lost when starting the next analysis or when reloading the page') }}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            {!! Form::select('save_classic', [
+                                                '1' => __('Save'),
+                                                '0' => __('Do not save'),
+                                            ], null, ['class' => 'custom-select rounded-0', 'id' => 'save_classic']) !!}
+                                        </div>
+                                    </div>
+
+                                    <input type="button" data-dismiss="modal"
+                                           class="btn btn-secondary" id="start-analyse" value="{{ __('Analyse') }}">
                                 </div>
                             </div>
                         </div>
@@ -151,6 +596,7 @@
         </div>
     </div>
     @slot('js')
+        <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
             var progressId
@@ -166,6 +612,14 @@
                 })
                 $('.dt-button.buttons-copy.buttons-html5').addClass('ml-2')
                 $('.dt-button').addClass('btn btn-secondary')
+
+                $('#brutForce').change(function () {
+                    if ($(this).is(':checked')) {
+                        $('.brut-force').show(300)
+                    } else {
+                        $('.brut-force').hide(300)
+                    }
+                });
 
             })
 
@@ -213,8 +667,123 @@
                         },
                         success: function (response) {
                             let request = response.request
+                            $('#repeat-scanLabel').html(response.created_at)
 
-                            console.log(request)
+                            if (request.mode === 'classic') {
+                                $('#pro').hide()
+                                $('#classic').show()
+                                $('#start-analyse').attr('data-target', 'classic')
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(4)').hide()
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(6)').hide()
+
+                                $('#region_classic').val(request.region)
+                                $('#phrases_classic').val(request.phrases)
+                                $('#clusteringLevel_classic').val(request.clusteringLevel)
+                                $('#engineVersion').val(request.engineVersion) //
+                                $('#domain-textarea_classic').html(request.domain)
+                                $('#comment-textarea_classic').html(request.comment)
+                                $('#save_classic').val(request.save)
+
+                                if (request.searchBase === 'true') {
+                                    $('#searchBase_classic').prop('checked', true);
+                                } else {
+                                    $('#searchBase_classic').prop('checked', false);
+                                }
+
+                                if (request.searchPhrases === 'true') {
+                                    $('#searchPhrases_classic').prop('checked', true);
+                                } else {
+                                    $('#searchPhrases_classic').prop('checked', false);
+                                }
+
+                                if (request.searchTarget === 'true') {
+                                    $('#searchTarget_classic').prop('checked', true);
+                                } else {
+                                    $('#searchTarget_classic').prop('checked', false);
+                                }
+
+                                if (request.searchRelevance === 'true') {
+                                    $('#searchRelevance_classic').prop('checked', true);
+                                    $('#searchEngineBlock_classic').show()
+                                } else {
+                                    $('#searchRelevance_classic').prop('checked', false);
+                                    $('#searchEngineBlock_classic').hide()
+                                }
+
+                            } else {
+                                $('#pro').show()
+                                $('#classic').hide()
+                                if ('searchEngine' in request) {
+                                    $('#searchEngine').val(request.searchEngine)
+                                } else {
+                                    $('#searchEngine').val('yandex')
+                                }
+
+                                if ('ignoredWords' in request) {
+                                    $('#ignoredWords').val(request.ignoredWords)
+                                } else {
+                                    $('#ignoredDomains').val('')
+                                }
+
+                                if ('ignoredDomains' in request) {
+                                    $('#ignoredDomains').val(request.ignoredDomains)
+                                } else {
+                                    $('#ignoredDomains').val('')
+                                }
+
+                                if ('gainFactor' in request) {
+                                    $('#gainFactor').val(request.gainFactor)
+                                } else {
+                                    $('#gainFactor').val(10)
+                                }
+
+                                if (request.engineVersion === 'max_phrases') {
+                                    $('#ignoredWordsBlock').show(300)
+                                } else {
+                                    $('#ignoredWordsBlock').hide(300)
+                                }
+
+                                if (request.searchPhrases === 'true') {
+                                    $('#searchPhrases').prop('checked', true);
+                                } else {
+                                    $('#searchPhrases').prop('checked', false);
+                                }
+
+                                if (request.brutForce === 'true') {
+                                    $('#brutForce').prop('checked', true);
+                                    $('.brut-force').show()
+                                } else {
+                                    $('#brutForce').prop('checked', false);
+                                    $('.brut-force').hide()
+                                }
+
+                                if (request.searchRelevance === 'true') {
+                                    $('#searchRelevance').prop('checked', true);
+                                    $('#searchEngineBlock').show()
+                                } else {
+                                    $('#searchRelevance').prop('checked', false);
+                                    $('#searchEngineBlock').hide()
+                                }
+
+                                if (request.searchTarget === 'true') {
+                                    $('#searchTarget').prop('checked', true);
+                                } else {
+                                    $('#searchTarget').prop('checked', false);
+                                }
+
+                                if (request.searchBase === 'true') {
+                                    $('#searchBase').prop('checked', true);
+                                } else {
+                                    $('#searchBase').prop('checked', false);
+                                }
+
+                                $("#brutForceCount").val(request.brutForceCount)
+
+                                $('#start-analyse').attr('data-target', 'professional')
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(4)').show()
+                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(6)').show()
+                            }
+
                             $('#repeat-scanLabel').html(response.created_at)
                             $('#region').val(request.region)
                             $('#count').val(request.count)
@@ -224,78 +793,6 @@
                             $('#domain-textarea').html(request.domain)
                             $('#comment-textarea').html(request.comment)
                             $('#save').val(request.save)
-
-                            if ('searchEngine' in request) {
-                                $('#searchEngine').val(request.searchEngine)
-                            } else {
-                                $('#searchEngine').val('yandex')
-                            }
-
-                            if ('ignoredWords' in request) {
-                                $('#ignoredWords').val(request.ignoredWords)
-                            } else {
-                                $('#ignoredDomains').val('')
-                            }
-
-                            if ('ignoredDomains' in request) {
-                                $('#ignoredDomains').val(request.ignoredDomains)
-                            } else {
-                                $('#ignoredDomains').val('')
-                            }
-
-                            if ('gainFactor' in request) {
-                                $('#gainFactor').val(request.gainFactor)
-                            } else {
-                                $('#gainFactor').val(10)
-                            }
-
-                            if (request.engineVersion === 'max_phrases') {
-                                $('#ignoredWordsBlock').show(300)
-                            } else {
-                                $('#ignoredWordsBlock').hide(300)
-                            }
-
-                            if (request.searchPhrases === 'true') {
-                                $('#searchPhrases').prop('checked', true);
-                            } else {
-                                $('#searchPhrases').prop('checked', false);
-                            }
-                            if (request.brutForce === 'true') {
-                                $('#brutForce').prop('checked', true);
-                                $('.brut-force').show(300)
-                            } else {
-                                $('#brutForce').prop('checked', false);
-                                $('.brut-force').hide(300)
-                            }
-
-                            if (request.searchRelevance === 'true') {
-                                $('#searchRelevance').prop('checked', true);
-                            } else {
-                                $('#searchRelevance').prop('checked', false);
-                            }
-
-                            if (request.searchTarget === 'true') {
-                                $('#searchTarget').prop('checked', true);
-                            } else {
-                                $('#searchTarget').prop('checked', false);
-                            }
-
-                            if (request.searchBase === 'true') {
-                                $('#searchBase').prop('checked', true);
-                            } else {
-                                $('#searchBase').prop('checked', false);
-                            }
-
-
-                            if (request.mode === 'professional') {
-                                $('#start-analyse').attr('data-target', 'professional')
-                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(4)').show()
-                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(6)').show()
-                            } else {
-                                $('#start-analyse').attr('data-target', 'classic')
-                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(4)').hide()
-                                $('#repeat-scan > div > div > div.modal-body > div:nth-child(6)').hide()
-                            }
                         },
                         error: function (error) {
                             errorMessage(error.responseJSON.message)

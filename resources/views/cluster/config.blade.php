@@ -132,6 +132,7 @@
                                                '16' => __('Yaroslavl'),
                                            ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('TOP') }}</label>
                                             {!! Form::select('count', array_unique([
@@ -143,6 +144,7 @@
                                                 '50' => 50,
                                             ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('clustering level') }}</label>
                                             {!! Form::select('clustering_level', [
@@ -153,18 +155,28 @@
                                                 'hard' => 'hard - 70%',
                                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engine_version', [
                                                     $config->engine_version => $config->engine_version,
-                                                    'latest' => __('Additional bulkhead (latest)'),
-                                                    'exp' => 'эксперимент',
-                                                    'exp_phrases' => 'Фразовый перебор',
-                                                    'maximum' => 'Поиск максимального',
                                                     'max_phrases' => 'Фразовый перебор и поиск максимального (13.01)',
-                                                    '1601' => 'Фразовый перебор и поиск максимального (15.01)',
+                                                    '1501' => 'Фразовый перебор и поиск максимального (15.01)',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
                                         </div>
+
+                                        <div class="form-group required">
+                                            <label for="ignored_domains">Игнорируемые домены</label>
+                                            <textarea class="form form-control" name="ignored_domains" id="ignored_domains" cols="8" rows="8"
+                                            >{{ $config->ignored_domains }}</textarea>
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="ignored_words">Игнорируемые слова</label>
+                                            <textarea class="form form-control" name="ignored_words" id="ignored_words" cols="8" rows="8"
+                                            >{{ $config->ignored_words }}</textarea>
+                                        </div>
+
                                         <div class="form-group required">
                                             <label for="brutForce">{{ __('Additional bulkhead') }}</label>
                                             {!! Form::select('brut_force', [
@@ -173,6 +185,28 @@
                                                     '0' => __('No'),
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'brut_force']) !!}
                                         </div>
+
+                                        <div class="form-group required">
+                                            <label for="gain_factor">Коэффицент усиления</label>
+                                            <input type="number" class="form form-control"
+                                                   value="{{ $config->gain_factor }}">
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="brut_force_count">Минимальный размер кластера для повторной переборки</label>
+                                            <input type="number" class="form form-control"
+                                                   value="{{ $config->brut_force_count }}">
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="reduction_ratio">Минимальный множитель</label>
+                                            {!! Form::select('reduction_ratio', array_unique([
+                                                $config->reduction_ratio => $config->reduction_ratio,
+                                                '0.6' => 'pre-hard',
+                                                '0.5' => 'soft',
+                                            ]), null, ['class' => 'custom-select rounded-0']) !!}
+                                        </div>
+
                                         <div class="form-group required">
                                             <label for="sendMessage"
                                                    class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
@@ -182,6 +216,7 @@
                                                 false => __('No'),
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'send_message']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('Save results') }}</label>
                                             {!! Form::select('save_results', [
@@ -190,6 +225,7 @@
                                                 '0' => __('Do not save'),
                                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'save_results']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label
                                                 for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
@@ -242,6 +278,7 @@
                                             <input type="number" name="warning_limit" class="form form-control"
                                                    value="{{ $config->warning_limit }}">
                                         </div>
+
                                         <input type="submit" class="btn btn-secondary" value="{{ __('Save changes') }}">
                                     </form>
                                 </div>
@@ -257,6 +294,7 @@
                                     <form action="{{ route('change.cluster.configuration') }}" method="post">
                                         @csrf
                                         <input type="hidden" name="type" value="classic">
+
                                         <div class="form-group required">
                                             <label>{{ __('Region') }}</label>
                                             {!! Form::select('region', array_unique([
@@ -325,6 +363,7 @@
                                                '16' => __('Yaroslavl'),
                                            ]), null, ['class' => 'custom-select rounded-0', 'id' => 'region']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('TOP') }}</label>
                                             {!! Form::select('count', array_unique([
@@ -336,6 +375,7 @@
                                                 '50' => 50,
                                             ]), null, ['class' => 'custom-select rounded-0', 'id' => 'count']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('clustering level') }}</label>
                                             {!! Form::select('clustering_level', [
@@ -346,18 +386,28 @@
                                                 'hard' => 'hard - 70%',
                                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'clusteringLevel']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engine_version', [
                                                     $config_classic->engine_version => $config_classic->engine_version,
-                                                    'latest' => __('Additional bulkhead (latest)'),
-                                                    'exp' => 'эксперимент',
-                                                    'exp_phrases' => 'Фразовый перебор',
-                                                    'maximum' => 'Поиск максимального',
                                                     'max_phrases' => 'Фразовый перебор и поиск максимального (13.01)',
-                                                    '1601' => 'Фразовый перебор и поиск максимального (15.01)',
+                                                    '1501' => 'Фразовый перебор и поиск максимального (15.01)',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersion']) !!}
                                         </div>
+
+                                        <div class="form-group required">
+                                            <label for="ignored_domains_classic">Игнорируемые домены</label>
+                                            <textarea class="form form-control" name="ignored_domains" id="ignored_domains_classic" cols="8" rows="8"
+                                            >{{ $config_classic->ignored_domains }}</textarea>
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="ignored_words_classic">Игнорируемые слова</label>
+                                            <textarea class="form form-control" name="ignored_words" id="ignored_words_classic" cols="8" rows="8"
+                                            >{{ $config_classic->ignored_words }}</textarea>
+                                        </div>
+
                                         <div class="form-group required">
                                             <label for="brutForce">{{ __('Additional bulkhead') }}</label>
                                             {!! Form::select('brut_force', [
@@ -366,6 +416,30 @@
                                                     '0' => __('No'),
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'brut_force']) !!}
                                         </div>
+
+                                        <div class="form-group required">
+                                            <label for="gain_factor_classic">Коэффицент усиления</label>
+                                            <input type="number" class="form form-control"
+                                                   name="gain_factor" id="gain_factor_classic"
+                                                   value="{{ $config_classic->gain_factor }}">
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="brut_force_count_classic">Минимальный размер кластера для повторной переборки</label>
+                                            <input type="number" class="form form-control" name="brut_force_count"
+                                                   id="brut_force_count_classic"
+                                                   value="{{ $config_classic->brut_force_count }}">
+                                        </div>
+
+                                        <div class="form-group required">
+                                            <label for="reduction_ratio_classic">Минимальный множитель</label>
+                                            {!! Form::select('reduction_ratio', array_unique([
+                                                $config_classic->reduction_ratio => $config_classic->reduction_ratio,
+                                                '0.6' => 'pre-hard',
+                                                '0.5' => 'soft',
+                                            ]), null, ['class' => 'custom-select rounded-0']) !!}
+                                        </div>
+
                                         <div class="form-group required">
                                             <label for="sendMessage"
                                                    class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
@@ -375,6 +449,7 @@
                                                 false => __('No'),
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'send_message']) !!}
                                         </div>
+
                                         <div class="form-group required">
                                             <label>{{ __('Save results') }}</label>
                                             {!! Form::select('save_results', [
@@ -383,9 +458,9 @@
                                                 '0' => __('Do not save'),
                                                 ], null, ['class' => 'custom-select rounded-0', 'id' => 'save_results']) !!}
                                         </div>
+
                                         <div class="form-group required">
-                                            <label
-                                                for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+                                            <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
                                             {!! Form::select('search_relevance', [
                                                 $config_classic->search_relevance => $config_classic->search_relevance,
                                                 '1' => __('Yes'),
@@ -430,11 +505,15 @@
                                         </div>
 
                                         <div class="form-group required">
-                                            <label for="warning_limit">При каком количестве фраз выводить предупреждение
-                                                о весе страницы?</label>
-                                            <input type="number" name="warning_limit" class="form form-control"
+                                            <label for="warning_limit">
+                                                При каком количестве фраз выводить предупреждение о весе страницы?
+                                            </label>
+                                            <input type="number"
+                                                   name="warning_limit"
+                                                   class="form form-control"
                                                    value="{{ $config_classic->warning_limit }}">
                                         </div>
+
                                         <input type="submit" class="btn btn-secondary" value="{{ __('Save changes') }}">
                                     </form>
                                 </div>

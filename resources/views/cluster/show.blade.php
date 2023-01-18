@@ -252,8 +252,6 @@
                                         <div class="form-group required">
                                             <label>{{ __('Merging Clusters') }}</label>
                                             {!! Form::select('engineVersion', [
-                                                    'exp_phrases' => 'Фразовый перебор',
-                                                    'maximum' => 'Поиск максимального',
                                                     'max_phrases' => 'Фразовый перебор и поиск максимального (13.01)',
                                                     '1501' => 'Фразовый перебор и поиск максимального (15.01)',
                                             ], null, ['class' => 'custom-select rounded-0', 'id' => 'engineVersionFast']) !!}
@@ -273,14 +271,6 @@
                                                           id="ignoredWords" cols="8"
                                                           rows="8">{{ $cluster['request']['ignoredWords'] }}</textarea>
                                             </div>
-
-                                            <div class="form-group required">
-                                                <label for="gainFactor">Коэфиент усиления(%)</label>
-                                                <input class="form form-control" type="number" id="gainFactor"
-                                                       name="gainFactor"
-                                                       value="{{ $cluster['request']['gainFactor']?? 10 }}"
-                                                       placeholder="default 10">
-                                            </div>
                                         </div>
 
                                         <div class="form-group required">
@@ -299,11 +289,11 @@
                                         </div>
                                         <div class="form-group required" id="brutForceCountBlock" style="display: none">
                                             <div class="form-group required">
-                                                <label for="brutForceType">Тип дополнительной переборки</label>
-                                                <select name="brutForceType" id="brutForceType" class="custom-select">
-                                                    <option value="new">new</option>
-                                                    <option value="old">old</option>
-                                                </select>
+                                                <label for="gainFactor">коэффициент усиления(%)</label>
+                                                <input class="form form-control" type="number" id="gainFactor"
+                                                       name="gainFactor"
+                                                       value="{{ $cluster['request']['gainFactor']?? 10 }}"
+                                                       placeholder="default 10">
                                             </div>
 
                                             <div class="form-group required">
@@ -321,9 +311,6 @@
                                                         class="select custom-select">
                                                     <option value="0.6">pre-hard</option>
                                                     <option value="0.5">soft</option>
-                                                    <option value="0.4">light</option>
-                                                    <option value="0.3">0.3</option>
-                                                    <option value="0.2">0.2</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -629,7 +616,6 @@
                             ignoredDomains: $('#ignoredDomains').val(),
                             gainFactor: $('#gainFactor').val(),
                             ignoredWords: $('#ignoredWords').val(),
-                            brutForceType: $('#brutForceType').val(),
                         },
                         success: function (response) {
                             $('#clusters-table-default').show()

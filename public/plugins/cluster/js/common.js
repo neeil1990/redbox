@@ -1,30 +1,49 @@
 function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
-    return {
-        _token: $('meta[name="csrf-token"]').attr('content'),
-        save: save,
-        progressId: progressId,
-        region: $('#region').val(),
-        count: $('#count').val(),
-        phrases: $('#phrases').val(),
-        clusteringLevel: $('#clusteringLevel').val(),
-        engineVersion: $('#engineVersion').val(),
-        searchBase: $('#searchBase').is(':checked'),
-        searchPhrases: $('#searchPhrases').is(':checked'),
-        searchTarget: $('#searchTarget').is(':checked'),
-        domain: $('#domain-textarea').val(),
-        comment: $('#comment-textarea').val(),
-        sendMessage: $('#sendMessage').val(),
-        brutForce: $('#brutForce').is(':checked'),
-        searchRelevance: $('#searchRelevance').is(':checked'),
-        searchEngine: $('#searchEngine').val(),
-        mode: $('#start-analyse').attr('data-target'),
-        brutForceCount: $('#brutForceCount').val(),
-        reductionRatio: $('#reductionRatio').val(),
-        brutForceType: $('#brutForceType').val(),
-        ignoredWords: $('#ignoredWords').val(),
-        ignoredDomains: $('#ignoredDomains').val(),
-        gainFactor: $('#gainFactor').val(),
-    };
+
+    if ($('#start-analyse').attr('data-target') === 'classic') {
+        return {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            save: $('#save_classic').val(),
+            region: $('#region_classic').val(),
+            phrases: $('#phrases_classic').val(),
+            domain: $('#domain-textarea_classic').val(),
+            sendMessage: $('#sendMessage_classic').val(),
+            comment: $('#comment-textarea_classic').val(),
+            clusteringLevel: $('#clusteringLevel_classic').val(),
+            searchBase: $('#searchBase_classic').is(':checked'),
+            searchTarget: $('#searchTarget_classic').is(':checked'),
+            searchPhrases: $('#searchPhrases_classic').is(':checked'),
+            searchRelevance: $('#searchRelevance_classic').is(':checked'),
+            mode: 'classic',
+            progressId: progressId,
+        };
+
+    } else {
+        return {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            save: save,
+            progressId: progressId,
+            region: $('#region').val(),
+            count: $('#count').val(),
+            phrases: $('#phrases').val(),
+            clusteringLevel: $('#clusteringLevel').val(),
+            searchBase: $('#searchBase').is(':checked'),
+            searchPhrases: $('#searchPhrases').is(':checked'),
+            searchTarget: $('#searchTarget').is(':checked'),
+            domain: $('#domain-textarea').val(),
+            comment: $('#comment-textarea').val(),
+            sendMessage: $('#sendMessage').val(),
+            brutForce: $('#brutForce').is(':checked'),
+            searchRelevance: $('#searchRelevance').is(':checked'),
+            searchEngine: $('#searchEngine').val(),
+            mode: $('#start-analyse').attr('data-target'),
+            brutForceCount: $('#brutForceCount').val(),
+            reductionRatio: $('#reductionRatio').val(),
+            ignoredWords: $('#ignoredWords').val(),
+            ignoredDomains: $('#ignoredDomains').val(),
+            gainFactor: $('#gainFactor').val(),
+        };
+    }
 }
 
 function setProgressBarStyles(count) {
@@ -135,12 +154,23 @@ $(document).ready(function () {
     $('#searchRelevance').on('click', function () {
         isSearchRelevance()
     })
+    $('#searchRelevance_classic').on('click', function () {
+        isSearchRelevanceClassic()
+    })
+
     isSearchRelevance()
+    isSearchRelevanceClassic()
 
     if ($('#brutForce').is(':checked')) {
         $('.brut-force').show(300)
     } else {
         $('.brut-force').hide(300)
+    }
+
+    if ($('#brutForce_classic').is(':checked')) {
+        $('.brut-force_classic').show(300)
+    } else {
+        $('.brut-force_classic').hide(300)
     }
 })
 
@@ -149,5 +179,13 @@ function isSearchRelevance() {
         $('#searchEngineBlock').show(300)
     } else {
         $('#searchEngineBlock').hide(300)
+    }
+}
+
+function isSearchRelevanceClassic() {
+    if ($('#searchRelevance_classic').is(':checked')) {
+        $('#searchEngineBlock_classic').show(300)
+    } else {
+        $('#searchEngineBlock_classic').hide(300)
     }
 }
