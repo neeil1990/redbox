@@ -78,7 +78,7 @@ class Cluster
             $this->searchEngine = $config->search_engine;
             $this->gainFactor = $config->gain_factor;
             $this->count = $config->count;
-            $this->reductionRatio = $config->reduction_ratio;
+            $this->setReductionRatio($config->reduction_ratio);
             $this->brutForceCount = $config->brut_force_count;
             $this->brutForce = $config->brut_force;
             $this->ignoredWords = explode("\r\n", $config->ignored_words);
@@ -90,7 +90,7 @@ class Cluster
             $this->searchEngine = $request['searchEngine'];
             $this->gainFactor = $request['gainFactor'];
             $this->count = $request['count'];
-            $this->reductionRatio = $request['reductionRatio'];
+            $this->setReductionRatio($request['reductionRatio']);
             $this->brutForceCount = $request['brutForceCount'];
             $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         }
@@ -132,6 +132,38 @@ class Cluster
             $this->xml = new SimplifiedXmlFacade($this->region, 100);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
+        }
+
+        Log::debug('searchEngine', [$this->searchEngine]);
+        Log::debug('gainFactor', [$this->gainFactor]);
+        Log::debug('count', [$this->count]);
+        Log::debug('reductionRatio', [$this->reductionRatio]);
+        Log::debug('brutForceCount', [$this->brutForceCount]);
+        Log::debug('brutForce', [$this->brutForce]);
+        Log::debug('ignoredWords', [$this->ignoredWords]);
+        Log::debug('ignoredDomains', [$this->ignoredDomains]);
+        Log::debug('engineVersion', [$this->engineVersion]);
+        Log::debug('clusteringLevel', [$this->clusteringLevel]);
+        Log::debug('minimum', [$this->minimum]);
+        Log::debug('user', [$this->user]);
+        Log::debug('request', [$this->request]);
+        Log::debug('searchBase', [$this->searchBase]);
+        Log::debug('searchRelevance', [$this->searchRelevance]);
+        Log::debug('searchPhrases', [$this->searchPhrases]);
+        Log::debug('searchTarget', [$this->searchTarget]);
+        Log::debug('save', [$this->save]);
+        Log::debug('phrases', [$this->phrases]);
+        Log::debug('countPhrases', [$this->countPhrases]);
+        Log::debug('progressId', [$this->progressId]);
+        Log::debug('region', [$this->region]);
+    }
+
+    protected function setReductionRatio(string $ratio)
+    {
+        if ($ratio === 'pre-hard') {
+            $this->reductionRatio = 0.6;
+        } else if ($ratio === 'soft') {
+            $this->reductionRatio = 0.5;
         }
     }
 
@@ -293,7 +325,7 @@ class Cluster
         if ($this->brutForce) {
             Log::debug('brutForce', [$this->brutForce]);
             Log::debug('clusteringLevel', [$this->clusteringLevel]);
-            Log::debug('gainFactor', [$this->gainFactor]);
+            Log::debug('reductionRatio', [$this->reductionRatio]);
             $percent = $this->clusteringLevel;
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
