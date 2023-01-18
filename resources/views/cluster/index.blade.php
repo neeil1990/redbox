@@ -150,13 +150,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+
             let progressId
             let interval
 
             $(document).ready(function () {
-                $('#engineVersion').val('{{ $config_classic->engine_version }}')
-                $('#count').val({{ $config_classic->count }})
-                $('#clusteringLevel').val('{{ $config_classic->clustering_level }}')
+                console.clear()
+                $('#pro').hide()
+                $('#classic').show()
 
                 isSearchRelevance();
             })
@@ -210,24 +211,28 @@
             }
 
             $('#start-analyse').click(function () {
-                if ($('#phrases').val() !== '') {
-                    $(this).attr('disabled', true)
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('start.cluster.progress') }}",
-                        success: function (response) {
-                            progressId = response.id
-                            $('#progress-bar').show()
-                            $('#progressId').val(progressId)
-                            setProgressBarStyles(0)
-                            interval = setInterval(() => {
-                                getProgressPercent(response.id, interval)
-                            }, 5000)
-
-                            startClusterAnalyse(interval)
-                        }
-                    })
+                if ($(this).attr('data-target') === 'classic' && $('#phrases_classic').val() === '') {
+                    return;
                 }
+                if ($(this).attr('data-target') !== 'classic' && $('#phrases').val() === '') {
+                    return;
+                }
+                $(this).attr('disabled', true)
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('start.cluster.progress') }}",
+                    success: function (response) {
+                        progressId = response.id
+                        $('#progress-bar').show()
+                        $('#progressId').val(progressId)
+                        setProgressBarStyles(0)
+                        interval = setInterval(() => {
+                            getProgressPercent(response.id, interval)
+                        }, 5000)
+
+                        startClusterAnalyse(interval)
+                    }
+                })
             });
 
             function refreshAll() {
@@ -364,7 +369,8 @@
 
             $('#classicMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'classic')
-                $('.pro').hide(300)
+                $('#pro').hide()
+                $('#classic').show(300)
 
                 proEngine = $('#engineVersion').val()
                 proCount = $('#count').val()
@@ -378,10 +384,10 @@
                 $('#ProfessionalMode').attr('class', 'btn btn-outline-secondary')
             })
 
-
             $('#ProfessionalMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'professional')
-                $('.pro').show(300)
+                $('#classic').hide()
+                $('#pro').show(300)
 
                 $('#engineVersion').val(proEngine)
                 $('#count').val(proCount)

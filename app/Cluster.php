@@ -10,109 +10,115 @@ class Cluster
 {
     public $count;
 
-    protected $region;
+    public $region;
 
-    protected $phrases;
+    public $phrases;
 
-    protected $clusteringLevel;
+    public $clusteringLevel;
 
-    protected $countPhrases;
+    public $countPhrases;
 
-    protected $sites;
+    public $sites;
 
-    protected $result;
+    public $result;
 
-    protected $clusters = [];
+    public $clusters = [];
 
-    protected $engineVersion;
+    public $engineVersion;
 
-    protected $searchBase;
+    public $searchBase;
 
-    protected $searchPhrases;
+    public $searchPhrases;
 
-    protected $searchTarget;
+    public $searchTarget;
 
-    protected $searchRelevance;
+    public $searchRelevance;
 
-    protected $searchEngine;
+    public $searchEngine;
 
-    protected $progress;
+    public $progress;
 
-    protected $save;
+    public $save;
 
-    protected $request;
+    public $request;
 
-    protected $newCluster;
+    public $newCluster;
 
     protected $user;
 
-    protected $brutForce;
+    public $brutForce;
 
-    protected $xml;
+    public $xml;
 
-    protected $host;
+    public $host;
 
-    protected $mode;
+    public $mode;
 
-    protected $minimum;
+    public $minimum;
 
-    protected $progressId;
+    public $progressId;
 
-    protected $brutForceCount;
+    public $brutForceCount;
 
-    protected $reductionRatio;
+    public $reductionRatio;
 
-    protected $ignoredWords;
+    public $ignoredWords;
 
     public $ignoredDomains;
 
-    protected $gainFactor;
+    public $gainFactor;
 
-    protected $brutForceType;
-
-    protected $wordRatio = [];
+    public $wordRatio = [];
 
     public function __construct(array $request, $user, $default = true)
     {
-        $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
-        $this->ignoredDomains = isset($request['ignoredDomains']) ? explode("\n", $request['ignoredDomains']) : [];
-        $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
-        $this->gainFactor = $request['gainFactor'] ?? 10;
-        $this->brutForceCount = $request['brutForceCount'] ?? 1;
-        $this->reductionRatio = $request['reductionRatio'] ?? 0.4;
-        $this->brutForceType = $request['brutForceType'] ?? 'old';
-
-        if (!isset($request['mode']) || $request['mode'] !== 'professional') {
-            $this->count = 40;
-            $this->clusteringLevel = 0.6;
+        if ($request['mode'] === 'classic') {
+            $config = ClusterConfigurationClassic::first();
+            $this->searchEngine = $config->search_engine;
+            $this->gainFactor = (int)$config->gain_factor;
+            $this->count = (int)$config->count;
+            $this->setReductionRatio($config->reduction_ratio);
+            $this->brutForceCount = (int)$config->brut_force_count;
+            $this->brutForce = $config->brut_force;
+            $this->ignoredWords = explode("\r\n", $config->ignored_words);
+            $this->ignoredDomains = explode("\r\n", $config->ignored_domains);
         } else {
-            $this->count = $request['count'];
-
-            switch ($request['clusteringLevel']) {
-                case 'light':
-                    $this->clusteringLevel = 0.4;
-                    break;
-                case 'soft':
-                    $this->clusteringLevel = 0.5;
-                    break;
-                case 'pre-hard':
-                    $this->clusteringLevel = 0.6;
-                    break;
-                case 'hard':
-                    $this->clusteringLevel = 0.7;
-                    break;
-            }
+            $config = ClusterConfiguration::first();
+            $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
+            $this->ignoredDomains = isset($request['ignoredDomains']) ? explode("\n", $request['ignoredDomains']) : [];
+            $this->searchEngine = $request['searchEngine'] ?? 'yandex';
+            $this->gainFactor = (int)$request['gainFactor'];
+            $this->count = (int)$request['count'];
+            $this->setReductionRatio($request['reductionRatio']);
+            $this->brutForceCount = (int)$request['brutForceCount'];
+            $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
         }
+
+        switch ($request['clusteringLevel']) {
+            case 'light':
+                $this->clusteringLevel = 0.4;
+                break;
+            case 'soft':
+                $this->clusteringLevel = 0.5;
+                break;
+            case 'pre-hard':
+                $this->clusteringLevel = 0.6;
+                break;
+            case 'hard':
+                $this->clusteringLevel = 0.7;
+                break;
+        }
+
+        $this->engineVersion = $config->engine_version;
         $this->minimum = $this->count * $this->clusteringLevel;
         $this->mode = $request['mode'];
-        $this->engineVersion = $request['engineVersion'] ?? 'max_phrases';
 
         if ($default) {
-            $this->request = $request;
-            $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
-            $this->searchEngine = $request['searchEngine'];
             $this->user = $user;
-            $this->region = $request['region'];
+            $this->request = $request;
+            $this->request['engineVersion'] = $this->engineVersion;
+            $this->request['count'] = $this->count;
+            $this->searchBase = filter_var($request['searchBase'], FILTER_VALIDATE_BOOLEAN);
             $this->searchRelevance = filter_var($request['searchRelevance'], FILTER_VALIDATE_BOOLEAN);
             $this->searchPhrases = filter_var($request['searchPhrases'], FILTER_VALIDATE_BOOLEAN);
             $this->searchTarget = filter_var($request['searchTarget'], FILTER_VALIDATE_BOOLEAN);
@@ -120,17 +126,28 @@ class Cluster
             $this->phrases = array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []));
             $this->countPhrases = count($this->phrases);
             $this->progressId = $request['progressId'];
+            $this->region = $request['region'];
 
             $this->xml = new SimplifiedXmlFacade($this->region, 100);
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
+        }
+//        Log::debug('this', [$this]);
+    }
+
+    protected function setReductionRatio(string $ratio)
+    {
+        if ($ratio === 'pre-hard') {
+            $this->reductionRatio = 0.6;
+        } else if ($ratio === 'soft') {
+            $this->reductionRatio = 0.5;
         }
     }
 
     public function __sleep()
     {
         return [
-            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'gainFactor', 'brutForceType',
+            'count', 'region', 'phrases', 'clusteringLevel', 'countPhrases', 'gainFactor',
             'sites', 'result', 'clusters', 'engineVersion', 'searchBase', 'searchPhrases', 'wordRatio',
             'searchTarget', 'searchRelevance', 'searchEngine', 'progress', 'save', 'request',
             'newCluster', 'user', 'brutForce', 'xml', 'host', 'mode', 'minimum', 'progressId',
@@ -273,308 +290,17 @@ class Cluster
     {
         $this->markIgnoredDomains();
 
-        if ($this->engineVersion === 'exp_phrases') {
-            $this->searchClustersEngineV4();
-        } elseif ($this->engineVersion === 'maximum') {
-            $this->searchClustersEngineV6();
-        } else if ($this->engineVersion === 'max_phrases') {
-            $this->searchClustersEngine1401();
+        if ($this->engineVersion === 'max_phrases') {
+            $this->searchClustersEngine1301();
         } else if ($this->engineVersion === '1501') {
             $this->searchClustersEngine1501();
         }
 
-        if ($this->brutForce && $this->mode === 'professional') {
+        if ($this->brutForce) {
             $percent = $this->clusteringLevel;
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
-                if ($this->brutForceType === 'new') {
-                    $this->brutForceNew($this->count * $percent, true);
-                } else {
-                    $this->brutForceOld($this->count * $percent, true);
-                }
-            }
-        }
-    }
-
-    protected function searchClustersEngineV2()
-    {
-        $willClustered = [];
-        foreach ($this->sites as $phrase => $item) {
-            foreach ($this->sites as $phrase2 => $item2) {
-                if (isset($willClustered[$phrase2])) {
-                    continue;
-                } else if (isset($this->clusters[$phrase])) {
-                    foreach ($this->clusters[$phrase] as $target => $elem) {
-                        $int = count(array_intersect(
-                            $this->getNotIgnoredDomains($this->sites[$phrase2]['mark']),
-                            $this->getNotIgnoredDomains($this->sites[$phrase]['mark'])
-                        ));
-                        if ($int >= $this->minimum) {
-                            $this->clusters[$phrase][$phrase2] = [
-                                'based' => $item2['based'],
-                                'phrased' => $item2['phrased'],
-                                'target' => $item2['target'],
-                                'relevance' => $item2['relevance'],
-                                'sites' => $item2['sites'],
-                                'basedNormal' => $item2['basedNormal'],
-                                'merge' => [$int => $phrase]
-                            ];
-                            $willClustered[$phrase2] = true;
-                            break;
-                        }
-                    }
-                } else if (count(array_intersect($this->getNotIgnoredDomains($this->sites[$phrase]['mark']), $this->getNotIgnoredDomains($this->sites[$phrase2]['mark']))) >= $this->minimum) {
-                    $this->clusters[$phrase][$phrase2] = [
-                        'based' => $item2['based'],
-                        'phrased' => $item2['phrased'],
-                        'target' => $item2['target'],
-                        'relevance' => $item2['relevance'],
-                        'sites' => $item2['sites'],
-                        'basedNormal' => $item2['basedNormal'],
-                        'merge' => [
-                            count(array_intersect($this->getNotIgnoredDomains($this->sites[$phrase]['mark']), $this->getNotIgnoredDomains($this->sites[$phrase2]['mark']))) => $phrase
-                        ]
-                    ];
-                    $willClustered[$phrase2] = true;
-                }
-            }
-        }
-    }
-
-    protected function searchClustersEngineV3()
-    {
-        $willClustered = [];
-        foreach ($this->sites as $phrase => $item) {
-            foreach ($this->sites as $phrase2 => $item2) {
-                if (isset($willClustered[$phrase2])) {
-                    continue;
-                }
-
-                foreach ($this->clusters as $key => $cluster) {
-                    foreach ($cluster as $key2 => $clusterItem) {
-                        $inter = count(array_intersect(
-                            $this->getNotIgnoredDomains($item2['mark']),
-                            $this->getNotIgnoredDomains($this->sites[$key2]['mark'])
-                        ));
-                        if ($inter >= $this->minimum) {
-                            $this->clusters[$key][$phrase2] = [
-                                'based' => $item2['based'],
-                                'phrased' => $item2['phrased'],
-                                'target' => $item2['target'],
-                                'relevance' => $item2['relevance'],
-                                'sites' => $item2['sites'],
-                                'basedNormal' => $item2['basedNormal'],
-                                'merge' => [$key2 => $inter]
-                            ];
-                            $willClustered[$phrase2] = true;
-                            break 3;
-                        }
-                    }
-                }
-
-                if (count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark']))) >= $this->minimum) {
-                    $this->clusters[$phrase][$phrase2] = [
-                        'based' => $item2['based'],
-                        'phrased' => $item2['phrased'],
-                        'target' => $item2['target'],
-                        'relevance' => $item2['relevance'],
-                        'sites' => $item2['sites'],
-                        'basedNormal' => $item2['basedNormal'],
-                    ];
-                    $willClustered[$phrase2] = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    protected function searchClustersEngineV4()
-    {
-        $m = new Morphy();
-        $this->wordRatio = [];
-        $cache = [];
-
-        foreach ($this->sites as $key1 => $site) {
-            $first = explode(' ', $key1);
-            if (count($first) === 1) {
-                $this->wordRatio[$key1][$key1] = 1;
-                continue;
-            }
-
-            foreach ($first as $keyF => $item) {
-                if (mb_strlen($item) < 2) {
-                    continue;
-                } elseif (isset($cache[$item])) {
-                    $first[$keyF] = $cache[$item];
-                } else {
-                    $base = $m->base($item);
-                    $first[$keyF] = $base;
-                    $cache[$item] = $base;
-                }
-            }
-
-            foreach ($this->sites as $key2 => $site2) {
-                $second = explode(' ', $key2);
-                foreach ($second as $keyS => $item) {
-                    if (mb_strlen($item) < 2) {
-                        continue;
-                    } elseif (isset($cache[$item])) {
-                        $second[$keyS] = $cache[$item];
-                    } else {
-                        $base = $m->base($item);
-                        $second[$keyS] = $base;
-                        $cache[$item] = $base;
-                    }
-                }
-
-                $count = count(array_intersect($first, $second));
-                if ($count > 0) {
-                    $this->wordRatio[$key1][$key2] = $count;
-                }
-            }
-        }
-
-        $willClustered = [];
-        foreach ($this->wordRatio as $mainPhrase => $items) {
-            foreach ($items as $phrase => $count) {
-                if (isset($willClustered[$phrase])) {
-                    continue;
-                } else if (isset($this->clusters[$mainPhrase])) {
-                    $ph = $this->getNotIgnoredDomains($this->sites[$phrase]['mark']);
-                    foreach ($this->clusters[$mainPhrase] as $target => $elem) {
-                        $el = $this->getNotIgnoredDomains($elem['sites']);
-                        $count = count(array_intersect($ph, $el));
-                        if ($count >= $this->minimum) {
-                            $this->clusters[$mainPhrase][$phrase] = [
-                                'based' => $this->sites[$phrase]['based'],
-                                'phrased' => $this->sites[$phrase]['phrased'],
-                                'target' => $this->sites[$phrase]['target'],
-                                'relevance' => $this->sites[$phrase]['relevance'],
-                                'sites' => $this->sites[$phrase]['sites'],
-                                'basedNormal' => $this->sites[$phrase]['basedNormal'],
-                                'merge' => [$target => $count]
-                            ];
-                            $willClustered[$phrase] = true;
-                            break;
-                        }
-                    }
-                }
-                $c = count(array_intersect($this->getNotIgnoredDomains($this->sites[$phrase]['mark']), $this->getNotIgnoredDomains($this->sites[$mainPhrase]['mark'])));
-                if ($c >= $this->minimum) {
-                    $this->clusters[$mainPhrase][$phrase] = [
-                        'based' => $this->sites[$phrase]['based'],
-                        'phrased' => $this->sites[$phrase]['phrased'],
-                        'target' => $this->sites[$phrase]['target'],
-                        'relevance' => $this->sites[$phrase]['relevance'],
-                        'sites' => $this->sites[$phrase]['sites'],
-                        'basedNormal' => $this->sites[$phrase]['basedNormal'],
-                        'merge' => [$mainPhrase => $c]
-                    ];
-                    $willClustered[$phrase] = true;
-                }
-            }
-        }
-    }
-
-    protected function searchClustersEngineV6()
-    {
-        $pre = [];
-        foreach ($this->sites as $phrase => $items) {
-            foreach ($this->sites as $ph => $its) {
-                $count = count(array_intersect($this->getNotIgnoredDomains($items['mark']), $this->getNotIgnoredDomains($its['mark'])));
-                if ($count >= $this->minimum) {
-                    $pre[$phrase][$ph] = $count;
-                }
-            }
-            arsort($pre[$phrase]);
-        }
-
-        $willClustered = [];
-        foreach ($pre as $items) {
-            foreach ($items as $phrase => $count) {
-                if (isset($willClustered[$phrase])) {
-                    continue;
-                }
-                if ($phrase === array_key_first($items)) {
-                    continue;
-                }
-
-                $keys = array_keys($pre[$phrase]);
-                $keysOf = array_keys($pre[$keys[1]]);
-
-                if ($keysOf[1] === $phrase) {
-                    $this->clusters[$phrase][$keys[1]] = $this->sites[$keys[1]];
-                    $this->clusters[$phrase][$phrase] = $this->sites[$phrase];
-                    $this->clusters[$phrase][$phrase]['merge'] = [$keys[1] => $pre[$phrase][$keys[1]]];
-                    $willClustered[$phrase] = true;
-                    $willClustered[$keys[1]] = true;
-                }
-            }
-        }
-
-        ksort($this->sites);
-        foreach ($this->sites as $mainPhrase => $item) {
-            if (isset($willClustered[$mainPhrase])) {
-                continue;
-            }
-
-            foreach ($this->clusters as $ph => $cluster) {
-                foreach ($cluster as $phrase => $val) {
-                    $count = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($this->sites[$phrase]['mark'])));
-                    if ($count >= $this->minimum) {
-                        $this->clusters[$ph][$mainPhrase] = $item;
-                        $this->clusters[$ph][$mainPhrase]['merge'] = [$phrase => $count];
-                        $willClustered[$mainPhrase] = true;
-                        continue 3;
-                    }
-                }
-            }
-            $this->clusters[$mainPhrase][$mainPhrase] = $item;
-            $willClustered[$mainPhrase] = true;
-        }
-
-        $willClustered = [];
-        foreach ($this->clusters as $mainPhrase => $cluster) {
-            if (isset($willClustered[$mainPhrase])) {
-                continue;
-            }
-            foreach ($cluster as $info) {
-                $intersects = [];
-                foreach ($this->clusters as $offPhrase => $offCluster) {
-                    if ($mainPhrase === $offPhrase || isset($willClustered[$offPhrase])) {
-                        continue;
-                    }
-                    foreach ($offCluster as $clusterPhrase => $offInfo) {
-                        $count = count(array_intersect($this->getNotIgnoredDomains($info['mark']), $this->getNotIgnoredDomains($offInfo['mark'])));
-                        if ($count >= $this->minimum) {
-                            $intersects[$offPhrase] = $count;
-                        }
-                    }
-                }
-                arsort($intersects);
-                if (count($intersects) > 0) {
-                    foreach ($intersects as $intersectPhrase => $intersectCount) {
-                        foreach ($this->clusters[$intersectPhrase] as $ph => $items) {
-                            $intersects2 = [];
-                            foreach ($this->clusters as $op => $oc) {
-                                if ($op === $intersectPhrase || isset($willClustered[$intersectPhrase])) {
-                                    continue;
-                                }
-                                foreach ($oc as $phrase => $clusterInfo) {
-                                    $count2 = count(array_intersect($this->getNotIgnoredDomains($items['mark']), $this->getNotIgnoredDomains($clusterInfo['mark'])));
-                                    if ($count2 >= $this->minimum)
-                                        $intersects2[$op] = $count2;
-                                }
-                            }
-                        }
-                        arsort($intersects2);
-                        if (array_key_first($intersects2) === $mainPhrase) {
-                            $this->clusters[$mainPhrase] = array_merge($this->clusters[$mainPhrase], $this->clusters[$intersectPhrase]);
-                            unset($this->clusters[$intersectPhrase]);
-                            $willClustered[$intersectPhrase] = true;
-                        }
-                    }
-                }
+                $this->brutForceNew($this->count * $percent);
             }
         }
     }
@@ -715,7 +441,7 @@ class Cluster
         }
     }
 
-    protected function searchClustersEngine1401()
+    protected function searchClustersEngine1301()
     {
         $m = new Morphy();
         $cache = [];
@@ -872,11 +598,11 @@ class Cluster
         return $result;
     }
 
-    protected function brutForceNew($minimum, $extra = false)
+    protected function brutForceNew($minimum)
     {
         $willClustered = [];
         foreach ($this->clusters as $firstPhrase => $cluster) {
-            if ($extra && count($cluster) > $this->brutForceCount || isset($willClustered[$firstPhrase])) {
+            if (count($cluster) > $this->brutForceCount || isset($willClustered[$firstPhrase])) {
                 continue;
             }
 
@@ -888,7 +614,11 @@ class Cluster
                 foreach ($cluster as $key => $item) {
                     foreach ($cluster2 as $key2 => $item2) {
                         $inter = count(array_intersect($this->getNotIgnoredDomains($item['mark']), $this->getNotIgnoredDomains($item2['mark'])));
-                        if (isset($this->wordRatio[$key][$key2]) && $inter >= $this->wordRatio[$key][$key2] || $inter > $minimum) {
+                        if (
+                            isset($this->wordRatio[$key][$key2]) &&
+                            $inter >= $this->wordRatio[$key][$key2] ||
+                            $inter > $minimum
+                        ) {
                             $intersects[$secondPhrase] = [$key => $key2];
                         }
                     }
@@ -902,34 +632,6 @@ class Cluster
                     $willClustered[$firstPhrase] = true;
                     unset($this->clusters[$ph]);
                     continue 2;
-                }
-            }
-        }
-    }
-
-    protected function brutForceOld($minimum, $extra = false)
-    {
-        $willClustered = [];
-        foreach ($this->clusters as $firstPhrase => $cluster) {
-            if ($extra && count($cluster) > $this->brutForceCount || isset($willClustered[$firstPhrase])) {
-                continue;
-            }
-            foreach ($this->clusters as $secondPhrase => $cluster2) {
-                if ($firstPhrase === $secondPhrase || isset($willClustered[$secondPhrase])) {
-                    continue;
-                }
-                foreach ($cluster as $key => $item) {
-                    foreach ($cluster2 as $key2 => $item2) {
-                        $inter = count(array_intersect($item['sites'], $item2['sites']));
-                        if ($inter >= $minimum) {
-                            unset($this->clusters[$secondPhrase]);
-                            $this->clusters[$firstPhrase] = array_merge($cluster, $cluster2);
-                            $this->clusters[$firstPhrase][$secondPhrase]['merge'] = [$key => $inter];
-                            $this->clusters[$firstPhrase][$firstPhrase]['merge'] = [$key2 => $inter];
-                            $willClustered[$secondPhrase] = true;
-                            break 3;
-                        }
-                    }
                 }
             }
         }
@@ -1015,20 +717,5 @@ class Cluster
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
         TelegramBot::sendMessage($message, $this->user->chat_id);
-    }
-
-    protected function mergeClusters($item2, $phrase, $phrase2, array $willClustered = []): array
-    {
-        $this->clusters[$phrase][$phrase2] = [
-            'based' => $item2['based'],
-            'phrased' => $item2['phrased'],
-            'target' => $item2['target'],
-            'relevance' => $item2['relevance'],
-            'sites' => $item2['sites'],
-            'basedNormal' => $item2['basedNormal'],
-        ];
-        $willClustered[$phrase2] = true;
-
-        return $willClustered;
     }
 }

@@ -1162,6 +1162,7 @@
     "A page can weigh a lot": "Страница может много весить",
     "Select the url that will be saved for each phrase of this cluster": "Выбирите url который будет сохранён для каждой фразы этого кластера",
     "and work slowly": "и медленно работать",
+    "the higher the clustering level, the more groups you will get": "чем выше уровень кластеризации, тем больше групп вы получите",
     "Pro mode": "Профессиональный режим",
     "Classic mode": "Классический режим",
     "url not valid": "не корректный url",
