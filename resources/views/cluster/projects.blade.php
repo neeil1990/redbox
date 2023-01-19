@@ -460,22 +460,6 @@
                                             {!! Form::textarea('phrases_classic', null, ['class' => 'form-control', 'id' => 'phrases_classic'] ) !!}
                                         </div>
 
-                                        <div class="form-group required" style="display: none">
-                                            <label for="ignoredDomains">Игнорируемые домены</label>
-                                            <textarea class="form form-control" name="ignoredDomains"
-                                                      id="ignoredDomains_classic" cols="8"
-                                                      rows="8"></textarea>
-                                        </div>
-
-                                        <div style="display: none">
-                                            <div class="form-group required">
-                                                <label for="ignoredWords">Игнорируемые слова</label>
-                                                <textarea class="form form-control" name="ignoredWords"
-                                                          id="ignoredWords_classic" cols="8"
-                                                          rows="8"></textarea>
-                                            </div>
-                                        </div>
-
                                         <div class="form-group required">
                                             <label>{{ __('clustering level') }}</label>
                                             {!! Form::select('clustering_level_classic', [
