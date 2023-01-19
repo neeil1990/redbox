@@ -6,6 +6,7 @@ use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
+use App\MonitoringColumn;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
@@ -299,6 +300,21 @@ class MonitoringController extends Controller
             $lengthDefault = $length->value;
 
         return $lengthDefault;
+    }
+
+    public function getColumnSettings()
+    {
+        $user = $this->user;
+        return MonitoringColumn::where(['user_id' => $user['id']])->get();
+    }
+
+    public function setColumnSettings(Request $request)
+    {
+        $user = $this->user;
+        MonitoringColumn::updateOrCreate(
+            ['user_id' => $user['id'], 'column' => $request->input('column')],
+            ['state' => $request->input('state')]
+        );
     }
 
     public function setColumnSettingsForProject(Request $request)

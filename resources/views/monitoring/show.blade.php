@@ -314,7 +314,40 @@
                                 });
                             });
 
-                            container.find('.tooltip-on').tooltip();
+                            container.find('.tooltip-on').tooltip({
+                                animation: false,
+                                trigger: 'hover',
+                            });
+
+                            container.find('.column-visible').click(function(){
+
+                                let name = $(this).data('column');
+                                let column = api.column(name + ':name');
+                                let visible = column.visible();
+
+                                column.visible(!visible);
+
+                                $(`.column-visible[data-column="${name}"]`).toggleClass('hover', visible);
+
+                                axios.post('/monitoring/project/set/column/settings', {
+                                    monitoring_project_id: PROJECT_ID,
+                                    name: name,
+                                    state: !visible,
+                                });
+                            });
+
+                            axios.post('/monitoring/project/get/column/settings', {monitoring_project_id: PROJECT_ID})
+                                .then(function(response){
+
+                                $.each(response.data, function(i, item){
+                                    if(item.state)
+                                        return true;
+
+                                    let column = api.column(item.name + ':name');
+                                    column.visible(item.state);
+                                    container.find(`.column-visible[data-column="${item.name}"]`).addClass('hover');
+                                });
+                            });
                         });
 
                         $('.search-button').click(function () {
@@ -400,7 +433,6 @@
                             class: 'form-group'
                         }).css({
                             float: "left",
-                            "margin-left": "2.25rem",
                             "margin-bottom": "0px",
                         });
 
@@ -425,69 +457,10 @@
 
                         dynamic.append(dynamicSelect);
 
-                        let btnGroup = $('<div />', {
-                            class: "btn-group"
-                        });
-
-                        for(let i = 0; i < MAIN_COLUMNS_COUNT; i++){
-
-                            let column = columns[i];
-
-                            if($(column.title).length)
-                                column.title = $(column.title).text();
-
-                            if(column.title){
-
-                                let button = $('<button />', {
-                                    class: "btn btn-default",
-                                    type: "type",
-                                    "data-column": column.name + ":name",
-                                });
-                                btnGroup.append(button.text(column.title));
-                            }
-                        }
-
-                        btnGroup.find('.btn').click(function(){
-                            let self = $(this);
-
-                            let name = self.attr('data-column');
-
-                            let column = api.column(name);
-
-                            axios.post('/monitoring/project/set/column/settings', {
-                                monitoring_project_id: PROJECT_ID,
-                                name: name,
-                                state: !column.visible(),
-                            });
-
-                            self.toggleClass('hover', column.visible());
-                            column.visible(!column.visible());
-                        });
-
-                        axios.post('/monitoring/project/get/column/settings', {
-                            monitoring_project_id: PROJECT_ID
-                        }).then(function(response){
-                            if(response.data.length){
-
-                                $.each(response.data, function(i, item){
-
-                                    if(item.state)
-                                        return true;
-
-                                    let column = api.column(item.name);
-
-                                    btnGroup.find(`.btn[data-column="${item.name}"]`).toggleClass('hover', !item.state);
-                                    column.visible(item.state);
-                                });
-                            }
-                        });
-
                         if(!response.data.region.length){
-                            this.closest('.card').find('.card-header').append(notValidateUrl);
                             this.closest('.card').find('.card-header').append(dynamic);
+                            this.closest('.card').find('.card-header').append(notValidateUrl);
                         }
-                        this.closest('.card').find('.card-header .card-title').html(btnGroup);
-                        this.closest('.card').find('.card-header .card-title').prepend($('<h3 />', {class: "card-title"}).css({"line-height": '38px', "margin-right": '10px'}).text("Скрыть колонки:"));
 
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');

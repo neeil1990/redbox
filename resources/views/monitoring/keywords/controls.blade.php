@@ -29,5 +29,17 @@
     </button>
 </div>
 
+<div class="btn-group">
+    @foreach ([
+            ['name' => 'query', 'text' => __('Query')],
+            ['name' => 'url', 'text' => __('URL')],
+            ['name' => 'group', 'text' => __('Group')],
+            ['name' => 'target', 'text' => __('Target')],
+            ['name' => 'dynamics', 'text' => __('Dynamics')],
+        ] as $col)
+        <a href="javascript:void(0)" class="btn btn-default btn-sm tooltip-on column-visible" data-toggle="tooltip" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
+    @endforeach
+</div>
+
 <div class="float-right"></div>
 <!-- /.float-right -->

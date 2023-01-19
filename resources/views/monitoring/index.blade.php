@@ -30,9 +30,6 @@
             .shrink-color {
                 background-color: rgb(251, 225, 223);
             }
-            .table td, .table th {
-                padding: 0.75rem!important;
-            }
             table.dataTable>thead .sorting:before, table.dataTable>thead .sorting_asc:before, table.dataTable>thead .sorting_desc:before, table.dataTable>thead .sorting_asc_disabled:before, table.dataTable>thead .sorting_desc_disabled:before {
                 right: 0.5em;
             }
@@ -108,7 +105,10 @@
                 $(this).data('clicks', !clicks)
             });
 
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="tooltip"]').tooltip({
+                animation: false,
+                trigger: 'hover',
+            });
 
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
@@ -138,7 +138,7 @@
                     [2, 'asc'],
                 ],
                 columnDefs: [
-                    { orderable: true, "width": "150px", targets: 2 },
+                    { orderable: true, "width": "150px", targets: 'name' },
                     { orderable: true, targets: 3 },
                     { orderable: false, targets: [0,1,4,12,13] },
                 ],
@@ -169,34 +169,36 @@
                         defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
                     },
                     {
-                        title: 'Проект',
+                        title: '{{ __('Project') }}',
                         name: 'name',
                         data: function (row){
                             return `<a href="/monitoring/${row.id}" class="text-bold">${row.name}</a>`;
                         },
                     },
                     {
-                        title: 'Домен',
+                        title: '{{ __('Domain') }}',
                         name: 'url',
                         data: function (row){
                             return `<a href="https://${row.url}" target="_blank" class="text-muted">${row.url} <i class="fas fa-external-link-square"></i></a>`;
                         },
                     },
                     {
+                        title: '{{ __('Search engine') }}',
+                        name: 'engines',
                         data: 'engines',
                     },
                     {
-                        title: 'Слов',
+                        title: '{{ __('Words') }}',
                         name: 'words',
                         data: 'words',
                     },
                     {
-                        title: 'Ср.Позиция',
+                        title: '{{ __('Middle position') }}',
                         name: 'middle',
                         data: 'middle',
                     },
                     {
-                        title: '% ТОП 3',
+                        title: '% {{ __('TOP') }} 3',
                         name: 'top3',
                         data: function (row){
                             let sup = subColorTag(row.diff_top3);
@@ -205,7 +207,7 @@
                         },
                     },
                     {
-                        title: '% ТОП 5',
+                        title: '% {{ __('TOP') }} 5',
                         name: 'top5',
                         data: function (row){
                             let sup = subColorTag(row.diff_top5);
@@ -214,7 +216,7 @@
                         },
                     },
                     {
-                        title: '% ТОП 10',
+                        title: '% {{ __('TOP') }} 10',
                         name: 'top10',
                         data: function (row){
                             let sup = subColorTag(row.diff_top10);
@@ -223,7 +225,7 @@
                         },
                     },
                     {
-                        title: '% ТОП 30',
+                        title: '% {{ __('TOP') }} 30',
                         name: 'top30',
                         data: function (row){
                             let sup = subColorTag(row.diff_top30);
@@ -232,7 +234,7 @@
                         },
                     },
                     {
-                        title: '% ТОП 100',
+                        title: '% {{ __('TOP') }} 100',
                         name: 'top100',
                         data: function (row){
                             let sup = subColorTag(row.diff_top100);
@@ -242,7 +244,7 @@
                     },
                     {
                         width: '120px',
-                        title: 'Отчеты',
+                        title: '{{ __('Reports') }}',
                         data: null,
                         class: 'project-actions text-right',
                         defaultContent: '<a class="btn btn-info btn-sm" href="#">{{ __('In progress') }}</a>',
@@ -258,7 +260,6 @@
                                 "data-target": '.modal',
                                 "data-type": 'create_keywords',
                                 "data-id": row.id,
-                                title: 'Добавить запрос',
                             });
 
                             let edit = $('<a />', {
@@ -369,11 +370,38 @@
                     updateCacheText.append(updateCacheButton);
                     let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
                     this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
+
+                    axios.post('/monitoring/get/column/settings').then(function (response) {
+
+                        $.each(response.data, function(i, col){
+                            if(col.state){
+                                table.column(col.column + ':name').visible(!col.state);
+                                $(`.column-visible[data-column="${col.column}"]`).addClass('hover');
+                            }
+                        });
+                    });
                 },
                 drawCallback: function(){
                     this.find('tbody tr').addClass('main');
                     $('.pagination').addClass('pagination-sm');
                 },
+            });
+
+            $('.column-visible').click(function(e){
+                e.preventDefault();
+
+                let name = $(this).data('column');
+                let column = table.column(name + ':name');
+                let visible = column.visible();
+
+                column.visible(!visible);
+
+                $(this).toggleClass('hover', visible);
+
+                axios.post('/monitoring/set/column/settings', {
+                    column: name,
+                    state: visible,
+                });
             });
 
             $('.parse-positions').click(function () {

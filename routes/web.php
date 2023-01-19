@@ -275,8 +275,12 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/{project_id}/table', 'MonitoringController@getTableKeywords')->name('monitoring.get.table.keywords');
 
     Route::post('/monitoring/projects/get-positions-for-calendars', 'MonitoringController@getPositionsForCalendars')->name('monitoring.projects.get.positions.for.calendars');
+
+    Route::post('/monitoring/get/column/settings', 'MonitoringController@getColumnSettings');
+    Route::post('/monitoring/set/column/settings', 'MonitoringController@setColumnSettings');
     Route::post('/monitoring/project/set/column/settings', 'MonitoringController@setColumnSettingsForProject');
     Route::post('/monitoring/project/get/column/settings', 'MonitoringController@getColumnSettingsForProject');
+
     Route::get('/monitoring/project/update-data-table', 'MonitoringController@updateDataTableProjects');
     Route::post('/monitoring/parse/positions/project', 'MonitoringController@parsePositionsInProject');
     Route::post('/monitoring/parse/positions/all/projects', 'MonitoringController@parsePositionsAllProject');
