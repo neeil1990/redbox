@@ -93,7 +93,7 @@ class Cluster
             $this->setReductionRatio($request['reductionRatio']);
             $this->brutForceCount = (int)$request['brutForceCount'];
             $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
-            $this->engineVersion = $request['engineVersion'];
+            $this->engineVersion = $request['engineVersion'] ?? $config->engine_version;
         }
 
         switch ($request['clusteringLevel']) {
