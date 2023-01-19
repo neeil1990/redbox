@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -83,6 +82,7 @@ class Cluster
             $this->brutForce = $config->brut_force;
             $this->ignoredWords = explode("\r\n", $config->ignored_words);
             $this->ignoredDomains = explode("\r\n", $config->ignored_domains);
+            $this->engineVersion = $config->engine_version;
         } else {
             $config = ClusterConfiguration::first();
             $this->ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
@@ -93,6 +93,7 @@ class Cluster
             $this->setReductionRatio($request['reductionRatio']);
             $this->brutForceCount = (int)$request['brutForceCount'];
             $this->brutForce = filter_var($request['brutForce'], FILTER_VALIDATE_BOOLEAN);
+            $this->engineVersion = $request['engineVersion'];
         }
 
         switch ($request['clusteringLevel']) {
@@ -110,7 +111,6 @@ class Cluster
                 break;
         }
 
-        $this->engineVersion = $config->engine_version;
         $this->minimum = $this->count * $this->clusteringLevel;
         $this->mode = $request['mode'];
 
@@ -142,8 +142,6 @@ class Cluster
         } else if ($ratio === 'soft') {
             $this->reductionRatio = 0.5;
         }
-
-        Log::debug('$this->reductionRatio', [$this->reductionRatio]);
     }
 
     public function __sleep()
@@ -261,6 +259,10 @@ class Cluster
     protected function markIgnoredDomains()
     {
         foreach ($this->sites as $phrase => $item) {
+            unset($this->sites[$phrase]['mark']);
+        }
+
+        foreach ($this->sites as $phrase => $item) {
             $count = 0;
             foreach ($item['sites'] as $key => $site) {
                 if ($count < $this->count) {
@@ -279,10 +281,6 @@ class Cluster
         }
     }
 
-    /**
-     * @param $sites
-     * @return void
-     */
     public function setSites($sites)
     {
         $this->sites = json_decode($sites, true);
@@ -408,9 +406,6 @@ class Cluster
                 }
             }
         }
-
-        Log::debug('will', $willClustered);
-        Log::debug('will', [count($willClustered)]);
 
         foreach ($this->sites as $mainPhrase => $item) {
             if (isset($willClustered[$mainPhrase])) {
