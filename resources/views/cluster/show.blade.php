@@ -618,6 +618,7 @@
                             ignoredWords: $('#ignoredWords').val(),
                         },
                         success: function (response) {
+                            console.log(response)
                             $('#clusters-table-default').show()
                             $('#hidden-result-fast').dataTable().fnDestroy()
                             $('.fast-render').remove()

@@ -301,7 +301,7 @@ class Cluster
             $percent = $this->clusteringLevel;
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
-                $this->brutForceNew($this->count * $percent);
+                $this->brutForce($this->count * $percent);
             }
         }
     }
@@ -314,6 +314,8 @@ class Cluster
         uksort($this->sites, function ($a, $b) {
             return mb_strlen($b) - mb_strlen($a);
         });
+
+        Log::debug('sites', $this->sites);
 
         foreach ($this->sites as $key1 => $site) {
             $first = explode(' ', $key1);
@@ -364,9 +366,11 @@ class Cluster
                 }
             }
             if (isset($this->wordRatio[$key1])) {
+                ksort($this->wordRatio[$key1]);
                 arsort($this->wordRatio[$key1]);
             }
         }
+        Log::debug('wordRatio', $this->wordRatio);
 
         $willClustered = [];
         foreach ($this->wordRatio as $mainPhrase => $phrases) {
@@ -397,8 +401,10 @@ class Cluster
                     }
                 }
 
+                ksort($intersect);
                 arsort($intersect);
                 if (array_key_first($intersect) === $mainPhrase) {
+                    Log::debug($mainPhrase, $intersect);
                     $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
                     $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
                     $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
@@ -604,7 +610,7 @@ class Cluster
         return $result;
     }
 
-    protected function brutForceNew($minimum)
+    protected function brutForce($minimum)
     {
         $willClustered = [];
         foreach ($this->clusters as $firstPhrase => $cluster) {
