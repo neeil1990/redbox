@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -134,6 +133,7 @@ class Cluster
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
+
     }
 
     protected function setReductionRatio(string $ratio)
@@ -312,10 +312,8 @@ class Cluster
         $cache = [];
 
         uksort($this->sites, function ($a, $b) {
-            return mb_strlen($b) - mb_strlen($a);
+            return mb_strlen($b) - mb_strlen($a)?: strcmp($a, $b);
         });
-
-        Log::debug('sites', $this->sites);
 
         foreach ($this->sites as $key1 => $site) {
             $first = explode(' ', $key1);
@@ -370,7 +368,6 @@ class Cluster
                 arsort($this->wordRatio[$key1]);
             }
         }
-        Log::debug('wordRatio', $this->wordRatio);
 
         $willClustered = [];
         foreach ($this->wordRatio as $mainPhrase => $phrases) {
@@ -404,7 +401,6 @@ class Cluster
                 ksort($intersect);
                 arsort($intersect);
                 if (array_key_first($intersect) === $mainPhrase) {
-                    Log::debug($mainPhrase, $intersect);
                     $this->clusters[$mainPhrase][$phrase] = $this->sites[$phrase];
                     $this->clusters[$mainPhrase][$phrase]['merge'] = [$mainPhrase => $intersect[array_key_first($intersect)]];
                     $this->clusters[$mainPhrase][$mainPhrase] = $this->sites[$mainPhrase];
@@ -459,7 +455,7 @@ class Cluster
         $cache = [];
 
         uksort($this->sites, function ($a, $b) {
-            return mb_strlen($b) - mb_strlen($a);
+            return mb_strlen($b) - mb_strlen($a)?: strcmp($a, $b);
         });
 
         foreach ($this->sites as $key1 => $site) {
@@ -510,6 +506,7 @@ class Cluster
                 }
             }
             if (isset($this->wordRatio[$key1])) {
+                ksort($this->wordRatio[$key1]);
                 arsort($this->wordRatio[$key1]);
             }
         }
@@ -684,9 +681,9 @@ class Cluster
 
     protected function setResult(array $results)
     {
-        $this->result = collect($results)->sortByDesc(function ($item, $key) {
-            return count($item);
-        })->values()->all();
+        $this->result = $results;
+        ksort($this->result);
+        arsort($this->result);
     }
 
     protected function saveResult()
