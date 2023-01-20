@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -133,6 +134,8 @@ class Cluster
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
+
+        Log::debug('this', [$this]);
     }
 
     protected function setReductionRatio(string $ratio)
@@ -454,7 +457,7 @@ class Cluster
         $cache = [];
 
         uksort($this->sites, function ($a, $b) {
-            return mb_strlen($b) - mb_strlen($a);
+            return mb_strlen($b) - mb_strlen($a)?: strcmp($a, $b);
         });
 
         foreach ($this->sites as $key1 => $site) {
@@ -505,6 +508,7 @@ class Cluster
                 }
             }
             if (isset($this->wordRatio[$key1])) {
+                ksort($this->wordRatio[$key1]);
                 arsort($this->wordRatio[$key1]);
             }
         }

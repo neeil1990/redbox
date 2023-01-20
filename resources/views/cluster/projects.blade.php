@@ -232,7 +232,7 @@
                                                       rows="8"></textarea>
                                         </div>
 
-                                        <div id="ignoredWordsBlock">
+                                        <div>
                                             <div class="form-group required">
                                                 <label for="ignoredWords">Игнорируемые слова</label>
                                                 <textarea class="form form-control" name="ignoredWords"
@@ -719,12 +719,6 @@
                                     $('#gainFactor').val(request.gainFactor)
                                 } else {
                                     $('#gainFactor').val(10)
-                                }
-
-                                if (request.engineVersion === 'max_phrases') {
-                                    $('#ignoredWordsBlock').show(300)
-                                } else {
-                                    $('#ignoredWordsBlock').hide(300)
                                 }
 
                                 if (request.searchPhrases === 'true') {
