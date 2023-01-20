@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -315,8 +314,6 @@ class Cluster
             return mb_strlen($b) - mb_strlen($a)?: strcmp($a, $b);
         });
 
-        Log::debug('sites', $this->sites);
-
         foreach ($this->sites as $key1 => $site) {
             $first = explode(' ', $key1);
             if (count($first) === 1) {
@@ -371,7 +368,6 @@ class Cluster
             }
         }
 
-        Log::debug('wordRatio', $this->wordRatio);
         $willClustered = [];
         foreach ($this->wordRatio as $mainPhrase => $phrases) {
             if (isset($willClustered[$mainPhrase])) {
@@ -413,7 +409,6 @@ class Cluster
             }
         }
 
-        Log::debug('willClustered', [count($willClustered)]);
         foreach ($this->sites as $mainPhrase => $item) {
             if (isset($willClustered[$mainPhrase])) {
                 continue;
@@ -443,7 +438,6 @@ class Cluster
                     return ($first < $second) ? -1 : 1;
                 });
 
-                Log::debug('$intersect', $intersect);
                 $mergePhrase = array_key_first($intersect);
                 $t = array_shift($intersect);
 
