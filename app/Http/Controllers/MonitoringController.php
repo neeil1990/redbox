@@ -14,6 +14,7 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\MonitoringSettings;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -184,28 +185,29 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $project = $user->monitoringProjects()->where('id', $project_id)->first();
+        $project = $user->monitoringProjects()->find($project_id);
 
         $engines = $project->searchengines()->with('location')->get();
 
-        $engines->transform(function($item){
-
-            $positions = $item->positions()->whereNotNull('position')->get();
-
+        $groups = collect([]);
+        foreach ($engines as $engine){
+            $positions = $engine->positions()->whereNotNull('position')->get();
             if($positions->isNotEmpty()){
-
-                $this->calculateTopPercent($positions, $item);
-                $item->latest_created = $positions->last()->created_at;
+                foreach ([0, 1, 3, 6, 12] as $month){
+                    if($grouped = $this->groupPositionsByMonth($positions, $month)){
+                        $groups->push($this->calculateTopPercent($grouped, $engine));
+                    }
+                }
             }
+        }
 
-            return $item;
-        });
-
-        return view('monitoring.partials._child_rows', compact('engines'));
+        return view('monitoring.partials._child_rows', compact('groups'));
     }
 
-    private function calculateTopPercent(Collection $positions, &$model)
+    private function calculateTopPercent(Collection $positions, $model)
     {
+        $engine = clone $model;
+
         $percents = [
             'top_1' => 1,
             'top_3' => 3,
@@ -216,25 +218,51 @@ class MonitoringController extends Controller
             'top_100' => 100,
         ];
 
-        $last_positions = $positions->sortByDesc('id')->unique('monitoring_keyword_id');
-
-        $pre_last_position = $positions->groupBy('monitoring_keyword_id')->transform(function($val, $i){
-            $count = $val->count() - 2;
-
-            if(isset($val[$count]))
-                return $val[$count];
-
-            return $val[$val->count() - 1];
-        });
+        $pos = $this->getLastCoupleOfPositions($positions);
 
         foreach ($percents as $name => $percent){
-
-            $last = Helper::calculateTopPercentByPositions($last_positions->pluck('position'), $percent);
-            $pre_last = Helper::calculateTopPercentByPositions($pre_last_position->pluck('position'), $percent);
-            $model->$name = $last . Helper::differentTopPercent($last, $pre_last);
+            $first = Helper::calculateTopPercentByPositions($pos->pluck('first.position'), $percent);
+            $last = Helper::calculateTopPercentByPositions($pos->pluck('last.position'), $percent);
+            $engine->$name = $first . Helper::differentTopPercent($first, $last);
         }
+        $engine->middle_position = round($pos->pluck('first')->sum('position') / $pos->pluck('first')->count(), 2);
+        $engine->latest_created = $pos->pluck('first')->last()->created_at;
 
-        $model->middle_position = round($last_positions->sum('position') / $last_positions->count(), 2);
+        return $engine;
+    }
+
+    public function getLastCoupleOfPositions(Collection $positions)
+    {
+        $positions = $positions->groupBy('monitoring_keyword_id')->transform(function($pos){
+            $p = $pos->sortByDesc('created_at')->values();
+
+            if($p->count() > 1)
+                return collect(['first' => $p[0], 'last' => $p[1]]);
+            elseif ($p->count())
+                return collect(['first' => $p[0], 'last' => []]);
+            else
+                return collect(['first' => [], 'last' => []]);
+        });
+
+        return $positions;
+    }
+
+    public function groupPositionsByMonth(Collection $positions, int $subMonth = null)
+    {
+        $format = 'Y-m';
+
+        $grouped = $positions->groupBy(function ($item) use ($format) {
+            return $item->created_at->format($format);
+        })->sortByDesc(function($i, $k){ return Carbon::parse($k)->timestamp; });
+
+        if($subMonth === null)
+            return $grouped;
+
+        $carbon = Carbon::now()->subMonths($subMonth)->format($format);
+        if($grouped->has($carbon))
+            return $grouped[$carbon];
+
+        return null;
     }
 
     /**
