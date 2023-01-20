@@ -112,9 +112,9 @@ class ClusterController extends Controller
         $cluster->setSites($results->sites_json);
         $cluster->searchClusters();
         $cluster->calculateClustersInfo();
-        $clusters = collect($cluster->getClusters())->sortByDesc(function ($item, $key) {
-            return count($item);
-        })->values()->all();
+        $clusters = $cluster->getClusters();
+        ksort($clusters);
+        arsort($clusters);
 
         return response()->json([
             'sites' => $clusters,
