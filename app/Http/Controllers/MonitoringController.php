@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 class MonitoringController extends Controller
 {
     protected $user;
+    protected $subtractionMonths = [0, 1, 3, 6, 12];
 
     /**
      * ProfilesController constructor.
@@ -193,7 +194,7 @@ class MonitoringController extends Controller
         foreach ($engines as $engine){
             $positions = $engine->positions()->whereNotNull('position')->get();
             if($positions->isNotEmpty()){
-                foreach ([0, 1, 3, 6, 12] as $month){
+                foreach ($this->subtractionMonths as $month){
                     if($grouped = $this->groupPositionsByMonth($positions, $month)){
                         $groups->push($this->calculateTopPercent($grouped, $engine));
                     }
