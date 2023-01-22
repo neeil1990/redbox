@@ -18,12 +18,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($engines as $engine)
+                @foreach($groups as $engine)
                 <tr>
                     <td>{{ $engine->id }}</td>
                     <td>{{ $engine->lr }}</td>
                     <td>{{ ucfirst($engine->engine) }}, {{ $engine->location->name }}</td>
-                    <td>{{ $engine->latest_created }}</td>
+                    <td>{{ $engine->latest_created->format('d.m.Y') }}</td>
                     <td>{{ $engine->middle_position }}</td>
                     <td class="top">{{$engine->top_1}}</td>
                     <td class="top">{{$engine->top_3}}</td>
