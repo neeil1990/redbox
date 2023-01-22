@@ -113,6 +113,9 @@
                                            href="{{ route('show.cluster.result', $project->id) }}" target="_blank">
                                             {{ __('View results') }}
                                         </a>
+                                        <a href="{{ route('edit.clusters', $project->id) }}" class="btn btn-secondary mb-2">
+                                            Перераспределить кластеры
+                                        </a>
                                         <a class="btn btn-secondary mb-2"
                                            href="/download-cluster-result/{{$project->id}}/csv"
                                            target="_blank">{{ __('Download csv') }}</a>

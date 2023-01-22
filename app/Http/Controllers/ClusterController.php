@@ -202,7 +202,7 @@ class ClusterController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return response()->json(['success' => false], 415);
+        return response()->json(['success' => false], 400);
     }
 
     public function setClusterRelevanceUrls(Request $request): JsonResponse
@@ -230,7 +230,7 @@ class ClusterController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return response()->json(['success' => false], 415);
+        return response()->json(['success' => false], 400);
     }
 
     public function downloadClusterResult(ClusterResults $cluster, string $type)
@@ -320,5 +320,103 @@ class ClusterController extends Controller
         return response()->json([
             'phrases' => explode("\n", $phrases)
         ]);
+    }
+
+    public function editClusters(ClusterResults $cluster)
+    {
+        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $cluster->request = json_decode($cluster->request, true);
+
+        return view('cluster.edit', ['cluster' => $cluster, 'admin' => User::isUserAdmin()]);
+    }
+
+    public function editCluster(Request $request)
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
+
+        if (empty($cluster)) {
+            return abort(403);
+        }
+
+        try {
+            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            $clusters = $cluster->result;
+            foreach ($clusters as $mainPhrase => $items) {
+                foreach ($items as $phrase => $item) {
+                    if ($phrase === $request->input('phrase')) {
+                        unset($item['merge']);
+                        unset($clusters[$mainPhrase][$phrase]);
+                        $clusters[$request->input('mainPhrase')][$request->input('phrase')] = $item;
+                    }
+                }
+            }
+            $cluster->result = Cluster::recalculateClustersInfo($clusters);
+
+            $cluster->save();
+
+            return response()->json([
+                'success' => true,
+            ]);
+        } catch (\Throwable $e) {
+            Log::debug('swap cluster error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+            ], 400);
+        }
+
+    }
+
+    public function checkGroupName(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
+        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $keys = array_keys($cluster->result);
+
+        if (in_array($request->input('groupName'), $keys)) {
+            return response()->json([
+                'success' => false,
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function changeGroupName(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
+        if (empty($cluster)) {
+            return abort(403);
+        }
+
+        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $keys = array_keys($cluster->result);
+
+        if (in_array($request->input('newGroupName'), $keys)) {
+            return response()->json([
+                'success' => false,
+            ], 400);
+        }
+
+        $clusters = $cluster->result;
+        $clusters[$request->input('newGroupName')] = $clusters[$request->input('oldGroupName')];
+        unset($clusters[$request->input('oldGroupName')]);
+        ksort($clusters);
+        arsort($clusters);
+        $cluster->result = base64_encode(gzcompress(json_encode($clusters), 9));
+
+        $cluster->save();
+
+        return response()->json([
+            'success' => true
+        ]);
+
     }
 }

@@ -333,5 +333,31 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-sites', 'ClusterController@downloadClusterSites')->name('download.cluster.sites');
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
+    Route::get('/edit-clusters/{cluster}', 'ClusterController@editClusters')->name('edit.clusters');
+    Route::post('/edit-clusters', 'ClusterController@editCluster')->name('edit.cluster');
+    Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
+    Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
 });
 
+Route::get('/test', function () {
+    $cluster = ClusterResults::where('id', '=', 379)->where('user_id', '=', Auth::id())->first();
+
+    if (empty($cluster)) {
+        return abort(403);
+    }
+
+    $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+    $clusters = $cluster->result;
+
+    foreach ($clusters as $mainPhrase => $items) {
+        foreach ($items as $phrase => $item) {
+            if ($phrase === 'прямой офтальмоскоп цена') {
+                unset($item['merge']);
+                unset($clusters[$mainPhrase][$phrase]);
+                $clusters['новый блок']['прямой офтальмоскоп цена'] = $item;
+            }
+        }
+    }
+
+    $cluster->result = Cluster::recalculateClustersInfo($clusters);
+});

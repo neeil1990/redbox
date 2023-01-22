@@ -312,7 +312,7 @@ class Cluster
         $cache = [];
 
         uksort($this->sites, function ($a, $b) {
-            return mb_strlen($b) - mb_strlen($a)?: strcmp($a, $b);
+            return mb_strlen($b) - mb_strlen($a) ?: strcmp($a, $b);
         });
 
         foreach ($this->sites as $key1 => $site) {
@@ -455,7 +455,7 @@ class Cluster
         $cache = [];
 
         uksort($this->sites, function ($a, $b) {
-            return mb_strlen($b) - mb_strlen($a)?: strcmp($a, $b);
+            return mb_strlen($b) - mb_strlen($a) ?: strcmp($a, $b);
         });
 
         foreach ($this->sites as $key1 => $site) {
@@ -657,6 +657,29 @@ class Cluster
             arsort($merge);
             $this->clusters[$key]['finallyResult']['sites'] = $merge;
         }
+    }
+
+    public static function recalculateClustersInfo(array $clusters): string
+    {
+        foreach ($clusters as $key => $phrases) {
+            if (count($phrases) === 1 && array_key_first($phrases) === 'finallyResult') {
+                unset($clusters[$key]);
+                continue;
+            }
+
+            $merge = [];
+            foreach ($phrases as $phrase => $sites) {
+                $merge = array_merge($merge, $sites['sites']);
+            }
+            $merge = array_count_values($merge);
+            arsort($merge);
+            $clusters[$key]['finallyResult']['sites'] = $merge;
+        }
+
+        ksort($clusters);
+        arsort($clusters);
+
+        return base64_encode(gzcompress(json_encode($clusters), 9));
     }
 
     protected function searchGroupName()
