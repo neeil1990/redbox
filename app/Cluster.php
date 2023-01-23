@@ -659,7 +659,7 @@ class Cluster
         }
     }
 
-    public static function recalculateClustersInfo(array $clusters): string
+    public static function recalculateClustersInfo(array $clusters, $searchBase = false): string
     {
         foreach ($clusters as $key => $phrases) {
             if (count($phrases) === 1 && array_key_first($phrases) === 'finallyResult') {
@@ -678,6 +678,25 @@ class Cluster
 
         ksort($clusters);
         arsort($clusters);
+
+        if (filter_var($searchBase, FILTER_VALIDATE_BOOLEAN)) {
+            foreach ($clusters as $key => $cluster) {
+                $maxRepeatPhrase = 0;
+                $groupName = '';
+                foreach ($cluster as $phrase => $info) {
+                    if ($phrase !== 'finallyResult') {
+                        if ($maxRepeatPhrase === 0) {
+                            $maxRepeatPhrase = $info['based']['number'];
+                            $groupName = $info['based']['phrase'];
+                        } else if ($info['based']['number'] > $maxRepeatPhrase) {
+                            $maxRepeatPhrase = $info['based']['number'];
+                            $groupName = $info['based']['phrase'];
+                        }
+                    }
+                }
+                $clusters[$key]['finallyResult']['groupName'] = $groupName;
+            }
+        }
 
         return base64_encode(gzcompress(json_encode($clusters), 9));
     }

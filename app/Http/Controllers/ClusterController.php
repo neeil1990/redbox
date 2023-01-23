@@ -350,7 +350,9 @@ class ClusterController extends Controller
                     }
                 }
             }
-            $cluster->result = Cluster::recalculateClustersInfo($clusters);
+
+            $request = json_decode($cluster->request, true);
+            $cluster->result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
 
             $cluster->save();
 

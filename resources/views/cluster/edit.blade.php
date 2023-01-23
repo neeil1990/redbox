@@ -324,8 +324,7 @@
                         refreshMethods()
 
                         $.each($('.cluster-block'), function (key, value) {
-                            if ($(this).children('ul').eq(0).html() === '' || $(this).children('ul').eq(0).html() === '      '
-                            ) {
+                            if ($(this).children('ul').eq(0).html().replaceAll(' ', '') === '') {
                                 $(this).remove()
                             }
                         })
