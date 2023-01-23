@@ -659,7 +659,7 @@ class Cluster
         }
     }
 
-    public static function recalculateClustersInfo(array $clusters, $searchBase = false): string
+    public static function recalculateClustersInfo(array $clusters, $searchBase = false): array
     {
         foreach ($clusters as $key => $phrases) {
             if (count($phrases) === 1 && array_key_first($phrases) === 'finallyResult') {
@@ -698,7 +698,10 @@ class Cluster
             }
         }
 
-        return base64_encode(gzcompress(json_encode($clusters), 9));
+        return [
+            'clusters' => base64_encode(gzcompress(json_encode($clusters), 9)),
+            'countClusters' => count($clusters)
+        ];
     }
 
     protected function searchGroupName()

@@ -352,12 +352,15 @@ class ClusterController extends Controller
             }
 
             $request = json_decode($cluster->request, true);
-            $cluster->result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
+            $result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
+            $cluster->result = $result['clusters'];
+            $cluster->count_clusters = $result['countClusters'];
 
             $cluster->save();
 
             return response()->json([
                 'success' => true,
+                'countClusters' => $cluster->count_clusters
             ]);
         } catch (\Throwable $e) {
             Log::debug('swap cluster error', [

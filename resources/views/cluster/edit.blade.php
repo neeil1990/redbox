@@ -57,7 +57,7 @@
                                 {{ __('Number of phrases') }}: {{ $cluster['count_phrases'] }}
                             </div>
                             <div>
-                                {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
+                                {{ __('Number of clusters') }}: <span id="countClusters">{{ $cluster['count_clusters'] }}</span>
                             </div>
                             <div>
                                 {{ __('Phrases') }}:
@@ -307,7 +307,8 @@
                         mainPhrase: clusterPhrase,
                         phrase: phrase,
                     },
-                    success: function () {
+                    success: function (response) {
+                        $('#countClusters').html(response.countClusters)
                         successMessage("{{ __('Successfully changed') }}")
                         $("ul").find(`[data-target='${phrase}']`).eq(0).remove()
 
