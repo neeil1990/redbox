@@ -171,7 +171,7 @@
                             <div>
                                 {{ __('Top') }}: {{ $cluster['request']['count'] }}
                             </div>
-                            @if(isset($cluster['request']['mode']) && $cluster['request']['mode'] === 'professional')
+                            @if(isset($cluster['request']['mode']) && $cluster['request']['mode'] === 'professional' || \App\User::isUserAdmin())
                                 <div>
                                     {{ __('Clustering level') }}: {{ $cluster['request']['clusteringLevel'] }}
                                 </div>
@@ -219,7 +219,7 @@
                             {{ __('Number of clusters') }}: {{ $cluster['count_clusters'] }}
                         </div>
                     </div>
-                    @if(isset($cluster['request']['mode']) && $cluster['request']['mode'] === 'professional')
+                    @if(isset($cluster['request']['mode']) && $cluster['request']['mode'] === 'professional' || \App\User::isUserAdmin())
                         <button class="btn btn-secondary mt-5"
                                 type="button"
                                 id="fastScanButton"
