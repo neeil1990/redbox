@@ -456,7 +456,7 @@
                 })
 
                 $('.change-group-name').unbind('click').on('click', function () {
-                    let parent = $(this).parent()
+                    let parent = $(this).parent().parent()
                     parent.children('span').eq(0).hide()
                     parent.children('div').eq(0).show()
                 })
