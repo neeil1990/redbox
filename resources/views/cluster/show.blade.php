@@ -261,7 +261,7 @@
                                             <label for="ignoredDomains">Игнорируемые домены</label>
                                             <textarea class="form form-control" name="ignoredDomains"
                                                       id="ignoredDomains" cols="8"
-                                                      rows="8">{{ $cluster['request']['ignoredDomains'] }}</textarea>
+                                                      rows="8">{{ $cluster['request']['ignoredDomains'] ?? '' }}</textarea>
                                         </div>
 
                                         <div id="ignoredWordsBlock" style="display: none">
@@ -269,7 +269,7 @@
                                                 <label for="ignoredWords">Игнорируемые слова</label>
                                                 <textarea class="form form-control" name="ignoredWords"
                                                           id="ignoredWords" cols="8"
-                                                          rows="8">{{ $cluster['request']['ignoredWords'] }}</textarea>
+                                                          rows="8">{{ $cluster['request']['ignoredWords'] ?? '' }}</textarea>
                                             </div>
                                         </div>
 
@@ -292,7 +292,7 @@
                                                 <label for="gainFactor">коэффициент усиления(%)</label>
                                                 <input class="form form-control" type="number" id="gainFactor"
                                                        name="gainFactor"
-                                                       value="{{ $cluster['request']['gainFactor']?? 10 }}"
+                                                       value="{{ $cluster['request']['gainFactor'] ?? 40 ?? 10 }}"
                                                        placeholder="default 10">
                                             </div>
 
@@ -604,7 +604,7 @@
                         url: "{{ route('fast.scan.clusters') }}",
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
-                            count: {{ $cluster['request']['count'] }},
+                            count: {{ $cluster['request']['count'] ?? 40 }},
                             clusteringLevel: $('#clusteringLevelFast').val(),
                             engineVersion: $('#engineVersionFast').val(),
                             resultId: {{ $cluster['id'] }},
