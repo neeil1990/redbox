@@ -57,7 +57,8 @@
                                 {{ __('Number of phrases') }}: {{ $cluster['count_phrases'] }}
                             </div>
                             <div>
-                                {{ __('Number of clusters') }}: <span id="countClusters">{{ $cluster['count_clusters'] }}</span>
+                                {{ __('Number of clusters') }}: <span
+                                    id="countClusters">{{ $cluster['count_clusters'] }}</span>
                             </div>
                             <div>
                                 {{ __('Phrases') }}:
@@ -220,7 +221,8 @@
                     <div>
                         Группы удаляются автоматически, когда у них не остаётся связанных с ними фраз
                         <br>
-                        Если вы создали группу, и не заполнили её фразами, в момент перезагрузки страницы она будет удалена автоматически
+                        Если вы создали группу, и не заполнили её фразами, в момент перезагрузки страницы она будет
+                        удалена автоматически
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -297,42 +299,57 @@
                 let clusterPhrase = $('#clusters-list').val();
                 let phrase = $('#your-phrase').val()
 
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('edit.cluster') }}",
-                    dataType: 'json',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: {{ $cluster['id'] }},
-                        mainPhrase: clusterPhrase,
-                        phrase: phrase,
-                    },
-                    success: function (response) {
-                        $('#countClusters').html(response.countClusters)
-                        successMessage("{{ __('Successfully changed') }}")
-                        $("ul").find(`[data-target='${phrase}']`).eq(0).remove()
+                if (clusterPhrase === '') {
+                    return;
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('edit.cluster') }}",
+                        dataType: 'json',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id: {{ $cluster['id'] }},
+                            mainPhrase: clusterPhrase,
+                            phrase: phrase,
+                        },
+                        success: function (response) {
+                            $('#countClusters').html(response.countClusters)
+                            successMessage("{{ __('Successfully changed') }}")
+                            $("ul").find(`[data-target='${phrase}']`).eq(0).remove()
 
-                        let targetDiv = $('#' + clusterPhrase.replaceAll(' ', '_')).children('ul').eq(0)
-                        let newBlock = '<li class="list-group-item move-phrase" style="background: #17a2b861" data-target="' + phrase + '" data-action="' + clusterPhrase + '"> ' +
-                            '<span class="d-flex justify-content-between">' + phrase + '<i class="fa fa-arrow-right"></i> ' +
-                            '</span> ' +
-                            '</li>'
-                        targetDiv.append(newBlock)
-                        lastBlock.hide(300)
-                        setTimeout(() => {
-                            lastBlock.remove()
-                        }, 300)
-                        refreshMethods()
+                            let targetDiv = $('#' + clusterPhrase.replaceAll(' ', '_')).children('ul').eq(0)
+                            let newBlock = '<li class="list-group-item move-phrase" style="background: #17a2b861" data-target="' + phrase + '" data-action="' + clusterPhrase + '"> ' +
+                                '<span class="d-flex justify-content-between">' + phrase + '<i class="fa fa-arrow-right"></i> ' +
+                                '</span> ' +
+                                '</li>'
+                            targetDiv.append(newBlock)
+                            lastBlock.hide(300)
+                            setTimeout(() => {
+                                lastBlock.remove()
+                            }, 300)
+                            refreshMethods()
 
-                        $.each($('.cluster-block'), function (key, value) {
-                            if ($(this).children('ul').eq(0).html().replaceAll(' ', '') === '') {
-                                $(this).remove()
+                            let objectPhrase = ''
+                            $.each($('.cluster-block'), function (key, value) {
+                                if ($(this).children('ul').eq(0).html().replaceAll(' ', '') === '') {
+                                    $(this).remove()
+                                    objectPhrase = $(this).attr('id').replaceAll('_', ' ');
+                                }
+                            })
+
+                            if (objectPhrase !== '') {
+                                $.each($('#clusters-list').children('option'), function (key, value) {
+                                    if ($(this).val() === objectPhrase) {
+                                        $(this).remove()
+                                    }
+                                })
                             }
-                        })
-                    },
-                    error: function (response) {
-                    }
-                });
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
             })
 
             $('#add-new-group').on('click', function () {
