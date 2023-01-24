@@ -192,14 +192,16 @@ class MonitoringController extends Controller
 
         $groups = collect([]);
         foreach ($engines as $engine){
+            $engine->data = collect([]);
             $positions = $engine->positions()->whereNotNull('position')->get();
             if($positions->isNotEmpty()){
                 foreach ($this->subtractionMonths as $month){
                     if($grouped = $this->groupPositionsByMonth($positions, $month)){
-                        $groups->push($this->calculateTopPercent($grouped, $engine));
+                        $engine->data->push($this->calculateTopPercent($grouped, $engine));
                     }
                 }
             }
+            $groups->push($engine);
         }
 
         return view('monitoring.partials._child_rows', compact('groups'));

@@ -13,6 +13,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
         <style>
+            .toast {
+                opacity: 1 !important;
+            }
             .table-hover tbody tr:hover {
                 background-color: #FFF;
             }
@@ -83,7 +86,7 @@
 
             toastr.options = {
                 "preventDuplicates": true,
-                "timeOut": "5000"
+                "timeOut": "8000"
             };
 
             const HIGHLIGHT_TR_CLASS = "table-success";
