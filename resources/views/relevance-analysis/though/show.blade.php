@@ -58,41 +58,37 @@
     @if(count(json_decode($though->cleaning_projects)) > 0 && $though->cleaning_state == 0)
         <div id="toast-container" class="toast-top-right success-message" style="display:none;">
             <div class="toast toast-success" aria-live="polite">
-                <div class="toast-message" id="message-info">Проекты успешно добавлены в очередь на повторный анализ
-                </div>
+                <div class="toast-message" id="message-info">{{ __('Projects have been successfully added to the reanalysis queue') }}</div>
             </div>
         </div>
 
         <div id="thoughId" data-target="{{ $though->id }}"></div>
         <div class="card" id="rescanBlock">
             <div class="card-body">
-                У вас есть проекты информация о которых была отчищена. <br>
-                Для того чтобы получить более подробную информацию вы можете переснять их, а затем повторно запустить
-                сквозной анализ
+                {{ __('You have projects whose information has been cleared.') }} <br>
+                {{ __('In order to get more detailed information, you can reshoot them, and then re-run the end-to-end analysis.') }}
                 <br>
                 <button type="button" class="btn btn-secondary mt-3" data-toggle="modal" data-target="#rescanModal">
-                    Переснять все отчищенные проекты
+                    {{ __('Reshoot all cleaned projects') }}
                 </button>
 
-                <!-- Modal -->
                 <div class="modal fade" id="rescanModal" tabindex="-1" aria-labelledby="rescanModalLabel"
                      aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="rescanModalLabel">Переснять все отчищенные проекты</h5>
+                                <h5 class="modal-title" id="rescanModalLabel">{{ __('Reshoot all cleaned projects') }}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                Вы собираетесь переснять все отчищенные проекты, вы уверены?
+                                {{ __("You're going to reshoot all the cleaned up projects, are you sure?") }}
                                 <div id="targetIds" data-target="{{ $though->cleaning_projects }}"></div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                        id="rescanProjects">Переснять
-                                </button>
+                                        id="rescanProjects">{{ __('Reshoot') }}</button>
                                 <button type="button" class="btn btn-default"
                                         data-dismiss="modal">{{ __('Close') }}</button>
                             </div>
@@ -113,14 +109,14 @@
             <tr>
                 <th class="sticky"></th>
                 <th class="sticky">{{ __('Word') }}</th>
-                <th class="sticky fixed-width">Пересечения</th>
+                <th class="sticky fixed-width">{{ __('Intersections') }}</th>
                 <th class="sticky">tf</th>
                 <th class="sticky">idf</th>
-                <th class="sticky">Сколько раз слово входило в текстовой части конкуретов в анализе</th>
-                <th class="sticky">Скольво раз слово встретилось в текстовой части посадочной страницы</th>
-                <th class="sticky">Сколько раз слово входило в ссылочной часть конкуретов в анализе</th>
-                <th class="sticky">Скольво раз слово встретилось в ссылочной части посадочной страницы</th>
-                <th class="sticky">Сумма количества вхождений</th>
+                <th class="sticky">{{ __('How many times the word was included in the text part of the competitors in the analysis') }}</th>
+                <th class="sticky">{{ __('How many times the word appeared in the text part of the landing page') }}</th>
+                <th class="sticky">{{ __('How many times the word was included in the reference part of competitors in the analysis') }}</th>
+                <th class="sticky">{{ __('How many times the word appeared in the link part of the landing page') }}</th>
+                <th class="sticky">{{ __('The sum of the number of occurrences') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -133,14 +129,14 @@
                     <td>
                         <a data-toggle="collapse" href="#collapseExample{{ $key }}"
                            role="button" aria-expanded="false" aria-controls="collapseExample{{ $key }}">
-                            Посмотреть таблицу
+                            {{ __('Show') }}
                         </a>
                         <div class="collapse" id="collapseExample{{ $key }}">
                             <table class="child-table">
                                 <thead>
                                 <tr>
-                                    <th class="col-9">Ссылка</th>
-                                    <th class="col-3">Кол-во вхождений</th>
+                                    <th class="col-9">{{ __('Link') }}</th>
+                                    <th class="col-3">{{ __('Number of entries') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>

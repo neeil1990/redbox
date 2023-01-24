@@ -63,6 +63,13 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
+                    <button type="button" class="btn btn-secondary mb-3" data-toggle="modal" data-target="#accessModal">
+                        {{ __('Granting access') }}
+                    </button>
+                    <button type="button" class="btn btn-secondary mb-3" data-toggle="modal" data-target="#offAccessModal">
+                        {{ __('Take access rights') }}
+                    </button>
+
                     <table id="my-projects-table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
@@ -166,12 +173,6 @@
                     </table>
                 </div>
             </div>
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#accessModal">
-                {{ __('Granting access') }}
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#offAccessModal">
-                {{ __('Take access rights') }}
-            </button>
         </div>
 
         <div class="modal fade" id="accessModal" tabindex="-1" aria-labelledby="accessModalLabel">
@@ -252,22 +253,34 @@
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
             $(document).ready(function () {
-                $('#my-projects-table').DataTable();
+                $('#my-projects-table').DataTable({
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                    'info': false
+                });
 
                 $('select[name="duallistbox_access"]').bootstrapDualListbox({
-                    selectedListLabel: 'Проекты к которым вы хотите дать доступ',
-                    nonSelectedListLabel: 'Ваши проекты',
-                    preserveSelectionOnMove: 'moved',
-                    moveAllLabel: 'Move all',
-                    removeAllLabel: 'Remove all'
+                    selectedListLabel: '{{ __('Projects you want to give access to') }}',
+                    nonSelectedListLabel: '{{ __('Your projects') }}',
+                    preserveSelectionOnMove: '{{ __('Moved') }}',
+                    moveAllLabel: '{{ __('Move all') }}',
+                    removeAllLabel: '{{ __('Move all') }}'
                 });
 
                 $('select[name="duallistbox_off_access"]').bootstrapDualListbox({
-                    selectedListLabel: 'Проекты для которых вы хотите забрать доступ',
-                    nonSelectedListLabel: 'Ваши проекты',
-                    preserveSelectionOnMove: 'moved',
-                    moveAllLabel: 'Move all',
-                    removeAllLabel: 'Remove all'
+                    selectedListLabel: '{{ __('Projects from which you want to take away access') }}',
+                    nonSelectedListLabel: '{{ __('Your projects') }}',
+                    preserveSelectionOnMove: '{{ __('Moved') }}',
+                    moveAllLabel: '{{ __('Move all') }}',
+                    removeAllLabel: '{{ __('Move all') }}'
                 });
 
                 setInterval(() => {

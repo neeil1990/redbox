@@ -5,7 +5,21 @@ $('#main_history_table').DataTable({
     dom: 'lBfrtip',
     buttons: [
         'copy', 'csv', 'excel'
-    ]
+    ],
+    language: {
+        lengthMenu: "_MENU_",
+        search: "_INPUT_",
+        paginate: {
+            "first": "«",
+            "last": "»",
+            "next": "»",
+            "previous": "«"
+        },
+    },
+    'info': false,
+    "oLanguage": {
+        "sEmptyTable": "No records"
+    }
 });
 
 $(".dt-button").addClass('btn btn-secondary')

@@ -69,7 +69,7 @@ class BehaviorController extends Controller
                 if($count >= $tariff['settings']['behavior']['value']){
 
                     if($tariff['settings']['behavior']['message'])
-                        flash()->overlay($tariff['settings']['behavior']['message'], __('Error'))->error();
+                        flash()->overlay(__($tariff['settings']['behavior']['message']), __('Error'))->error();
 
                     return redirect()->route('behavior.index');
                 }

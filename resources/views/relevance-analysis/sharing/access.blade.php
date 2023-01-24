@@ -70,7 +70,6 @@
                     <table id="main_history_table" class="table table-bordered table-hover dataTable dtr-inline mb-3">
                         <thead>
                         <tr>
-                        <tr>
                             <th class="table-header col-2">{{ __('Project name') }}</th>
                             <th class="table-header col-2">{{ __('Owner') }}</th>
                             <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
@@ -691,7 +690,6 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
@@ -699,7 +697,6 @@
     @slot('js')
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -707,6 +704,32 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
+            $('#main_history_table').DataTable({
+                "order": [[0, "desc"]],
+                "pageLength": 10,
+                "searching": true,
+                dom: 'lBfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                language: {
+                    lengthMenu: "_MENU_",
+                    search: "_INPUT_",
+                    paginate: {
+                        "first": "«",
+                        "last": "»",
+                        "next": "»",
+                        "previous": "«"
+                    },
+                },
+                'info': false,
+                "oLanguage": {
+                    "sEmptyTable": "{{ __('No records') }}"
+                }
+            });
+
+            $(".dt-button").addClass('btn btn-secondary')
+
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
                     $('.form-group.required.list-words.mt-1').show(300)
@@ -841,8 +864,7 @@
                         return "{{ __('Yaroslavl') }}";
                 }
             }
-        </script>
-        <script>
+
             $('.remove-access').on('click', function () {
                 let button = $(this)
                 $.ajax({

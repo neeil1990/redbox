@@ -1027,6 +1027,17 @@
                     "order": [[0, "desc"]],
                     "pageLength": 10,
                     "searching": true,
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                    'info': false
                 })
 
                 setInterval(() => {
@@ -1072,7 +1083,18 @@
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
-                ]
+                ],
+                language: {
+                    lengthMenu: "_MENU_",
+                    search: "_INPUT_",
+                    paginate: {
+                        "first": "«",
+                        "last": "»",
+                        "next": "»",
+                        "previous": "«"
+                    },
+                },
+                'info': false
             });
 
             $(".dt-button").addClass('btn btn-secondary')

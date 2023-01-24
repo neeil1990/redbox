@@ -843,6 +843,17 @@ $(document).ready(function () {
                                 "order": [[0, "desc"]],
                                 "pageLength": 25,
                                 "searching": true,
+                                language: {
+                                    lengthMenu: "_MENU_",
+                                    search: "_INPUT_",
+                                    paginate: {
+                                        "first": "«",
+                                        "last": "»",
+                                        "next": "»",
+                                        "previous": "«"
+                                    },
+                                },
+                                'info': false
                             });
 
                             $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
@@ -948,7 +959,18 @@ $(document).ready(function () {
                                     {data: 'density'},
                                 ],
                                 order: [[1, 'desc']],
-                                destroy: true
+                                destroy: true,
+                                language: {
+                                    lengthMenu: "_MENU_",
+                                    search: "_INPUT_",
+                                    paginate: {
+                                        "first": "«",
+                                        "last": "»",
+                                        "next": "»",
+                                        "previous": "«"
+                                    },
+                                },
+                                'info': false
                             });
 
                             scrollTo('#history-list-subject')
@@ -970,7 +992,17 @@ $(document).ready(function () {
                                     let target = $(this).attr('data-target').replace(' ', '-')
                                     let table = $('#' + target).DataTable({
                                         order: [[0, 'desc']],
-                                        destroy: true
+                                        destroy: true,
+                                        language: {
+                                            lengthMenu: "_MENU_",
+                                            search: "_INPUT_",
+                                            paginate: {
+                                                "first": "«",
+                                                "last": "»",
+                                                "next": "»",
+                                                "previous": "«"
+                                            },
+                                        },
                                     })
                                     customFilters(target, table, target)
                                 }
