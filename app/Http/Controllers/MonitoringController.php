@@ -228,6 +228,7 @@ class MonitoringController extends Controller
             $last = Helper::calculateTopPercentByPositions($pos->pluck('last.position'), $percent);
             $engine->$name = $first . Helper::differentTopPercent($first, $last);
         }
+        dump($pos->pluck('first')->pluck('position'), $pos->pluck('first')->sum('position'), $pos->pluck('first')->count());
         $engine->middle_position = round($pos->pluck('first')->sum('position') / $pos->pluck('first')->count(), 2);
         $engine->latest_created = $pos->pluck('first')->last()->created_at;
 
