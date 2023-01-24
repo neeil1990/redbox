@@ -1,4 +1,4 @@
-function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPercent, avg = null) {
+function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null) {
     $('.sites').show(300)
     let iterator = 1;
     let tbody = $('#scanned-sites-tbody')
@@ -99,7 +99,21 @@ function renderScannedSitesList(sites, avgCoveragePercent, count, hide, boostPer
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'
-            ]
+            ],
+            language: {
+                paginate: {
+                    "first": "«",
+                    "last": "»",
+                    "next": "»",
+                    "previous": "«"
+                },
+            },
+            "oLanguage": {
+                "sSearch": words.search + ":",
+                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                "sEmptyTable": words.noRecords,
+                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+            }
         });
     });
 

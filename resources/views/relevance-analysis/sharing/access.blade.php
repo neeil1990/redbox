@@ -55,10 +55,12 @@
                     </li>
                     @if($admin)
                         <li class="nav-item">
-                            <a class="nav-link admin-link" href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                            <a class="nav-link admin-link"
+                               href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link admin-link" href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                            <a class="nav-link admin-link"
+                               href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
                         </li>
                     @endif
                 </ul>
@@ -704,17 +706,26 @@
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
+            let words = {
+                search: "{{ __('Search') }}",
+                show: "{{ __('show') }}",
+                records: "{{ __('records') }}",
+                noRecords: "{{ __('No records') }}",
+                showing: "{{ __('Showing') }}",
+                from: "{{ __('from') }}",
+                to: "{{ __('to') }}",
+                of: "{{ __('of') }}",
+                entries: "{{ __('entries') }}"
+            };
+
             $('#main_history_table').DataTable({
                 "order": [[0, "desc"]],
                 "pageLength": 10,
-                "searching": true,
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
                 ],
                 language: {
-                    lengthMenu: "_MENU_",
-                    search: "_INPUT_",
                     paginate: {
                         "first": "«",
                         "last": "»",
@@ -722,11 +733,18 @@
                         "previous": "«"
                     },
                 },
-                'info': false,
                 "oLanguage": {
-                    "sEmptyTable": "{{ __('No records') }}"
+                    "sSearch": words.search + ":",
+                    "sLengthMenu": words.show + " _MENU_ " + words.records,
+                    "sEmptyTable": words.noRecords,
+                    "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
                 }
             });
+
+            if ($('.dataTables_info').html() === 'Showing 0 to 0 of 0 entries') {
+                $('.dataTables_info').html(words.showing + " " + words.from + " 0 " + words.to + " 0 " + words.of + " 0 " + words.entries)
+            }
+
 
             $(".dt-button").addClass('btn btn-secondary')
 

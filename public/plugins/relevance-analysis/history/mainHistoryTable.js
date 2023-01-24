@@ -16,9 +16,9 @@ $('#main_history_table').DataTable({
             "previous": "«"
         },
     },
-    'info': false,
     "oLanguage": {
-        "sEmptyTable": "No records"
+        "sEmptyTable": "No records",
+        "sLengthMenu": "Display _MENU_ records",
     }
 });
 

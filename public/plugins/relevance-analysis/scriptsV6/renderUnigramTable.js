@@ -1,4 +1,4 @@
-function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = false) {
+function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPassages = false) {
     if (searchPassages) {
         $('#unigram > thead > tr:nth-child(2) > th:nth-child(12)').after(
             "<th class='passages-elem'>Среднее кол-во повторений в пассажах</th>" +
@@ -45,10 +45,23 @@ function renderUnigramTable(unigramTable, count, resultId = 0, searchPassages = 
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'
-            ]
+            ],
+            language: {
+                paginate: {
+                    "first": "«",
+                    "last": "»",
+                    "next": "»",
+                    "previous": "«"
+                },
+            },
+            "oLanguage": {
+                "sSearch": words.search + ":",
+                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                "sEmptyTable": words.noRecords,
+                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+            }
         });
         $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
-        //Добавляем только в ниграм
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {
                 $(this).append("<a class='btn btn-secondary' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");

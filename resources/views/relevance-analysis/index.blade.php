@@ -997,8 +997,7 @@
                     },
                 });
             };
-        </script>
-        <script>
+
             window.session = String(new Date()).shuffle();
             localStorage.setItem("session", window.session);
 
@@ -1077,8 +1076,6 @@
                 });
             }
 
-            // ----------------------------
-
             $('#full-analyse').click(() => {
                 startProgress('full')
             })
@@ -1090,8 +1087,6 @@
             $('#repeat-relevance-analyse').click(() => {
                 startProgress('repeatRelevance')
             })
-
-            // ----------------------------
 
             function startAnalyse() {
                 $.ajax({
@@ -1219,13 +1214,32 @@
                     limitMessage()
                     return;
                 }
-                sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
+
+                let localization = {
+                    search: "{{ __('Search') }}",
+                    show: "{{ __('show') }}",
+                    records: "{{ __('records') }}",
+                    noRecords: "{{ __('No records') }}",
+                    showing: "{{ __('Showing') }}",
+                    from: "{{ __('from') }}",
+                    to: "{{ __('to') }}",
+                    of: "{{ __('of') }}",
+                    entries: "{{ __('entries') }}"
+                };
+
                 stopProgressBar()
                 renderTextTable(response.avg, response.mainPage)
-                renderRecommendationsTable(response.recommendations, response.recommendations_count)
-                renderUnigramTable(response.unigramTable, response.ltp_count, response.history_id, response.searchPassages);
-                renderPhrasesTable(response.phrases, response.ltps_count)
+                renderRecommendationsTable(response.recommendations, response.recommendations_count, localization)
+                renderUnigramTable(
+                    response.unigramTable,
+                    response.ltp_count,
+                    localization,
+                    response.history_id,
+                    response.searchPassages
+                );
+                renderPhrasesTable(response.phrases, response.ltps_count, localization)
                 renderScannedSitesList(
+                    localization,
                     response.sites,
                     response.avgCoveragePercent,
                     response.scanned_sites_count,
@@ -1326,7 +1340,6 @@
             }
 
             function getData() {
-
                 return {
                     pageHash: window.session,
                     type: $('#check-type').val(),

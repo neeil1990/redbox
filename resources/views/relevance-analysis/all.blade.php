@@ -1020,16 +1020,25 @@
                         return "{{ __('Yaroslavl') }}";
                 }
             }
-        </script>
-        <script>
+
             $(document).ready(function () {
+                let words = {
+                    search: "{{ __('Search') }}",
+                    show: "{{ __('show') }}",
+                    records: "{{ __('records') }}",
+                    noRecords: "{{ __('No records') }}",
+                    showing: "{{ __('Showing') }}",
+                    from: "{{ __('from') }}",
+                    to: "{{ __('to') }}",
+                    of: "{{ __('of') }}",
+                    entries: "{{ __('entries') }}"
+                };
+
                 $('#user_jobs_table').dataTable({
                     "order": [[0, "desc"]],
                     "pageLength": 10,
                     "searching": true,
                     language: {
-                        lengthMenu: "_MENU_",
-                        search: "_INPUT_",
                         paginate: {
                             "first": "«",
                             "last": "»",
@@ -1037,7 +1046,12 @@
                             "previous": "«"
                         },
                     },
-                    'info': false
+                    "oLanguage": {
+                        "sSearch": words.search + ":",
+                        "sLengthMenu": words.show + " _MENU_ " + words.records,
+                        "sEmptyTable": words.noRecords,
+                        "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                    }
                 })
 
                 setInterval(() => {
@@ -1079,14 +1093,11 @@
             let usersProjects = $('#users_projects').DataTable({
                 order: [[0, "desc"]],
                 pageLength: 10,
-                searching: true,
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
                 ],
                 language: {
-                    lengthMenu: "_MENU_",
-                    search: "_INPUT_",
                     paginate: {
                         "first": "«",
                         "last": "»",
@@ -1094,7 +1105,12 @@
                         "previous": "«"
                     },
                 },
-                'info': false
+                "oLanguage": {
+                    "sSearch": words.search + ":",
+                    "sLengthMenu": words.show + " _MENU_ " + words.records,
+                    "sEmptyTable": words.noRecords,
+                    "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                }
             });
 
             $(".dt-button").addClass('btn btn-secondary')

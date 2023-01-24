@@ -1,4 +1,4 @@
-function renderRecommendationsTable(recommendations, count) {
+function renderRecommendationsTable(recommendations, count, words) {
     $('#rec').show()
     let tBody = $('#recommendationsTBody')
 
@@ -41,7 +41,21 @@ function renderRecommendationsTable(recommendations, count) {
         dom: 'lBfrtip',
         buttons: [
             'copy', 'csv', 'excel'
-        ]
+        ],
+        language: {
+            paginate: {
+                "first": "«",
+                "last": "»",
+                "next": "»",
+                "previous": "«"
+            },
+        },
+        "oLanguage": {
+            "sSearch": words.search + ":",
+            "sLengthMenu": words.show + " _MENU_ " + words.records,
+            "sEmptyTable": words.noRecords,
+            "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+        }
     });
 
     setTimeout(() => {

@@ -1256,11 +1256,29 @@
             }
 
             function successRequest(history, config) {
+                let localization = {
+                    search: "{{ __('Search') }}",
+                    show: "{{ __('show') }}",
+                    records: "{{ __('records') }}",
+                    noRecords: "{{ __('No records') }}",
+                    showing: "{{ __('Showing') }}",
+                    from: "{{ __('from') }}",
+                    to: "{{ __('to') }}",
+                    of: "{{ __('of') }}",
+                    entries: "{{ __('entries') }}"
+                };
+
                 if (!history.cleaning) {
                     renderTextTable(history.avg, history.main_page)
-                    renderRecommendationsTable(history.recommendations, config.recommendations_count)
-                    renderUnigramTable(history.unigram_table, config.ltp_count, history.history_id, {{ isset($object['request']['searchPassages']) ? $object['request']['searchPassages'] : false }});
-                    renderPhrasesTable(history.phrases, config.ltps_count)
+                    renderRecommendationsTable(history.recommendations, config.recommendations_count, localization)
+                    renderUnigramTable(
+                        history.unigram_table,
+                        config.ltp_count,
+                        localization,
+                        history.history_id,
+                        {{ isset($object['request']['searchPassages']) ? $object['request']['searchPassages'] : false }}
+                    );
+                    renderPhrasesTable(history.phrases, config.ltps_count, localization)
                     renderClouds(history.clouds_competitors, history.clouds_main_page, history.tf_comp_clouds, false, true);
                     $('.sites').css({
                         'margin-top': '50px',
@@ -1272,7 +1290,15 @@
                         $('.toast-top-right.success-message').hide(300)
                     }, 10000)
                 }
-                renderScannedSitesList(history.sites, history.avg_coverage_percent, config.scanned_sites_count, false, config.boostPercent, history.average_values);
+                renderScannedSitesList(
+                    localization,
+                    history.sites,
+                    history.avg_coverage_percent,
+                    config.scanned_sites_count,
+                    false,
+                    config.boostPercent,
+                    history.average_values
+                );
                 setTimeout(function () {
                     $('.dt-button').addClass('btn btn-secondary')
                     $('#preloaderBlock').hide(300)

@@ -1,4 +1,4 @@
-function renderPhrasesTable(phrases, count) {
+function renderPhrasesTable(phrases, count, words) {
     $('.phrases').show()
     let tBody = $('#phrasesTBody')
     $.each(phrases, function (key, item) {
@@ -13,7 +13,21 @@ function renderPhrasesTable(phrases, count) {
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'
-            ]
+            ],
+            language: {
+                paginate: {
+                    "first": "«",
+                    "last": "»",
+                    "next": "»",
+                    "previous": "«"
+                },
+            },
+            "oLanguage": {
+                "sSearch": words.search + ":",
+                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                "sEmptyTable": words.noRecords,
+                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+            }
         });
 
         setTimeout(() => {
