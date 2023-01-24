@@ -86,7 +86,7 @@
 
             toastr.options = {
                 "preventDuplicates": true,
-                "timeOut": "8000"
+                "timeOut": "5000"
             };
 
             const HIGHLIGHT_TR_CLASS = "table-success";
@@ -333,6 +333,11 @@
                                 });
 
                                 row.child(content).show();
+
+                                content.find('.tooltip-child-table').tooltip({
+                                    animation: false,
+                                    trigger: 'hover',
+                                });
                             });
 
                             tr.addClass('shown');
