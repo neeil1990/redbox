@@ -36,7 +36,7 @@ class PositionStore
 
             $this->save($model, [
                 'monitoring_searchengine_id' => $engine->id,
-                'position' => (isset($response["position"])) ? $response["position"] : rand(101, 150),
+                'position' => (isset($response["position"])) ? $response["position"] : 101,
                 'url' => (isset($response["url"])) ? strtolower($response["url"]) : null,
             ]);
         }
