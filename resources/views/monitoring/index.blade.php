@@ -13,6 +13,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
         <style>
+            .toast {
+                opacity: 1 !important;
+            }
             .table-hover tbody tr:hover {
                 background-color: #FFF;
             }
@@ -330,6 +333,11 @@
                                 });
 
                                 row.child(content).show();
+
+                                content.find('.tooltip-child-table').tooltip({
+                                    animation: false,
+                                    trigger: 'hover',
+                                });
                             });
 
                             tr.addClass('shown');
