@@ -1190,6 +1190,7 @@
     "######################## CLUSTER ########################": "",
     "A module for grouping key queries and relevant pages for these groups.": "Модуль для группировки ключевых запросов и релевантных страниц для этих групп.",
     "A page can weigh a lot": "Страница может много весить",
+    "Redistribute clusters": "Перераспределить кластеры",
     "A group with the same name already exists": "Группа с таким названием уже существует",
     "Group deleted successfully": "Группа успешно удалена",
     "Select the url that will be saved for each phrase of this cluster": "Выбирите url который будет сохранён для каждой фразы этого кластера",

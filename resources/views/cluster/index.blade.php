@@ -150,7 +150,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
-
             let progressId
             let interval
 
@@ -359,26 +358,10 @@
                 setProgressBarStyles(0)
             }
 
-            let classicEngine = $('#engineVersion').val()
-            let classicCount = $('#count').val()
-            let classicLevel = $('#clusteringLevel').val()
-
-            let proEngine = '{{ $config->engine_version }}'
-            let proCount = '{{ $config->count }}'
-            let proLevel = '{{ $config->clustering_level }}'
-
             $('#classicMode').on('click', function () {
                 $('#start-analyse').attr('data-target', 'classic')
                 $('#pro').hide()
                 $('#classic').show(300)
-
-                proEngine = $('#engineVersion').val()
-                proCount = $('#count').val()
-                proLevel = $('#clusteringLevel').val()
-
-                $('#engineVersion').val(classicEngine)
-                $('#count').val(classicCount)
-                $('#clusteringLevel').val(classicLevel)
 
                 $('#classicMode').attr('class', 'btn btn-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-outline-secondary')
@@ -388,10 +371,6 @@
                 $('#start-analyse').attr('data-target', 'professional')
                 $('#classic').hide()
                 $('#pro').show(300)
-
-                $('#engineVersion').val(proEngine)
-                $('#count').val(proCount)
-                $('#clusteringLevel').val(proLevel)
 
                 $('#classicMode').attr('class', 'btn btn-outline-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-secondary')

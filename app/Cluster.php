@@ -247,6 +247,7 @@ class Cluster
         if ($this->getSearchBase()) {
             $this->searchGroupName();
         }
+        $this->calculateSimilarities();
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -348,11 +349,7 @@ class Cluster
                     }
                 }
 
-                foreach ($second as $key => $phrase) {
-                    if (in_array($phrase, $this->ignoredWords)) {
-                        unset($second[$key]);
-                    }
-                }
+                $second = array_diff($second, $this->ignoredWords);
 
                 if (count($second) === 1) {
                     continue;
@@ -721,6 +718,48 @@ class Cluster
                 }
             }
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
+        }
+    }
+
+    protected function calculateSimilarities()
+    {
+        $m = new Morphy();
+
+        foreach ($this->clusters as $mainPhrase => $items) {
+            $phrase = explode(' ', $mainPhrase);
+            $phrase = array_diff($phrase, $this->ignoredWords);
+
+            foreach ($phrase as $keyF => $item) {
+                if (mb_strlen($item) < 2) {
+                    continue;
+                } else {
+                    $base = $m->base($item);
+                    $phrase[$keyF] = $base;
+                }
+            }
+
+            foreach ($this->clusters as $mainPhrase2 => $items2) {
+                if ($mainPhrase === $mainPhrase2) {
+                    continue;
+                }
+                foreach ($items2 as $offPhrase => $info) {
+                    $phrase2 = explode(' ', $offPhrase);
+                    $phrase2 = array_diff($phrase2, $this->ignoredWords);
+                    foreach ($phrase2 as $keyF => $item) {
+                        if (mb_strlen($item) < 2) {
+                            continue;
+                        } else {
+                            $base = $m->base($item);
+                            $phrase2[$keyF] = $base;
+                        }
+                    }
+
+                    $similarities = count(array_intersect($phrase, $phrase2));
+                    if ($similarities > 1) {
+                        $this->clusters[$mainPhrase]['finallyResult']['similarities'][$offPhrase] = $similarities;
+                    }
+                }
+            }
         }
     }
 
