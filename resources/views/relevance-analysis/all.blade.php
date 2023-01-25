@@ -907,133 +907,6 @@
                     }
                 })
 
-                function getRegionName(id) {
-                    switch (id) {
-                        case '1' :
-                            return "{{ __('Moscow') }}";
-                        case '20' :
-                            return "{{ __('Arkhangelsk') }}";
-                        case '37' :
-                            return "{{ __('Astrakhan') }}";
-                        case '197' :
-                            return "{{ __('Barnaul') }}";
-                        case '4' :
-                            return "{{ __('Belgorod') }}";
-                        case '77' :
-                            return "{{ __('Blagoveshchensk') }}";
-                        case '191' :
-                            return "{{ __('Bryansk') }}";
-                        case '24' :
-                            return "{{ __('Veliky Novgorod') }}";
-                        case '75' :
-                            return "{{ __('Vladivostok') }}";
-                        case '33' :
-                            return "{{ __('Vladikavkaz') }}";
-                        case '192' :
-                            return "{{ __('Vladimir') }}";
-                        case '38' :
-                            return "{{ __('Volgograd') }}";
-                        case '21' :
-                            return "{{ __('Vologda') }}";
-                        case '193' :
-                            return "{{ __('Voronezh') }}";
-                        case '1106' :
-                            return "{{ __('Grozny') }}";
-                        case '54' :
-                            return "{{ __('Ekaterinburg') }}";
-                        case '5' :
-                            return "{{ __('Ivanovo') }}";
-                        case '63' :
-                            return "{{ __('Irkutsk') }}";
-                        case '41' :
-                            return "{{ __('Yoshkar-ola') }}";
-                        case '43' :
-                            return "{{ __('Kazan') }}";
-                        case '22' :
-                            return "{{ __('Kaliningrad') }}";
-                        case '64' :
-                            return "{{ __('Kemerovo') }}";
-                        case '7' :
-                            return "{{ __('Kostroma') }}";
-                        case '35' :
-                            return "{{ __('Krasnodar') }}";
-                        case '62' :
-                            return "{{ __('Krasnoyarsk') }}";
-                        case '53' :
-                            return "{{ __('Kurgan') }}";
-                        case '8' :
-                            return "{{ __('Kursk') }}";
-                        case '9' :
-                            return "{{ __('Lipetsk') }}";
-                        case '28' :
-                            return "{{ __('Makhachkala') }}";
-                        case '213' :
-                            return "{{ __('Moscow') }}";
-                        case '23' :
-                            return "{{ __('Murmansk') }}";
-                        case '1092' :
-                            return "{{ __('Nazran') }}";
-                        case '30' :
-                            return "{{ __('Nalchik') }}";
-                        case '47' :
-                            return "{{ __('Nizhniy Novgorod') }}";
-                        case '65' :
-                            return "{{ __('Novosibirsk') }}";
-                        case '66' :
-                            return "{{ __('Omsk') }}";
-                        case '10' :
-                            return "{{ __('Eagle') }}";
-                        case '48' :
-                            return "{{ __('Orenburg') }}";
-                        case '49' :
-                            return "{{ __('Penza') }}";
-                        case '50' :
-                            return "{{ __('Perm') }}";
-                        case '25' :
-                            return "{{ __('Pskov') }}";
-                        case '39' :
-                            return "{{ __('Rostov-on') }}";
-                        case '11' :
-                            return "{{ __('Ryazan') }}";
-                        case '51' :
-                            return "{{ __('Samara') }}";
-                        case '42' :
-                            return "{{ __('Saransk') }}";
-                        case '2' :
-                            return "{{ __('Saint-Petersburg') }}";
-                        case '12' :
-                            return "{{ __('Smolensk') }}";
-                        case '239' :
-                            return "{{ __('Sochi') }}";
-                        case '36' :
-                            return "{{ __('Stavropol') }}";
-                        case '973' :
-                            return "{{ __('Surgut') }}";
-                        case '13' :
-                            return "{{ __('Tambov') }}";
-                        case '14' :
-                            return "{{ __('Tver') }}";
-                        case '67' :
-                            return "{{ __('Tomsk') }}";
-                        case '15' :
-                            return "{{ __('Tula') }}";
-                        case '195' :
-                            return "{{ __('Ulyanovsk') }}";
-                        case '172' :
-                            return "{{ __('Ufa') }}";
-                        case '76' :
-                            return "{{ __('Khabarovsk') }}";
-                        case '45' :
-                            return "{{ __('Cheboksary') }}";
-                        case '56' :
-                            return "{{ __('Chelyabinsk') }}";
-                        case '1104' :
-                            return "{{ __('Cherkessk') }}";
-                        case '16' :
-                            return "{{ __('Yaroslavl') }}";
-                    }
-                }
-
                 $('#user_jobs_table').dataTable({
                     "order": [[0, "desc"]],
                     "pageLength": 10,
@@ -1088,7 +961,504 @@
                     });
 
                 }, 10000)
+
+                setInterval(() => {
+                    $('#changeAllState, #changeAllStateList').unbind().on('change', function () {
+                        let state = $(this).is(':checked')
+                        $.each($('.custom-control-input.switch'), function () {
+                            if (state !== $(this).is(':checked')) {
+                                $(this).trigger('click');
+                            }
+                        });
+                    });
+
+                    $('.history-comment').unbind().change(function () {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/edit-history-comment",
+                            data: {
+                                id: $(this).attr('data-target'),
+                                comment: $(this).val()
+                            },
+                            success: function () {
+                                $('#toast-container').show(300)
+                                $('#message-info').html("{{ __('Successfully changed') }}")
+                                setInterval(function () {
+                                    $('#toast-container').hide(300)
+                                }, 3000)
+                            },
+                        });
+                    });
+
+                    $('.project_name').unbind().click(function () {
+                        let thisElem = $(this)
+                        let thisElementClass = $(this).attr('class')
+                        hideListHistory()
+                        hideTableHistory()
+
+                        let storyId = $(this).attr('data-order')
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/get-stories",
+                            data: {
+                                history_id: storyId,
+                            },
+                            beforeSend: function () {
+                                thisElem.attr('class', 'fa fa-clock')
+                            },
+                            async: true,
+                            success: function (response) {
+                                thisElem.attr('class', thisElementClass)
+                                if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                } else {
+                                    $('#changeAllState').prop('checked', false);
+                                    $('#changeAllStateList').prop('checked', false);
+                                    $('.search-input').val('')
+                                    $('.history').show()
+                                    let tbody = $('#historyTbody')
+
+                                    $.each(response.stories, function (key, val) {
+                                        let checked = val.calculate ? 'checked' : ''
+                                        let state
+
+                                        if (val.state === 1) {
+                                            state =
+                                                '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                                '   Повторить анализ' +
+                                                '</button>'
+                                                +
+                                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+
+                                        } else if (val.state === 0) {
+                                            state =
+                                                '<p>Обрабатывается..</p>' +
+                                                '<div class="text-center" id="preloaderBlock">' +
+                                                '        <div class="three col">' +
+                                                '            <div class="loader" id="loader-1"></div>' +
+                                                '        </div>' +
+                                                '</div>'
+                                            checkAnalyseProgress(val.id)
+                                        } else if (val.state === -1) {
+                                            state =
+                                                '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                                '   Повторить анализ' +
+                                                '</button>' +
+                                                "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
+                                        }
+
+                                        let position = val.position
+
+                                        if (val.position === 0) {
+                                            position = 'Не попал в топ 100'
+                                        }
+
+                                        let phrase = val.phrase
+
+                                        if (phrase == null) {
+                                            phrase = 'Был использван анализ без ключевой фразы'
+                                        }
+
+                                        let newRow
+
+                                        if (val.average_values == null) {
+                                            newRow = "<tr class='render'>" +
+                                                "   <td>" + val.last_check + "</td>" +
+                                                "   <td>" +
+                                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                                "   </td>" +
+                                                "   <td>" + phrase + "</td>" +
+                                                "   <td>" + getRegionName(val.region) + "</td>" +
+                                                "   <td>" + val.main_link + "</td>" +
+                                                "   <td>" + position + "</td>" +
+                                                "   <td>" + val.points + "</td>" +
+                                                "   <td>" + val.coverage + "</td>" +
+                                                "   <td>" + val.coverage_tf + "</td>" +
+                                                "   <td>" + val.width + "</td>" +
+                                                "   <td>" + val.density + "</td>" +
+                                                "   <td>" +
+                                                "      <div class='d-flex justify-content-center'> " +
+                                                "          <div class='__helper-link ui_tooltip_w'> " +
+                                                "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                                "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                                "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                                "              </div>" +
+                                                "          </div>" +
+                                                "      </div>" +
+                                                "   </td>" +
+                                                "   <td id='history-state-" + val.id + "'>" +
+                                                state +
+                                                "   </td>" +
+                                                "</tr>"
+                                        } else {
+                                            newRow = "<tr class='render'>" +
+                                                "   <td>" + val.last_check + "</td>" +
+                                                "   <td>" +
+                                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                                "   </td>" +
+                                                "   <td>" + phrase + "</td>" +
+                                                "   <td>" + getRegionName(val.region) + "</td>" +
+                                                "   <td>" + val.main_link + "</td>" +
+                                                "   <td>" + position + "</td>" +
+                                                "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + getTextResult(val.coverage, Math.round(val.average_values.coverage)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + getTextResult(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + getTextResult(val.width, Math.round(val.average_values.width)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + getTextResult(val.density, Math.round(val.average_values.densityPercent)) + "</td>" +
+                                                "   <td>" +
+                                                "      <div class='d-flex justify-content-center'> " +
+                                                "          <div class='__helper-link ui_tooltip_w'> " +
+                                                "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                                "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                                "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                                "              </div>" +
+                                                "          </div>" +
+                                                "      </div>" +
+                                                "   </td>" +
+                                                "   <td id='history-state-" + val.id + "'>" +
+                                                state +
+                                                "   </td>" +
+                                                "</tr>"
+                                        }
+
+                                        tbody.append(newRow)
+                                    })
+
+                                    $(document).ready(function () {
+                                        if ($.fn.DataTable.fnIsDataTable($('#history_table'))) {
+                                            $('#history_table').dataTable().fnDestroy();
+                                        }
+
+                                        let historyTable = $('#history_table').DataTable({
+                                            "order": [[0, "desc"]],
+                                            "pageLength": 25,
+                                            "searching": true,
+                                            language: {
+                                                paginate: {
+                                                    "first": "«",
+                                                    "last": "»",
+                                                    "next": "»",
+                                                    "previous": "«"
+                                                },
+                                            },
+                                            "oLanguage": {
+                                                "sSearch": words.search + ":",
+                                                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                                                "sEmptyTable": words.noRecords,
+                                                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                                            }
+                                        });
+
+                                        $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
+
+                                        $('#history_table_length').before(
+                                            "<span>" +
+                                            "<a href='/get-file/" + storyId + "/csv' class='btn btn-secondary ml-1'>CSV</a>" +
+                                            "<a href='/get-file/" + storyId + "/xls' class='btn btn-secondary ml-1'>Excel</a>" +
+                                            "</span>"
+                                        )
+
+                                        $(".dt-button").addClass('btn btn-secondary')
+
+                                        $('#history_table_filter').hide()
+
+                                        scrollTo('#tab_1 > div.history > h3')
+
+                                        repeatScan()
+
+                                        customHistoryFilters('history_table', historyTable)
+                                    });
+                                }
+                            },
+                            error: function () {
+                                thisElem.attr('class', thisElementClass)
+                            }
+                        });
+                    });
+
+                    $('.project_name_v2').unbind().click(function () {
+                        let thisElem = $(this)
+                        let thisElementClass = $(this).attr('class')
+                        hideListHistory()
+                        hideTableHistory()
+
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/get-stories-v2",
+                            async: true,
+                            data: {
+                                historyId: $(this).attr('data-order'),
+                            },
+                            beforeSend: function () {
+                                thisElem.attr('class', 'fa fa-clock')
+                            },
+                            success: function (response) {
+                                thisElem.attr('class', thisElementClass)
+
+                                if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                } else {
+                                    $('#history-list-subject').show()
+                                    $('#list-history').show()
+                                    object = response.object
+                                    $.each(response.object, function (key, value) {
+                                        let position = value[0]['position']
+                                        if (position == 0) {
+                                            position = 'Не попал в топ 100'
+                                        }
+                                        $('#list-history-body').append(
+                                            '<tr class="render">' +
+                                            '   <td data-target="' + key + '" class="col-1" style="text-align: center; vertical-align: inherit; width: 50px"></td>' +
+                                            '   <td>' + value[0]['created_at'] + '</td>' +
+                                            '   <td>' + key + '</td>' +
+                                            '   <td>' + getRegionName(value[0]['region']) + '</td>' +
+                                            '   <td>' + value[0]['main_link'] + '</td>' +
+                                            '   <td>' + position + '</td>' +
+                                            '   <td>' + value[0]['points'] + '</td>' +
+                                            '   <td>' + value[0]['coverage'] + '</td>' +
+                                            '   <td>' + value[0]['coverage_tf'] + '</td>' +
+                                            '   <td>' + value[0]['width'] + '</td>' +
+                                            '   <td>' + value[0]['density'] + '</td>' +
+                                            '</tr>'
+                                        )
+                                    })
+                                    $(document).ready(function () {
+                                        $('.dataTables_wrapper.no-footer').css({
+                                            width: '100%'
+                                        })
+
+                                        $('#list-history-body > tr.render > td.col-1').append('<i class="fa fa-eye"></i>')
+
+                                        if ($.fn.DataTable.fnIsDataTable($('#list-history'))) {
+                                            $('#list-history').dataTable().fnDestroy();
+                                        }
+
+                                        let listTable = $('#list-history').DataTable({
+                                            columns: [
+                                                {
+                                                    className: 'dt-control',
+                                                    orderable: false,
+                                                },
+                                                {data: 'date'},
+                                                {data: 'phrase'},
+                                                {data: 'region'},
+                                                {data: 'link'},
+                                                {data: 'position'},
+                                                {data: 'points'},
+                                                {data: 'coverage'},
+                                                {data: 'coverage_tf'},
+                                                {data: 'width'},
+                                                {data: 'density'},
+                                            ],
+                                            order: [[1, 'desc']],
+                                            destroy: true,
+                                            language: {
+                                                paginate: {
+                                                    "first": "«",
+                                                    "last": "»",
+                                                    "next": "»",
+                                                    "previous": "«"
+                                                },
+                                            },
+                                            "oLanguage": {
+                                                "sSearch": words.search + ":",
+                                                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                                                "sEmptyTable": words.noRecords,
+                                                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                                            }
+                                        });
+
+                                        scrollTo('#history-list-subject')
+
+                                        customFiltersWithoutComment('list-history', listTable, 'List', 1)
+                                        $('#list-history').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
+
+                                        $('#list-history').unbind().on('click', 'td.dt-control', function () {
+                                            let tr = $(this).closest('tr');
+                                            let row = listTable.row(tr);
+
+                                            if (row.child.isShown()) {
+                                                row.child.hide();
+                                                tr.removeClass('shown');
+                                                $('#' + $(this).attr('data-target').replace(' ', '-')).dataTable().fnDestroy()
+                                            } else {
+                                                row.child(format($(this).attr('data-target'))).show();
+                                                tr.addClass('shown');
+                                                let target = $(this).attr('data-target').replace(' ', '-')
+                                                let table = $('#' + target).DataTable({
+                                                    order: [[0, 'desc']],
+                                                    destroy: true,
+                                                    language: {
+                                                        lengthMenu: "_MENU_",
+                                                        search: "_INPUT_",
+                                                        paginate: {
+                                                            "first": "«",
+                                                            "last": "»",
+                                                            "next": "»",
+                                                            "previous": "«"
+                                                        },
+                                                    },
+                                                })
+                                                customFilters(target, table, target)
+                                            }
+                                        });
+                                    })
+                                    repeatScan()
+                                }
+                            },
+                            error: function () {
+                                thisElem.attr('class', thisElementClass)
+                            }
+                        });
+                    })
+
+                    $('.fa.fa-plus.show-stories').unbind().on('click', function () {
+                        let target = $(this).attr('data-target');
+                        $("td[data-order='" + target + "']").show()
+
+                        $(this).attr('class', 'fa fa-minus hide-stories')
+                    });
+
+                    $('.fa.fa-minus.hide-stories').unbind().on('click', function () {
+                        let target = $(this).attr('data-target');
+                        $("td[data-order='" + target + "']").hide()
+
+                        $(this).attr('class', 'fa fa-plus show-stories')
+                    });
+
+                    getHistoryInfo()
+                }, 500)
             });
+
+            function getRegionName(id) {
+                switch (id) {
+                    case '1' :
+                        return "{{ __('Moscow') }}";
+                    case '20' :
+                        return "{{ __('Arkhangelsk') }}";
+                    case '37' :
+                        return "{{ __('Astrakhan') }}";
+                    case '197' :
+                        return "{{ __('Barnaul') }}";
+                    case '4' :
+                        return "{{ __('Belgorod') }}";
+                    case '77' :
+                        return "{{ __('Blagoveshchensk') }}";
+                    case '191' :
+                        return "{{ __('Bryansk') }}";
+                    case '24' :
+                        return "{{ __('Veliky Novgorod') }}";
+                    case '75' :
+                        return "{{ __('Vladivostok') }}";
+                    case '33' :
+                        return "{{ __('Vladikavkaz') }}";
+                    case '192' :
+                        return "{{ __('Vladimir') }}";
+                    case '38' :
+                        return "{{ __('Volgograd') }}";
+                    case '21' :
+                        return "{{ __('Vologda') }}";
+                    case '193' :
+                        return "{{ __('Voronezh') }}";
+                    case '1106' :
+                        return "{{ __('Grozny') }}";
+                    case '54' :
+                        return "{{ __('Ekaterinburg') }}";
+                    case '5' :
+                        return "{{ __('Ivanovo') }}";
+                    case '63' :
+                        return "{{ __('Irkutsk') }}";
+                    case '41' :
+                        return "{{ __('Yoshkar-ola') }}";
+                    case '43' :
+                        return "{{ __('Kazan') }}";
+                    case '22' :
+                        return "{{ __('Kaliningrad') }}";
+                    case '64' :
+                        return "{{ __('Kemerovo') }}";
+                    case '7' :
+                        return "{{ __('Kostroma') }}";
+                    case '35' :
+                        return "{{ __('Krasnodar') }}";
+                    case '62' :
+                        return "{{ __('Krasnoyarsk') }}";
+                    case '53' :
+                        return "{{ __('Kurgan') }}";
+                    case '8' :
+                        return "{{ __('Kursk') }}";
+                    case '9' :
+                        return "{{ __('Lipetsk') }}";
+                    case '28' :
+                        return "{{ __('Makhachkala') }}";
+                    case '213' :
+                        return "{{ __('Moscow') }}";
+                    case '23' :
+                        return "{{ __('Murmansk') }}";
+                    case '1092' :
+                        return "{{ __('Nazran') }}";
+                    case '30' :
+                        return "{{ __('Nalchik') }}";
+                    case '47' :
+                        return "{{ __('Nizhniy Novgorod') }}";
+                    case '65' :
+                        return "{{ __('Novosibirsk') }}";
+                    case '66' :
+                        return "{{ __('Omsk') }}";
+                    case '10' :
+                        return "{{ __('Eagle') }}";
+                    case '48' :
+                        return "{{ __('Orenburg') }}";
+                    case '49' :
+                        return "{{ __('Penza') }}";
+                    case '50' :
+                        return "{{ __('Perm') }}";
+                    case '25' :
+                        return "{{ __('Pskov') }}";
+                    case '39' :
+                        return "{{ __('Rostov-on') }}";
+                    case '11' :
+                        return "{{ __('Ryazan') }}";
+                    case '51' :
+                        return "{{ __('Samara') }}";
+                    case '42' :
+                        return "{{ __('Saransk') }}";
+                    case '2' :
+                        return "{{ __('Saint-Petersburg') }}";
+                    case '12' :
+                        return "{{ __('Smolensk') }}";
+                    case '239' :
+                        return "{{ __('Sochi') }}";
+                    case '36' :
+                        return "{{ __('Stavropol') }}";
+                    case '973' :
+                        return "{{ __('Surgut') }}";
+                    case '13' :
+                        return "{{ __('Tambov') }}";
+                    case '14' :
+                        return "{{ __('Tver') }}";
+                    case '67' :
+                        return "{{ __('Tomsk') }}";
+                    case '15' :
+                        return "{{ __('Tula') }}";
+                    case '195' :
+                        return "{{ __('Ulyanovsk') }}";
+                    case '172' :
+                        return "{{ __('Ufa') }}";
+                    case '76' :
+                        return "{{ __('Khabarovsk') }}";
+                    case '45' :
+                        return "{{ __('Cheboksary') }}";
+                    case '56' :
+                        return "{{ __('Chelyabinsk') }}";
+                    case '1104' :
+                        return "{{ __('Cherkessk') }}";
+                    case '16' :
+                        return "{{ __('Yaroslavl') }}";
+                }
+            }
 
             let usersProjects = $('#users_projects').DataTable({
                 order: [[0, "desc"]],
@@ -1115,27 +1485,6 @@
 
             $(".dt-button").addClass('btn btn-secondary')
 
-            function refreshMethods() {
-                $('.fa.fa-plus.show-stories').unbind().on('click', function () {
-                    let target = $(this).attr('data-target');
-                    $("td[data-order='" + target + "']").show()
-
-                    $(this).attr('class', 'fa fa-minus hide-stories')
-                });
-
-                $('.fa.fa-minus.hide-stories').unbind().on('click', function () {
-                    let target = $(this).attr('data-target');
-                    $("td[data-order='" + target + "']").hide()
-
-                    $(this).attr('class', 'fa fa-plus show-stories')
-                });
-
-            }
-
-            setInterval(() => {
-                refreshMethods()
-            }, 200)
-
             function getSuccessMessage(message, time = 3000) {
                 $('.toast-top-right.success-message').show(300)
                 $('#message-info').html(message)
@@ -1150,6 +1499,116 @@
                 setTimeout(() => {
                     $('.toast-top-right.error-message').hide(300)
                 }, time)
+            }
+
+            function customFiltersWithoutComment(tableID, table, prefix = '', index = 0) {
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let target = String(data[index]);
+                    return isDateValid(target, settings, tableID, prefix)
+                });
+                $('#dateMin' + prefix).change(function () {
+                    table.draw();
+                });
+                $('#dateMax' + prefix).change(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let phraseSearch = String($('#phraseSearch' + prefix).val()).toLowerCase();
+                    let target = String(data[index + 1]).toLowerCase();
+                    return isIncludes(target, phraseSearch, settings, tableID)
+                });
+                $('#phraseSearch' + prefix).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let regionSearch = String($('#regionSearch' + prefix).val()).toLowerCase();
+                    let target = String(data[index + 2]).toLowerCase();
+                    return isIncludes(target, regionSearch, settings, tableID)
+                });
+                $('#regionSearch' + prefix).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let mainPageSearch = String($('#mainPageSearch' + prefix).val()).toLowerCase();
+                    let target = String(data[index + 3]).toLowerCase();
+                    return isIncludes(target, mainPageSearch, settings, tableID)
+                });
+                $('#mainPageSearch' + prefix).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxPosition = parseFloat($('#maxPosition' + prefix).val());
+                    let minPosition = parseFloat($('#minPosition' + prefix).val());
+                    let target = parseFloat(data[index + 4]);
+                    return isValidate(minPosition, maxPosition, target, settings, tableID)
+                });
+                let pos = '#minPosition' + prefix + ', #maxPosition' + prefix
+                $(pos).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxPoints = parseFloat($('#maxPoints' + prefix).val());
+                    let minPoints = parseFloat($('#minPoints' + prefix).val());
+                    let target = parseFloat(data[index + 5]);
+                    return isValidate(minPoints, maxPoints, target, settings, tableID)
+                });
+                let points = '#minPoints' + prefix + ', #maxPoints' + prefix
+                $(points).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxCoverage = parseFloat($('#maxCoverage' + prefix).val());
+                    let minCoverage = parseFloat($('#minCoverage' + prefix).val());
+                    let target = parseFloat(data[index + 6]);
+                    return isValidate(minCoverage, maxCoverage, target, settings, tableID)
+                });
+                let coverage = '#minCoverage' + prefix + ', #maxCoverage' + prefix
+                $(coverage).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxCoverageTf = parseFloat($('#maxCoverageTf' + prefix).val());
+                    let minCoverageTf = parseFloat($('#minCoverageTf' + prefix).val());
+                    let target = parseFloat(data[index + 7]);
+                    return isValidate(minCoverageTf, maxCoverageTf, target, settings, tableID)
+                });
+                let covTf = '#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix
+                $(covTf).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxWidth = parseFloat($('#maxWidth' + prefix).val());
+                    let minWidth = parseFloat($('#minWidth' + prefix).val());
+                    let target = parseFloat(data[index + 8]);
+                    return isValidate(minWidth, maxWidth, target, settings, tableID)
+                });
+                let width = '#minWidth' + prefix + ', #maxWidth' + prefix
+                $(width).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxDensity = parseFloat($('#maxDensity' + prefix).val());
+                    let minDensity = parseFloat($('#minDensity' + prefix).val());
+                    let target = parseFloat(data[index + 9]);
+                    return isValidate(minDensity, maxDensity, target, settings, tableID)
+                });
+                let density = '#minDensity' + prefix + ', #maxDensity' + prefix
+                $(density).keyup(function () {
+                    table.draw();
+                });
+            }
+
+            function getTextResult(result, ideal) {
+                return 'Посадочная страница получила <b>' + result + '</b>.<br> Рекомендованное значение <b>' + ideal + '.</b>';
             }
         </script>
     @endslot
