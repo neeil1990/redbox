@@ -4,11 +4,10 @@ namespace App;
 
 use App\Jobs\RelevanceAnalysisQueue;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class Queue extends Model
+class Queue
 {
 
     /**
@@ -18,26 +17,21 @@ class Queue extends Model
      */
     public static function addInQueue($row, $request)
     {
-        try {
-            $userId = Auth::id();
-            $item = explode(';', $row);
-            $link = parse_url(trim($item[1]));
+        $userId = Auth::id();
+        $item = explode(';', $row);
+        $link = parse_url(trim($item[1]));
 
-            if (count($item) == 2 && isset($link['host'])) {
-                $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
+        if (count($item) == 2 && isset($link['host'])) {
+            $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
 
-                RelevanceAnalysisQueue::dispatch(
-                    $userId,
-                    $request->all(),
-                    $historyId,
-                    trim($item[1]),
-                    trim($item[0])
-                )->onQueue(UsersJobs::getPriority($userId))->onConnection('database');
-            }
-        } catch (\Throwable $e) {
-
+            RelevanceAnalysisQueue::dispatch(
+                $userId,
+                $request->all(),
+                $historyId,
+                trim($item[1]),
+                trim($item[0])
+            )->onQueue(UsersJobs::getPriority($userId));
         }
-
     }
 
     /**

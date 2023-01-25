@@ -18,13 +18,15 @@ class RelevanceAnalysisQueue implements ShouldQueue
 
     public $tries = 1;
 
-    private $request;
+    public $request;
 
-    private $userId;
+    public $userId;
 
-    private $historyId;
+    public $historyId;
 
-    private $type;
+    public $type;
+
+    public $relevance;
 
     /**
      * Create a new job instance.
@@ -38,7 +40,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
         $this->historyId = $historyId;
         $this->type = $type;
 
-        if ($link != false) {
+        if ($link !== false) {
             $this->request['link'] = $link;
             $this->request['phrase'] = $phrase;
         }
@@ -51,33 +53,34 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function handle()
     {
-        $relevance = new Relevance($this->request, true);
+        $this->relevance = new Relevance($this->request, true);
+
         try {
         if ($this->type == 'full') {
-            $relevance->getMainPageHtml();
+            $this->relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
-                $relevance->analysisByPhrase($this->request, false);
+                $this->relevance->analysisByPhrase($this->request, false);
 
             } elseif ($this->request['type'] == 'list') {
-                $relevance->analysisByList($this->request);
+                $this->relevance->analysisByList($this->request);
             }
 
         } elseif ($this->type == 'mainPage') {
             $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
-            $relevance->getMainPageHtml();
-            $relevance->setSites($info->sites);
+            $this->relevance->getMainPageHtml();
+            $this->relevance->setSites($info->sites);
 
         } elseif ($this->type == 'competitors') {
             $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
-            $relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
-            $relevance->setDomains($info->sites);
-            $relevance->parseSites();
+            $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
+            $this->relevance->setDomains($info->sites);
+            $this->relevance->parseSites();
         }
 
-        $relevance->analysis($this->userId, $this->historyId);
+        $this->relevance->analysis($this->userId, $this->historyId);
         UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
 
         } catch (\Throwable $exception) {
@@ -85,7 +88,7 @@ class RelevanceAnalysisQueue implements ShouldQueue
                 'state' => '-1'
             ]);
 
-            $relevance->saveError($exception);
+            $this->relevance->saveError($exception);
             TelegramBot::sendMessage('RelevanceAnalysisQueue error', 938341087);
             TelegramBot::sendMessage(implode('  ', $this->request), 938341087);
         }
@@ -97,6 +100,19 @@ class RelevanceAnalysisQueue implements ShouldQueue
      */
     public function failed()
     {
+        RelevanceHistory::where('id', '=', $this->request['id'])->update([
+            'state' => '-1'
+        ]);
 
+        TelegramBot::sendMessage('RelevanceAnalysisQueue error', 938341087);
+
+        RelevanceAnalysisQueue::dispatch(
+            $this->userId,
+            $this->request,
+            $this->request['id'],
+            $this->request['link'] ?? false,
+            $this->request['phrase'] ?? false,
+            $this->type
+        )->onQueue(UsersJobs::getPriority($this->userId));
     }
 }

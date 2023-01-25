@@ -23,11 +23,11 @@ class RelevanceHistory extends Model
      * @param $mainHistory
      * @param $state
      * @param $historyId
-     * @param $html
-     * @param $sites
+     * @param string $html
+     * @param string $sites
      * @return int
      */
-    public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId, $html = null, $sites = null): int
+    public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId, string $html = '', string $sites = ''): int
     {
         if ($historyId > 0) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
