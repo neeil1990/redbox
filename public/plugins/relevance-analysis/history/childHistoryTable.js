@@ -23,12 +23,6 @@ function getHistoryInfo() {
                     $('#site-list').hide()
                 }
 
-                if (history.version) {
-                    $(".version").val(history.version).change();
-                } else {
-                    $(".version").val('stemmer').change();
-                }
-
                 $('.form-control.link').val(history.link)
                 $('.form-control.phrase').val(history.phrase)
                 $('#type').val(history.type)
@@ -340,7 +334,6 @@ function repeatScan() {
                 conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
                 switchMyListWords: $('#switchMyListWords').is(':checked'),
                 listWords: $('.form-control.listWords').val(),
-                version: $('.version').val(),
             },
             success: function (response) {
                 if (response.code === 415) {

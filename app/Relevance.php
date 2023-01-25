@@ -614,31 +614,20 @@ class Relevance
         return preg_replace('| +|', ' ', str_replace($search, $replace, $unicodeString));
     }
 
-    /**
-     * search word root stemmer or phpmorphy engine
-     * @return void
-     */
     public function searchWordForms()
     {
-        $stemmer = new LinguaStem();
-        $morphy = new Morphy();
+        $m = new Morphy();
         $wordWorms = [];
 
         $array = explode(' ', $this->competitorsTextAndLinks);
         $array = array_count_values($array);
         arsort($array);
 
-        $version = $this->request['version'] ?? 'phpmorphy';
-
         foreach ($array as $key => $item) {
             if (!in_array($key, $this->ignoredWords)) {
                 $this->ignoredWords[] = $key;
 
-                if ($version == 'stemmer') {
-                    $root = $stemmer->getRootWord($key);
-                } else {
-                    $root = $morphy->base($key);
-                }
+                $root = $m->base($key);
                 if ($root == null) {
                     continue;
                 }
@@ -664,7 +653,6 @@ class Relevance
         });
 
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
-
     }
 
     /**
@@ -1013,7 +1001,7 @@ class Relevance
     public function prepareTfCloud($text): array
     {
         $wordForms = $cloud = [];
-        $lingua = new LinguaStem();
+        $m = new Morphy();
 
         $array = array_count_values(explode(' ', $text));
         arsort($array);
@@ -1034,7 +1022,7 @@ class Relevance
                 similar_text($item1['text'], $item2['text'], $percent);
                 if (
                     preg_match("/[А-Яа-я]/", $item1['text']) &&
-                    $lingua->getRootWord($item1['text']) == $lingua->getRootWord($item2['text']) ||
+                    $m->base($item1['text']) == $m->base($item2['text']) ||
                     preg_match("/[A-Za-z]/", $item2['text']) &&
                     $percent >= 82
                 ) {
