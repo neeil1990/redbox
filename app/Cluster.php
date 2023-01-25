@@ -755,7 +755,7 @@ class Cluster
                     }
 
                     $similarities = count(array_intersect($phrase, $phrase2));
-                    if ($similarities > 1) {
+                    if ($similarities > 2) {
                         $this->clusters[$mainPhrase]['finallyResult']['similarities'][$offPhrase] = $similarities;
                     }
                 }
