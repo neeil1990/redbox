@@ -22,14 +22,14 @@ $(document).ready(function () {
     $('.remove-with-filters').on('click', function () {
         let id = $(this).attr('data-target');
 
-        if ($('#comment-filter-' + id).val() == '' &&
-            $('#phrase-filter-' + id).val() == '' &&
-            $('#region-filter-' + id).val() == 'none' &&
-            $('#link-filter-' + id).val() == '' &&
-            $('#date-filter-before-' + id).val() == '' &&
-            $('#date-filter-after-' + id).val() == '' &&
-            $('#position-filter-after-' + id).val() == '' &&
-            $('#position-filter-before-' + id).val() == ''
+        if ($('#comment-filter-' + id).val() === '' &&
+            $('#phrase-filter-' + id).val() === '' &&
+            $('#region-filter-' + id).val() === 'none' &&
+            $('#link-filter-' + id).val() === '' &&
+            $('#date-filter-before-' + id).val() === '' &&
+            $('#date-filter-after-' + id).val() === '' &&
+            $('#position-filter-after-' + id).val() === '' &&
+            $('#position-filter-before-' + id).val() === ''
         ) {
             let response = prompt('У вас будут удалены ВСЕ результаты проекта. Напишите "Да", если вы хотите подтверить опперацию')
             if (response !== 'Да') {
@@ -57,7 +57,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.code === 200) {
                     getSuccessMessage(response.message)
-                    setValues(response)
+                    window.location.reload();
                 } else if (response.code === 415) {
                     getErrorMessage(response.message)
                 }

@@ -55,13 +55,9 @@ class RelevanceController extends Controller
         $relevance->getMainPageHtml();
 
         if ($request['type'] == 'phrase') {
-
             $relevance->analysisByPhrase($request->all(), $request->exp);
-
         } elseif ($request['type'] == 'list') {
-
             $relevance->analysisByList($request->all());
-
         }
 
         $relevance->analysis(Auth::id());

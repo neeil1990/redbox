@@ -1277,6 +1277,15 @@ class Relevance
                     json_encode($this->sites)
                 );
 
+                RelevanceHistory::where('user_id', '=', $userId)
+                    ->where('phrase', '=', $this->request['phrase'])
+                    ->where('main_link', '=', $this->request['link'])
+                    ->where('position', '=', 0)
+                    ->where('points', '=', 0)
+                    ->where('coverage', '=', 0)
+                    ->where('density', '=', 0)
+                    ->delete();
+
                 ProjectRelevanceHistory::calculateInfo($main);
 
                 $this->params['result_id'] = $this->saveHistoryResult($id);
