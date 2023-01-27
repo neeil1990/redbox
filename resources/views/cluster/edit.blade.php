@@ -138,7 +138,10 @@
                                             <div class="d-flex justify-content-between">
                                                 <div class="phrase-for-color">{{ $phrase }}</div>
                                                 @if(isset($item['similarities']))
-                                                    <div style="display: none">@foreach($item['similarities'] as $ph => $count){{ $ph . "\n" }}@endforeach</div>
+                                                    <div
+                                                        style="display: none">@foreach($item['similarities'] as $ph => $count)
+                                                            {{ $ph . "\n" }}
+                                                        @endforeach</div>
                                                 @else
                                                     <div></div>
                                                 @endif
@@ -472,6 +475,14 @@
                                 swapObject = $(this).parent().parent().parent().parent()
                                 swapMainPhrase = String(swapObject.parent().attr('id')).replaceAll('_', ' ')
                             })
+
+                            $.each($('.list-group.list-group-flush'), function (key, value) {
+                                if ($(this).html().replaceAll(' ', '') === '' && $(this).parent().attr('id') !== undefined) {
+                                    let removePhrase = String($(this).parent().attr('id')).replaceAll('_', ' ')
+                                    $(this).parent().remove()
+                                    $("#clusters-list option[value='" + removePhrase + "']").remove()
+                                }
+                            })
                         },
                         error: function (response) {
                         }
@@ -490,7 +501,7 @@
                             '   <i class="fa fa-arrow-left move-back mr-2" data-target="' + $(this).attr('data-target') + '"></i>' +
                             '   <i class="fa fa-brush" data-target="' + $(this).attr('data-target') + '"></i>' +
                             '</div>' +
-                            '<div><div class="phrase-for-color">'+$(this).attr('data-target')+'</div></div>' +
+                            '<div><div class="phrase-for-color">' + $(this).attr('data-target') + '</div></div>' +
                             '</li>'
                         )
 
