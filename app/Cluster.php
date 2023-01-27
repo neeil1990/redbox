@@ -825,7 +825,8 @@ class Cluster
     public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters)
     {
         $request = json_decode($cluster->request, true);
-        $clusters = Cluster::calculateSimilarities($clusters, $request['ignoredWords'] ?? []);
+        $ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
+        $clusters = Cluster::calculateSimilarities($clusters, $ignoredWords);
         $result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
         $cluster->result = $result['clusters'];
         $cluster->count_clusters = $result['countClusters'];
