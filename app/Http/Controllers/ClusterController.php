@@ -322,6 +322,7 @@ class ClusterController extends Controller
         ]);
     }
 
+
     public function editClusters(ClusterResults $cluster)
     {
         $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
@@ -330,7 +331,8 @@ class ClusterController extends Controller
         return view('cluster.edit', ['cluster' => $cluster, 'admin' => User::isUserAdmin()]);
     }
 
-    public function editCluster(Request $request)
+
+    public function editCluster(Request $request): ?JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
 
@@ -351,12 +353,7 @@ class ClusterController extends Controller
                 }
             }
 
-            $request = json_decode($cluster->request, true);
-            $result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
-            $cluster->result = $result['clusters'];
-            $cluster->count_clusters = $result['countClusters'];
-
-            $cluster->save();
+            Cluster::recalculateClusterInfo($cluster, $clusters);
 
             return response()->json([
                 'success' => true,
@@ -383,6 +380,12 @@ class ClusterController extends Controller
         $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
         $keys = array_keys($cluster->result);
 
+        if (empty($cluster) || preg_replace("/[0-9]/", "", $request->input('groupName')) === '') {
+            return response()->json([
+                'success' => false,
+            ], 400);
+        }
+
         if (in_array($request->input('groupName'), $keys)) {
             return response()->json([
                 'success' => false,
@@ -397,8 +400,10 @@ class ClusterController extends Controller
     public function changeGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
-        if (empty($cluster)) {
-            return abort(403);
+        if (empty($cluster) || preg_replace("/[0-9.]/", "", $request->input('newGroupName')) === '') {
+            return response()->json([
+                'success' => false,
+            ], 400);
         }
 
         $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
@@ -422,6 +427,29 @@ class ClusterController extends Controller
         return response()->json([
             'success' => true
         ]);
+    }
 
+    public function confirmationNewCluster(Request $request): ?JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->where('user_id', '=', Auth::id())->first();
+        if (empty($cluster)) {
+            return abort(403);
+        }
+
+        $clusters = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        foreach ($clusters as $mainPhrase => $items) {
+            foreach ($items as $phrase => $item) {
+                if (in_array($phrase, $request->input('phrases'))) {
+                    $clusters[$request->input('mainPhrase')][$phrase] = $item;
+                    unset($clusters[$mainPhrase][$phrase]);
+                }
+            }
+        }
+
+        Cluster::recalculateClusterInfo($cluster, $clusters);
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

@@ -13,7 +13,6 @@ function renderResultTable(data) {
         let groupName = ''
         let relevanceHeader = ''
         let saveUrlButton = ''
-        let similarities = ''
         let colspan = 3
 
         $.each(result, function (phrase, information) {
@@ -54,14 +53,6 @@ function renderResultTable(data) {
                 } else {
                     copyGroupBool = false
                 }
-
-                similarities = ''
-                if ('similarities' in result['finallyResult']) {
-                    $.each(result['finallyResult']['similarities'], function (key, value) {
-                        similarities += key + "<br>"
-                    })
-                }
-
 
                 let merge = ''
                 if ('merge' in information) {
@@ -175,12 +166,6 @@ function renderResultTable(data) {
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">' +
             '                   Ключевой запрос ' +
-            '                   <span class="__helper-link ui_tooltip_w" style="cursor: pointer">' +
-            '                       <span class="text-muted font-weight-normal"><u>схожие фразы из других кластеров</u></span>' +
-            '                       <span class="ui_tooltip __right" style="min-width: 550px;">' +
-            '                           <span class="ui_tooltip_content font-weight-normal"><u class="colored-phrases">Подсветить</u><div>' + similarities + '</div></span>' +
-            '                       </span>' +
-            '                   </span>' +
             '               </th>' +
             groupHeader +
             relevanceHeader +
