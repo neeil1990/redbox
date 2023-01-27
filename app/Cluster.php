@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -723,6 +724,7 @@ class Cluster
 
     public static function calculateSimilarities($clusters, $ignoredWords)
     {
+        Log::debug('$ignoredWords', $ignoredWords);
         $m = new Morphy();
 
         foreach ($clusters as $mainPhrase => $items) {
