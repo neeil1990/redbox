@@ -138,10 +138,7 @@
                                             <div class="d-flex justify-content-between">
                                                 <div class="phrase-for-color">{{ $phrase }}</div>
                                                 @if(isset($item['similarities']))
-                                                    <div
-                                                        style="display: none">@foreach($item['similarities'] as $ph => $count)
-                                                            {{ $ph . "\n" }}
-                                                        @endforeach</div>
+                                                    <div style="display: none">@foreach($item['similarities'] as $ph => $count){{ $ph . "\n" }}@endforeach</div>
                                                 @else
                                                     <div></div>
                                                 @endif

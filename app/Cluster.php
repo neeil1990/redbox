@@ -724,7 +724,6 @@ class Cluster
 
     public static function calculateSimilarities($clusters, $ignoredWords)
     {
-        Log::debug('$ignoredWords', $ignoredWords);
         $m = new Morphy();
 
         foreach ($clusters as $mainPhrase => $items) {
