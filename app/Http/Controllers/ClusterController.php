@@ -75,7 +75,7 @@ class ClusterController extends Controller
             ClusterQueue::where('progress_id', '=', $id)->delete();
             return response()->json([
                 'count' => $cluster->count_phrases,
-                'result' => json_decode(gzuncompress(base64_decode($cluster->result)), true),
+                'result' => Cluster::unpackCluster($cluster->result),
                 'objectId' => $cluster->id,
             ]);
         }
@@ -184,7 +184,7 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            $cluster->result = Cluster::unpackCluster($cluster->result);
             $results = $cluster->result;
 
             foreach ($results as $key => $items) {
@@ -212,7 +212,7 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            $cluster->result = Cluster::unpackCluster($cluster->result);
             $results = $cluster->result;
 
             foreach ($results as $key => $items) {
@@ -325,7 +325,7 @@ class ClusterController extends Controller
 
     public function editClusters(ClusterResults $cluster)
     {
-        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $cluster->result = Cluster::unpackCluster($cluster->result);
         $cluster->request = json_decode($cluster->request, true);
 
         return view('cluster.edit', ['cluster' => $cluster, 'admin' => User::isUserAdmin()]);
@@ -334,8 +334,6 @@ class ClusterController extends Controller
 
     public function editCluster(Request $request): ?JsonResponse
     {
-        Log::debug('request', $request->all());
-
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
 
         if (empty($cluster)) {
@@ -343,7 +341,7 @@ class ClusterController extends Controller
         }
 
         try {
-            $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+            $cluster->result = Cluster::unpackCluster($cluster->result);
             $clusters = $cluster->result;
             foreach ($clusters as $mainPhrase => $items) {
                 foreach ($items as $phrase => $item) {
@@ -359,16 +357,10 @@ class ClusterController extends Controller
 
             return response()->json([
                 'success' => true,
-                'countClusters' => $cluster->count_clusters
+                'countClusters' => $cluster->count_clusters,
+                'similarities' => implode("\n", array_keys(Cluster::unpackCluster($cluster->result)[$request->input('mainPhrase')][$request->input('phrase')]['similarities'])),
             ]);
         } catch (\Throwable $e) {
-            Log::debug('swap cluster error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'request' => $request->all()
-            ]);
-
             return response()->json([
                 'success' => false,
             ], 400);
@@ -385,7 +377,7 @@ class ClusterController extends Controller
             ], 400);
         }
 
-        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $cluster->result = Cluster::unpackCluster($cluster->result);
         $keys = array_keys($cluster->result);
 
         if (in_array($request->input('groupName'), $keys)) {
@@ -408,7 +400,7 @@ class ClusterController extends Controller
             ], 400);
         }
 
-        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $cluster->result = Cluster::unpackCluster($cluster->result);
         $keys = array_keys($cluster->result);
 
         if (in_array($request->input('newGroupName'), $keys)) {
@@ -438,7 +430,7 @@ class ClusterController extends Controller
             return abort(403);
         }
 
-        $clusters = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $clusters = Cluster::unpackCluster($cluster->result);
         foreach ($clusters as $mainPhrase => $items) {
             foreach ($items as $phrase => $item) {
                 if (in_array($phrase, $request->input('phrases'))) {

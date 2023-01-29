@@ -151,7 +151,6 @@
                                                 @else
                                                     <div></div>
                                                 @endif
-
                                                 <div class="btn-group">
                                                     <i class="fa fa-ellipsis mr-2"
                                                        data-toggle="dropdown"
@@ -166,7 +165,8 @@
                                                         <button data-toggle="modal" class="dropdown-item color-phrases">
                                                             Подсветить похожие фразы
                                                         </button>
-                                                        <button data-toggle="modal" class="dropdown-item set-default-colors">
+                                                        <button data-toggle="modal"
+                                                                class="dropdown-item set-default-colors">
                                                             отменить выделение
                                                         </button>
                                                     </div>
@@ -423,35 +423,6 @@
                 swapMainPhrase = String(swapObject.parent().attr('id')).replaceAll('_', ' ')
             })
 
-            $('.color-phrases').unbind('click').on('click', function () {
-                let searchSuccess = false
-                $.each($('.phrase-for-color'), function (key, value) {
-                    $(this).parent().parent().css({
-                        'background-color': 'white'
-                    })
-                })
-
-                let targetHtml = $(this).parent().parent().parent().children('div').eq(1).html().trim();
-                let array = targetHtml.split("\n");
-
-                $.each($('.phrase-for-color'), function (key, value) {
-                    if (array.indexOf($(this).html()) != -1) {
-                        searchSuccess = true
-                        $(this).parent().parent().css({
-                            'background-color': '#cbe0f5'
-                        })
-                    }
-                })
-
-                if (searchSuccess) {
-                    $(this).parent().parent().parent().parent().css({
-                        'background-color': '#59abfa'
-                    })
-                } else {
-                    errorMessage("{{ __('No matches found') }}")
-                }
-            })
-
             $('#save-changes').unbind().on('click', function () {
                 let clusterPhrase = $('#clusters-list').val();
                 let phrase = $('#your-phrase').val()
@@ -470,14 +441,27 @@
                             phrase: phrase,
                         },
                         success: function (response) {
+                            console.log(response)
                             successMessage("{{ __('Successfully') }}")
                             $('#' + clusterPhrase.replaceAll(' ', '_')).children('ul').eq(0).append(
                                 '<li data-target="' + phrase + '" data-action="' + clusterPhrase + '" class="list-group-item">' +
-                                '    <span class="d-flex justify-content-between">' + phrase +
+                                '    <div class="d-flex justify-content-between">' +
+                                '        <div class="phrase-for-color">' + phrase + '</div>' +
+                                '        <div style="display: none">'+ response.similarities +'</div>' +
                                 '        <div class="btn-group">' +
                                 '            <i data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="fa fa-ellipsis mr-2"></i> ' +
                                 '            <div class="dropdown-menu">' +
-                                '            <button data-toggle="modal" data-target="#exampleModal" data-action="' + phrase + '" class="dropdown-item add-to-another">Добавить фразу к другому кластеру</button>' +
+                                '                <button data-toggle="modal" data-target="#exampleModal"' +
+                                '                        class="dropdown-item add-to-another"' +
+                                '                        data-action="' + phrase + '">' +
+                                '                    Добавить фразу к другому кластеру' +
+                                '                </button>' +
+                                '                <button data-toggle="modal" class="dropdown-item color-phrases">' +
+                                '                    Подсветить похожие фразы' +
+                                '                </button>' +
+                                '                <button data-toggle="modal" class="dropdown-item set-default-colors">' +
+                                '                    отменить выделение' +
+                                '                </button>' +
                                 '            </div>' +
                                 '            <i data-target="' + phrase + '" class="fa fa-arrow-right move-phrase"></i>' +
                                 '        </div>' +
@@ -585,6 +569,41 @@
                         });
                     }
                 })
+
+                $('.color-phrases').unbind('click').on('click', function () {
+                    let searchSuccess = false
+                    $.each($('.phrase-for-color'), function (key, value) {
+                        $(this).parent().parent().css({
+                            'background-color': 'white'
+                        })
+                    })
+
+                    let targetHtml = $(this).parent().parent().parent().children('div').eq(1).html().trim();
+                    let array = targetHtml.split("\n");
+
+                    $.each($('.phrase-for-color'), function (key, value) {
+                        if (array.indexOf($(this).html()) != -1) {
+                            searchSuccess = true
+                            $(this).parent().parent().css({
+                                'background-color': '#cbe0f5'
+                            })
+                        }
+                    })
+
+                    if (searchSuccess) {
+                        $(this).parent().parent().parent().parent().css({
+                            'background-color': '#59abfa'
+                        })
+                    } else {
+                        errorMessage("{{ __('No matches found') }}")
+                    }
+                })
+
+                $('.set-default-colors').unbind('click').on('click', function () {
+                    $('.phrase-for-color').parent().parent().css({
+                        'background-color': 'white'
+                    })
+                })
             }
 
             $('#resetChanges').on('click', function () {
@@ -672,12 +691,6 @@
 
             $('#setDefaultVision').on('click', function () {
                 $('.phrase-for-color').parent().parent().show()
-            })
-
-            $('.set-default-colors').on('click', function () {
-                $('.phrase-for-color').parent().parent().css({
-                    'background-color': 'white'
-                })
             })
         </script>
     @endslot

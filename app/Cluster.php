@@ -841,4 +841,9 @@ class Cluster
         $cluster->count_clusters = $result['countClusters'];
         $cluster->save();
     }
+
+    public static function unpackCluster($result): array
+    {
+        return json_decode(gzuncompress(base64_decode($result)), true);
+    }
 }
