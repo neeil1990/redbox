@@ -727,6 +727,12 @@ class Cluster
         $m = new Morphy();
 
         foreach ($clusters as $mainPhrase => $items) {
+            foreach ($items as $ph => $item) {
+                unset($clusters[$mainPhrase][$ph]['similarities']);
+            }
+        }
+
+        foreach ($clusters as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $info) {
                 $phrase = explode(' ', $offPhrase);
                 $phrase = array_diff($phrase, $ignoredWords);
@@ -744,6 +750,7 @@ class Cluster
                     if ($mainPhrase === $mainPhrase2) {
                         continue;
                     }
+
                     foreach ($items2 as $offPhrase2 => $info2) {
                         if ($offPhrase === $offPhrase2 || $offPhrase === 'finallyResult' || $offPhrase2 === 'finallyResult') {
                             continue;
@@ -757,10 +764,11 @@ class Cluster
                                 $base = $m->base($item);
                                 $phrase2[$keyF] = $base;
                             }
-                            $similarities = count(array_intersect($phrase, $phrase2));
-                            if ($similarities > 1) {
-                                $clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
-                            }
+                        }
+
+                        $similarities = count(array_intersect($phrase, $phrase2));
+                        if ($similarities >= 1) {
+                            $clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
                         }
                     }
                 }

@@ -334,6 +334,8 @@ class ClusterController extends Controller
 
     public function editCluster(Request $request): ?JsonResponse
     {
+        Log::debug('request', $request->all());
+
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
 
         if (empty($cluster)) {
@@ -377,14 +379,14 @@ class ClusterController extends Controller
     public function checkGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
-        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
-        $keys = array_keys($cluster->result);
-
-        if (empty($cluster) || preg_replace("/[0-9]/", "", $request->input('groupName')) === '') {
+        if (empty($cluster) || preg_match("/[0-9]/", $request->input('groupName'))) {
             return response()->json([
                 'success' => false,
             ], 400);
         }
+
+        $cluster->result = json_decode(gzuncompress(base64_decode($cluster->result)), true);
+        $keys = array_keys($cluster->result);
 
         if (in_array($request->input('groupName'), $keys)) {
             return response()->json([
@@ -400,7 +402,7 @@ class ClusterController extends Controller
     public function changeGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
-        if (empty($cluster) || preg_replace("/[0-9.]/", "", $request->input('newGroupName')) === '') {
+        if (empty($cluster) || preg_match("/[0-9]/", $request->input('newGroupName'))) {
             return response()->json([
                 'success' => false,
             ], 400);

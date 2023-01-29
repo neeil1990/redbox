@@ -15,6 +15,15 @@
             .card-header:after {
                 content: none;
             }
+
+            .work-place-conf {
+                margin-bottom: 0;
+                border-radius: 0;
+                position: sticky;
+                top: 15px;
+                max-height: 80vh;
+                overflow: auto
+            }
         </style>
     @endslot
 
@@ -157,6 +166,9 @@
                                                         <button data-toggle="modal" class="dropdown-item color-phrases">
                                                             Подсветить похожие фразы
                                                         </button>
+                                                        <button data-toggle="modal" class="dropdown-item set-default-colors">
+                                                            отменить выделение
+                                                        </button>
                                                     </div>
                                                     <i class="fa fa-arrow-right move-phrase"
                                                        data-target="{{ $phrase }}"></i>
@@ -168,11 +180,22 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="work-place-block" style="width: 50%;">
-                        <div class="card"
-                             style="margin-bottom: 0; border-radius: 0; position: sticky; top: 15px; height: 80vh; overflow: auto">
+                    <div class="col-6">
+                        <div class="btn-group w-100 mb-2">
+                            <input type="text" id="clusterFilter" class="form form-control"
+                                   placeholder="{{ __('Search') }}">
+                            <button class="btn btn-outline-secondary" id="searchPhrases">
+                                {{ __('Search') }}
+                            </button>
+                            <button class="btn btn-outline-secondary" id="setDefaultVision">
+                                Отменить
+                            </button>
+                        </div>
+                        <div class="card work-place-conf">
                             <div class="card-header d-flex justify-content-between" id="workPlace"
-                                 style="background-color: #343a40; color: white">{{ __('Workspace') }}</div>
+                                 style="background-color: #343a40; color: white">
+                                {{ __('Workspace') }}
+                            </div>
                             <ul class="list-group list-group-flush" id="work-place"></ul>
                             <div>
                                 <button class="btn btn-outline-secondary w-100" id="addNewGroupButton"
@@ -276,14 +299,9 @@
     </div>
     @slot('js')
         <script>
-            $('.work-place-block').css({
-                'height': ($('#app > div > div > div.card-body > div.card > div.card-body').height() - 100) + 'px'
-            })
-
             $('#app > div > div > div.card-header').append($('#params').html())
             $('#params').remove()
 
-            // TODO add search input
             let worPlaceCreated = false
             let swapMainPhrase = ''
             let swapObject = ''
@@ -301,7 +319,7 @@
                 $('.toast-message.error-msg').html(message)
                 setTimeout(() => {
                     $('.toast.toast-error').hide(300)
-                }, 3000)
+                }, 5000)
             }
 
             $('#copyUsedPhrases').click(function () {
@@ -389,11 +407,11 @@
                             })
                         },
                         error: function () {
-                            errorMessage("{{ __('A group with the same name already exists or the group consists only of numbers') }}")
+                            errorMessage("{{ __('A group with the same name already exists or the name contains numbers') }}")
                         }
                     });
                 } else {
-                    errorMessage('Название группы не может быть пустым')
+                    errorMessage("{{ __('The name of the group cannot be empty') }}")
                 }
             })
 
@@ -414,10 +432,10 @@
                 })
 
                 let targetHtml = $(this).parent().parent().parent().children('div').eq(1).html().trim();
-                targetHtml = targetHtml.split("\n");
+                let array = targetHtml.split("\n");
 
                 $.each($('.phrase-for-color'), function (key, value) {
-                    if (targetHtml.indexOf($(this).html()) != -1) {
+                    if (array.indexOf($(this).html()) != -1) {
                         searchSuccess = true
                         $(this).parent().parent().css({
                             'background-color': '#cbe0f5'
@@ -454,7 +472,7 @@
                         success: function (response) {
                             successMessage("{{ __('Successfully') }}")
                             $('#' + clusterPhrase.replaceAll(' ', '_')).children('ul').eq(0).append(
-                                '<li data-target="' + phrase + '" data-action="' + clusterPhrase + '" class="list-group-item" style="background: #f5e2aa">' +
+                                '<li data-target="' + phrase + '" data-action="' + clusterPhrase + '" class="list-group-item">' +
                                 '    <span class="d-flex justify-content-between">' + phrase +
                                 '        <div class="btn-group">' +
                                 '            <i data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="fa fa-ellipsis mr-2"></i> ' +
@@ -480,6 +498,8 @@
                                     $("#clusters-list option[value='" + removePhrase + "']").remove()
                                 }
                             })
+
+                            refreshMethods()
                         },
                         error: function (response) {
                         }
@@ -560,7 +580,7 @@
                                 refreshMethods()
                             },
                             error: function () {
-                                errorMessage("{{ __('A group with the same name already exists or the group consists only of numbers') }}")
+                                errorMessage("{{ __('A group with the same name already exists or the name contains numbers') }}")
                             }
                         });
                     }
@@ -597,7 +617,6 @@
                 });
             }
 
-
             function scanArray(array, object) {
                 let searchSuccess = false
 
@@ -624,6 +643,42 @@
                     errorMessage("{{ __('No matches found') }}")
                 }
             }
+
+            $('#searchPhrases').on('click', function () {
+                let searchSuccess = false
+                let string = $('#clusterFilter').val().trim()
+                let count = 0
+
+                if (string !== '') {
+                    $('.phrase-for-color').parent().parent().css({
+                        'background-color': 'white'
+                    })
+
+                    $.each($('.phrase-for-color'), function (key, value) {
+                        if (!$(this).html().includes(string)) {
+                            searchSuccess = true
+                            count += 1
+                            $(this).parent().parent().hide()
+                        }
+                    })
+                }
+
+                if (!searchSuccess) {
+                    errorMessage("{{ __('No matches found') }}")
+                } else {
+                    successMessage(count + " {{ __('elements hidden') }}")
+                }
+            })
+
+            $('#setDefaultVision').on('click', function () {
+                $('.phrase-for-color').parent().parent().show()
+            })
+
+            $('.set-default-colors').on('click', function () {
+                $('.phrase-for-color').parent().parent().css({
+                    'background-color': 'white'
+                })
+            })
         </script>
     @endslot
 @endcomponent
