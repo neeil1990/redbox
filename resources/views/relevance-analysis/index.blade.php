@@ -1219,6 +1219,7 @@
                     entries: "{{ __('entries') }}"
                 };
 
+                sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 stopProgressBar()
                 renderTextTable(response.avg, response.mainPage)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count, localization)

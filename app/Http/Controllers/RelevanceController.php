@@ -51,16 +51,20 @@ class RelevanceController extends Controller
             'siteList.required' => __('The list of sites is required to fill in.'),
         ]);
 
+        Log::debug('Прошли проверку');
         $relevance = new Relevance($request->all());
         $relevance->getMainPageHtml();
 
+        Log::debug('Получили html main page');
         if ($request['type'] == 'phrase') {
             $relevance->analysisByPhrase($request->all(), $request->exp);
         } elseif ($request['type'] == 'list') {
             $relevance->analysisByList($request->all());
         }
 
+        Log::debug('Подготовились');
         $relevance->analysis(Auth::id());
+        Log::debug('Анализируем');
 
         return RelevanceController::successResponse($relevance);
     }

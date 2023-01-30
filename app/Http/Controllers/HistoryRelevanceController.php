@@ -26,9 +26,6 @@ use Throwable;
 
 class HistoryRelevanceController extends Controller
 {
-    /**
-     * @return View
-     */
     public function index(): View
     {
         $config = RelevanceAnalysisConfig::first();
@@ -44,10 +41,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function getStories(Request $request): JsonResponse
     {
         $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first();
@@ -88,10 +81,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function editGroupName(Request $request): JsonResponse
     {
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
@@ -103,10 +92,6 @@ class HistoryRelevanceController extends Controller
         return response()->json([]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function changeCalculateState(Request $request): JsonResponse
     {
         $project = RelevanceHistory::where('id', '=', $request->id)->first();
@@ -120,10 +105,6 @@ class HistoryRelevanceController extends Controller
         return response()->json([]);
     }
 
-    /**
-     * @param int $id
-     * @return View|void
-     */
     public function show(int $id)
     {
         $admin = User::isUserAdmin();
@@ -146,10 +127,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function getDetailsInfo(Request $request): JsonResponse
     {
         try {
@@ -198,10 +175,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function editComment(Request $request): JsonResponse
     {
         $project = RelevanceHistory::where('id', '=', $request->id)->first();
@@ -213,11 +186,6 @@ class HistoryRelevanceController extends Controller
         return response()->json([]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws ValidationException
-     */
     public function repeatScan(Request $request): JsonResponse
     {
         if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
@@ -264,10 +232,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function repeatQueueCompetitorsScan(Request $request): JsonResponse
     {
         if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
@@ -312,10 +276,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function repeatQueueMainPageScan(Request $request): JsonResponse
     {
         if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
@@ -360,10 +320,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param RelevanceHistory $object
-     * @return JsonResponse
-     */
     public function getHistoryInfo(RelevanceHistory $object): JsonResponse
     {
         $userId = Auth::id();
@@ -387,10 +343,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function getHistoryInfoV2(Request $request): JsonResponse
     {
         $projects = RelevanceHistory::where('project_relevance_history_id', '=', $request->historyId)->latest('id')
@@ -438,10 +390,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function removeEmptyResults(Request $request): JsonResponse
     {
         $userId = Auth::id();
@@ -512,10 +460,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function removeEmptyResultsFilters(Request $request): JsonResponse
     {
         $userId = Auth::id();
@@ -589,10 +533,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     function checkQueueScanState(Request $request): JsonResponse
     {
         $project = RelevanceHistory::where('id', '=', $request->id)->first();
@@ -615,10 +555,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function repeatScanUniqueSites(Request $request): JsonResponse
     {
         $ownerId = $this->checkAccess($request);
@@ -657,10 +593,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param $request
-     * @return JsonResponse|int
-     */
     public static function checkAccess($request)
     {
         $userId = Auth::id();
@@ -682,10 +614,6 @@ class HistoryRelevanceController extends Controller
         return $project->user_id;
     }
 
-    /**
-     * @param $id
-     * @return Collection
-     */
     public static function getUniqueScanned($id): Collection
     {
         return RelevanceHistory::where('project_relevance_history_id', '=', $id)
@@ -693,10 +621,6 @@ class HistoryRelevanceController extends Controller
             ->get(['main_link', 'phrase', 'region']);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function rescanProjects(Request $request): JsonResponse
     {
         $admin = User::isUserAdmin();
@@ -738,10 +662,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     function checkAnalyseProgress(Request $request): JsonResponse
     {
         $object = RelevanceHistory::where('id', '=', $request->id)->first();
@@ -774,9 +694,6 @@ class HistoryRelevanceController extends Controller
 
     }
 
-    /**
-     * @return void
-     */
     public function showMissingWords(RelevanceHistoryResult $result)
     {
         $admin = User::isUserAdmin();
@@ -798,10 +715,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param RelevanceHistoryResult $result
-     * @return View
-     */
     public function showChildrenRows(RelevanceHistoryResult $result): View
     {
         $admin = User::isUserAdmin();
@@ -822,11 +735,6 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param int $id
-     * @param string $type
-     * @return void
-     */
     public function getFile(int $id, string $type)
     {
         $history = ProjectRelevanceHistory::where('id', '=', $id)->first();
