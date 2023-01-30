@@ -73,7 +73,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
             $relevance->setSites($params->sites);
         }
 
-        $relevance->analysis($this->userId);
+        $relevance->analysis();
 
     }
 }

@@ -80,7 +80,7 @@ class RelevanceHistoryQueue implements ShouldQueue
                 $this->relevance->parseSites();
             }
 
-            $this->relevance->analysis($this->userId, $this->historyId);
+            $this->relevance->analysis($this->historyId);
             UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
 
         } catch (\Throwable $exception) {

@@ -178,11 +178,10 @@ class Relevance
     }
 
     /**
-     * @param $userId
      * @param int|boolean $historyId
      * @return void
      */
-    public function analysis($userId, $historyId = false)
+    public function analysis($historyId = false)
     {
         try {
             $this->removeNoIndex();
@@ -199,7 +198,7 @@ class Relevance
             $this->analyzeRecommendations();
             $this->prepareAnalysedSitesTable();
             $this->prepareClouds();
-            $this->saveHistory($userId, $historyId);
+            $this->saveHistory($historyId);
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
@@ -1232,17 +1231,15 @@ class Relevance
 
         if (!$this->queue) {
             $this->params['sites'] = json_encode($saveObject);
-            Log::debug('params', [$this->params]);
             $this->params->save();
         }
     }
 
     /**
-     * @param $userId
      * @param $historyId
      * @return void
      */
-    public function saveHistory($userId, $historyId)
+    public function saveHistory($historyId)
     {
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
@@ -1251,7 +1248,7 @@ class Relevance
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
 
-        $main = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
+        $main = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $this->userId);
 
         foreach ($this->sites as $site) {
             if ($site['mainPage']) {
@@ -1277,7 +1274,7 @@ class Relevance
                     json_encode($this->sites)
                 );
 
-                RelevanceHistory::where('user_id', '=', $userId)
+                RelevanceHistory::where('user_id', '=', $this->userId)
                     ->where('phrase', '=', $this->request['phrase'])
                     ->where('main_link', '=', $this->request['link'])
                     ->where('position', '=', 0)
