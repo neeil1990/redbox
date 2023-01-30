@@ -1240,6 +1240,7 @@ class Relevance
 
         if (!$this->queue) {
             $this->params['sites'] = json_encode($saveObject);
+            Log::debug('params', [$this->params]);
             $this->params->save();
         }
     }
