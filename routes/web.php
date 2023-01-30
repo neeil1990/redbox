@@ -198,7 +198,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
     Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
-    Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
+    Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
 

@@ -1021,7 +1021,7 @@ class Relevance
             foreach ($cloud as $key2 => $item2) {
                 similar_text($item1['text'], $item2['text'], $percent);
                 if (
-                    preg_match("/[А-Яа-я]/", $item1['text']) &&
+                    preg_match("/[А-я]/", $item1['text']) &&
                     $m->base($item1['text']) == $m->base($item2['text']) ||
                     preg_match("/[A-Za-z]/", $item2['text']) &&
                     $percent >= 82

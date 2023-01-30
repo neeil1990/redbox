@@ -32,7 +32,7 @@ class RelevanceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function analysis(Request $request): JsonResponse
+    public function analyse(Request $request): JsonResponse
     {
         if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
             return response()->json([
