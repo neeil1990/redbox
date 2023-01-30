@@ -4,7 +4,6 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -70,6 +69,8 @@ class Relevance
 
     public $queue;
 
+    public $userId;
+
     /**
      * @param $request
      * @param bool $queue
@@ -87,11 +88,11 @@ class Relevance
 
         if ($this->queue) {
             $params = [
-                'user_id' => Auth::id(),
+                'user_id' => $this->userId,
             ];
         } else {
             $params = [
-                'user_id' => Auth::id(),
+                'user_id' => $this->userId,
                 'page_hash' => $request['pageHash']
             ];
         }
@@ -101,6 +102,11 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
+    }
+
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
     }
 
     /**
