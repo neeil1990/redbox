@@ -1205,15 +1205,15 @@
 
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 renderTextTable(response.avg, response.main_page)
-                renderRecommendationsTable(response.recommendations, response.recommendations_count, localization)
+                renderRecommendationsTable(response.recommendations, 50, localization)
                 renderUnigramTable(
                     response.unigram_table,
-                    response.ltp_count,
+                    50,
                     localization,
                     response.history_id,
                     response.searchPassages
                 );
-                renderPhrasesTable(response.phrases, response.ltps_count, localization)
+                renderPhrasesTable(response.phrases, 50, localization)
                 renderScannedSitesList(
                     localization,
                     response.sites,
