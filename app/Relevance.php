@@ -97,6 +97,8 @@ class Relevance
             ];
         }
 
+        Log::debug('params', [$params]);
+        die();
         $this->params = RelevanceAnalyseResults::firstOrNew($params);
 
         $this->params['main_page_link'] = $request['link'];
