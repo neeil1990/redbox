@@ -256,7 +256,7 @@ class HistoryRelevanceController extends Controller
                 $ownerId,
                 $request->all(),
                 $request['id']
-            )->onQueue(UsersJobs::getPriority($ownerId));
+            )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
         }
         return response()->json([
             'success' => true,
@@ -304,7 +304,7 @@ class HistoryRelevanceController extends Controller
                 false,
                 false,
                 'competitors'
-            )->onQueue(UsersJobs::getPriority($ownerId));
+            )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
         }
         return response()->json([
             'success' => true,
@@ -352,7 +352,7 @@ class HistoryRelevanceController extends Controller
                 false,
                 false,
                 'mainPage'
-            )->onQueue(UsersJobs::getPriority($ownerId));
+            )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
         }
         return response()->json([
             'success' => true,
@@ -639,7 +639,7 @@ class HistoryRelevanceController extends Controller
                     $ownerId,
                     json_decode($record->request, true),
                     $record->id
-                )->onQueue(UsersJobs::getPriority($ownerId));
+                )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
 
                 $record->state = 0;
                 $record->save();
@@ -725,7 +725,7 @@ class HistoryRelevanceController extends Controller
                     $ownerId,
                     json_decode($object->request, true),
                     $id
-                )->onQueue(UsersJobs::getPriority($ownerId));
+                )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
             }
 
             ProjectRelevanceThough::where('id', '=', $request->thoughId)->update(['cleaning_state' => 1]);

@@ -250,9 +250,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public static function isUserAdmin(): bool
     {
-        foreach (Auth::user()->role as $role) {
-            if ($role == '1' || $role == '3') {
-                return true;
+        if (Auth::check()) {
+            foreach (Auth::user()->role as $role) {
+                if ($role == '1' || $role == '3') {
+                    return true;
+                }
             }
         }
 

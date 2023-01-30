@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\ProjectRelevanceHistory;
 use App\Relevance;
 use App\RelevanceHistory;
 use App\TelegramBot;
@@ -12,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalysisQueue implements ShouldQueue
 {
@@ -82,10 +80,6 @@ class RelevanceAnalysisQueue implements ShouldQueue
                 $this->relevance->parseSites();
             }
 
-            Log::debug('inf', [
-                $this->request['phrase'],
-                $this->request['link']
-            ]);
             $this->relevance->analysis($this->userId, $this->historyId);
             UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
 

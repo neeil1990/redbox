@@ -12,23 +12,25 @@ class MenuComposer
     public function compose(View $view)
     {
         $user = Auth::user();
-        $result = MenuComposer::getProjects();
-        $modules = [];
+        if (isset($user)) {
+            $result = MenuComposer::getProjects();
+            $modules = [];
 
-        foreach ($result as $item) {
-            $access = (is_null($item['access'])) ? [] : $item['access'];
-            if ($user->hasRole($access))
-                $modules[] = [
-                    'id' => $item['id'],
-                    'title' => __($item['title']),
-                    'description' => $item['description'],
-                    'link' => $item['link'],
-                    'icon' => $item['icon'],
-                ];
+            foreach ($result as $item) {
+                $access = (is_null($item['access'])) ? [] : $item['access'];
+                if ($user->hasRole($access))
+                    $modules[] = [
+                        'id' => $item['id'],
+                        'title' => __($item['title']),
+                        'description' => $item['description'],
+                        'link' => $item['link'],
+                        'icon' => $item['icon'],
+                    ];
+            }
+
+            $modules = collect($modules)->sortBy('title')->toArray();
+            $view->with(compact('modules'));
         }
-
-        $modules = collect($modules)->sortBy('title')->toArray();
-        $view->with(compact('modules'));
     }
 
     public static function getProjects(): array

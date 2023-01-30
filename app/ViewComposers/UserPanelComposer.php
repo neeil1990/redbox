@@ -11,17 +11,19 @@ class UserPanelComposer
 {
     public function compose(View $view)
     {
-        /** @var User $user */
-        $user = Auth::user();
+        if (Auth::check()) {
+            /** @var User $user */
+            $user = Auth::user();
 
-        $tariff = $user->tariff();
-        $name = ($tariff) ? $tariff->name() : null;
+            $tariff = $user->tariff();
+            $name = ($tariff) ? $tariff->name() : null;
 
-        $tariffs = [];
-        if (isset($tariff)) {
-            $tariffs = $tariff->getAsArray()['settings'];
+            $tariffs = [];
+            if (isset($tariff)) {
+                $tariffs = $tariff->getAsArray()['settings'];
+            }
+
+            $view->with(compact('user', 'name', 'tariffs'));
         }
-
-        $view->with(compact('user', 'name', 'tariffs'));
     }
 }

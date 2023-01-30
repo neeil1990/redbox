@@ -18,28 +18,30 @@ class LimitsComposer
 {
     public function compose(View $view)
     {
-        /** @var User $user */
-        $user = Auth::user();
+        if (Auth::check()) {
+            /** @var User $user */
+            $user = Auth::user();
 
-        $tariff = $user->tariff();
+            $tariff = $user->tariff();
 
-        $tariffLimits = [];
-        if (isset($tariff)) {
-            $tariffLimits = $tariff->getAsArray()['settings'];
+            $tariffLimits = [];
+            if (isset($tariff)) {
+                $tariffLimits = $tariff->getAsArray()['settings'];
+            }
+
+            $limitsStatistics = [];
+            foreach ($tariffLimits as $tariffKey => $tariffValue) {
+                $info = LimitsComposer::getUsedLimit($tariffKey, $user);
+                $limitsStatistics[$tariffKey]['used'] = $info['count'];
+                $limitsStatistics[$tariffKey]['position'] = $info['position'];
+                $limitsStatistics[$tariffKey]['name'] = $tariffValue['name'];
+                $limitsStatistics[$tariffKey]['value'] = $tariffValue['value'];
+            }
+
+            $limitsStatistics = collect($limitsStatistics)->sortBy('position')->toArray();
+
+            $view->with(compact('limitsStatistics'));
         }
-
-        $limitsStatistics = [];
-        foreach ($tariffLimits as $tariffKey => $tariffValue) {
-            $info = LimitsComposer::getUsedLimit($tariffKey, $user);
-            $limitsStatistics[$tariffKey]['used'] = $info['count'];
-            $limitsStatistics[$tariffKey]['position'] = $info['position'];
-            $limitsStatistics[$tariffKey]['name'] = $tariffValue['name'];
-            $limitsStatistics[$tariffKey]['value'] = $tariffValue['value'];
-        }
-
-        $limitsStatistics = collect($limitsStatistics)->sortBy('position')->toArray();
-
-        $view->with(compact('limitsStatistics'));
     }
 
     /**

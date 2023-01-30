@@ -23,14 +23,25 @@
     </div>
     <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false"
         style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px; white-space: inherit !important;">
-        @foreach($modules as $module)
-            <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
-                <a class="nav-link search-link" href="{{ $module['link'] }}" style="white-space: inherit !important;">
+        @if(isset($modules))
+            @foreach($modules as $module)
+                <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
+                    <a class="nav-link search-link" href="{{ $module['link'] }}"
+                       style="white-space: inherit !important;">
                     <span class="ml-2">{!! $module['icon'] !!} <span
                             class="module-name">{{ $module['title'] }}</span></span>
+                    </a>
+                </li>
+            @endforeach
+        @else
+            <li class="nav-item menu-item">
+                <a class="nav-link search-link" href="/login" style="white-space: inherit !important;">
+                    <span> <i class="fa fa-users"></i>
+                        <span class="module-name ml-2"> {{ __('Login page') }}</span>
+                    </span>
                 </a>
             </li>
-        @endforeach
+        @endif
         {{-- Контроллер с CRUD DescriptionProjectForAdminController--}}
     </ul>
 </nav>
