@@ -44,6 +44,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
      */
     public function handle()
     {
+        Log::debug('$this->userId', [$this->userId]);
         $relevance = new Relevance($this->request);
         if ($this->type === 'full') {
             $relevance->getMainPageHtml();

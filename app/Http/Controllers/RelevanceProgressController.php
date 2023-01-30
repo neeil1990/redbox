@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ProjectRelevanceHistory;
 use App\Relevance;
+use App\RelevanceHistoryResult;
 use App\RelevanceProgress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class RelevanceProgressController extends Controller
 
         if ($progress->progress === 100) {
             $project = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->latest('updated_at')->first();
-            $history = \App\RelevanceHistoryResult::where('project_id', '=', $project->id)->latest('updated_at')->first();
+            $history = RelevanceHistoryResult::where('project_id', '=', $project->id)->latest('updated_at')->first();
             return response()->json([
                 'progress' => $progress->progress,
                 'result' => Relevance::uncompressed($history)
