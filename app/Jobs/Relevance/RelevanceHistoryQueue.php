@@ -53,8 +53,7 @@ class RelevanceHistoryQueue implements ShouldQueue
      */
     public function handle()
     {
-        $this->relevance = new Relevance($this->request, true);
-        $this->relevance->setUserId($this->userId);
+        $this->relevance = new Relevance($this->request, $this->userId, true);
 
         try {
             if ($this->type == 'full') {

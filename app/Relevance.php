@@ -71,14 +71,11 @@ class Relevance
 
     public $userId;
 
-    /**
-     * @param $request
-     * @param bool $queue
-     */
-    public function __construct($request, bool $queue = false)
+    public function __construct($request, $userId, bool $queue = false)
     {
         $this->queue = $queue;
         $this->request = $request;
+        $this->userId = $userId;
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
@@ -97,18 +94,11 @@ class Relevance
             ];
         }
 
-        Log::debug('params', [$params]);
-        die();
         $this->params = RelevanceAnalyseResults::firstOrNew($params);
 
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
-    }
-
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
     }
 
     /**
