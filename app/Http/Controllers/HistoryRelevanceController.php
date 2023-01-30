@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Common;
 use App\Exports\RelevanceStatisticsExport;
-use App\Jobs\RelevanceAnalysisQueue;
+use App\Jobs\Relevance\RelevanceHistoryQueue;
 use App\ProjectRelevanceHistory;
 use App\ProjectRelevanceThough;
 use App\Relevance;
@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -220,7 +219,7 @@ class HistoryRelevanceController extends Controller
             $object->state = 0;
             $object->save();
 
-            RelevanceAnalysisQueue::dispatch(
+            RelevanceHistoryQueue::dispatch(
                 $ownerId,
                 $request->all(),
                 $request['id']
@@ -261,7 +260,7 @@ class HistoryRelevanceController extends Controller
             $object->state = 0;
             $object->save();
 
-            RelevanceAnalysisQueue::dispatch(
+            RelevanceHistoryQueue::dispatch(
                 $ownerId,
                 $request->all(),
                 $request->id,
@@ -305,7 +304,7 @@ class HistoryRelevanceController extends Controller
             $object->state = 0;
             $object->save();
 
-            RelevanceAnalysisQueue::dispatch(
+            RelevanceHistoryQueue::dispatch(
                 $ownerId,
                 $request->all(),
                 $request['id'],
@@ -571,7 +570,7 @@ class HistoryRelevanceController extends Controller
                 ->first();
 
             if ($record->state != 0) {
-                RelevanceAnalysisQueue::dispatch(
+                RelevanceHistoryQueue::dispatch(
                     $ownerId,
                     json_decode($record->request, true),
                     $record->id
@@ -645,7 +644,7 @@ class HistoryRelevanceController extends Controller
                 $object->state = 0;
                 $object->save();
 
-                RelevanceAnalysisQueue::dispatch(
+                RelevanceHistoryQueue::dispatch(
                     $ownerId,
                     json_decode($object->request, true),
                     $id

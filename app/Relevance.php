@@ -1245,6 +1245,7 @@ class Relevance
      */
     public function saveHistory($userId, $historyId)
     {
+        RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
         $this->saveStatistic();
 
@@ -1491,13 +1492,6 @@ class Relevance
             'line' => $exception->getLine(),
             'message' => $exception->getMessage(),
         ]);
-
-        TelegramBot::sendMessage(implode(' ', [
-            'relevance error',
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'message' => $exception->getMessage(),
-        ]), 938341087);
     }
 
     /**

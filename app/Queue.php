@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Jobs\RelevanceAnalysisQueue;
+use App\Jobs\Relevance\RelevanceHistoryQueue;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ class Queue
         if (count($item) == 2 && isset($link['host'])) {
             $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
 
-            RelevanceAnalysisQueue::dispatch(
+            RelevanceHistoryQueue::dispatch(
                 $userId,
                 $request->all(),
                 $historyId,

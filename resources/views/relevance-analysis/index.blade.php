@@ -1036,15 +1036,17 @@
                             hash: $('#hiddenHash').val()
                         },
                         success: function (response) {
-                            if (response.progress == null) {
+                            setProgressBarStyles(response.progress)
+
+                            if (response.progress === 100) {
                                 clearInterval(interval)
-                                return stopProgressBar()
-                            } else {
-                                setProgressBarStyles(response.progress.progress)
+                                stopProgressBar()
+                                endProgress()
+                                successRequest(response.result)
                             }
                         },
                     });
-                }, 1000);
+                }, 5000);
             }
 
             function startProgress(type) {
@@ -1094,10 +1096,6 @@
                         $("#progress-bar").show(300)
                         getProgress()
                     },
-                    success: function (response) {
-                        endProgress()
-                        successRequest(response)
-                    },
                     error: function (response) {
                         endProgress()
                         let message = ''
@@ -1142,10 +1140,6 @@
                         $("#progress-bar").show(300)
                         getProgress()
                     },
-                    success: function (response) {
-                        endProgress()
-                        successRequest(response)
-                    },
                     error: function (response) {
                         endProgress()
                         if (response.responseText) {
@@ -1178,10 +1172,6 @@
                         $("#progress-bar").show(300)
                         getProgress()
                     },
-                    success: function (response) {
-                        endProgress()
-                        successRequest(response)
-                    },
                     error: function (response) {
                         endProgress()
                         if (response.responseText) {
@@ -1201,12 +1191,6 @@
             }
 
             function successRequest(response) {
-                if (response.code === 415) {
-                    $("#full-analyse").prop("disabled", false);
-                    limitMessage()
-                    return;
-                }
-
                 let localization = {
                     search: "{{ __('Search') }}",
                     show: "{{ __('show') }}",
@@ -1220,11 +1204,10 @@
                 };
 
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
-                stopProgressBar()
-                renderTextTable(response.avg, response.mainPage)
+                renderTextTable(response.avg, response.main_page)
                 renderRecommendationsTable(response.recommendations, response.recommendations_count, localization)
                 renderUnigramTable(
-                    response.unigramTable,
+                    response.unigram_table,
                     response.ltp_count,
                     localization,
                     response.history_id,
@@ -1234,13 +1217,13 @@
                 renderScannedSitesList(
                     localization,
                     response.sites,
-                    response.avgCoveragePercent,
-                    response.scanned_sites_count,
-                    response.hide_ignored_domains,
-                    response.boostPercent,
+                    response.avg_coverage_percent,
+                    50,
+                    false,
+                    0,
                     response.sitesAVG,
                 );
-                renderClouds(response.clouds.competitors, response.clouds.mainPage, response.tfCompClouds, response.hide_ignored_domains);
+                renderClouds(response.clouds_competitors, response.clouds_main_page, response.tf_comp_clouds, response.hide_ignored_domains);
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);
