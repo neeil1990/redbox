@@ -334,9 +334,8 @@ class ClusterController extends Controller
 
     public function editCluster(Request $request): ?JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
-
-        if (empty($cluster)) {
+        $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
+        if (!User::isUserAdmin() && $cluster->user_id !== Auth::id()) {
             return abort(403);
         }
 
@@ -370,8 +369,8 @@ class ClusterController extends Controller
 
     public function checkGroupName(Request $request): JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
-        if (empty($cluster) || preg_match("/[0-9]/", $request->input('groupName'))) {
+        $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
+        if ((!User::isUserAdmin() && $cluster->user_id !== Auth::id() )|| preg_match("/[0-9]/", $request->input('groupName'))) {
             return response()->json([
                 'success' => false,
             ], 400);
@@ -393,8 +392,8 @@ class ClusterController extends Controller
 
     public function changeGroupName(Request $request): JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->input('id'))->where('user_id', '=', Auth::id())->first();
-        if (empty($cluster) || preg_match("/[0-9]/", $request->input('newGroupName'))) {
+        $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
+        if ((!User::isUserAdmin() && $cluster->user_id !== Auth::id() )|| preg_match("/[0-9]/", $request->input('newGroupName'))) {
             return response()->json([
                 'success' => false,
             ], 400);
@@ -426,7 +425,7 @@ class ClusterController extends Controller
     public function confirmationNewCluster(Request $request): ?JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->where('user_id', '=', Auth::id())->first();
-        if (empty($cluster)) {
+        if (!User::isUserAdmin() && $cluster->user_id !== Auth::id()) {
             return abort(403);
         }
 

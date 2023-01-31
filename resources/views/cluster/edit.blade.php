@@ -222,7 +222,7 @@
                         <div class="card cluster-block" style="margin-bottom: 0; border-radius: 0">
                             <div class="card-header" style="background-color: #343a40; color: white">
                                 <div class="d-flex justify-content-between text-white">
-                                    <span>Не распределённые</span>
+                                    <span>Нераспределённые слова</span>
                                     <div>
                                     <span class="__helper-link ui_tooltip_w">
                                         <i class="fa fa-eye mr-2"
