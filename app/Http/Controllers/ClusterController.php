@@ -340,37 +340,31 @@ class ClusterController extends Controller
             return abort(403);
         }
 
-        try {
-            $clusterItem = [];
+        $clusterItem = [];
 
-            $cluster->result = Cluster::unpackCluster($cluster->result);
-            $clusters = $cluster->result;
-            foreach ($clusters as $mainPhrase => $items) {
-                foreach ($items as $phrase => $item) {
-                    if ($phrase === $request->input('phrase')) {
-                        unset($item['merge']);
-                        unset($clusters[$mainPhrase][$phrase]);
-                        $clusters[$request->input('mainPhrase')][$request->input('phrase')] = $item;
-                        $clusterItem = $item;
-                    }
+        $cluster->result = Cluster::unpackCluster($cluster->result);
+        $clusters = $cluster->result;
+        foreach ($clusters as $mainPhrase => $items) {
+            foreach ($items as $phrase => $item) {
+                if ($phrase === $request->input('phrase')) {
+                    unset($item['merge']);
+                    unset($clusters[$mainPhrase][$phrase]);
+                    $clusters[$request->input('mainPhrase')][$request->input('phrase')] = $item;
+                    $clusterItem = $item;
                 }
             }
-
-            Cluster::recalculateClusterInfo($cluster, $clusters);
-
-            return response()->json([
-                'success' => true,
-                'countClusters' => $cluster->count_clusters,
-                'similarities' => implode("\n", array_keys($clusterItem['similarities'])),
-                'based' => $clusterItem['based'],
-                'phrased' => $clusterItem['phrased'],
-                'target' => $clusterItem['target'],
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-            ], 400);
         }
+
+        $similarities = Cluster::recalculateClusterInfo($cluster, $clusters);
+
+        return response()->json([
+            'success' => true,
+            'countClusters' => $cluster->count_clusters,
+            'similarities' => implode("\n", array_keys($similarities[$request->input('mainPhrase')][$request->input('phrase')]['similarities'] ?? [])),
+            'based' => $clusterItem['based']['number'],
+            'phrased' => $clusterItem['phrased']['number'],
+            'target' => $clusterItem['target']['number'],
+        ]);
 
     }
 

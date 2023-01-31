@@ -179,9 +179,9 @@
                                                 @endif
                                                 <div>
                                                     <span class="__helper-link ui_tooltip_w">
-                                                                <span>{{ $item['based'] }}</span> /
-                                                                <span>{{ $item['phrased'] }}</span> /
-                                                                <span>{{ $item['target'] }}</span>
+                                                                <span>{{ $item['based']['number'] }}</span> /
+                                                                <span>{{ $item['phrased']['number'] }}</span> /
+                                                                <span>{{ $item['target']['number'] }}</span>
                                                             <span class="ui_tooltip __bottom">
                                                             <span class="ui_tooltip_content">
                                                                 <span>Базвая</span> /
@@ -263,9 +263,9 @@
                                                 @endif
                                                 <div>
                                                     <span class="__helper-link ui_tooltip_w">
-                                                                <span>{{ $item['based'] }}</span> /
-                                                                <span>{{ $item['phrased'] }}</span> /
-                                                                <span>{{ $item['target'] }}</span>
+                                                            <span>{{ $item['based']['number'] }}</span> /
+                                                            <span>{{ $item['phrased']['number'] }}</span> /
+                                                            <span>{{ $item['target']['number'] }}</span>
                                                             <span class="ui_tooltip __bottom">
                                                             <span class="ui_tooltip_content">
                                                                 <span>Базвая</span> /
@@ -531,6 +531,7 @@
                             phrase: phrase,
                         },
                         success: function (response) {
+                            console.log(response)
                             successMessage("{{ __('Successfully') }}")
                             $('#' + clusterPhrase.replaceAll(' ', '_')).children('ul').eq(0).append(
                                 '<li data-target="' + phrase + '" data-action="' + clusterPhrase + '" class="list-group-item">' +

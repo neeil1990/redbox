@@ -831,7 +831,7 @@ class Cluster
         TelegramBot::sendMessage($message, $this->user->chat_id);
     }
 
-    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters)
+    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters): array
     {
         $request = json_decode($cluster->request, true);
         $ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
@@ -840,6 +840,8 @@ class Cluster
         $cluster->result = $result['clusters'];
         $cluster->count_clusters = $result['countClusters'];
         $cluster->save();
+
+        return $clusters;
     }
 
     public static function unpackCluster($result): array
