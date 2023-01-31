@@ -341,6 +341,8 @@ class ClusterController extends Controller
         }
 
         try {
+            $clusterItem = [];
+
             $cluster->result = Cluster::unpackCluster($cluster->result);
             $clusters = $cluster->result;
             foreach ($clusters as $mainPhrase => $items) {
@@ -349,6 +351,7 @@ class ClusterController extends Controller
                         unset($item['merge']);
                         unset($clusters[$mainPhrase][$phrase]);
                         $clusters[$request->input('mainPhrase')][$request->input('phrase')] = $item;
+                        $clusterItem = $item;
                     }
                 }
             }
@@ -358,7 +361,10 @@ class ClusterController extends Controller
             return response()->json([
                 'success' => true,
                 'countClusters' => $cluster->count_clusters,
-                'similarities' => implode("\n", array_keys(Cluster::unpackCluster($cluster->result)[$request->input('mainPhrase')][$request->input('phrase')]['similarities'])),
+                'similarities' => implode("\n", array_keys($clusterItem['similarities'])),
+                'based' => $clusterItem['based'],
+                'phrased' => $clusterItem['phrased'],
+                'target' => $clusterItem['target'],
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -433,7 +439,7 @@ class ClusterController extends Controller
         $clusters = Cluster::unpackCluster($cluster->result);
         foreach ($clusters as $mainPhrase => $items) {
             foreach ($items as $phrase => $item) {
-                if (in_array($phrase, $request->input('phrases'))) {
+                if (in_array($phrase, $request->input('phrases')) && $request->input('mainPhrase') !== $mainPhrase) {
                     $clusters[$request->input('mainPhrase')][$phrase] = $item;
                     unset($clusters[$mainPhrase][$phrase]);
                 }

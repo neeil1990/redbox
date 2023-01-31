@@ -340,9 +340,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
 });
-
-Route::get('/test', function () {
-    $project = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->latest('updated_at')->first();
-    $analyse = \App\RelevanceHistoryResult::where('project_id', '=', $project->id)->latest('id')->first();
-    dd($analyse);
-});
