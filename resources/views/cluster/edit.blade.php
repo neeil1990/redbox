@@ -305,17 +305,17 @@
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="btn-group w-100 mb-2">
-                            <input type="text" id="clusterFilter" class="form form-control"
-                                   placeholder="{{ __('Search') }}">
-                            <button class="btn btn-outline-secondary" id="searchPhrases">
-                                {{ __('Search') }}
-                            </button>
-                            <button class="btn btn-outline-secondary" id="setDefaultVision">
-                                Отменить
-                            </button>
-                        </div>
-                        <div class="card work-place-conf">
+                        <div class="work-place-conf">
+                            <div class="btn-group w-100 mb-2">
+                                <input type="text" id="clusterFilter" class="form form-control"
+                                       placeholder="{{ __('Search') }}">
+                                <button class="btn btn-outline-secondary" id="searchPhrases">
+                                    {{ __('Search') }}
+                                </button>
+                                <button class="btn btn-outline-secondary" id="setDefaultVision">
+                                    Отменить
+                                </button>
+                            </div>
                             <div class="card-header d-flex justify-content-between" id="workPlace"
                                  style="background-color: #343a40; color: white">
                                 {{ __('Workspace') }}
