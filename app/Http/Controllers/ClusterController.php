@@ -324,7 +324,7 @@ class ClusterController extends Controller
 
     public function editClusters(ClusterResults $cluster)
     {
-        if ($cluster->created_at <= Carbon::parse('00:00 01.01.2023')) {
+        if ($cluster->created_at <= Carbon::parse('00:00 30.01.2023')) {
             return abort(403, __('In order to edit this result, you need to reshoot it'));
         }
 
