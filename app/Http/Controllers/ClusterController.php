@@ -16,7 +16,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -145,6 +144,7 @@ class ClusterController extends Controller
         ClusterResults::where('id', $request->id)
             ->where('user_id', '=', Auth::id())
             ->update([$request->option => $request->value]);
+
         return response()->json([]);
     }
 
@@ -322,9 +322,12 @@ class ClusterController extends Controller
         ]);
     }
 
-
     public function editClusters(ClusterResults $cluster)
     {
+        if ($cluster->created_at <= Carbon::parse('00:00 01.01.2023')) {
+            return abort(403, __('In order to edit this result, you need to reshoot it'));
+        }
+
         $cluster->result = Cluster::unpackCluster($cluster->result);
         $cluster->request = json_decode($cluster->request, true);
 
@@ -370,7 +373,7 @@ class ClusterController extends Controller
     public function checkGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
-        if ((!User::isUserAdmin() && $cluster->user_id !== Auth::id() )|| preg_match("/[0-9]/", $request->input('groupName'))) {
+        if ((!User::isUserAdmin() && $cluster->user_id !== Auth::id()) || preg_match("/[0-9]/", $request->input('groupName'))) {
             return response()->json([
                 'success' => false,
             ], 400);
@@ -393,7 +396,7 @@ class ClusterController extends Controller
     public function changeGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
-        if ((!User::isUserAdmin() && $cluster->user_id !== Auth::id() )|| preg_match("/[0-9]/", $request->input('newGroupName'))) {
+        if ((!User::isUserAdmin() && $cluster->user_id !== Auth::id()) || preg_match("/[0-9]/", $request->input('newGroupName'))) {
             return response()->json([
                 'success' => false,
             ], 400);
