@@ -179,10 +179,10 @@
                                                 @endif
                                                 <div>
                                                     <span class="__helper-link ui_tooltip_w">
-                                                                <span>{{ $item['based']['number'] }}</span> /
-                                                                <span>{{ $item['phrased']['number'] }}</span> /
-                                                                <span>{{ $item['target']['number'] }}</span>
-                                                            <span class="ui_tooltip __bottom">
+                                                        <span>{{ $item['based']['number'] ?? $item['based'] }}</span> /
+                                                        <span>{{ $item['phrased']['number'] ?? $item['phrased'] }}</span> /
+                                                        <span>{{ $item['target']['number'] ?? $item['target'] }}</span>
+                                                        <span class="ui_tooltip __bottom">
                                                             <span class="ui_tooltip_content">
                                                                 <span>Базвая</span> /
                                                                 <span>Фразовая</span> /
@@ -263,10 +263,10 @@
                                                 @endif
                                                 <div>
                                                     <span class="__helper-link ui_tooltip_w">
-                                                            <span>{{ $item['based']['number'] }}</span> /
-                                                            <span>{{ $item['phrased']['number'] }}</span> /
-                                                            <span>{{ $item['target']['number'] }}</span>
-                                                            <span class="ui_tooltip __bottom">
+                                                        <span>{{ $item['based']['number'] ?? $item['based'] }}</span> /
+                                                        <span>{{ $item['phrased']['number'] ?? $item['phrased'] }}</span> /
+                                                        <span>{{ $item['target']['number'] ?? $item['target'] }}</span>
+                                                        <span class="ui_tooltip __bottom">
                                                             <span class="ui_tooltip_content">
                                                                 <span>Базвая</span> /
                                                                 <span>Фразовая</span> /
