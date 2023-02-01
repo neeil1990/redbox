@@ -724,6 +724,7 @@ class Cluster
     public static function calculateSimilarities($clusters, $ignoredWords)
     {
         $m = new Morphy();
+        $cache = [];
 
         foreach ($clusters as $mainPhrase => $items) {
             foreach ($items as $ph => $item) {
@@ -739,9 +740,12 @@ class Cluster
                 foreach ($phrase as $keyF => $item) {
                     if (mb_strlen($item) < 2) {
                         continue;
+                    } elseif (isset($cache[$item])) {
+                        $phrase[$keyF] = $cache[$item];
                     } else {
                         $base = $m->base($item);
                         $phrase[$keyF] = $base;
+                        $cache[$item] = $base;
                     }
                 }
 
@@ -756,12 +760,16 @@ class Cluster
                         }
                         $phrase2 = explode(' ', $offPhrase2);
                         $phrase2 = array_diff($phrase2, $ignoredWords);
+
                         foreach ($phrase2 as $keyF => $item) {
                             if (mb_strlen($item) < 2) {
                                 continue;
+                            } elseif (isset($cache[$item])) {
+                                $phrase2[$keyF] = $cache[$item];
                             } else {
                                 $base = $m->base($item);
                                 $phrase2[$keyF] = $base;
+                                $cache[$item] = $base;
                             }
                         }
 

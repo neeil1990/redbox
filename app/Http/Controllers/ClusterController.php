@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -427,7 +428,7 @@ class ClusterController extends Controller
 
     public function confirmationNewCluster(Request $request): ?JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->where('user_id', '=', Auth::id())->first();
+        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->first();
         if (!User::isUserAdmin() && $cluster->user_id !== Auth::id()) {
             return abort(403);
         }
