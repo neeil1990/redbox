@@ -102,6 +102,13 @@
                                 <td class="project-region">{{ $project->region }}</td>
                                 <td>
                                     <div class="d-flex flex-column">
+                                        <a class="btn btn-secondary mb-2"
+                                           href="{{ route('show.cluster.result', $project->id) }}" target="_blank">
+                                            {{ __('View results') }}
+                                        </a>
+                                        <a href="{{ route('edit.clusters', $project->id) }}" class="btn btn-secondary mb-2">
+                                            {{ __('Redistribute clusters') }}
+                                        </a>
                                         <button type="button"
                                                 data-toggle="modal"
                                                 data-target="#repeat-scan"
@@ -109,13 +116,6 @@
                                                 class="btn btn-secondary mb-2 repeat-scan">
                                             {{ __('Repeat analysis') }}
                                         </button>
-                                        <a class="btn btn-secondary mb-2"
-                                           href="{{ route('show.cluster.result', $project->id) }}" target="_blank">
-                                            {{ __('View results') }}
-                                        </a>
-                                        <a href="{{ route('edit.clusters', $project->id) }}" class="btn btn-secondary mb-2">
-                                            Перераспределить кластеры
-                                        </a>
                                         <a class="btn btn-secondary mb-2"
                                            href="/download-cluster-result/{{$project->id}}/csv"
                                            target="_blank">{{ __('Download csv') }}</a>
@@ -836,8 +836,9 @@
                                     6: cluster['clustering_level'] + ' / ' + cluster['request']['engineVersion'],
                                     7: cluster['region'],
                                     8: '<div class="d-flex flex-column">' +
-                                        '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">{{ __('Repeat the analysis') }}</button> ' +
                                         '<a href="/show-cluster-result/' + cluster['id'] + '" target="_blank" class="btn btn-secondary mb-2">{{ __('View results') }}</a> ' +
+                                        '<a href="/edit-clusters/' + cluster['id'] + '" class="btn btn-secondary mb-2">{{ __('Redistribute clusters') }}</a>' +
+                                        '<button type="button" data-toggle="modal" data-target="#repeat-scan" data-order="' + cluster['id'] + '" class="btn btn-secondary mb-2 repeat-scan">{{ __('Repeat the analysis') }}</button> ' +
                                         '<button class="btn btn-secondary mb-2">{{ __('Download csv') }}</button>' +
                                         '<button class="btn btn-secondary">{{ __('Download xls') }}</button></div>'
                                 });

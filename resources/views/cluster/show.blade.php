@@ -207,7 +207,7 @@
                             <thead>
                             <tr>
                                 <th>{{ __('Clusters') }}</th>
-                                <th style="min-width: 333px;">{{ __('Competitors') }}</th>
+                                <th style="min-width: 333px;"></th>
                             </tr>
                             </thead>
                             <tbody id="clusters-table-tbody">
@@ -264,7 +264,7 @@
                                                       rows="8">{{ $cluster['request']['ignoredDomains'] ?? '' }}</textarea>
                                         </div>
 
-                                        <div id="ignoredWordsBlock" style="display: none">
+                                        <div id="ignoredWordsBlock">
                                             <div class="form-group required">
                                                 <label for="ignoredWords">Игнорируемые слова</label>
                                                 <textarea class="form form-control" name="ignoredWords"
@@ -450,14 +450,6 @@
     <input type="hidden" id="progressId">
     @slot('js')
         <script>
-            function successCopiedMessage() {
-                $('.toast.toast-success').show(300)
-                $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
-                setTimeout(() => {
-                    $('.toast.toast-success').hide(300)
-                }, 3000)
-            }
-
             $('#app > div > div > div.card-header').append($('#params').html())
             $('#params').remove()
 
@@ -488,6 +480,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            function successCopiedMessage() {
+                $('.toast.toast-success').show(300)
+                $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")
+                setTimeout(() => {
+                    $('.toast.toast-success').hide(300)
+                }, 3000)
+            }
+
             function saveAllUrls(id) {
                 let button = $(this)
                 $('.save-all-urls').unbind().on('click', function () {
@@ -697,16 +697,6 @@
                     $('#result-table').show()
                     $('#block-for-downloads-files').show()
                 }, 1000)
-
-                $('#engineVersionFast').change(function () {
-                    if ($(this).val() === 'max_phrases' || $(this).val() === '1501') {
-                        $('#ignoredWordsBlock').show(300)
-                    } else {
-                        if ($('#ignoredWordsBlock').is(':visible')) {
-                            $('#ignoredWordsBlock').hide(300)
-                        }
-                    }
-                })
             })
         </script>
     @endslot

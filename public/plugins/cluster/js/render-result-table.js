@@ -13,6 +13,7 @@ function renderResultTable(data) {
         let groupName = ''
         let relevanceHeader = ''
         let saveUrlButton = ''
+        let colspan = 3
 
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
@@ -45,10 +46,10 @@ function renderResultTable(data) {
                     }
                 }
 
-
                 if ('groupName' in result['finallyResult']) {
                     groupHeader = '<th style="border-top-width: 2px;min-width: 250px">Группа</th>'
                     groupName = '<td class="border-0 group-' + clusterId + '">' + result['finallyResult']['groupName'] + '</td>'
+                    colspan += 1
                 } else {
                     copyGroupBool = false
                 }
@@ -70,6 +71,7 @@ function renderResultTable(data) {
                     relevance = '<td class="border-0 relevance-' + clusterId + '"> <a href="' + information['link'] + '" target="_blank">' + information['link'] + ' </a></td>'
                     relevanceHeader = '<th style="border-top-width: 2px;">Релевантные url </th>'
                     copyRelevanceBool = true
+                    colspan += 1
                 } else if ('relevance' in information && information['relevance'] !== 0) {
                     $.each(information['relevance'], function (key, value) {
                         relevance += '<option value="' + value + '">' + value + '</option>'
@@ -84,13 +86,14 @@ function renderResultTable(data) {
                     relevance = '<td class="border-0 relevance-' + clusterId + '"> ' + relevance + '</td>'
                     relevanceHeader = '<th style="border-top-width: 2px;">Релевантные url </th>'
                     copyRelevanceBool = true
+                    colspan += 1
                 }
 
                 if (allRelevanceUrls.length > 0) {
                     saveUrlButton = '<button class="btn btn-secondary save-all-urls" ' +
                         'data-toggle="modal" data-target="#saveUrlsModal" ' +
                         'data-urls="' + [...new Set(allRelevanceUrls)] + '">' +
-                        '   Сохранить url ' +
+                        'Сохранить url' +
                         '</button>'
                 }
 
@@ -155,13 +158,15 @@ function renderResultTable(data) {
             '       <table class="table table-hover text-nowrap render-table" id="render-table' + key + '" style="width: 100%">' +
             '       <thead>' +
             '           <tr>' +
-            '               <th colspan="4" style="border-bottom: 0; border-top: 0;"></th>' +
+            '               <th colspan="' + colspan + '" style="border-bottom: 0; border-top: 0;"></th>' +
             '               <th class="centered-text border-0" colspan="3">Частотность</th>' +
             '           </tr>' +
             '           <tr>' +
             '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
             '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
-            '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
+            '               <th style="border-top-width: 2px;min-width: 250px;">' +
+            '                   Ключевой запрос ' +
+            '               </th>' +
             groupHeader +
             relevanceHeader +
             '               <th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
@@ -198,8 +203,7 @@ function renderResultTable(data) {
             '                   Конкуренты' +
             '               </a>' +
             '            </div>' +
-            '           <div class="col-6">' + saveUrlButton +
-            '           </div>' +
+            '           <div class="col-6">' + saveUrlButton + '</div>' +
             '       </div>' +
             '       <div class="collapse" id="competitors' + key + '"> </div>' +
             '   </td>' +
@@ -208,6 +212,7 @@ function renderResultTable(data) {
         $('#clusters-table-tbody').append(newRow)
     })
 
+    coloredPhrases()
     copyBased()
     copyPhrases()
     copyTarget()
@@ -227,6 +232,26 @@ function renderResultTable(data) {
             })
         })
     });
+}
+
+function coloredPhrases() {
+    $('.colored-phrases').unbind('click').on('click', function () {
+        let object = $(this).parent().children('div').eq(0)
+        let array = object.html().split('<br>')
+
+        $.each($('#clusters-table > tbody > tr > td > table > tbody > tr').find('td:eq(2)'), function (key, value) {
+            let html = $(this).children('div').eq(0).children('div').eq(0).html()
+            if (array.indexOf(html) !== -1) {
+                $(this).css({
+                    'background': '#f5e2aa',
+                })
+            } else {
+                $(this).css({
+                    'background': 'white',
+                })
+            }
+        })
+    })
 }
 
 function copyCluster() {

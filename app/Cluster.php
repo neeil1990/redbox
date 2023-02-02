@@ -247,6 +247,7 @@ class Cluster
         if ($this->getSearchBase()) {
             $this->searchGroupName();
         }
+        $this->clusters = $this->calculateSimilarities($this->clusters, $this->ignoredWords);
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -348,11 +349,7 @@ class Cluster
                     }
                 }
 
-                foreach ($second as $key => $phrase) {
-                    if (in_array($phrase, $this->ignoredWords)) {
-                        unset($second[$key]);
-                    }
-                }
+                $second = array_diff($second, $this->ignoredWords);
 
                 if (count($second) === 1) {
                     continue;
@@ -724,6 +721,74 @@ class Cluster
         }
     }
 
+    public static function calculateSimilarities($clusters, $ignoredWords)
+    {
+        $m = new Morphy();
+        $cache = [];
+
+        foreach ($clusters as $mainPhrase => $items) {
+            foreach ($items as $ph => $item) {
+                unset($clusters[$mainPhrase][$ph]['similarities']);
+            }
+        }
+
+        foreach ($clusters as $mainPhrase => $items) {
+            foreach ($items as $offPhrase => $info) {
+                $phrase = explode(' ', $offPhrase);
+                $phrase = array_diff($phrase, $ignoredWords);
+
+                foreach ($phrase as $keyF => $item) {
+                    if (mb_strlen($item) < 2) {
+                        continue;
+                    } elseif (isset($cache[$item])) {
+                        $phrase[$keyF] = $cache[$item];
+                    } else {
+                        $base = $m->base($item);
+                        $phrase[$keyF] = $base;
+                        $cache[$item] = $base;
+                    }
+                }
+
+                foreach ($clusters as $mainPhrase2 => $items2) {
+                    if ($mainPhrase === $mainPhrase2) {
+                        continue;
+                    }
+
+                    foreach ($items2 as $offPhrase2 => $info2) {
+                        if ($offPhrase === $offPhrase2 || $offPhrase === 'finallyResult' || $offPhrase2 === 'finallyResult') {
+                            continue;
+                        }
+                        $phrase2 = explode(' ', $offPhrase2);
+                        $phrase2 = array_diff($phrase2, $ignoredWords);
+
+                        foreach ($phrase2 as $keyF => $item) {
+                            if (mb_strlen($item) < 2) {
+                                continue;
+                            } elseif (isset($cache[$item])) {
+                                $phrase2[$keyF] = $cache[$item];
+                            } else {
+                                $base = $m->base($item);
+                                $phrase2[$keyF] = $base;
+                                $cache[$item] = $base;
+                            }
+                        }
+
+                        $similarities = count(array_intersect($phrase, $phrase2));
+                        if ($similarities >= 1) {
+                            $clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
+                        }
+                    }
+                }
+
+                if (isset($clusters[$mainPhrase][$offPhrase]['similarities'])) {
+                    arsort($clusters[$mainPhrase][$offPhrase]['similarities']);
+                }
+            }
+        }
+
+        return $clusters;
+    }
+
     protected function setResult(array $results)
     {
         $this->result = $results;
@@ -771,5 +836,23 @@ class Cluster
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
         TelegramBot::sendMessage($message, $this->user->chat_id);
+    }
+
+    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters): array
+    {
+        $request = json_decode($cluster->request, true);
+        $ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
+        $clusters = Cluster::calculateSimilarities($clusters, $ignoredWords);
+        $result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
+        $cluster->result = $result['clusters'];
+        $cluster->count_clusters = $result['countClusters'];
+        $cluster->save();
+
+        return $clusters;
+    }
+
+    public static function unpackCluster($result): array
+    {
+        return json_decode(gzuncompress(base64_decode($result)), true);
     }
 }

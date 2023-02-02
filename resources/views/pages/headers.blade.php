@@ -62,10 +62,6 @@
                         <div class="card-body p-0 overflow-auto">
                             <table class="table table-striped">
                                 <tbody>
-                                <tr>
-                                    <td><strong>{{ __('contentType') }}</strong></td>
-                                    <td>{{ $arItems['contentType'] }}</td>
-                                </tr>
                                 @foreach($arItems['headers'] as $name => $val)
                                     <tr>
                                         <td><strong>{{ $name }}</strong></td>
@@ -136,5 +132,4 @@
             </script>
         @endslot
     @endif
-
 @endcomponent

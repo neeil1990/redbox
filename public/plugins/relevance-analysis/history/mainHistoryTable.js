@@ -16,10 +16,6 @@ $('#main_history_table').DataTable({
             "previous": "«"
         },
     },
-    "oLanguage": {
-        "sEmptyTable": "No records",
-        "sLengthMenu": "Display _MENU_ records",
-    }
 });
 
 $(".dt-button").addClass('btn btn-secondary')

@@ -17,6 +17,7 @@ use App\ClusterConfigurationClassic;
 use App\ClusterResults;
 use App\Common;
 use App\Morphy;
+use App\ProjectRelevanceHistory;
 use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -203,7 +204,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/create-queue', 'RelevanceController@createQueue')->name('create.queue.view');
     Route::post('/create-queue', 'RelevanceController@createTaskQueue')->name('create.queue');
     Route::get('/analyze-relevance', 'RelevanceController@index')->name('relevance-analysis');
-    Route::post('/analyze-relevance', 'RelevanceController@analysis')->name('analysis.relevance');
+    Route::post('/analyze-relevance', 'RelevanceController@analyse')->name('analysis.relevance');
     Route::post('/repeat-analyze-main-page', 'RelevanceController@repeatMainPageAnalysis')->name('repeat.main.page.analysis');
     Route::post('/repeat-analyze-relevance', 'RelevanceController@repeatRelevanceAnalysis')->name('repeat.relevance.analysis');
 
@@ -345,6 +346,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/download-cluster-competitors', 'ClusterController@downloadClusterCompetitors')->name('download.cluster.competitors');
     Route::post('/download-cluster-phrases', 'ClusterController@downloadClusterPhrases')->name('download.cluster.phrases');
     Route::get('/edit-clusters/{cluster}', 'ClusterController@editClusters')->name('edit.clusters');
+    Route::post('/confirmation-new-cluster', 'ClusterController@confirmationNewCluster')->name('confirmation.new.cluster');
     Route::post('/edit-clusters', 'ClusterController@editCluster')->name('edit.cluster');
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');

@@ -929,24 +929,6 @@
                                     </div>
                                     <span>Поиск пассажей</span>
                                 </div>
-
-                                <div class="form-group required mt-3">
-                                    @if(isset($object['request']['version']))
-                                        <label>Способ подбора корней</label>
-                                        {!! Form::select('version', array_unique([
-                                                $object['request']['version'] => $object['request']['version'],
-                                                'stemmer' => 'stemmer (старая версия)',
-                                                'phpmorphy' => 'phpMorphy (новая версия)',
-                                        ]), null, ['class' => 'custom-select rounded-0 version']) !!}
-                                    @else
-                                        <label>Способ подбора корней</label>
-                                        {!! Form::select('version', array_unique([
-                                                'stemmer' => 'stemmer (старая версия)',
-                                                'phpmorphy' => 'phpMorphy (новая версия)',
-                                        ]), null, ['class' => 'custom-select rounded-0 version']) !!}
-                                    @endif
-                                </div>
-
                             @endif
 
                             <div class="d-flex flex-column">
@@ -1186,7 +1168,6 @@
                     conjunctionsPrepositionsPronouns: $('#switchConjunctionsPrepositionsPronouns').is(':checked'),
                     switchMyListWords: $('#switchMyListWords').is(':checked'),
                     listWords: $('.form-control.listWords').val(),
-                    version: $('.version').val(),
                     searchPassages: $('#searchPassages').is(':checked'),
                 }
             }
@@ -1210,7 +1191,6 @@
                                 '<a style="color: white; font-weight: bolder" target="_blank" href="/show-history/' + response.newProject.id + '">Здесь</a>'
                             )
                             $('#primaryAlert').show()
-                        } else if (response.message === 'wait') {
                         }
                     },
 

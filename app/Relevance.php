@@ -4,7 +4,6 @@ namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -70,14 +69,13 @@ class Relevance
 
     public $queue;
 
-    /**
-     * @param $request
-     * @param bool $queue
-     */
-    public function __construct($request, bool $queue = false)
+    public $userId;
+
+    public function __construct($request, $userId, bool $queue = false)
     {
         $this->queue = $queue;
         $this->request = $request;
+        $this->userId = $userId;
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
@@ -87,11 +85,11 @@ class Relevance
 
         if ($this->queue) {
             $params = [
-                'user_id' => Auth::id(),
+                'user_id' => $this->userId,
             ];
         } else {
             $params = [
-                'user_id' => Auth::id(),
+                'user_id' => $this->userId,
                 'page_hash' => $request['pageHash']
             ];
         }
@@ -180,11 +178,10 @@ class Relevance
     }
 
     /**
-     * @param $userId
      * @param int|boolean $historyId
      * @return void
      */
-    public function analysis($userId, $historyId = false)
+    public function analysis($historyId = false)
     {
         try {
             $this->removeNoIndex();
@@ -201,7 +198,7 @@ class Relevance
             $this->analyzeRecommendations();
             $this->prepareAnalysedSitesTable();
             $this->prepareClouds();
-            $this->saveHistory($userId, $historyId);
+            $this->saveHistory($historyId);
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
@@ -614,31 +611,20 @@ class Relevance
         return preg_replace('| +|', ' ', str_replace($search, $replace, $unicodeString));
     }
 
-    /**
-     * search word root stemmer or phpmorphy engine
-     * @return void
-     */
     public function searchWordForms()
     {
-        $stemmer = new LinguaStem();
-        $morphy = new Morphy();
+        $m = new Morphy();
         $wordWorms = [];
 
         $array = explode(' ', $this->competitorsTextAndLinks);
         $array = array_count_values($array);
         arsort($array);
 
-        $version = $this->request['version'] ?? 'phpmorphy';
-
         foreach ($array as $key => $item) {
             if (!in_array($key, $this->ignoredWords)) {
                 $this->ignoredWords[] = $key;
 
-                if ($version == 'stemmer') {
-                    $root = $stemmer->getRootWord($key);
-                } else {
-                    $root = $morphy->base($key);
-                }
+                $root = $m->base($key);
                 if ($root == null) {
                     continue;
                 }
@@ -664,7 +650,6 @@ class Relevance
         });
 
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
-
     }
 
     /**
@@ -1013,7 +998,7 @@ class Relevance
     public function prepareTfCloud($text): array
     {
         $wordForms = $cloud = [];
-        $lingua = new LinguaStem();
+        $m = new Morphy();
 
         $array = array_count_values(explode(' ', $text));
         arsort($array);
@@ -1033,8 +1018,8 @@ class Relevance
             foreach ($cloud as $key2 => $item2) {
                 similar_text($item1['text'], $item2['text'], $percent);
                 if (
-                    preg_match("/[А-Яа-я]/", $item1['text']) &&
-                    $lingua->getRootWord($item1['text']) == $lingua->getRootWord($item2['text']) ||
+                    preg_match("/[А-я]/", $item1['text']) &&
+                    $m->base($item1['text']) == $m->base($item2['text']) ||
                     preg_match("/[A-Za-z]/", $item2['text']) &&
                     $percent >= 82
                 ) {
@@ -1251,19 +1236,19 @@ class Relevance
     }
 
     /**
-     * @param $userId
      * @param $historyId
      * @return void
      */
-    public function saveHistory($userId, $historyId)
+    public function saveHistory($historyId)
     {
+        RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
         $this->saveStatistic();
 
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
 
-        $main = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $userId);
+        $main = ProjectRelevanceHistory::createOrUpdate($link['host'], $time, $this->userId);
 
         foreach ($this->sites as $site) {
             if ($site['mainPage']) {
@@ -1288,6 +1273,15 @@ class Relevance
                     base64_encode(gzcompress($this->params['html_main_page'], 9)),
                     json_encode($this->sites)
                 );
+
+                RelevanceHistory::where('user_id', '=', $this->userId)
+                    ->where('phrase', '=', $this->request['phrase'])
+                    ->where('main_link', '=', $this->request['link'])
+                    ->where('position', '=', 0)
+                    ->where('points', '=', 0)
+                    ->where('coverage', '=', 0)
+                    ->where('density', '=', 0)
+                    ->delete();
 
                 ProjectRelevanceHistory::calculateInfo($main);
 
@@ -1494,13 +1488,6 @@ class Relevance
             'line' => $exception->getLine(),
             'message' => $exception->getMessage(),
         ]);
-
-        TelegramBot::sendMessage(implode(' ', [
-            'relevance error',
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'message' => $exception->getMessage(),
-        ]), 938341087);
     }
 
     /**

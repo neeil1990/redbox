@@ -323,16 +323,6 @@
                                 {!! Form::textarea('listWords', $config->my_list_words,['class' => 'form-control listWords', 'cols' => 8, 'rows' => 5]) !!}
                             </div>
                         </div>
-
-                        @if($admin)
-                            <div class="form-group required">
-                                <label>Способ подбора корней</label>
-                                {!! Form::select('version', array_unique([
-                                        'stemmer' => 'stemmer (старая версия)',
-                                        'phpmorphy' => 'phpMorphy (новая версия)',
-                                        ]), null, ['class' => 'custom-select rounded-0 version']) !!}
-                            </div>
-                        @endif
                     </div>
                 </div>
                 <input type="hidden" id="hiddenId">

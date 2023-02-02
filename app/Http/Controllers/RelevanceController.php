@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\Relevance\RelevanceAnalyseQueue;
 use App\Queue;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
@@ -17,9 +18,6 @@ use Illuminate\View\View;
 
 class RelevanceController extends Controller
 {
-    /**
-     * @return View
-     */
     public function index(): View
     {
         $admin = User::isUserAdmin();
@@ -28,11 +26,7 @@ class RelevanceController extends Controller
         return view('relevance-analysis.index', ['admin' => $admin, 'config' => $config]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function analysis(Request $request): JsonResponse
+    public function analyse(Request $request): JsonResponse
     {
         if (RelevanceHistory::checkRelevanceAnalysisLimits()) {
             return response()->json([
@@ -51,22 +45,11 @@ class RelevanceController extends Controller
             'siteList.required' => __('The list of sites is required to fill in.'),
         ]);
 
-        $relevance = new Relevance($request->all());
-        $relevance->getMainPageHtml();
+        RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full');
 
-        if ($request['type'] == 'phrase') {
-
-            $relevance->analysisByPhrase($request->all(), $request->exp);
-
-        } elseif ($request['type'] == 'list') {
-
-            $relevance->analysisByList($request->all());
-
-        }
-
-        $relevance->analysis(Auth::id());
-
-        return RelevanceController::successResponse($relevance);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
@@ -91,17 +74,11 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        RelevanceProgress::editProgress(10, $request);
-        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
-            ->where('page_hash', '=', $request['pageHash'])
-            ->first();
-        $relevance = new Relevance($request->all());
-        $relevance->setMainPage($params->html_main_page);
-        $relevance->setDomains($params->sites);
-        $relevance->parseSites();
-        $relevance->analysis(Auth::id());
+        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'competitors');
 
-        return RelevanceController::successResponse($relevance);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
@@ -126,23 +103,13 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        RelevanceProgress::editProgress(10, $request);
-        $params = RelevanceAnalyseResults::where('user_id', '=', Auth::id())
-            ->where('page_hash', '=', $request['pageHash'])
-            ->first();
-        $relevance = new Relevance($request->all());
-        $relevance->getMainPageHtml();
-        RelevanceProgress::editProgress(15, $request);
-        $relevance->setSites($params->sites);
-        $relevance->analysis(Auth::id());
+        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'main');
 
-        return RelevanceController::successResponse($relevance);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
-    /**
-     * @param $relevance
-     * @return JsonResponse
-     */
     public static function successResponse($relevance): JsonResponse
     {
         $config = RelevanceAnalysisConfig::first();
@@ -195,9 +162,6 @@ class RelevanceController extends Controller
         return response()->json($result);
     }
 
-    /**
-     * @return View
-     */
     public function createQueue(): View
     {
         $config = RelevanceAnalysisConfig::first();
@@ -209,10 +173,6 @@ class RelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function createTaskQueue(Request $request): JsonResponse
     {
         $rows = explode("\n", $request->params);
@@ -232,11 +192,6 @@ class RelevanceController extends Controller
         ]);
     }
 
-    /**
-     * @param $request
-     * @param $e
-     * @return JsonResponse
-     */
     public static function errorResponse($request, $e): JsonResponse
     {
         Log::debug('relevance scan error', [
@@ -249,10 +204,6 @@ class RelevanceController extends Controller
         return response()->json()->setStatusCode(500);
     }
 
-    /**
-     * @param Request $request
-     * @return void
-     */
     public function removePageHistory(Request $request)
     {
         RelevanceAnalyseResults::where('user_id', '=', Auth::id())
