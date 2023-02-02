@@ -26,8 +26,8 @@ Route::get('info', function () {
     phpinfo();
 });
 
-Route::get('occurrence', function () {
-    $river = new \App\Classes\Services\XmlRiver('"[!офтальмоскоп]"', 213);
+Route::get('occurrence', function (\Illuminate\Http\Request $request) {
+    $river = new \App\Classes\Services\XmlRiver($request->get('query'), $request->get('regions'));
     dd($river->get());
 });
 
