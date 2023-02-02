@@ -25,6 +25,11 @@ Route::get('info', function () {
     phpinfo();
 });
 
+Route::get('occurrence', function () {
+    $river = new \App\Classes\Services\XmlRiver('"[!офтальмоскоп]"', 213);
+    dd($river->get());
+});
+
 Auth::routes(['verify' => true]);
 Route::post('/validate-registration-form', 'Auth\RegisterController@validateData')->name('validate.registration.form');
 Route::post('/validate-verify-code', 'Auth\VerificationController@validateVerifyCode')->name('validate.verify.code');
@@ -250,6 +255,12 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/admin/settings/update', 'MonitoringSettingsController@updateOrCreate')->name('monitoring.admin.settings.update');
     Route::get('/monitoring/admin/settings/delete/{name}', 'MonitoringSettingsController@destroy')->name('monitoring.admin.settings.delete');
     Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
+
+    // Monitoring keywords occurrence
+    Route::get('/monitoring/occurrence', 'MonitoringOccurrenceController@index');
+
+    // Monitoring export
+    Route::get('/monitoring/export', 'MonitoringExportsController@index');
 
     // Monitoring project creator
     Route::post('monitoring/creator/create', 'MonitoringProjectCreatorController@createProject');
