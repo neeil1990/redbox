@@ -1237,7 +1237,7 @@
             }
 
             function refreshAllRenderElements() {
-                $('#recButton').html({{ __('Show') }})
+                $('#recButton').html("{{ __('Show') }}")
                 if (generatedCompetitorCoverage) {
                     $('#coverage-clouds-button').trigger('click')
                     if (sessionStorage.getItem('hideDomains') === 'yes') {
