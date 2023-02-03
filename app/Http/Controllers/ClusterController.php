@@ -329,10 +329,15 @@ class ClusterController extends Controller
             return abort(403, __('In order to edit this result, you need to reshoot it'));
         }
 
-        $cluster->result = Cluster::unpackCluster($cluster->result);
+        $clusters = Cluster::unpackCluster($cluster->result);
         $cluster->request = json_decode($cluster->request, true);
 
-        return view('cluster.edit', ['cluster' => $cluster, 'admin' => User::isUserAdmin()]);
+        ksort($clusters);
+        return view('cluster.edit', [
+            'cluster' => $cluster,
+            'clusters' => $clusters,
+            'admin' => User::isUserAdmin()
+        ]);
     }
 
 
@@ -364,9 +369,9 @@ class ClusterController extends Controller
             'success' => true,
             'countClusters' => $cluster->count_clusters,
             'similarities' => implode("\n", array_keys($similarities[$request->input('mainPhrase')][$request->input('phrase')]['similarities'] ?? [])),
-            'based' => $clusterItem['based']['number'],
-            'phrased' => $clusterItem['phrased']['number'],
-            'target' => $clusterItem['target']['number'],
+            'based' => $clusterItem['based']['number'] ?? $clusterItem['based'],
+            'phrased' => $clusterItem['phrased']['number'] ?? $clusterItem['phrased'],
+            'target' => $clusterItem['target']['number'] ?? $clusterItem['target'],
         ]);
 
     }

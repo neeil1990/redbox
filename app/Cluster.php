@@ -82,6 +82,8 @@ class Cluster
             $this->brutForce = $config->brut_force;
             $this->ignoredWords = explode("\r\n", $config->ignored_words);
             $this->ignoredDomains = explode("\r\n", $config->ignored_domains);
+            $this->request['ignoredWords'] = $this->ignoredWords;
+            $this->request['ignoredDomains'] = $this->ignoredDomains;
             $this->engineVersion = $config->engine_version;
         } else {
             $config = ClusterConfiguration::first();
@@ -143,6 +145,28 @@ class Cluster
         } else if ($ratio === 'soft') {
             $this->reductionRatio = 0.5;
         }
+    }
+
+    /**
+     * @param $cluster
+     * @return mixed|string
+     */
+    protected static function getGroupName($cluster)
+    {
+        $maxRepeatPhrase = 0;
+        $groupName = '';
+        foreach ($cluster as $phrase => $info) {
+            if ($phrase !== 'finallyResult') {
+                if ($maxRepeatPhrase === 0) {
+                    $maxRepeatPhrase = $info['based']['number'];
+                    $groupName = $info['based']['phrase'];
+                } else if ($info['based']['number'] > $maxRepeatPhrase) {
+                    $maxRepeatPhrase = $info['based']['number'];
+                    $groupName = $info['based']['phrase'];
+                }
+            }
+        }
+        return $groupName;
     }
 
     public function __sleep()
@@ -244,10 +268,8 @@ class Cluster
 
         $this->searchClusters();
         $this->calculateClustersInfo();
-        if ($this->getSearchBase()) {
-            $this->searchGroupName();
-        }
-        $this->clusters = $this->calculateSimilarities($this->clusters, $this->ignoredWords);
+        $this->searchGroupName();
+        $this->clusters = Cluster::calculateSimilarities($this->clusters, $this->ignoredWords);
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -676,25 +698,6 @@ class Cluster
         ksort($clusters);
         arsort($clusters);
 
-        if (filter_var($searchBase, FILTER_VALIDATE_BOOLEAN)) {
-            foreach ($clusters as $key => $cluster) {
-                $maxRepeatPhrase = 0;
-                $groupName = '';
-                foreach ($cluster as $phrase => $info) {
-                    if ($phrase !== 'finallyResult') {
-                        if ($maxRepeatPhrase === 0) {
-                            $maxRepeatPhrase = $info['based']['number'];
-                            $groupName = $info['based']['phrase'];
-                        } else if ($info['based']['number'] > $maxRepeatPhrase) {
-                            $maxRepeatPhrase = $info['based']['number'];
-                            $groupName = $info['based']['phrase'];
-                        }
-                    }
-                }
-                $clusters[$key]['finallyResult']['groupName'] = $groupName;
-            }
-        }
-
         return [
             'clusters' => base64_encode(gzcompress(json_encode($clusters), 9)),
             'countClusters' => count($clusters)
@@ -704,20 +707,19 @@ class Cluster
     protected function searchGroupName()
     {
         foreach ($this->clusters as $key => $cluster) {
-            $maxRepeatPhrase = 0;
-            $groupName = '';
-            foreach ($cluster as $phrase => $info) {
-                if ($phrase !== 'finallyResult') {
-                    if ($maxRepeatPhrase === 0) {
-                        $maxRepeatPhrase = $info['based']['number'];
-                        $groupName = $info['based']['phrase'];
-                    } else if ($info['based']['number'] > $maxRepeatPhrase) {
-                        $maxRepeatPhrase = $info['based']['number'];
-                        $groupName = $info['based']['phrase'];
-                    }
-                }
+            if ($this->getSearchBase()) {
+                $groupName = self::getGroupName($cluster);
+            } else {
+                unset($cluster['finallyResult']);
+                uksort($cluster, function ($a, $b) {
+                    return mb_strlen($b) - mb_strlen($a) ?: strcmp($a, $b);
+                });
+                $groupName = array_key_first(array_reverse($cluster));
             }
+
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
+            $this->clusters[$groupName] = $this->clusters[$key];
+            unset($this->clusters[$key]);
         }
     }
 

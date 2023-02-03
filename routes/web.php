@@ -346,3 +346,12 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
 });
+
+Route::get('/test', function () {
+    dump(env('XML_PROXY_USER'));
+    dump(env('XML_PROXY_KEY'));
+    dump(env('XML_RIVER_USER'));
+    dump(env('XML_RIVER_KEY'));
+    dump(env('XML_STOCK_USER'));
+    dump(env('XML_STOCK_KEY'));
+});

@@ -106,16 +106,31 @@
                 </div>
                 <div class="d-flex">
                     <div class="col-6" id="clusters-block">
-                        @foreach($cluster->result as $mainPhrase => $items)
+                        @foreach($clusters as $mainPhrase => $items)
                             @if(count($items) <= 2)
                                 @continue
                             @endif
                             @php($hash = preg_replace("/[0-9]/", "", Str::random()))
+                            @php($base = 0)
+                            @php($phrased = 0)
+                            @php($target = 0)
+                            @foreach($items as $phrase => $item)
+                                @if($phrase === 'finallyResult')
+                                    @continue
+                                @endif
+                                @php($base += $item['based']['number'] ?? $item['based'])
+                                @php($phrased += $item['phrased']['number'] ?? $item['phrased'])
+                                @php($target += $item['target']['number'] ?? $item['target'])
+                            @endforeach
                             <div class="card cluster-block" style="margin-bottom: 0; border-radius: 0"
                                  id="{{ str_replace(' ', '_', $mainPhrase) }}">
                                 <div class="card-header" style="background-color: #343a40; color: white">
                                     <div class="d-flex justify-content-between text-white">
-                                        <span>{{ $mainPhrase }}</span>
+                                        <span>
+                                            {{ $mainPhrase }}
+                                        </span>
+                                        <span>кол-во фраз: {{ count($items) - 1 }}</span>
+                                        <span>{{ $base }} / {{ $phrased }} / {{ $target }}</span>
                                         <div class="btn-group btn-group-toggle w-75" style="display: none">
                                             <input type="text" value="{{ $mainPhrase }}"
                                                    class="form form-control group-name-input"
@@ -171,12 +186,11 @@
                                             data-action="{{ $mainPhrase }}">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="phrase-for-color" style="width: 440px">{{ $phrase }}</div>
-                                                @if(isset($item['similarities']))
-                                                    <div
-                                                        style="display: none">{{ implode("\n", array_keys($item['similarities'])) }}</div>
-                                                @else
-                                                    <div></div>
-                                                @endif
+                                                <div style="display: none">
+                                                    @if(isset($item['similarities']))
+                                                        {{ implode("\n", array_keys($item['similarities'])) }}
+                                                    @endif
+                                                </div>
                                                 <div>
                                                     <span class="__helper-link ui_tooltip_w">
                                                         <span>{{ $item['based']['number'] ?? $item['based'] }}</span> /
@@ -242,7 +256,7 @@
                                 </div>
                             </div>
                             <ul class="list-group list-group-flush collapse show" id="alone_phrases">
-                                @foreach($cluster->result as $mainPhrase => $items)
+                                @foreach($clusters as $mainPhrase => $items)
                                     @if(count($items) != 2)
                                         @continue
                                     @endif
@@ -361,7 +375,7 @@
 
                     <label for="clusters-list"></label>
                     <select name="clusters-list" id="clusters-list" class="custom-select">
-                        @foreach($cluster->result as $mainPhrase => $items)
+                        @foreach($clusters as $mainPhrase => $items)
                             @if(count($items) === 2)
                                 @continue
                             @endif
@@ -601,16 +615,16 @@
                         $(this).parent().parent().parent().hide(300)
 
                         $('#work-place-ul').append(
-                            '<li class="list-group-item d-flex justify-content-between" style="display: none" data-target="' + $(this).attr('data-target') + '">' +
-                            '<div>' +
+                            '<li class="list-group-item work-place-li" style="display: none" data-target="' + $(this).attr('data-target') + '">' +
+                            '<div style="float: left">' +
                             '   <i class="fa fa-arrow-left move-back mr-2" data-target="' + $(this).attr('data-target') + '"></i>' +
                             '   <i class="fa fa-brush" data-target="' + $(this).attr('data-target') + '"></i>' +
                             '</div>' +
-                            '<div><div class="phrase-for-color">' + $(this).attr('data-target') + '</div></div>' +
+                            '<div style="float: right"><div class="phrase-for-color">' + $(this).attr('data-target') + '</div></div>' +
                             '</li>'
                         )
 
-                        $('.list-group-item.d-flex.justify-content-between').show(300)
+                        $('.work-place-li').show(300)
 
                         $('.move-back').unbind('click').on('click', function () {
                             $("ul").find(`[data-target='${$(this).attr('data-target')}']`).parents().eq(9).show()
@@ -640,17 +654,23 @@
                 $('.change-group-name').unbind().on('click', function () {
                     let parent = $(this).parent().parent().parent()
                     parent.children('span').eq(0).hide()
+                    parent.children('span').eq(1).hide()
+                    parent.children('span').eq(2).hide()
                     parent.children('div').eq(0).show()
                 })
 
                 $('.edit-group-name').unbind().on('click', function () {
                     let span = $(this).parent().parent().children('span').eq(0)
+                    let span1 = $(this).parent().parent().children('span').eq(1)
+                    let span2 = $(this).parent().parent().children('span').eq(2)
                     let div = $(this).parent().parent().children('div').eq(0)
                     let newGroupName = $(this).parent().children('input').eq(0).val()
                     let oldGroupName = $(this).parent().children('input').eq(0).attr('data-target')
 
                     if (newGroupName === oldGroupName) {
                         span.show()
+                        span1.show()
+                        span2.show()
                         div.hide()
                     } else {
                         $.ajax({
@@ -667,6 +687,8 @@
                                 span.parent().parent().parent().attr('id', newGroupName.replaceAll(' ', '_'))
                                 span.html(newGroupName)
                                 span.show()
+                                span1.show()
+                                span2.show()
                                 div.hide()
 
                                 div.children('input').eq(0).attr('data-target', newGroupName)
@@ -841,8 +863,8 @@
                     '<i class="fa fa-edit" style="color: white" id="editWorkPlace"></i>'
                 )
 
-                worPlaceCreated =  true
-                $.each(group.children('ul').eq(0).children('li'), function (){
+                worPlaceCreated = true
+                $.each(group.children('ul').eq(0).children('li'), function () {
                     $(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).trigger('click')
                 })
 
