@@ -25,7 +25,6 @@ class RiverFacade
         $this->user = env('XML_RIVER_USER');
         $this->key = env('XML_RIVER_KEY');
 
-        dd($this);
         $this->region = $region;
 
         $this->xmlRiverPath = "https://xmlriver.com/wordstat/json?user=$this->user&key=$this->key&regions=$this->region&query=";
