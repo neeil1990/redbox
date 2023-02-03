@@ -102,15 +102,15 @@ class SimplifiedXmlFacade extends XmlFacade
 
         if ($attempt >= 1 && $attempt <= 2) {
             $this->setPath('https://xmlstock.com/google/xml/');
-            $this->setUser('9371');
-            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+            $this->setUser(env('XML_STOCK_USER'));
+            $this->setKey(env('XML_STOCK_KEY'));
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&lr=$this->lr&sortby=$this->sortby";
 
         } elseif ($attempt >= 3 && $attempt <= 4) {
             $this->setPath('https://xmlriver.com/search/xml');
-            $this->setUser('6602');
-            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+            $this->setUser(env('XML_RIVER_USER'));
+            $this->setKey(env('XML_RIVER_KEY'));
             $loc = $this->getRiverLocation();
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&loc=$loc";
@@ -125,20 +125,20 @@ class SimplifiedXmlFacade extends XmlFacade
 
         if ($attempt >= 1 && $attempt <= 2) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
-            $this->setUser('9371');
-            $this->setKey('660fb3c4c831f41ac36637cf3b69031e');
+            $this->setUser(env('XML_STOCK_USER'));
+            $this->setKey(env('XML_STOCK_KEY'));
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         } elseif ($attempt >= 3 && $attempt <= 4) {
             $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser('sv@prime-ltd.su');
-            $this->setKey('2fdf7f2b218748ea34cf1afb8b6f8bbb');
+            $this->setUser(env('XML_PROXY_USER'));
+            $this->setKey(env('XML_PROXY_KEY'));
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         } elseif ($attempt >= 5 && $attempt <= 6) {
             $this->setPath('https://xmlriver.com/search_yandex/xml');
-            $this->setUser('6602');
-            $this->setKey('8c0d8e659c4ba2240e791fb3e6b4f172556be01f');
+            $this->setUser(env('XML_RIVER_USER'));
+            $this->setKey(env('XML_RIVER_KEY'));
             $loc = $this->getRiverLocation();
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
