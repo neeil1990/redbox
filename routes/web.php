@@ -38,7 +38,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
-    Route::resource('main-projects', 'DescriptionProjectForAdminController');
+    Route::resource('main-projects', 'MainProjectsController');
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
@@ -337,3 +337,4 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
 });
+

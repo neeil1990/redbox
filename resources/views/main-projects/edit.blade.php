@@ -4,46 +4,52 @@
         <span
             class="text-muted"> {{ __('When you update a project, you need to manually changed the localization text to the item') }}</span>
         <p class="text-muted">######################## Main page ########################</p>
-        {!! Form::open(['action' =>['DescriptionProjectForAdminController@update',$data->id], 'method' => 'PUT'])!!}
+        {!! Form::open(['action' => ['MainProjectsController@update',$data->id], 'method' => 'PUT'])!!}
         <div class="col-md-6">
             <div class="form-group required">
-                {!! Form::label("title") !!}
+                <label for="title">{{ __('Title') }}</label>
                 {!! Form::text("title", $data->title ,["class" => "form-control","required" => "required"]) !!}
             </div>
 
             <div class="form-group required">
-                {!! Form::label("description") !!}
+                <label for="position">{{ __('Position in the menu') }}</label>
+                {!! Form::number("position", $data->position ,["class" => "form-control","required" => "required"]) !!}
+            </div>
+
+
+            <div class="form-group required">
+                <label for="description">{{ __('Project description') }}</label>
                 {!! Form::textarea("description", $data->description ,["class" => "form-control","required" => "required"]) !!}
             </div>
 
             <div class="form-group required">
-                {!! Form::label("link") !!}
+                <label for="link">{{ __('Link') }}</label>
                 {!! Form::text("link", $data->link ,["class" => "form-control","required" => "required"]) !!}
             </div>
-
             <div class="form-group required">
                 {!! Form::label("icon") !!}
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question"></i>
-                    <span class="ui_tooltip __right" style="min-width: 550px;">
-                        <span class="ui_tooltip_content">
-                            Если иконка оторбражается не корректно, попробуйте добавить в класс "fas" <br>
-                            было "fa-address-book"<br> стало "<b>fas</b> fa-address-book"
-                        </span>
-                    </span>
-                </span>
                 {!! Form::text("icon", $data->icon ,["class" => "form-control","required" => "required", 'placeholder' => '<i class="fas fa-address-book"></i>']) !!}
             </div>
 
             <div class="form-group required">
-                {!! Form::label("access") !!}
+                <label for="access">{{ __('Access') }}</label>
                 {!! Form::select("access[]",  $roles, $data->access, ["class" => "form-control", "multiple"]) !!}
             </div>
 
             <div class="form-group required">
-                {!! Form::label("show") !!}
+                <label for="show">Показывать обычным пользователям</label>
                 <input type="checkbox" name="show" @if($data->show) checked @endif>
             </div>
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="text-muted mb-3">
                 <div>Команды и сами иконки можно посмотреть на сайтах:</div>
@@ -63,7 +69,6 @@
                 <button class="btn btn-success pull-right" title="Save" type="submit">{{ __('Update') }}</button>
                 <a href="{{ url('main-projects') }}" class="btn btn-default"> {{ __('Back') }}</a>
             </div>
-
         </div>
         {!! Form::close() !!}
     @endsection

@@ -6,6 +6,7 @@
                 <thead>
                 <tr>
                     <td>id</td>
+                    <td>Позиция</td>
                     <td>Уровни доступа</td>
                     <td>icon</td>
                     <td>Заголовок</td>
@@ -19,12 +20,13 @@
                 @foreach($data as $row)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
+                        <td>{{ $row->position }}</td>
                         <td>{{ $row->access_as_string }}</td>
                         <td>{!! $row->icon !!}</td>
                         <td>{{ $row->title }}</td>
                         <td class="w-50">{{ $row->description }}</td>
                         <td>{{ $row->link }}</td>
-                        <td>{{ $row->show }}</td>
+                        <td>{{ $row->show ? __('Yes') : __('No') }}</td>
                         <td>
                             <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default mr-1" style="display: inline;">
                                 <i class="fa fa-edit"></i>

@@ -28,7 +28,8 @@ class MenuComposer
                     ];
             }
 
-            $modules = collect($modules)->sortBy('title')->toArray();
+            $modules = collect($modules)->toArray();
+
             $view->with(compact('modules'));
         }
     }
@@ -36,11 +37,11 @@ class MenuComposer
     public static function getProjects(): array
     {
         if (User::isUserAdmin()) {
-            $result = MainProject::all()->toArray();
+            $result = MainProject::orderBy('position', 'asc')->get();
         } else {
-            $result = MainProject::where('show', '=', 1)->get()->toArray();
+            $result = MainProject::where('show', '=', 1)->orderBy('position', 'asc')->get();
         }
 
-        return $result;
+        return $result->toArray();
     }
 }
