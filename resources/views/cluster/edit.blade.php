@@ -24,6 +24,11 @@
                 max-height: 80vh;
                 overflow: auto
             }
+
+            .card.cluster-block {
+                margin-bottom: 0;
+                border-radius: 0;
+            }
         </style>
     @endslot
 
@@ -122,11 +127,10 @@
                                 @php($phrased += $item['phrased']['number'] ?? $item['phrased'])
                                 @php($target += $item['target']['number'] ?? $item['target'])
                             @endforeach
-                            <div class="card cluster-block" style="margin-bottom: 0; border-radius: 0"
-                                 id="{{ str_replace(' ', '_', $mainPhrase) }}">
+                            <div class="card cluster-block" id="{{ str_replace(' ', '_', $mainPhrase) }}">
                                 <div class="card-header" style="background-color: #343a40; color: white">
                                     <div class="d-flex justify-content-between text-white">
-                                        <span>
+                                        <span class="w-50">
                                             {{ $mainPhrase }}
                                         </span>
                                         <span>кол-во фраз: {{ count($items) - 1 }}</span>
@@ -186,11 +190,9 @@
                                             data-action="{{ $mainPhrase }}">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="phrase-for-color" style="width: 440px">{{ $phrase }}</div>
-                                                <div style="display: none">
-                                                    @if(isset($item['similarities']))
+                                                <div style="display: none">@if(isset($item['similarities']))
                                                         {{ implode("\n", array_keys($item['similarities'])) }}
-                                                    @endif
-                                                </div>
+                                                    @endif</div>
                                                 <div>
                                                     <span class="__helper-link ui_tooltip_w">
                                                         <span>{{ $item['based']['number'] ?? $item['based'] }}</span> /
@@ -233,7 +235,7 @@
                                 </ul>
                             </div>
                         @endforeach
-                        <div class="card cluster-block" style="margin-bottom: 0; border-radius: 0">
+                        <div class="card cluster-block">
                             <div class="card-header" style="background-color: #343a40; color: white">
                                 <div class="d-flex justify-content-between text-white">
                                     <span>Нераспределённые слова</span>
@@ -319,7 +321,7 @@
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="work-place-conf">
+                        <div class="card work-place-conf">
                             <div class="btn-group w-100 mb-2">
                                 <input type="text" id="clusterFilter" class="form form-control"
                                        placeholder="{{ __('Search') }}">
@@ -515,17 +517,11 @@
                         }
                     });
                 } else {
-                    errorMessage("{{ __('The name of the group cannot be empty') }}")
+                    errorMessage("{{ __('The group name cannot be empty and contain numbers') }}")
                 }
             })
 
             refreshMethods()
-
-            $('.add-to-another').unbind('click').on('click', function () {
-                $('#your-phrase').val($(this).attr('data-action'))
-                swapObject = $(this).parent().parent().parent().parent()
-                swapMainPhrase = String(swapObject.parent().attr('id')).replaceAll('_', ' ')
-            })
 
             $('#save-changes').unbind().on('click', function () {
                 let clusterPhrase = $('#clusters-list').val();
@@ -545,13 +541,12 @@
                             phrase: phrase,
                         },
                         success: function (response) {
-                            console.log(response)
                             successMessage("{{ __('Successfully') }}")
                             $('#' + clusterPhrase.replaceAll(' ', '_')).children('ul').eq(0).append(
                                 '<li data-target="' + phrase + '" data-action="' + clusterPhrase + '" class="list-group-item">' +
                                 '    <div class="d-flex justify-content-between">' +
                                 '        <div class="phrase-for-color" style="width: 440px">' + phrase + '</div>' +
-                                '        <div style="display: none">' + response.similarities + '</div>' +
+                                '        <div style="display: none">similarities</div>' +
                                 '        <div>' +
                                 '            <span class="__helper-link ui_tooltip_w">' +
                                 '                        <span>' + response.based + '</span> /' +
@@ -593,15 +588,9 @@
                                 swapMainPhrase = String(swapObject.parent().attr('id')).replaceAll('_', ' ')
                             })
 
-                            $.each($('.list-group.list-group-flush'), function (key, value) {
-                                if ($(this).html().replaceAll(' ', '') === '' && $(this).parent().attr('id') !== undefined) {
-                                    let removePhrase = String($(this).parent().attr('id')).replaceAll('_', ' ')
-                                    $(this).parent().remove()
-                                    $("#clusters-list option[value='" + removePhrase + "']").remove()
-                                }
-                            })
-
                             refreshMethods()
+
+                            recalculateFrequency()
                         },
                         error: function (response) {
                         }
@@ -684,6 +673,7 @@
                                 oldGroupName: oldGroupName,
                             },
                             success: function () {
+                                $("li[data-action='" + oldGroupName + "']").attr('data-action', newGroupName);
                                 span.parent().parent().parent().attr('id', newGroupName.replaceAll(' ', '_'))
                                 span.html(newGroupName)
                                 span.show()
@@ -744,10 +734,10 @@
                 })
 
                 $('#editWorkPlaceButton').unbind().on('click', function () {
-                    let newName = $('#editWorkPlaceName').val()
+                    let newName = $('#editWorkPlaceName').val().trim()
 
-                    if (newName === '') {
-                        errorMessage("{{ __('The name of the group cannot be empty') }}")
+                    if (newName === '' || newName.length !== $('#editWorkPlaceName').val().trim().replace(/\d+/g, '').length) {
+                        errorMessage("{{ __('The group name cannot be empty and contain numbers') }}")
                     } else {
                         $('#groupName').html(newName)
 
@@ -762,10 +752,57 @@
                 })
 
                 $('#resetChanges').unbind().on('click', function () {
-
                     $.each($('#work-place-ul').children('li'), function (key, value) {
                         $(this).children('div').eq(0).children('i').eq(0).trigger('click')
                     })
+
+                    $('#workPlace').html("{{ __('Workspace') }}")
+                    $('#addNewGroupButton').show()
+                    $('#actionsButton').hide()
+                    worPlaceCreated = false
+                })
+
+                $('.move-group').unbind().on('click', function () {
+                    group = $(this).parents().eq(4)
+
+                    if (!worPlaceCreated) {
+                        let id = group.attr('id').replaceAll('_', ' ')
+
+                        $('#workPlace').html(
+                            '<div class="btn-group btn-group-toggle w-75" id="editWorkPlaceBlock" style="display: none">' +
+                            '   <input class="form form-control" id="editWorkPlaceName" value="' + id + '">' +
+                            '   <button class="btn btn-secondary" id="editWorkPlaceButton">{{ __('Change') }}</button>' +
+                            '</div>' +
+                            '<span id="groupName">' + id + '</span>' +
+                            '<i class="fa fa-edit" style="color: white" id="editWorkPlace"></i>'
+                        )
+
+                        worPlaceCreated = true
+                    }
+
+                    $.each(group.children('ul').eq(0).children('li'), function () {
+                        $(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).trigger('click')
+                    })
+
+                    $('#addNewGroupButton').hide()
+                    $('#actionsButton').show()
+
+                    group.hide()
+                    refreshMethods()
+                })
+
+                $.each($('.list-group.list-group-flush'), function (key, value) {
+                    if ($(this).html().replaceAll(' ', '') === '' && $(this).parent().attr('id') !== undefined) {
+                        let removePhrase = String($(this).parent().attr('id')).replaceAll('_', ' ')
+                        $(this).parent().remove()
+                        $("#clusters-list option[value='" + removePhrase + "']").remove()
+                    }
+                })
+
+                $('.add-to-another').unbind().on('click', function () {
+                    $('#your-phrase').val($(this).attr('data-action'))
+                    swapObject = $(this).parent().parent().parent().parent()
+                    swapMainPhrase = String(swapObject.parent().attr('id')).replaceAll('_', ' ')
                 })
             }
 
@@ -775,6 +812,8 @@
                     phrases.push($(this).attr('data-target'))
                 })
 
+                let newGroupName = $('#groupName').html();
+
                 $.ajax({
                     type: "POST",
                     url: "/confirmation-new-cluster",
@@ -782,11 +821,12 @@
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         projectId: {{ $cluster['id'] }},
-                        mainPhrase: $('#groupName').html(),
+                        mainPhrase: newGroupName,
                         phrases: phrases,
                     },
                     success: function (response) {
-                        window.location.reload()
+                        moveNewGroup(phrases, newGroupName, response.groupId)
+                        recalculateFrequency()
                     },
                     error: function (response) {
                     }
@@ -823,57 +863,125 @@
             $('#searchPhrases').on('click', function () {
                 let searchSuccess = false
                 let string = $('#clusterFilter').val().trim()
-                let count = 0
+                let totalCount = 0
 
                 if (string !== '') {
-                    $('.phrase-for-color').parent().parent().css({
-                        'background-color': 'white'
-                    })
-
-                    $.each($('.phrase-for-color'), function (key, value) {
-                        if (!$(this).html().includes(string)) {
-                            searchSuccess = true
-                            count += 1
-                            $(this).parent().parent().hide()
+                    $.each($('.card.cluster-block'), function (key, value) {
+                        let thisBlock = $(this)
+                        let ul = $(this).children('ul').eq(0)
+                        let countLi = ul.children('li').length
+                        let counter = 0
+                        $.each($(ul.children('li')), function (key, value) {
+                            if (!$(this).children('div').eq(0).children('div').eq(0).html().includes(string)) {
+                                searchSuccess = true
+                                totalCount += 1
+                                counter += 1
+                                $(this).hide()
+                            }
+                        })
+                        if (counter === countLi) {
+                            thisBlock.hide()
                         }
                     })
+
                 }
 
                 if (!searchSuccess) {
                     errorMessage("{{ __('No matches found') }}")
                 } else {
-                    successMessage(count + " {{ __('elements hidden') }}")
+                    successMessage(totalCount + " {{ __('elements hidden') }}")
                 }
             })
 
             $('#setDefaultVision').on('click', function () {
                 $('.phrase-for-color').parent().parent().show()
+                $('.card.cluster-block').show()
             })
 
-            $('.move-group').on('click', function () {
-                group = $(this).parents().eq(4)
-                let id = group.attr('id').replaceAll('_', ' ')
+            function moveNewGroup(phrases, newGroupName, newId) {
+                let newUl = '<ul id="' + newId + '" class="list-group list-group-flush collapse show">'
 
-                $('#workPlace').html(
-                    '<div class="btn-group btn-group-toggle w-75" id="editWorkPlaceBlock" style="display: none">' +
-                    '   <input class="form form-control" id="editWorkPlaceName" value="' + id + '">' +
-                    '   <button class="btn btn-secondary" id="editWorkPlaceButton">{{ __('Change') }}</button>' +
-                    '</div>' +
-                    '<span id="groupName">' + id + '</span>' +
-                    '<i class="fa fa-edit" style="color: white" id="editWorkPlace"></i>'
-                )
-
-                worPlaceCreated = true
-                $.each(group.children('ul').eq(0).children('li'), function () {
-                    $(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).trigger('click')
+                $.each(phrases, function (key, value) {
+                    newUl += '<li data-target="' + value + '" data-action="' + newGroupName + '" class="list-group-item">' + $("li[data-target='" + value + "']").html() + '</li>'
+                    $("li[data-target='" + value + "']").remove()
                 })
 
-                $('#addNewGroupButton').hide()
-                $('#actionsButton').show()
+                if ($('#' + newGroupName.replaceAll(' ', '_')).length) {
+                    $.each($('#' + newGroupName.replaceAll(' ', '_')).children('ul').eq(0).children('li'), function (key, value) {
+                        if($(this).is(':visible')) {
+                            $(this).attr('data-action', newGroupName)
+                            newUl += '<li data-target="' + value + '" data-action="' + newGroupName + '" class="list-group-item">' + $(this).html() + '</li>'
+                            $(this).remove()
+                        }
+                    })
+                }
 
-                group.hide()
+                newUl += '</ul>'
+
+                $('#clusters-block').prepend(
+                    '<div id="' + newGroupName.replaceAll(' ', '_') + '" class="card cluster-block">' +
+                    '    <div class="card-header" style="background-color: rgb(52, 58, 64); color: white;">' +
+                    '        <div class="d-flex justify-content-between text-white">' +
+                    '            <span class="w-50">' + newGroupName + '</span>' +
+                    '            <span>кол-во фраз: ' + phrases.length + '</span>' +
+                    '            <span>0 / 0 / 0</span> ' +
+                    '            <div class="btn-group btn-group-toggle w-75" style="display: none;">' +
+                    '                <input type="text" value="' + newGroupName + '" data-target="' + newGroupName + '" class="form form-control group-name-input">' +
+                    '                    <button class="btn btn-secondary edit-group-name">Изменить</button>' +
+                    '                </div> ' +
+                    '            <div class="d-flex justify-content-between">' +
+                    '                <span class="__helper-link ui_tooltip_w">' +
+                    '                    <i data-toggle="collapse" aria-expanded="false" data-target="#' + newId + '" aria-controls="' + newId + '" class="fa fa-eye mr-2" style="color: white;"></i> ' +
+                    '                    <span class="ui_tooltip __bottom">' +
+                    '                        <span class="ui_tooltip_content">скрыть группу</span>' +
+                    '                    </span>' +
+                    '                </span> ' +
+                    '                <span class="__helper-link ui_tooltip_w">' +
+                    '                    <i class="fa fa-edit change-group-name mr-2" style="color: white; padding-top: 5px;"></i>' +
+                    '                    <span class="ui_tooltip __bottom">' +
+                    '                        <span class="ui_tooltip_content">' +
+                    '                            Изменить название' +
+                    '                        </span>' +
+                    '                    </span>' +
+                    '                </span> ' +
+                    '                <span class="__helper-link ui_tooltip_w">' +
+                    '                    <i class="fa fa-arrow-right move-group" style="color: white; padding-top: 5px;"></i> ' +
+                    '                    <span class="ui_tooltip __bottom">' +
+                    '                        <span class="ui_tooltip_content">' +
+                    '                             Переместить всю группу' +
+                    '                        </span>' +
+                    '                    </span>' +
+                    '                </span>' +
+                    '            </div>' +
+                    '        </div>' +
+                    '    </div>' +
+                    newUl +
+                    '</div>'
+                );
+
+                $('#workPlace').html("{{ __('Workspace') }}")
+                $('#work-place-ul').html("")
+                $('#addNewGroupButton').show()
+                $('#actionsButton').hide()
+                worPlaceCreated = false
                 refreshMethods()
-            })
+            }
+
+            function recalculateFrequency() {
+                $.each($('.card.cluster-block'), function (key, value) {
+                    let base = 0
+                    let phrase = 0
+                    let target = 0
+                    $.each($(this).children('ul').eq(0).children('li'), function (v, k) {
+                        let span = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0)
+                        base += +span.children('span').eq(0).html()
+                        phrase += +span.children('span').eq(1).html()
+                        target += +span.children('span').eq(2).html()
+                    })
+
+                    $(this).children('div').eq(0).children('div').eq(0).children('span').eq(2).html(base + ' / ' + phrase + ' / ' + target)
+                })
+            }
         </script>
     @endslot
 @endcomponent

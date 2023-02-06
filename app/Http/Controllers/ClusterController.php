@@ -16,8 +16,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -363,12 +363,11 @@ class ClusterController extends Controller
             }
         }
 
-        $similarities = Cluster::recalculateClusterInfo($cluster, $clusters);
+        Cluster::recalculateClusterInfo($cluster, $clusters);
 
         return response()->json([
             'success' => true,
             'countClusters' => $cluster->count_clusters,
-            'similarities' => implode("\n", array_keys($similarities[$request->input('mainPhrase')][$request->input('phrase')]['similarities'] ?? [])),
             'based' => $clusterItem['based']['number'] ?? $clusterItem['based'],
             'phrased' => $clusterItem['phrased']['number'] ?? $clusterItem['phrased'],
             'target' => $clusterItem['target']['number'] ?? $clusterItem['target'],
@@ -452,6 +451,7 @@ class ClusterController extends Controller
 
         return response()->json([
             'success' => true,
+            'groupId' => Str::random(10),
         ]);
     }
 }

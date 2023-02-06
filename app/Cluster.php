@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -269,7 +270,7 @@ class Cluster
         $this->searchClusters();
         $this->calculateClustersInfo();
         $this->searchGroupName();
-        $this->clusters = Cluster::calculateSimilarities($this->clusters, $this->ignoredWords);
+        $this->calculateSimilarities();
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -723,21 +724,15 @@ class Cluster
         }
     }
 
-    public static function calculateSimilarities($clusters, $ignoredWords)
+    public function calculateSimilarities()
     {
         $m = new Morphy();
         $cache = [];
 
-        foreach ($clusters as $mainPhrase => $items) {
-            foreach ($items as $ph => $item) {
-                unset($clusters[$mainPhrase][$ph]['similarities']);
-            }
-        }
-
-        foreach ($clusters as $mainPhrase => $items) {
+        foreach ($this->clusters as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $info) {
                 $phrase = explode(' ', $offPhrase);
-                $phrase = array_diff($phrase, $ignoredWords);
+                $phrase = array_diff($phrase, $this->ignoredWords);
 
                 foreach ($phrase as $keyF => $item) {
                     if (mb_strlen($item) < 2) {
@@ -751,17 +746,13 @@ class Cluster
                     }
                 }
 
-                foreach ($clusters as $mainPhrase2 => $items2) {
-                    if ($mainPhrase === $mainPhrase2) {
-                        continue;
-                    }
-
+                foreach ($this->clusters as $mainPhrase2 => $items2) {
                     foreach ($items2 as $offPhrase2 => $info2) {
                         if ($offPhrase === $offPhrase2 || $offPhrase === 'finallyResult' || $offPhrase2 === 'finallyResult') {
                             continue;
                         }
                         $phrase2 = explode(' ', $offPhrase2);
-                        $phrase2 = array_diff($phrase2, $ignoredWords);
+                        $phrase2 = array_diff($phrase2, $this->ignoredWords);
 
                         foreach ($phrase2 as $keyF => $item) {
                             if (mb_strlen($item) < 2) {
@@ -777,18 +768,16 @@ class Cluster
 
                         $similarities = count(array_intersect($phrase, $phrase2));
                         if ($similarities >= 1) {
-                            $clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
+                            $this->clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
                         }
                     }
                 }
 
-                if (isset($clusters[$mainPhrase][$offPhrase]['similarities'])) {
-                    arsort($clusters[$mainPhrase][$offPhrase]['similarities']);
+                if (isset($this->clusters[$mainPhrase][$offPhrase]['similarities'])) {
+                    arsort($this->clusters[$mainPhrase][$offPhrase]['similarities']);
                 }
             }
         }
-
-        return $clusters;
     }
 
     protected function setResult(array $results)
@@ -840,17 +829,13 @@ class Cluster
         TelegramBot::sendMessage($message, $this->user->chat_id);
     }
 
-    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters): array
+    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters)
     {
         $request = json_decode($cluster->request, true);
-        $ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
-        $clusters = Cluster::calculateSimilarities($clusters, $ignoredWords);
         $result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
         $cluster->result = $result['clusters'];
         $cluster->count_clusters = $result['countClusters'];
         $cluster->save();
-
-        return $clusters;
     }
 
     public static function unpackCluster($result): array

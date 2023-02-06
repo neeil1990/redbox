@@ -11,16 +11,7 @@
 |
 */
 
-use App\Cluster;
-use App\ClusterConfiguration;
-use App\ClusterConfigurationClassic;
-use App\ClusterResults;
-use App\Common;
-use App\Morphy;
-use App\ProjectRelevanceHistory;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
