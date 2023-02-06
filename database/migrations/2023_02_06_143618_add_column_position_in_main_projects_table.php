@@ -14,7 +14,7 @@ class AddColumnPositionInMainProjectsTable extends Migration
     public function up()
     {
         Schema::table('main_projects', function (Blueprint $table) {
-            $table->integer('position');
+            $table->integer('position')->unique();
         });
     }
 
