@@ -77,6 +77,7 @@
     <div class="row">
         <div class="col-12 mb-3">
             <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
+            <a href="javascript:void(0)" id="occurrence-update" class="btn btn-default">Обновить частотность проекта</a>
         </div>
     </div>
 
@@ -319,6 +320,20 @@
                                 trigger: 'hover',
                             });
 
+                            $(container[0]).find('.column-visible').each(function () {
+                                let name = $(this).data('column');
+                                let status = $(this).data('default');
+                                let column = api.column(name + ':name');
+
+                                if(status === 'on'){
+                                    column.visible(true);
+                                    $('.column-visible[data-column="'+ name +'"]').removeClass('hover');
+                                }else{
+                                    column.visible(false);
+                                    $('.column-visible[data-column="'+ name +'"]').addClass('hover');
+                                }
+                            });
+
                             container.find('.column-visible').click(function(){
 
                                 let name = $(this).data('column');
@@ -340,12 +355,14 @@
                                 .then(function(response){
 
                                 $.each(response.data, function(i, item){
-                                    if(item.state)
-                                        return true;
-
                                     let column = api.column(item.name + ':name');
+
                                     column.visible(item.state);
-                                    container.find(`.column-visible[data-column="${item.name}"]`).addClass('hover');
+
+                                    if(item.state)
+                                        container.find(`.column-visible[data-column="${item.name}"]`).removeClass('hover');
+                                    else
+                                        container.find(`.column-visible[data-column="${item.name}"]`).addClass('hover');
                                 });
                             });
                         });
@@ -1178,6 +1195,18 @@
                     btn.text('Показать графики');
                 }
 
+            });
+
+            $('#occurrence-update').click(function(){
+                let action = 'all';
+
+                axios.post('/monitoring/occurrence', {
+                    action: action,
+                    id: PROJECT_ID,
+                })
+                .then(function (response) {
+                    toastr.success('Очередь добавлена!');
+                });
             });
         </script>
     @endslot

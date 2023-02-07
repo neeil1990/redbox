@@ -258,7 +258,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
 
     // Monitoring keywords occurrence
-    Route::get('/monitoring/occurrence', 'MonitoringOccurrenceController@index');
+    Route::post('/monitoring/occurrence', 'MonitoringOccurrenceController@update');
 
     // Monitoring export
     Route::get('/monitoring/export', 'MonitoringExportsController@index');

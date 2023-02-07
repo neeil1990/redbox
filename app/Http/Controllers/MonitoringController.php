@@ -9,6 +9,7 @@ use App\Jobs\PositionQueue;
 use App\MonitoringColumn;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
+use App\MonitoringOccurrence;
 use App\MonitoringPosition;
 use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
@@ -449,8 +450,10 @@ class MonitoringController extends Controller
                 $query->dateRange($dates);
         }]);
 
-        if(isset($region->id))
+        if(isset($region->id)){
             $keywords = $this->setUrlsInKeywords($keywords, $region->id);
+            $keywords = $this->setOccurrenceInKeywords($keywords, $region->id);
+        }
 
         $columns = $this->getMainColumns();
 
@@ -468,6 +471,21 @@ class MonitoringController extends Controller
         ]);
 
         return $data;
+    }
+
+    private function setOccurrenceInKeywords($query, $region)
+    {
+        $query->transform(function($item) use ($region){
+            $occurrence = MonitoringOccurrence::where(['monitoring_keyword_id' => $item->id, 'monitoring_searchengine_id' => $region])->first();
+            if($occurrence){
+                $item->base = $occurrence->base;
+                $item->phrasal = $occurrence->phrasal;
+                $item->exact = $occurrence->exact;
+            }
+            return $item;
+        });
+
+        return $query;
     }
 
     private function orderTableKeywords(&$keywords, $order = null)
@@ -738,6 +756,24 @@ class MonitoringController extends Controller
 
                     $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
                     break;
+                case 'base':
+                    if(isset($keyword->base))
+                        $row->put('base', $keyword->base);
+                    else
+                        $row->put('base', '-');
+                    break;
+                case 'phrasal':
+                    if(isset($keyword->phrasal))
+                        $row->put('phrasal', $keyword->phrasal);
+                    else
+                        $row->put('phrasal', '-');
+                    break;
+                case 'exact':
+                    if(isset($keyword->exact))
+                        $row->put('exact', $keyword->exact);
+                    else
+                        $row->put('exact', '-');
+                    break;
                 default:
 
                     if($mode === "dates" || $mode === "main"){
@@ -836,6 +872,9 @@ class MonitoringController extends Controller
             'group' => __('Group'),
             'target' => __('Target'),
             'dynamics' => __('Dynamics'),
+            'base' => 'Базовая частотность',
+            'phrasal' => 'Фразовая частотность "[]"',
+            'exact' => 'Точная частотность "[!]"',
         ]);
 
         return $columns;
