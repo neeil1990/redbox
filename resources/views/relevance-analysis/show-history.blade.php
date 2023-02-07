@@ -932,7 +932,7 @@
                             @endif
 
                             <div class="d-flex flex-column">
-                                <div class="btn-group w-50 mb-2">
+                                <div class="btn-group w-50 mb-2 mt-2">
                                     <button class="btn btn-secondary" id="repeat-queue-scan">
                                         {{ __('Repeat the analysis') }}
                                     </button>
