@@ -5,7 +5,6 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
-use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -136,7 +135,6 @@ class Cluster
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
-
     }
 
     protected function setReductionRatio(string $ratio)
@@ -467,6 +465,7 @@ class Cluster
             }
             $willClustered[$mainPhrase] = true;
         }
+
     }
 
     protected function searchClustersEngine1301()
@@ -720,7 +719,9 @@ class Cluster
 
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
             $this->clusters[$groupName] = $this->clusters[$key];
-            unset($this->clusters[$key]);
+            if (count($this->clusters[$key]) > 2) {
+                unset($this->clusters[$key]);
+            }
         }
     }
 
