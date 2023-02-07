@@ -20,6 +20,7 @@
     "Title": "Заголовок",
     "Position in the menu": "Позиция в меню",
     "Access": "Доступы",
+    "here": "здесь",
 
     "######################## Auth page ###############################": "",
     "Login page": "Страница авторизация на сервисе RedBox",
@@ -1281,8 +1282,7 @@
     "Parse xml": "Парcинг xml",
     "Waiting for a queue": "Ожидание очереди",
     "Processing of the received information": "Обработка полученной информации",
-    "Notify in a telegram upon completion?": "Уведомить в телеграме по завершении?",
-    "here": "здесь",
+    "Notify in a telegram upon completion": "Уведомить в телеграме по завершении",
     "You can close the page or start a new analysis, when your results are ready, you can view them": "Вы можете закрыть страницу или запустить новый анализ, когда ваши результаты будут готовы, вы сможете посмотреть их",
     "If your analysis is \"hanging\" at 50% for a long time, don't worry, it's just waiting in line to process": "Если ваш анализ долго \"висит\" на 50%, не беспокойтесь, просто он стоит в очереди на обработку"
 }

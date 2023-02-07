@@ -789,11 +789,14 @@ class Cluster
 
     protected function saveResult()
     {
-        $this->newCluster = new ClusterResults();
         $result = $this->getResult();
+        $package = base64_encode(gzcompress(json_encode($result), 9));
+
+        $this->newCluster = new ClusterResults();
         $this->newCluster->user_id = $this->user->id;
         $this->newCluster->progress_id = $this->getProgressId();
-        $this->newCluster->result = base64_encode(gzcompress(json_encode($result), 9));
+        $this->newCluster->result = $package;
+        $this->newCluster->default_result = $package;
         $this->newCluster->count_phrases = $this->countPhrases;
         $this->newCluster->count_clusters = count($result);
         $this->newCluster->clustering_level = $this->request['clusteringLevel'];

@@ -336,5 +336,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/edit-clusters', 'ClusterController@editCluster')->name('edit.cluster');
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
+    Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
 });
 

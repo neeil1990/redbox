@@ -454,4 +454,17 @@ class ClusterController extends Controller
             'groupId' => Str::random(10),
         ]);
     }
+
+    public function resetAllChanges(Request $request): ?JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->first();
+        if (!User::isUserAdmin() && $cluster->user_id !== Auth::id()) {
+            return response()->json([], 403);
+        }
+
+        $cluster->result = $cluster->default_result;
+        $cluster->save();
+
+        return response()->json([]);
+    }
 }

@@ -44,6 +44,34 @@
         </div>
     </div>
 
+    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetAllChangesLabel">Откат всех изменений</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Если во время ручного редактирования вы заметили что,
+                    что-то пошло не так и у вас потерялись фразы или группы,
+                    то вы можете откатить результаты сканирования до начального состояния.
+                    <br>
+                    <br>
+                    Приносим извенения за предоставленные неудобства, сообщите о ошибке администратору.
+                    <br>
+                    <br>
+                    <span class="text-danger">Это дейсвие отменить невозможно.</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="resetAllChanges" data-dismiss="modal">Откатить изменения</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -66,6 +94,13 @@
                         </a>
                     </li>
                 @endif
+                @isset($cluster['default_result'])
+                    <li>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#resetAllChanges">
+                            Откат всех изменений
+                        </button>
+                    </li>
+                @endisset
             </ul>
         </div>
         <div class="card-body">
@@ -994,6 +1029,24 @@
                     successMessage(totalCount + " {{ __('elements hidden') }}")
                 }
             }
+
+            $('#resetAllChanges').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('reset.all.cluster.changes') }}",
+                    dataType: 'json',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        projectId: {{ $cluster['id'] }},
+                    },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (response) {
+                        alert('У вас нет прав')
+                    }
+                });
+            })
         </script>
     @endslot
 @endcomponent
