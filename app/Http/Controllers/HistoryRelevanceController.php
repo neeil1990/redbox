@@ -158,7 +158,7 @@ class HistoryRelevanceController extends Controller
 
                 $history = RelevanceHistoryResult::where('project_id', '=', $request->id)->latest('updated_at')->first();
             }
-            $history = Relevance::uncompressed($history);
+            $history = Relevance::uncompress($history);
 
         } catch (Throwable $exception) {
             return response()->json([

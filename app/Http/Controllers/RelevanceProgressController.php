@@ -14,10 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class RelevanceProgressController extends Controller
 {
-    /**
-     * @return mixed|string
-     */
-    public function startProgress()
+    public function startProgress(): JsonResponse
     {
         $progress = new RelevanceProgress();
         $progress->user_id = Auth::id();
@@ -31,22 +28,21 @@ class RelevanceProgressController extends Controller
         ]);
     }
 
-
     public function getProgress(Request $request): JsonResponse
     {
         $progress = RelevanceProgress::where('hash', '=', $request->hash)->first();
 
-        if ($progress->progress === 100) {
+        if (isset($progress) && $progress->progress === 100) {
             $project = RelevanceHistory::where('user_id', '=', Auth::id())->latest('created_at')->first();
             $history = RelevanceHistoryResult::where('project_id', '=', $project->id)->latest('updated_at')->first();
             return response()->json([
                 'progress' => $progress->progress,
-                'result' => Relevance::uncompressed($history)
+                'result' => Relevance::uncompress($history)
             ]);
         }
 
         return response()->json([
-            'progress' => $progress->progress
+            'progress' => $progress->progress ?? 0
         ]);
     }
 

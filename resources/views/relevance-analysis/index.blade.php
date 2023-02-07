@@ -1026,6 +1026,7 @@
             }
 
             function getProgress() {
+                let clearInteval = false
                 let interval = setInterval(() => {
                     $.ajax({
                         type: "POST",
@@ -1037,15 +1038,18 @@
                         },
                         success: function (response) {
                             setProgressBarStyles(response.progress)
-
                             if (response.progress === 100) {
-                                clearInterval(interval)
+                                clearInteval = true;
                                 stopProgressBar()
                                 endProgress()
                                 successRequest(response.result)
                             }
                         },
                     });
+
+                    if(clearInteval) {
+                        clearInterval(interval)
+                    }
                 }, 5000);
             }
 
