@@ -1281,6 +1281,7 @@ class Relevance
                     ->where('points', '=', 0)
                     ->where('coverage', '=', 0)
                     ->where('density', '=', 0)
+                    ->where('html_main_page', '=', '')
                     ->delete();
 
                 ProjectRelevanceHistory::calculateInfo($main);
@@ -1289,7 +1290,6 @@ class Relevance
                 return;
             }
         }
-
     }
 
     /**
@@ -1471,6 +1471,12 @@ class Relevance
      */
     public function saveError($exception)
     {
+        Log::debug('Relevance Error', [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ]);
+
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
         if ($toDay->id) {
             $toDay->count_fails += 1;
@@ -1482,19 +1488,9 @@ class Relevance
         if ($this->queue) {
             UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
         }
-
-        Log::debug('Relevance Error', [
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'message' => $exception->getMessage(),
-        ]);
     }
 
-    /**
-     * @param $history
-     * @return array
-     */
-    public static function uncompressed($history): array
+    public static function uncompress($history): array
     {
         $history = json_decode($history, true);
 
