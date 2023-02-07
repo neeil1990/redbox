@@ -8,9 +8,9 @@ use Illuminate\Support\Str;
 
 class RiverFacade
 {
-    protected $user = '6602';
+    protected $user;
 
-    protected $key = '8c0d8e659c4ba2240e791fb3e6b4f172556be01f';
+    protected $key;
 
     protected $region;
 
@@ -22,6 +22,9 @@ class RiverFacade
 
     public function __construct($region)
     {
+        $this->user = env('XML_RIVER_USER');
+        $this->key = env('XML_RIVER_KEY');
+
         $this->region = $region;
 
         $this->xmlRiverPath = "https://xmlriver.com/wordstat/json?user=$this->user&key=$this->key&regions=$this->region&query=";
@@ -78,8 +81,7 @@ class RiverFacade
                 }
             }
 
-            if (
-                $searchInItems &&
+            if ($searchInItems &&
                 isset($riverResponse['content']['includingPhrases']['items'][0]['phrase']) &&
                 Str::length($riverResponse['content']['includingPhrases']['items'][0]['phrase']) === Str::length($this->getQuery())
             ) {

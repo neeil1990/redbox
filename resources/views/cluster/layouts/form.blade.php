@@ -225,7 +225,7 @@
             </div>
         @else
             <div id="sendTelegramMessage">
-                <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion') }}</label>
                 {!! Form::select('sendMessage', [
                     $config->send_message => $config->send_message,
                     true => __('Yes'),
@@ -429,7 +429,7 @@
             </div>
         @else
             <div id="sendTelegramMessage">
-                <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                <label for="sendMessage" class="pt-1">{{ __('Notify in a telegram upon completion') }}</label>
                 {!! Form::select('sendMessage', [
                     $config_classic->send_message => $config_classic->send_message,
                     true => __('Yes'),

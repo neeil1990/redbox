@@ -345,7 +345,7 @@
                                             @else
                                                 <div id="sendTelegramMessage">
                                                     <label for="sendMessage"
-                                                           class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                                                           class="pt-1">{{ __('Notify in a telegram upon completion') }}</label>
                                                     {!! Form::select('sendMessage', [
                                                         true => __('Yes'),
                                                         false => __('No'),
@@ -527,7 +527,7 @@
                                             @else
                                                 <div id="sendTelegramMessage">
                                                     <label for="sendMessage"
-                                                           class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                                                           class="pt-1">{{ __('Notify in a telegram upon completion') }}</label>
                                                     {!! Form::select('sendMessage', [
                                                         true => __('Yes'),
                                                         false => __('No'),

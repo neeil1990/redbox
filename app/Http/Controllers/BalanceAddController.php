@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Balance;
 use App\Classes\Pay\Robokassa\RobokassaPay;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class BalanceAddController extends Controller

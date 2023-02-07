@@ -209,7 +209,7 @@
 
                                         <div class="form-group required">
                                             <label for="sendMessage"
-                                                   class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                                                   class="pt-1">{{ __('Notify in a telegram upon completion') }}</label>
                                             {!! Form::select('send_message', [
                                                 $config->send_message => $config->send_message,
                                                 true => __('Yes'),
@@ -442,7 +442,7 @@
 
                                         <div class="form-group required">
                                             <label for="sendMessage"
-                                                   class="pt-1">{{ __('Notify in a telegram upon completion?') }}</label>
+                                                   class="pt-1">{{ __('Notify in a telegram upon completion') }}</label>
                                             {!! Form::select('send_message', [
                                                 $config_classic->send_message => $config_classic->send_message,
                                                 true => __('Yes'),

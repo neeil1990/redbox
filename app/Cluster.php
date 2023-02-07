@@ -82,6 +82,8 @@ class Cluster
             $this->brutForce = $config->brut_force;
             $this->ignoredWords = explode("\r\n", $config->ignored_words);
             $this->ignoredDomains = explode("\r\n", $config->ignored_domains);
+            $this->request['ignoredWords'] = $this->ignoredWords;
+            $this->request['ignoredDomains'] = $this->ignoredDomains;
             $this->engineVersion = $config->engine_version;
         } else {
             $config = ClusterConfiguration::first();
@@ -133,7 +135,6 @@ class Cluster
 
             $this->host = $this->searchRelevance ? parse_url($this->request['domain'])['host'] : $this->request['domain'];
         }
-
     }
 
     protected function setReductionRatio(string $ratio)
@@ -143,6 +144,28 @@ class Cluster
         } else if ($ratio === 'soft') {
             $this->reductionRatio = 0.5;
         }
+    }
+
+    /**
+     * @param $cluster
+     * @return mixed|string
+     */
+    protected static function getGroupName($cluster)
+    {
+        $maxRepeatPhrase = 0;
+        $groupName = '';
+        foreach ($cluster as $phrase => $info) {
+            if ($phrase !== 'finallyResult') {
+                if ($maxRepeatPhrase === 0) {
+                    $maxRepeatPhrase = $info['based']['number'];
+                    $groupName = $info['based']['phrase'];
+                } else if ($info['based']['number'] > $maxRepeatPhrase) {
+                    $maxRepeatPhrase = $info['based']['number'];
+                    $groupName = $info['based']['phrase'];
+                }
+            }
+        }
+        return $groupName;
     }
 
     public function __sleep()
@@ -244,10 +267,8 @@ class Cluster
 
         $this->searchClusters();
         $this->calculateClustersInfo();
-        if ($this->getSearchBase()) {
-            $this->searchGroupName();
-        }
-        $this->clusters = $this->calculateSimilarities($this->clusters, $this->ignoredWords);
+        $this->searchGroupName();
+        $this->calculateSimilarities();
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -444,6 +465,7 @@ class Cluster
             }
             $willClustered[$mainPhrase] = true;
         }
+
     }
 
     protected function searchClustersEngine1301()
@@ -676,25 +698,6 @@ class Cluster
         ksort($clusters);
         arsort($clusters);
 
-        if (filter_var($searchBase, FILTER_VALIDATE_BOOLEAN)) {
-            foreach ($clusters as $key => $cluster) {
-                $maxRepeatPhrase = 0;
-                $groupName = '';
-                foreach ($cluster as $phrase => $info) {
-                    if ($phrase !== 'finallyResult') {
-                        if ($maxRepeatPhrase === 0) {
-                            $maxRepeatPhrase = $info['based']['number'];
-                            $groupName = $info['based']['phrase'];
-                        } else if ($info['based']['number'] > $maxRepeatPhrase) {
-                            $maxRepeatPhrase = $info['based']['number'];
-                            $groupName = $info['based']['phrase'];
-                        }
-                    }
-                }
-                $clusters[$key]['finallyResult']['groupName'] = $groupName;
-            }
-        }
-
         return [
             'clusters' => base64_encode(gzcompress(json_encode($clusters), 9)),
             'countClusters' => count($clusters)
@@ -704,38 +707,33 @@ class Cluster
     protected function searchGroupName()
     {
         foreach ($this->clusters as $key => $cluster) {
-            $maxRepeatPhrase = 0;
-            $groupName = '';
-            foreach ($cluster as $phrase => $info) {
-                if ($phrase !== 'finallyResult') {
-                    if ($maxRepeatPhrase === 0) {
-                        $maxRepeatPhrase = $info['based']['number'];
-                        $groupName = $info['based']['phrase'];
-                    } else if ($info['based']['number'] > $maxRepeatPhrase) {
-                        $maxRepeatPhrase = $info['based']['number'];
-                        $groupName = $info['based']['phrase'];
-                    }
-                }
+            if ($this->getSearchBase()) {
+                $groupName = self::getGroupName($cluster);
+            } else {
+                unset($cluster['finallyResult']);
+                uksort($cluster, function ($a, $b) {
+                    return mb_strlen($b) - mb_strlen($a) ?: strcmp($a, $b);
+                });
+                $groupName = array_key_first(array_reverse($cluster));
             }
+
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
+            $this->clusters[$groupName] = $this->clusters[$key];
+            if (count($this->clusters[$key]) > 2) {
+                unset($this->clusters[$key]);
+            }
         }
     }
 
-    public static function calculateSimilarities($clusters, $ignoredWords)
+    public function calculateSimilarities()
     {
         $m = new Morphy();
         $cache = [];
 
-        foreach ($clusters as $mainPhrase => $items) {
-            foreach ($items as $ph => $item) {
-                unset($clusters[$mainPhrase][$ph]['similarities']);
-            }
-        }
-
-        foreach ($clusters as $mainPhrase => $items) {
+        foreach ($this->clusters as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $info) {
                 $phrase = explode(' ', $offPhrase);
-                $phrase = array_diff($phrase, $ignoredWords);
+                $phrase = array_diff($phrase, $this->ignoredWords);
 
                 foreach ($phrase as $keyF => $item) {
                     if (mb_strlen($item) < 2) {
@@ -749,17 +747,13 @@ class Cluster
                     }
                 }
 
-                foreach ($clusters as $mainPhrase2 => $items2) {
-                    if ($mainPhrase === $mainPhrase2) {
-                        continue;
-                    }
-
+                foreach ($this->clusters as $mainPhrase2 => $items2) {
                     foreach ($items2 as $offPhrase2 => $info2) {
                         if ($offPhrase === $offPhrase2 || $offPhrase === 'finallyResult' || $offPhrase2 === 'finallyResult') {
                             continue;
                         }
                         $phrase2 = explode(' ', $offPhrase2);
-                        $phrase2 = array_diff($phrase2, $ignoredWords);
+                        $phrase2 = array_diff($phrase2, $this->ignoredWords);
 
                         foreach ($phrase2 as $keyF => $item) {
                             if (mb_strlen($item) < 2) {
@@ -775,18 +769,16 @@ class Cluster
 
                         $similarities = count(array_intersect($phrase, $phrase2));
                         if ($similarities >= 1) {
-                            $clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
+                            $this->clusters[$mainPhrase][$offPhrase]['similarities'][$offPhrase2] = $similarities;
                         }
                     }
                 }
 
-                if (isset($clusters[$mainPhrase][$offPhrase]['similarities'])) {
-                    arsort($clusters[$mainPhrase][$offPhrase]['similarities']);
+                if (isset($this->clusters[$mainPhrase][$offPhrase]['similarities'])) {
+                    arsort($this->clusters[$mainPhrase][$offPhrase]['similarities']);
                 }
             }
         }
-
-        return $clusters;
     }
 
     protected function setResult(array $results)
@@ -798,11 +790,14 @@ class Cluster
 
     protected function saveResult()
     {
-        $this->newCluster = new ClusterResults();
         $result = $this->getResult();
+        $package = base64_encode(gzcompress(json_encode($result), 9));
+
+        $this->newCluster = new ClusterResults();
         $this->newCluster->user_id = $this->user->id;
         $this->newCluster->progress_id = $this->getProgressId();
-        $this->newCluster->result = base64_encode(gzcompress(json_encode($result), 9));
+        $this->newCluster->result = $package;
+        $this->newCluster->default_result = $package;
         $this->newCluster->count_phrases = $this->countPhrases;
         $this->newCluster->count_clusters = count($result);
         $this->newCluster->clustering_level = $this->request['clusteringLevel'];
@@ -838,17 +833,13 @@ class Cluster
         TelegramBot::sendMessage($message, $this->user->chat_id);
     }
 
-    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters): array
+    public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters)
     {
         $request = json_decode($cluster->request, true);
-        $ignoredWords = isset($request['ignoredWords']) ? explode("\n", $request['ignoredWords']) : [];
-        $clusters = Cluster::calculateSimilarities($clusters, $ignoredWords);
         $result = Cluster::recalculateClustersInfo($clusters, $request['searchBase']);
         $cluster->result = $result['clusters'];
         $cluster->count_clusters = $result['countClusters'];
         $cluster->save();
-
-        return $clusters;
     }
 
     public static function unpackCluster($result): array

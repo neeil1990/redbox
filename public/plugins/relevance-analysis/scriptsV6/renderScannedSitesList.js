@@ -92,6 +92,10 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
     });
 
     $(document).ready(function () {
+        if ($.fn.DataTable.isDataTable('#scanned-sites')) {
+            $("#scanned-sites").dataTable().fnDestroy();
+        }
+
         $('#scanned-sites').DataTable({
             "order": [[0, "asc"]],
             "pageLength": count,

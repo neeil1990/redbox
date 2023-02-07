@@ -695,11 +695,10 @@
             </div>
         </div>
     </div>
-
     @slot('js')
-        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -721,6 +720,7 @@
             $('#main_history_table').DataTable({
                 "order": [[0, "desc"]],
                 "pageLength": 10,
+                "searching": true,
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
@@ -734,19 +734,64 @@
                     },
                 },
                 "oLanguage": {
-                    "sSearch": words.search + ":",
-                    "sLengthMenu": words.show + " _MENU_ " + words.records,
-                    "sEmptyTable": words.noRecords,
-                    "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                    "sSearch": "{{ __('Search') }}:",
+                    "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
+                    "sEmptyTable": "{{ __('No records') }}",
+                    "sInfo" : "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",// text you want show for info section
                 }
             });
 
-            if ($('.dataTables_info').html() === 'Showing 0 to 0 of 0 entries') {
-                $('.dataTables_info').html(words.showing + " " + words.from + " 0 " + words.to + " 0 " + words.of + " 0 " + words.entries)
-            }
-
-
             $(".dt-button").addClass('btn btn-secondary')
+
+            $('.repeat-scan-unique-sites').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/repeat-scan-unique-sites",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $(this).attr('data-target'),
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            getSuccessMessage(response.message)
+                            $.each(response.object, function (key, value) {
+                                $('#history-state-' + value).html(
+                                    '<p>Обрабатывается..</p>' +
+                                    '<div class="text-center" id="preloaderBlock">' +
+                                    '        <div class="three col">' +
+                                    '            <div class="loader" id="loader-1"></div>' +
+                                    '        </div>' +
+                                    '</div>'
+                                )
+                            })
+
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message)
+                        }
+                    },
+                });
+            })
+
+            $('.start-through-analyse').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/start-through-analyse",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $(this).attr('data-target'),
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            getSuccessMessage(response.message, 5000)
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message, 15000)
+                        }
+                    },
+                });
+            })
+
 
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
@@ -759,9 +804,11 @@
             function getRegionName(id) {
                 switch (id) {
                     case '1' :
-                        return "{{ __('Moscow') }}";
+                        return "{{ __('Moscow and the area') }}";
                     case '20' :
                         return "{{ __('Arkhangelsk') }}";
+                    case '10649' :
+                        return "{{ __('Stary Oskol') }}";
                     case '37' :
                         return "{{ __('Astrakhan') }}";
                     case '197' :
@@ -883,26 +930,200 @@
                 }
             }
 
-            $('.remove-access').on('click', function () {
-                let button = $(this)
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('remove.guest.access') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: button.attr('data-target'),
-                    },
-                    success: function (response) {
-                        if (response.code === 201) {
-                            getSuccessMessage(response.message)
-                            button.parent().parent().remove()
-                        } else if (response.code === 415) {
-                            getErrorMessage(response.message)
-                        }
-                    },
-                });
-            });
+            setInterval(() => {
+                refreshMethods()
+            }, 200)
+
+            function refreshMethods() {
+                $('.create-new-link').unbind().on('click', function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('create.link.project.with.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            projectId: $('#project-id').val(),
+                            tagId: $('#tag-id').val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                $('#project-' + response.project.id).append(
+                                    '<div style="color: ' + response.tag.color + '" id="tag-' + response.tag.id + '-item-' + response.project.id + '">' + response.tag.name + '' +
+                                    ' <i class="fa fa-trash" style="opacity: 0.5; cursor: pointer" data-toggle="modal"' +
+                                    ' data-target=#removeTagModal' + response.timestamps + '></i>' +
+                                    '</div>'
+                                )
+                                $('#removeLinksModals').append(
+                                    '<div class="modal fade" id="removeTagModal' + response.timestamps + '" aria-labelledby="removeTagModal' + response.timestamps + 'Label" aria-hidden="true"> ' +
+                                    '   <div class="modal-dialog"> ' +
+                                    '       <div class="modal-content"> ' +
+                                    '           <div class="modal-header"> ' +
+                                    '               <button type="button" class="close" data-dismiss="modal" ' +
+                                    '               aria-label="Close"> ' +
+                                    '               <span aria-hidden="true">&times;</span> ' +
+                                    '               </button> ' +
+                                    '           </div> ' +
+                                    '       <div class="modal-body"> {{ __('Are you going to untie the label from the project, are you sure?') }}" ' +
+                                    '   </div> ' +
+                                    '   <div class="modal-footer"> ' +
+                                    '           <button type="button"' +
+                                    '               class="btn btn-secondary remove-project-relevance-link"' +
+                                    '               data-tag="' + response.tag.id + '" ' +
+                                    '               data-history="' + response.project.id + '" data-dismiss="modal">Отвязать метку от проекта' +
+                                    '           </button> ' +
+                                    '           <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть' +
+                                    '           </button>' +
+                                    '           </div>' +
+                                    '       </div>' +
+                                    '   </div>' +
+                                    '</div>')
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+
+                $('#create-tag').unbind().on('click', function () {
+                    if ($('#tag-name').val() !== '') {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('store.relevance.tag') }}",
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                name: $('#tag-name').val(),
+                                color: $('#tag-color').val()
+                            },
+                            success: function (response) {
+                                if (response.code === 201) {
+                                    $('#tags-list').append(
+                                        '<li data-target="' + response.tag.id + '"> ' +
+                                        '   <div class="btn-group mb-2"> ' +
+                                        '<input type="color" class="tag-color-input" data-target="' + response.tag.id + '" value="' + response.tag.color + '" style="height: 37px">' +
+                                        '       <input type="text" class="form form-control w-100 tag-name-input d-inline" style="display: inline !important;" ' +
+                                        '       data-target="' + response.tag.id + '" value="' + response.tag.name + '">' +
+                                        '<button type="button" class="btn btn-secondary col-2 remove-tag" data-target="' + response.tag.id + '"> ' +
+                                        '       <i class="fa fa-trash text-white"></i></button> ' +
+                                        '   </div> ' +
+                                        '</li>'
+                                    )
+                                    getSuccessMessage(response.message)
+
+                                    $('#tag-id').append(
+                                        '<option value="' + response.tag.id + '" id="option-tag-' + response.tag.id + '">' + response.tag.name + '</option>'
+                                    )
+                                } else if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                }
+                            },
+                        });
+                    }
+                })
+
+                $('.remove-tag').unbind().on('click', function () {
+                    let ojb = $(this)
+                    let id = $(this).attr('data-target')
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('destroy.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target')
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                                ojb.parent().parent().remove()
+                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
+                                    $(this).parent().remove()
+                                })
+
+                                $('#option-tag-' + id).remove()
+                            }
+                        },
+                    });
+                })
+
+                $('.tag-name-input').unbind().on('change', function () {
+                    var prev = this.defaultValue;
+                    var current = $(this).val();
+
+                    let id = $(this).attr('data-target')
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target'),
+                            name: $(this).val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
+                                    let oldHtml = $(this).parent().html()
+                                    let newHtml = oldHtml.replace(prev, current)
+                                    $(this).parent().html(newHtml)
+                                })
+                            }
+                        },
+                    });
+                    this.defaultValue = current
+                })
+
+                $('.tag-color-input').unbind().on('change', function () {
+                    let id = $(this).attr('data-target')
+                    let color = $(this).val()
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target'),
+                            color: $(this).val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
+                                    $(this).parent().css('color', color)
+                                })
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+
+                $('.remove-project-relevance-link').unbind().on('click', function () {
+                    let elem = $(this)
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('destroy.link.project.with.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-tag'),
+                            projectId: $(this).attr('data-history')
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                let tId = elem.attr('data-tag')
+                                let iId = elem.attr('data-history')
+                                $("#tag-" + tId + "-item-" + iId).remove()
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+            }
 
             function getSuccessMessage(message, time = 3000) {
                 $('.toast-top-right.success-message').show(300)
@@ -918,6 +1139,474 @@
                 setTimeout(() => {
                     $('.toast-top-right.error-message').hide(300)
                 }, time)
+            }
+
+            $(document).ready(function () {
+                setInterval(() => {
+                    $('#changeAllState, #changeAllStateList').unbind().on('change', function () {
+                        let state = $(this).is(':checked')
+                        $.each($('.custom-control-input.switch'), function () {
+                            if (state !== $(this).is(':checked')) {
+                                $(this).trigger('click');
+                            }
+                        });
+                    });
+
+                    $('.history-comment').unbind().change(function () {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/edit-history-comment",
+                            data: {
+                                id: $(this).attr('data-target'),
+                                comment: $(this).val()
+                            },
+                            success: function () {
+                                $('#toast-container').show(300)
+                                $('#message-info').html("{{ __('Successfully changed') }}")
+                                setInterval(function () {
+                                    $('#toast-container').hide(300)
+                                }, 3000)
+                            },
+                        });
+                    });
+
+                    $('.project_name').unbind().click(function () {
+                        let thisElem = $(this)
+                        let thisElementClass = $(this).attr('class')
+                        hideListHistory()
+                        hideTableHistory()
+
+                        let storyId = $(this).attr('data-order')
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/get-stories",
+                            data: {
+                                history_id: storyId,
+                            },
+                            beforeSend: function () {
+                                thisElem.attr('class', 'fa fa-clock')
+                            },
+                            async: true,
+                            success: function (response) {
+                                thisElem.attr('class', thisElementClass)
+                                if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                } else {
+                                    $('#changeAllState').prop('checked', false);
+                                    $('#changeAllStateList').prop('checked', false);
+                                    $('.search-input').val('')
+                                    $('.history').show()
+                                    let tbody = $('#historyTbody')
+
+                                    $.each(response.stories, function (key, val) {
+                                        let checked = val.calculate ? 'checked' : ''
+                                        let state
+
+                                        if (val.state === 1) {
+                                            state =
+                                                '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                                '   Повторить анализ' +
+                                                '</button>'
+                                                +
+                                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+
+                                        } else if (val.state === 0) {
+                                            state =
+                                                '<p>Обрабатывается..</p>' +
+                                                '<div class="text-center" id="preloaderBlock">' +
+                                                '        <div class="three col">' +
+                                                '            <div class="loader" id="loader-1"></div>' +
+                                                '        </div>' +
+                                                '</div>'
+                                            checkAnalyseProgress(val.id)
+                                        } else if (val.state === -1) {
+                                            state =
+                                                '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
+                                                '   Повторить анализ' +
+                                                '</button>' +
+                                                "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
+                                        }
+
+                                        let position = val.position
+
+                                        if (val.position == 0) {
+                                            position = 'Не попал в топ 100'
+                                        }
+
+                                        let phrase = val.phrase
+
+                                        if (phrase == null) {
+                                            phrase = 'Был использван анализ без ключевой фразы'
+                                        }
+
+                                        let newRow
+
+                                        if (val.average_values == null) {
+                                            newRow = "<tr class='render'>" +
+                                                "   <td>" + val.last_check + "</td>" +
+                                                "   <td>" +
+                                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                                "   </td>" +
+                                                "   <td>" + phrase + "</td>" +
+                                                "   <td>" + getRegionName(val.region) + "</td>" +
+                                                "   <td>" + val.main_link + "</td>" +
+                                                "   <td>" + position + "</td>" +
+                                                "   <td>" + val.points + "</td>" +
+                                                "   <td>" + val.coverage + "</td>" +
+                                                "   <td>" + val.coverage_tf + "</td>" +
+                                                "   <td>" + val.width + "</td>" +
+                                                "   <td>" + val.density + "</td>" +
+                                                "   <td>" +
+                                                "      <div class='d-flex justify-content-center'> " +
+                                                "          <div class='__helper-link ui_tooltip_w'> " +
+                                                "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                                "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                                "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                                "              </div>" +
+                                                "          </div>" +
+                                                "      </div>" +
+                                                "   </td>" +
+                                                "   <td id='history-state-" + val.id + "'>" +
+                                                state +
+                                                "   </td>" +
+                                                "</tr>"
+                                        } else {
+                                            newRow = "<tr class='render'>" +
+                                                "   <td>" + val.last_check + "</td>" +
+                                                "   <td>" +
+                                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                                "   </td>" +
+                                                "   <td>" + phrase + "</td>" +
+                                                "   <td>" + getRegionName(val.region) + "</td>" +
+                                                "   <td>" + val.main_link + "</td>" +
+                                                "   <td>" + position + "</td>" +
+                                                "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + getTextResult(val.coverage, Math.round(val.average_values.coverage)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + getTextResult(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + getTextResult(val.width, Math.round(val.average_values.width)) + "</td>" +
+                                                "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + getTextResult(val.density, Math.round(val.average_values.densityPercent)) + "</td>" +
+                                                "   <td>" +
+                                                "      <div class='d-flex justify-content-center'> " +
+                                                "          <div class='__helper-link ui_tooltip_w'> " +
+                                                "              <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
+                                                "                  <input onclick='changeState($(this))' type='checkbox' class='custom-control-input switch' id='calculate-project-" + val.id + "' name='noIndex' data-target='" + val.id + "' " + checked + ">" +
+                                                "                  <label class='custom-control-label' for='calculate-project-" + val.id + "'></label>" +
+                                                "              </div>" +
+                                                "          </div>" +
+                                                "      </div>" +
+                                                "   </td>" +
+                                                "   <td id='history-state-" + val.id + "'>" +
+                                                state +
+                                                "   </td>" +
+                                                "</tr>"
+                                        }
+
+                                        tbody.append(newRow)
+                                    })
+
+                                    $(document).ready(function () {
+                                        if ($.fn.DataTable.fnIsDataTable($('#history_table'))) {
+                                            $('#history_table').dataTable().fnDestroy();
+                                        }
+
+                                        let historyTable = $('#history_table').DataTable({
+                                            "order": [[0, "desc"]],
+                                            "pageLength": 25,
+                                            "searching": true,
+                                            language: {
+                                                paginate: {
+                                                    "first": "«",
+                                                    "last": "»",
+                                                    "next": "»",
+                                                    "previous": "«"
+                                                },
+                                            },
+                                            "oLanguage": {
+                                                "sSearch": words.search + ":",
+                                                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                                                "sEmptyTable": words.noRecords,
+                                                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                                            }
+                                        });
+
+                                        $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
+
+                                        $('#history_table_length').before(
+                                            "<span>" +
+                                            "<a href='/get-file/" + storyId + "/csv' class='btn btn-secondary ml-1'>CSV</a>" +
+                                            "<a href='/get-file/" + storyId + "/xls' class='btn btn-secondary ml-1'>Excel</a>" +
+                                            "</span>"
+                                        )
+
+                                        $(".dt-button").addClass('btn btn-secondary')
+
+                                        $('#history_table_filter').hide()
+
+                                        scrollTo('#tab_1 > div.history > h3')
+
+                                        repeatScan()
+
+                                        customHistoryFilters('history_table', historyTable)
+                                    });
+                                }
+                            },
+                            error: function () {
+                                thisElem.attr('class', thisElementClass)
+                            }
+                        });
+                    });
+
+                    $('.project_name_v2').unbind().click(function () {
+                        let thisElem = $(this)
+                        let thisElementClass = $(this).attr('class')
+                        hideListHistory()
+                        hideTableHistory()
+
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/get-stories-v2",
+                            async: true,
+                            data: {
+                                historyId: $(this).attr('data-order'),
+                            },
+                            beforeSend: function () {
+                                thisElem.attr('class', 'fa fa-clock')
+                            },
+                            success: function (response) {
+                                thisElem.attr('class', thisElementClass)
+
+                                if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                } else {
+                                    $('#history-list-subject').show()
+                                    $('#list-history').show()
+                                    object = response.object
+                                    $.each(response.object, function (key, value) {
+                                        let position = value[0]['position']
+                                        if (position == 0) {
+                                            position = 'Не попал в топ 100'
+                                        }
+                                        $('#list-history-body').append(
+                                            '<tr class="render">' +
+                                            '   <td data-target="' + key + '" class="col-1" style="text-align: center; vertical-align: inherit; width: 50px"></td>' +
+                                            '   <td>' + value[0]['created_at'] + '</td>' +
+                                            '   <td>' + key + '</td>' +
+                                            '   <td>' + getRegionName(value[0]['region']) + '</td>' +
+                                            '   <td>' + value[0]['main_link'] + '</td>' +
+                                            '   <td>' + position + '</td>' +
+                                            '   <td>' + value[0]['points'] + '</td>' +
+                                            '   <td>' + value[0]['coverage'] + '</td>' +
+                                            '   <td>' + value[0]['coverage_tf'] + '</td>' +
+                                            '   <td>' + value[0]['width'] + '</td>' +
+                                            '   <td>' + value[0]['density'] + '</td>' +
+                                            '</tr>'
+                                        )
+                                    })
+                                    $(document).ready(function () {
+                                        $('.dataTables_wrapper.no-footer').css({
+                                            width: '100%'
+                                        })
+
+                                        $('#list-history-body > tr.render > td.col-1').append('<i class="fa fa-eye"></i>')
+
+                                        if ($.fn.DataTable.fnIsDataTable($('#list-history'))) {
+                                            $('#list-history').dataTable().fnDestroy();
+                                        }
+
+                                        let listTable = $('#list-history').DataTable({
+                                            columns: [
+                                                {
+                                                    className: 'dt-control',
+                                                    orderable: false,
+                                                },
+                                                {data: 'date'},
+                                                {data: 'phrase'},
+                                                {data: 'region'},
+                                                {data: 'link'},
+                                                {data: 'position'},
+                                                {data: 'points'},
+                                                {data: 'coverage'},
+                                                {data: 'coverage_tf'},
+                                                {data: 'width'},
+                                                {data: 'density'},
+                                            ],
+                                            order: [[1, 'desc']],
+                                            destroy: true,
+                                            language: {
+                                                paginate: {
+                                                    "first": "«",
+                                                    "last": "»",
+                                                    "next": "»",
+                                                    "previous": "«"
+                                                },
+                                            },
+                                            "oLanguage": {
+                                                "sSearch": words.search + ":",
+                                                "sLengthMenu": words.show + " _MENU_ " + words.records,
+                                                "sEmptyTable": words.noRecords,
+                                                "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                                            }
+                                        });
+
+                                        scrollTo('#history-list-subject')
+
+                                        customFiltersWithoutComment('list-history', listTable, 'List', 1)
+                                        $('#list-history').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
+
+                                        $('#list-history').unbind().on('click', 'td.dt-control', function () {
+                                            let tr = $(this).closest('tr');
+                                            let row = listTable.row(tr);
+
+                                            if (row.child.isShown()) {
+                                                row.child.hide();
+                                                tr.removeClass('shown');
+                                                $('#' + $(this).attr('data-target').replace(' ', '-')).dataTable().fnDestroy()
+                                            } else {
+                                                row.child(format($(this).attr('data-target'))).show();
+                                                tr.addClass('shown');
+                                                let target = $(this).attr('data-target').replace(' ', '-')
+                                                let table = $('#' + target).DataTable({
+                                                    order: [[0, 'desc']],
+                                                    destroy: true,
+                                                    language: {
+                                                        lengthMenu: "_MENU_",
+                                                        search: "_INPUT_",
+                                                        paginate: {
+                                                            "first": "«",
+                                                            "last": "»",
+                                                            "next": "»",
+                                                            "previous": "«"
+                                                        },
+                                                    },
+                                                })
+                                                customFilters(target, table, target)
+                                            }
+                                        });
+                                    })
+                                    repeatScan()
+                                }
+                            },
+                            error: function () {
+                                thisElem.attr('class', thisElementClass)
+                            }
+                        });
+                    })
+
+                    getHistoryInfo()
+                }, 500)
+            })
+
+            function customFiltersWithoutComment(tableID, table, prefix = '', index = 0) {
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let target = String(data[index]);
+                    return isDateValid(target, settings, tableID, prefix)
+                });
+                $('#dateMin' + prefix).change(function () {
+                    table.draw();
+                });
+                $('#dateMax' + prefix).change(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let phraseSearch = String($('#phraseSearch' + prefix).val()).toLowerCase();
+                    let target = String(data[index + 1]).toLowerCase();
+                    return isIncludes(target, phraseSearch, settings, tableID)
+                });
+                $('#phraseSearch' + prefix).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let regionSearch = String($('#regionSearch' + prefix).val()).toLowerCase();
+                    let target = String(data[index + 2]).toLowerCase();
+                    return isIncludes(target, regionSearch, settings, tableID)
+                });
+                $('#regionSearch' + prefix).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let mainPageSearch = String($('#mainPageSearch' + prefix).val()).toLowerCase();
+                    let target = String(data[index + 3]).toLowerCase();
+                    return isIncludes(target, mainPageSearch, settings, tableID)
+                });
+                $('#mainPageSearch' + prefix).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxPosition = parseFloat($('#maxPosition' + prefix).val());
+                    let minPosition = parseFloat($('#minPosition' + prefix).val());
+                    let target = parseFloat(data[index + 4]);
+                    return isValidate(minPosition, maxPosition, target, settings, tableID)
+                });
+                let pos = '#minPosition' + prefix + ', #maxPosition' + prefix
+                $(pos).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxPoints = parseFloat($('#maxPoints' + prefix).val());
+                    let minPoints = parseFloat($('#minPoints' + prefix).val());
+                    let target = parseFloat(data[index + 5]);
+                    return isValidate(minPoints, maxPoints, target, settings, tableID)
+                });
+                let points = '#minPoints' + prefix + ', #maxPoints' + prefix
+                $(points).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxCoverage = parseFloat($('#maxCoverage' + prefix).val());
+                    let minCoverage = parseFloat($('#minCoverage' + prefix).val());
+                    let target = parseFloat(data[index + 6]);
+                    return isValidate(minCoverage, maxCoverage, target, settings, tableID)
+                });
+                let coverage = '#minCoverage' + prefix + ', #maxCoverage' + prefix
+                $(coverage).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxCoverageTf = parseFloat($('#maxCoverageTf' + prefix).val());
+                    let minCoverageTf = parseFloat($('#minCoverageTf' + prefix).val());
+                    let target = parseFloat(data[index + 7]);
+                    return isValidate(minCoverageTf, maxCoverageTf, target, settings, tableID)
+                });
+                let covTf = '#minCoverageTf' + prefix + ', #maxCoverageTf' + prefix
+                $(covTf).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxWidth = parseFloat($('#maxWidth' + prefix).val());
+                    let minWidth = parseFloat($('#minWidth' + prefix).val());
+                    let target = parseFloat(data[index + 8]);
+                    return isValidate(minWidth, maxWidth, target, settings, tableID)
+                });
+                let width = '#minWidth' + prefix + ', #maxWidth' + prefix
+                $(width).keyup(function () {
+                    table.draw();
+                });
+
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let maxDensity = parseFloat($('#maxDensity' + prefix).val());
+                    let minDensity = parseFloat($('#minDensity' + prefix).val());
+                    let target = parseFloat(data[index + 9]);
+                    return isValidate(minDensity, maxDensity, target, settings, tableID)
+                });
+                let density = '#minDensity' + prefix + ', #maxDensity' + prefix
+                $(density).keyup(function () {
+                    table.draw();
+                });
+            }
+
+            function getTextResult(result, ideal) {
+                return 'Посадочная страница получила <b>' + result + '</b>.<br> Рекомендованное значение <b>' + ideal + '.</b>';
             }
         </script>
     @endslot

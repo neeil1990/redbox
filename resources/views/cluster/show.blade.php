@@ -471,7 +471,7 @@
             });
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>

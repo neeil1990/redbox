@@ -11,24 +11,11 @@
 |
 */
 
-use App\Cluster;
-use App\ClusterConfiguration;
-use App\ClusterConfigurationClassic;
-use App\ClusterResults;
-use App\Common;
 use App\Morphy;
-use App\ProjectRelevanceHistory;
-use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
-});
-
-Route::get('occurrence', function (\Illuminate\Http\Request $request) {
-    $river = new \App\Classes\Services\XmlRiver($request->get('query'), $request->get('regions'));
-    dd($river->get());
 });
 
 Auth::routes(['verify' => true]);
@@ -52,7 +39,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
-    Route::resource('main-projects', 'DescriptionProjectForAdminController');
+    Route::resource('main-projects', 'MainProjectsController');
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
@@ -350,4 +337,5 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/edit-clusters', 'ClusterController@editCluster')->name('edit.cluster');
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
+    Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
 });

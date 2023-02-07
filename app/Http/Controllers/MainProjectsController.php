@@ -8,10 +8,11 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
 
-class DescriptionProjectForAdminController extends Controller
+class MainProjectsController extends Controller
 {
     protected $roles;
 
@@ -22,38 +23,36 @@ class DescriptionProjectForAdminController extends Controller
         $this->roles = Role::all()->pluck('name', 'name');
     }
 
-    /**
-     * @return array|false|Application|Factory|View|mixed
-     */
     public function index()
     {
-        $data = MainProject::all();
+        $data = MainProject::orderBy('position', 'asc')->get();
         return view('main-projects.index', compact('data'));
     }
 
-    /**
-     * @return array|false|Application|Factory|View|mixed
-     */
     public function create()
     {
         $roles = $this->roles;
         return view('main-projects.create', compact('roles'));
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function store(Request $request): RedirectResponse
     {
-        MainProject::create($request->all());
+        $this->validate($request, [
+            'title' => ['required'],
+            'position' => ['required', 'unique:main_projects'],
+            'link' => ['required'],
+            'icon' => ['required'],
+        ], [
+            'position.unique' => 'Такая позиция уже существует',
+        ]);
+
+        $request = $request->all();
+        $request['show'] = $request['show'] === 'on';
+
+        MainProject::create($request);
         return redirect()->route('main-projects.index');
     }
 
-    /**
-     * @param $id
-     * @return array|false|Application|Factory|View|mixed
-     */
     public function edit($id)
     {
         $data = MainProject::find($id);
@@ -61,29 +60,26 @@ class DescriptionProjectForAdminController extends Controller
         return view('main-projects.edit', compact('data', 'roles'));
     }
 
-    /**
-     * @param Request $request
-     * @param $id
-     * @return RedirectResponse
-     */
     public function update(Request $request, $id): RedirectResponse
     {
-        MainProject::find($id)->update([
-            'access' => $request->access,
-            'title' => $request->title,
-            'description' => $request->description,
-            'link' => $request->link,
-            'icon' => $request->icon,
-            'show' => $request->show === 'on'
+        $project = MainProject::find($id);
+        $this->validate($request, [
+            'title' => ['required'],
+            'position' => Rule::unique('main_projects')->ignore($project->position, 'position'),
+            'link' => ['required'],
+            'icon' => ['required'],
+        ], [
+            'position.unique' => 'Такая позиция уже существует',
         ]);
+
+        $request = $request->all();
+        $request['show'] = $request['show'] === 'on';
+
+        $project->update($request);
 
         return redirect()->route('main-projects.index');
     }
 
-    /**
-     * @param $id
-     * @return RedirectResponse
-     */
     public function destroy($id): RedirectResponse
     {
         MainProject::where('id', $id)->delete();

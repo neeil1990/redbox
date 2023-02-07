@@ -13,7 +13,7 @@ function renderResultTable(data) {
         let groupName = ''
         let relevanceHeader = ''
         let saveUrlButton = ''
-        let colspan = 3
+        let addColspan = false
 
         $.each(result, function (phrase, information) {
             if (phrase !== 'finallyResult') {
@@ -49,7 +49,6 @@ function renderResultTable(data) {
                 if ('groupName' in result['finallyResult']) {
                     groupHeader = '<th style="border-top-width: 2px;min-width: 250px">Группа</th>'
                     groupName = '<td class="border-0 group-' + clusterId + '">' + result['finallyResult']['groupName'] + '</td>'
-                    colspan += 1
                 } else {
                     copyGroupBool = false
                 }
@@ -71,7 +70,8 @@ function renderResultTable(data) {
                     relevance = '<td class="border-0 relevance-' + clusterId + '"> <a href="' + information['link'] + '" target="_blank">' + information['link'] + ' </a></td>'
                     relevanceHeader = '<th style="border-top-width: 2px;">Релевантные url </th>'
                     copyRelevanceBool = true
-                    colspan += 1
+                    addColspan = true
+
                 } else if ('relevance' in information && information['relevance'] !== 0) {
                     $.each(information['relevance'], function (key, value) {
                         relevance += '<option value="' + value + '">' + value + '</option>'
@@ -86,7 +86,7 @@ function renderResultTable(data) {
                     relevance = '<td class="border-0 relevance-' + clusterId + '"> ' + relevance + '</td>'
                     relevanceHeader = '<th style="border-top-width: 2px;">Релевантные url </th>'
                     copyRelevanceBool = true
-                    colspan += 1
+                    addColspan = true
                 }
 
                 if (allRelevanceUrls.length > 0) {
@@ -152,6 +152,11 @@ function renderResultTable(data) {
             groupButton = ''
         }
 
+        let colspan = 4
+        if(addColspan){
+            colspan = 5
+        }
+
         newRow +=
             '<tr class="render">' +
             '   <td class="p-0">' +
@@ -162,8 +167,8 @@ function renderResultTable(data) {
             '               <th class="centered-text border-0" colspan="3">Частотность</th>' +
             '           </tr>' +
             '           <tr>' +
-            '               <th style="border-top-width: 2px;min-width: 25px;" title="Порядковый номер">#</th>' +
-            '               <th style="border-top-width: 2px;min-width: 30px;" title="Порядковый номер в кластере">##</th>' +
+            '               <th style="border-top-width: 2px;min-width: 25px;">#</th>' +
+            '               <th style="border-top-width: 2px;min-width: 30px;">##</th>' +
             '               <th style="border-top-width: 2px;min-width: 250px;">' +
             '                   Ключевой запрос ' +
             '               </th>' +
