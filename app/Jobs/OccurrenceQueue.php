@@ -22,7 +22,6 @@ class OccurrenceQueue implements ShouldQueue
     protected $lr;
 
     public $timeout = 0;
-    public $retryAfter = 1;
 
     /**
      * Create a new job instance.
