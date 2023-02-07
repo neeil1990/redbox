@@ -860,37 +860,14 @@
                 }
             }
 
+            $(document).keypress(function(e) {
+                if(e.which === 13 && $('#clusterFilter').is(':focus')) {
+                    searchPhrases()
+                }
+            });
+
             $('#searchPhrases').on('click', function () {
-                let searchSuccess = false
-                let string = $('#clusterFilter').val().trim()
-                let totalCount = 0
-
-                if (string !== '') {
-                    $.each($('.card.cluster-block'), function (key, value) {
-                        let thisBlock = $(this)
-                        let ul = $(this).children('ul').eq(0)
-                        let countLi = ul.children('li').length
-                        let counter = 0
-                        $.each($(ul.children('li')), function (key, value) {
-                            if (!$(this).children('div').eq(0).children('div').eq(0).html().includes(string)) {
-                                searchSuccess = true
-                                totalCount += 1
-                                counter += 1
-                                $(this).hide()
-                            }
-                        })
-                        if (counter === countLi) {
-                            thisBlock.hide()
-                        }
-                    })
-
-                }
-
-                if (!searchSuccess) {
-                    errorMessage("{{ __('No matches found') }}")
-                } else {
-                    successMessage(totalCount + " {{ __('elements hidden') }}")
-                }
+                searchPhrases()
             })
 
             $('#setDefaultVision').on('click', function () {
@@ -981,6 +958,41 @@
 
                     $(this).children('div').eq(0).children('div').eq(0).children('span').eq(2).html(base + ' / ' + phrase + ' / ' + target)
                 })
+            }
+
+            function searchPhrases() {
+                $('.phrase-for-color').parent().parent().show()
+                $('.card.cluster-block').show()
+
+                let searchSuccess = false
+                let string = $('#clusterFilter').val().trim()
+                let totalCount = 0
+
+                if (string !== '') {
+                    $.each($('.card.cluster-block'), function (key, value) {
+                        let thisBlock = $(this)
+                        let ul = $(this).children('ul').eq(0)
+                        let countLi = ul.children('li').length
+                        let counter = 0
+                        $.each($(ul.children('li')), function (key, value) {
+                            if (!$(this).children('div').eq(0).children('div').eq(0).html().includes(string)) {
+                                searchSuccess = true
+                                totalCount += 1
+                                counter += 1
+                                $(this).hide()
+                            }
+                        })
+                        if (counter === countLi) {
+                            thisBlock.hide()
+                        }
+                    })
+                }
+
+                if (!searchSuccess) {
+                    errorMessage("{{ __('No matches found') }}")
+                } else {
+                    successMessage(totalCount + " {{ __('elements hidden') }}")
+                }
             }
         </script>
     @endslot
