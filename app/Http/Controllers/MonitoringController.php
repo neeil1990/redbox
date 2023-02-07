@@ -872,9 +872,9 @@ class MonitoringController extends Controller
             'group' => __('Group'),
             'target' => __('Target'),
             'dynamics' => __('Dynamics'),
-            'base' => 'Базовая частотность',
-            'phrasal' => 'Фразовая частотность "[]"',
-            'exact' => 'Точная частотность "[!]"',
+            'base' => __('YW'),
+            'phrasal' => __('YW') . ' "[]"',
+            'exact' => __('YW') . ' "[!]"',
         ]);
 
         return $columns;

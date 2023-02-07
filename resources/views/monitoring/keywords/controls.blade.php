@@ -36,9 +36,9 @@
             ['name' => 'group', 'text' => __('Group'), 'default' => 'on'],
             ['name' => 'target', 'text' => __('Target'), 'default' => 'on'],
             ['name' => 'dynamics', 'text' => __('Dynamics'), 'default' => 'on'],
-            ['name' => 'base', 'text' => 'Базовая частотность', 'default' => 'off'],
-            ['name' => 'phrasal', 'text' => 'Фразовая частотность', 'default' => 'off'],
-            ['name' => 'exact', 'text' => 'Точная частотность', 'default' => 'off'],
+            ['name' => 'base', 'text' => __('YW'), 'default' => 'off'],
+            ['name' => 'phrasal', 'text' => __('YW') . ' "[]"', 'default' => 'off'],
+            ['name' => 'exact', 'text' => __('YW') . ' "[!]"', 'default' => 'off'],
         ] as $col)
         <a href="javascript:void(0)" class="btn btn-default btn-sm tooltip-on column-visible" data-toggle="tooltip" data-default="{{ $col['default'] }}" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
     @endforeach

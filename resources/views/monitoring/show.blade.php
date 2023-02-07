@@ -320,20 +320,6 @@
                                 trigger: 'hover',
                             });
 
-                            $(container[0]).find('.column-visible').each(function () {
-                                let name = $(this).data('column');
-                                let status = $(this).data('default');
-                                let column = api.column(name + ':name');
-
-                                if(status === 'on'){
-                                    column.visible(true);
-                                    $('.column-visible[data-column="'+ name +'"]').removeClass('hover');
-                                }else{
-                                    column.visible(false);
-                                    $('.column-visible[data-column="'+ name +'"]').addClass('hover');
-                                }
-                            });
-
                             container.find('.column-visible').click(function(){
 
                                 let name = $(this).data('column');
