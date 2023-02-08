@@ -125,20 +125,20 @@ class SimplifiedXmlFacade extends XmlFacade
 
         if ($attempt >= 1 && $attempt <= 2) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
-            $this->setUser(env('XML_STOCK_USER'));
-            $this->setKey(env('XML_STOCK_KEY'));
+            $this->setUser(config('xmlriver.stockUser'));
+            $this->setKey(config('xmlriver.stockKey'));
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         } elseif ($attempt >= 3 && $attempt <= 4) {
             $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser(env('XML_PROXY_USER'));
-            $this->setKey(env('XML_PROXY_KEY'));
+            $this->setUser(config('xmlriver.proxyUser'));
+            $this->setKey(config('xmlriver.proxyKey'));
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         } elseif ($attempt >= 5 && $attempt <= 6) {
             $this->setPath('https://xmlriver.com/search_yandex/xml');
-            $this->setUser(env('XML_RIVER_USER'));
-            $this->setKey(env('XML_RIVER_KEY'));
+            $this->setUser(config('xmlriver.user'));
+            $this->setKey(config('xmlriver.key'));
             $loc = $this->getRiverLocation();
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
