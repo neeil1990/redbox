@@ -872,9 +872,9 @@ class MonitoringController extends Controller
             'group' => __('Group'),
             'target' => __('Target'),
             'dynamics' => __('Dynamics'),
-            'base' => __('YW'),
-            'phrasal' => __('YW') . ' "[]"',
-            'exact' => __('YW') . ' "[!]"',
+            'base' => view('monitoring.partials.show.header.yw', ['ext' => ''])->render(),
+            'phrasal' => view('monitoring.partials.show.header.yw', ['ext' => '"[]"'])->render(),
+            'exact' => view('monitoring.partials.show.header.yw', ['ext' => '"[!]"'])->render(),
         ]);
 
         return $columns;
