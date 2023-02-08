@@ -31,13 +31,16 @@
 
 <div class="btn-group">
     @foreach ([
-            ['name' => 'query', 'text' => __('Query')],
-            ['name' => 'url', 'text' => __('URL')],
-            ['name' => 'group', 'text' => __('Group')],
-            ['name' => 'target', 'text' => __('Target')],
-            ['name' => 'dynamics', 'text' => __('Dynamics')],
+            ['name' => 'query', 'text' => __('Query'), 'default' => 'on'],
+            ['name' => 'url', 'text' => __('URL'), 'default' => 'on'],
+            ['name' => 'group', 'text' => __('Group'), 'default' => 'on'],
+            ['name' => 'target', 'text' => __('Target'), 'default' => 'on'],
+            ['name' => 'dynamics', 'text' => __('Dynamics'), 'default' => 'on'],
+            ['name' => 'base', 'text' => __('YW'), 'default' => 'off'],
+            ['name' => 'phrasal', 'text' => __('YW') . ' "[]"', 'default' => 'off'],
+            ['name' => 'exact', 'text' => __('YW') . ' "[!]"', 'default' => 'off'],
         ] as $col)
-        <a href="javascript:void(0)" class="btn btn-default btn-sm tooltip-on column-visible" data-toggle="tooltip" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
+        <a href="javascript:void(0)" class="btn btn-default btn-sm tooltip-on column-visible" data-toggle="tooltip" data-default="{{ $col['default'] }}" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
     @endforeach
 </div>
 
