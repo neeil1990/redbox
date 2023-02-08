@@ -339,14 +339,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
 });
-
-Route::get('/test', function (){
-   dd([
-       env('XML_PROXY_USER'),
-       env('XML_PROXY_KEY'),
-       env('XML_RIVER_USER'),
-       env('XML_RIVER_KEY'),
-       env('XML_STOCK_USER'),
-       env('XML_STOCK_KEY'),
-   ]);
-});
