@@ -34,7 +34,12 @@ function renderRecommendationsTable(recommendations, count, words) {
         )
     })
 
-    var table = $('#recommendations').DataTable({
+
+    if ($.fn.DataTable.fnIsDataTable($('#recommendations'))) {
+        $('#recommendations').dataTable().fnDestroy();
+    }
+
+    let table = $('#recommendations').DataTable({
         "order": [[2, "desc"]],
         "pageLength": count,
         "searching": true,
