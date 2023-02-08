@@ -3,12 +3,10 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | XML River Driver
+    | XML PROXY Driver
     |--------------------------------------------------------------------------
     */
 
-    'url' => "https://xmlriver.com/wordstat/json",
-
-    'user' => env('XML_RIVER_USER', ''),
-    'key' => env('XML_RIVER_KEY', ''),
+    'user' => env('XML_PROXY_USER', ''),
+    'key' => env('XML_PROXY_KEY', ''),
 ];
