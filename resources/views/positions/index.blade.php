@@ -65,6 +65,10 @@
                 background-color: lightgrey;
             }
 
+            .alone:hover {
+                background-color: lightgrey;
+            }
+
             .card-header:after {
                 content: none;
             }
@@ -73,7 +77,7 @@
                 display: none !important;
             }
 
-            i:hover {
+            li > i:hover {
                 color: black;
                 cursor: pointer;
             }
@@ -98,7 +102,7 @@
             <ol class="nested_with_switch vertical">
                 @foreach($items as $key => $item)
                     @if(isset($item['id']))
-                        <li class="p-2 moved-item d-flex justify-content-between" data-id="{{ $item['id'] }}"
+                        <li class="p-2 moved-item d-flex justify-content-between alone" data-id="{{ $item['id'] }}"
                             data-name="{{ $item['title'] }}">
                             {{ __($item['title']) }}
                         </li>
