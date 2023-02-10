@@ -57,7 +57,7 @@ class ClusterResultExport implements FromCollection
                     $clusterIterator,
                     $iterator,
                     $phrase,
-                    $items['finallyResult']['groupName'],
+                    $items['finallyResult']['groupName'] ?? '',
                     $relevance,
                     $baseForm,
                     $phraseForm,
