@@ -236,7 +236,7 @@ class ClusterController extends Controller
 
     public function downloadClusterResult(ClusterResults $cluster, string $type)
     {
-        if ($cluster->user_id !== Auth::id() || !($type === 'xls' || $type === 'csv')) {
+        if (!User::isUserAdmin() && $cluster->user_id !== Auth::id() || !($type === 'xls' || $type === 'csv')) {
             return abort(403);
         }
 
