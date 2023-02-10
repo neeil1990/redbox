@@ -11,7 +11,6 @@
 |
 */
 
-use App\Morphy;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -338,4 +337,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
+
+    Route::get('/configuration-menu', 'PositionMenuItemsController@index');
+    Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
+    Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
 });

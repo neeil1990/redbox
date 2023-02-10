@@ -24,14 +24,36 @@
     <ul class="nav nav-pills nav-sidebar flex-column mt-3" data-widget="treeview" role="menu" data-accordion="false"
         style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px; white-space: inherit !important;">
         @if(isset($modules))
-            @foreach($modules as $module)
-                <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
-                    <a class="nav-link search-link" href="{{ $module['link'] }}"
-                       style="white-space: inherit !important;">
-                    <span class="ml-2">{!! $module['icon'] !!} <span
-                            class="module-name">{{ $module['title'] }}</span></span>
-                    </a>
-                </li>
+            @foreach($modules as $key => $module)
+                @if(isset($module['id']))
+                    <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
+                        <a class="nav-link search-link" href="{{ $module['link'] }}"
+                           style="white-space: inherit !important;">
+                            <span class="ml-2">{!! $module['icon'] !!}
+                                <span class="module-name">{{ $module['title'] }}
+                                </span>
+                            </span>
+                        </a>
+                    </li>
+                @else
+                    <li class="nav-item menu-item ml-2">
+                        <a href="#" class="nav-link">
+                            <i class="fa-solid fa-folder"></i>
+                            <p> {{ $key }} </p>
+                        </a>
+                        <ul class="nav nav-treeview" style="display: none;">
+                            @foreach($module as $elem)
+                                <li class="nav-item pl-2" data-id="{{ $elem['id'] }}">
+                                    <a class="nav-link search-link" href="{{ $elem['link'] }}" style="white-space: inherit !important;">
+                                        <span class="ml-3">{!! $elem['icon'] !!}
+                                            <span class="module-name">{{ $elem['title'] }}</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
             @endforeach
         @else
             <li class="nav-item menu-item">
