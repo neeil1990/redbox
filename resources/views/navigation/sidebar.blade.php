@@ -25,7 +25,7 @@
         style="min-height: 70vh; overflow-x: hidden !important; overflow-y: auto; padding-bottom: 50px; white-space: inherit !important;">
         @if(isset($modules))
             @foreach($modules as $key => $module)
-                @if(isset($module['id']))
+                @if(!array_key_exists('configurationInfo', $module))
                     <li class="nav-item menu-item" data-id="{{ $module['id'] }}">
                         <a class="nav-link search-link" href="{{ $module['link'] }}"
                            style="white-space: inherit !important;">
@@ -36,15 +36,19 @@
                         </a>
                     </li>
                 @else
-                    <li class="nav-item menu-item ml-2">
+                    <li class="nav-item menu-item ml-2 @if($module['configurationInfo']['show'] == 'true') menu-is-opening menu-open @endif">
                         <a href="#" class="nav-link">
                             <i class="fa-solid fa-folder"></i>
                             <p> {{ $key }} </p>
                         </a>
-                        <ul class="nav nav-treeview" style="display: none;">
-                            @foreach($module as $elem)
+                        <ul class="nav nav-treeview" @if($module['configurationInfo']['show'] == 'false') style="display: none;" @endif>
+                            @foreach($module as $k => $elem)
+                                @if($k === 'configurationInfo')
+                                    @continue
+                                @endif
                                 <li class="nav-item pl-2" data-id="{{ $elem['id'] }}">
-                                    <a class="nav-link search-link" href="{{ $elem['link'] }}" style="white-space: inherit !important;">
+                                    <a class="nav-link search-link" href="{{ $elem['link'] }}"
+                                       style="white-space: inherit !important;">
                                         <span class="ml-3">{!! $elem['icon'] !!}
                                             <span class="module-name">{{ $elem['title'] }}</span>
                                         </span>
@@ -68,6 +72,37 @@
     </ul>
 </nav>
 <script>
+    $('.x-input__field.form-control.form-control-sidebar').on('keyup', function () {
+        let input = $(this).val().trim()
+        if (input === '') {
+            $('.nav-item.menu-item').show()
+            $('.nav.nav-treeview').hide()
+            setTimeout(() => {
+                $('.nav-item.menu-item.ml-2.menu-is-opening.menu-open').removeClass('menu-is-opening menu-open')
+            }, 310)
+            return;
+        }
+
+        $.each($('.nav-item.menu-item.ml-2').children('ul'), function () {
+            let mainBlock = $(this).parent()
+            let showMain = false
+            $.each(mainBlock.children('ul').eq(0).children('li'), function () {
+                let html = $(this).children('a').eq(0).children('span').eq(0).children('span').eq(0).html().trim()
+                if (html.includes(input)) {
+                    showMain = true;
+                }
+            })
+
+            if (showMain) {
+                mainBlock.show()
+                mainBlock.children('ul').eq(0).show(300)
+            } else {
+                mainBlock.hide()
+                mainBlock.children('ul').eq(0).show(300)
+            }
+        })
+    })
+
     let visible = true;
     $('#show-and-hide').click(() => {
         if (visible) {

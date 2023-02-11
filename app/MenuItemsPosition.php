@@ -5,7 +5,6 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class MenuItemsPosition extends Model
@@ -23,7 +22,6 @@ class MenuItemsPosition extends Model
         }
         $items = $items->toArray();
         $config = MenuItemsPosition::where('user_id', '=', Auth::id())->first();
-
         try {
             if (isset($config)) {
                 $oldPositions = json_decode($config->positions, true);
@@ -31,7 +29,7 @@ class MenuItemsPosition extends Model
 
                 foreach ($oldPositions as $item) {
                     if (isset($item[0]) && $item[0]['dir']) {
-                        $newPositions[$item[0]['dirName']] = [];
+                        $newPositions[$item[0]['dirName']]['configurationInfo'] = $item[0];
                         foreach ($item as $groupItem) {
                             if (isset($groupItem['dir'])) {
                                 continue;

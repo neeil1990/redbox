@@ -101,12 +101,7 @@
         <div id="sortContainer" class="col-6">
             <ol class="nested_with_switch vertical">
                 @foreach($items as $key => $item)
-                    @if(isset($item['id']))
-                        <li class="p-2 moved-item d-flex justify-content-between alone" data-id="{{ $item['id'] }}"
-                            data-name="{{ $item['title'] }}">
-                            {{ __($item['title']) }}
-                        </li>
-                    @else
+                    @if(array_key_exists('configurationInfo', $item))
                         <li data-name="{{ $key }}" class="w-100 pb-3" data-action="dir">
                             <div class="card-header group-name d-flex justify-content-between">
                                 <div>
@@ -125,10 +120,11 @@
                                            data-target="#{{ str_replace(' ', '_', $key) }}"
                                            aria-controls="{{ str_replace(' ', '_', $key) }}"
                                            class="fa fa-eye pr-2"
+                                           data-action="{{ $item['configurationInfo']['show'] }}"
                                            style="color: white"></i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
-                                                Скрыть группу
+                                                Скрыть/показать группу
                                             </span>
                                         </span>
                                     </span>
@@ -151,14 +147,23 @@
                                     </span>
                                 </div>
                             </div>
-                            <ol class="for-nest show" id="{{ str_replace(' ', '_', $key) }}">
-                                @foreach($items[$key] as $item)
+                            <ol class="for-nest @if($item['configurationInfo']['show'] === 'true') show @else collapse @endif"
+                                id="{{ str_replace(' ', '_', $key) }}">
+                                @foreach($item as $k => $elem)
+                                    @if($k === 'configurationInfo')
+                                        @continue
+                                    @endif
                                     <li class="p-2 moved-item d-flex justify-content-between"
-                                        data-id="{{ $item['id'] }}" data-name="{{ $item['title'] }}">
-                                        {{ __($item['title']) }}
+                                        data-id="{{ $elem['id'] }}" data-name="{{ $elem['title'] }}">
+                                        {{ __($elem['title']) }}
                                     </li>
                                 @endforeach
                             </ol>
+                        </li>
+                    @else
+                        <li class="p-2 moved-item d-flex justify-content-between alone" data-id="{{ $item['id'] }}"
+                            data-name="{{ $item['title'] }}">
+                            {{ __($item['title']) }}
                         </li>
                     @endif
                 @endforeach
@@ -264,6 +269,7 @@
                 onDrop: function ($item, container, _super) {
                     container.el.removeClass('active');
                     _super($item, container);
+                    saveChanges()
                 },
                 isValidTarget: function ($item, container) {
                     if (container.el.hasClass('block-nested')) {
@@ -306,10 +312,11 @@
                         '                       data-target="#' + newDir.val().replaceAll(' ', '_') + '"' +
                         '                       aria-controls="' + newDir.val().replaceAll(' ', '_') + '"' +
                         '                       class="fa fa-eye pr-2"' +
+                        '                       data-action="true"' +
                         '                       style="color: white"></i>' +
                         '                    <span class="ui_tooltip __bottom">' +
                         '                        <span class="ui_tooltip_content">' +
-                        '                            Скрыть группу' +
+                        '                            Скрыть/показать группу' +
                         '                        </span>' +
                         '                    </span>' +
                         '                </span>' +
@@ -344,22 +351,7 @@
             });
 
             $('#saveChanges').unbind().on('click', function () {
-                let items = configurationJson()
-
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('configuration.menu') }}",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        menuItems: JSON.stringify(items),
-                    },
-                    success: function () {
-                        successMessage("{{ __('In order for the changes to be applied, you need to reload the page') }}")
-                    },
-                    error: function () {
-                        errorMessage("{{ __('Error') }}")
-                    }
-                });
+                saveChanges()
             })
 
             $('#removeSelectedBlock').on('click', function () {
@@ -411,10 +403,22 @@
                     parent.children('div').eq(0).children('div').eq(0).removeClass('hide')
                     parent.children('div').eq(0).children('div').eq(1).addClass('hide')
                     parent.children('div').eq(0).children('div').eq(2).removeClass('hide')
+
+                    saveChanges()
                 })
 
                 $('.remove-dir').unbind().on('click', function () {
                     groupBlock = $(this).parent().parent().parent().parent()
+                })
+
+                $('.__helper-link.ui_tooltip_w .fa.fa-eye.pr-2').unbind().on('click', function () {
+                    if ($(this).attr('data-action') === 'false') {
+                        $(this).attr('data-action', 'true')
+                    } else {
+                        $(this).attr('data-action', 'false')
+                    }
+
+                    saveChanges()
                 })
             }
 
@@ -437,12 +441,12 @@
                 }, 5000)
             }
 
-            function successMessage(message) {
+            function successMessage(message, timeout = 8000) {
                 $('.toast.toast-success').show(300)
                 $('.toast-message.success-msg').html(message)
                 setTimeout(() => {
                     $('.toast.toast-success').hide(300)
-                }, 8000)
+                }, timeout)
             }
 
             function configurationJson() {
@@ -456,13 +460,14 @@
                             id: id,
                             name: name,
                         }
-
                         items.push(obj)
                     } else if ($(this).children('ol').eq(0).children('li').length > 0) {
                         let dir = [];
+                        let show = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0).children('i').eq(0).attr('data-action')
                         dir.push({
                             dirName: $(this).attr('data-name'),
                             dir: true,
+                            show: show
                         })
                         $.each($(this).children('ol').eq(0).children('li'), function (key, value) {
                             let id = $(this).attr('data-id')
@@ -478,6 +483,25 @@
                 });
 
                 return items
+            }
+
+            function saveChanges() {
+                let items = configurationJson()
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('configuration.menu') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        menuItems: JSON.stringify(items),
+                    },
+                    success: function () {
+                        successMessage("{{ __('Successfully') }}", 1000)
+                    },
+                    error: function () {
+                        errorMessage("{{ __('Error') }}")
+                    }
+                });
             }
 
             refreshMethod()

@@ -16,8 +16,13 @@ class MenuComposer
             $modules = [];
 
             foreach ($result as $key => $item) {
-                if (isset($item[0]['id'])) {
-                    foreach ($item as $elem) {
+                if (array_key_exists('configurationInfo', $item)) {
+                    foreach ($item as $k => $elem) {
+                        if ($k === 'configurationInfo') {
+                            $modules[$key]['configurationInfo'] = $elem;
+                            continue;
+                        }
+
                         $access = (is_null($elem['access'])) ? [] : $elem['access'];
                         if ($user->hasRole($access)) {
                             $modules[$key][] = [
