@@ -12,6 +12,7 @@ class PositionMenuItemsController extends Controller
     public function index()
     {
         $items = MenuItemsPosition::sortMenu();
+
         return view('positions.index', ['items' => $items]);
     }
 

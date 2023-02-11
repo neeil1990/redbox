@@ -35,7 +35,7 @@
                             </span>
                         </a>
                     </li>
-                @else
+                @elseif(count($module) > 1)
                     <li class="nav-item menu-item ml-2 @if($module['configurationInfo']['show'] == 'true') menu-is-opening menu-open @endif">
                         <a href="#" class="nav-link">
                             <i class="fa-solid fa-folder"></i>
@@ -56,6 +56,13 @@
                                 </li>
                             @endforeach
                         </ul>
+                    </li>
+                @else
+                    <li class="nav-item menu-item">
+                        <a href="#" class="nav-link">
+                            <i class="fa-solid fa-folder"></i>
+                            <p> {{ $key }} </p>
+                        </a>
                     </li>
                 @endif
             @endforeach

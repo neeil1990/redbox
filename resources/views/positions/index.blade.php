@@ -124,7 +124,8 @@
                                            style="color: white"></i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
-                                                Скрыть/показать группу
+                                                Скрыть/показать группу <br><br>
+                                                <b>Эта настройка так же влияет на то, будет ли развёрнута группа в меню или нет</b>
                                             </span>
                                         </span>
                                     </span>
@@ -316,7 +317,8 @@
                         '                       style="color: white"></i>' +
                         '                    <span class="ui_tooltip __bottom">' +
                         '                        <span class="ui_tooltip_content">' +
-                        '                            Скрыть/показать группу' +
+                        '                            Скрыть/показать группу <br> <br>' +
+                        '                            <b>Эта настройка так же влияет на то, будет ли развёрнута группа в меню или нет</b>' +
                         '                        </span>' +
                         '                    </span>' +
                         '                </span>' +
@@ -461,25 +463,23 @@
                             name: name,
                         }
                         items.push(obj)
-                    } else if ($(this).children('ol').eq(0).children('li').length > 0) {
-                        let dir = [];
-                        let show = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0).children('i').eq(0).attr('data-action')
-                        dir.push({
-                            dirName: $(this).attr('data-name'),
-                            dir: true,
-                            show: show
-                        })
-                        $.each($(this).children('ol').eq(0).children('li'), function (key, value) {
-                            let id = $(this).attr('data-id')
-                            let name = $(this).attr('data-name')
-                            dir.push({
-                                id: id,
-                                name: name,
-                            })
-                        })
-                        items.push(dir)
                     }
-
+                    let dir = [];
+                    let show = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0).children('i').eq(0).attr('data-action')
+                    dir.push({
+                        dirName: $(this).attr('data-name'),
+                        dir: true,
+                        show: show
+                    })
+                    $.each($(this).children('ol').eq(0).children('li'), function (key, value) {
+                        let id = $(this).attr('data-id')
+                        let name = $(this).attr('data-name')
+                        dir.push({
+                            id: id,
+                            name: name,
+                        })
+                    })
+                    items.push(dir)
                 });
 
                 return items
