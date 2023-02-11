@@ -270,7 +270,6 @@
                 onDrop: function ($item, container, _super) {
                     container.el.removeClass('active');
                     _super($item, container);
-                    saveChanges()
                 },
                 isValidTarget: function ($item, container) {
                     if (container.el.hasClass('block-nested')) {
@@ -405,8 +404,6 @@
                     parent.children('div').eq(0).children('div').eq(0).removeClass('hide')
                     parent.children('div').eq(0).children('div').eq(1).addClass('hide')
                     parent.children('div').eq(0).children('div').eq(2).removeClass('hide')
-
-                    saveChanges()
                 })
 
                 $('.remove-dir').unbind().on('click', function () {
@@ -419,8 +416,6 @@
                     } else {
                         $(this).attr('data-action', 'false')
                     }
-
-                    saveChanges()
                 })
             }
 
