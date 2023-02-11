@@ -11,6 +11,7 @@
 |
 */
 
+use App\ViewComposers\MenuComposer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -341,4 +342,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/configuration-menu', 'PositionMenuItemsController@index');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
     Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
+});
+
+Route::get('/test', function () {
+    $k = [123, 321];
+    dd("'" . $k . "'");
 });

@@ -2,9 +2,7 @@
 
 namespace App\ViewComposers;
 
-use App\MainProject;
 use App\MenuItemsPosition;
-use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -14,7 +12,7 @@ class MenuComposer
     {
         $user = Auth::user();
         if (isset($user)) {
-            $result = MenuComposer::getProjects();
+            $result = MenuItemsPosition::sortMenu();
             $modules = [];
 
             foreach ($result as $key => $item) {
@@ -49,19 +47,5 @@ class MenuComposer
 
             $view->with(compact('modules'));
         }
-    }
-
-    public static function getProjects(): array
-    {
-        if (Auth::check() && Auth::id() === 85 || Auth::id() === 4) {
-            return MenuItemsPosition::sortMenu();
-        }
-        if (User::isUserAdmin()) {
-            $result = MainProject::orderBy('position', 'asc')->get();
-        } else {
-            $result = MainProject::where('show', '=', 1)->orderBy('position', 'asc')->get();
-        }
-
-        return $result->toArray();
     }
 }
