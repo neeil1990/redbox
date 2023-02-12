@@ -458,23 +458,24 @@
                             name: name,
                         }
                         items.push(obj)
-                    }
-                    let dir = [];
-                    let show = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0).children('i').eq(0).attr('data-action')
-                    dir.push({
-                        dirName: $(this).attr('data-name'),
-                        dir: true,
-                        show: show
-                    })
-                    $.each($(this).children('ol').eq(0).children('li'), function (key, value) {
-                        let id = $(this).attr('data-id')
-                        let name = $(this).attr('data-name')
+                    } else {
+                        let dir = [];
+                        let show = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0).children('i').eq(0).attr('data-action')
                         dir.push({
-                            id: id,
-                            name: name,
+                            dirName: $(this).attr('data-name'),
+                            dir: true,
+                            show: show
                         })
-                    })
-                    items.push(dir)
+                        $.each($(this).children('ol').eq(0).children('li'), function (key, value) {
+                            let id = $(this).attr('data-id')
+                            let name = $(this).attr('data-name')
+                            dir.push({
+                                id: id,
+                                name: name,
+                            })
+                        })
+                        items.push(dir)
+                    }
                 });
 
                 return items

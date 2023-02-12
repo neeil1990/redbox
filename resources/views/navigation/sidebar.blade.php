@@ -36,12 +36,14 @@
                         </a>
                     </li>
                 @elseif(count($module) > 1)
-                    <li class="nav-item menu-item ml-2 @if($module['configurationInfo']['show'] == 'true') menu-is-opening menu-open @endif">
+                    <li class="folder nav-item menu-item ml-2 @if($module['configurationInfo']['show'] == 'true') menu-is-opening menu-open @endif"
+                        data-action="{{ $module['configurationInfo']['show'] }}">
                         <a href="#" class="nav-link">
                             <i class="fa-solid fa-folder"></i>
                             <p> {{ $key }} </p>
                         </a>
-                        <ul class="nav nav-treeview" @if($module['configurationInfo']['show'] == 'false') style="display: none;" @endif>
+                        <ul class="nav nav-treeview"
+                            @if($module['configurationInfo']['show'] == 'false') style="display: none;" @endif>
                             @foreach($module as $k => $elem)
                                 @if($k === 'configurationInfo')
                                     @continue
@@ -58,7 +60,7 @@
                         </ul>
                     </li>
                 @else
-                    <li class="nav-item menu-item">
+                    <li class="nav-item menu-item ml-2 empty-folder">
                         <a href="#" class="nav-link">
                             <i class="fa-solid fa-folder"></i>
                             <p> {{ $key }} </p>
@@ -69,7 +71,8 @@
         @else
             <li class="nav-item menu-item">
                 <a class="nav-link search-link" href="/login" style="white-space: inherit !important;">
-                    <span> <i class="fa fa-users"></i>
+                    <span>
+                        <i class="fa fa-users"></i>
                         <span class="module-name ml-2"> {{ __('Login page') }}</span>
                     </span>
                 </a>
@@ -80,34 +83,42 @@
 </nav>
 <script>
     $('.x-input__field.form-control.form-control-sidebar').on('keyup', function () {
-        let input = $(this).val().trim()
-        if (input === '') {
-            $('.nav-item.menu-item').show()
-            $('.nav.nav-treeview').hide()
-            setTimeout(() => {
-                $('.nav-item.menu-item.ml-2.menu-is-opening.menu-open').removeClass('menu-is-opening menu-open')
-            }, 310)
-            return;
-        }
-
-        $.each($('.nav-item.menu-item.ml-2').children('ul'), function () {
-            let mainBlock = $(this).parent()
-            let showMain = false
-            $.each(mainBlock.children('ul').eq(0).children('li'), function () {
-                let html = $(this).children('a').eq(0).children('span').eq(0).children('span').eq(0).html().trim()
-                if (html.includes(input)) {
-                    showMain = true;
+        let input = $(this).val().trim().toLowerCase()
+        if (input !== '') {
+            $.each($('.folder'), function (key, value) {
+                if ($(this).attr('data-action') == 'false') {
+                    $(this).addClass('menu-is-opening menu-open')
+                    $(this).children('ul').eq(0).show()
                 }
             })
 
-            if (showMain) {
-                mainBlock.show()
-                mainBlock.children('ul').eq(0).show(300)
-            } else {
-                mainBlock.hide()
-                mainBlock.children('ul').eq(0).show(300)
-            }
-        })
+            $('.empty-folder').hide()
+
+            $.each($('.nav-item.menu-item.ml-2').children('ul'), function () {
+                let mainBlock = $(this).parent()
+                let showMain = false
+                $.each($(this).eq(0).children('li'), function () {
+                    let html = $(this).children('a').eq(0).children('span').eq(0).children('span').eq(0).html().trim().toLowerCase()
+                    if (html.includes(input)) {
+                        showMain = true
+                    }
+                })
+
+                if (showMain) {
+                    mainBlock.show()
+                } else {
+                    mainBlock.hide()
+                }
+            })
+        } else {
+            $('.empty-folder').show()
+            $.each($('.folder'), function (key, value) {
+                $(this).show()
+                if ($(this).attr('data-action') == 'false') {
+                    $(this).removeClass('menu-is-opening menu-open')
+                }
+            })
+        }
     })
 
     let visible = true;
