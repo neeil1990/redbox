@@ -154,16 +154,23 @@
                                     @if($k === 'configurationInfo')
                                         @continue
                                     @endif
-                                    <li class="p-2 moved-item d-flex justify-content-between"
-                                        data-id="{{ $elem['id'] }}" data-name="{{ $elem['title'] }}">
+                                    <li class="p-2 moved-item" data-id="{{ $elem['id'] }}" data-name="{{ $elem['title'] }}">
+                                        <span class="handle ui-sortable-handle mr-2">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                                         {{ __($elem['title']) }}
                                     </li>
                                 @endforeach
                             </ol>
                         </li>
                     @else
-                        <li class="p-2 moved-item d-flex justify-content-between alone" data-id="{{ $item['id'] }}"
+                        <li class="p-2 moved-item alone" data-id="{{ $item['id'] }}"
                             data-name="{{ $item['title'] }}">
+                                        <span class="handle ui-sortable-handle mr-2">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </span>
                             {{ __($item['title']) }}
                         </li>
                     @endif
@@ -404,6 +411,7 @@
                     parent.children('div').eq(0).children('div').eq(0).removeClass('hide')
                     parent.children('div').eq(0).children('div').eq(1).addClass('hide')
                     parent.children('div').eq(0).children('div').eq(2).removeClass('hide')
+                    saveChanges()
                 })
 
                 $('.remove-dir').unbind().on('click', function () {
