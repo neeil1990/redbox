@@ -73,8 +73,12 @@ class MainProjectsController extends Controller
         ]);
 
         $request = $request->all();
-        $request['show'] = $request['show'] === 'on';
 
+        if (isset($request['show'])) {
+            $request['show'] = 'on';
+        } else {
+            $request['show'] = 'off';
+        }
         $project->update($request);
 
         return redirect()->route('main-projects.index');
