@@ -51,7 +51,7 @@
                                 <li class="nav-item pl-2" data-id="{{ $elem['id'] }}">
                                     <a class="nav-link search-link" href="{{ $elem['link'] }}"
                                        style="white-space: inherit !important;">
-                                        <span class="ml-3">{!! $elem['icon'] !!}
+                                        <span>{!! $elem['icon'] !!}
                                             <span class="module-name">{{ $elem['title'] }}</span>
                                         </span>
                                     </a>
