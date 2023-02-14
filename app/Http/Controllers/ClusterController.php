@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -23,7 +24,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ClusterController extends Controller
 {
-
     public function index($result = null): View
     {
         $admin = User::isUserAdmin();
@@ -177,7 +177,6 @@ class ClusterController extends Controller
         return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
     }
 
-
     public function setClusterRelevanceUrl(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))
@@ -256,7 +255,6 @@ class ClusterController extends Controller
         if (!User::isUserAdmin()) {
             return abort(403);
         }
-
 
         return view('cluster.config', [
             'config' => ClusterConfiguration::first(),
@@ -340,7 +338,6 @@ class ClusterController extends Controller
         ]);
     }
 
-
     public function editCluster(Request $request): ?JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
@@ -385,16 +382,16 @@ class ClusterController extends Controller
         }
 
         $cluster->result = Cluster::unpackCluster($cluster->result);
-        $keys = array_keys($cluster->result);
+        $result = Cluster::isGroupNameExist($request->input('groupName'), $cluster->result);
 
-        if (in_array($request->input('groupName'), $keys)) {
+        if ($result['error']) {
             return response()->json([
-                'success' => false,
+                'message' => $result['message'],
             ], 400);
         }
 
         return response()->json([
-            'success' => true,
+            'result' => $result ?? false
         ]);
     }
 
@@ -411,22 +408,31 @@ class ClusterController extends Controller
         $keys = array_keys($cluster->result);
 
         if (in_array($request->input('newGroupName'), $keys)) {
-            return response()->json([
-                'success' => false,
-            ], 400);
+            if (count($cluster->result[$request->input('newGroupName')]) > 2) {
+                return response()->json([
+                    'success' => false,
+                ], 400);
+            } else {
+                $item = $cluster->result[$request->input('newGroupName')][$request->input('newGroupName')];
+            }
+
         }
 
         $clusters = $cluster->result;
         $clusters[$request->input('newGroupName')] = $clusters[$request->input('oldGroupName')];
+        if (isset($item)) {
+            $clusters[$request->input('newGroupName')][$request->input('newGroupName')] = $item;
+        }
         unset($clusters[$request->input('oldGroupName')]);
         ksort($clusters);
         arsort($clusters);
         $cluster->result = base64_encode(gzcompress(json_encode($clusters), 9));
-
+        $cluster->count_clusters = count($clusters);
         $cluster->save();
 
         return response()->json([
-            'success' => true
+            'success' => true,
+            'move' => isset($item)
         ]);
     }
 
@@ -461,7 +467,6 @@ class ClusterController extends Controller
         if (!User::isUserAdmin() && $cluster->user_id !== Auth::id()) {
             return response()->json([], 403);
         }
-
         $cluster->result = $cluster->default_result;
         $cluster->save();
 

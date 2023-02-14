@@ -124,6 +124,11 @@
                         {{ __('My project') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-link" href="{{ route('edit.clusters', $cluster['id']) }}">
+                        {{ __('Hands editor') }}
+                    </a>
+                </li>
                 @if($admin)
                     <li>
                         <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">

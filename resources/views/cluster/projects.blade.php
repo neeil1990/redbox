@@ -107,7 +107,7 @@
                                             {{ __('View results') }}
                                         </a>
                                         <a href="{{ route('edit.clusters', $project->id) }}" class="btn btn-secondary mb-2">
-                                            {{ __('Redistribute clusters') }}
+                                            {{ __('Hands editor') }}
                                         </a>
                                         <button type="button"
                                                 data-toggle="modal"

@@ -47,6 +47,20 @@
         </div>
         <!-- ./col -->
         @endif
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-cyan">
+                <div class="inner">
+                    <h3>{{ __('Setting menu') }}</h3>
+                    <p>{{ __('Setting up menu items') }}</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-folder"></i>
+                </div>
+                <a href="{{ route('menu.config') }}" class="small-box-footer">
+                    {{ __('Setting up menu items') }} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
     </div>
 
     <div class="row">

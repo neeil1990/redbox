@@ -339,12 +339,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
 
-    Route::get('/configuration-menu', 'PositionMenuItemsController@index');
+    Route::get('/configuration-menu', 'PositionMenuItemsController@index')->name('menu.config');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
     Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
-});
-
-Route::get('/test', function () {
-    $k = [123, 321];
-    dd("'" . $k . "'");
 });

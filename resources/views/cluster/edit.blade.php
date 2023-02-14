@@ -29,11 +29,16 @@
                 margin-bottom: 0;
                 border-radius: 0;
             }
+
+            .radius {
+                border-top-right-radius: 0;
+                border-top-left-radius: 0;
+            }
         </style>
     @endslot
 
     <div id="toast-container" class="toast-top-right success-message">
-        <div class="toast toast-success" aria-live="polite" style="display:none;">
+        <div class="toast toast-success" aria-live="polite" style="display:none; opacity: 1">
             <div class="toast-message success-msg"></div>
         </div>
     </div>
@@ -44,11 +49,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel" aria-hidden="true">
+    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="resetAllChangesLabel">Откат всех изменений</h5>
+                    <h5 class="modal-title" id="resetAllChangesLabel">{{ __('Rolling back all changes') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -57,16 +63,18 @@
                     Если во время ручного редактирования вы заметили что,
                     что-то пошло не так и у вас потерялись фразы или группы,
                     то вы можете откатить результаты сканирования до начального состояния.
+                    Сообщите об ошибке администратору.
                     <br>
                     <br>
-                    Приносим извенения за предоставленные неудобства, сообщите о ошибке администратору.
+                    {{ __('We apologize for the inconvenience.') }}
                     <br>
                     <br>
-                    <span class="text-danger">Это дейсвие отменить невозможно.</span>
+                    <span class="text-danger">{{ __('This action cannot be undone.') }}</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-primary" id="resetAllChanges" data-dismiss="modal">Откатить изменения</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-primary" id="resetAllChanges"
+                            data-dismiss="modal">{{ __('Roll back changes') }}</button>
                 </div>
             </div>
         </div>
@@ -83,8 +91,13 @@
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active" href="{{ route('show.cluster.result', $cluster['id']) }}">
+                    <a class="nav-link admin-link" href="{{ route('show.cluster.result', $cluster['id']) }}">
                         {{ __('My project') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-link active" href="{{ route('edit.clusters', $cluster['id']) }}">
+                        {{ __('Hands editor') }}
                     </a>
                 </li>
                 @if($admin)
@@ -97,7 +110,7 @@
                 @isset($cluster['default_result'])
                     <li>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#resetAllChanges">
-                            Откат всех изменений
+                            {{ __('Rolling back all changes') }}
                         </button>
                     </li>
                 @endisset
@@ -189,7 +202,7 @@
                                                 </i>
                                                 <span class="ui_tooltip __bottom">
                                                     <span class="ui_tooltip_content">
-                                                        скрыть группу
+                                                        {{ __('Hide a group') }}
                                                     </span>
                                                 </span>
                                             </span>
@@ -199,7 +212,7 @@
                                                    style="color: white; padding-top: 5px"></i>
                                                 <span class="ui_tooltip __bottom">
                                                     <span class="ui_tooltip_content">
-                                                        Изменить название
+                                                        {{ __('Change the name') }}
                                                     </span>
                                                 </span>
                                             </span>
@@ -209,14 +222,14 @@
                                                    style="color: white; padding-top: 5px"></i>
                                                 <span class="ui_tooltip __bottom">
                                                     <span class="ui_tooltip_content">
-                                                        Переместить всю группу
+                                                        {{ __('Move the entire group') }}
                                                     </span>
                                                 </span>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
-                                <ul class="list-group list-group-flush collapse show" id="{{ $hash }}">
+                                <ul class="list-group list-group-flush show" id="{{ $hash }}">
                                     @foreach($items as $phrase => $item)
                                         @if($phrase === 'finallyResult')
                                             @continue
@@ -235,9 +248,9 @@
                                                         <span>{{ $item['target']['number'] ?? $item['target'] }}</span>
                                                         <span class="ui_tooltip __bottom">
                                                             <span class="ui_tooltip_content">
-                                                                <span>Базвая</span> /
-                                                                <span>Фразовая</span> /
-                                                                <span>Точная</span>
+                                                                <span>{{ __('Base') }}</span> /
+                                                                <span>{{ __('Phrasal') }}</span> /
+                                                                <span>{{ __('Target') }}</span>
                                                             </span>
                                                         </span>
                                                     </span>
@@ -276,23 +289,23 @@
                                     <span>Нераспределённые слова</span>
                                     <div>
                                     <span class="__helper-link ui_tooltip_w">
-                                        <i class="fa fa-eye mr-2"
+                                        <i class="fa fa-eye mr-2 alone-eye"
                                            data-toggle="collapse"
                                            aria-expanded="false"
-                                           data-target="#alone"
-                                           aria-controls="alone"
+                                           data-target="#alone_phrases"
+                                           aria-controls="alone_phrases"
                                            style="color: white">
                                         </i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
-                                                скрыть группу
+                                                {{ __('Hide a group') }}
                                             </span>
                                         </span>
                                     </span>
                                     </div>
                                 </div>
                             </div>
-                            <ul class="list-group list-group-flush collapse show" id="alone_phrases">
+                            <ul class="list-group list-group-flush show" id="alone_phrases">
                                 @foreach($clusters as $mainPhrase => $items)
                                     @if(count($items) != 2)
                                         @continue
@@ -373,19 +386,27 @@
                             </div>
                             <ul class="list-group list-group-flush" id="work-place-ul"></ul>
                             <div>
-                                <button class="btn btn-outline-secondary w-100" id="addNewGroupButton"
-                                        style="border-top-right-radius: 0; border-top-left-radius: 0"
-                                        data-toggle="modal" data-target="#addNewGroup">
-                                    {{ __('Add new group') }}
-                                </button>
-                                <div class="btn-group w-100" style="display: none" id="actionsButton">
-                                    <button class="btn btn-outline-danger w-50" id="resetChanges" disabled
-                                            style="border-top-right-radius: 0; border-top-left-radius: 0;">
-                                        {{ __('Reset changes') }}
+                                <div id="addNewGroupButton">
+                                    <button class="btn btn-outline-secondary w-50 radius" style="float: left"
+                                            data-toggle="modal" data-target="#addNewGroup">
+                                        {{ __('Add new group') }}
                                     </button>
-                                    <button class="btn btn-outline-primary w-50" id="saveChanges" disabled
-                                            style="border-top-right-radius: 0; border-top-left-radius: 0;">
+                                    <button class="btn btn-outline-secondary w-50 radius hide-or-show"
+                                            data-action="hide"
+                                            style="float: right">
+                                        {{ __('Close groups') }}
+                                    </button>
+                                </div>
+                                <div class="btn-group w-100" style="display: none" id="actionsButton">
+                                    <button class="btn btn-outline-primary w-50 radius" id="saveChanges" disabled>
                                         {{ __('Save changes') }}
+                                    </button>
+                                    <button class="btn btn-outline-secondary w-100 radius hide-or-show"
+                                            data-action="hide">
+                                        {{ __('Close groups') }}
+                                    </button>
+                                    <button class="btn btn-outline-danger w-50 radius" id="resetChanges" disabled>
+                                        {{ __('Reset changes') }}
                                     </button>
                                 </div>
                             </div>
@@ -456,6 +477,7 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/sortable/sortable.min.js') }}"></script>
         <script>
             $('#app > div > div > div.card-header').append($('#params').html())
             $('#params').remove()
@@ -469,12 +491,12 @@
             let swapObject = ''
             let group
 
-            function successMessage(message = "{{ __('Successfully copied') }}") {
+            function successMessage(message = "{{ __('Successfully') }}", timeout = 3000) {
                 $('.toast.toast-success').show(300)
                 $('.toast-message.success-msg').html(message)
                 setTimeout(() => {
                     $('.toast.toast-success').hide(300)
-                }, 3000)
+                }, timeout)
             }
 
             function errorMessage(message = "{{ __('Error') }}") {
@@ -532,7 +554,7 @@
                             id: {{ $cluster['id'] }},
                             groupName: groupName,
                         },
-                        success: function () {
+                        success: function (response) {
                             $('#workPlace').html(
                                 '<div class="btn-group btn-group-toggle w-75" id="editWorkPlaceBlock" style="display: none">' +
                                 '   <input class="form form-control" id="editWorkPlaceName" value="' + groupName + '">' +
@@ -544,11 +566,21 @@
                             $('#addNewGroupButton').hide()
                             $('#actionsButton').show()
                             worPlaceCreated = true
-
                             refreshMethods()
+
+                            let res = response.result
+                            if (res.error === false) {
+                                $.each($('#alone_phrases').children('li'), function () {
+                                    if ($(this).attr('data-target') === groupName) {
+                                        successMessage(res.message, 5000)
+                                        $(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).trigger('click')
+                                        return;
+                                    }
+                                })
+                            }
                         },
-                        error: function () {
-                            errorMessage("{{ __('A group with the same name already exists or the name contains numbers') }}")
+                        error: function (response) {
+                            errorMessage(response.responseJSON.message)
                         }
                     });
                 } else {
@@ -707,7 +739,7 @@
                                 newGroupName: newGroupName,
                                 oldGroupName: oldGroupName,
                             },
-                            success: function () {
+                            success: function (response) {
                                 $("li[data-action='" + oldGroupName + "']").attr('data-action', newGroupName);
                                 span.parent().parent().parent().attr('id', newGroupName.replaceAll(' ', '_'))
                                 span.html(newGroupName)
@@ -715,9 +747,19 @@
                                 span1.show()
                                 span2.show()
                                 div.hide()
-
                                 div.children('input').eq(0).attr('data-target', newGroupName)
+                                if (response.move) {
+                                    $.each($('#alone_phrases').children('li'), function () {
+                                        let object = $(this)
+                                        if (object.attr('data-target') === newGroupName) {
+                                            object.attr('data-action', newGroupName)
+                                            $('#' + newGroupName.replaceAll(' ', '_')).append(object)
+                                            return;
+                                        }
+                                    })
+                                }
 
+                                successMessage("{{ __('A phrase similar to the name of the group was automatically added to the group') }}", 5000)
                                 refreshMethods()
                             },
                             error: function () {
@@ -783,7 +825,30 @@
                 })
 
                 $('#saveChanges').unbind().on('click', function () {
-                    saveChanges()
+                    let phrases = []
+                    $.each($('#work-place-ul').children('li'), function (key, value) {
+                        phrases.push($(this).attr('data-target'))
+                    })
+
+                    let newGroupName = $('#groupName').html();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/confirmation-new-cluster",
+                        dataType: 'json',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            projectId: {{ $cluster['id'] }},
+                            mainPhrase: newGroupName,
+                            phrases: phrases,
+                        },
+                        success: function (response) {
+                            moveNewGroup(phrases, newGroupName, response.groupId)
+                            recalculateFrequency()
+                        },
+                        error: function (response) {
+                        }
+                    });
                 })
 
                 $('#resetChanges').unbind().on('click', function () {
@@ -841,33 +906,6 @@
                 })
             }
 
-            function saveChanges() {
-                let phrases = []
-                $.each($('#work-place-ul').children('li'), function (key, value) {
-                    phrases.push($(this).attr('data-target'))
-                })
-
-                let newGroupName = $('#groupName').html();
-
-                $.ajax({
-                    type: "POST",
-                    url: "/confirmation-new-cluster",
-                    dataType: 'json',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        projectId: {{ $cluster['id'] }},
-                        mainPhrase: newGroupName,
-                        phrases: phrases,
-                    },
-                    success: function (response) {
-                        moveNewGroup(phrases, newGroupName, response.groupId)
-                        recalculateFrequency()
-                    },
-                    error: function (response) {
-                    }
-                });
-            }
-
             function scanArray(array, object) {
                 let searchSuccess = false
 
@@ -895,8 +933,8 @@
                 }
             }
 
-            $(document).keypress(function(e) {
-                if(e.which === 13 && $('#clusterFilter').is(':focus')) {
+            $(document).keypress(function (e) {
+                if (e.which === 13 && $('#clusterFilter').is(':focus')) {
                     searchPhrases()
                 }
             });
@@ -911,7 +949,7 @@
             })
 
             function moveNewGroup(phrases, newGroupName, newId) {
-                let newUl = '<ul id="' + newId + '" class="list-group list-group-flush collapse show">'
+                let newUl = '<ul id="' + newId + '" class="list-group list-group-flush show">'
 
                 $.each(phrases, function (key, value) {
                     newUl += '<li data-target="' + value + '" data-action="' + newGroupName + '" class="list-group-item">' + $("li[data-target='" + value + "']").html() + '</li>'
@@ -920,7 +958,7 @@
 
                 if ($('#' + newGroupName.replaceAll(' ', '_')).length) {
                     $.each($('#' + newGroupName.replaceAll(' ', '_')).children('ul').eq(0).children('li'), function (key, value) {
-                        if($(this).is(':visible')) {
+                        if ($(this).is(':visible')) {
                             $(this).attr('data-action', newGroupName)
                             newUl += '<li data-target="' + value + '" data-action="' + newGroupName + '" class="list-group-item">' + $(this).html() + '</li>'
                             $(this).remove()
@@ -939,20 +977,20 @@
                     '            <span>0 / 0 / 0</span> ' +
                     '            <div class="btn-group btn-group-toggle w-75" style="display: none;">' +
                     '                <input type="text" value="' + newGroupName + '" data-target="' + newGroupName + '" class="form form-control group-name-input">' +
-                    '                    <button class="btn btn-secondary edit-group-name">Изменить</button>' +
+                    '                    <button class="btn btn-secondary edit-group-name">{{ __("Change") }}</button>' +
                     '                </div> ' +
                     '            <div class="d-flex justify-content-between">' +
                     '                <span class="__helper-link ui_tooltip_w">' +
                     '                    <i data-toggle="collapse" aria-expanded="false" data-target="#' + newId + '" aria-controls="' + newId + '" class="fa fa-eye mr-2" style="color: white;"></i> ' +
                     '                    <span class="ui_tooltip __bottom">' +
-                    '                        <span class="ui_tooltip_content">скрыть группу</span>' +
+                    '                        <span class="ui_tooltip_content">{{ __("Hide a group") }}</span>' +
                     '                    </span>' +
                     '                </span> ' +
                     '                <span class="__helper-link ui_tooltip_w">' +
                     '                    <i class="fa fa-edit change-group-name mr-2" style="color: white; padding-top: 5px;"></i>' +
                     '                    <span class="ui_tooltip __bottom">' +
                     '                        <span class="ui_tooltip_content">' +
-                    '                            Изменить название' +
+                    '                            {{ __('Change the name') }}' +
                     '                        </span>' +
                     '                    </span>' +
                     '                </span> ' +
@@ -1046,6 +1084,36 @@
                         alert('У вас нет прав')
                     }
                 });
+            })
+
+            $('.hide-or-show').on('click', function () {
+                if ($(this).attr('data-action') === 'hide') {
+                    $.each($('#clusters-block').children('div'), function (key, val) {
+                        let parent = $(this)
+                        if (parent.children('ul').eq(0).hasClass('show')) {
+                            parent.children('div').eq(0).children('div').eq(0).children('div').eq(1).children('span').eq(0).children('i').eq(0).trigger('click')
+                        }
+                    });
+
+                    if ($('#alone_phrases').hasClass('show')) {
+                        $('.alone-eye').trigger('click')
+                    }
+                    $('.hide-or-show').attr('data-action', 'show')
+                    $('.hide-or-show').html("{{ __('Reveal groups') }}")
+                } else {
+                    $.each($('#clusters-block').children('div'), function (key, val) {
+                        let parent = $(this)
+                        if (!parent.children('ul').eq(0).hasClass('show')) {
+                            parent.children('div').eq(0).children('div').eq(0).children('div').eq(1).children('span').eq(0).children('i').eq(0).trigger('click')
+                        }
+                    });
+
+                    if (!$('#alone_phrases').hasClass('show')) {
+                        $('.alone-eye').trigger('click')
+                    }
+                    $('.hide-or-show').attr('data-action', 'hide')
+                    $('.hide-or-show').html("{{ __('Close groups') }}")
+                }
             })
         </script>
     @endslot

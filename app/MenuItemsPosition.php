@@ -22,57 +22,42 @@ class MenuItemsPosition extends Model
         }
         $items = $items->toArray();
         $config = MenuItemsPosition::where('user_id', '=', Auth::id())->first();
-        try {
-            if (isset($config)) {
-                $oldPositions = json_decode($config->positions, true);
-                $newPositions = [];
 
-                foreach ($oldPositions as $item) {
-                    if (isset($item[0]) && $item[0]['dir']) {
-                        $newPositions[$item[0]['dirName']]['configurationInfo'] = $item[0];
-                        foreach ($item as $groupItem) {
-                            if (isset($groupItem['dir'])) {
-                                continue;
-                            }
-                            foreach ($items as $key => $elem) {
-                                if ($elem['id'] == $groupItem['id']) {
-                                    $newPositions[$item[0]['dirName']][] = $elem;
-                                    unset($items[$key]);
-                                }
+        if (isset($config)) {
+            $oldPositions = json_decode($config->positions, true);
+            $newPositions = [];
+
+            foreach ($oldPositions as $item) {
+                if (isset($item[0]) && $item[0]['dir']) {
+                    $newPositions[$item[0]['dirName']]['configurationInfo'] = $item[0];
+                    foreach ($item as $groupItem) {
+                        if (isset($groupItem['dir'])) {
+                            continue;
+                        }
+                        foreach ($items as $key => $elem) {
+                            if ($elem['id'] == $groupItem['id']) {
+                                $newPositions[$item[0]['dirName']][] = $elem;
+                                unset($items[$key]);
                             }
                         }
-                        continue;
                     }
-                    foreach ($items as $key => $elem) {
-                        if ($elem['id'] == $item['id']) {
-                            $newPositions[] = $elem;
-                            unset($items[$key]);
-                        }
-                    }
+                    continue;
                 }
-
-                if (count($items) > 0) {
-                    foreach ($items as $elem) {
+                foreach ($items as $key => $elem) {
+                    if ($elem['id'] == $item['id']) {
                         $newPositions[] = $elem;
+                        unset($items[$key]);
                     }
                 }
-
-                return $newPositions;
             }
-        } catch (Throwable $e) {
-            $e = [
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile()
-            ];
 
-            TelegramBot::sendMessage(
-                "Произошла ошибка " . Carbon::now()->toDateTimeString() .
-                "\n user id: " . Auth::id() . "\n" . $config->positions . "\n\n" . implode("\n", $e),
-                938341087
-            );
+            if (count($items) > 0) {
+                foreach ($items as $elem) {
+                    $newPositions[] = $elem;
+                }
+            }
 
-            $config->delete();
+            return $newPositions;
         }
 
         return $items;

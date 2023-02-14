@@ -846,4 +846,27 @@ class Cluster
     {
         return json_decode(gzuncompress(base64_decode($result)), true);
     }
+
+    public static function isGroupNameExist($search, $clusters): array
+    {
+        $keys = array_keys($clusters);
+        if (in_array($search, $keys)) {
+            if (count($clusters[$search]) > 2) {
+                $message = 'Группа с таким названием уже существует';
+                $error = true;
+            } else {
+                $message = 'Элемент с таким же названием находится в не распределённых элементах';
+                $error = false;
+            }
+
+            return [
+                'error' => $error,
+                'message' => $message,
+            ];
+        }
+
+        return [
+            'error' => false,
+        ];
+    }
 }

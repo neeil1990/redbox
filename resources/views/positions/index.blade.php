@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Настройка порядка пунктов меню') ])
+@component('component.card', ['title' =>  __('Setting the order of menu items') ])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -125,7 +125,7 @@
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
                                                 Скрыть/показать группу <br><br>
-                                                <b>Эта настройка так же влияет на то, будет ли развёрнута группа в меню или нет</b>
+                                                <b>{{ __('This setting also affects whether the group will be expanded in the menu or not') }}</b>
                                             </span>
                                         </span>
                                     </span>
@@ -133,7 +133,7 @@
                                         <i class="fa fa-edit edit-dir-name pr-2" style="color: white"></i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
-                                                Редактировать название группы
+                                                {{ __('Edit the group name') }}
                                             </span>
                                         </span>
                                     </span>
@@ -142,7 +142,7 @@
                                            style="color: white"></i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
-                                                Удалить группу
+                                                {{ __('Delete a group') }}
                                             </span>
                                         </span>
                                     </span>
@@ -181,13 +181,13 @@
         <div id="configurationBlock" class="col-6">
             <div class="btn-group btn-group-toggle w-100">
                 <button class="btn btn-outline-success w-25" id="saveChanges">
-                    Сохранить изменения
+                    {{ __('Save Changes') }}
                 </button>
                 <button class="btn btn-outline-primary w-25" data-toggle="modal" data-target="#addNewDir">
-                    Создать группу
+                    {{ __('Create a group') }}
                 </button>
                 <button class="btn btn-outline-danger w-50" data-toggle="modal" data-target="#resetAllChanges">
-                    Вернуть стандартную расстановку
+                    {{ __('Return the standard layout') }}
                 </button>
             </div>
         </div>
@@ -197,13 +197,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addNewDirLabel">Введите название группы</h5>
+                    <h5 class="modal-title" id="addNewDirLabel">{{ __('Enter the name of the group') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="dir">Название группы</label>
+                    <label for="dir">{{ __('Group name') }}</label>
                     <input type="text" class="form form-control" name="dir" id="dir">
                 </div>
                 <div class="modal-footer">
@@ -220,13 +220,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="removeModalLabel">Удаление группы</h5>
+                    <h5 class="modal-title" id="removeModalLabel">{{ __('Deleting a group') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Все пункты меню находящиеся в ней автоматически будут вынесены.
+                    {{ __('All menu items located in it will be automatically taken out.') }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
@@ -242,13 +242,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="resetAllChangesLabel">Вы можете восстановить значения по умолчанию</h5>
+                    <h5 class="modal-title" id="resetAllChangesLabel">{{ __('You can restore the default values') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Если вернуть значения по умолчанию, то порядок пунктов меню будет определена администраторами.
+                    {{ __('If you return the default values, the order of the menu items will be determined by the administrators.') }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
@@ -259,7 +259,7 @@
         </div>
     </div>
     @slot('js')
-        <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
+        <script src="{{ asset('plugins/sortable/sortable.min.js') }}"></script>
         <script>
             let groupBlock;
             let oldContainer;
@@ -285,7 +285,6 @@
                         return true;
                     }
                 }
-
             });
 
             $(".switch-container").on("click", ".switch", function (e) {
@@ -297,7 +296,7 @@
                 let newDir = $('#dir')
 
                 if (issetItem(newDir.val().trim())) {
-                    errorMessage('Группа с таким названием уже существует')
+                    errorMessage("{{ __('A group with that name already exists') }}")
                     return;
                 }
 
@@ -324,24 +323,20 @@
                         '                    <span class="ui_tooltip __bottom">' +
                         '                        <span class="ui_tooltip_content">' +
                         '                            Скрыть/показать группу <br> <br>' +
-                        '                            <b>Эта настройка так же влияет на то, будет ли развёрнута группа в меню или нет</b>' +
+                        '                            <b>' + "{{ __('This setting also affects whether the group will be expanded in the menu or not') }}" + '</b>' +
                         '                        </span>' +
                         '                    </span>' +
                         '                </span>' +
                         '            <span class="__helper-link ui_tooltip_w">' +
                         '                    <i class="fa fa-edit edit-dir-name pr-2" style="color: white"></i>' +
                         '                    <span class="ui_tooltip __bottom">' +
-                        '                        <span class="ui_tooltip_content">' +
-                        '                            Редактировать название группы' +
-                        '                        </span>' +
+                        '                        <span class="ui_tooltip_content">' + "{{ __('Edit the group name') }}" + '</span>' +
                         '                    </span>' +
                         '                </span>' +
                         '            <span class="__helper-link ui_tooltip_w">' +
                         '                    <i class="fa fa-trash remove-dir" style="color: white"></i>' +
                         '                    <span class="ui_tooltip __bottom">' +
-                        '                        <span class="ui_tooltip_content">' +
-                        '                            Удалить группу' +
-                        '                        </span>' +
+                        '                        <span class="ui_tooltip_content">' + "{{ __('Delete a group') }}" + '</span>' +
                         '                    </span>' +
                         '                </span>' +
                         '        </div>' +
@@ -353,7 +348,7 @@
 
                     refreshMethod()
                 } else {
-                    errorMessage('Название группы не может быть пустым')
+                    errorMessage("{{ __('The name of the group cannot be empty') }}")
                 }
 
             });
