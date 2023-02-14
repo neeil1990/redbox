@@ -28,6 +28,12 @@
             .btn-secondary:hover {
                 border-color: #ddd;
             }
+            .grow-color {
+                background-color: rgb(153, 228, 185);
+            }
+            .shrink-color {
+                background-color: rgb(251, 225, 223);
+            }
         </style>
     @endslot
 
@@ -134,13 +140,18 @@
                     type: 'GET',
                 },
                 order: [
-                    [1, 'asc'],
+                    [2, 'asc'],
                 ],
                 columnDefs: [
-                    { orderable: true, targets: [0, 1, 2, 3] },
+                    { orderable: true, targets: [1, 2, 3, 4] },
                     { orderable: false, targets: '_all' },
                 ],
                 columns: [
+                    {
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
+                    },
                     {
                         title: 'ID',
                         data: 'id',
@@ -208,8 +219,61 @@
 
                     let count = data.reduce((s, c) => s + c.queries, 0);
 
-                    $( api.column( 1 ).header() ).html('Группы: ' + (end-start));
-                    $( api.column( 2 ).header() ).html('Запросы: ' + count);
+                    $( api.column( 2 ).header() ).html('Группы: ' + (end-start));
+                    $( api.column( 3 ).header() ).html('Запросы: ' + count);
+                },
+                initComplete: function () {
+                    let api = this.api();
+
+                    this.find('tbody').on('click', 'td .dt-control', function () {
+                        let icon = $(this).find('i');
+                        let tr = $(this).closest('tr');
+                        let row = api.row(tr);
+
+                        if (row.child.isShown()) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+
+                            icon.removeClass('fa-minus-circle');
+                            icon.addClass('fa-plus-circle');
+                        } else {
+                            // Open this row
+                            let data = row.data();
+                            let projectId = data.monitoring_project_id;
+                            let groupId = data.id;
+
+                            axios.get(`/monitoring/${projectId}/child-rows/get/${groupId}`).then(function(response){
+
+                                let content = $(response.data);
+
+                                $.each(content.find('.top'), function(i, el){
+
+                                    let str = $(el).text();
+
+                                    if(str.indexOf('+') > 0)
+                                        $(el).addClass('grow-color');
+
+                                    if(str.indexOf('-') > 0)
+                                        $(el).addClass('shrink-color');
+                                });
+
+                                row.child(content).show();
+
+                                content.find('.tooltip-child-table').tooltip({
+                                    animation: false,
+                                    trigger: 'hover',
+                                });
+                            });
+
+                            tr.addClass('shown');
+
+                            icon.removeClass('fa-plus-circle');
+                            icon.addClass('fa-minus-circle')
+                        }
+
+                        return false;
+                    });
                 },
             });
 

@@ -184,18 +184,24 @@ class MonitoringController extends Controller
         return response(200);
     }
 
-    public function getChildRowsPageByProject(int $project_id)
+    public function getChildRowsPageByProject(int $project_id, $group_id = null)
     {
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->find($project_id);
-
         $engines = $project->searchengines()->with('location')->get();
+        $section = $project->groups()->find($group_id);
 
         $groups = collect([]);
         foreach ($engines as $engine){
             $engine->data = collect([]);
-            $positions = $engine->positions()->whereNotNull('position')->get();
+            $positions = $engine->positions()->whereNotNull('position');
+
+            if($section)
+                $positions->whereIn('monitoring_keyword_id', $section->keywords->pluck('id'));
+
+            $positions = $positions->get();
+
             if($positions->isNotEmpty()){
                 foreach ($this->subtractionMonths as $month){
                     if($grouped = $this->groupPositionsByMonth($positions, $month)){

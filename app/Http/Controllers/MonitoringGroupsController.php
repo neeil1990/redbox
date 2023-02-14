@@ -134,7 +134,7 @@ class MonitoringGroupsController extends Controller
 
     private function edit(Collection $data)
     {
-        $model = $this->groups->where('id', $data['id'])->first();
+        $model = MonitoringGroup::where('id', $data['id'])->first();
 
         $model->update([
             'name' => $data['name']
