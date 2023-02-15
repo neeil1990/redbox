@@ -41,18 +41,18 @@
                 let oldVal = calculate(elem)
                 let counter = 1
                 let interval = setInterval(() => {
-                    if (counter === 10) {
+                    if (counter === 20) {
                         clearInterval(interval)
                     }
 
                     let newVal = calculate(elem)
                     if (newVal !== oldVal) {
-                        elem.html(newVal)
+                        $('#countPhrases').html(newVal)
                         clearInterval(interval)
                     }
 
                     counter++
-                }, 1000)
+                }, 500)
             })
         </script>
     @endslot
