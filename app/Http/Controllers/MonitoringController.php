@@ -13,6 +13,7 @@ use App\MonitoringOccurrence;
 use App\MonitoringPosition;
 use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
+use App\MonitoringSearchengine;
 use App\MonitoringSettings;
 use App\User;
 use Carbon\Carbon;
@@ -183,18 +184,24 @@ class MonitoringController extends Controller
         return response(200);
     }
 
-    public function getChildRowsPageByProject(int $project_id)
+    public function getChildRowsPageByProject(int $project_id, $group_id = null)
     {
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->find($project_id);
-
         $engines = $project->searchengines()->with('location')->get();
+        $section = $project->groups()->find($group_id);
 
         $groups = collect([]);
         foreach ($engines as $engine){
             $engine->data = collect([]);
-            $positions = $engine->positions()->whereNotNull('position')->get();
+            $positions = $engine->positions()->whereNotNull('position');
+
+            if($section)
+                $positions->whereIn('monitoring_keyword_id', $section->keywords->pluck('id'));
+
+            $positions = $positions->get();
+
             if($positions->isNotEmpty()){
                 foreach ($this->subtractionMonths as $month){
                     if($grouped = $this->groupPositionsByMonth($positions, $month)){
@@ -452,10 +459,11 @@ class MonitoringController extends Controller
 
         if(isset($region->id)){
             $keywords = $this->setUrlsInKeywords($keywords, $region->id);
-            $keywords = $this->setOccurrenceInKeywords($keywords, $region->id);
         }
 
-        $columns = $this->getMainColumns();
+        $keywords = $this->setOccurrenceInKeywords($keywords, $region);
+
+        $columns = $this->getMainColumns($keywords);
 
         $this->getLastPositions($keywords,$columns, $mode, $region, $dates);
 
@@ -475,13 +483,24 @@ class MonitoringController extends Controller
 
     private function setOccurrenceInKeywords($query, $region)
     {
-        $query->transform(function($item) use ($region){
-            $occurrence = MonitoringOccurrence::where(['monitoring_keyword_id' => $item->id, 'monitoring_searchengine_id' => $region])->first();
-            if($occurrence){
-                $item->base = $occurrence->base;
-                $item->phrasal = $occurrence->phrasal;
-                $item->exact = $occurrence->exact;
+        $collection = collect([]);
+        if($region instanceof MonitoringSearchengine)
+            $collection->push($region);
+        else
+            $collection = $region;
+
+        $query->transform(function($item) use ($collection){
+            foreach($collection as $region){
+                $occurrence = MonitoringOccurrence::where(['monitoring_keyword_id' => $item->id, 'monitoring_searchengine_id' => $region['id']])->first();
+                if($occurrence){
+                    $item->base += $occurrence->base;
+                    $item->phrasal += $occurrence->phrasal;
+                    $item->exact += $occurrence->exact;
+
+                    $item->occurrenceCreateAt = $occurrence->updated_at;
+                }
             }
+
             return $item;
         });
 
@@ -862,8 +881,14 @@ class MonitoringController extends Controller
         return $positions;
     }
 
-    private function getMainColumns()
+    private function getMainColumns($keywords = null)
     {
+        $query = $keywords->first();
+        $text = '';
+
+        if(isset($query['occurrenceCreateAt']))
+            $text = $query['occurrenceCreateAt']->format('d.m.Y');
+
         $columns = collect([
             'checkbox' => '',
             'btn' => '',
@@ -872,9 +897,9 @@ class MonitoringController extends Controller
             'group' => __('Group'),
             'target' => __('Target'),
             'dynamics' => __('Dynamics'),
-            'base' => view('monitoring.partials.show.header.yw', ['ext' => ''])->render(),
-            'phrasal' => view('monitoring.partials.show.header.yw', ['ext' => '"[]"'])->render(),
-            'exact' => view('monitoring.partials.show.header.yw', ['ext' => '"[!]"'])->render(),
+            'base' => view('monitoring.partials.show.header.yw', ['ext' => '', 'date' => $text])->render(),
+            'phrasal' => view('monitoring.partials.show.header.yw', ['ext' => '"[]"', 'date' => $text])->render(),
+            'exact' => view('monitoring.partials.show.header.yw', ['ext' => '"[!]"', 'date' => $text])->render(),
         ]);
 
         return $columns;
