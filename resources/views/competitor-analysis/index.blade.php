@@ -544,7 +544,7 @@
                         },
                         beforeSend: function () {
                             interval = setInterval(() => {
-                                getProgressPercent(token, interval)
+                                getProgressPercent(token, interval, count)
                             }, 5000)
                         },
                         success: function () {
@@ -563,7 +563,7 @@
                 }
             });
 
-            function getProgressPercent(token, interval) {
+            function getProgressPercent(token, interval, count) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
