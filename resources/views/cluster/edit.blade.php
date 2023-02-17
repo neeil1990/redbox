@@ -34,6 +34,79 @@
                 border-top-right-radius: 0;
                 border-top-left-radius: 0;
             }
+
+            div.sortable {
+                width: 100px;
+                background-color: lightgrey;
+                font-size: large;
+                float: left;
+                margin: 6px;
+                text-align: center;
+                border: medium solid black;
+                padding: 10px;
+            }
+
+            .remove-sort-block {
+                color: white;
+            }
+
+            .card-header.group-name {
+                cursor: move;
+            }
+
+            #configurationBlock {
+                margin-bottom: 0;
+                border-radius: 0;
+                position: sticky;
+                top: 15px;
+                max-height: 80vh;
+                overflow: auto;
+            }
+
+            .emptySpace {
+                background-color: rgba(52, 58, 64, 0.27);
+                height: 40px;
+                margin: 4px;
+            }
+
+            .dragged {
+                position: absolute;
+                top: 0;
+                opacity: 0.5;
+                z-index: 2000;
+            }
+
+            .group-name {
+                background-color: rgb(52, 58, 64);
+                color: white;
+                direction: initial;
+            }
+
+            .placeholder {
+                height: 40px;
+                background-color: rgba(52, 58, 64, 0.27);
+            }
+
+
+            .w-100.pb-3 li:hover {
+                background-color: lightgrey;
+            }
+
+            .alone:hover {
+                background-color: lightgrey;
+            }
+
+            .card-header:after {
+                content: none;
+            }
+
+            .hide {
+                display: none !important;
+            }
+
+            li > ol > li {
+                padding-left: 20px;
+            }
         </style>
     @endslot
 
@@ -80,6 +153,38 @@
         </div>
     </div>
 
+    <div class="modal fade" id="groupModal" tabindex="-1" aria-labelledby="groupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="groupModalLabel">{{ __('Nesting settings for downloading a file') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="sortContainer" class="col-12">
+                        <button id="generate" class="btn btn-outline-secondary mb-3">{{ __('Regenerate the list') }}</button>
+                        <ol id="nested_with_switch"></ol>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                    <button type="button" class="btn btn-secondary download-file" data-action="xls" data-dismiss="modal">{{ __('Download xls') }}</button>
+                    <button type="button" class="btn btn-secondary download-file" data-action="csv" data-dismiss="modal">{{ __('Download csv') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form action="{{ route('download.cluster.group') }}" method="POST" style="display: none">
+        @csrf
+        <input type="text" name="type" id="fileType">
+        <input type="text" name="json" id="json">
+        <input type="number" name="id" value="{{ $cluster['id'] }}">
+        <input type="submit" id="sendForm">
+    </form>
+
     <div class="card">
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
@@ -98,6 +203,12 @@
                 <li class="nav-item">
                     <a class="nav-link admin-link active" href="{{ route('edit.clusters', $cluster['id']) }}">
                         {{ __('Hands editor') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-link" href="#" data-toggle="modal" data-target="#groupModal"
+                       id="confirmBlocks">
+                        {{ __('Подготовка файла для скачивания') }}
                     </a>
                 </li>
                 @if($admin)
@@ -1114,6 +1225,77 @@
                     $('.hide-or-show').attr('data-action', 'hide')
                     $('.hide-or-show').html("{{ __('Close groups') }}")
                 }
+            })
+
+            $("#confirmBlocks").on('click', function () {
+                generateBlocks()
+            })
+
+            $('#generate').on('click', function () {
+                generateBlocks()
+            })
+
+            function generateBlocks() {
+                $('#nested_with_switch').html('')
+                $.each($('#clusters-block').children('div'), function () {
+                    let block = $(this)
+                    if (block.attr('id') !== undefined) {
+                        let blockName = block.attr('id').replaceAll('_', ' ')
+                        let ul = block.children('ul').eq(0)
+                        let li = ''
+                        $.each(ul.children('li'), function () {
+                            li += '<li class="p-2 disable-sort-item">' + $(this).attr('data-target') + '</li>'
+                        })
+
+                        let newLi = '<li class="folder" data-action="folder">' +
+                            '   <div class="p-2 group-name">' +
+                            '       <span class="mr-2">' +
+                            '           <i class="fas fa-ellipsis-v"></i>' +
+                            '           <i class="fas fa-ellipsis-v"></i>' +
+                            '       </span>' +
+                            '       <span>' + blockName + '</span>' +
+                            '   <i class="pl-2 fa fa-trash remove-sort-block"></i>' +
+                            '   </div>' +
+                            '   <ol>' + li + '</ol>' +
+                            '</li>'
+
+                        $('#nested_with_switch').append(newLi)
+                    }
+                })
+                $("#nested_with_switch").sortable({
+                    items: '.folder'
+                });
+
+                $('.remove-sort-block').unbind().on('click', function () {
+                    $(this).parent().parent().remove()
+                })
+            }
+
+            function scanTree($element) {
+                let result = {};
+                $element.children('li').get().map(function (el) {
+                    let $el = $(el);
+                    let $title = $el.children('.group-name');
+                    let $list = $el.children('ol,ul');
+
+                    if ($title.length) {
+                        result[$title.text().trim()] = scanTree($list);
+                    } else {
+                        result[$el.text().trim()] = {};
+                    }
+                });
+
+                return result;
+            }
+
+            $('.download-file').on('click', function () {
+                let $core = $("#nested_with_switch");
+                let scan = scanTree($core);
+                let type = $(this).attr('data-action')
+                $('#fileType').val(type)
+                $('#json').val(JSON.stringify(scan))
+
+                $('#sendForm').trigger('click')
             })
         </script>
     @endslot

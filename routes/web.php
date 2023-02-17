@@ -11,8 +11,13 @@
 |
 */
 
+use App\Cluster;
+use App\ClusterResults;
+use App\Common;
+use App\Exports\Cluster\ClusterGroupExport;
 use App\ViewComposers\MenuComposer;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
     phpinfo();
@@ -338,8 +343,18 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
+    Route::post('/download-cluster-group', 'ClusterController@downloadClusterGroup')->name('download.cluster.group');
 
     Route::get('/configuration-menu', 'PositionMenuItemsController@index')->name('menu.config');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
     Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
+});
+
+Route::get('/test', function () {
+    $cluster = ClusterResults::find(424);
+    $clusters = Cluster::unpackCluster($cluster->result);
+    $str = "{\"офтальмоскоп купить\":{\"прямой офтальмоскоп цена\":{},\"прямой офтальмоскоп купить\":{},\"электрический офтальмоскоп\":{},\"офтальмоскоп электрический купить\":{},\"электрический офтальмоскоп цена\":{},\"офтальмоскоп цена купить\":{},\"офтальмоскоп купить\":{},\"офтальмоскоп ручной\":{\"офтальмоскоп ручной\":{},\"офтальмоскоп ручной цена\":{},\"офтальмоскоп ручной универсальный\":{},\"стетоскоп цена\":{\"стетоскоп стоимость\":{},\"стетоскоп медицинский купить\":{},\"фонендоскоп медицинский купить\":{},\"стетоскоп медицинский\":{},\"стетоскоп медицинский цена\":{},\"стетоскоп купить цена\":{},\"стетоскоп купить\":{},\"стетоскоп цена\":{}}}},\"тонометр купить механический цена\":{\"тонометр купить механический цена\":{},\"купить механический тонометр для измерения давления\":{},\"артериальный тонометр механический\":{},\"механический тонометр с встроенным фонендоскопом\":{},\"механический тонометр со встроенным фонендоскопом\":{},\"механические тонометры со встроенным фонендоскопом купить\":{}}}";
+    $array = json_decode($str, true);
+    $file = Excel::download(new ClusterGroupExport($clusters, $array), 'FILE_NAME.xls');
+    Common::fileExport($file, 'xls', 'FILE_NAME');
 });
