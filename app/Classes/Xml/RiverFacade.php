@@ -22,8 +22,8 @@ class RiverFacade
 
     public function __construct($region)
     {
-        $this->user = env('XML_RIVER_USER');
-        $this->key = env('XML_RIVER_KEY');
+        $this->user = config('xmlriver.user');
+        $this->key = config('xmlriver.key');
 
         $this->region = $region;
 
