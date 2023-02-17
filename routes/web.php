@@ -349,18 +349,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
     Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
 });
-
-Route::get('/test', function () {
-    dump([
-        config('xmlstock.user'),
-        config('xmlstock.key')
-    ]);
-    dump([
-        config('xmlproxy.user'),
-        config('xmlproxy.key')
-    ]);
-    dump([
-        config('xmlriver.user'),
-        config('xmlriver.key')
-    ]);
-});
