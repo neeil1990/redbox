@@ -123,7 +123,33 @@ class ClusterGroupExport implements FromCollection
                     $after[] = '';
                 }
 
-                $this->file[] = array_merge([$this->clusterNumber, count($this->file), $phrase], $before, [$groupName], $after, [(string)$info['relevance'], (string)$info['based'], (string)$info['phrased'], (string)$info['target']]);
+                if (isset($info['link'])) {
+                    $relevance = $info['link'];
+                } else if (is_array($info['relevance'])) {
+                    $relevance = $info['relevance'][0];
+                } else {
+                    $relevance = '';
+                }
+
+                if (is_array($info['based'])) {
+                    $base = (string)$info['based']['number'];
+                } else {
+                    $base = '0';
+                }
+
+                if (is_array($info['phrased'])) {
+                    $phrased = (string)$info['phrased']['number'];
+                } else {
+                    $phrased = '0';
+                }
+
+                if (is_array($info['target'])) {
+                    $target = (string)$info['target']['number'];
+                } else {
+                    $target = '0';
+                }
+
+                $this->file[] = array_merge([$this->clusterNumber, count($this->file), $phrase], $before, [$groupName], $after, [$relevance, $base, $phrased, $target]);
             } else {
                 $this->chapter++;
                 $this->clusterNumber++;
