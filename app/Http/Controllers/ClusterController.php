@@ -8,7 +8,8 @@ use App\ClusterConfigurationClassic;
 use App\ClusterQueue;
 use App\ClusterResults;
 use App\Common;
-use App\Exports\ClusterResultExport;
+use App\Exports\Cluster\ClusterGroupExport;
+use App\Exports\Cluster\ClusterResultExport;
 use App\Jobs\Cluster\StartClusterAnalyseQueue;
 use App\User;
 use Carbon\Carbon;
@@ -16,7 +17,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -471,5 +471,15 @@ class ClusterController extends Controller
         $cluster->save();
 
         return response()->json([]);
+    }
+
+    public function downloadClusterGroup(Request $request)
+    {
+        $cluster = ClusterResults::find($request->input('id'));
+        $clusters = Cluster::unpackCluster($cluster->result);
+        $array = json_decode($request->json, true);
+        $file = Excel::download(new ClusterGroupExport($clusters, $array), "group_results.$request->type");
+
+        Common::fileExport($file, $request->type, 'group_results');
     }
 }

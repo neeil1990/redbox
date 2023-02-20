@@ -137,7 +137,7 @@ function getBtnGroup(url) {
         '       <a target="_blank" class="dropdown-item" href="' + url['origin'] + '" style="text-shadow: none">' +
         '       <i class="fas fa-external-link-alt"></i> Перейти на сайт</a>' +
 
-        '       <a style="text-shadow: none" target="_blank" class="dropdown-item" href="/redirect-to-text-analyzer/' + url['origin'].replace(/\\|\//g, 'abc') + '">' +
+        '       <a style="text-shadow: none" target="_blank" class="dropdown-item" href="/redirect-to-text-analyzer/' + url['href'].replace(/\\|\//g, 'abc') + '">' +
         '       <i class="fas fa-external-link-alt"></i> Проанализировать текст</a>' +
 
         '   </div>' +

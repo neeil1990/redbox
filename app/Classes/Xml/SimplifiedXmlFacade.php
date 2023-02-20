@@ -102,15 +102,15 @@ class SimplifiedXmlFacade extends XmlFacade
 
         if ($attempt >= 1 && $attempt <= 2) {
             $this->setPath('https://xmlstock.com/google/xml/');
-            $this->setUser(env('XML_STOCK_USER'));
-            $this->setKey(env('XML_STOCK_KEY'));
+            $this->setUser(config('xmlstock.user'));
+            $this->setKey(config('xmlstock.key'));
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&lr=$this->lr&sortby=$this->sortby";
 
         } elseif ($attempt >= 3 && $attempt <= 4) {
             $this->setPath('https://xmlriver.com/search/xml');
-            $this->setUser(env('XML_RIVER_USER'));
-            $this->setKey(env('XML_RIVER_KEY'));
+            $this->setUser(config('xmlriver.user'));
+            $this->setKey(config('xmlriver.key'));
             $loc = $this->getRiverLocation();
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&loc=$loc";

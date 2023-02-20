@@ -4,12 +4,7 @@ namespace App;
 
 class Common
 {
-    /**
-     * @param $file
-     * @param string $type
-     * @param string $name
-     * @return void
-     */
+
     public static function fileExport($file, string $type, string $name = '')
     {
         if (!$name) {
@@ -34,10 +29,6 @@ class Common
         unlink($newFileName);
     }
 
-    /**
-     * @param $string
-     * @return mixed
-     */
     public static function uncompressArray($string): array
     {
         return json_decode(gzuncompress(base64_decode($string)), true);

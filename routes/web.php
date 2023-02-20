@@ -11,8 +11,13 @@
 |
 */
 
+use App\Cluster;
+use App\ClusterResults;
+use App\Common;
+use App\Exports\Cluster\ClusterGroupExport;
 use App\ViewComposers\MenuComposer;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
     phpinfo();
@@ -338,6 +343,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-group-name/', 'ClusterController@checkGroupName')->name('check.group.name');
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
+    Route::post('/download-cluster-group', 'ClusterController@downloadClusterGroup')->name('download.cluster.group');
 
     Route::get('/configuration-menu', 'PositionMenuItemsController@index')->name('menu.config');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
