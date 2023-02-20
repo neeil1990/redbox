@@ -28,7 +28,7 @@ class ProjectDataTableUpdateDB
            $keywords = $model->keywords()->get();
 
            if($keywords->isEmpty())
-               return false;
+               continue;
 
            $arResult = $this->calculateTop($keywords, $model);
 
