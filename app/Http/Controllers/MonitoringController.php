@@ -558,55 +558,63 @@ class MonitoringController extends Controller
 
     private function getLastPositions(&$keywords, &$columns, $mode, $region, $dates)
     {
+        $dateCollection = collect([]);
+        foreach($keywords as &$keyword){
+
+            $grouped = $keyword->positions->groupBy(function($item){
+                return $item->created_at->format('d.m.Y');
+            })->sortByDesc(function($i, $k){ return Carbon::parse($k)->timestamp; });
+
+            $grouped->transform(function ($item) {
+                return $item->sortByDesc(function($i){ return $i->created_at->timestamp; })->values()->first();
+            });
+
+            foreach($grouped->keys() as $date)
+                if(!$dateCollection->contains($date))
+                    $dateCollection->push($date);
+
+            $keyword->positions_data_table = $grouped;
+        }
+
+        $columnCollection = collect([]);
+        foreach ($dateCollection->sortByDesc(function($i){ return Carbon::parse($i)->timestamp; }) as $col_idx => $col_date)
+            $columnCollection->put('col_' . $col_idx, $col_date);
+
         switch ($mode){
             case "dates":
-
                 $columns = $columns->merge(collect([
                     'col_0' => __('First of find'),
                     'col_1' => __('Last of find'),
                 ]));
 
                 $keywords->transform(function($item){
-
-                    $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
-                        return $item->created_at->format('d.m.Y');
-                    });
-
-                    if($unique->count())
-                        $item->last_positions = collect([
-                            'col_0' => $unique->first(),
-                            'col_1' => $unique->last()
-                        ]);
+                    $item->positions_view = collect([
+                        'col_0' => $item->positions_data_table->first(),
+                        'col_1' => $item->positions_data_table->last(),
+                    ]);
 
                     return $item;
                 });
                 break;
-
             case "randWeek":
             case "randMonth":
-
                 $keywords->transform(function($item) use ($mode){
-
-                    $unique = $item->positions->sortByDesc('created_at')->unique(function($item){
-                        return $item->created_at->format('d.m.Y');
-                    });
-
                     $positionsRange = collect([]);
-                    foreach ($unique as $p){
+                    foreach ($item->positions_data_table as $p){
                         if($mode === "randWeek")
                             $positionsRange->put($p->created_at->week(), $p);
                         else
                             $positionsRange->put($p->created_at->month, $p);
                     }
 
-                    $item->last_positions = $positionsRange;
+                    $item->positions_view = $positionsRange;
 
                     return $item;
                 });
 
                 $getDateForColumns = collect([]);
                 foreach ($keywords as $keyword)
-                    $getDateForColumns = $getDateForColumns->merge($keyword->last_positions->pluck('created_at'));
+                    $getDateForColumns = $getDateForColumns->merge($keyword->positions_view->pluck('created_at'));
 
                 $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique(function($item){
                     return $item->format('d.m.Y');
@@ -618,33 +626,23 @@ class MonitoringController extends Controller
 
                 $columns = $columns->merge($dateOfColumns);
 
-
                 foreach ($keywords as $keyword){
-
                     $lastPosition = collect([]);
                     foreach ($dateOfColumns as $col => $name){
-
-                        $modelPosition = $keyword->positions->where('date', $name)->sortByDesc('created_at')->first();
-                        if($modelPosition)
-                            $lastPosition->put($col, $modelPosition);
+                        if($keyword->positions_data_table->has($name))
+                            $lastPosition->put($col, $keyword->positions_data_table[$name]);
                     }
-
-                    $keyword->last_positions = $lastPosition;
+                    $keyword->positions_view = $lastPosition;
                 }
-
                 break;
-
             case "main":
-
                 $mainColumns = collect([]);
                 $keywords->transform(function($item) use ($region, $mainColumns){
 
                     $lastPosition = collect([]);
                     foreach ($region as $reg){
 
-                        $model = $item->positions()
-                            ->where('monitoring_searchengine_id', $reg->id)->latest()->get()->unique('date')->take(2);
-
+                        $model = $item->positions()->where('monitoring_searchengine_id', $reg->id)->latest()->get();
                         $col = 'engine_' . $reg->lr;
 
                         if($model->isNotEmpty()){
@@ -664,7 +662,7 @@ class MonitoringController extends Controller
                         $mainColumns->put($col, implode(' ', [$icon, $city]));
                     }
 
-                    $item->last_positions = $lastPosition;
+                    $item->positions_view = $lastPosition;
 
                     return $item;
                 });
@@ -674,27 +672,21 @@ class MonitoringController extends Controller
 
                 break;
             default;
-                $dateRangeColumns = $this->getDateRangeForColumns($region, $dates, $mode);
+                $columns = $columns->merge($columnCollection);
+                $keywords->transform(function($item) use ($columnCollection){
 
-                $columns = $columns->merge($dateRangeColumns);
+                    $positions = collect([]);
+                    foreach ($columnCollection as $col => $name)
+                        if($item->positions_data_table->has($name))
+                            $positions->put($col, $item->positions_data_table[$name]);
 
-                $keywords->transform(function($item) use ($dateRangeColumns){
+                    $this->diffPositionExtension($positions);
 
-                    $lastPosition = collect([]);
-                    foreach ($dateRangeColumns as $col => $name){
-
-                        $modelPosition = $item->positions->where('date', $name)->sortByDesc('created_at')->first();
-                        if($modelPosition)
-                            $lastPosition->put($col, $modelPosition);
-                    }
-
-                    $this->diffPositionExtension($lastPosition);
-
-                    $item->last_positions = $lastPosition;
+                    $item->positions_view = $positions;
 
                     return $item;
                 });
-        }
+            }
     }
 
     private function diffPositionExtension(&$positions)
@@ -729,7 +721,7 @@ class MonitoringController extends Controller
     private function generateRowDataTable($columns, $keyword, $mode)
     {
         $row = collect([]);
-        $collectionPositions = $keyword->last_positions;
+        $collectionPositions = $keyword->positions_view;
 
         foreach ($columns as $i => $v){
 
@@ -835,25 +827,6 @@ class MonitoringController extends Controller
         });
 
         return $keywords;
-    }
-
-    private function getDateRangeForColumns($region, $dates, $mode)
-    {
-
-        $model = $region->positions()->select(DB::raw('*, DATE(created_at) as date'));
-
-        if($mode === "datesFind")
-            $model->dateFind($dates);
-        else
-            $model->dateRange($dates);
-
-        $model = $model->groupBy('date')->orderBy('date', 'desc')->get();
-
-        $columns = collect([]);
-        foreach ($model as $i => $m)
-            $columns->put('col_' . $i, $m->date);
-
-        return $columns;
     }
 
     public function getPositionsForCalendars(Request $request)
