@@ -171,7 +171,11 @@ class ClusterController extends Controller
             return abort(403);
         }
 
-        $cluster->result = gzuncompress(base64_decode($cluster->result));
+        if (isset($cluster->default_result)) {
+            $cluster->result = gzuncompress(base64_decode($cluster->default_result));
+        } else {
+            $cluster->result = gzuncompress(base64_decode($cluster->result));
+        }
         $cluster->request = json_decode($cluster->request, true);
 
         return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
@@ -184,8 +188,12 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-            $cluster->result = Cluster::unpackCluster($cluster->result);
-            $results = $cluster->result;
+
+            if ($request->input('type') === 'notDefault') {
+                $results = Cluster::unpackCluster($cluster->result);
+            } else {
+                $results = Cluster::unpackCluster($cluster->default_result);
+            }
 
             foreach ($results as $key => $items) {
                 foreach ($items as $phrase => $item) {
@@ -196,7 +204,12 @@ class ClusterController extends Controller
                 }
             }
 
-            $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            if ($request->input('type') === 'notDefault') {
+                $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            } else {
+                $cluster->default_result = base64_encode(gzcompress(json_encode($results), 9));
+            }
+
             $cluster->save();
 
             return response()->json(['success' => true]);
@@ -323,7 +336,7 @@ class ClusterController extends Controller
 
     public function editClusters(ClusterResults $cluster)
     {
-        if ($cluster->created_at <= Carbon::parse('00:00 30.01.2023')) {
+        if ($cluster->created_at <= Carbon::parse('00:00 22.02.2023')) {
             return abort(403, __('In order to edit this result, you need to reshoot it'));
         }
 
@@ -482,4 +495,17 @@ class ClusterController extends Controller
 
         Common::fileExport($file, $request->type, 'group_results');
     }
+
+    public function saveHtml(Request $request): JsonResponse
+    {
+        $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->first();
+        if (!User::isUserAdmin() && $cluster->user_id !== Auth::id()) {
+            return response()->json([], 403);
+        }
+        $cluster->html = $request->html;
+        $cluster->save();
+
+        return response()->json([]);
+    }
+
 }

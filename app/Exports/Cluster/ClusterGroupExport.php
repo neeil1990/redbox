@@ -34,10 +34,10 @@ class ClusterGroupExport implements FromCollection
     {
         $iterator = 1;
         $this->maxNested = $this->confirmation();
+
         $this->file[] = [
             __('Sequence number'),
             __('Sequence number in the cluster'),
-            __('Key query'),
             __('Chapter'),
         ];
 
@@ -46,6 +46,7 @@ class ClusterGroupExport implements FromCollection
         }
 
         $this->file[0] = array_merge($this->file[0], [
+            __('Key query'),
             __('Relevant'),
             __('Base'),
             __('Phrasal'),
@@ -64,20 +65,22 @@ class ClusterGroupExport implements FromCollection
     public function confirmation()
     {
         $nestCounter = 0;
-
         foreach ($this->array as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $item) {
-                if (count($item) === 0) {
-                    $this->array[$mainPhrase][$offPhrase] = $this->setValues($offPhrase);
+                if (is_array($item)) {
+                    $this->array[$mainPhrase][array_key_first($item)] = $this->loop($item[array_key_first($item)]);
                 } else {
-                    $this->array[$mainPhrase][$offPhrase] = $this->loop($item);
+                    $this->array[$mainPhrase][$item] = $this->setValues($item);
                 }
+
+                unset($this->array[$mainPhrase][$offPhrase]);
             }
             if ($nestCounter < $this->nestCounter) {
                 $nestCounter = $this->nestCounter;
             }
             $this->nestCounter = 0;
         }
+
 
         return $nestCounter;
     }
@@ -98,10 +101,10 @@ class ClusterGroupExport implements FromCollection
         $this->nestCounter += 1;
         $res = [];
         foreach ($elems as $offPhrase => $item) {
-            if (count($item) === 0) {
-                $res[$offPhrase] = $this->setValues($offPhrase);
+            if (is_array($item)) {
+                $res[array_key_first($item)] = $this->loop($item[array_key_first($item)]);
             } else {
-                $res[$offPhrase] = $this->loop($item);
+                $res[$item] = $this->setValues($item);
             }
         }
 
@@ -118,6 +121,7 @@ class ClusterGroupExport implements FromCollection
                         $before[] = '';
                     }
                 }
+
                 $after = [];
                 for ($i = 0; $i < $this->maxNested - $this->chapter; $i++) {
                     $after[] = '';
@@ -149,7 +153,7 @@ class ClusterGroupExport implements FromCollection
                     $target = '0';
                 }
 
-                $this->file[] = array_merge([$this->clusterNumber, count($this->file), $phrase], $before, [$groupName], $after, [$relevance, $base, $phrased, $target]);
+                $this->file[] = array_merge([$this->clusterNumber, count($this->file)], $before, [$groupName], $after, [$phrase, $relevance, $base, $phrased, $target]);
             } else {
                 $this->chapter++;
                 $this->clusterNumber++;
