@@ -481,6 +481,7 @@ class ClusterController extends Controller
             return response()->json([], 403);
         }
         $cluster->result = $cluster->default_result;
+        $cluster->html = null;
         $cluster->save();
 
         return response()->json([]);

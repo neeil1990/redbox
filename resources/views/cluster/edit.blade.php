@@ -133,7 +133,7 @@
             }
 
             .list-group-item {
-                border: 1px solid grey !important;
+                border: 1px solid rgba(128, 128, 128, 0.4) !important;
             }
         </style>
     @endslot
@@ -150,8 +150,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel"
-         aria-hidden="true">
+    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -295,7 +294,7 @@
                     </div>
                 </div>
                 <div class="d-flex">
-                    <ol class="col-7" id="clusters-block">
+                    <ol class="col-6" id="clusters-block">
                         @if(isset($cluster['html']))
                             {!! $cluster['html'] !!}
                         @else
@@ -516,14 +515,19 @@
                             </li>
                         @endif
                     </ol>
-                    <div class="col-5">
+                    <div class="col-6">
                         <div class="work-place-conf">
                             <div class="switch-container mb-3 d-flex">
-                                <button id="change-sortable" class="btn btn-outline-secondary" data-action="enable">
-                                    {{ __('Group dragging mode') }}
+                                <button id="change-sortable" class="btn btn-outline-secondary w-25" data-action="enable">
+                                    {{ __('Moving groups') }}
                                 </button>
-                                <button id="relevance" class="btn btn-outline-secondary" data-action="show">
+                                <button id="relevance" class="btn btn-outline-secondary w-25" data-action="show">
                                     {{ __('Show relevant') }}
+                                </button>
+                                <button class="btn btn-outline-secondary w-50 radius hide-or-show w-50"
+                                        data-action="hide"
+                                        style="float: right">
+                                    {{ __('Close groups') }}
                                 </button>
                             </div>
                             <div class="btn-group w-100 mb-2">
@@ -543,23 +547,14 @@
                             <ul class="list-group list-group-flush" id="work-place-ul"></ul>
                             <div>
                                 <div id="addNewGroupButton">
-                                    <button class="btn btn-outline-secondary w-50 radius" style="float: left"
+                                    <button class="btn btn-outline-secondary w-100 radius" style="float: left"
                                             data-toggle="modal" data-target="#addNewGroup">
                                         {{ __('Add new group') }}
-                                    </button>
-                                    <button class="btn btn-outline-secondary w-50 radius hide-or-show"
-                                            data-action="hide"
-                                            style="float: right">
-                                        {{ __('Close groups') }}
                                     </button>
                                 </div>
                                 <div class="btn-group w-100" style="display: none" id="actionsButton">
                                     <button class="btn btn-outline-primary w-50 radius" id="saveChanges" disabled>
                                         {{ __('Save changes') }}
-                                    </button>
-                                    <button class="btn btn-outline-secondary w-100 radius hide-or-show"
-                                            data-action="hide">
-                                        {{ __('Close groups') }}
                                     </button>
                                     <button class="btn btn-outline-danger w-50 radius" id="resetChanges" disabled>
                                         {{ __('Reset changes') }}
@@ -1343,7 +1338,7 @@
 
                 if ($(this).attr('data-action') === 'disable') {
                     $(this).attr('data-action', 'enable')
-                    $(this).html("{{ __('Group dragging mode') }}")
+                    $(this).html("{{ __('Moving groups') }}")
 
                     $('.fa.fa-arrow-right.move-group').show()
                     $('.fa.fa-edit.change-group-name.mr-2').show()
@@ -1356,7 +1351,7 @@
                         alert("{{ __('The workspace should be empty') }}")
                     } else {
                         $(this).attr('data-action', 'disable')
-                        $(this).html("{{ __('Editing mode') }}")
+                        $(this).html("{{ __('Moving phrases') }}")
 
                         $('.fa.fa-arrow-right.move-group').hide()
                         $('.fa.fa-edit.change-group-name.mr-2').hide()
