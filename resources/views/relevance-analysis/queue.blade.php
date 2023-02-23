@@ -247,7 +247,7 @@
 
                     <div class="d-flex flex-column">
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <input type="submit" class="btn btn-secondary" id="add-in-queue" value="Добавить в очередь">
+                            <input type="submit" class="btn btn-secondary" id="add-in-queue" value="{{ __('Add to queue') }}">
                         </div>
                     </div>
                 </div>

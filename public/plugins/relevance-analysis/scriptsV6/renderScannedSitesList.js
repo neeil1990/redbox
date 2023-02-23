@@ -37,25 +37,25 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         let warning
 
         if (value['ignored']) {
-            ignorBlock = "<div class='text-muted'>(игнорируемый домен)</div>"
+            ignorBlock = "<div class='text-muted'>(" + words.ignoredDomain + ")</div>"
             ignorClass = " ignored-site"
         }
 
         if (value['danger']) {
             warning = "<td class='bg-warning'>" +
-                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Не удалось получить данные со страницы</span>"
+                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>"
                 + ignorBlock +
                 "</td>";
         } else {
             warning = "<td>" +
-                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> Страница успешно проанализирована </span>"
+                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> " + words.successAnalyse + " </span>"
                 + ignorBlock +
                 "</td>"
         }
 
         if (value['mainPage']) {
             if (!value['inRelevance']) {
-                noTop = "<span class='text-muted'>(сайт не попал в топ)</span>"
+                noTop = "<span class='text-muted'>(" + words.notTop + ")</span>"
             }
             className = 'bg-my-site'
         } else if (value['equallyHost']) {
@@ -65,7 +65,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         var position
 
         if (!value['position']) {
-            position = "<td data-order='100'> не попал в топ 100 </td>"
+            position = "<td data-order='100'>" + words.notTop + "</td>"
 
         } else {
             position = "<td data-order='" + value['position'] + "'> " + value['position'] + " </td>"
@@ -135,7 +135,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
             "                <label class='custom-control-label' for='showOrHideIgnoredSites'></label>" +
             "            </div>" +
             "        </div>" +
-            "        <p>скрыть игнорируемые домены</p>" +
+            "        <p>" + words.hideDomains + "</p>" +
             "    </div>"
         )
 
@@ -152,9 +152,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         $('#scanned-sites_wrapper > .dt-buttons').after(
-            "    <button class='btn btn-secondary ml-1' id='copySites' style='cursor: pointer'>" +
-            "        Скопировать ссылки сайтов" +
-            "    </button>"
+            "<button class='btn btn-secondary ml-1' id='copySites' style='cursor: pointer'>" + words.copyLinks + "</button>"
         )
 
         $('#copySites').click(function () {
@@ -171,21 +169,13 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-
-            let toastr = $('.toast-top-right.success-message.lock-word');
-            toastr.show(300)
-            $('#lock-word').html('Успешно скопировано')
-            setTimeout(() => {
-                toastr.hide(300)
-            }, 3000)
         })
-
 
         if (avg !== null) {
             $('#scanned-sites-row').after(
                 '<tr class="render">' +
                 '    <th>-</th>' +
-                '    <th>Рекомендации для вашей страницы</th>' +
+                '    <th>' + words.recommendations + '</th>' +
                 '    <th>' + Number(avg.points).toFixed(2) + '</th>' +
                 '    <th>' + Number(avg.coverage).toFixed(2) + '</th>' +
                 '    <th>' + Number(avg.coverageTf).toFixed(2) + '</th>' +
@@ -214,24 +204,23 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
 
             let toastr = $('.toast-top-right.success-message.lock-word');
             toastr.show(300)
-            $('#lock-word').html('Домен "' + domain + '" добавлен в игнорируемые')
             setTimeout(() => {
                 toastr.hide(300)
             }, 3000)
         }
     });
 
-    $('.remove-from-ignored-domains').click(function () {
+    $('.remove-from-ignored-domains').unbind().click(function () {
         let url = new URL($(this).attr('data-target'))
         let textarea = $('.form-control.ignoredDomains')
         let string = textarea.val()
-        if (string.includes(url.hostname)) {
-            let domain = (url.hostname).replace('www.', '')
+        let domain = (url.hostname).replace('www.', '')
+
+        if (string.includes(domain)) {
             textarea.val(textarea.val().replace(domain, ""))
 
-            let toastr = $('.toast-top-right.success-message.lock-word');
+            let toastr = $('.toast-top-right.success-message.lock-word-removed');
             toastr.show(300)
-            $('#lock-word').html('Домен "' + domain + '" удалён из игнорируемых')
             setTimeout(() => {
                 toastr.hide(300)
             }, 3000)

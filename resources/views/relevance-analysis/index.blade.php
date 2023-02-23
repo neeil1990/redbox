@@ -16,26 +16,30 @@
 
             .first-action::after {
                 display: inline;
-                content: "{{ __(' Go to the landing page') }}";
+                content: "{{ __('Go to the landing page') }}";
                 font-weight: normal;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
             }
 
             .second-action::after {
                 display: inline;
-                content: "{{ __(' Go to the text analyzer') }}";
+                content: "{{ __('Go to the text analyzer') }}";
                 font-weight: normal;
+                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
             }
 
             .third-action::after {
                 display: inline;
-                content: "{{ __(' Add to Ignored Domains') }}";
+                content: "{{ __('Add to Ignored Domains') }}";
                 font-weight: normal;
+                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
             }
 
             .fourth-action::after {
                 display: inline;
-                content: "{{ __(' Exclude from ignored domains') }}";
+                content: "{{ __('Exclude from ignored domains') }}";
                 font-weight: normal;
+                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
             }
 
             .RelevanceAnalysis {
@@ -51,7 +55,13 @@
 
     <div id="toast-container" class="toast-top-right success-message lock-word" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="lock-word"></div>
+            <div class="toast-message">{{ __('added in ignored') }}</div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-top-right success-message lock-word-removed" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('removed from ignored') }}</div>
         </div>
     </div>
 
@@ -1047,7 +1057,7 @@
                         },
                     });
 
-                    if(clearInteval) {
+                    if (clearInteval) {
                         clearInterval(interval)
                     }
                 }, 5000);
@@ -1204,7 +1214,15 @@
                     from: "{{ __('from') }}",
                     to: "{{ __('to') }}",
                     of: "{{ __('of') }}",
-                    entries: "{{ __('entries') }}"
+                    entries: "{{ __('entries') }}",
+                    ignoredDomain: "{{ __('ignored domain') }}",
+                    notGetData: "{{ __('Could not get data from the page') }}",
+                    successAnalyse: "{{ __('The page has been successfully analyzed') }}",
+                    notTop: "{{ __('the site did not get into the top') }}",
+                    hideDomains: "{{ __('hide ignored domains') }}",
+                    copyLinks: "{{ __('Copy site links') }}",
+                    success: "{{ __('Successfully') }}",
+                    recommendations: "{{ __('Recommendations for your page') }}",
                 };
 
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)

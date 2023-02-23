@@ -105,14 +105,14 @@
     </div>
 
     <div class="form-group required">
-        <label for="ignoredDomains">Игнорируемые домены</label>
+        <label for="ignoredDomains">{{ __('Ignored domains') }}</label>
         <textarea class="form form-control" name="ignoredDomains" id="ignoredDomains" cols="8"
                   rows="8">{{ $config->ignored_domains }}</textarea>
     </div>
 
     <div id="ignoredWordsBlock">
         <div class="form-group required">
-            <label for="ignoredWords">Игнорируемые слова</label>
+            <label for="ignoredWords">{{ __('Ignored words') }}</label>
             <textarea class="form form-control" name="ignoredWords" id="ignoredWords" cols="8"
                       rows="8">{{ $config->ignored_words }}</textarea>
         </div>
@@ -152,19 +152,19 @@
         </span>
         <div class="brut-force" style="display: none">
             <div class="form-group required">
-                <label for="gainFactor">коэффициент усиления(%)</label>
+                <label for="gainFactor">{{ __('Gain factor(%)') }}</label>
                 <input class="form form-control" type="number" id="gainFactor" name="gainFactor"
                        value="{{ $config->gain_factor }}">
             </div>
 
             <div class="form-group required">
-                <label for="brutForceCount">Минимальный размер кластера для повторной переборки</label>
+                <label for="brutForceCount">{{ __('Minimum cluster size for re-bulkhead') }}</label>
                 <input type="number" name="brutForceCount" id="brutForceCount" class="form form-control"
                        value="{{ $config->brut_force_count }}">
             </div>
 
             <div class="form-group required">
-                <label for="reductionRatio">Минимальный множитель</label>
+                <label for="reductionRatio">{{ __('Minimum multiplier') }}</label>
                 {!! Form::select('reductionRatio', [
                     $config->reduction_ratio => $config->reduction_ratio,
                     'pre-hard' => 'pre-hard',
@@ -199,9 +199,9 @@
             <i class="fa fa-question-circle" style="color: grey"></i>
             <span class="ui_tooltip __right">
                 <span class="ui_tooltip_content" style="width: 300px">
-                    Для каждой фразы будет произведён поиск релевантных страниц
+                    {{ __('Relevant pages will be searched for each phrase') }}
                     <br>
-                    Вам необходимо указать доменное имя в формате <b>http(s)://site.ru/</b>
+                    {{ __('You need to specify the domain name in the format') }} <b>http(s)://site.ru/</b>
                 </span>
             </span>
         </span>
@@ -346,14 +346,14 @@
     </div>
 
     <div class="form-group required" style="display: none">
-        <label for="ignoredDomains">Игнорируемые домены</label>
+        <label for="ignoredDomains">{{ __('Ignored domains') }}</label>
         <textarea class="form form-control" name="ignoredDomains" id="ignoredDomains_classic" cols="8"
                   rows="8">{{ $config_classic->ignored_domains }}</textarea>
     </div>
 
     <div style="display: none">
         <div class="form-group required">
-            <label for="ignoredWords">Игнорируемые слова</label>
+            <label for="ignoredWords">{{ __('Ignored words') }}</label>
             <textarea class="form form-control" name="ignoredWords" id="ignoredWords_classic" cols="8"
                       rows="8">{{ $config_classic->ignored_words }}</textarea>
         </div>
@@ -403,9 +403,9 @@
             <i class="fa fa-question-circle" style="color: grey"></i>
             <span class="ui_tooltip __right">
                 <span class="ui_tooltip_content" style="width: 300px">
-                    Для каждой фразы будет произведён поиск релевантных страниц
+                    {{ __('Relevant pages will be searched for each phrase') }}
                     <br>
-                    Вам необходимо указать доменное имя в формате <b>http(s)://site.ru/</b>
+                    {{ __('You need to specify the domain name in the format') }} <b>http(s)://site.ru/</b>
                 </span>
             </span>
         </span>

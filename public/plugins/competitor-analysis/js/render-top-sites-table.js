@@ -1,18 +1,18 @@
-function renderTopSites(analysedSites) {
+function renderTopSites(analysedSites, messages) {
     $.each(analysedSites, function (phrase, sites) {
         let tr = '<tr style="height: 80px" class="render">'
         tr += '<td>' + phrase + '</td>'
         $.each(sites, function (site, info) {
             let url = new URL(site)
 
-            let btnGroup = getBtnGroup(url)
+            let btnGroup = getBtnGroup(url, messages)
 
             let danger = info['danger'] ? 'danger' : ''
 
             let infoBlock
 
             if (info['danger']) {
-                infoBlock = '<div class="text-danger mt-2">Сайт защищен от сбора информации, советуем проанализировать вручную</div>'
+                infoBlock = '<div class="text-danger mt-2">' + messages.protected + '</div>'
                 infoBlock = getStub(url['host'], btnGroup, infoBlock, true)
             } else {
                 infoBlock = ''
@@ -40,7 +40,7 @@ function renderTopSites(analysedSites) {
     $('.top-sites.mt-5').show()
 }
 
-function renderTopSitesV2(analysedSites) {
+function renderTopSitesV2(analysedSites, messages) {
     let domains = [];
     let links = [];
     $.each(analysedSites, function (phrase, sites) {
@@ -50,13 +50,13 @@ function renderTopSitesV2(analysedSites) {
             '   <div class="card-body p-0 d-flex flex-column">' +
             '       <div class="fixed-color d-flex p-2 border">' +
             '           <div class="font-weight-bold pr-2">#</div>' +
-            '           <div class="font-weight-bold">Домен</div>' +
+            '           <div class="font-weight-bold">' + messages.domain + '</div>' +
             '       </div>'
 
         let iterator = 1
         $.each(sites, function (link, object) {
             let url = new URL(link)
-            let btnGroup = getBtnGroup(url)
+            let btnGroup = getBtnGroup(url, messages)
             newTable +=
                 '<div class="d-flex p-2 align-items-center justify-content-start border await-color" style="cursor: pointer; height: 75px" ' +
                 'data-order="' + url['host'] + '" ' +
@@ -124,7 +124,7 @@ function getStub(host, btnGroup, html, showBlock = false) {
         '    </div>';
 }
 
-function getBtnGroup(url) {
+function getBtnGroup(url, messages) {
     return '<div class="btn-group pl-1 p-0">' +
         '   <button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-tool dropdown-toggle p-0" style="color: black;">' +
         '   <i class="fas fa-external-link-alt"></i>' +
@@ -132,13 +132,13 @@ function getBtnGroup(url) {
         '       <div role="menu" class="dropdown-menu dropdown-menu-left">' +
 
         '       <a target="_blank" class="dropdown-item" href="' + url['href'] + '" style="text-shadow: none">' +
-        '       <i class="fas fa-external-link-alt"></i> Перейти на посадочную страницу</a>' +
+        '       <i class="fas fa-external-link-alt"></i> ' + messages.mainPage + '</a>' +
 
         '       <a target="_blank" class="dropdown-item" href="' + url['origin'] + '" style="text-shadow: none">' +
-        '       <i class="fas fa-external-link-alt"></i> Перейти на сайт</a>' +
+        '       <i class="fas fa-external-link-alt"></i> ' + messages.site + '</a>' +
 
         '       <a style="text-shadow: none" target="_blank" class="dropdown-item" href="/redirect-to-text-analyzer/' + url['href'].replace(/\\|\//g, 'abc') + '">' +
-        '       <i class="fas fa-external-link-alt"></i> Проанализировать текст</a>' +
+        '       <i class="fas fa-external-link-alt"></i> ' + messages.analyzeText + '</a>' +
 
         '   </div>' +
         '</div>'

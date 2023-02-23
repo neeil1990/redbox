@@ -291,16 +291,16 @@
                                     <button class="btn btn-secondary"
                                             data-target="#startThroughScan{{ $item->id }}"
                                             data-toggle="modal" data-placement="top">
-                                        Анализ сквозных слов
+                                        {{ __('Analysis of end-to-end words') }}
                                     </button>
 
                                     @isset($item->though)
                                         <div id="though{{ $item->id }}" class="mt-2 mb-2">
                                             <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
-                                                Результаты сквозного анализа
+                                                {{ __('Results of end-to-end analysis') }}
                                             </a>
                                             <div class="text-muted">
-                                                Последний анализ {{ $item->though->updated_at }}
+                                                {{ __('Last analysis') }} {{ $item->though->updated_at }}
                                             </div>
                                         </div>
                                     @else
@@ -537,14 +537,15 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Запустить анализ сквозных слов у
-                                            проекта {{ $item->name }}</h5>
+                                        <h5 class="modal-title">
+                                            {{ __('Run an analysis of the end-to-end results of the project') }} {{ $item->name }}
+                                        </h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        Будет произведён анализ сквозных слов у
+                                        {{ __('The analysis of end-to-end words will be performed at') }}
                                         <b>{{ $item->count_sites }}</b>
                                         {{ __('unique pages, are you sure?') }}
                                     </div>
@@ -1027,14 +1028,14 @@
                                         if (val.state === 1) {
                                             state =
                                                 '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
-                                                '   Повторить анализ' +
+                                                "{{ __('Repeat the analysis') }}" +
                                                 '</button>'
                                                 +
-                                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+                                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'>" + '{{ __("Detailed information") }}' + "</a>"
 
                                         } else if (val.state === 0) {
                                             state =
-                                                '<p>Обрабатывается..</p>' +
+                                                '<p>' + "{{ __('Processed..') }}" + '</p>' +
                                                 '<div class="text-center" id="preloaderBlock">' +
                                                 '        <div class="three col">' +
                                                 '            <div class="loader" id="loader-1"></div>' +
@@ -1044,21 +1045,21 @@
                                         } else if (val.state === -1) {
                                             state =
                                                 '<button type="button" class="btn btn-secondary get-history-info" data-order="' + val.id + '" data-toggle="modal" data-target="#staticBackdrop">' +
-                                                '   Повторить анализ' +
+                                                '{{ __("Processed..") }}' +
                                                 '</button>' +
-                                                "<span class='text-muted'>Произошла ошибка, повторите попытку или обратитесь к администратору</span>"
+                                                "<span class='text-muted'>" + '{{ __("An error has occurred, try again or contact the administrator") }}' + "</span>"
                                         }
 
                                         let position = val.position
 
                                         if (val.position === 0) {
-                                            position = 'Не попал в топ 100'
+                                            position = "{{ __('Did not get into the top 100') }}"
                                         }
 
                                         let phrase = val.phrase
 
                                         if (phrase == null) {
-                                            phrase = 'Был использван анализ без ключевой фразы'
+                                            phrase = "{{ __('An analysis without a keyword was used') }}"
                                         }
 
                                         let newRow
@@ -1608,7 +1609,7 @@
             }
 
             function getTextResult(result, ideal) {
-                return 'Посадочная страница получила <b>' + result + '</b>.<br> Рекомендованное значение <b>' + ideal + '.</b>';
+                return "{{ __('The landing page received') }}" + ' <b>' + result + '</b>.<br> ' + ' {{ __('Recommended value')}}' + ' <b>' + ideal + '.</b>';
             }
         </script>
     @endslot

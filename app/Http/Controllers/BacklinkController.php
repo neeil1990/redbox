@@ -313,11 +313,7 @@ class BacklinkController extends Controller
         return false;
     }
 
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
-    public function checkLink($id)
+    public function checkLink($id): RedirectResponse
     {
         $target = LinkTracking::findOrFail($id);
         $this->analyseLink(
@@ -328,7 +324,7 @@ class BacklinkController extends Controller
             $target->noindex
         );
         if (isset($this->result['error'])) {
-            flash()->overlay($this->result['error'], ' ')->error();
+            flash()->overlay(__($this->result['error']), ' ')->error();
             $this->saveResult($target, true);
         } else {
             $this->saveResult($target, false, false);
@@ -348,7 +344,7 @@ class BacklinkController extends Controller
     {
         $html = $this->curlInit($page_url);
         if ($html == false) {
-            $this->result['error'] = __('the donor site does not exist');
+            $this->result['error'] = 'the donor site does not exist';
         } else {
             if ($noindex) {
                 $this->searchNoindex($html, $link_url, $anchor);
@@ -396,7 +392,7 @@ class BacklinkController extends Controller
             $this->result['link'] = __('link found, anchor matches');
             return array_unique($matches, SORT_REGULAR);
         }
-        $this->result['error'] = __('link not found or anchor does not match');
+        $this->result['error'] = 'link not found or anchor does not match';
         return null;
     }
 
@@ -407,9 +403,9 @@ class BacklinkController extends Controller
     public function searchAnchor($match, $anchor)
     {
         if (strpos($match, $anchor) === 'false') {
-            $this->result['error'] = __('anchor does not match');
+            $this->result['error'] = 'anchor does not match';
         }
-        $this->result['anchor'] = __('anchor matches');
+        $this->result['anchor'] = 'anchor matches';
     }
 
     /**
@@ -418,9 +414,9 @@ class BacklinkController extends Controller
     public function searchNofollow($link)
     {
         if (preg_match('/rel*=*[\'"]?nofollow[\'"]?/i ', $link[0])) {
-            $this->result['error'] = __('the nofollow property is present in the rel attribute');
+            $this->result['error'] = 'the nofollow property is present in the rel attribute';
         } else {
-            $this->result['nofollow'] = __('nofollow is missing');
+            $this->result['nofollow'] = 'nofollow is missing';
         }
     }
 
@@ -435,14 +431,14 @@ class BacklinkController extends Controller
             $html,
             $matches,
             PREG_SET_ORDER)) {
-            $this->result['error'] = __('the link is placed in noindex');
+            $this->result['error'] = 'the link is placed in noindex';
         } elseif (preg_match_all('(<noindex>(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))</noindex>)',
             $html,
             $matches,
             PREG_SET_ORDER)) {
-            $this->result['error'] = __('the link is placed in noindex');
+            $this->result['error'] = 'the link is placed in noindex';
         } else {
-            $this->result['noindex'] = __('the link is not placed in noindex');
+            $this->result['noindex'] = 'the link is not placed in noindex';
         }
     }
 
@@ -454,6 +450,7 @@ class BacklinkController extends Controller
     public function saveResult($target, $broken, $sendMail = null)
     {
         $target->status = implode(', ', $this->result);
+
         $target->last_check = date("Y-m-d H:i:s");
         if ($target->broken == null) {
             if ($broken) {

@@ -490,7 +490,6 @@ function addWordInIgnore(elem) {
         textarea.val(textarea.val() + "\n" + word + "\n")
     }
     toastr.show(300)
-    $('#lock-word').html('Слово "' + word + '" добавлено в игнорируемые')
     setTimeout(() => {
         toastr.hide(300)
     }, 3000)
@@ -509,9 +508,8 @@ function removeWordFromIgnored(elem) {
         }
     });
     textarea.val(result.trim())
-    let toastr = $('.toast-top-right.success-message.lock-word');
+    let toastr = $('.toast-top-right.success-message.lock-word-removed');
     toastr.show(300)
-    $('#lock-word').html('Слово "' + word + '" удалено из игнорируемых')
     setTimeout(() => {
         toastr.hide(300)
     }, 3000)

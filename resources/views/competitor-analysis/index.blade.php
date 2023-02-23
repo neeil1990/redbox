@@ -396,9 +396,8 @@
             <div class="tag-analysis mt-5" style="display: none">
                 <div class="d-flex flex-row pb-2">
                     <h2>{{ __('Tag Analysis') }}</h2>
-                    <button type="button" class="btn btn-secondary ml-2" data-toggle="modal"
-                            data-target="#recommendationModal">
-                        Получить рекомендации
+                    <button type="button" class="btn btn-secondary ml-2" data-toggle="modal" data-target="#recommendationModal">
+                        {{ __('Get recommendations') }}
                     </button>
                 </div>
                 <table class="table table-bordered table-striped dataTable dtr-inline" id="tag-analysis"
@@ -583,8 +582,15 @@
                             }, 1000)
                             removeProgressPercent(token)
 
-                            await renderTopSites(response.result.analysedSites)
-                            await renderTopSitesV2(response.result.analysedSites)
+                            let renderMessages = {
+                                'protected': "{{ __('The site is protected from information collection, we recommend analyzing it manually') }}",
+                                'domain': "{{ __('domain') }}",
+                                'mainPage': "{{ __('Go to the landing page') }}",
+                                'site': "{{ __('Go to site') }}",
+                                'analyzeText': "{{ __('Analyze the text') }}",
+                            }
+                            await renderTopSites(response.result.analysedSites, renderMessages)
+                            await renderTopSitesV2(response.result.analysedSites, renderMessages)
                             await renderNestingTable(response.result.pagesCounter)
                             await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
                             await renderTagsTable(response.result.totalMetaTags)

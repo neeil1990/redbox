@@ -8,21 +8,21 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Пополнить баланс</h3>
+                    <h3 class="card-title">{{ __('Top up your balance') }}</h3>
                 </div>
 
                 {!! Form::open(['method' => 'POST', 'route' => ['balance-add.store']]) !!}
                 <div class="card-body">
 
                     <div class="form-group">
-                        {!! Form::label('sum', 'Сумма') !!}
+                        {!! Form::label('sum', __('Sum')) !!}
                         {!! Form::number('sum', null, ['class' => 'form-control' . ($errors->has('domain') ? ' is-invalid' : ''), 'min' => '1']) !!}
                         @error('sum') <span class="error invalid-feedback d-block">{{ $message }}</span> @enderror
                     </div>
 
                 </div>
                 <div class="card-footer">
-                    {!! Form::submit('Пополнить', ['class' => 'btn btn-success']) !!}
+                    {!! Form::submit(__('Replenish'), ['class' => 'btn btn-success']) !!}
                 </div>
                 {!! Form::close() !!}
             </div>
@@ -37,10 +37,10 @@
                     <table class="table table-striped table-valign-middle">
                         <thead>
                         <tr>
-                            <th>Status</th>
-                            <th>Sum</th>
-                            <th>Source</th>
-                            <th>Date</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Sum') }}</th>
+                            <th>{{ __('Source') }}</th>
+                            <th>{{ __('Date') }}</th>
                         </tr>
                         </thead>
 
@@ -51,25 +51,25 @@
                                     @switch($balance->status)
                                         @case(0)
                                             <small class="badge badge-danger"><i
-                                                    class="far fa-clock"></i> {{ $balance->statuses[$balance->status] }}
+                                                    class="far fa-clock"></i> {{ __($balance->statuses[$balance->status]) }}
                                             </small>
                                             @break
 
                                         @case(1)
                                             <small class="badge badge-success"><i
-                                                    class="fas fa-plus-circle"></i> {{ $balance->statuses[$balance->status] }}
+                                                    class="fas fa-plus-circle"></i> {{ __($balance->statuses[$balance->status]) }}
                                             </small>
                                             @break
 
                                         @case(2)
                                             <small class="badge badge-info"><i
-                                                    class="fas fa-minus-circle"></i> {{ $balance->statuses[$balance->status] }}
+                                                    class="fas fa-minus-circle"></i> {{ __($balance->statuses[$balance->status]) }}
                                             </small>
                                             @break
                                     @endswitch
                                 </td>
                                 <td>{{ $balance->sum }}</td>
-                                <td>{{ $balance->source }}</td>
+                                <td>{{ __($balance->source) }}</td>
                                 <td>{{ $balance->created_at->diffForHumans() }}</td>
                             </tr>
                         @empty

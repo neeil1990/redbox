@@ -112,7 +112,6 @@ $('#coverage-clouds-button').click(function () {
 
                     let toastr = $('.toast-top-right.success-message.lock-word');
                     toastr.show(300)
-                    $('#lock-word').html('Домен "' + domain + '" добавлен в игнорируемые')
                     setTimeout(() => {
                         toastr.hide(300)
                     }, 3000)

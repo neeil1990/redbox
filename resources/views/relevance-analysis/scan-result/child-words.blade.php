@@ -29,7 +29,7 @@
 
     <div id="toast-container" class="toast-top-right success-message lock-word" style="display:none;">
         <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message" id="lock-word"></div>
+            <div class="toast-message">{{ __('added in ignored') }}</div>
         </div>
     </div>
 

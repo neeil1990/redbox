@@ -392,7 +392,7 @@
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
-                            <th class="table-header">Сквозной анализ</th>
+                            <th class="table-header">{{ __('end-to-end analysis') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -476,16 +476,16 @@
                                     <button class="btn btn-secondary"
                                             data-target="#startThroughScan{{ $item->id }}"
                                             data-toggle="modal" data-placement="top">
-                                        Анализ сквозных слов
+                                        {{ __('Analysis of end-to-end words') }}
                                     </button>
 
                                     @isset($item->though)
                                         <div id="though{{ $item->id }}" class="mt-2 mb-2">
                                             <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
-                                                Результаты сквозного анализа
+                                                {{ __('Results of end-to-end analysis') }}
                                             </a>
                                             <div class="text-muted">
-                                                Последний анализ {{ $item->though->updated_at }}
+                                                {{ __('Last analysis') }} {{ $item->though->updated_at }}
                                             </div>
                                         </div>
                                     @else
@@ -937,7 +937,7 @@
                     "sSearch": "{{ __('Search') }}:",
                     "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
                     "sEmptyTable": "{{ __('No records') }}",
-                    "sInfo" : "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",// text you want show for info section
+                    "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
                 }
             });
 
@@ -1432,13 +1432,13 @@
                                         let position = val.position
 
                                         if (val.position == 0) {
-                                            position = 'Не попал в топ 100'
+                                            position = "{{ __('Did not get into the top 100') }}"
                                         }
 
                                         let phrase = val.phrase
 
                                         if (phrase == null) {
-                                            phrase = 'Был использван анализ без ключевой фразы'
+                                            phrase = "{{ __('An analysis without a keyword was used') }}"
                                         }
 
                                         let newRow
@@ -1806,7 +1806,7 @@
             }
 
             function getTextResult(result, ideal) {
-                return 'Посадочная страница получила <b>' + result + '</b>.<br> Рекомендованное значение <b>' + ideal + '.</b>';
+                return "{{ __('The landing page received') }}" + ' <b>' + result + '</b>.<br> ' + '{{ __('Recommended value')}}' + ' <b>' + ideal + '.</b>';
             }
         </script>
     @endslot

@@ -65,9 +65,9 @@
                     <td class="">@isset($link->last_check){{ $link->last_check }}@endisset</td>
                     <td class="fixed-height">
                         @if((boolean)$link->broken)
-                            <span class="text-danger">{{ $link->status }}</span>
+                            <span class="text-danger">@foreach(explode(',', $link->status) as $phrase){{ __(trim($phrase)) }}<br>@endforeach</span>
                         @else
-                            <span class="text-info">{{ $link->status }}</span>
+                            <span class="text-info">@foreach(explode(',', $link->status) as $phrase){{ __(trim($phrase)) }}<br>@endforeach</span>
                         @endif
                     </td>
                     <td class="d-flex justify-content-around m-auto">

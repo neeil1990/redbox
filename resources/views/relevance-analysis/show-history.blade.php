@@ -38,26 +38,16 @@
 
             .first-action::after {
                 display: inline;
-                content: "{{ __(' Go to the landing page') }}";
+                content: " {{ __('Go to the landing page') }}";
                 font-weight: normal;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
             }
 
             .second-action::after {
                 display: inline;
-                content: "{{ __(' Go to the text analyzer') }}";
+                content: " {{ __('Go to the text analyzer') }}";
                 font-weight: normal;
-            }
-
-            .third-action::after {
-                display: inline;
-                content: "{{ __(' Add to Ignored Domains') }}";
-                font-weight: normal;
-            }
-
-            .fourth-action::after {
-                display: inline;
-                content: "{{ __(' Exclude from ignored domains') }}";
-                font-weight: normal;
+                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
             }
 
             #scanned-sites {
@@ -1245,7 +1235,15 @@
                     from: "{{ __('from') }}",
                     to: "{{ __('to') }}",
                     of: "{{ __('of') }}",
-                    entries: "{{ __('entries') }}"
+                    entries: "{{ __('entries') }}",
+                    ignoredDomain: "{{ __('ignored domain') }}",
+                    notGetData: "{{ __('Could not get data from the page') }}",
+                    successAnalyse: "{{ __('The page has been successfully analyzed') }}",
+                    notTop: "{{ __('the site did not get into the top') }}",
+                    hideDomains: "{{ __('hide ignored domains') }}",
+                    copyLinks: "{{ __('Copy site links') }}",
+                    success: "{{ __('Successfully') }}",
+                    recommendations: "{{ __('Recommendations for your page') }}",
                 };
 
                 if (!history.cleaning) {
@@ -1279,7 +1277,12 @@
                     config.boostPercent,
                     history.average_values
                 );
+
                 setTimeout(function () {
+                    $('.add-in-ignored-domains').remove()
+                    $('.remove-from-ignored-domains').remove()
+                    $('.lock-block').remove()
+
                     $('.dt-button').addClass('btn btn-secondary')
                     $('#preloaderBlock').hide(300)
                 }, 1500)

@@ -61,8 +61,8 @@ function duallboxBlockRender(metaTags, count) {
                     $("html, body").animate({
                         scrollTop: $("#recommendations-table").offset().top
                     }, {
-                        duration: 600,   // по умолчанию «400»
-                        easing: "swing" // по умолчанию «swing»
+                        duration: 600,
+                        easing: "swing"
                     });
                 })
             },
