@@ -63,12 +63,6 @@
                 overflow: auto;
             }
 
-            .emptySpace {
-                background-color: rgba(52, 58, 64, 0.27);
-                height: 40px;
-                margin: 4px;
-            }
-
             .dragged {
                 position: absolute;
                 top: 0;
@@ -87,6 +81,9 @@
                 background-color: rgba(52, 58, 64, 0.27);
             }
 
+            li li.placeholder {
+                margin-left: 20px;
+            }
 
             .w-100.pb-3 li:hover {
                 background-color: lightgrey;
@@ -110,7 +107,7 @@
             }
 
             ol > li > ol > li {
-                padding-right: 20px;
+                padding-left: 20px;
             }
 
 
@@ -135,6 +132,10 @@
             .list-group-item {
                 border: 1px solid rgba(128, 128, 128, 0.4) !important;
             }
+
+            .selected-group {
+                background-color: #0c84ff !important;
+            }
         </style>
     @endslot
 
@@ -150,7 +151,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel" aria-hidden="true">
+    <div class="modal fade" id="resetAllChanges" tabindex="-1" aria-labelledby="resetAllChangesLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -331,40 +333,47 @@
                                                 </button>
                                             </div>
                                             <div class="d-flex justify-content-between">
-                                            <span class="__helper-link ui_tooltip_w">
-                                                <i class="fa fa-eye mr-2"
-                                                   data-toggle="collapse"
-                                                   aria-expanded="false"
-                                                   data-target="#{{ $hash }}"
-                                                   aria-controls="{{ $hash }}"
-                                                   style="color: white">
-                                                </i>
-                                                <span class="ui_tooltip __bottom">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('Hide a group') }}
-                                                    </span>
-                                                </span>
-                                            </span>
-
                                                 <span class="__helper-link ui_tooltip_w">
-                                                <i class="fa fa-edit change-group-name mr-2"
-                                                   style="color: white; padding-top: 5px"></i>
-                                                <span class="ui_tooltip __bottom">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('Change the name') }}
+                                                    <i class="fa fa-eye mr-2"
+                                                       data-toggle="collapse"
+                                                       aria-expanded="false"
+                                                       data-target="#{{ $hash }}"
+                                                       aria-controls="{{ $hash }}"
+                                                       style="color: white">
+                                                    </i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            {{ __('Hide a group') }}
+                                                        </span>
                                                     </span>
                                                 </span>
-                                            </span>
-
                                                 <span class="__helper-link ui_tooltip_w">
-                                                <i class="fa fa-arrow-right move-group"
-                                                   style="color: white; padding-top: 5px"></i>
-                                                <span class="ui_tooltip __bottom">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('Move the entire group') }}
+                                                    <i class="fa fa-edit change-group-name mr-2"
+                                                       style="color: white; padding-top: 5px"></i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            {{ __('Change the name') }}
+                                                        </span>
                                                     </span>
                                                 </span>
-                                            </span>
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-check select-group mr-2"
+                                                       style="color: white; padding-top: 5px"></i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            {{ __('Select group') }}
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-arrow-right move-group"
+                                                       style="color: white; padding-top: 5px"></i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            {{ __('Move the entire group') }}
+                                                        </span>
+                                                    </span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -407,15 +416,15 @@
                                                             <button data-toggle="modal" data-target="#exampleModal"
                                                                     class="dropdown-item add-to-another"
                                                                     data-action="{{ $phrase }}">
-                                                                Добавить фразу к другому кластеру
+                                                                {{ __("Add a phrase to another cluster") }}
                                                             </button>
                                                             <button data-toggle="modal"
                                                                     class="dropdown-item color-phrases">
-                                                                Подсветить похожие фразы
+                                                                {{ __('Highlight similar phrases') }}
                                                             </button>
                                                             <button data-toggle="modal"
                                                                     class="dropdown-item set-default-colors">
-                                                                Отменить выделение
+                                                                {{ __('Cancel selection') }}
                                                             </button>
                                                         </div>
                                                         <i class="fa fa-arrow-right move-phrase"
@@ -518,7 +527,8 @@
                     <div class="col-6">
                         <div class="work-place-conf">
                             <div class="switch-container mb-3 d-flex">
-                                <button id="change-sortable" class="btn btn-outline-secondary w-25" data-action="enable">
+                                <button id="change-sortable" class="btn btn-outline-secondary w-25"
+                                        data-action="enable">
                                     {{ __('Moving groups') }}
                                 </button>
                                 <button id="relevance" class="btn btn-outline-secondary w-25" data-action="show">
@@ -637,17 +647,23 @@
                 $('#alone_phrases').parent().remove()
             }
 
+            @if(isset($cluster['html']))
+            // приводим html к дефолтному состоянию
             $('.fa.fa-arrow-right.move-group').show()
             $('.fa.fa-edit.change-group-name.mr-2').show()
             $('.fa.fa-ellipsis.mr-2').parent().show()
             $('.list-group-item').show()
             $('.relevance-link').addClass('hide')
-
+            $('.card-header .fa.fa-minus.select-group.mr-2').attr('class', 'fa fa-check select-group mr-2')
+            $('.card-header.selected-group').removeClass('selected-group')
             $('.phrase-for-color').parent().parent().css({
                 'background-color': 'white'
             })
+            @endif
 
             let worPlaceCreated = false
+            let selectedGroup = false
+
             let swapMainPhrase = ''
             let swapObject = ''
             let group
@@ -782,9 +798,9 @@
                                 '                        <span>' + response.target + '</span>' +
                                 '                    <span class="ui_tooltip __bottom">' +
                                 '                    <span class="ui_tooltip_content">' +
-                                '                        <span>Базвая</span> /' +
-                                '                        <span>Фразовая</span> /' +
-                                '                        <span>Точная</span>' +
+                                '                        <span>' + "{{ __('Base') }}" + '</span> /' +
+                                '                        <span>' + "{{ __('Phrasal') }}" + '</span> /' +
+                                '                        <span>' + "{{ __('Target') }}" + '</span>' +
                                 '                    </span>' +
                                 '                </span>' +
                                 '            </span>' +
@@ -794,14 +810,11 @@
                                 '            <div class="dropdown-menu">' +
                                 '                <button data-toggle="modal" data-target="#exampleModal"' +
                                 '                        class="dropdown-item add-to-another"' +
-                                '                        data-action="' + phrase + '">' +
-                                '                    Добавить фразу к другому кластеру' +
+                                '                        data-action="' + phrase + '">' + "{{ __('Add a phrase to another cluster') }}" +
                                 '                </button>' +
-                                '                <button data-toggle="modal" class="dropdown-item color-phrases">' +
-                                '                    Подсветить похожие фразы' +
+                                '                <button data-toggle="modal" class="dropdown-item color-phrases">'+ "{{ __('Highlight similar phrases') }}" +
                                 '                </button>' +
-                                '                <button data-toggle="modal" class="dropdown-item set-default-colors">' +
-                                '                    Отменить выделение' +
+                                '                <button data-toggle="modal" class="dropdown-item set-default-colors">' + "{{ __('Cancel selection') }}" +
                                 '                </button>' +
                                 '            </div>' +
                                 '            <i data-target="' + phrase + '" class="fa fa-arrow-right move-phrase"></i>' +
@@ -1071,6 +1084,60 @@
                     swapObject = $(this).parent().parent().parent().parent()
                     swapMainPhrase = String(swapObject.parent().attr('id')).replaceAll('_', ' ')
                 })
+
+                $('.select-group').unbind().on('click', function () {
+                    if (worPlaceCreated) {
+                        errorMessage("{{ __('The workspace should be empty') }}")
+                    } else {
+                        if ($(this).parent().parent().parent().parent().hasClass('selected-group')) {
+                            $(this).attr('class', 'fa fa-check select-group mr-2')
+                            $('#change-sortable').removeAttr("disabled");
+                            $('#relevance').removeAttr("disabled");
+                            $('.selected-group').removeClass('selected-group')
+                            $('#clusters-block div > div > div.btn-group').show()
+                            $('.btn-group.btn-group-toggle.w-75').hide()
+                            $('.list-group-item').removeAttr('title')
+                            $('.list-group-item').unbind()
+                            selectedGroup = false
+                        } else {
+                            $('#change-sortable').attr('disabled', 'disabled')
+                            $('#relevance').attr('disabled', 'disabled')
+                            $('.list-group-item').attr('title', 'нажмите на фразу и она будет перемещена к выбранной группе')
+                            $('.selected-group').removeClass('selected-group')
+                            $('#clusters-block div > div > div.btn-group').hide()
+
+                            $('.card-header .fa.fa-minus.select-group.mr-2').attr('class', 'fa fa-check select-group mr-2')
+                            $(this).attr('class', 'fa fa-minus select-group mr-2')
+                            $(this).parent().parent().parent().parent().addClass('selected-group')
+
+                            selectedGroup = $(this).parent().parent().parent().parent().parent().attr('id')
+                            $('.list-group-item').on('click', function () {
+                                let phrase = $(this).attr('data-target')
+                                let element = $(this)
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{{ route('edit.cluster') }}",
+                                    dataType: 'json',
+                                    data: {
+                                        _token: $('meta[name="csrf-token"]').attr('content'),
+                                        id: {{ $cluster['id'] }},
+                                        mainPhrase: selectedGroup.replaceAll('_', ' '),
+                                        phrase: phrase,
+                                    },
+                                    success: function (response) {
+                                        successMessage("{{ __('Successfully') }}")
+                                        $('#' + selectedGroup).children('ol').eq(0).append(element)
+
+                                        element.attr('data-action', selectedGroup.replaceAll('_', ' '))
+                                        refreshMethods()
+                                        recalculateFrequency()
+                                        saveHtml()
+                                    }
+                                });
+                            })
+                        }
+                    }
+                })
             }
 
             function scanArray(array, object) {
@@ -1113,6 +1180,7 @@
             $('#setDefaultVision').on('click', function () {
                 $('.phrase-for-color').parent().parent().show()
                 $('.cluster-block').show()
+                $('#clusterFilter').val('')
             })
 
             function moveNewGroup(phrases, newGroupName, newId) {
@@ -1185,11 +1253,11 @@
             }
 
             function recalculateFrequency() {
-                $.each($('.card.cluster-block'), function (key, value) {
+                $.each($('.cluster-block'), function (key, value) {
                     let base = 0
                     let phrase = 0
                     let target = 0
-                    $.each($(this).children('ul').eq(0).children('li'), function (v, k) {
+                    $.each($(this).children('ol').eq(0).children('div'), function (v, k) {
                         let span = $(this).children('div').eq(0).children('div').eq(2).children('span').eq(0)
                         base += +span.children('span').eq(0).html()
                         phrase += +span.children('span').eq(1).html()
@@ -1202,7 +1270,7 @@
 
             function searchPhrases() {
                 $('.phrase-for-color').parent().parent().show()
-                $('.card.cluster-block').show()
+                $('.cluster-block').show()
 
                 let searchSuccess = false
                 let string = $('#clusterFilter').val().trim()
@@ -1226,12 +1294,14 @@
                         //     thisBlock.hide()
                         // }
                     })
-                }
 
-                if (!searchSuccess) {
-                    errorMessage("{{ __('No matches found') }}")
+                    if (!searchSuccess) {
+                        errorMessage("{{ __('No matches found') }}")
+                    } else {
+                        successMessage(totalCount + " {{ __('elements hidden') }}")
+                    }
                 } else {
-                    successMessage(totalCount + " {{ __('elements hidden') }}")
+                    errorMessage("{{ __('Поле поиска пустое') }}")
                 }
             }
 
@@ -1248,7 +1318,7 @@
                         location.reload();
                     },
                     error: function (response) {
-                        alert('У вас нет прав')
+                        errorMessage("{{ __("You don't have rights") }}")
                     }
                 });
             })
@@ -1333,6 +1403,10 @@
             $('#clusters-block').sortable('disable')
 
             $('#change-sortable').on('click', function () {
+                if (selectedGroup !== false) {
+                    errorMessage("{{ __("You cannot enable group movement mode if you have a selected group") }}")
+                    return;
+                }
                 $('#clusters-block').sortable($(this).attr('data-action'));
                 let place = $('.work-place-conf')
 
@@ -1343,12 +1417,13 @@
                     $('.fa.fa-arrow-right.move-group').show()
                     $('.fa.fa-edit.change-group-name.mr-2').show()
                     $('.fa.fa-ellipsis.mr-2').parent().show()
+                    $('.fa.fa-check.select-group.mr-2').parent().show()
                     place.children('div').eq(2).show()
                     place.children('div').eq(2).removeClass('hide')
                     place.children('div').eq(3).show()
                 } else {
                     if (worPlaceCreated) {
-                        alert("{{ __('The workspace should be empty') }}")
+                        errorMessage("{{ __('The workspace should be empty') }}")
                     } else {
                         $(this).attr('data-action', 'disable')
                         $(this).html("{{ __('Moving phrases') }}")
@@ -1356,6 +1431,7 @@
                         $('.fa.fa-arrow-right.move-group').hide()
                         $('.fa.fa-edit.change-group-name.mr-2').hide()
                         $('.fa.fa-ellipsis.mr-2').parent().hide()
+                        $('.fa.fa-check.select-group.mr-2').parent().hide()
                         place.children('div').eq(2).addClass('hide')
                         place.children('div').eq(3).hide()
                     }
