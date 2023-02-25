@@ -121,10 +121,10 @@
                 ],
                 i18n: {
                     "multi": {
-                        "title": "Multiple values",
-                        "info": "The selected items contain different values for this input. To edit and set all items for this input to the same value, click or tap here, otherwise they will retain their individual values.",
-                        "restore": "Undo changes",
-                        "noMulti": "This input can be edited individually, but not part of a group."
+                        "title": "Несколько значений",
+                        "info": "Выбранные элементы содержат разные значения для этого входа. Чтобы отредактировать и установить для всех элементов этого ввода одинаковое значение, нажмите здесь, в противном случае они сохранят свои индивидуальные значения.",
+                        "restore": "Отменить изменения",
+                        "noMulti": "Этот вход можно редактировать индивидуально, но не как часть группы."
                     },
                 }
             } );
