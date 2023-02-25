@@ -81,7 +81,12 @@
             };
 
             let editor = new $.fn.dataTable.Editor( {
-                ajax: "{{ route('prices.index', request('id')) }}",
+                ajax: {
+                    url: "{{ route('prices.action', request('id')) }}",
+                    data: function(data){
+                        data.region = $('#select-region').val();
+                    },
+                },
                 table: "#prices",
                 fields: [
                     {
@@ -145,8 +150,8 @@
                 autoWidth: false,
                 ordering: false,
                 paging: true,
-                lengthMenu: [2, 4, 10, 30],
-                pageLength: 2,
+                lengthMenu: [10, 30, 50, 100],
+                pageLength: 30,
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",

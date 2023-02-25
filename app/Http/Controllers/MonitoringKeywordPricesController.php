@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\MonitoringKeywordPrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,7 @@ class MonitoringKeywordPricesController extends Controller
         });
     }
 
-    public function index(Request $request)
+    private function initField(Request $request): void
     {
         $user = $this->user;
         $this->project = $user->monitoringProjects()->find($request['id']);
@@ -30,11 +31,46 @@ class MonitoringKeywordPricesController extends Controller
 
         $this->regions = $this->project->searchengines()->with('location')->get();
         $this->request = $request;
+    }
+
+    public function index(Request $request)
+    {
+        $this->initField($request);
 
         if($request->ajax())
             return $this->getDataTable();
 
         return view('monitoring.price.index');
+    }
+
+    public function action(Request $request)
+    {
+        $this->initField($request);
+
+        switch ($request->input('action')) {
+            case 'edit':
+                return $this->updateOrCreate();
+                break;
+        }
+    }
+
+    public function updateOrCreate()
+    {
+        $request = $this->request;
+
+        $region = $request->input('region', null);
+        $data = $request->input('data', []);
+
+        foreach ($data as $id => $val){
+            MonitoringKeywordPrice::updateOrCreate(
+                ['monitoring_keyword_id' => $id, 'monitoring_searchengine_id' => $region],
+                $val
+            );
+        }
+
+        return collect([
+            'data' => []
+        ]);
     }
 
     public function getKeywordsWithPrice()

@@ -17,13 +17,13 @@ class CreateMonitoringKeywordPricesTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('monitoring_keyword_id')->unsigned();
             $table->bigInteger('monitoring_searchengine_id')->unsigned();
-            $table->string('top1')->nullable();
-            $table->string('top3')->nullable();
-            $table->string('top5')->nullable();
-            $table->string('top10')->nullable();
-            $table->string('top20')->nullable();
-            $table->string('top50')->nullable();
-            $table->string('top100')->nullable();
+            $table->decimal('top1', 15, 2)->default('0.00');
+            $table->decimal('top3', 15, 2)->default('0.00');
+            $table->decimal('top5', 15, 2)->default('0.00');
+            $table->decimal('top10', 15, 2)->default('0.00');
+            $table->decimal('top20', 15, 2)->default('0.00');
+            $table->decimal('top50', 15, 2)->default('0.00');
+            $table->decimal('top100', 15, 2)->default('0.00');
             $table->timestamps();
 
             $table->foreign('monitoring_keyword_id')
