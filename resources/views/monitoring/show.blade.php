@@ -344,7 +344,8 @@
                                 $.each(response.data, function(i, item){
                                     let column = api.column(item.name + ':name');
 
-                                    column.visible(item.state);
+                                    if(item.state === 0)
+                                        column.visible(item.state);
 
                                     if(item.state)
                                         container.find(`.column-visible[data-column="${item.name}"]`).removeClass('hover');
