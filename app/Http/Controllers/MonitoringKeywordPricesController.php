@@ -74,24 +74,6 @@ class MonitoringKeywordPricesController extends Controller
         ]);
     }
 
-    public function getKeywordsWithPrice()
-    {
-        $request = $this->request;
-        $region = $request->input('region', $this->regions->first()['id']);
-
-        $model = $this->project->keywords()->with(['prices' => function($query) use ($region){
-            $query->where('monitoring_searchengine_id', $region);
-        }]);
-
-        if($search = $request->input('search')['value'])
-            $model->where('query', 'like', '%'.$search.'%');
-
-        $page = ($request->input('start') / $request->input('length')) + 1;
-        $keywords = $model->paginate($request->input('length', 1), ['*'], 'page', $page);
-
-        return $this->format($keywords);
-    }
-
     private function format($keywords)
     {
         $collection = collect([]);
@@ -125,7 +107,20 @@ class MonitoringKeywordPricesController extends Controller
 
     public function getDataTable()
     {
-        $data = $this->getKeywordsWithPrice();
+        $request = $this->request;
+        $region = $request->input('region', $this->regions->first()['id']);
+
+        $model = $this->project->keywords()->with(['prices' => function($query) use ($region){
+            $query->where('monitoring_searchengine_id', $region);
+        }]);
+
+        if($search = $request->input('search')['value'])
+            $model->where('query', 'like', '%'.$search.'%');
+
+        $page = ($request->input('start') / $request->input('length')) + 1;
+        $keywords = $model->paginate($request->input('length', 1), ['*'], 'page', $page);
+
+        $data = $this->format($keywords);
 
         $regions = collect([]);
         $searchengines = $this->regions->pluck('location.name', 'id');
@@ -141,7 +136,7 @@ class MonitoringKeywordPricesController extends Controller
         $collection->put('regions', $regions);
         $collection->put('draw', $this->request->input('draw'));
 
-        $records = $this->project->keywords->count();
+        $records = $model->count();
         $collection->put('recordsFiltered', $records);
         $collection->put('recordsTotal', $records);
 
