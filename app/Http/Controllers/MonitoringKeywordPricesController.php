@@ -136,7 +136,7 @@ class MonitoringKeywordPricesController extends Controller
         $collection->put('regions', $regions);
         $collection->put('draw', $this->request->input('draw'));
 
-        $records = $model->count();
+        $records = $keywords->total();
         $collection->put('recordsFiltered', $records);
         $collection->put('recordsTotal', $records);
 
