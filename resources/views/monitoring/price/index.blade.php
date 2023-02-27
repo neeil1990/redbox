@@ -150,8 +150,8 @@
                 autoWidth: false,
                 ordering: false,
                 paging: true,
-                lengthMenu: [10, 30, 50, 100],
-                pageLength: 30,
+                lengthMenu: [10, 30, 50, 100, 500, 1000],
+                pageLength: 500,
                 pagingType: "simple_numbers",
                 language: {
                     lengthMenu: "_MENU_",
