@@ -89,15 +89,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="saveUrlsModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="saveUrlsModalLabel">{{ __('Select the url that will be saved for each phrase of this cluster') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">
-                        {{ __('Select the url that will be saved for each phrase of this cluster') }}
-                    </label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -514,7 +511,9 @@
                             if (thisElem.children('td').eq(2).attr('title') !== undefined) {
                                 let phrase = thisElem.children('td').eq(2).attr('title')
                                 phrase = phrase.replace('Ваша фраза "', '')
+                                phrase = phrase.replace('Your phrase "', '')
                                 phrase = phrase.replace('" была изменена', '')
+                                phrase = phrase.replace('" has been changed', '')
                                 phrases.push(phrase)
                             } else {
                                 phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())

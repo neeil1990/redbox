@@ -65,10 +65,12 @@ class ClusterGroupExport implements FromCollection
     public function confirmation()
     {
         $nestCounter = 0;
+        $add = true;
         foreach ($this->array as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $item) {
                 if (is_array($item)) {
-                    $this->array[$mainPhrase][array_key_first($item)] = $this->loop($item[array_key_first($item)]);
+                    $this->array[$mainPhrase][array_key_first($item)] = $this->loop($item[array_key_first($item)], $add);
+                    $add = false;
                 } else {
                     $this->array[$mainPhrase][$item] = $this->setValues($item);
                 }
@@ -96,13 +98,17 @@ class ClusterGroupExport implements FromCollection
         return [];
     }
 
-    public function loop($elems): array
+    public function loop($elems, $boolean): array
     {
-        $this->nestCounter += 1;
+        if ($boolean) {
+            $this->nestCounter += 1;
+        }
+
         $res = [];
         foreach ($elems as $offPhrase => $item) {
             if (is_array($item)) {
-                $res[array_key_first($item)] = $this->loop($item[array_key_first($item)]);
+                $res[array_key_first($item)] = $this->loop($item[array_key_first($item)], $boolean);
+                $boolean = false;
             } else {
                 $res[$item] = $this->setValues($item);
             }

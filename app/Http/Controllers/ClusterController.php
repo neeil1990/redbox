@@ -13,6 +13,7 @@ use App\Exports\Cluster\ClusterResultExport;
 use App\Jobs\Cluster\StartClusterAnalyseQueue;
 use App\User;
 use Carbon\Carbon;
+use Doctrine\DBAL\Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -187,7 +188,6 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-
             if ($request->input('type') === 'notDefault') {
                 $results = Cluster::unpackCluster($cluster->result);
             } else {
@@ -224,8 +224,11 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-            $cluster->result = Cluster::unpackCluster($cluster->result);
-            $results = $cluster->result;
+            if ($request->input('type') === 'notDefault') {
+                $results = Cluster::unpackCluster($cluster->result);
+            } else {
+                $results = Cluster::unpackCluster($cluster->default_result);
+            }
 
             foreach ($results as $key => $items) {
                 foreach ($items as $phrase => $item) {
@@ -236,7 +239,11 @@ class ClusterController extends Controller
                 }
             }
 
-            $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            if ($request->input('type') === 'notDefault') {
+                $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            } else {
+                $cluster->default_result = base64_encode(gzcompress(json_encode($results), 9));
+            }
             $cluster->save();
 
             return response()->json(['success' => true]);
@@ -339,9 +346,24 @@ class ClusterController extends Controller
             return abort(403, __('In order to edit this result, you need to reshoot it'));
         }
 
-        $clusters = Cluster::unpackCluster($cluster->result);
         $cluster->request = json_decode($cluster->request, true);
+        $clusters = Cluster::unpackCluster($cluster->result);
+
+        if (isset($cluster->html) && $cluster->html !== '') {
+            $ar = json_decode($cluster->html, true);
+            $cluster->setClusters($cluster->result);
+            $html = $cluster->parseTree($ar);
+
+            return view('cluster.edit', [
+                'cluster' => $cluster,
+                'clusters' => $clusters,
+                'html' => $html,
+                'admin' => User::isUserAdmin()
+            ]);
+        }
+
         ksort($clusters);
+
         return view('cluster.edit', [
             'cluster' => $cluster,
             'clusters' => $clusters,
@@ -386,7 +408,7 @@ class ClusterController extends Controller
     public function checkGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
-        if ((User::isUserAdmin() || $cluster->user_id == Auth::id()) && !preg_match("/[0-9]/", $request->input('groupName'))) {
+        if (User::isUserAdmin() || $cluster->user_id == Auth::id()) {
             $cluster->result = Cluster::unpackCluster($cluster->result);
             $result = Cluster::isGroupNameExist($request->input('groupName'), $cluster->result);
 
@@ -410,7 +432,7 @@ class ClusterController extends Controller
     public function changeGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
-        if ((User::isUserAdmin() || $cluster->user_id == Auth::id()) && !preg_match("/[0-9]/", $request->input('newGroupName'))) {
+        if (User::isUserAdmin() || $cluster->user_id == Auth::id()) {
             $cluster->result = Cluster::unpackCluster($cluster->result);
             $keys = array_keys($cluster->result);
 
@@ -498,10 +520,10 @@ class ClusterController extends Controller
         Common::fileExport($file, $request->type, 'group_results');
     }
 
-    public function saveHtml(Request $request): JsonResponse
+    public function saveTree(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->first();
-        if (User::isUserAdmin() && $cluster->user_id == Auth::id()) {
+        if (User::isUserAdmin() || $cluster->user_id == Auth::id()) {
             $cluster->html = $request->html;
             $cluster->save();
 

@@ -344,7 +344,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
     Route::post('/download-cluster-group', 'ClusterController@downloadClusterGroup')->name('download.cluster.group');
-    Route::post('/save-html', 'ClusterController@saveHtml')->name('save.clusters.html');
+    Route::post('/save-html', 'ClusterController@saveTree')->name('save.clusters.tree');
 
     Route::get('/configuration-menu', 'PositionMenuItemsController@index')->name('menu.config');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
