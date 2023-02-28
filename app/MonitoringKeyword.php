@@ -23,5 +23,9 @@ class MonitoringKeyword extends Model
         return $this->hasMany(MonitoringPosition::class);
     }
 
+    public function prices()
+    {
+        return $this->hasOne(MonitoringKeywordPrice::class);
+    }
 
 }

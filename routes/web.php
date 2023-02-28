@@ -265,6 +265,10 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/creator/competitors', 'MonitoringProjectCreatorController@createCompetitors');
     Route::post('monitoring/creator/regions', 'MonitoringProjectCreatorController@actionRegion');
 
+    // Monitoring query price
+    Route::get('monitoring/{id}/prices', 'MonitoringKeywordPricesController@index')->name('prices.index');
+    Route::post('monitoring/{id}/prices', 'MonitoringKeywordPricesController@action')->name('prices.action');
+
     // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
     Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');

@@ -78,6 +78,7 @@
         <div class="col-12 mb-3">
             <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
             <a href="javascript:void(0)" id="occurrence-update" class="btn btn-default">Обновить частотность проекта</a>
+            <a href="{{ route('prices.index', $project->id) }}" id="" class="btn btn-default">Цена запросов</a>
         </div>
     </div>
 
@@ -343,7 +344,8 @@
                                 $.each(response.data, function(i, item){
                                     let column = api.column(item.name + ':name');
 
-                                    column.visible(item.state);
+                                    if(item.state === 0)
+                                        column.visible(item.state);
 
                                     if(item.state)
                                         container.find(`.column-visible[data-column="${item.name}"]`).removeClass('hover');

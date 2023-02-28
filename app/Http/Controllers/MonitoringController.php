@@ -545,9 +545,8 @@ class MonitoringController extends Controller
         $this->getLastPositions($keywords,$columns, $mode, $region, $dates);
 
         foreach ($keywords as $keyword){
-
             $dynamics = 0;
-            $model = $keyword->last_positions;
+            $model = $keyword->positions_view;
 
             if($model && $model->count() > 1)
                 $dynamics = ($model->last()->position - $model->first()->position);
@@ -856,11 +855,13 @@ class MonitoringController extends Controller
 
     private function getMainColumns($keywords = null)
     {
-        $query = $keywords->first();
         $text = '';
 
-        if(isset($query['occurrenceCreateAt']))
-            $text = $query['occurrenceCreateAt']->format('d.m.Y');
+        if($keywords){
+            $query = $keywords->first();
+            if(isset($query['occurrenceCreateAt']))
+                $text = $query['occurrenceCreateAt']->format('d.m.Y');
+        }
 
         $columns = collect([
             'checkbox' => '',

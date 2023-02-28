@@ -186,17 +186,6 @@ class MonitoringKeywordsController extends Controller
         return $keywords;
     }
 
-    protected function scanPosition($id)
-    {
-        $model = new MonitoringKeyword();
-        $query = $model->where('id', $id)->first();
-
-        $store = (new PositionStore($query, true))->save();
-
-        if($store)
-            return redirect()->back();
-    }
-
     /**
      * Remove the specified resource from storage.
      *
