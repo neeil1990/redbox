@@ -133,7 +133,8 @@ class ClusterResults extends Model
                                           ' . __("Cancel selection") . '
                                       </button>
                                    </div>
-                            </div>
+                                   <i data-target="' . $phrase . '" class="fa fa-arrow-right move-phrase"></i>
+                               </div>
                           </div>
                      </div>';
             }

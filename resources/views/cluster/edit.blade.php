@@ -969,6 +969,10 @@
             })
 
             $('#relevance').on('click', function () {
+                if (worPlaceCreated) {
+                    errorMessage("{{ __('The workspace should be empty') }}")
+                    return;
+                }
                 if ($(this).attr('data-action') === 'show') {
                     $('.relevance-link').removeClass('hide')
                     $(this).attr('data-action', 'hide')
