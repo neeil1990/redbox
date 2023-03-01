@@ -56,7 +56,9 @@ class TextEditorController extends Controller
             return Redirect::route('HTML.editor');
         }
 
-        return view('html-editor.create-project', compact('showButton'));
+        $lang = Auth::user()->lang;
+
+        return view('html-editor.create-project', compact('showButton', 'lang'));
     }
 
     /**
@@ -125,9 +127,10 @@ class TextEditorController extends Controller
      */
     public function editDescriptionView(string $id)
     {
+        $lang = Auth::user()->lang;
         $project = ProjectDescription::where('id', $id)->first();
 
-        return view('html-editor.edit-description', compact('project'));
+        return view('html-editor.edit-description', compact('project', 'lang'));
     }
 
     /**
@@ -170,17 +173,18 @@ class TextEditorController extends Controller
      */
     public function createDescriptionView()
     {
-        $user_id = Auth::id();
-        if (self::isCountDescriptionProjectsMoreThirty($user_id)) {
+        $user = Auth::user();
+        $lang = $user->lang;
+
+        if (self::isCountDescriptionProjectsMoreThirty($user->id)) {
             flash()->overlay(__('You have reached the maximum number of texts per project, you need to delete something'), ' ')
                 ->error();
 
             return Redirect::route('HTML.editor');
         }
 
-        $projects = Project::where('user_id', $user_id)->get();
-
-        return view('html-editor.create-description')->with('projects', $projects);
+        $projects = Project::where('user_id', $user->id)->get();
+        return view('html-editor.create-description', compact('lang'))->with('projects', $projects);
     }
 
     /**
