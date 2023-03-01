@@ -1,5 +1,5 @@
-function duallboxBlockRender(metaTags, count) {
-    getPhrasesDuallbox(metaTags)
+function duallboxBlockRender(metaTags, count, localization) {
+    getPhrasesDuallbox(metaTags, localization.SelectPhrases)
 
     $('#getRecommendations').unbind().on('click', function () {
         if ($.fn.DataTable.fnIsDataTable($('#recommendations-table'))) {
@@ -73,9 +73,9 @@ function duallboxBlockRender(metaTags, count) {
     })
 }
 
-function getPhrasesDuallbox(metaTags) {
+function getPhrasesDuallbox(metaTags, selectPhrases) {
     let select =
-        '<h3>Выберите фразы</h3>' +
+        '<h3>' + selectPhrases + '</h3>' +
         '    <select multiple="multiple" size="10" name="duallistbox_phrases" id="duallistbox_phrases">'
 
     $.each(metaTags, function (phrase, tags) {

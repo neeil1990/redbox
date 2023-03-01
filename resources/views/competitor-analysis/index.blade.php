@@ -435,7 +435,7 @@
                                 <div class="w-50 pr-3" id="dualbox-phrases-block">
                                 </div>
                                 <div class="w-50 pl-3">
-                                    <h3>Выберите теги</h3>
+                                    <h3>{{ __('Select tags') }}</h3>
                                     <select multiple="multiple" size="10" name="duallistbox_tags"
                                             id="duallistbox_tags">
                                         <option value="h1" class="duallist-default">h1</option>
@@ -582,20 +582,21 @@
                             }, 1000)
                             removeProgressPercent(token)
 
-                            let renderMessages = {
+                            let localization = {
                                 'protected': "{{ __('The site is protected from information collection, we recommend analyzing it manually') }}",
                                 'domain': "{{ __('domain') }}",
                                 'mainPage': "{{ __('Go to the landing page') }}",
                                 'site': "{{ __('Go to site') }}",
                                 'analyzeText': "{{ __('Analyze the text') }}",
+                                'SelectPhrases': "{{ __('Select phrases') }}",
                             }
-                            await renderTopSites(response.result.analysedSites, renderMessages)
-                            await renderTopSitesV2(response.result.analysedSites, renderMessages)
+                            await renderTopSites(response.result.analysedSites, localization)
+                            await renderTopSitesV2(response.result.analysedSites, localization)
                             await renderNestingTable(response.result.pagesCounter)
                             await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
                             await renderTagsTable(response.result.totalMetaTags)
                             await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                            await duallboxBlockRender(response.result.totalMetaTags, count)
+                            await duallboxBlockRender(response.result.totalMetaTags, count, localization)
                         } else {
                             setProgressBarStyles(response.percent)
                         }
