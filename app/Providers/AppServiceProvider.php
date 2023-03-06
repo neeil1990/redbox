@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 return false;
             }
-        }, __('Invalid landing page link.'));
+        }, __('Invalid link.'));
 
         Validator::extend('not_website', function ($attribute, $value) {
             $link = parse_url($value);

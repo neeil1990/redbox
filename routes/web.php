@@ -353,4 +353,17 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/configuration-menu', 'PositionMenuItemsController@index')->name('menu.config');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
     Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
+
+    Route::get('/partners', 'PartnersController@partners')->name('partners');
+    Route::get('/partners/add-group', 'PartnersController@addGroup')->name('partners.add.group');
+    Route::post('/partners/add-group', 'PartnersController@saveGroup')->name('partners.save.group');
+    Route::post('/partners/remove-group', 'PartnersController@removeGroup')->name('partners.remove.group');
+    Route::get('/partners/edit-group/{group}', 'PartnersController@editGroupView')->name('partners.edit.group');
+    Route::post('/partners/edit-group', 'PartnersController@editGroup')->name('partners.edit.save');
+    Route::get('/partners/add-item', 'PartnersController@addItem')->name('partners.add.item');
+    Route::post('/partners/add-item', 'PartnersController@saveItem')->name('partners.save.item');
+    Route::post('/partners/remove-item', 'PartnersController@removeItem')->name('partners.remove.item');
+    Route::get('/partners/edit-item/{item}', 'PartnersController@editItemView')->name('partners.edit.item');
+    Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
+    Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
 });

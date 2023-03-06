@@ -91,7 +91,7 @@
                                     $config->count_sites => $config->count_sites,
                                     '10' => 10,
                                     '20' => 20,
-                                    ]), null, ['class' => 'custom-select rounded-0 count']) !!}
+                            ]), null, ['class' => 'custom-select rounded-0 count']) !!}
                         </div>
 
                         <div class="form-group required">
