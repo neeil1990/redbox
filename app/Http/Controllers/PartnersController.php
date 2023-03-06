@@ -236,6 +236,8 @@ class PartnersController extends Controller
 
         $array['auditorium_ru'] = $request->auditorium_ru === 'on';
         $array['auditorium_en'] = $request->auditorium_en === 'on';
+        $item['short_link_ru'] = $item->generateShortLink('ru');
+        $item['short_link_en'] = $item->generateShortLink('en');
         $item->update($array);
 
         flash()->overlay(__('A partner was successfully edited'), ' ')->success();
