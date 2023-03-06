@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class PartnersController extends Controller
@@ -168,6 +169,7 @@ class PartnersController extends Controller
         $item->image = $request->file('image')->store('upload');
         $item->auditorium_ru = isset($request->auditorium_ru);
         $item->auditorium_en = isset($request->auditorium_en);
+        $item->short_link = $item->generateShortLink();
         $item->save();
 
         flash()->overlay(__('A partner was successfully created'), ' ')->success();
@@ -186,7 +188,7 @@ class PartnersController extends Controller
         return view('partners.edit-item', compact('groups', 'item'));
     }
 
-    public function editItem(Request $request)
+    public function editItem(Request $request): ?RedirectResponse
     {
         if (!User::isUserAdmin()) {
             return abort(403);
@@ -237,5 +239,17 @@ class PartnersController extends Controller
         $item->delete();
 
         return response()->json([], 200);
+    }
+
+    public function redirect(string $short_link)
+    {
+        $item = PartnersItems::where('short_link', '=', $short_link)->first();
+
+        if (isset($item)) {
+            header('Location: ' . $item->link);
+            exit();
+        }
+
+        return abort(403, 'Link not found');
     }
 }

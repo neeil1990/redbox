@@ -52,7 +52,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
-                                <a href="{{ $item['link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
+                                <a href="/partners/r/{{ $item['short_link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
                             </div>
                         </div>
                     </div>

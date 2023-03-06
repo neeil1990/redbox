@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class PartnersItems extends Model
 {
@@ -23,5 +24,16 @@ class PartnersItems extends Model
         }
 
         parent::delete();
+    }
+
+    public function generateShortLink(): string
+    {
+        $link = Str::random();
+
+        if (empty($this->where('short_link', '=', $link)->first())) {
+            return $link;
+        }
+
+        return $this->generateShortLink();
     }
 }

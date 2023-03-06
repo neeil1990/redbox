@@ -121,7 +121,7 @@
                             <div class="card-footer h-100">
                                 <h5 class="card-title">{{ $item['name'] }}</h5>
                                 <p class="card-text">{{ $item['description'] }}</p>
-                                <a href="{{ $item['link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
+                                <a href="/partners/r/{{ $item['short_link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
                             </div>
                         </div>
                     @endforeach
