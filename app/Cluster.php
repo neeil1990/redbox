@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -319,11 +320,24 @@ class Cluster
             $this->searchClustersEngine1501();
         }
 
+        $count = 0;
+        foreach ($this->clusters as $cluster) {
+            $count += count($cluster);
+        }
+
+        Log::debug('Count Clusters', [$count]);
+
         if ($this->brutForce) {
             $percent = $this->clusteringLevel;
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForce($this->count * $percent);
+                $count = 0;
+                foreach ($this->clusters as $cluster) {
+                    $count += count($cluster);
+                }
+
+                Log::debug('Count Clusters (bf)', [$count]);
             }
         }
     }
