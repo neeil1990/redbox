@@ -181,7 +181,7 @@
                         id: groupId
                     },
                     success: function () {
-                        i.parents().eq(1).remove();
+                        i.parents().eq(2).remove();
                     },
                 });
             })
