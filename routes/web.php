@@ -368,7 +368,3 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
 });
-
-Route::get('/test', function () {
-    dd(TextAnalyzer::curlInit('https://masterregion.ru/'));
-});
