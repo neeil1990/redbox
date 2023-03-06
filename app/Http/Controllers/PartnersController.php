@@ -152,7 +152,7 @@ class PartnersController extends Controller
         }
 
         $this->validate($request, [
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'required|mimes:jpeg,png,jpg|max:2048',
             'name' => 'required|unique:partners_items',
             'link' => 'required|website',
             'position' => 'required',
@@ -195,7 +195,7 @@ class PartnersController extends Controller
         $item = PartnersItems::findOrfail($request->id);
 
         $this->validate($request, [
-            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'mimes:jpeg,png,jpg|max:2048',
             'link' => 'required|website',
             'name' => ['required', Rule::unique('partners_items')->ignore($item->name, 'name')],
             'position' => ['required', Rule::unique('partners_items')->ignore($item->position, 'position')],
