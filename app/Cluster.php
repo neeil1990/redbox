@@ -276,7 +276,7 @@ class Cluster
         $this->calculateClustersInfo();
         $count = 0;
         foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
+            $count += count($cluster) - 1;
         }
         Log::debug('after calculateClustersInfo', [$count]);
 
@@ -363,24 +363,11 @@ class Cluster
             $this->searchClustersEngine1501();
         }
 
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-
-        Log::debug('Count Clusters', [$count]);
-
         if ($this->brutForce) {
             $percent = $this->clusteringLevel;
             while ($percent > $this->reductionRatio) {
                 $percent = round($percent - 0.1, 1, PHP_ROUND_HALF_ODD);
                 $this->brutForce($this->count * $percent);
-                $count = 0;
-                foreach ($this->clusters as $cluster) {
-                    $count += count($cluster);
-                }
-
-                Log::debug('Count Clusters (bf)', [$count]);
             }
         }
     }
@@ -775,10 +762,11 @@ class Cluster
             }
 
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
-            $this->clusters[$groupName] = $this->clusters[$key];
+            $swap = $this->clusters[$key];
             if (count($this->clusters[$key]) > 2) {
                 unset($this->clusters[$key]);
             }
+            $this->clusters[$groupName] = $swap;
         }
     }
 
