@@ -26,14 +26,14 @@ class PartnersItems extends Model
         parent::delete();
     }
 
-    public function generateShortLink(): string
+    public function generateShortLink($lang): string
     {
         $link = Str::random();
 
-        if (empty($this->where('short_link', '=', $link)->first())) {
+        if (empty($this->where('short_link_' . $lang, '=', $link)->first())) {
             return $link;
         }
 
-        return $this->generateShortLink();
+        return $this->generateShortLink($lang);
     }
 }

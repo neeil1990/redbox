@@ -97,34 +97,65 @@
                            data-target="#removeGroupModal"></i>
                     </div>
                 </div>
-                <div class="row d-flex justify-content-center">
-                    @foreach($elem['items'] as $item)
-                        <div class="card mr-3" style="width: 18rem;">
-                            <div class="d-flex justify-content-end m-2 align-items-center">
-                                @if($item['auditorium_ru'])
-                                    <span class="text-muted mr-2">RU</span>
-                                @endif
-                                @if($item['auditorium_en'])
-                                    <span class="text-muted mr-2">Eng</span>
-                                @endif
-                                <span class="text-muted">{{ __("Partner's position") }}: {{ $item['position'] }}</span>
-                                <a href="{{ route('partners.edit.item', $item['id']) }}" class="ml-2 mr-2"
-                                   style="padding-top: 1px">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <i class="fa fa-trash remove-item"
-                                   data-id="{{ $item['id'] }}"
-                                   data-toggle="modal"
-                                   data-target="#removeItemModal"></i>
-                            </div>
-                            <img class="card-img-top" src="../../storage/{{ $item['image'] }}" alt="image">
-                            <div class="card-footer h-100">
-                                <h5 class="card-title">{{ $item['name'] }}</h5>
-                                <p class="card-text">{{ $item['description'] }}</p>
-                                <a href="/partners/r/{{ $item['short_link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
-                            </div>
-                        </div>
-                    @endforeach
+                <div>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Image') }}</th>
+                            <th>{{ __('Partner name') }} (ru)</th>
+                            <th>{{ __('Partner description') }} (ru)</th>
+                            <th>{{ __('Link') }} (ru) / {{ __('Link') }} (en)</th>
+                            <th>{{ __('Partner name') }} (en)</th>
+                            <th>{{ __('Partner description') }} (en)</th>
+                            <th>{{ __('Position') }}</th>
+                            <th>ru</th>
+                            <th>en</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($elem['items'] as $item)
+                            <tr>
+                                <td>
+                                    <img class="card-img-top" src="../../storage/{{ $item['image'] }}" alt="image">
+                                </td>
+                                <td>{{ $item['name_ru'] }}</td>
+                                <td style="max-width: 250px; min-height: 250px;">{{ $item['description_ru'] }}</td>
+                                <td style="max-width: 150px; min-height: 150px;">
+                                    @isset($item['link_ru'])
+                                        <div>
+                                            <a style="display: inline-block;" href="{{ $item['link_ru'] }}"
+                                               target="_blank"> {{ parse_url($item['link_ru'])['host'] }}</a>
+                                            (ru)
+                                        </div>
+                                    @endisset
+                                    @isset($item['link_en'])
+                                        <div>
+                                            <a href="{{ $item['link_en'] }}"
+                                               target="_blank"> {{ parse_url($item['link_en'])['host'] }}</a>
+                                            (en)
+                                        </div>
+                                    @endisset
+                                </td>
+                                <td>{{ $item['name_en'] }}</td>
+                                <td style="max-width: 250px; min-height: 250px;">{{ $item['description_en'] }}</td>
+                                <td>{{ $item['position'] }}</td>
+                                <td>{{ $item['auditorium_ru'] }}</td>
+                                <td>{{ $item['auditorium_en'] }}</td>
+                                <td>
+                                    <a href="{{ route('partners.edit.item', $item['id']) }}" class="ml-2 mr-2"
+                                       style="padding-top: 1px">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <i class="fa fa-trash remove-item"
+                                       data-id="{{ $item['id'] }}"
+                                       data-toggle="modal"
+                                       data-target="#removeItemModal"></i>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         @endforeach
@@ -150,7 +181,7 @@
                         id: groupId
                     },
                     success: function () {
-                        i.parents().eq(2).remove();
+                        i.parents().eq(1).remove();
                     },
                 });
             })

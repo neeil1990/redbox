@@ -47,12 +47,13 @@
                         <div class="card-footer d-flex flex-column h-100">
                             <div class="h-100 d-flex flex-column">
                                 <div class="d-flex flex-column justify-content-start">
-                                    <h3 class="card-title">{{ $item['name'] }}</h3>
-                                    <p class="card-text">{{ $item['description'] }}</p>
+                                    <h3 class="card-title">{{ $item['name_'. $lang] }}</h3>
+                                    <p class="card-text">{{ $item['description_'. $lang] }}</p>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
-                                <a href="/partners/r/{{ $item['short_link'] }}" class="btn btn-secondary" target="_blank"> >>> </a>
+                                <a href="/partners/r/{{ $item['short_link_' . $lang] }}" class="btn btn-secondary"
+                                   target="_blank"> >>> </a>
                             </div>
                         </div>
                     </div>

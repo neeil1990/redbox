@@ -10,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class PartnersController extends Controller
@@ -34,7 +33,8 @@ class PartnersController extends Controller
             }
         }
 
-        return view('partners.index', compact('groups', 'admin'));
+        $lang = Auth::user()->lang;
+        return view('partners.index', compact('groups', 'admin', 'lang'));
     }
 
     public function admin()
@@ -152,24 +152,34 @@ class PartnersController extends Controller
             return abort(403);
         }
 
-        $this->validate($request, [
+        $rules = [
             'image' => 'required|mimes:jpeg,png,jpg|max:2048',
-            'name' => 'required|unique:partners_items',
-            'link' => 'required|website',
-            'position' => 'required',
-        ], [
-            'image.required' => __('Required to fill in'),
-            'name.required' => __('Required to fill in'),
-            'name.unique' => __('A partner with this name already exists'),
-            'link.required' => __('Required to fill in'),
-            'position.required' => __('Required to fill in'),
+            'link_ru' => 'website',
+            'link_en' => 'website',
+            'position' => 'required|unique:partners_items',
+        ];
+
+        if (isset($request->name_ru)) {
+            $rules['name_ru'] = 'unique:partners_items';
+        }
+        if (isset($request->name_en)) {
+            $rules['name_en'] = 'unique:partners_items';
+        }
+
+        $this->validate($request, $rules, [
+            'image.required' => __('Image required'),
+            'name_ru.unique' => __('A partner with this name already exists'),
+            'name_en.unique' => __('A partner with this name already exists'),
+            'position.unique' => __('Position already exists'),
         ]);
 
         $item = new PartnersItems($request->all());
         $item->image = $request->file('image')->store('upload');
         $item->auditorium_ru = isset($request->auditorium_ru);
         $item->auditorium_en = isset($request->auditorium_en);
-        $item->short_link = $item->generateShortLink();
+        $item->short_link_ru = $item->generateShortLink('ru');
+        $item->short_link_en = $item->generateShortLink('en');
+
         $item->save();
 
         flash()->overlay(__('A partner was successfully created'), ' ')->success();
@@ -196,20 +206,24 @@ class PartnersController extends Controller
 
         $item = PartnersItems::findOrfail($request->id);
 
-        $this->validate($request, [
-            'image' => 'mimes:jpeg,png,jpg|max:2048',
-            'link' => 'required|website',
-            'name' => ['required', Rule::unique('partners_items')->ignore($item->name, 'name')],
-            'position' => ['required', Rule::unique('partners_items')->ignore($item->position, 'position')],
-        ], [
-            'image.required' => __('Required to fill in'),
-            'name.required' => __('Required to fill in'),
-            'name.unique' => __('A partner with this name already exists'),
-            'link.required' => __('Required to fill in'),
-            'position.required' => __('Required to fill in'),
-            'position.unique' => __('This position is occupied'),
-        ]);
+        if (isset($request->name_ru)) {
+            $rules['name_ru'] = [Rule::unique('partners_items')->ignore($item->name_ru, 'name_ru')];
+        }
+        if (isset($request->name_en)) {
+            $rules['name_en'] = [Rule::unique('partners_items')->ignore($item->name_en, 'name_en')];
+        }
 
+        $rules = [
+            'image' => 'mimes:jpeg,png,jpg|max:2048',
+            'link_ru' => 'website',
+            'link_en' => 'website',
+            'position' => [Rule::unique('partners_items')->ignore($item->position, 'position')],
+        ];
+        $this->validate($request, $rules, [
+            'name_ru.unique' => __('A partner with this name already exists') . ' (ru)',
+            'name_en.unique' => __('A partner with this name already exists') . ' (en)',
+            'position.unique' => __('Position already exists'),
+        ]);
 
         $array = $request->all();
 
@@ -243,10 +257,11 @@ class PartnersController extends Controller
 
     public function redirect(string $short_link)
     {
-        $item = PartnersItems::where('short_link', '=', $short_link)->first();
+        $lang = Auth::user()->lang;
+        $item = PartnersItems::where('short_link_' . $lang, '=', $short_link)->first();
 
         if (isset($item)) {
-            header('Location: ' . $item->link);
+            header('Location: ' . $item['link_' . $lang]);
             exit();
         }
 

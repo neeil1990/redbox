@@ -30,30 +30,50 @@
             </div>
 
             <div class="form-group required">
-                <label>{{ __('Partner name') }}</label>
-                <input type="text" name="name" class="form form-control" value="{{ $item->name }}" required>
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Link') }}</label>
-                <input type="text" name="link" class="form form-control" value="{{ $item->link }}" required>
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Partner description') }}</label>
-                <textarea name="description" id="description" cols="8" rows="8"
-                          class="form form-control">{{ $item->description }}</textarea>
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Auditorium') }}</label>
                 <div>
                     <label for="auditorium_ru">Ru</label>
-                    <input type="checkbox" name="auditorium_ru" @if($item->auditorium_ru) checked @endif>
+                    <input type="checkbox" name="auditorium_ru" id="auditorium_ru" @if($item['auditorium_ru']) checked @endif>
                 </div>
+
+                <div id="ru" @if(!$item['auditorium_ru']) style="display: none" @endif>
+                    <div class="form-group required">
+                        <label>{{ __('Partner name') }} (ru)</label>
+                        <input type="text" name="name_ru" class="form form-control ru-input" value="{{ $item['name_ru'] }}">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Link') }} (ru)</label>
+                        <input type="text" name="link_ru" class="form form-control ru-input" value="{{ $item['link_ru'] }}">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Partner description') }} (ru)</label>
+                        <textarea name="description_ru" cols="8" rows="8"
+                                  class="form form-control ru-input">{{ $item['description_ru'] }}</textarea>
+                    </div>
+                </div>
+
                 <div>
                     <label for="auditorium_en">Eng</label>
-                    <input type="checkbox" name="auditorium_en" @if($item->auditorium_en) checked @endif>
+                    <input type="checkbox" name="auditorium_en" id="auditorium_en" @if($item['auditorium_en']) checked @endif>
+                </div>
+
+                <div id="en" @if(!$item['auditorium_en']) style="display: none" @endif>
+                    <div class="form-group required">
+                        <label>{{ __('Partner name') }} (en)</label>
+                        <input type="text" name="name_en" class="form form-control en-input" value="{{ $item['name_en'] }}">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Link') }} (en)</label>
+                        <input type="text" name="link_en" class="form form-control en-input" value="{{ $item['link_en'] }}">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Partner description') }} (en)</label>
+                        <textarea name="description_en" cols="8" rows="8"
+                                  class="form form-control en-input">{{ $item['description_en'] }}</textarea>
+                    </div>
                 </div>
             </div>
 
@@ -86,4 +106,27 @@
             <input type="submit" class="btn btn-secondary" value="{{ __('Save') }}">
         </form>
     </div>
+    @slot('js')
+        <script>
+            $('#auditorium_ru').on('click', function () {
+                if ($(this).is(':checked')) {
+                    $('#ru').show(300)
+                    $('.ru-input').prop('required', true);
+                } else {
+                    $('#ru').hide(300)
+                    $('.ru-input').prop('required', false);
+                }
+            })
+
+            $('#auditorium_en').on('click', function () {
+                if ($(this).is(':checked')) {
+                    $('#en').show(300)
+                    $('.en-input').prop('required', true);
+                } else {
+                    $('#en').hide(300)
+                    $('.en-input').prop('required', false);
+                }
+            })
+        </script>
+    @endslot
 @endcomponent

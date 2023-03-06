@@ -21,43 +21,63 @@
             </div>
 
             <div class="form-group required">
+                <div>
+                    <label for="auditorium_ru">Ru</label>
+                    <input type="checkbox" name="auditorium_ru" id="auditorium_ru">
+                </div>
+
+                <div id="ru" style="display: none">
+                    <div class="form-group required">
+                        <label>{{ __('Partner name') }} (ru)</label>
+                        <input type="text" name="name_ru" class="form form-control ru-input">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Link') }} (ru)</label>
+                        <input type="text" name="link_ru" class="form form-control ru-input">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Partner description') }} (ru)</label>
+                        <textarea name="description_ru" cols="8" rows="8"
+                                  class="form form-control ru-input"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="auditorium_en">Eng</label>
+                    <input type="checkbox" name="auditorium_en" id="auditorium_en">
+                </div>
+
+                <div id="en" style="display: none">
+                    <div class="form-group required">
+                        <label>{{ __('Partner name') }} (en)</label>
+                        <input type="text" name="name_en" class="form form-control en-input">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Link') }} (en)</label>
+                        <input type="text" name="link_en" class="form form-control en-input">
+                    </div>
+
+                    <div class="form-group required">
+                        <label>{{ __('Partner description') }} (en)</label>
+                        <textarea name="description_en" cols="8" rows="8" class="form form-control en-input"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group required">
                 <label>{{ __('Position') }}</label>
                 <input type="number" name="position" class="form form-control" required>
             </div>
 
-            <div class="form-group required">
-                <label>{{ __('Partner name') }}</label>
-                <input type="text" name="name" class="form form-control" required>
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Link') }}</label>
-                <input type="text" name="link" class="form form-control" required>
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Partner description') }}</label>
-                <textarea name="description" id="description" cols="8" rows="8"
-                          class="form form-control"></textarea>
-            </div>
-
-            <div class="form-group required">
-                <label>{{ __('Auditorium') }}</label>
-                <div>
-                    <label for="auditorium_ru">Ru</label>
-                    <input type="checkbox" name="auditorium_ru">
-                </div>
-                <div>
-                    <label for="auditorium_en">Eng</label>
-                    <input type="checkbox" name="auditorium_en">
-                </div>
-            </div>
 
             <div class="form-group">
                 {!! Form::label('image', __('Image')) !!}
                 <div class="input-group">
                     <div class="custom-file">
-                        {!! Form::file('image', ['class' => 'custom-file-input', 'id' => 'customFile', 'accept' => '.jpg, .jpeg, .png']) !!}
+                        {!! Form::file('image', ['class' => 'custom-file-input', 'accept' => '.jpg, .jpeg, .png']) !!}
                         {!! Form::label('image', __('Choose img'), ['class' => 'custom-file-label', 'for' => 'customFile']) !!}
                     </div>
                 </div>
@@ -74,4 +94,27 @@
             <input type="submit" class="btn btn-secondary" value="{{ __('Add') }}">
         </form>
     </div>
+    @slot('js')
+        <script>
+            $('#auditorium_ru').on('click', function () {
+                if ($(this).is(':checked')) {
+                    $('#ru').show(300)
+                    $('.ru-input').prop('required', true);
+                } else {
+                    $('#ru').hide(300)
+                    $('.ru-input').prop('required', false);
+                }
+            })
+
+            $('#auditorium_en').on('click', function () {
+                if ($(this).is(':checked')) {
+                    $('#en').show(300)
+                    $('.en-input').prop('required', true);
+                } else {
+                    $('#en').hide(300)
+                    $('.en-input').prop('required', false);
+                }
+            })
+        </script>
+    @endslot
 @endcomponent
