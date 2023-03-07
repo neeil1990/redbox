@@ -267,54 +267,18 @@ class Cluster
         }
 
         $this->searchClusters();
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-        Log::debug('after searchClusters', [$count]);
 
         $this->calculateClustersInfo();
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster) - 1;
-        }
-        Log::debug('after calculateClustersInfo', [$count]);
 
         $this->searchGroupName();
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-        Log::debug('after searchGroupName', [$count]);
 
         $this->calculateSimilarities();
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-        Log::debug('after calculateSimilarities', [$count]);
 
         $this->searchGroupName();
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-        Log::debug('after searchGroupName', [$count]);
 
         $this->setResult($this->clusters);
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-        Log::debug('after setResult', [$count]);
 
         $this->saveResult();
-        $count = 0;
-        foreach ($this->clusters as $cluster) {
-            $count += count($cluster);
-        }
-
-        Log::debug('after saveResult', [$count]);
 
         if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
             $this->sendNotification();
