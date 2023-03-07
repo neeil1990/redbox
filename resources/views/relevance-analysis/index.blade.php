@@ -961,6 +961,20 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            String.prototype.shuffle = function () {
+                let a = this.split(""),
+                    n = a.length;
+
+                for (let i = n - 1; i > 0; i--) {
+                    let j = Math.floor(Math.random() * (i + 1));
+                    let tmp = a[i];
+                    a[i] = a[j];
+                    a[j] = tmp;
+                }
+                return a.join("").replaceAll(" ", "");
+            }
+
+
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
