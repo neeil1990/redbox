@@ -9,8 +9,13 @@
         <form action="{{ route('partners.edit.save') }}" method="POST" class="w-50">
             @csrf
             <div class="form-group required">
-                <label>{{ __('Group Name') }}</label>
-                <input type="text" name="name" class="form form-control" value="{{ $group->name }}" required>
+                <label>{{ __('Group Name') }} (ru)</label>
+                <input type="text" name="name_ru" class="form form-control" required value="{{ $group->name_ru }}">
+            </div>
+
+            <div class="form-group required">
+                <label>{{ __('Group Name') }} (en)</label>
+                <input type="text" name="name_en" class="form form-control" required value="{{ $group->name_en }}">
             </div>
 
             <div class="form-group required">

@@ -13,12 +13,14 @@
             <div class="form-group required">
                 <label>{{ __('Group Name') }}</label>
                 <select name="partners_groups_id" id="partners_groups_id" class="custom-select">
-                    <option value="{{ $item->partner->id }}">{{ $item->partner->name }}</option>
+                    <option value="{{ $item->partner->id }}">
+                        {{ $item->partner->name_ru }}/ {{ $item->partner->name_en }}
+                    </option>
                     @foreach($groups as $group)
                         @if($item->partner->id === $group->id)
                             @continue
                         @endif
-                        <option value="{{ $group->id }}">{{ $group->name }}</option>
+                        <option value="{{ $group->id }}">{{ $group->name_ru }} / {{ $group->name_en }}</option>
                     @endforeach
                 </select>
             </div>
@@ -32,18 +34,21 @@
             <div class="form-group required">
                 <div>
                     <label for="auditorium_ru">Ru</label>
-                    <input type="checkbox" name="auditorium_ru" id="auditorium_ru" @if($item['auditorium_ru']) checked @endif>
+                    <input type="checkbox" name="auditorium_ru" id="auditorium_ru"
+                           @if($item['auditorium_ru']) checked @endif>
                 </div>
 
                 <div id="ru" @if(!$item['auditorium_ru']) style="display: none" @endif>
                     <div class="form-group required">
                         <label>{{ __('Partner name') }} (ru)</label>
-                        <input type="text" name="name_ru" class="form form-control ru-input" value="{{ $item['name_ru'] }}">
+                        <input type="text" name="name_ru" class="form form-control ru-input"
+                               value="{{ $item['name_ru'] }}">
                     </div>
 
                     <div class="form-group required">
                         <label>{{ __('Link') }} (ru)</label>
-                        <input type="text" name="link_ru" class="form form-control ru-input" value="{{ $item['link_ru'] }}">
+                        <input type="text" name="link_ru" class="form form-control ru-input"
+                               value="{{ $item['link_ru'] }}">
                     </div>
 
                     <div class="form-group required">
@@ -55,18 +60,21 @@
 
                 <div>
                     <label for="auditorium_en">Eng</label>
-                    <input type="checkbox" name="auditorium_en" id="auditorium_en" @if($item['auditorium_en']) checked @endif>
+                    <input type="checkbox" name="auditorium_en" id="auditorium_en"
+                           @if($item['auditorium_en']) checked @endif>
                 </div>
 
                 <div id="en" @if(!$item['auditorium_en']) style="display: none" @endif>
                     <div class="form-group required">
                         <label>{{ __('Partner name') }} (en)</label>
-                        <input type="text" name="name_en" class="form form-control en-input" value="{{ $item['name_en'] }}">
+                        <input type="text" name="name_en" class="form form-control en-input"
+                               value="{{ $item['name_en'] }}">
                     </div>
 
                     <div class="form-group required">
                         <label>{{ __('Link') }} (en)</label>
-                        <input type="text" name="link_en" class="form form-control en-input" value="{{ $item['link_en'] }}">
+                        <input type="text" name="link_en" class="form form-control en-input"
+                               value="{{ $item['link_en'] }}">
                     </div>
 
                     <div class="form-group required">

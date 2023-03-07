@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 
+
 class PartnersController extends Controller
 {
     public function partners()
@@ -70,13 +71,16 @@ class PartnersController extends Controller
         }
 
         $this->validate($request, [
-            'name' => ['required', 'unique:partners_groups'],
+            'name_ru' => ['required', 'unique:partners_groups'],
+            'name_en' => ['required', 'unique:partners_groups'],
             'position' => ['required', 'unique:partners_groups'],
         ], [
             'position.unique' => __('This position already exists'),
             'position.required' => __('The position of the group cannot be empty'),
-            'name.unique' => __('Such a group already exists'),
-            'name.required' => __('The name of the group cannot be empty'),
+            'name_ru.unique' => __('Such a group already exists'),
+            'name_ru.required' => __('The name of the group cannot be empty'),
+            'name_en.unique' => __('Such a group already exists'),
+            'name_en.required' => __('The name of the group cannot be empty'),
         ]);
 
         $group = new PartnersGroups($request->all());
@@ -100,18 +104,19 @@ class PartnersController extends Controller
 
         $group = PartnersGroups::findOrFail($request->id);
         $this->validate($request, [
-            'name' => ['required', Rule::unique('partners_groups')->ignore($group->name, 'name')],
+            'name_ru' => ['required', Rule::unique('partners_groups')->ignore($group->name_ru, 'name_ru')],
+            'name_en' => ['required', Rule::unique('partners_groups')->ignore($group->name_en, 'name_en')],
             'position' => ['required', Rule::unique('partners_groups')->ignore($group->position, 'position')],
         ], [
             'position.unique' => __('This position already exists'),
             'position.required' => __('The position of the group cannot be empty'),
-            'name.unique' => __('Such a group already exists'),
-            'name.required' => __('The name of the group cannot be empty'),
+            'name_ru.unique' => __('Such a group already exists') . ' (ru)',
+            'name_en.unique' => __('Such a group already exists') . ' (en)',
+            'name_ru.required' => __('The name of the group cannot be empty') . ' (ru)',
+            'name_en.required' => __('The name of the group cannot be empty') . ' (en)',
         ]);
 
-        $group->name = $request->name;
-        $group->position = $request->position;
-        $group->save();
+        $group->update($request->all());
 
         flash()->overlay(__('A group was successfully edited'), ' ')->success();
 

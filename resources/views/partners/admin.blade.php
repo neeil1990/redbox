@@ -25,6 +25,7 @@
                 height: 180px;
                 width: 100%;
                 display: block;
+                object-fit: contain;
             }
         </style>
     @endslot
@@ -82,7 +83,8 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <div>
-                        <h3 class="text-muted">{{ $elem['name'] }}</h3>
+                        <h3 class="text-muted">{{ $elem['name_ru'] }} (ru)</h3>
+                        <h3 class="text-muted">{{ $elem['name_en'] }} (en)</h3>
                         <span class="text-muted">{{ __('Group position') }}: {{ $elem['position'] }}</span>
                     </div>
                     <div data-id="{{ $elem['id'] }}"

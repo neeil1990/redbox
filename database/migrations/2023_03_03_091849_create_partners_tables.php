@@ -15,7 +15,8 @@ class CreatePartnersTables extends Migration
     {
         Schema::create('partners_groups', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->string('name_ru')->unique();
+            $table->string('name_en')->unique();
             $table->integer('position');
             $table->timestamps();
         });

@@ -15,7 +15,7 @@
                 <label>{{ __('Group Name') }}</label>
                 <select name="partners_groups_id" id="partners_groups_id" class="custom-select">
                     @foreach($groups as $group)
-                        <option value="{{ $group->id }}">{{ $group->name }}</option>
+                        <option value="{{ $group->id }}">{{ $group->name_ru }} / {{ $group->name_en }}</option>
                     @endforeach
                 </select>
             </div>
