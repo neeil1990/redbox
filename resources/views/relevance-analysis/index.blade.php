@@ -946,7 +946,7 @@
     </div>
     <input type="hidden" name="hash" id="hiddenHash">
     @slot('js')
-        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
+        <script src="{{ asset('plugins/common/js/common_v2.js') }}"></script>
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>

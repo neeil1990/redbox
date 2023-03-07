@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -304,8 +305,8 @@ class ClusterController extends Controller
 
     public function downloadClusterSites(Request $request): JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('result');
-        $results = Common::uncompressArray($cluster->result);
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('default_result');
+        $results = Common::uncompressArray($cluster->default_result);
 
         foreach ($results as $result) {
             if (key_exists($request->phrase, $result)) {
@@ -321,8 +322,8 @@ class ClusterController extends Controller
 
     public function downloadClusterCompetitors(Request $request): JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('result');
-        $results = Common::uncompressArray($cluster->result);
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('default_result');
+        $results = Common::uncompressArray($cluster->default_result);
         arsort($results[$request->key]['finallyResult']['sites']);
 
         return response()->json([

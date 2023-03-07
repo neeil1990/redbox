@@ -105,7 +105,7 @@ class ClusterResults extends Model
                            <div class="d-flex justify-content-between align-items-center">
                                <div class="phrase-for-color">' . $phrase . '</div>
                                <span class="relevance-link hide">' . Cluster::getRelevanceLink($this->searchElement($phrase)) . '</span>
-                               <div class="hide">' . implode("\n", array_keys($this->searchElement($phrase)['similarities'])) . '</div>
+                               <div class="hide">' . implode("\n", array_keys($this->searchElement($phrase, true))) . '</div>
                                <div>
                                     <span class="__helper-link ui_tooltip_w frequency">
                                         <span>0</span> /
@@ -144,14 +144,20 @@ class ClusterResults extends Model
         return $ol;
     }
 
-    public function searchElement($ph): array
+    public function searchElement($ph, $similarities = false): array
     {
+        $item = [];
         foreach ($this->clusters as $mainPhrase => $items) {
             if (array_key_exists($ph, $items)) {
-                return $this->clusters[$mainPhrase][$ph];
+                $item = $this->clusters[$mainPhrase][$ph];
+                break;
             }
         }
 
-        return [];
+        if ($similarities) {
+            return $item['similarities'] ?? [];
+        }
+
+        return $item;
     }
 }

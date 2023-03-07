@@ -1,3 +1,13 @@
+const isValidUrl = urlString => {
+    var urlPattern = new RegExp('^(https?:\\/\\/)?' + // validate protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // validate domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // validate OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // validate port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // validate query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // validate fragment locator
+    return !!urlPattern.test(urlString);
+}
+
 function getData(save = $('#save').val(), progressId = $('#progressId').val()) {
 
     if ($('#start-analyse').attr('data-target') === 'classic') {
@@ -123,7 +133,7 @@ function downloadSites(id, target, type) {
 }
 
 function downloadAllCompetitors(id, key) {
-    if ($('#competitors' + key).html() === ' ') {
+    if ($('#competitors-' + key.replaceAll(' ', '-')).html() === ' ') {
         $.ajax({
             type: "POST",
             url: "/download-cluster-competitors",
@@ -138,11 +148,10 @@ function downloadAllCompetitors(id, key) {
                 $.each(response['competitors'], function (site, count) {
                     resultBlock +=
                         '<div>' +
-                        '   <a href="' + site + '">' + new URL(site)['host'] + '</a> :' + count +
+                        '   <a href="' + site + '" target="_blank">' + new URL(site)['host'] + '</a> :' + count +
                         '</div>'
                 })
-                $('#competitors' + key).html('')
-                $('#competitors' + key).html(resultBlock)
+                $('#competitors-' + key.replaceAll(' ', '-')).html(resultBlock)
             },
             error: function (response) {
             }
@@ -188,4 +197,69 @@ function isSearchRelevanceClassic() {
     } else {
         $('#searchEngineBlock_classic').hide(300)
     }
+}
+
+function saveAllUrls(id) {
+    let button
+    let trs
+    $('.save-all-urls').unbind().on('click', function () {
+        button = $(this)
+        trs = button.parents().eq(3).children('td').eq(0).children('table').eq(0).children('tbody').children('tr')
+
+        $('#relevanceUrls').html('')
+        let links = []
+
+        $.each(trs, function () {
+            let td = $(this).children('td').eq(4)
+            if (td.children('a').length === 0) {
+                $.each(td.children('div').eq(0).children('select').eq(0).children('option'), function () {
+                    links.push($(this).val())
+                })
+            }
+        })
+        let uniqueLinks = new Set([...links])
+
+        for (let value of uniqueLinks) {
+            $('#relevanceUrls').append($('<option>', {
+                value: value,
+                text: value
+            }));
+        }
+    })
+
+    $('#save-cluster-url-button').unbind().on('click', function () {
+        let phrases = []
+        $.each(trs, function (key, value) {
+            let thisElem = $(this)
+            if (thisElem.children('td').eq(4).children('a').length === 0) {
+                if (thisElem.children('td').eq(2).attr('title') !== undefined) {
+                    let phrase = thisElem.children('td').eq(2).attr('title')
+                    phrase = phrase.replace('Ваша фраза "', '')
+                    phrase = phrase.replace('Your phrase "', '')
+                    phrase = phrase.replace('" была изменена', '')
+                    phrase = phrase.replace('" has been changed', '')
+                    phrases.push(phrase)
+                } else {
+                    phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
+                }
+                thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
+            }
+        })
+
+        $.ajax({
+            type: "POST",
+            url: "/set-cluster-relevance-urls",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                phrases: phrases,
+                url: $('#relevanceUrls').val(),
+                projectId: id,
+            },
+            success: function () {
+
+            },
+            error: function (response) {
+            }
+        });
+    })
 }

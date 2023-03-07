@@ -143,8 +143,9 @@
                 }, 3000)
             }
         </script>
+        <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -160,54 +161,6 @@
 
                 isSearchRelevance();
             })
-
-            function saveAllUrls(id) {
-                let button = $(this)
-                $('.save-all-urls').unbind().on('click', function () {
-                    button = $(this)
-                    $('#relevanceUrls').html('')
-                    $.each($(this).attr('data-urls').split(','), function (key, value) {
-                        $('#relevanceUrls').append($('<option>', {
-                            value: value,
-                            text: value
-                        }));
-                    })
-                })
-
-                $('#save-cluster-url-button').unbind().on('click', function () {
-                    let phrases = []
-                    $.each(button.parent().parent().parent().parent().children('td').eq(0).children('div').eq(0).children('table').eq(0).children('tbody').children('tr'), function (key, value) {
-                        let thisElem = $(this)
-                        if (thisElem.children('td').eq(4).children('a').eq(0).length === 0) {
-                            if (thisElem.children('td').eq(2).attr('title') !== undefined) {
-                                let phrase = thisElem.children('td').eq(2).attr('title')
-                                phrase = phrase.replace('Ваша фраза "', '')
-                                phrase = phrase.replace('" была изменена', '')
-                                phrases.push(phrase)
-                            } else {
-                                phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
-                            }
-                            thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
-                        }
-                    })
-
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('set.cluster.relevance.urls') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            phrases: phrases,
-                            url: $('#relevanceUrls').val(),
-                            projectId: id,
-                        },
-                        success: function () {
-
-                        },
-                        error: function (response) {
-                        }
-                    });
-                })
-            }
 
             $('#start-analyse').click(function () {
                 if ($(this).attr('data-target') === 'classic' && $('#phrases_classic').val() === '') {
@@ -255,10 +208,11 @@
                     url: `/get-cluster-progress/${id}`,
                     success: function (response) {
                         setProgressBarStyles(response.count)
-
                         if ('result' in response) {
+                            $('#progress-bar-state').html("{{ __('Parse xml') }}")
+
                             refreshAll()
-                            renderResultTable(response['result'])
+                            renderResultTable_v2(response['result'])
                             destroyProgress(interval)
 
                             $('#files-downloads').html(
@@ -280,13 +234,11 @@
                                         projectId: response['objectId'],
                                     },
                                     success: function () {
-                                        select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
+                                        select.parent().parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
                                     },
                                     error: function (response) {
                                     }
                                 });
-
-                                $('#progress-bar-state').html("{{ __('Parse xml') }}")
                             })
 
                             saveAllUrls(response['objectId'])
@@ -304,7 +256,6 @@
                             $('.all-competitors').unbind().on('click', function () {
                                 downloadAllCompetitors(response['objectId'], $(this).attr('data-action'))
                             })
-
 
                             setTimeout(() => {
                                 $('#result-table').show()

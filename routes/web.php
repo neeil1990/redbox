@@ -15,6 +15,7 @@ use App\Cluster;
 use App\ClusterResults;
 use App\Common;
 use App\Exports\Cluster\ClusterGroupExport;
+use App\Morphy;
 use App\TextAnalyzer;
 use App\ViewComposers\MenuComposer;
 use Illuminate\Support\Facades\Auth;
