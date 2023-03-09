@@ -43,7 +43,7 @@
             <div class="row d-flex justify-content-center mb-5">
                 <h2 class="text-muted w-100 text-center">{{ $elem['name_'. $lang] }}</h2>
                 @foreach($elem['items'] as $item)
-                    <div class="card @if(count($elem['items']) > 1) mr-3 @endif" style="width: 17rem;">
+                    <div class="card @if(count($elem['items']) > 1) mr-3 @endif" style="width: 20rem;">
                         <img class="card-img-top" src="storage/{{ $item['image'] }}" alt="image">
                         <div class="card-footer d-flex flex-column h-100">
                             <div class="h-100 d-flex flex-column">
