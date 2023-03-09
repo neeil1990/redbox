@@ -1121,7 +1121,6 @@
                         getProgress()
                     },
                     error: function (response) {
-                        console.log(response)
                         endProgress()
                         let message = ''
                         if (response.responseText) {
@@ -1130,9 +1129,7 @@
                                 message += value + "<br>"
                             });
 
-                            if (messages['message']) {
-                                message = messages['message']
-                            } else if (message === '') {
+                            if (message === '') {
                                 message = "{{ __('An error has occurred, repeat the request.') }}"
                             }
 
