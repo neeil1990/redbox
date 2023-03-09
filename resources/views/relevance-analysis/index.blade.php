@@ -1121,6 +1121,7 @@
                         getProgress()
                     },
                     error: function (response) {
+                        console.log(response)
                         endProgress()
                         let message = ''
                         if (response.responseText) {

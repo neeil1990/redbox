@@ -17,10 +17,13 @@ class RelevanceProgressController extends Controller
     public function startProgress(Request $request): JsonResponse
     {
         $request = $request->all();
-        if ($request['data']['type'] === 'list' && count(explode("\n", $request['data']['siteList'])) < 5) {
-            return response()->json([
-                'message' => __('The list of sites must contain at least 5 sites')
-            ], 415);
+        if (isset($request['data']['type']) && $request['data']['type'] === 'list') {
+            $ar = array_diff(explode("\n", $request['data']['siteList']), [""]);
+            if (count($ar) < 5) {
+                return response()->json([
+                    'message' => __('The list of sites must contain at least 5 sites')
+                ], 415);
+            }
         }
         $progress = new RelevanceProgress();
         $progress->user_id = Auth::id();
