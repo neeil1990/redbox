@@ -62,4 +62,9 @@
             </div>
         @endforeach
     </div>
+
+    <div class="mt-5">
+        {{ __('If you know a good service and are ready to share it, then write to ') }}
+        <a href="mailto:info@redbox.su">info@redbox.su</a>
+    </div>
 @endcomponent

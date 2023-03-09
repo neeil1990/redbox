@@ -11,15 +11,7 @@
 |
 */
 
-use App\Cluster;
-use App\ClusterResults;
-use App\Common;
-use App\Exports\Cluster\ClusterGroupExport;
-use App\Morphy;
-use App\TextAnalyzer;
-use App\ViewComposers\MenuComposer;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
     phpinfo();
@@ -188,7 +180,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/competitors-config', 'SearchCompetitorsController@editConfig')->name('competitor.edit.config');
     Route::post('/get-recommendations', 'SearchCompetitorsController@getRecommendations')->name('competitor.get.recommendations');
 
-    Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
+    Route::post('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
     Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
     Route::post('/end-relevance-progress-percent', 'RelevanceProgressController@endProgress')->name('end.relevance.progress');
     Route::post('/create-link-project-with-tag', 'ProjectRelevanceHistoryTagsController@store')->name('create.link.project.with.tag');

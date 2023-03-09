@@ -126,8 +126,11 @@ class ClusterResults extends Model
                                       <button data-toggle="modal" data-target="#exampleModal" data-action="' . $phrase . '" class="dropdown-item add-to-another">
                                          ' . __("Add a phrase to another cluster") . '
                                       </button>
+                                      <button data-toggle="modal" class="dropdown-item select-for-analyse">
+                                          ' . __("Select phase for analyse") . '
+                                      </button>
                                       <button data-toggle="modal" class="dropdown-item color-phrases">
-                                         ' . __("Highlight similar phrases") . '
+                                          ' . __("Highlight similar phrases") . '
                                       </button>
                                       <button data-toggle="modal" class="dropdown-item set-default-colors">
                                           ' . __("Cancel selection") . '

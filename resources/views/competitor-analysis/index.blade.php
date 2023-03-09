@@ -396,7 +396,8 @@
             <div class="tag-analysis mt-5" style="display: none">
                 <div class="d-flex flex-row pb-2">
                     <h2>{{ __('Tag Analysis') }}</h2>
-                    <button type="button" class="btn btn-secondary ml-2" data-toggle="modal" data-target="#recommendationModal">
+                    <button type="button" class="btn btn-secondary ml-2" data-toggle="modal"
+                            data-target="#recommendationModal">
                         {{ __('Get recommendations') }}
                     </button>
                 </div>
@@ -487,19 +488,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
         <script>
-            String.prototype.shuffle = function () {
-                var a = this.split(""),
-                    n = a.length;
-
-                for (var i = n - 1; i > 0; i--) {
-                    var j = Math.floor(Math.random() * (i + 1));
-                    var tmp = a[i];
-                    a[i] = a[j];
-                    a[j] = tmp;
-                }
-                return a.join("").replaceAll(" ", "");
-            }
             window.session = String(new Date()).shuffle();
             localStorage.setItem("sessionCompetitors", window.session);
             onStorage = function (e) {
@@ -709,6 +699,16 @@
             });
 
             console.clear()
+        </script>
+        <script>
+            $(document).ready(function () {
+                let phrases = localStorage.getItem('lk_redbox_phrases_for_analyse')
+
+                if (phrases !== null) {
+                    $('#phrasesList').val(phrases)
+                    localStorage.removeItem('lk_redbox_phrases_for_analyse')
+                }
+            })
         </script>
     @endslot
 @endcomponent

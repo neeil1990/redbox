@@ -111,9 +111,12 @@
             }
 
             ol > li > ol > li {
-                padding-left: 20px;
+                padding: 0 0 0 20px;
             }
 
+            #clusters-block > li {
+                padding: 10px;
+            }
 
             ul .card-header {
                 background-color: rgb(52, 58, 64);
@@ -507,6 +510,10 @@
                                                                 {{ __("Add a phrase to another cluster") }}
                                                             </button>
                                                             <button data-toggle="modal"
+                                                                    class="dropdown-item select-for-analyse">
+                                                                {{ __('Select phase for analyse') }}
+                                                            </button>
+                                                            <button data-toggle="modal"
                                                                     class="dropdown-item color-phrases">
                                                                 {{ __('Highlight similar phrases') }}
                                                             </button>
@@ -601,6 +608,10 @@
                                                                 {{ __('Add a phrase to another cluster') }}
                                                             </button>
                                                             <button data-toggle="modal"
+                                                                    class="dropdown-item select-for-analyse">
+                                                                {{ __("Select phase for analyse") }}
+                                                            </button>
+                                                            <button data-toggle="modal"
                                                                     class="dropdown-item color-phrases">
                                                                 {{ __('Highlight similar phrases') }}
                                                             </button>
@@ -622,6 +633,41 @@
                     </ol>
                     <div class="col-6">
                         <div class="work-place-conf">
+                            <div class="card collapsed-card" style="box-shadow: none">
+                                <div class="card-header shadow-none border-0">
+                                    <div class="d-flex justify-content-between">
+                                        <h3 class="card-title mr-2">Фразы для анализа</h3>
+                                        <button type="button" data-card-widget="collapse" class="btn btn-tool">
+                                            <i class="fas fa-plus" id="selected-phrases-i"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body" style="display: none;" id="selected-phrases-block">
+                                    <textarea class="form form-control" name="selected-phrases" id="selected-phrases"
+                                              cols="8" rows="8"></textarea>
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <div class="btn-group mr-2">
+                                            <button class="btn btn-outline-secondary" id="go-to-competitors-analyse">
+                                                {{ __('Analyse phrases') }}
+                                            </button>
+                                            <button class="btn btn-secondary">
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-question-circle" style="color: white"></i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            Вы будете перенаправлены на страницу Анализа конкурентов <br>
+                                                            Выбранные фразы будут подставленны автоматически
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-outline-secondary" id="copy-selected-phrases">
+                                            {{ __('Copy phrases') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="switch-container mb-3 d-flex">
                                 <button id="change-sortable" class="btn btn-outline-secondary radius w-25"
                                         data-action="enable">
@@ -683,7 +729,6 @@
             if ($('#alone_phrases').length && $('#alone_phrases').html().trim() === '') {
                 $('#alone_phrases').parent().remove()
             }
-
             $(document).ready(function () {
                 recalculateFrequency()
             })
@@ -694,6 +739,32 @@
             let swapMainPhrase = ''
             let swapObject = ''
             let group
+
+            $(document).keypress(function (e) {
+                if (e.which === 13 && $('#clusterFilter').is(':focus')) {
+                    searchPhrases()
+                }
+            });
+
+            $('#copy-selected-phrases').on('click', function () {
+                if ($('#selected-phrases').val().trim() !== '') {
+                    let text = $('#selected-phrases');
+                    text.select();
+                    document.execCommand("copy");
+
+                    successMessage('Фразы скопированы в буфер обмена', 3000)
+                }
+
+            });
+
+            $('#go-to-competitors-analyse').on('click', function () {
+                let phrases = $('#selected-phrases').val().trim()
+
+                if (phrases !== '') {
+                    localStorage.setItem('lk_redbox_phrases_for_analyse', phrases)
+                    window.open("{{ route('competitor.analysis') }}", '_blank');
+                }
+            })
 
             $('#copyUsedPhrases').click(function () {
                 let object = $('#usedPhrases')
@@ -821,6 +892,7 @@
                                 '                        class="dropdown-item add-to-another"' +
                                 '                        data-action="' + phrase + '">' + "{{ __('Add a phrase to another cluster') }}" +
                                 '                </button>' +
+                                '                <button data-toggle="modal" class="dropdown-item select-for-analyse">' + "{{ __("Select phase for analyse") }}" + '</button>' +
                                 '                <button data-toggle="modal" class="dropdown-item color-phrases">' + "{{ __('Highlight similar phrases') }}" +
                                 '                </button>' +
                                 '                <button data-toggle="modal" class="dropdown-item set-default-colors">' + "{{ __('Cancel selection') }}" +
@@ -848,11 +920,6 @@
                 }
             })
 
-            $(document).keypress(function (e) {
-                if (e.which === 13 && $('#clusterFilter').is(':focus')) {
-                    searchPhrases()
-                }
-            });
 
             $('#searchPhrases').on('click', function () {
                 searchPhrases()
@@ -926,8 +993,12 @@
                     container.el.removeClass("active");
                     _super($item, container);
                     saveHtml("{{ __('Successfully') }}")
+                },
+                onMouseDown: function ($item, _super, event) {
+                    console.log(322)
                 }
             })
+
             $('#clusters-block').sortable('disable')
 
             $('#change-sortable').on('click', function () {
@@ -935,10 +1006,12 @@
                     errorMessage("{{ __("You cannot enable group movement mode if you have a selected group") }}")
                     return;
                 }
-                $('#clusters-block').sortable($(this).attr('data-action'));
+                $('ol#clusters-block').sortable($(this).attr('data-action'));
                 let place = $('.work-place-conf')
 
                 if ($(this).attr('data-action') === 'disable') {
+                    $('ol#clusters-block').sortable('disable');
+
                     $(this).attr('data-action', 'enable')
                     $(this).html("{{ __('Moving groups') }}")
 
@@ -1224,21 +1297,14 @@
 
                 if (string !== '') {
                     $.each($('.cluster-block'), function (key, value) {
-                        // let thisBlock = $(this)
                         let ol = $(this).children('ol').eq(0)
-                        // let countLi = ol.children('div').length
-                        // let counter = 0
                         $.each($(ol.children('div')), function (key, value) {
                             if (!$(this).children('div').eq(0).children('div').eq(0).html().includes(string)) {
                                 searchSuccess = true
                                 totalCount += 1
-                                // counter += 1
                                 $(this).hide()
                             }
                         })
-                        // if (counter === countLi) {
-                        //     thisBlock.hide()
-                        // }
                     })
 
                     if (!searchSuccess) {
@@ -1600,6 +1666,17 @@
                         $.each($(this).parent().parent().parent().parent().parent().children('ol').eq(0).children('div'), function () {
                             $(this).removeClass('hide')
                         })
+                    }
+                })
+
+                $('.select-for-analyse').unbind('click').on('click', function () {
+                    let phrase = $(this).parent().parent().parent().children('div').eq(0).html().trim();
+                    if (!$('#selected-phrases').val().includes(phrase)) {
+                        $('#selected-phrases').val($('#selected-phrases').val() + phrase + "\n")
+                    }
+
+                    if ($('#selected-phrases-block').is(':visible') === false) {
+                        $('#selected-phrases-i').trigger('click')
                     }
                 })
             }
