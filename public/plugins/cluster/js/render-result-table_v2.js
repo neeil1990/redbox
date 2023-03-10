@@ -1,11 +1,3 @@
-if (!Object.prototype.length) {
-    Object.defineProperty(Object.prototype, 'length', {
-        get: function () {
-            return Object.keys(this).length
-        }
-    })
-}
-
 function renderResultTable_v2(data) {
     let iterator = 0
     let copyGroupBool = true
@@ -14,7 +6,12 @@ function renderResultTable_v2(data) {
     let colspan = 4
 
     $.each(data, function (key, result) {
-        if (result.length > 2) {
+        let count = 0;
+        for (let res in result) {
+            count++
+        }
+
+        if (count > 2) {
             let clusterIterator = 0
             let newTableRows = ''
             let newRow = ''
@@ -251,7 +248,11 @@ function renderResultTable_v2(data) {
 }
 
 function renderAlonePhrases(alone, iterator, colspan) {
-    if (alone.length > 0) {
+    let count = 0;
+    for (let res in alone) {
+        count++
+    }
+    if (count > 0) {
         let copyRelevanceBool = false
         let clusterIterator = 0
         let newTableRows = ''

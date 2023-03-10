@@ -2,6 +2,7 @@
 
 namespace App\ViewComposers;
 
+use App\ClusterLimit;
 use App\DomainInformation;
 use App\DomainMonitoring;
 use App\MetaTag;
@@ -188,10 +189,22 @@ class LimitsComposer
                     'count' => $user->behaviors()->count(),
                     'position' => 19
                 ];
+
             case 'HttpHeaders':
                 return [
                     'count' => __('Restrictions are not tracked'),
                     'position' => 20
+                ];
+
+            case 'Clusters':
+                $now = Carbon::now();
+                $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
+
+                return [
+                    'count' => ClusterLimit::where('user_id', '=', Auth::id())
+                            ->where('date', '=', "$now->year-$month")
+                            ->first('count')->count ?? 0,
+                    'position' => 21
                 ];
 
             default:

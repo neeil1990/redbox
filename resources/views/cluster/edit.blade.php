@@ -153,6 +153,10 @@
                 background-color: rgb(52, 58, 64);
                 color: white;
             }
+
+            .Clusters {
+                background: oldlace;
+            }
         </style>
     @endslot
 
@@ -283,13 +287,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="setRelevanceLinkLabel">Установить релевантную страницу</h5>
+                    <h5 class="modal-title" id="setRelevanceLinkLabel">{{ __('Set relevant page') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Выбор релевантной страницы
+                    {{ __('Selecting a relevant page') }}
                     <select class="custom-select" name="relevanceSelect" id="relevanceSelect"></select>
                 </div>
                 <div class="modal-footer">
@@ -404,9 +408,9 @@
                                 <li class="cluster-block" id="{{ str_replace(' ', '_', $mainPhrase) }}">
                                     <div class="card-header" style="background-color: #343a40; color: white">
                                         <div class="d-flex justify-content-between text-white">
-                                        <span class="w-50">
-                                            {{ $mainPhrase }}
-                                        </span>
+                                            <span class="w-50">
+                                                {{ $mainPhrase }}
+                                            </span>
                                             <span></span>
                                             <span></span>
                                             <div class="btn-group btn-group-toggle w-75" style="display: none">
@@ -534,7 +538,9 @@
                             <li class="cluster-block" id="{{ __('unallocated_words') }}">
                                 <div class="card-header" style="background-color: #343a40; color: white">
                                     <div class="d-flex justify-content-between text-white">
-                                        <span>{{ __('Unallocated words') }}</span>
+                                        <span class="w-50">{{ __('Unallocated words') }}</span>
+                                        <span></span>
+                                        <span></span>
                                         <div class="d-flex justify-content-between">
                                             <span class="__helper-link ui_tooltip_w">
                                                 <i class="fa fa-eye mr-2 alone-eye" data-action="hide"
@@ -568,11 +574,11 @@
                                             @if($phrase === 'finallyResult')
                                                 @continue
                                             @endif
-                                            <div class="list-group-item" data-target="{{ $phrase }}"
-                                                 data-action="alone">
+                                            <div class="list-group-item" data-target="{{ $phrase }}" data-action="alone">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="phrase-for-color"
-                                                         style="width: 440px">{{ $phrase }}</div>
+                                                    <div class="phrase-for-color" style="width: 440px">
+                                                        {{ $phrase }}
+                                                    </div>
                                                     <span class="relevance-link hide">
                                                         {!! \App\Cluster::getRelevanceLink($item) !!}
                                                     </span>
@@ -636,7 +642,7 @@
                             <div class="card collapsed-card" style="box-shadow: none">
                                 <div class="card-header shadow-none border-0">
                                     <div class="d-flex justify-content-between">
-                                        <h3 class="card-title mr-2">Фразы для анализа</h3>
+                                        <h3 class="card-title mr-2">{{ __('Phrases for analysis') }}</h3>
                                         <button type="button" data-card-widget="collapse" class="btn btn-tool">
                                             <i class="fas fa-plus" id="selected-phrases-i"></i>
                                         </button>
@@ -655,8 +661,8 @@
                                                     <i class="fa fa-question-circle" style="color: white"></i>
                                                     <span class="ui_tooltip __bottom">
                                                         <span class="ui_tooltip_content">
-                                                            Вы будете перенаправлены на страницу Анализа конкурентов <br>
-                                                            Выбранные фразы будут подставленны автоматически
+                                                            {{ __('You will be redirected to the Competitor Analysis page') }} <br>
+                                                            {{ __('The selected phrases will be filled in automatically.') }}
                                                         </span>
                                                     </span>
                                                 </span>
@@ -731,6 +737,10 @@
             }
             $(document).ready(function () {
                 recalculateFrequency()
+                $('#нераспределённые_слова > div > div > div.d-flex.justify-content-between > span:nth-child(2)').remove()
+                $('#unallocated_words > div > div > div.d-flex.justify-content-between > span:nth-child(2)').remove()
+                $('#нераспределённые_слова > div > div > div.d-flex.justify-content-between > span:nth-child(1)').remove()
+                $('#unallocated_words > div > div > div.d-flex.justify-content-between > span:nth-child(1)').remove()
             })
 
             let worPlaceCreated = false
@@ -752,7 +762,7 @@
                     text.select();
                     document.execCommand("copy");
 
-                    successMessage('Фразы скопированы в буфер обмена', 3000)
+                    successMessage("{{ __('Phrases copied to the clipboard') }}", 3000)
                 }
 
             });
@@ -940,10 +950,10 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         projectId: {{ $cluster['id'] }},
                     },
-                    success: function (response) {
+                    success: function () {
                         location.reload();
                     },
-                    error: function (response) {
+                    error: function () {
                         errorMessage("{{ __("You don't have rights") }}")
                     }
                 });
@@ -1017,9 +1027,8 @@
 
                     $('.fa.fa-arrow-right.move-group').show()
                     $('.fa.fa-edit.change-group-name.mr-2').show()
-                    $('.fa.fa-ellipsis.mr-2').parent().show()
+                    $('.fa.fa-ellipsis.mr-2').children('div').eq(0).children('button').eq(0).show()
                     $('.fa.fa-check.select-group.mr-2').parent().show()
-                    place.children('div').eq(2).show()
                     place.children('div').eq(2).removeClass('hide')
                     place.children('div').eq(3).show()
                     $('#relevance').removeAttr('disabled')
@@ -1032,7 +1041,7 @@
 
                         $('.fa.fa-arrow-right.move-group').hide()
                         $('.fa.fa-edit.change-group-name.mr-2').hide()
-                        $('.fa.fa-ellipsis.mr-2').parent().hide()
+                        $('.fa.fa-ellipsis.mr-2').children('div').eq(0).children('button').eq(0).hide()
                         $('.fa.fa-check.select-group.mr-2').parent().hide()
                         place.children('div').eq(2).addClass('hide')
                         place.children('div').eq(3).hide()
@@ -1313,7 +1322,7 @@
                         successMessage(totalCount + " {{ __('elements hidden') }}")
                     }
                 } else {
-                    errorMessage("{{ __('Поле поиска пустое') }}")
+                    errorMessage("{{ __('The search field is empty') }}")
                 }
             }
 
@@ -1621,7 +1630,6 @@
                     $('.selected-group-list').removeClass('selected-group-list')
 
                     if ($(this).parent().parent().parent().parent().hasClass('selected-group')) {
-                        // set default work-place
                         selectedGroup = false
 
                         $(this).attr('class', 'fa fa-check select-group mr-2')

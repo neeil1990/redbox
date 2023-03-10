@@ -11,6 +11,9 @@
 |
 */
 
+use App\ClusterLimit;
+use App\DomainMonitoring;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -315,6 +318,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
+    Route::post('/set-cluster-cleaning-interval', 'ClusterController@setCleaningInterval')->name('set.cluster.cleaning.interval');
     Route::get('/cluster', 'ClusterController@index')->name('cluster');
     Route::post('/analysis-cluster', 'ClusterController@analyseCluster')->name('analysis.cluster');
     Route::get('/start-cluster-progress', 'ClusterController@startProgress')->name('start.cluster.progress');

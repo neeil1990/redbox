@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Cluster;
 use App\ClusterConfiguration;
 use App\ClusterConfigurationClassic;
+use App\ClusterLimit;
 use App\ClusterQueue;
 use App\ClusterResults;
 use App\Common;
@@ -40,6 +41,13 @@ class ClusterController extends Controller
 
     public function analyseCluster(Request $request): JsonResponse
     {
+        $countRequests = ClusterLimit::calculateCountRequests($request->all());
+        if (ClusterLimit::checkClustersLimits($countRequests)) {
+            return response()->json([
+                'errors' => ['domain' => __('Your limits are exhausted')]
+            ], 422);
+        }
+
         $this->validate($request, [
             'domain' => 'sometimes|required_if:searchRelevance,==,true',
         ], [
@@ -59,7 +67,8 @@ class ClusterController extends Controller
 
         return response()->json([
             'result' => true,
-            'totalPhrases' => count(array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), [])))
+            'totalPhrases' => count(array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []))),
+            'totalRequests' => $countRequests,
         ]);
     }
 
@@ -534,4 +543,12 @@ class ClusterController extends Controller
         return response()->json([], 403);
     }
 
+    public function setCleaningInterval(Request $request): RedirectResponse
+    {
+        ClusterConfiguration::where('id', '>', 0)->update([
+            'cleaning_interval' => $request->input('cleaning_interval')
+        ]);
+
+        return Redirect::back();
+    }
 }

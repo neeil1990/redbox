@@ -30,6 +30,10 @@
             .nav-link.text-primary.active {
                 color: white !important;
             }
+
+            .Clusters {
+                background: oldlace;
+            }
         </style>
     @endslot
     <div class="card">
@@ -167,13 +171,15 @@
 
                                         <div class="form-group required">
                                             <label for="ignored_domains">Игнорируемые домены</label>
-                                            <textarea class="form form-control" name="ignored_domains" id="ignored_domains" cols="8" rows="8"
+                                            <textarea class="form form-control" name="ignored_domains"
+                                                      id="ignored_domains" cols="8" rows="8"
                                             >{{ $config->ignored_domains }}</textarea>
                                         </div>
 
                                         <div class="form-group required">
                                             <label for="ignored_words">Игнорируемые слова</label>
-                                            <textarea class="form form-control" name="ignored_words" id="ignored_words" cols="8" rows="8"
+                                            <textarea class="form form-control" name="ignored_words" id="ignored_words"
+                                                      cols="8" rows="8"
                                             >{{ $config->ignored_words }}</textarea>
                                         </div>
 
@@ -193,7 +199,8 @@
                                         </div>
 
                                         <div class="form-group required">
-                                            <label for="brut_force_count">Минимальный размер кластера для повторной переборки</label>
+                                            <label for="brut_force_count">Минимальный размер кластера для повторной
+                                                переборки</label>
                                             <input type="number" class="form form-control"
                                                    value="{{ $config->brut_force_count }}">
                                         </div>
@@ -398,13 +405,15 @@
 
                                         <div class="form-group required">
                                             <label for="ignored_domains_classic">Игнорируемые домены</label>
-                                            <textarea class="form form-control" name="ignored_domains" id="ignored_domains_classic" cols="8" rows="8"
+                                            <textarea class="form form-control" name="ignored_domains"
+                                                      id="ignored_domains_classic" cols="8" rows="8"
                                             >{{ $config_classic->ignored_domains }}</textarea>
                                         </div>
 
                                         <div class="form-group required">
                                             <label for="ignored_words_classic">Игнорируемые слова</label>
-                                            <textarea class="form form-control" name="ignored_words" id="ignored_words_classic" cols="8" rows="8"
+                                            <textarea class="form form-control" name="ignored_words"
+                                                      id="ignored_words_classic" cols="8" rows="8"
                                             >{{ $config_classic->ignored_words }}</textarea>
                                         </div>
 
@@ -425,7 +434,8 @@
                                         </div>
 
                                         <div class="form-group required">
-                                            <label for="brut_force_count_classic">Минимальный размер кластера для повторной переборки</label>
+                                            <label for="brut_force_count_classic">Минимальный размер кластера для
+                                                повторной переборки</label>
                                             <input type="number" class="form form-control" name="brut_force_count"
                                                    id="brut_force_count_classic"
                                                    value="{{ $config_classic->brut_force_count }}">
@@ -460,7 +470,8 @@
                                         </div>
 
                                         <div class="form-group required">
-                                            <label for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
+                                            <label
+                                                for="searchRelevance">{{ __('Select a relevant page for the domain') }}</label>
                                             {!! Form::select('search_relevance', [
                                                 $config_classic->search_relevance => $config_classic->search_relevance,
                                                 '1' => __('Yes'),
@@ -512,6 +523,28 @@
                                                    name="warning_limit"
                                                    class="form form-control"
                                                    value="{{ $config_classic->warning_limit }}">
+                                        </div>
+
+                                        <input type="submit" class="btn btn-secondary" value="{{ __('Save changes') }}">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header bg-primary">
+                                    Настройка автоудаления
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{ route('set.cluster.cleaning.interval') }}" method="POST">
+                                        @csrf
+                                        <div class="form-group required d-flex align-items-center">
+                                            Удалить проекты старше
+                                            <input class="ml-1 mr-1 form form-control w-25" name="cleaning_interval"
+                                                   id="cleaning_interval" type="number"
+                                                   value="{{ $config->cleaning_interval }}">
+                                            дней
                                         </div>
 
                                         <input type="submit" class="btn btn-secondary" value="{{ __('Save changes') }}">

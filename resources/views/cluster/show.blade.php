@@ -69,6 +69,10 @@
             #scroll_top:hover, #scroll_bottom:hover, #scroll_button:hover {
                 opacity: 1;
             }
+
+            .Clusters {
+                background: oldlace;
+            }
         </style>
     @endslot
 

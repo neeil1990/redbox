@@ -26,6 +26,10 @@
             .text-primary {
                 color: #007bff !important;
             }
+
+            .Clusters {
+                background: oldlace;
+            }
         </style>
     @endslot
 
@@ -102,8 +106,10 @@
                     </div>
 
                     <div id="progress-bar" class="w-25 pt-3 pb-3" style="display: none">
-                        <span id="progress-bar-state"></span><span id="total-phrases"></span>
+                        <span id="progress-bar-state"></span>
+                        <span id="total-phrases"></span>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
+                        <div>{{ __('Written off') }} <span id="countLimits"></span> {{ __('limits') }}</div>
                     </div>
 
                     <div id="block-for-downloads-files" style="display: none">
@@ -283,6 +289,7 @@
                             }, 15000)
                         }
                         $('#total-phrases').html(response.totalPhrases)
+                        $('#countLimits').html(response.totalRequests)
                     },
                     error: function (response) {
                         destroyProgress(interval)
@@ -298,7 +305,7 @@
 
                         setTimeout(() => {
                             $('.toast.toast-error').hide(300)
-                        }, 10000)
+                        }, 5000)
                     },
                 });
             }

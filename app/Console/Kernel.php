@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Classes\Cron\AutoUpdateMonitoringPositions;
+use App\Classes\Cron\ClusterCleaningResults;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
@@ -43,6 +44,9 @@ class Kernel extends ConsoleKernel
 
         // Delete relevance histories > 30 days (see relevance_analysis_config table)
         $schedule->call(new RelevanceCleaningResults())->daily();
+
+        // Delete cluster histories > 180 days (see cluster_configuration table)
+        $schedule->call(new ClusterCleaningResults())->daily();
 
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);

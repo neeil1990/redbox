@@ -4,11 +4,14 @@ namespace App\Jobs\Cluster;
 
 use App\Classes\Xml\RiverFacade;
 use App\Cluster;
+use App\ClusterLimit;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ClusterQueue implements ShouldQueue
@@ -89,6 +92,12 @@ class ClusterQueue implements ShouldQueue
 
     public function failed(\Throwable $exception)
     {
+        $now = Carbon::now();
+        $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
+
+        ClusterLimit::where('user_id', '=', Auth::id())
+            ->where('date', '=', "$now->year-$month")->decrement('count');
+
         Log::debug('cluster queue bug report', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
