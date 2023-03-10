@@ -266,6 +266,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
         $.each(alone, function (key, result) {
             $.each(result, function (phrase, information) {
                 if (phrase !== 'finallyResult') {
+                    iterator++
                     clusterIterator++
                     let phraseForm = 0
                     if ('phrased' in information) {
@@ -377,7 +378,6 @@ function renderAlonePhrases(alone, iterator, colspan) {
                         '   <td class="border-0 target-' + clusterId + '" data-target="' + targetForm + '">' + targetForm + '</td>' +
                         '</tr>'
 
-                    iterator++
                 }
             })
         })
