@@ -376,8 +376,9 @@ function renderAlonePhrases(alone, iterator, colspan) {
                         '   <td class="border-0 phrase-' + clusterId + '" data-target="' + phraseForm + '">' + phraseForm + '</td>' +
                         '   <td class="border-0 target-' + clusterId + '" data-target="' + targetForm + '">' + targetForm + '</td>' +
                         '</tr>'
+
+                    iterator++
                 }
-                iterator++
             })
         })
 
