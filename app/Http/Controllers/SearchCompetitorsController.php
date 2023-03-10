@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Classes\Tariffs\Facades\Tariffs;
 use App\CompetitorConfig;
 use App\CompetitorsProgressBar;
 use App\Jobs\CompetitorAnalyse\CompetitorAnalyseQueue;
 use App\SearchCompetitors;
 use App\TariffSetting;
-use App\TextAnalyzer;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
@@ -109,7 +106,7 @@ class SearchCompetitorsController extends Controller
         if ($progress->percent === 100) {
             $progress->delete();
             return response()->json([
-                'percent' => $progress->percent,
+                'percent' => 100,
                 'result' => json_decode($progress->result, true),
                 'code' => 200,
             ]);

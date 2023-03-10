@@ -6,6 +6,7 @@ function refreshAll() {
     $('.tag-analysis').hide()
     $('#sites-block').hide()
     $('.urls.mt-5').hide()
+    $('#render-bar').hide()
     $('#recommendations-block').hide()
     $('.render').remove()
 

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class SearchCompetitors extends Model
@@ -72,11 +73,6 @@ class SearchCompetitors extends Model
         $this->phrases = array_unique(array_diff($phrases, ['']));
     }
 
-    public function getPhrases()
-    {
-        return $this->phrases;
-    }
-
     public function setRegion(string $region)
     {
         $this->region = $region;
@@ -116,6 +112,7 @@ class SearchCompetitors extends Model
 
         foreach ($this->phrases as $phrase) {
             $phrase = trim($phrase);
+            $phrase .= '\n';
             if ($phrase != '') {
                 $xml->setQuery($phrase);
                 $this->sites[$phrase] = $xml->getXMLResponse();
@@ -134,7 +131,6 @@ class SearchCompetitors extends Model
         TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
-            $this->searchDuplicates();
             $this->scanSites();
         } catch (Throwable $e) {
             Log::debug('search competitors exception', [
@@ -147,7 +143,7 @@ class SearchCompetitors extends Model
 
             SearchCompetitors::where('user_id', '=', $this->getUserId())
                 ->where('month', '=', $now->year . '-' . $now->month)
-                ->decriment('counter', $this->getCountPhrases());
+                ->decrement('counter', $this->getCountPhrases());
 
             return new Exception('competitors error');
         }
@@ -162,25 +158,19 @@ class SearchCompetitors extends Model
         $iterator = 0;
         $total = ($this->count * count($this->phrases)) / 100;
         foreach ($this->sites as $phrase => $items) {
+            $phrase = substr($phrase, 0, -2);
             foreach ($items as $link) {
-                if ($this->duplicates[$link]) {
-                    if (array_key_exists($link, $this->savedHtml)) {
-                        $this->analysedSites[$phrase][$link] = $this->savedHtml[$link];
-                    } else {
-                        $this->savedHtml[$link] = $this->analyseSite(
-                            $this->encodingContent(SearchCompetitors::curlInit($link)),
-                            $phrase,
-                            $link
-                        );
-                    }
+                if (isset($this->duplicates[$link])) {
+                    $this->analysedSites[$phrase][$link] = $this->duplicates[$link];
                 } else {
-                    $this->analyseSite(
+                    $result = $this->analyseSite(
                         $this->encodingContent(SearchCompetitors::curlInit($link)),
-                        $phrase,
                         $link
                     );
-                }
 
+                    $this->analysedSites[$phrase][$link] = $result;
+                    $this->duplicates[$link] = $result;
+                }
 
                 $iterator++;
                 if ($iterator % 3 === 0) {
@@ -190,7 +180,6 @@ class SearchCompetitors extends Model
                     ]);
                 }
             }
-
         }
 
         $this->analysisNestingDomains();
@@ -198,12 +187,13 @@ class SearchCompetitors extends Model
 
     /**
      * @param $site
-     * @param $phrase
      * @param $link
-     * @return mixed
+     * @return array
      */
-    protected function analyseSite($site, $phrase, $link)
+    protected function analyseSite($site, $link): array
     {
+        $object = [];
+
         $description = SearchCompetitors::getText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
         $title = SearchCompetitors::getText($site[0], "/<title.*?>(.*?)<\/title>/");
         $h1 = SearchCompetitors::getText($site[0], "/<h1.*?>(.*?)<\/h1>/");
@@ -213,7 +203,7 @@ class SearchCompetitors extends Model
         $h5 = SearchCompetitors::getText($site[0], "/<h5.*?>(.*?)<\/h5>/");
         $h6 = SearchCompetitors::getText($site[0], "/<h6.*?>(.*?)<\/h6>/");
 
-        $this->analysedSites[$phrase][$link]['meta'] = [
+        $object['meta'] = [
             'title' => $title,
             'h1' => $h1,
             'h2' => $h2,
@@ -224,11 +214,11 @@ class SearchCompetitors extends Model
             'description' => $description,
         ];
 
-        $this->analysedSites[$phrase][$link]['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
+        $object['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
 
-        $this->analysedSites[$phrase][$link]['mainPage'] = SearchCompetitors::isLinkMainPage($link);
+        $object['mainPage'] = SearchCompetitors::isLinkMainPage($link);
 
-        return $this->analysedSites[$phrase][$link];
+        return $object;
     }
 
     /**

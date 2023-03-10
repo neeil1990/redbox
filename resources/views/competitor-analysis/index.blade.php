@@ -563,15 +563,6 @@
                     },
                     success: async function (response) {
                         if (response.percent === 100) {
-                            clearInterval(interval)
-                            setProgressBarStyles(100)
-                            setTimeout(() => {
-                                $("#progress-bar").hide(300)
-                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                                $('#render-bar').show(300)
-                            }, 1000)
-                            removeProgressPercent(token)
-
                             let localization = {
                                 'protected': "{{ __('The site is protected from information collection, we recommend analyzing it manually') }}",
                                 'domain': "{{ __('domain') }}",
@@ -580,29 +571,36 @@
                                 'analyzeText': "{{ __('Analyze the text') }}",
                                 'SelectPhrases': "{{ __('Select phrases') }}",
                             }
-                            await renderTopSites(response.result.analysedSites, localization)
-                            await renderTopSitesV2(response.result.analysedSites, localization)
-                            await renderNestingTable(response.result.pagesCounter)
-                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
-                            await renderTagsTable(response.result.totalMetaTags)
-                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                            await duallboxBlockRender(response.result.totalMetaTags, count, localization)
+
+                            try {
+                                $('#render-bar').show(300)
+                                clearInterval(interval)
+                                setProgressBarStyles(100)
+                                setTimeout(() => {
+                                    $("#progress-bar").hide(300)
+                                    $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                                }, 1000)
+
+                                await renderTopSites(response.result.analysedSites, localization)
+                                await renderTopSitesV2(response.result.analysedSites, localization)
+                                await renderNestingTable(response.result.pagesCounter)
+                                await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
+                                await renderTagsTable(response.result.totalMetaTags)
+                                await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
+                                await duallboxBlockRender(response.result.totalMetaTags, count, localization)
+                            } catch (e) {
+                                refreshAll()
+                                $('.toast-top-right.broken-script-message').show(300)
+                                $('.toast-message').html('System error')
+                                setTimeout(() => {
+                                    $('.toast-top-right.broken-script-message').hide(300)
+                                }, 5000)
+                            }
+
                         } else {
                             setProgressBarStyles(response.percent)
                         }
                     }
-                });
-            }
-
-            function removeProgressPercent(token) {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('remove.competitor.progress') }}",
-                    data: {
-                        _token: token,
-                        pageHash: window.session,
-                    },
                 });
             }
 
