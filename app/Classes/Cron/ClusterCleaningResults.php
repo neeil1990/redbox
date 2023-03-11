@@ -17,8 +17,8 @@ class ClusterCleaningResults
 
     public function cleaning()
     {
-        Log::debug('daily check days old ClusterCleaningResults');
+        $count = ClusterResults::where('created_at', '<', Carbon::now()->subDays(ClusterConfiguration::first('cleaning_interval')->cleaning_interval))->delete();
 
-        ClusterResults::where('created_at', '<', Carbon::now()->subDays(ClusterConfiguration::first('cleaning_interval')->cleaning_interval))->delete();
+        Log::debug("will deleted $count clusters records");
     }
 }
