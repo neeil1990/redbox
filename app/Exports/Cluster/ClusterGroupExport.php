@@ -33,7 +33,7 @@ class ClusterGroupExport implements FromCollection
     public function collection(): Collection
     {
         $iterator = 1;
-        $this->maxNested = $this->confirmation();
+        $this->confirmation();
 
         $this->file[] = [
             __('Sequence number'),
@@ -42,7 +42,7 @@ class ClusterGroupExport implements FromCollection
         ];
 
         for ($i = 1; $i <= $this->maxNested; $i++) {
-            $this->file[0][] = 'Подраздел ' . $i;
+            $this->file[0][] = __('Subsection') . " $i";
         }
 
         $this->file[0] = array_merge($this->file[0], [
@@ -64,27 +64,23 @@ class ClusterGroupExport implements FromCollection
 
     public function confirmation()
     {
-        $nestCounter = 0;
-        $add = true;
+        $this->maxNested = 0;
         foreach ($this->array as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $item) {
                 if (is_array($item)) {
-                    $this->array[$mainPhrase][array_key_first($item)] = $this->loop($item[array_key_first($item)], $add);
-                    $add = false;
+                    $nestCounter = 0;
+                    $this->array[$mainPhrase][array_key_first($item)] = $this->loop($item[array_key_first($item)], ++$nestCounter);
                 } else {
                     $this->array[$mainPhrase][$item] = $this->setValues($item);
                 }
 
                 unset($this->array[$mainPhrase][$offPhrase]);
             }
-            if ($nestCounter < $this->nestCounter) {
-                $nestCounter = $this->nestCounter;
+            if ($this->maxNested < $this->nestCounter) {
+                $this->maxNested = $this->nestCounter;
             }
             $this->nestCounter = 0;
         }
-
-
-        return $nestCounter;
     }
 
     public function setValues($offPhrase): array
@@ -98,17 +94,14 @@ class ClusterGroupExport implements FromCollection
         return [];
     }
 
-    public function loop($elems, $boolean): array
+    public function loop($elems, $counter): array
     {
-        if ($boolean) {
-            $this->nestCounter += 1;
-        }
+        $this->nestCounter = $counter;
 
         $res = [];
         foreach ($elems as $offPhrase => $item) {
             if (is_array($item)) {
-                $res[array_key_first($item)] = $this->loop($item[array_key_first($item)], $boolean);
-                $boolean = false;
+                $res[array_key_first($item)] = $this->loop($item[array_key_first($item)], $counter + 1);
             } else {
                 $res[$item] = $this->setValues($item);
             }

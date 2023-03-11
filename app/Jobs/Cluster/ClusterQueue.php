@@ -92,12 +92,6 @@ class ClusterQueue implements ShouldQueue
 
     public function failed(\Throwable $exception)
     {
-        $now = Carbon::now();
-        $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
-
-        ClusterLimit::where('user_id', '=', Auth::id())
-            ->where('date', '=', "$now->year-$month")->decrement('count');
-
         Log::debug('cluster queue bug report', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
