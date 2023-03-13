@@ -182,7 +182,7 @@
     <div class="form-group required" id="extra-block">
         <div class="row">
             <div class="col-6 d-flex flex-column">
-                <label for="domain-textarea">{{ __('Domain') }}</label>
+                <label for="domain-textarea">{{ __('Domain') }} <b>http/https</b></label>
                 <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"
                           placeholder="https://site.ru"></textarea>
             </div>
@@ -391,7 +391,7 @@
     <div class="form-group required" id="extra-block">
         <div class="row">
             <div class="col-6 d-flex flex-column">
-                <label for="domain-textarea">{{ __('Domain') }}</label>
+                <label for="domain-textarea">{{ __('Domain') }} <b>http/https</b></label>
                 <textarea name="domain-textarea" id="domain-textarea_classic" rows="5" class="form-control w-100"
                           placeholder="https://site.ru"></textarea>
             </div>
