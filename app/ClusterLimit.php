@@ -60,17 +60,6 @@ class ClusterLimit extends Model
 
                 if ($countRecordInThisMonth + $count >= $tariff['settings']['Clusters']['value']) {
                     return true;
-                } else {
-                    if (isset($limit)) {
-                        $limit->count += $count;
-                    } else {
-                        $limit = new ClusterLimit();
-                        $limit->user_id = Auth::id();
-                        $limit->date = "$now->year-$month";
-                        $limit->count = $count;
-                    }
-
-                    $limit->save();
                 }
             }
         }

@@ -258,39 +258,36 @@ class Cluster
 
     public function calculate()
     {
-        try {
-            $ab = $k;
-            $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
-            $res = [];
-            foreach ($results as $result) {
-                $res = array_merge_recursive($res, json_decode($result->json, true));
-            }
-
-            foreach ($res as $item) {
-                $this->sites[array_key_first($item)] = $item[array_key_first($item)];
-            }
-
-            $this->searchClusters();
-            $this->calculateClustersInfo();
-            $this->searchGroupName();
-            $this->calculateSimilarities();
-            $this->searchGroupName();
-            $this->setResult($this->clusters);
-            $this->saveResult();
-
-            if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
-                $this->sendNotification();
-            }
-
-            \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
-        } catch (\Throwable $e) {
-            $now = Carbon::now();
-            $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
-
-            $count = ClusterLimit::calculateCountRequests($this->request);
-            ClusterLimit::where('user_id', '=', $this->user->id)
-                ->where('date', '=', "$now->year-$month")->decrement('count', $count);
+        $results = \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->get();
+        $res = [];
+        foreach ($results as $result) {
+            $res = array_merge_recursive($res, json_decode($result->json, true));
         }
+
+        foreach ($res as $item) {
+            $this->sites[array_key_first($item)] = $item[array_key_first($item)];
+        }
+
+        $this->searchClusters();
+        $this->calculateClustersInfo();
+        $this->searchGroupName();
+        $this->calculateSimilarities();
+        $this->searchGroupName();
+        $this->setResult($this->clusters);
+        $this->saveResult();
+
+        if (isset($this->request['sendMessage']) && filter_var($this->request['sendMessage'], FILTER_VALIDATE_BOOLEAN)) {
+            $this->sendNotification();
+        }
+
+        \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
+
+        $now = Carbon::now();
+        $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
+
+        $count = ClusterLimit::calculateCountRequests($this->request);
+        ClusterLimit::where('user_id', '=', $this->user->id)
+            ->where('date', '=', "$now->year-$month")->increment('count', $count);
     }
 
     protected function markIgnoredDomains()
