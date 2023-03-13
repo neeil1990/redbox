@@ -109,7 +109,6 @@
                         <span id="progress-bar-state"></span>
                         <span id="total-phrases"></span>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
-                        <div>{{ __('Written off') }} <span id="countLimits"></span> {{ __('limits') }}</div>
                     </div>
 
                     <div id="block-for-downloads-files" style="display: none">
@@ -287,7 +286,6 @@
                             }, 15000)
                         }
                         $('#total-phrases').html(response.totalPhrases)
-                        $('#countLimits').html(response.totalRequests)
                     },
                     error: function (response) {
                         destroyProgress(interval)
