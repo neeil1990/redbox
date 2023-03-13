@@ -149,7 +149,6 @@
                 }, 3000)
             }
         </script>
-        <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
@@ -161,7 +160,6 @@
             let interval
 
             $(document).ready(function () {
-                console.clear()
                 $('#pro').hide()
                 $('#classic').show()
 
@@ -323,6 +321,10 @@
 
                 $('#classicMode').attr('class', 'btn btn-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-outline-secondary')
+
+                let count = calculateClassicLimits();
+                let newCount = Number($('#list-phrases-counter-classic').html())
+                $('#loss-limits').html(newCount * count)
             })
 
             $('#ProfessionalMode').on('click', function () {
@@ -332,6 +334,10 @@
 
                 $('#classicMode').attr('class', 'btn btn-outline-secondary')
                 $('#ProfessionalMode').attr('class', 'btn btn-secondary')
+
+                let count = calculateLimits();
+                let newCount = Number($('#list-phrases-counter').html())
+                $('#loss-limits').html(newCount * count)
             })
         </script>
     @endslot

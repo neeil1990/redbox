@@ -264,6 +264,10 @@ class ClusterController extends Controller
 
     public function downloadClusterResult(ClusterResults $cluster, string $type)
     {
+        if ($cluster->created_at <= Carbon::parse('00:00 22.02.2023')) {
+            return abort(403, __('In order to edit this result, you need to reshoot it'));
+        }
+
         if ((User::isUserAdmin() || $cluster->user_id == Auth::id()) && ($type === 'xls' || $type === 'csv')) {
             if (isset($cluster->domain)) {
                 $domain = str_replace(['https://', 'http://'], '', $cluster->domain);
