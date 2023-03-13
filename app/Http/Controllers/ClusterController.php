@@ -41,18 +41,18 @@ class ClusterController extends Controller
 
     public function analyseCluster(Request $request): JsonResponse
     {
-        $countRequests = ClusterLimit::calculateCountRequests($request->all());
-        if (ClusterLimit::checkClustersLimits($countRequests)) {
-            return response()->json([
-                'errors' => ['domain' => __('Your limits are exhausted')]
-            ], 422);
-        }
-
         $this->validate($request, [
             'domain' => 'sometimes|required_if:searchRelevance,==,true',
         ], [
             'domain.required_if' => __('the domain is required if the relevant page selection mode is selected')
         ]);
+
+        $countRequests = ClusterLimit::calculateCountRequests($request->all());
+        if (ClusterLimit::checkClustersLimits($countRequests)) {
+            return response()->json([
+                'errors' => ['limits' => __('Your limits are exhausted')]
+            ], 422);
+        }
 
         if (filter_var($request->input('searchRelevance'), FILTER_VALIDATE_BOOL)) {
             $link = parse_url($request->input('domain'));

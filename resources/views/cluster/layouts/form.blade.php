@@ -491,8 +491,8 @@
        class="btn btn-secondary" id="start-analyse"
        data-target="classic" value="{{ __('Analyse') }}">
 
-<span class="pt-3">
-    {{ __('It will be written off') }} <span id="loss-limits"></span> {{ __('limits') }}
+<span class="ml-2">
+    {{ __('It will be written off') }} <span id="loss-limits">0</span> {{ __('limits') }}
 </span>
 
 <script type="application/javascript" src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
