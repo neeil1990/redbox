@@ -38,6 +38,10 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
     })
 
     $(document).ready(function () {
+        if ($.fn.DataTable.fnIsDataTable($('#unigram'))) {
+            $('#unigram').dataTable().fnDestroy()
+        }
+
         var table = $('#unigram').DataTable({
             "order": [[2, "desc"]],
             "pageLength": count,
@@ -93,8 +97,6 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
             $.each($('[generated-child=true]'), function () {
                 $(this).attr('generated-child', false)
             })
-
-
         });
 
         $.fn.dataTable.ext.search.push(function (settings, data) {
