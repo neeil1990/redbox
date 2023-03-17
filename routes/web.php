@@ -11,8 +11,11 @@
 |
 */
 
+use App\Classes\Cron\AutoUpdateMonitoringPositions;
 use App\ClusterLimit;
 use App\DomainMonitoring;
+use App\Jobs\AutoUpdatePositionQueue;
+use App\MonitoringSearchengine;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -272,6 +275,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     Route::resource('monitoring', 'MonitoringController');
+    Route::get('/monitoring/projects/{monitoring}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');

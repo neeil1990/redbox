@@ -51,7 +51,7 @@ class PositionStore
 
     private function getEngine($name, $params = [])
     {
-        if(!Arr::has($params, ['domain', 'query', 'lr']))
+        if (!Arr::has($params, ['domain', 'query', 'lr']))
             throw new \ErrorException('Params domain, query and lr is required.');
 
         switch ($name) {
