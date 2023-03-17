@@ -1036,6 +1036,7 @@ class MonitoringController extends Controller
 
         $competitors = array_count_values($competitors);
         $countQuery = count($monitoring->keywords);
+        $searchEngines = array_unique($searchEngines);
 
         $navigations = $this->navigations($monitoring);
 
