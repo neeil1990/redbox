@@ -75,7 +75,9 @@
         {{  __('Project') . " $monitoring->name" }}
     </h3>
 
-    <table class="table table-hover table-bordered no-footer">
+    <h4>Количество фраз: {{ $countQuery }}</h4>
+
+    <table class="table table-hover table-bordered no-footer mt-3">
         <thead>
         <tr>
             <th>Конкурент?</th>
