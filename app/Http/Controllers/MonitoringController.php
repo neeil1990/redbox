@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\Common;
 use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
+use App\Location;
 use App\MonitoringColumn;
+use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringOccurrence;
@@ -19,7 +22,9 @@ use App\MonitoringSettings;
 use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +50,7 @@ class MonitoringController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -283,7 +288,7 @@ class MonitoringController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -293,8 +298,8 @@ class MonitoringController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -306,12 +311,14 @@ class MonitoringController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
         /** @var User $user */
         $user = $this->user;
+
+        /** @var MonitoringProject $project */
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
         $navigations = $this->navigations($project);
@@ -946,7 +953,7 @@ class MonitoringController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -956,9 +963,9 @@ class MonitoringController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -969,7 +976,7 @@ class MonitoringController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
@@ -1012,44 +1019,57 @@ class MonitoringController extends Controller
         return $region;
     }
 
-    public function monitoringCompetitors(MonitoringProject $monitoring)
+    public function monitoringCompetitors(MonitoringProject $project, Request $request)
     {
+        if (isset($request->region)) {
+            $engines = MonitoringSearchengine::where('id', '=', $request->region)->get(['lr', 'engine']);
+        } else {
+            $engines = $project->searchengines;
+        }
         $competitors = [];
-        $searchEngines = [];
 
-        foreach ($monitoring->searchengines as $searchengine) {
-            $searchEngines[] = $searchengine->engine;
-
-            foreach ($monitoring->keywords as $keyword) {
+        // optimization requests +-
+        // add save competitors
+        // filters ++
+        foreach ($engines as $searchengine) {
+            foreach ($project->keywords as $keyword) {
                 $results = SearchIndex::where('lr', '=', $searchengine->lr)
                     ->where('query', '=', $keyword->query)
                     ->where('position', '<=', 10)
                     ->orderBy('created_at', 'desc')
-                    ->take(10)->get()
-                    ->sortBy('position');
+                    ->pluck('query', 'url');
 
-                foreach ($results as $item) {
-                    $competitors[] = urldecode($item->url);
+                foreach ($results as $url => $query) {
+                    $host = parse_url(Common::domainFilter($url))['host'];
+                    $competitors[$host]['urls'][$searchengine->engine][$keyword->query] = Common::domainFilter($url);
                 }
             }
         }
 
-        $competitors = array_count_values($competitors);
-        $countQuery = count($monitoring->keywords);
-        $searchEngines = array_unique($searchEngines);
+        foreach ($project->competitors as $competitor) {
+            $url = Common::domainFilter($competitor->url);
 
-        $navigations = $this->navigations($monitoring);
+            if (array_key_exists($url, $competitors)) {
+                $competitors[$url]['competitor'] = true;
+            }
+        }
+
+        if (array_key_exists($project->url, $competitors)) {
+            $competitors[$project->url]['mainPage'] = true;
+        }
+
+        $countQuery = count($project->keywords);
+
+        $navigations = $this->navigations($project);
 
         return view('monitoring.competitors', compact(
             'navigations',
             'competitors',
             'countQuery',
-            'searchEngines',
-            'monitoring'
+            'project'
         ));
 
 
-//        dd(array_count_values($competitors));
 //        foreach ($monitoring->searchengines as $searchengine) {
 //            dd($searchengine->lr);
 //        }
@@ -1070,5 +1090,38 @@ class MonitoringController extends Controller
 //            $results[$keyword->query]['top30'] = $keyword->topPositions(30);
 //        }
 
+    }
+
+    public function addCompetitor(Request $request): ?JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        if ($project->user->id !== Auth::id()) {
+            return abort(403);
+        }
+
+        MonitoringCompetitor::insert([
+            'monitoring_project_id' => $project->id,
+            'url' => $request->url,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        return response()->json([], 201);
+    }
+
+    public function removeCompetitor(Request $request): ?JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        if ($project->user->id !== Auth::id()) {
+            return abort(403);
+        }
+
+        MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
+            ->where('url', $request->url)
+            ->delete();
+
+        return response()->json([], 200);
     }
 }

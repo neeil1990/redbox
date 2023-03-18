@@ -4,7 +4,6 @@ namespace App;
 
 class Common
 {
-
     public static function fileExport($file, string $type, string $name = '')
     {
         if (!$name) {
@@ -162,5 +161,10 @@ class Common
             default:
                 return 'Регион не опознан';
         }
+    }
+
+    public static function domainFilter($domain): string
+    {
+        return urldecode(str_replace(['www.'], '', strtolower($domain)));
     }
 }
