@@ -150,7 +150,7 @@
                                     <b class="mb-2"> {{ $engine }} </b>
                                     @foreach($urls as $word => $url)
                                         <div class="mb-2">
-                                            {{ $word }} : <a href="{{ $url }}"> {{ $url }} </a>
+                                            {{ $word }} : <a href="{{ $url }}" target="_blank"> {{ $url }} </a>
                                         </div>
                                     @endforeach
                                 @endforeach

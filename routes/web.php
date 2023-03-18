@@ -48,6 +48,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
+    Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::resource('users', 'UsersController');
 
     Route::post('/manage-access/assignPermission', 'ManageAccessController@assignPermission');
