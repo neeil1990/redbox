@@ -44,9 +44,13 @@
 
             .dataTables_scrollHead {
                 position: sticky !important;
-                top: 0px;
+                top: 0;
                 z-index: 1;
                 background-color: white;
+            }
+
+            .custom-info-bg {
+                background-color: rgba(23, 162, 184, 0.5) !important;
             }
         </style>
     @endslot
@@ -140,7 +144,7 @@
                                @if(isset($info['competitor'])) checked @endif>
                     </div>
                 </td>
-                <td @if(isset($info['mainPage'])) class="bg-info" @endif>
+                <td @if(isset($info['mainPage'])) class="custom-info-bg" @endif>
                     {{ $competitor }}
                     <span class="__helper-link ui_tooltip_w">
                         <i class="fa fa-question-circle"></i>
