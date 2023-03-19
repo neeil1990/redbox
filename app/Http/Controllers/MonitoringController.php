@@ -1033,8 +1033,7 @@ class MonitoringController extends Controller
             foreach ($project->keywords as $keyword) {
                 $results = SearchIndex::where('lr', '=', $searchengine->lr)
                     ->where('query', '=', $keyword->query)
-                    ->where('position', '<=', 10)
-                    ->orderBy('created_at', 'desc')
+                    ->where('position', '<=', 10)->latest()
                     ->pluck('query', 'url');
 
                 foreach ($results as $url => $query) {

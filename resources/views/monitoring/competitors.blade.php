@@ -126,7 +126,7 @@
         Количество фраз: {{ $countQuery }}
     </h4>
 
-    <table class="table table-hover table-bordered no-footer">
+    <table id="table" class="table table-hover table-bordered no-footer">
         <thead>
         <tr>
             <th>Конкурент?</th>
@@ -138,9 +138,11 @@
         <tbody>
         @foreach($competitors as $competitor => $info)
             <tr>
-                <td>
+                <td data-order="@if(isset($info['competitor'])) 1 @else 0 @endif">
                     <div>
-                        <input type="checkbox" class="change-domain-state" data-target="{{ $competitor }}"
+                        <input type="checkbox"
+                               class="change-domain-state"
+                               data-target="{{ $competitor }}"
                                @if(isset($info['competitor'])) checked @endif>
                     </div>
                 </td>
@@ -188,7 +190,35 @@
         </tbody>
     </table>
     @slot('js')
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+
         <script>
+            $(document).ready(function () {
+                $('#table').DataTable({
+                    fixedHeader: true,
+                    lengthMenu: [10, 25, 50, 100],
+                    pageLength: 50,
+                    order: [[3, 'desc']],
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "{{ __('Search project') }}",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                })
+            })
+
             $('.change-domain-state').on('click', function () {
                 let url = $(this).attr('data-target')
                 if ($(this).is(':checked')) {
