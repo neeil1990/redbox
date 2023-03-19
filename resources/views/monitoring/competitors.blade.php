@@ -146,12 +146,14 @@
                         <i class="fa fa-question-circle"></i>
                         <span class="ui_tooltip __right" style="width: 460px">
                             <span class="ui_tooltip_content">
-                                @foreach($info['urls'] as $engine => $urls)
-                                    <b class="mb-2"> {{ $engine }} </b>
-                                    @foreach($urls as $word => $url)
-                                        <div class="mb-2">
-                                            {{ $word }} : <a href="{{ $url }}" target="_blank"> {{ $url }} </a>
-                                        </div>
+                                @foreach($info['urls'] as $engine => $words)
+                                    <b class="mb-2 text-info"> {{ $engine }}: </b>
+                                    @foreach($words as $word => $stats)
+                                        @foreach($stats as $stat)
+                                            <div class="mb-2">
+                                                {{ $word }}: <a href="{{ $stat }}" target="_blank"> {{ $stat }} </a>
+                                            </div>
+                                        @endforeach
                                     @endforeach
                                 @endforeach
                             </span>
@@ -171,7 +173,9 @@
                 <td>
                     @php($count = 0)
                     @foreach($info['urls'] as $engine => $urls)
-                        @php($count += count($urls))
+                        @foreach($urls as $url)
+                            @php($count += count($url))
+                        @endforeach
                     @endforeach
                     {{ $count }}
                 </td>
@@ -182,9 +186,9 @@
     @slot('js')
         <script>
             $('.change-domain-state').on('click', function () {
+                let url = $(this).attr('data-target')
                 if ($(this).is(':checked')) {
-                    if (confirm('Вы собираетесь добавить домен в конкуренты')) {
-                        let url = $(this).attr('data-target')
+                    if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
                         $.ajax({
                             type: "POST",
                             dataType: "json",
@@ -202,8 +206,7 @@
                         $(this).prop('checked', false);
                     }
                 } else {
-                    if (confirm('Вы собираетесь убрать домен из конкурентов')) {
-                        let target = $(this).attr('data-target')
+                    if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
                         $.ajax({
                             type: "POST",
                             dataType: "json",

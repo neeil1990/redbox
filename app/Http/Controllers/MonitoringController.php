@@ -930,16 +930,17 @@ class MonitoringController extends Controller
         return $columns;
     }
 
-    private function navigations(MonitoringProject $project)
+    private function navigations(MonitoringProject $project): array
     {
         /** @var User $user */
         $user = $this->user;
         $countMonitoringProjects = $user->monitoringProjects()->count();
         $countBackLinkProjects = $user->backlingProjects()->count();
+        $countCompetitors = count($project->competitors);
 
         $navigations = [
             ['h3' => $countMonitoringProjects, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
+            ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
             ['h3' => '150', 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
             ['h3' => '150', 'p' => 'План продвижения', 'small' => 'В разработке', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
             ['h3' => '150', 'p' => 'Аудит сайта', 'small' => 'В разработке', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
@@ -1028,9 +1029,6 @@ class MonitoringController extends Controller
         }
         $competitors = [];
 
-        // optimization requests +-
-        // add save competitors
-        // filters ++
         foreach ($engines as $searchengine) {
             foreach ($project->keywords as $keyword) {
                 $results = SearchIndex::where('lr', '=', $searchengine->lr)
@@ -1041,7 +1039,7 @@ class MonitoringController extends Controller
 
                 foreach ($results as $url => $query) {
                     $host = parse_url(Common::domainFilter($url))['host'];
-                    $competitors[$host]['urls'][$searchengine->engine][$keyword->query] = Common::domainFilter($url);
+                    $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
                 }
             }
         }
