@@ -658,7 +658,7 @@
                                 });
                             }
 
-                            modal.find('.save-modal').click(function () {
+                            modal.find('.save-modal').click(function (e) {
                                 let self = $(this);
                                 let form = self.closest('.modal-content').find('form');
                                 let action = form.attr('action');
@@ -668,6 +668,18 @@
                                 $.each(form.serializeArray(), function (inc, item) {
                                     $.extend(data, {[item.name]: item.value});
                                 });
+
+                                if(data.hasOwnProperty('monitoring_group_id') === false || data.monitoring_group_id.length < 1){
+                                    e.preventDefault();
+                                    form.find('.invalid-feedback.monitoring_group_id').fadeIn().delay(3000).fadeOut();
+                                    return false;
+                                }
+
+                                if(data.hasOwnProperty('query') && data.query.length < 1){
+                                    e.preventDefault();
+                                    form.find('.invalid-feedback.query').fadeIn().delay(3000).fadeOut();
+                                    return false;
+                                }
 
                                 let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
 

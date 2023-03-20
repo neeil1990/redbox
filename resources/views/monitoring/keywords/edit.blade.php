@@ -11,6 +11,9 @@
         <div class="form-group">
             <label class="col-form-label">{{ __('Query') }}:</label>
             <input type="text" class="form-control" name="query" value="{{ $keyword->query }}">
+            <div class="invalid-feedback query">
+                {{ __('Please add queries') }}
+            </div>
         </div>
 
         <div class="form-group">
