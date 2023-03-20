@@ -29,6 +29,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use TheSeer\Tokenizer\Exception;
 
 class MonitoringController extends Controller
 {
@@ -1020,8 +1021,42 @@ class MonitoringController extends Controller
         return $region;
     }
 
-    public function monitoringCompetitors(MonitoringProject $project, Request $request)
+    public function monitoringCompetitors(MonitoringProject $project)
     {
+        $countQuery = count($project->keywords);
+        $navigations = $this->navigations($project);
+
+        return view('monitoring.competitors', compact(
+            'navigations',
+            'countQuery',
+            'project'
+        ));
+
+//        foreach ($monitoring->searchengines as $searchengine) {
+//            dd($searchengine->lr);
+//        }
+//        dd();
+//        $results = [];
+//        $competitors = [];
+//        foreach ($monitoring->competitors as $competitor) {
+//            $competitors[] = $competitor->url;
+//            $array = $competitor->positions->toArray();
+//            $results[$array[0]['query']]['competitors'][$competitor->url] = $competitor->avgPositions();
+//        }
+////        count($keyword->positions) -- количество проверок для всех слов одинаково?
+//        foreach ($monitoring->keywords as $keyword) {
+//            $results[$keyword->query]['allCheck'] = count($keyword->positions);
+//            $results[$keyword->query]['avg'] = $keyword->avgPositions();
+//            $results[$keyword->query]['top10'] = $keyword->topPositions(10);
+//            $results[$keyword->query]['top20'] = $keyword->topPositions(20);
+//            $results[$keyword->query]['top30'] = $keyword->topPositions(30);
+//        }
+    }
+
+    public function getCompetitorsInfo(Request $request): JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
         if (isset($request->region)) {
             $engines = MonitoringSearchengine::where('id', '=', $request->region)->get(['lr', 'engine']);
         } else {
@@ -1055,38 +1090,25 @@ class MonitoringController extends Controller
             $competitors[$project->url]['mainPage'] = true;
         }
 
-        $countQuery = count($project->keywords);
+        foreach ($competitors as $key => $urls) {
+            $count = 0;
+            foreach ($urls as $inf => $engines) {
+                if ($inf !== 'urls') {
+                    continue;
+                }
+                foreach ($engines as $words) {
+                    foreach ($words as $word) {
+                        $count += count($word);
+                    }
+                }
+            }
 
-        $navigations = $this->navigations($project);
+            $competitors[$key]['visibility'] = $count;
+        }
 
-        return view('monitoring.competitors', compact(
-            'navigations',
-            'competitors',
-            'countQuery',
-            'project'
-        ));
-
-
-//        foreach ($monitoring->searchengines as $searchengine) {
-//            dd($searchengine->lr);
-//        }
-//        dd();
-//        $results = [];
-//        $competitors = [];
-//        foreach ($monitoring->competitors as $competitor) {
-//            $competitors[] = $competitor->url;
-//            $array = $competitor->positions->toArray();
-//            $results[$array[0]['query']]['competitors'][$competitor->url] = $competitor->avgPositions();
-//        }
-////        count($keyword->positions) -- количество проверок для всех слов одинаково?
-//        foreach ($monitoring->keywords as $keyword) {
-//            $results[$keyword->query]['allCheck'] = count($keyword->positions);
-//            $results[$keyword->query]['avg'] = $keyword->avgPositions();
-//            $results[$keyword->query]['top10'] = $keyword->topPositions(10);
-//            $results[$keyword->query]['top20'] = $keyword->topPositions(20);
-//            $results[$keyword->query]['top30'] = $keyword->topPositions(30);
-//        }
-
+        return response()->json([
+            'data' => $competitors
+        ]);
     }
 
     public function addCompetitor(Request $request): ?JsonResponse
