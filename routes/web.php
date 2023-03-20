@@ -254,6 +254,7 @@ Route::middleware(['verified'])->group(function () {
 
     // Monitoring export
     Route::get('/monitoring/export', 'MonitoringExportsController@index');
+    Route::get('/monitoring/export/view', 'MonitoringExportsController@view');
 
     // Monitoring project creator
     Route::post('monitoring/creator/create', 'MonitoringProjectCreatorController@createProject');

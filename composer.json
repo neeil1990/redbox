@@ -26,6 +26,7 @@
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "5.8.*",
         "maatwebsite/excel": "^3.1",
+        "mpdf/mpdf": "^8.1",
         "predis/predis": "^2.0",
         "spatie/async": "^1.5",
         "spatie/laravel-permission": "3.*",
@@ -45,7 +46,8 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "disable-tls": true
     },
     "extra": {
         "laravel": {
