@@ -227,7 +227,7 @@
                                         url: "{{ route('monitoring.remove.competitor') }}",
                                         data: {
                                             '_token': $('meta[name="csrf-token"]').attr('content'),
-                                            'url': target,
+                                            'url': url,
                                             'projectId': {{ $project->id }}
                                         },
                                         success: function (response) {
