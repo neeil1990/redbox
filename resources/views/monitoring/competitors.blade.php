@@ -38,8 +38,6 @@
         @endforeach
     </div>
 
-    @include('monitoring.keywords.modal.main')
-
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -200,49 +198,49 @@
                             })
                             $('#table').show()
                         }, 300)
+
+                        $('.change-domain-state').unbind().on('click', function () {
+                            let url = $(this).attr('data-target')
+                            if ($(this).is(':checked')) {
+                                if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
+                                    $.ajax({
+                                        type: "POST",
+                                        dataType: "json",
+                                        url: "{{ route('monitoring.add.competitor') }}",
+                                        data: {
+                                            '_token': $('meta[name="csrf-token"]').attr('content'),
+                                            'url': url,
+                                            'projectId': {{ $project->id }}
+                                        },
+                                        success: function (response) {
+
+                                        },
+                                    });
+                                } else {
+                                    $(this).prop('checked', false);
+                                }
+                            } else {
+                                if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
+                                    $.ajax({
+                                        type: "POST",
+                                        dataType: "json",
+                                        url: "{{ route('monitoring.remove.competitor') }}",
+                                        data: {
+                                            '_token': $('meta[name="csrf-token"]').attr('content'),
+                                            'url': target,
+                                            'projectId': {{ $project->id }}
+                                        },
+                                        success: function (response) {
+
+                                        },
+                                    });
+                                } else {
+                                    $(this).prop('checked', true);
+                                }
+                            }
+                        })
                     },
                 });
-            })
-
-            $('.change-domain-state').on('click', function () {
-                let url = $(this).attr('data-target')
-                if ($(this).is(':checked')) {
-                    if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('monitoring.add.competitor') }}",
-                            data: {
-                                '_token': $('meta[name="csrf-token"]').attr('content'),
-                                'url': url,
-                                'projectId': {{ $project->id }}
-                            },
-                            success: function (response) {
-
-                            },
-                        });
-                    } else {
-                        $(this).prop('checked', false);
-                    }
-                } else {
-                    if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('monitoring.remove.competitor') }}",
-                            data: {
-                                '_token': $('meta[name="csrf-token"]').attr('content'),
-                                'url': target,
-                                'projectId': {{ $project->id }}
-                            },
-                            success: function (response) {
-
-                            },
-                        });
-                    } else {
-                        $(this).prop('checked', true);
-                    }
-                }
             })
 
             $('#searchEngines').on('change', function () {
