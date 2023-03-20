@@ -52,7 +52,7 @@ class AutoUpdatePositionQueue implements ShouldQueue
      */
     public function handle()
     {
-        $store = new PositionStore(false);
+        $store = new PositionStore(true);
         $store->saveByQuery($this->model, $this->engine);
 
         MonitoringStat::create([
