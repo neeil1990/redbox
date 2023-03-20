@@ -21,13 +21,18 @@ class MonitoringExportsController extends Controller
         });
     }
 
+    public function view()
+    {
+        return view('monitoring.export.test');
+    }
+
     public function index()
     {
-        $id = 48;
+        $id = 30;
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->find($id);
 
-        return Excel::download(new TestExport, 'test.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        return Excel::download(new TestExport, 'test.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
 }

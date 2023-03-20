@@ -545,7 +545,7 @@
                             });
                         }
 
-                        modal.find('.save-modal').click(function () {
+                        modal.find('.save-modal').click(function (e) {
                             let self = $(this);
                             let form = self.closest('.modal-content').find('form');
                             let action = form.attr('action');
@@ -556,12 +556,23 @@
                                 $.extend( data, {[item.name]: item.value} );
                             });
 
+                            if(data.hasOwnProperty('monitoring_group_id') === false || data.monitoring_group_id.length < 1){
+                                e.preventDefault();
+                                form.find('.invalid-feedback.monitoring_group_id').fadeIn().delay(3000).fadeOut();
+                                return false;
+                            }
+
+                            if(data.query.length < 1){
+                                e.preventDefault();
+                                form.find('.invalid-feedback.query').fadeIn().delay(3000).fadeOut();
+                                return false;
+                            }
+
                             axios({
                                 method: method,
                                 url: action,
                                 data: data
                             }).then(function (response) {
-
                                 table.draw(false);
                                 self.closest('.modal').modal('hide');
                                 toastr.success('Запросы добавлены');

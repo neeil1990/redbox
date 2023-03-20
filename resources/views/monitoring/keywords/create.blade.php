@@ -14,6 +14,9 @@
         <div class="form-group">
             <label>{{ __('Queries') }}:</label>
             <textarea name="query" class="form-control" rows="10" placeholder="Введите ваш список запросов, каждый с новой строки"></textarea>
+            <div class="invalid-feedback query">
+                {{ __('Please add queries') }}
+            </div>
         </div>
 
         <div class="input-group">
@@ -46,6 +49,9 @@
 
             <div class="input-group-append">
                 <button type="button" class="btn btn-success" id="create-group">{{ __('Create a new group') }}</button>
+            </div>
+            <div class="invalid-feedback monitoring_group_id">
+                {{ __('Please add a group') }}
             </div>
         </div>
     </div>

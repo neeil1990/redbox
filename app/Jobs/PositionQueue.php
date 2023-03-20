@@ -53,7 +53,7 @@ class PositionQueue implements ShouldQueue
      */
     public function handle()
     {
-        $store = new PositionStore(false);
+        $store = new PositionStore(true);
         $store->saveByQuery($this->model);
 
         MonitoringStat::create([
