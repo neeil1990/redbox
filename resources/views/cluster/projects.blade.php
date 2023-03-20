@@ -30,6 +30,10 @@
             a.paginate_button.current {
                 background: #ebf0f5 !important;
             }
+
+            .Clusters {
+                background: oldlace;
+            }
         </style>
     @endslot
 
@@ -106,7 +110,8 @@
                                            href="{{ route('show.cluster.result', $project->id) }}" target="_blank">
                                             {{ __('View results') }}
                                         </a>
-                                        <a href="{{ route('edit.clusters', $project->id) }}" class="btn btn-secondary mb-2">
+                                        <a href="{{ route('edit.clusters', $project->id) }}"
+                                           class="btn btn-secondary mb-2">
                                             {{ __('Hands editor') }}
                                         </a>
                                         <button type="button"
@@ -583,7 +588,7 @@
         </div>
     </div>
     @slot('js')
-        <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
             var progressId
@@ -637,7 +642,12 @@
                         successMessage("{{ __('The analysis has been successfully launched, the results will be automatically added to the table') }}")
                     },
                     error: function (response) {
-                        errorMessage(response.responseJSON.message)
+                        let values = [];
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            values.push(value)
+                        })
+
+                        errorMessage(values)
                         clearInterval(interval)
                     }
                 });
@@ -793,7 +803,7 @@
                                 }, 5000)
 
                                 startClusterAnalyse(response.id, interval)
-                            }
+                            },
                         })
                     }
                 });

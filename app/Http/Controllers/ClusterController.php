@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Cluster;
 use App\ClusterConfiguration;
 use App\ClusterConfigurationClassic;
+use App\ClusterLimit;
 use App\ClusterQueue;
 use App\ClusterResults;
 use App\Common;
@@ -13,10 +14,12 @@ use App\Exports\Cluster\ClusterResultExport;
 use App\Jobs\Cluster\StartClusterAnalyseQueue;
 use App\User;
 use Carbon\Carbon;
+use Doctrine\DBAL\Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -44,6 +47,13 @@ class ClusterController extends Controller
             'domain.required_if' => __('the domain is required if the relevant page selection mode is selected')
         ]);
 
+        $countRequests = ClusterLimit::calculateCountRequests($request->all());
+        if (ClusterLimit::checkClustersLimits($countRequests)) {
+            return response()->json([
+                'errors' => ['limits' => __('Your limits are exhausted')]
+            ], 422);
+        }
+
         if (filter_var($request->input('searchRelevance'), FILTER_VALIDATE_BOOL)) {
             $link = parse_url($request->input('domain'));
             if (empty($link['host'])) {
@@ -57,7 +67,8 @@ class ClusterController extends Controller
 
         return response()->json([
             'result' => true,
-            'totalPhrases' => count(array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), [])))
+            'totalPhrases' => count(array_unique(array_diff(explode("\n", str_replace("\r", "", $request['phrases'])), []))),
+            'totalRequests' => $countRequests,
         ]);
     }
 
@@ -187,7 +198,6 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-
             if ($request->input('type') === 'notDefault') {
                 $results = Cluster::unpackCluster($cluster->result);
             } else {
@@ -224,8 +234,11 @@ class ClusterController extends Controller
             ->first();
 
         if (isset($cluster)) {
-            $cluster->result = Cluster::unpackCluster($cluster->result);
-            $results = $cluster->result;
+            if ($request->input('type') === 'notDefault') {
+                $results = Cluster::unpackCluster($cluster->result);
+            } else {
+                $results = Cluster::unpackCluster($cluster->default_result);
+            }
 
             foreach ($results as $key => $items) {
                 foreach ($items as $phrase => $item) {
@@ -236,7 +249,11 @@ class ClusterController extends Controller
                 }
             }
 
-            $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            if ($request->input('type') === 'notDefault') {
+                $cluster->result = base64_encode(gzcompress(json_encode($results), 9));
+            } else {
+                $cluster->default_result = base64_encode(gzcompress(json_encode($results), 9));
+            }
             $cluster->save();
 
             return response()->json(['success' => true]);
@@ -247,6 +264,10 @@ class ClusterController extends Controller
 
     public function downloadClusterResult(ClusterResults $cluster, string $type)
     {
+        if ($cluster->created_at <= Carbon::parse('00:00 22.02.2023')) {
+            return abort(403, __('In order to edit this result, you need to reshoot it'));
+        }
+
         if ((User::isUserAdmin() || $cluster->user_id == Auth::id()) && ($type === 'xls' || $type === 'csv')) {
             if (isset($cluster->domain)) {
                 $domain = str_replace(['https://', 'http://'], '', $cluster->domain);
@@ -297,8 +318,8 @@ class ClusterController extends Controller
 
     public function downloadClusterSites(Request $request): JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('result');
-        $results = Common::uncompressArray($cluster->result);
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('default_result');
+        $results = Common::uncompressArray($cluster->default_result);
 
         foreach ($results as $result) {
             if (key_exists($request->phrase, $result)) {
@@ -314,8 +335,8 @@ class ClusterController extends Controller
 
     public function downloadClusterCompetitors(Request $request): JsonResponse
     {
-        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('result');
-        $results = Common::uncompressArray($cluster->result);
+        $cluster = ClusterResults::where('id', '=', $request->projectId)->first('default_result');
+        $results = Common::uncompressArray($cluster->default_result);
         arsort($results[$request->key]['finallyResult']['sites']);
 
         return response()->json([
@@ -339,9 +360,24 @@ class ClusterController extends Controller
             return abort(403, __('In order to edit this result, you need to reshoot it'));
         }
 
-        $clusters = Cluster::unpackCluster($cluster->result);
         $cluster->request = json_decode($cluster->request, true);
+        $clusters = Cluster::unpackCluster($cluster->result);
+
+        if (isset($cluster->html) && $cluster->html !== '') {
+            $ar = json_decode($cluster->html, true);
+            $cluster->setClusters($cluster->result);
+            $html = $cluster->parseTree($ar);
+
+            return view('cluster.edit', [
+                'cluster' => $cluster,
+                'clusters' => $clusters,
+                'html' => $html,
+                'admin' => User::isUserAdmin()
+            ]);
+        }
+
         ksort($clusters);
+
         return view('cluster.edit', [
             'cluster' => $cluster,
             'clusters' => $clusters,
@@ -386,7 +422,7 @@ class ClusterController extends Controller
     public function checkGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
-        if ((User::isUserAdmin() || $cluster->user_id == Auth::id()) && !preg_match("/[0-9]/", $request->input('groupName'))) {
+        if (User::isUserAdmin() || $cluster->user_id == Auth::id()) {
             $cluster->result = Cluster::unpackCluster($cluster->result);
             $result = Cluster::isGroupNameExist($request->input('groupName'), $cluster->result);
 
@@ -410,7 +446,7 @@ class ClusterController extends Controller
     public function changeGroupName(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('id'))->first();
-        if ((User::isUserAdmin() || $cluster->user_id == Auth::id()) && !preg_match("/[0-9]/", $request->input('newGroupName'))) {
+        if (User::isUserAdmin() || $cluster->user_id == Auth::id()) {
             $cluster->result = Cluster::unpackCluster($cluster->result);
             $keys = array_keys($cluster->result);
 
@@ -498,10 +534,10 @@ class ClusterController extends Controller
         Common::fileExport($file, $request->type, 'group_results');
     }
 
-    public function saveHtml(Request $request): JsonResponse
+    public function saveTree(Request $request): JsonResponse
     {
         $cluster = ClusterResults::where('id', '=', $request->input('projectId'))->first();
-        if (User::isUserAdmin() && $cluster->user_id == Auth::id()) {
+        if (User::isUserAdmin() || $cluster->user_id == Auth::id()) {
             $cluster->html = $request->html;
             $cluster->save();
 
@@ -511,4 +547,12 @@ class ClusterController extends Controller
         return response()->json([], 403);
     }
 
+    public function setCleaningInterval(Request $request): RedirectResponse
+    {
+        ClusterConfiguration::where('id', '>', 0)->update([
+            'cleaning_interval' => $request->input('cleaning_interval')
+        ]);
+
+        return Redirect::back();
+    }
 }

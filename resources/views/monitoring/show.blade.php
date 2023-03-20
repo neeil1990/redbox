@@ -17,29 +17,35 @@
             .dTable {
                 display: none;
             }
+
             .dataTables_processing {
                 margin: 10px auto;
                 z-index: 4;
             }
+
             .exist-position {
-                color: #28a745!important;
+                color: #28a745 !important;
                 font-weight: bold;
             }
+
             .popover {
                 max-width: none;
             }
-            .progress-spinner{
+
+            .progress-spinner {
                 position: absolute;
                 top: 10%;
                 width: 100%;
                 text-align: center;
                 z-index: 1;
             }
+
             .reset-zoom {
                 position: absolute;
                 top: 50px;
                 right: 30px;
             }
+
             .dataTables_scrollHead {
                 position: sticky !important;
                 top: 0px;
@@ -51,18 +57,20 @@
 
     <div class="row">
         @foreach($navigations as $navigation)
-        <div class="col-lg-2 col-6">
-            <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}" style="min-height: 137px">
-                <div class="inner">
-                    <h3>{{ $navigation['h3'] }}</h3>
-                    <p>{{ $navigation['p'] }}</p>
-                    <small>{{ $navigation['small'] }}</small>
-                </div>
-                <div class="icon">
-                    <i class="{{ $navigation['icon'] }}"></i>
-                </div>
-            </a>
-        </div>
+            <div class="col-lg-2 col-6">
+                <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}" style="min-height: 137px">
+                    <div class="inner">
+                        <h3>{{ $navigation['h3'] }}</h3>
+                        <p>{{ $navigation['p'] }}</p>
+                        @isset($navigation['small'])
+                            <small>{{ $navigation['small'] }}</small>
+                        @endisset
+                    </div>
+                    <div class="icon">
+                        <i class="{{ $navigation['icon'] }}"></i>
+                    </div>
+                </a>
+            </div>
         @endforeach
     </div>
 
@@ -88,7 +96,8 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-hover table-responsive table-bordered text-center" id="monitoringTable"></table>
+                <table class="table table-hover table-responsive table-bordered text-center"
+                       id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -170,10 +179,10 @@
                         search: "_INPUT_",
                         searchPlaceholder: "Search...",
                         paginate: {
-                            "first":      "«",
-                            "last":       "»",
-                            "next":       "»",
-                            "previous":   "«"
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
                         },
                         processing: '<img src="/img/1485.gif" style="width: 50px; height: 50px;">',
                     },
@@ -194,11 +203,11 @@
                         [2, 'asc'],
                     ],
                     columnDefs: [
-                        { orderable: true, className: 'reorder', targets: 2 },
-                        { orderable: false, targets: '_all' },
-                        { "width": "350px", "targets": 2 },
+                        {orderable: true, className: 'reorder', targets: 2},
+                        {orderable: false, targets: '_all'},
+                        {"width": "350px", "targets": 2},
                     ],
-                    initComplete: function(){
+                    initComplete: function () {
                         let api = this.api();
                         let url = new URL(window.location.href);
                         let params = new URLSearchParams(url.search);
@@ -232,7 +241,7 @@
                             deletes.click(function () {
 
                                 let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
-                                if(checkboxes.length){
+                                if (checkboxes.length) {
 
                                     if (window.confirm("Do you really want to delete?")) {
 
@@ -244,7 +253,7 @@
 
                                         window.location.reload();
                                     }
-                                }else{
+                                } else {
                                     toastr.error('Выберите хотя бы один элемент.');
                                 }
                             });
@@ -255,7 +264,11 @@
                                 let params = [];
                                 select.find('option[value!=""]').map((i, item) => {
                                     let region = $(item);
-                                    params.push({val: region.val(), text: region.text(), checked: region.prop('selected')});
+                                    params.push({
+                                        val: region.val(),
+                                        text: region.text(),
+                                        checked: region.prop('selected')
+                                    });
                                 });
 
                                 $('.modal').modal('show').BootstrapModalFormTemplates({
@@ -268,11 +281,11 @@
                                             params: params
                                         },
                                     ],
-                                    onAgree: function(m){
+                                    onAgree: function (m) {
                                         const formData = new FormData(m.find('form').get(0));
                                         let regions = formData.getAll('regions');
 
-                                        if (!regions.length || !window.confirm("Вы собираетесь добавить в очередь все запросы, подтвердите ваше действие")){
+                                        if (!regions.length || !window.confirm("Вы собираетесь добавить в очередь все запросы, подтвердите ваше действие")) {
                                             m.modal('hide');
                                             return false;
                                         }
@@ -282,7 +295,7 @@
                                             regions: regions,
                                         }).then(function (response) {
                                             m.modal('hide');
-                                            if(response.data.status)
+                                            if (response.data.status)
                                                 toastr.success('Задание добавленно в очередь');
                                             else
                                                 toastr.error('Something went wrong!');
@@ -297,7 +310,7 @@
                                 let keys = $('.table tbody tr').find('input[type="checkbox"]:checked');
                                 let region = $('#searchengines').val();
 
-                                if(!region.length){
+                                if (!region.length) {
                                     toastr.error('Нужно выбрать регион!');
                                     return false;
                                 }
@@ -321,7 +334,7 @@
                                 trigger: 'hover',
                             });
 
-                            container.find('.column-visible').click(function(){
+                            container.find('.column-visible').click(function () {
 
                                 let name = $(this).data('column');
                                 let column = api.column(name + ':name');
@@ -339,20 +352,20 @@
                             });
 
                             axios.post('/monitoring/project/get/column/settings', {monitoring_project_id: PROJECT_ID})
-                                .then(function(response){
+                                .then(function (response) {
 
-                                $.each(response.data, function(i, item){
-                                    let column = api.column(item.name + ':name');
+                                    $.each(response.data, function (i, item) {
+                                        let column = api.column(item.name + ':name');
 
-                                    if(item.state === 0)
-                                        column.visible(item.state);
+                                        if (item.state === 0)
+                                            column.visible(item.state);
 
-                                    if(item.state)
-                                        container.find(`.column-visible[data-column="${item.name}"]`).removeClass('hover');
-                                    else
-                                        container.find(`.column-visible[data-column="${item.name}"]`).addClass('hover');
+                                        if (item.state)
+                                            container.find(`.column-visible[data-column="${item.name}"]`).removeClass('hover');
+                                        else
+                                            container.find(`.column-visible[data-column="${item.name}"]`).addClass('hover');
+                                    });
                                 });
-                            });
                         });
 
                         $('.search-button').click(function () {
@@ -366,7 +379,7 @@
                             a.addClass(toggleClass);
                             b.addClass(toggleClass);
 
-                            input.unbind( "blur" );
+                            input.unbind("blur");
 
                             input.removeClass(toggleClass).focus().blur(function () {
                                 $(this).addClass(toggleClass);
@@ -375,7 +388,7 @@
                             });
                         });
 
-                        api.columns().every(function() {
+                        api.columns().every(function () {
                             let that = this;
 
                             $('input', this.header()).on('keyup change', function () {
@@ -387,7 +400,7 @@
 
                         let filter = $('#filter');
                         filter.unbind('filtered');
-                        filter.on('filtered', function(e, start, end){
+                        filter.on('filtered', function (e, start, end) {
 
                             let form = $(this);
 
@@ -401,7 +414,7 @@
                             });
                         });
 
-                        if(params.has('group'))
+                        if (params.has('group'))
                             setTimeout(() => api.column('group:name').search(params.get('group')).draw(), 1000);
 
                         let notValidateUrl = $('<div />', {
@@ -421,7 +434,7 @@
                         }).click(function () {
                             let val = $(this).val();
 
-                            if(val == "1")
+                            if (val == "1")
                                 $(this).val(0);
                             else
                                 $(this).val(1);
@@ -442,16 +455,16 @@
                         });
 
                         let dynamicOptions = [
-                            {val : '', text: 'Динамика'},
-                            {val : 'positive', text: 'Положительная'},
-                            {val : 'negative', text: 'Отрицательная'},
+                            {val: '', text: 'Динамика'},
+                            {val: 'positive', text: 'Положительная'},
+                            {val: 'negative', text: 'Отрицательная'},
                         ];
 
                         let dynamicSelect = $('<select />', {
-                           class: 'custom-select',
+                            class: 'custom-select',
                             name: 'dynamics'
                         });
-                        $.each(dynamicOptions, function() {
+                        $.each(dynamicOptions, function () {
                             dynamicSelect.append($("<option />").attr('value', this.val).text(this.text));
                         });
 
@@ -462,7 +475,7 @@
 
                         dynamic.append(dynamicSelect);
 
-                        if(!response.data.region.length){
+                        if (!response.data.region.length) {
                             this.closest('.card').find('.card-header').append(dynamic);
                             this.closest('.card').find('.card-header').append(notValidateUrl);
                         }
@@ -470,7 +483,7 @@
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
                     },
-                    drawCallback: function(){
+                    drawCallback: function () {
                         let api = this.api();
 
                         let card = table.closest('.card-table');
@@ -485,10 +498,10 @@
                                 let current = $(item).data('position');
                                 let nextTo = $(positions[i + 1]).data('position');
 
-                                if(target >= current)
+                                if (target >= current)
                                     $(item).closest('td').css('background-color', '#99e4b9');
-                                else{
-                                    if(target >= nextTo)
+                                else {
+                                    if (target >= nextTo)
                                         $(item).closest('td').css('background-color', '#fbe1df');
                                 }
                             });
@@ -500,12 +513,12 @@
                             trigger: 'manual',
                             placement: 'right',
                             html: true,
-                        }).on("mouseenter", function() {
+                        }).on("mouseenter", function () {
                             $(this).popover("show");
-                        }).on("mouseleave", function() {
+                        }).on("mouseleave", function () {
                             let self = this;
 
-                            let timeout = setTimeout(function(){
+                            let timeout = setTimeout(function () {
                                 $(self).popover("hide");
                             }, 300);
 
@@ -543,7 +556,7 @@
 
                             let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
 
-                            if(checkboxes.length){
+                            if (checkboxes.length) {
 
                                 request = axios.get(`/monitoring/keywords/${PROJECT_ID}/edit-plural`).then(function (response) {
 
@@ -552,7 +565,7 @@
                                     modal.find('.modal-content').html(content);
                                 });
 
-                            }else{
+                            } else {
                                 axios.get('/monitoring/keywords/empty/modal').then(function (response) {
 
                                     let content = response.data;
@@ -577,7 +590,7 @@
                                     let self = $(this);
                                     let csv = self.closest('.input-group').find('#upload');
 
-                                    if(csv[0].files.length && csv[0].files[0].type === 'text/csv'){
+                                    if (csv[0].files.length && csv[0].files[0].type === 'text/csv') {
 
                                         csv.parse({
                                             config: {
@@ -585,9 +598,9 @@
                                                 complete: function (result) {
 
                                                     let value = '';
-                                                    $.each(result.data, function(i, item){
+                                                    $.each(result.data, function (i, item) {
 
-                                                        if(item[0])
+                                                        if (item[0])
                                                             value += item[0] + '\r\n';
                                                     });
 
@@ -597,7 +610,7 @@
                                             }
                                         });
 
-                                    }else{
+                                    } else {
 
                                         toastr.error('Загрузите файл формата .csv');
                                     }
@@ -607,21 +620,21 @@
                             break;
                     }
 
-                    if(request){
+                    if (request) {
                         request.then(function () {
 
                             let group = modal.find('.custom-select[name="monitoring_group_id"]');
-                            if(group.length){
+                            if (group.length) {
 
                                 group.select2({
                                     theme: 'bootstrap4'
                                 });
 
-                                modal.find('#create-group').click(function(){
+                                modal.find('#create-group').click(function () {
                                     let el = $(this);
                                     let input = el.closest('.input-group').find('input');
 
-                                    if(input.val()){
+                                    if (input.val()) {
 
                                         let id_project = input.data('id');
 
@@ -653,13 +666,13 @@
                                 let data = {};
 
                                 $.each(form.serializeArray(), function (inc, item) {
-                                    $.extend( data, {[item.name]: item.value} );
+                                    $.extend(data, {[item.name]: item.value});
                                 });
 
                                 let checkboxes = $('.table tbody tr').find('input[type="checkbox"]:checked');
 
-                                if(checkboxes.length && method === 'POST'){
-                                    $.extend( data, {id: []} );
+                                if (checkboxes.length && method === 'POST') {
+                                    $.extend(data, {id: []});
                                     $.each(checkboxes, function (i, checkbox) {
                                         data.id.push($(checkbox).val());
                                     });
@@ -692,7 +705,7 @@
 
             let startDate = null;
             let endDate = null;
-            if(DATES){
+            if (DATES) {
 
                 let dates = DATES.split(" - ");
                 startDate = moment(dates[0]);
@@ -703,11 +716,11 @@
             range.daterangepicker({
                 opens: 'left',
                 startDate: startDate ?? moment().subtract(30, 'days'),
-                endDate  : endDate ?? moment(),
-                ranges   : {
-                    'Последние 7 дней' : [moment().subtract(6, 'days'), moment()],
+                endDate: endDate ?? moment(),
+                ranges: {
+                    'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
                     'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
-                    'Прошлый месяц'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 },
                 alwaysShowCalendars: true,
                 showCustomRangeLabel: false,
@@ -740,9 +753,9 @@
                 }
             });
 
-            range.on('apply.daterangepicker', function(ev, picker) {
+            range.on('apply.daterangepicker', function (ev, picker) {
 
-                let dates = picker.startDate.format('YYYY-MM-DD')+ ' - ' + picker.endDate.format('YYYY-MM-DD');
+                let dates = picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD');
 
                 let url = new URL(window.location.href);
                 let params = new URLSearchParams(url.search);
@@ -756,11 +769,11 @@
                 window.location.search = params.toString();
             });
 
-            range.on('show.daterangepicker', function(ev, picker) {
+            range.on('show.daterangepicker', function (ev, picker) {
                 //do something, like clearing an input
                 let container = picker.container;
 
-                if(container.find('.mode').length === 0){
+                if (container.find('.mode').length === 0) {
 
                     let ranges = $('<div />', {
                         class: "mode"
@@ -778,7 +791,14 @@
                     $.each(settings, function (i, item) {
 
                         let label = $('<label />', {class: "form-check-label", for: item.id}).text(item.name);
-                        let radio = $('<input />', {class: "form-check-input",id: item.id, type: "radio", name: "mode", value: item.value, checked: item.checked}).css('margin-top', 'auto');
+                        let radio = $('<input />', {
+                            class: "form-check-input",
+                            id: item.id,
+                            type: "radio",
+                            name: "mode",
+                            value: item.value,
+                            checked: item.checked
+                        }).css('margin-top', 'auto');
                         let formCheck = $('<div />', {
                             class: "form-check"
                         });
@@ -786,16 +806,16 @@
                         ul.append($('<li />').html(formCheck.prepend(radio, label)));
                     });
 
-                    if(MODE){
+                    if (MODE) {
                         ul.find('input[name="mode"]').prop('checked', false);
-                        ul.find('input[value="'+ MODE +'"]').prop('checked', true);
+                        ul.find('input[value="' + MODE + '"]').prop('checked', true);
                     }
 
                     container.prepend(ranges.html(ul));
                 }
             });
 
-            range.on('updateCalendar.daterangepicker', function(ev, picker) {
+            range.on('updateCalendar.daterangepicker', function (ev, picker) {
 
                 let container = picker.container;
 
@@ -805,15 +825,15 @@
                 let leftCalendarData = picker.leftCalendar.calendar;
                 let rightCalendarData = picker.rightCalendar.calendar;
 
-                let showDates= [];
+                let showDates = [];
 
-                for(let rows = 0; rows < leftCalendarData.length; rows++){
+                for (let rows = 0; rows < leftCalendarData.length; rows++) {
 
                     let leftCalendarRowEl = $(leftCalendarEl[rows]);
-                    $.each(leftCalendarData[rows], function(i, item){
+                    $.each(leftCalendarData[rows], function (i, item) {
 
                         let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
-                        if(!leftCalendarDaysEl.hasClass('off')){
+                        if (!leftCalendarDaysEl.hasClass('off')) {
 
                             showDates.push({
                                 date: item.format('YYYY-MM-DD'),
@@ -823,10 +843,10 @@
                     });
 
                     let rightCalendarRowEl = $(rightCalendarEl[rows]);
-                    $.each(rightCalendarData[rows], function(i, item){
+                    $.each(rightCalendarData[rows], function (i, item) {
 
                         let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
-                        if(!rightCalendarDaysEl.hasClass('off')){
+                        if (!rightCalendarDaysEl.hasClass('off')) {
 
                             showDates.push({
                                 date: item.format('YYYY-MM-DD'),
@@ -842,14 +862,14 @@
                     dates: showDates,
                 }).then(function (response) {
 
-                    $.each(response.data, function(i, item){
+                    $.each(response.data, function (i, item) {
 
                         let found = showDates.find(function (elem) {
-                            if(elem.date === item.dateOnly)
+                            if (elem.date === item.dateOnly)
                                 return true;
                         });
 
-                        if(!found.el.hasClass('exist-position'))
+                        if (!found.el.hasClass('exist-position'))
                             found.el.addClass('exist-position');
                     });
                 }).catch(function (error) {
@@ -858,7 +878,7 @@
                 });
             });
 
-            $('.table').on('click', '.delete-keyword' ,function () {
+            $('.table').on('click', '.delete-keyword', function () {
                 let item = $(this);
                 let id = item.data('id');
 
@@ -869,9 +889,9 @@
             });
 
             let charts = {};
-            if($('#topPercent').length){
-                $.extend( charts, {
-                    'top' : {
+            if ($('#topPercent').length) {
+                $.extend(charts, {
+                    'top': {
                         el: $('#topPercent').get(0).getContext('2d'),
                         type: 'line',
                         chart: 'top',
@@ -881,14 +901,14 @@
                                 text: '% Ключевых слов в ТОП',
                                 position: 'left',
                             },
-                            maintainAspectRatio : false,
+                            maintainAspectRatio: false,
                             legend: {
                                 display: true
                             },
                             scales: {
                                 x: {
-                                    grid : {
-                                        display : false,
+                                    grid: {
+                                        display: false,
                                     }
                                 },
                                 y: {
@@ -911,7 +931,7 @@
                                         zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
                                     },
                                     callbacks: {
-                                        afterZoom: function() {
+                                        afterZoom: function () {
                                             charts.top.options.plugins.crosshair.zoom.enabled = false;
                                         }
                                     }
@@ -927,9 +947,9 @@
                 });
             }
 
-            if($('#middlePosition').length){
-                $.extend( charts, {
-                    'middle' : {
+            if ($('#middlePosition').length) {
+                $.extend(charts, {
+                    'middle': {
                         el: $('#middlePosition').get(0).getContext('2d'),
                         type: 'line',
                         chart: 'middle',
@@ -939,14 +959,14 @@
                                 text: 'Средняя позиция',
                                 position: 'left',
                             },
-                            maintainAspectRatio : false,
+                            maintainAspectRatio: false,
                             legend: {
                                 display: true
                             },
                             scales: {
                                 x: {
-                                    grid : {
-                                        display : false,
+                                    grid: {
+                                        display: false,
                                     }
                                 },
                                 y: {
@@ -969,7 +989,7 @@
                                         zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
                                     },
                                     callbacks: {
-                                        afterZoom: function() {
+                                        afterZoom: function () {
                                             charts.middle.options.plugins.crosshair.zoom.enabled = false;
                                         }
                                     }
@@ -985,9 +1005,9 @@
                 });
             }
 
-            if($('#middlePositionRegions').length){
-                $.extend( charts, {
-                    'regions_middle' : {
+            if ($('#middlePositionRegions').length) {
+                $.extend(charts, {
+                    'regions_middle': {
                         el: $('#middlePositionRegions').get(0).getContext('2d'),
                         type: 'line',
                         chart: 'regions_middle',
@@ -997,14 +1017,14 @@
                                 text: 'Средняя позиция',
                                 position: 'left',
                             },
-                            maintainAspectRatio : false,
+                            maintainAspectRatio: false,
                             legend: {
                                 display: true
                             },
                             scales: {
                                 x: {
-                                    grid : {
-                                        display : false,
+                                    grid: {
+                                        display: false,
                                     }
                                 },
                                 y: {
@@ -1027,7 +1047,7 @@
                                         zoomButtonClass: 'reset-zoom btn btn-default btn-sm',
                                     },
                                     callbacks: {
-                                        afterZoom: function() {
+                                        afterZoom: function () {
                                             charts.middle.options.plugins.crosshair.zoom.enabled = false;
                                         }
                                     }
@@ -1045,7 +1065,7 @@
 
             let chartFilterPeriod = $('#chartFilterPeriod');
 
-            $.each(charts, function(key, obj){
+            $.each(charts, function (key, obj) {
 
                 let chart = new Chart(obj.el, {
                     type: obj.type,
@@ -1053,7 +1073,7 @@
                     options: obj.options
                 });
 
-                chartFilterPeriod.change(function() {
+                chartFilterPeriod.change(function () {
                     let range = $(this).val();
                     $('.progress-spinner').removeClass('d-none');
 
@@ -1085,13 +1105,13 @@
                 }
             }).then(function (response) {
 
-                if($('#distributionByTop').length){
+                if ($('#distributionByTop').length) {
                     new Chart($('#distributionByTop').get(0).getContext('2d'), {
                         type: 'doughnut',
                         data: response.data,
                         plugins: [ChartDataLabels],
                         options: {
-                            maintainAspectRatio : false,
+                            maintainAspectRatio: false,
                             title: {
                                 display: true,
                                 text: 'Распределение по ТОП-100',
@@ -1101,13 +1121,15 @@
                                 crosshair: false,
                                 tooltip: {
                                     callbacks: {
-                                        label: function(context) {
+                                        label: function (context) {
                                             let label = context.label;
                                             let data = context.dataset.data;
                                             let dataItem = data[context.dataIndex];
 
                                             let sum = 0;
-                                            data.map(data => { sum += data });
+                                            data.map(data => {
+                                                sum += data
+                                            });
                                             let percent = Math.round((dataItem * 100 / sum));
 
                                             label += ': ' + dataItem + ' (' + percent + '%)';
@@ -1126,9 +1148,11 @@
                                     formatter: (value, ctx) => {
                                         let sum = 0;
                                         let dataArr = ctx.chart.data.datasets[0].data;
-                                        dataArr.map(data => { sum += data });
+                                        dataArr.map(data => {
+                                            sum += data
+                                        });
                                         let percent = Math.round((value * 100 / sum));
-                                        if(percent > 1)
+                                        if (percent > 1)
                                             return `${percent}%`;
                                         else
                                             return null;
@@ -1141,15 +1165,17 @@
                                             size: 24,
                                             style: "normal",
                                         },
-                                        generateLabels: function(chart){
+                                        generateLabels: function (chart) {
                                             let data = chart.data;
 
-                                            return data.labels.map(function(label, i) {
+                                            return data.labels.map(function (label, i) {
                                                 let dsIndex = 0;
                                                 let ds = data.datasets[0];
 
                                                 let sum = 0;
-                                                ds.data.map(data => { sum += data });
+                                                ds.data.map(data => {
+                                                    sum += data
+                                                });
 
                                                 let value = chart.config.data.datasets[dsIndex].data[i];
                                                 let percent = Math.round((value * 100 / sum));
@@ -1175,29 +1201,28 @@
                 let btn = $(this);
                 let charts = $('.card-charts');
 
-                if(charts.hasClass('d-none')) {
+                if (charts.hasClass('d-none')) {
                     charts.removeClass('d-none');
                     btn.text('Скрыть графики');
-                }else {
+                } else {
                     charts.addClass('d-none');
                     btn.text('Показать графики');
                 }
 
             });
 
-            $('#occurrence-update').click(function(){
+            $('#occurrence-update').click(function () {
                 let action = 'all';
 
                 axios.post('/monitoring/occurrence', {
                     action: action,
                     id: PROJECT_ID,
                 })
-                .then(function (response) {
-                    toastr.success('Очередь добавлена!');
-                });
+                    .then(function (response) {
+                        toastr.success('Очередь добавлена!');
+                    });
             });
         </script>
     @endslot
-
 
 @endcomponent

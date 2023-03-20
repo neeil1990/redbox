@@ -4,7 +4,6 @@
 namespace App\Classes\Cron;
 
 use App\Jobs\AutoUpdatePositionQueue;
-use Illuminate\Support\Facades\Log;
 
 class AutoUpdateMonitoringPositions
 {
@@ -22,7 +21,5 @@ class AutoUpdateMonitoringPositions
 
         foreach ($project->keywords as $query)
             dispatch((new AutoUpdatePositionQueue($query, $engine))->onQueue('position_low'));
-
-        //Log::debug($this->model);
     }
 }

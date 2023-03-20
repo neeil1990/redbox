@@ -27,13 +27,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Validator::extend('website', function ($attribute, $value) {
-            $link = parse_url($value);
-            if (isset($link['host'])) {
-                return true;
+            if (isset($value)) {
+                $link = parse_url($value);
+                if (isset($link['host'])) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                return true;
             }
-        }, __('Invalid landing page link.'));
+
+        }, __('Invalid link.'));
 
         Validator::extend('not_website', function ($attribute, $value) {
             $link = parse_url($value);

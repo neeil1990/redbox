@@ -11,13 +11,13 @@
 |
 */
 
-use App\Cluster;
-use App\ClusterResults;
-use App\Common;
-use App\Exports\Cluster\ClusterGroupExport;
-use App\ViewComposers\MenuComposer;
+use App\Classes\Cron\AutoUpdateMonitoringPositions;
+use App\ClusterLimit;
+use App\DomainMonitoring;
+use App\Jobs\AutoUpdatePositionQueue;
+use App\MonitoringSearchengine;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('info', function () {
     phpinfo();
@@ -48,6 +48,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
+    Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::resource('users', 'UsersController');
 
     Route::post('/manage-access/assignPermission', 'ManageAccessController@assignPermission');
@@ -186,7 +187,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/competitors-config', 'SearchCompetitorsController@editConfig')->name('competitor.edit.config');
     Route::post('/get-recommendations', 'SearchCompetitorsController@getRecommendations')->name('competitor.get.recommendations');
 
-    Route::get('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
+    Route::post('/start-relevance-progress-percent', 'RelevanceProgressController@startProgress')->name('start.relevance.progress');
     Route::post('/get-relevance-progress-percent', 'RelevanceProgressController@getProgress')->name('get.relevance.progress');
     Route::post('/end-relevance-progress-percent', 'RelevanceProgressController@endProgress')->name('end.relevance.progress');
     Route::post('/create-link-project-with-tag', 'ProjectRelevanceHistoryTagsController@store')->name('create.link.project.with.tag');
@@ -276,6 +277,10 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     Route::resource('monitoring', 'MonitoringController');
+    Route::get('/monitoring/projects/{project}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
+    Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
+    Route::post('/monitoring/add-competitor', 'MonitoringController@addCompetitor')->name('monitoring.add.competitor');
+    Route::post('/monitoring/remove-competitor', 'MonitoringController@removeCompetitor')->name('monitoring.remove.competitor');
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
@@ -322,6 +327,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/start-through-analyse', 'RelevanceThoughController@startThroughAnalyse')->name('start.through.analyse');
     Route::post('/get-slice-result', 'RelevanceThoughController@getSliceResult')->name('get.slice.result');
 
+    Route::post('/set-cluster-cleaning-interval', 'ClusterController@setCleaningInterval')->name('set.cluster.cleaning.interval');
     Route::get('/cluster', 'ClusterController@index')->name('cluster');
     Route::post('/analysis-cluster', 'ClusterController@analyseCluster')->name('analysis.cluster');
     Route::get('/start-cluster-progress', 'ClusterController@startProgress')->name('start.cluster.progress');
@@ -349,9 +355,23 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/change-group-name/', 'ClusterController@changeGroupName')->name('change.group.name');
     Route::post('/reset-all-cluster-changes', 'ClusterController@resetAllChanges')->name('reset.all.cluster.changes');
     Route::post('/download-cluster-group', 'ClusterController@downloadClusterGroup')->name('download.cluster.group');
-    Route::post('/save-html', 'ClusterController@saveHtml')->name('save.clusters.html');
+    Route::post('/save-html', 'ClusterController@saveTree')->name('save.clusters.tree');
 
     Route::get('/configuration-menu', 'PositionMenuItemsController@index')->name('menu.config');
     Route::post('/configuration-menu', 'PositionMenuItemsController@edit')->name('configuration.menu');
     Route::post('/restore-configuration-menu', 'PositionMenuItemsController@remove')->name('restore.configuration.menu');
+
+    Route::get('/partners', 'PartnersController@partners')->name('partners');
+    Route::get('/partners/add-group', 'PartnersController@addGroup')->name('partners.add.group');
+    Route::post('/partners/add-group', 'PartnersController@saveGroup')->name('partners.save.group');
+    Route::post('/partners/remove-group', 'PartnersController@removeGroup')->name('partners.remove.group');
+    Route::get('/partners/edit-group/{group}', 'PartnersController@editGroupView')->name('partners.edit.group');
+    Route::post('/partners/edit-group', 'PartnersController@editGroup')->name('partners.edit.save');
+    Route::get('/partners/add-item', 'PartnersController@addItem')->name('partners.add.item');
+    Route::post('/partners/add-item', 'PartnersController@saveItem')->name('partners.save.item');
+    Route::post('/partners/remove-item', 'PartnersController@removeItem')->name('partners.remove.item');
+    Route::get('/partners/edit-item/{item}', 'PartnersController@editItemView')->name('partners.edit.item');
+    Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
+    Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
+    Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });

@@ -100,7 +100,12 @@
     </div>
 
     <div class="form-group required" id="phrases-form-block">
-        <label>{{ __('Key phrases') }}</label>
+        <div class="d-flex justify-content-between">
+            <label>{{ __('Key phrases') }}</label>
+            <span class="text-muted">{{ __('Count phrases') }}:
+                <span id="list-phrases-counter">0</span>
+            </span>
+        </div>
         {!! Form::textarea('phrases', null, ['class' => 'form-control', 'id'=>'phrases'] ) !!}
     </div>
 
@@ -177,7 +182,7 @@
     <div class="form-group required" id="extra-block">
         <div class="row">
             <div class="col-6 d-flex flex-column">
-                <label for="domain-textarea">{{ __('Domain') }}</label>
+                <label for="domain-textarea">{{ __('Domain') }} <b>http/https</b></label>
                 <textarea name="domain-textarea" id="domain-textarea" rows="5" class="form-control w-100"
                           placeholder="https://site.ru"></textarea>
             </div>
@@ -341,7 +346,12 @@
     </div>
 
     <div class="form-group required" id="phrases-form-block">
-        <label>{{ __('Key phrases') }}</label>
+        <div class="d-flex justify-content-between">
+            <label>{{ __('Key phrases') }}</label>
+            <span class="text-muted">{{ __('Count phrases') }}:
+                <span id="list-phrases-counter-classic">0</span>
+            </span>
+        </div>
         {!! Form::textarea('phrases_classic', null, ['class' => 'form-control', 'id' => 'phrases_classic'] ) !!}
     </div>
 
@@ -381,7 +391,7 @@
     <div class="form-group required" id="extra-block">
         <div class="row">
             <div class="col-6 d-flex flex-column">
-                <label for="domain-textarea">{{ __('Domain') }}</label>
+                <label for="domain-textarea">{{ __('Domain') }} <b>http/https</b></label>
                 <textarea name="domain-textarea" id="domain-textarea_classic" rows="5" class="form-control w-100"
                           placeholder="https://site.ru"></textarea>
             </div>
@@ -481,15 +491,77 @@
        class="btn btn-secondary" id="start-analyse"
        data-target="classic" value="{{ __('Analyse') }}">
 
-<script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
+<span class="ml-2">
+    {{ __('It will be written off') }} <span id="loss-limits">0</span> {{ __('limits') }}
+</span>
 
-<script>
+<script type="application/javascript" src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
+<script type="application/javascript" src="{{ asset('/plugins/common/js/common.js') }}"></script>
+<script type="application/javascript">
     let url = new URL(window.location.href)
     if (url['pathname'] === '/cluster-configuration') {
         $('#form').remove()
         $('#sendTelegramMessageConfig').show()
     } else {
         $('#sendTelegramMessageConfig').remove()
+    }
+
+    function calculateClassicLimits() {
+        let count = 1;
+
+        if ($('#searchRelevance_classic').is(':checked')) {
+            count += 1
+        }
+
+        if ($('#searchBase_classic').is(':checked')) {
+            count += 1
+        }
+
+        if ($('#searchPhrases_classic').is(':checked')) {
+            count += 1
+        }
+
+        if ($('#searchTarget_classic').is(':checked')) {
+            count += 1
+        }
+
+        return count
+    }
+
+    function calculateLimits() {
+        let count = 1;
+
+        if ($('#searchRelevance').is(':checked')) {
+            count += 1
+        }
+
+        if ($('#searchBase').is(':checked')) {
+            count += 1
+        }
+
+        if ($('#searchPhrases').is(':checked')) {
+            count += 1
+        }
+
+        if ($('#searchTarget').is(':checked')) {
+            count += 1
+        }
+
+        return count
+    }
+
+    function changeCheckBoxState() {
+        $('#searchRelevance_classic,#searchBase_classic,#searchPhrases_classic,#searchTarget_classic').change(function () {
+            let count = calculateClassicLimits();
+            let newCount = Number($('#list-phrases-counter-classic').html())
+            $('#loss-limits').html(newCount * count)
+        })
+
+        $('#searchRelevance,#searchBase,#searchPhrases,#searchTarget').change(function () {
+            let count = calculateLimits();
+            let newCount = Number($('#list-phrases-counter').html())
+            $('#loss-limits').html(newCount * count)
+        })
     }
 
     $(document).ready(function () {
@@ -508,5 +580,11 @@
                 $('.brut-force_classic').hide(300)
             }
         })
+
+        eventChangeList($('#phrases_classic'), $('#loss-limits'), $('#list-phrases-counter-classic'), calculateClassicLimits)
+        eventChangeList($('#phrases'), $('#loss-limits'), $('#list-phrases-counter'), calculateLimits)
+
+        changeCheckBoxState()
     })
+
 </script>

@@ -14,8 +14,17 @@ use Illuminate\Support\Facades\Log;
 
 class RelevanceProgressController extends Controller
 {
-    public function startProgress(): JsonResponse
+    public function startProgress(Request $request): JsonResponse
     {
+        $request = $request->all();
+        if (isset($request['data']['type']) && $request['data']['type'] === 'list') {
+            $ar = array_diff(explode("\n", $request['data']['siteList']), [""]);
+            if (count($ar) < 5) {
+                return response()->json([
+                    'message' => __('The list of sites must contain at least 5 sites')
+                ], 415);
+            }
+        }
         $progress = new RelevanceProgress();
         $progress->user_id = Auth::id();
         $progress->hash = md5(Auth::id() . time());

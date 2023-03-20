@@ -4,24 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\Common;
 use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
+use App\Location;
 use App\MonitoringColumn;
+use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringOccurrence;
 use App\MonitoringPosition;
+use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
+use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use TheSeer\Tokenizer\Exception;
 
 class MonitoringController extends Controller
 {
@@ -43,7 +51,7 @@ class MonitoringController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -67,12 +75,12 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->find($request->input('projectId'));
-        if(!$project)
+        if (!$project)
             return collect(['status' => false]);
 
         $engines = $project->searchengines()->whereIn('id', $request->input('regions'))->get();
 
-        foreach ($engines as $engine){
+        foreach ($engines as $engine) {
             foreach ($project->keywords as $query)
                 dispatch((new AutoUpdatePositionQueue($query, $engine))->onQueue('position_high'));
         }
@@ -128,16 +136,16 @@ class MonitoringController extends Controller
         $user = $this->user;
 
         $dataTable = MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get('id')->pluck('id'));
-        if(!$dataTable->count())
+        if (!$dataTable->count())
             $this->updateDataTableProjects();
 
         $model = $user->monitoringProjectsWithDataTable();
 
         $search = $request->input('search');
-        if($search = $search['value'])
+        if ($search = $search['value'])
             $model = $model->where('name', 'like', $search . '%');
 
-        if($order = Arr::first($request->input('order'))){
+        if ($order = Arr::first($request->input('order'))) {
             $columns = $request->input('columns');
             $model->orderBy($columns[$order['column']]['name'], $order['dir']);
         }
@@ -159,13 +167,13 @@ class MonitoringController extends Controller
 
     protected function loadSearchEnginesToProjects($projects)
     {
-        $projects->transform(function($item){
+        $projects->transform(function ($item) {
             $item->load(['searchengines' => function ($query) {
                 $query->groupBy('engine');
             }]);
 
-            $item->engines = $item->searchengines->pluck('engine')->map(function ($item){
-                return '<span class="badge badge-light"><i class="fab fa-'. $item .' fa-sm"></i></span>';
+            $item->engines = $item->searchengines->pluck('engine')->map(function ($item) {
+                return '<span class="badge badge-light"><i class="fab fa-' . $item . ' fa-sm"></i></span>';
             })->implode(' ');
 
             return $item;
@@ -193,18 +201,18 @@ class MonitoringController extends Controller
         $section = $project->groups()->find($group_id);
 
         $groups = collect([]);
-        foreach ($engines as $engine){
+        foreach ($engines as $engine) {
             $engine->data = collect([]);
             $positions = $engine->positions()->whereNotNull('position');
 
-            if($section)
+            if ($section)
                 $positions->whereIn('monitoring_keyword_id', $section->keywords->pluck('id'));
 
             $positions = $positions->get();
 
-            if($positions->isNotEmpty()){
-                foreach ($this->subtractionMonths as $month){
-                    if($grouped = $this->groupPositionsByMonth($positions, $month)){
+            if ($positions->isNotEmpty()) {
+                foreach ($this->subtractionMonths as $month) {
+                    if ($grouped = $this->groupPositionsByMonth($positions, $month)) {
                         $engine->data->push($this->calculateTopPercent($grouped, $engine));
                     }
                 }
@@ -231,7 +239,7 @@ class MonitoringController extends Controller
 
         $pos = $this->getLastCoupleOfPositions($positions);
 
-        foreach ($percents as $name => $percent){
+        foreach ($percents as $name => $percent) {
             $first = Helper::calculateTopPercentByPositions($pos->pluck('first.position'), $percent);
             $last = Helper::calculateTopPercentByPositions($pos->pluck('last.position'), $percent);
             $engine->$name = $first . Helper::differentTopPercent($first, $last);
@@ -244,10 +252,10 @@ class MonitoringController extends Controller
 
     public function getLastCoupleOfPositions(Collection $positions)
     {
-        $positions = $positions->groupBy('monitoring_keyword_id')->transform(function($pos){
+        $positions = $positions->groupBy('monitoring_keyword_id')->transform(function ($pos) {
             $p = $pos->sortByDesc('created_at')->values();
 
-            if($p->count() > 1)
+            if ($p->count() > 1)
                 return collect(['first' => $p[0], 'last' => $p[1]]);
             elseif ($p->count())
                 return collect(['first' => $p[0], 'last' => []]);
@@ -264,13 +272,15 @@ class MonitoringController extends Controller
 
         $grouped = $positions->groupBy(function ($item) use ($format) {
             return $item->created_at->format($format);
-        })->sortByDesc(function($i, $k){ return Carbon::parse($k)->timestamp; });
+        })->sortByDesc(function ($i, $k) {
+            return Carbon::parse($k)->timestamp;
+        });
 
-        if($subMonth === null)
+        if ($subMonth === null)
             return $grouped;
 
         $carbon = Carbon::now()->subMonths($subMonth)->format($format);
-        if($grouped->has($carbon))
+        if ($grouped->has($carbon))
             return $grouped[$carbon];
 
         return null;
@@ -279,7 +289,7 @@ class MonitoringController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -289,8 +299,8 @@ class MonitoringController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -302,15 +312,17 @@ class MonitoringController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
-        $navigations = $this->navigations();
-
         /** @var User $user */
         $user = $this->user;
+
+        /** @var MonitoringProject $project */
         $project = $user->monitoringProjects()->where('id', $id)->first();
+
+        $navigations = $this->navigations($project);
 
         $length = $this->getLength($project->id);
         $lengthMenu = $this->getPaginationMenu();
@@ -322,8 +334,8 @@ class MonitoringController extends Controller
     {
         $lengthMenu = '[10,20,30,50]';
 
-        if($global = (new MonitoringSettings())->getValue('pagination_items'))
-            $lengthMenu = '['. $global .']';
+        if ($global = (new MonitoringSettings())->getValue('pagination_items'))
+            $lengthMenu = '[' . $global . ']';
 
         return $lengthMenu;
     }
@@ -332,10 +344,10 @@ class MonitoringController extends Controller
     {
         $lengthDefault = 100;
 
-        if($global = (new MonitoringSettings())->getValue('pagination_query'))
+        if ($global = (new MonitoringSettings())->getValue('pagination_query'))
             $lengthDefault = $global;
 
-        if($length = $this->getSetting($projectId, 'length'))
+        if ($length = $this->getSetting($projectId, 'length'))
             $lengthDefault = $length->value;
 
         return $lengthDefault;
@@ -391,7 +403,7 @@ class MonitoringController extends Controller
             ->groupBy('monitoring_keyword_id');
 
         $lastUrlPosition = DB::table('monitoring_positions')
-            ->joinSub($lastDateUrlPosition, 'latest_url', function($join){
+            ->joinSub($lastDateUrlPosition, 'latest_url', function ($join) {
                 $join->on('monitoring_positions.monitoring_keyword_id', '=', 'latest_url.monitoring_keyword_id')
                     ->on('monitoring_positions.created_at', '=', 'latest_url.created_max');
             })
@@ -417,17 +429,17 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->where('id', $id)->first();
 
-        if($project->searchengines->count() > 1 && empty($regionId))
+        if ($project->searchengines->count() > 1 && empty($regionId))
             $mode = 'main';
-        else{
-            if(empty($regionId))
+        else {
+            if (empty($regionId))
                 $regionId = $project->searchengines->first()->id;
         }
 
         $keywords = $project->keywords();
 
         $region = $this->getRegion($project, $regionId);
-        if($mode === 'main')
+        if ($mode === 'main')
             $region = $this->getRegions($project);
 
         $this->filter($project, $keywords, $region, $request);
@@ -440,24 +452,24 @@ class MonitoringController extends Controller
         $this->setSetting($project->id, 'length', $request->input('length'));
 
         $dates = null;
-        if($request->input('dates_range', null)){
+        if ($request->input('dates_range', null)) {
             $dates = explode(' - ', $request->input('dates_range'), 2);
         }
 
         $keywords->load('group');
 
-        $keywords->load(['positions' => function($query) use ($region, $dates, $mode){
+        $keywords->load(['positions' => function ($query) use ($region, $dates, $mode) {
 
-            if(isset($region->id))
+            if (isset($region->id))
                 $query->where('monitoring_searchengine_id', $region->id);
 
-            if($mode === "datesFind")
+            if ($mode === "datesFind")
                 $query->dateFind($dates);
             else
                 $query->dateRange($dates);
         }]);
 
-        if(isset($region->id)){
+        if (isset($region->id)) {
             $keywords = $this->setUrlsInKeywords($keywords, $region->id);
         }
 
@@ -465,7 +477,7 @@ class MonitoringController extends Controller
 
         $columns = $this->getMainColumns($keywords);
 
-        $this->getLastPositions($keywords,$columns, $mode, $region, $dates);
+        $this->getLastPositions($keywords, $columns, $mode, $region, $dates);
 
         $table = $this->generateDataTable($keywords, $columns, $mode);
 
@@ -484,15 +496,15 @@ class MonitoringController extends Controller
     private function setOccurrenceInKeywords($query, $region)
     {
         $collection = collect([]);
-        if($region instanceof MonitoringSearchengine)
+        if ($region instanceof MonitoringSearchengine)
             $collection->push($region);
         else
             $collection = $region;
 
-        $query->transform(function($item) use ($collection){
-            foreach($collection as $region){
+        $query->transform(function ($item) use ($collection) {
+            foreach ($collection as $region) {
                 $occurrence = MonitoringOccurrence::where(['monitoring_keyword_id' => $item->id, 'monitoring_searchengine_id' => $region['id']])->first();
-                if($occurrence){
+                if ($occurrence) {
                     $item->base += $occurrence->base;
                     $item->phrasal += $occurrence->phrasal;
                     $item->exact += $occurrence->exact;
@@ -511,10 +523,10 @@ class MonitoringController extends Controller
     {
         $dir = 'asc';
 
-        if($order && is_array($order)){
+        if ($order && is_array($order)) {
             $order = collect($order)->collapse();
 
-            if($order->has('dir') && $order['dir'] != $dir)
+            if ($order->has('dir') && $order['dir'] != $dir)
                 $dir = $order['dir'];
         }
 
@@ -525,30 +537,30 @@ class MonitoringController extends Controller
     {
         $mode = $request->input('mode_range', 'range');
         $dates = null;
-        if($request->input('dates_range', null)){
+        if ($request->input('dates_range', null)) {
             $dates = explode(' - ', $request->input('dates_range'), 2);
         }
 
         $keywords = $keywords->get();
 
-        $keywords->load(['positions' => function($query) use ($region, $dates, $mode){
+        $keywords->load(['positions' => function ($query) use ($region, $dates, $mode) {
 
             $query->where('monitoring_searchengine_id', $region->id);
 
-            if($mode === "datesFind")
+            if ($mode === "datesFind")
                 $query->dateFind($dates);
             else
                 $query->dateRange($dates);
         }]);
 
         $columns = $this->getMainColumns();
-        $this->getLastPositions($keywords,$columns, $mode, $region, $dates);
+        $this->getLastPositions($keywords, $columns, $mode, $region, $dates);
 
-        foreach ($keywords as $keyword){
+        foreach ($keywords as $keyword) {
             $dynamics = 0;
             $model = $keyword->positions_view;
 
-            if($model && $model->count() > 1)
+            if ($model && $model->count() > 1)
                 $dynamics = ($model->last()->position - $model->first()->position);
 
             MonitoringKeyword::where('id', $keyword->id)->update(['dynamic' => $dynamics]);
@@ -558,35 +570,41 @@ class MonitoringController extends Controller
     private function getLastPositions(&$keywords, &$columns, $mode, $region, $dates)
     {
         $dateCollection = collect([]);
-        foreach($keywords as &$keyword){
+        foreach ($keywords as &$keyword) {
 
-            $grouped = $keyword->positions->groupBy(function($item){
+            $grouped = $keyword->positions->groupBy(function ($item) {
                 return $item->created_at->format('d.m.Y');
-            })->sortByDesc(function($i, $k){ return Carbon::parse($k)->timestamp; });
-
-            $grouped->transform(function ($item) {
-                return $item->sortByDesc(function($i){ return $i->created_at->timestamp; })->values()->first();
+            })->sortByDesc(function ($i, $k) {
+                return Carbon::parse($k)->timestamp;
             });
 
-            foreach($grouped->keys() as $date)
-                if(!$dateCollection->contains($date))
+            $grouped->transform(function ($item) {
+                return $item->sortByDesc(function ($i) {
+                    return $i->created_at->timestamp;
+                })->values()->first();
+            });
+
+            foreach ($grouped->keys() as $date)
+                if (!$dateCollection->contains($date))
                     $dateCollection->push($date);
 
             $keyword->positions_data_table = $grouped;
         }
 
         $columnCollection = collect([]);
-        foreach ($dateCollection->sortByDesc(function($i){ return Carbon::parse($i)->timestamp; }) as $col_idx => $col_date)
+        foreach ($dateCollection->sortByDesc(function ($i) {
+            return Carbon::parse($i)->timestamp;
+        }) as $col_idx => $col_date)
             $columnCollection->put('col_' . $col_idx, $col_date);
 
-        switch ($mode){
+        switch ($mode) {
             case "dates":
                 $columns = $columns->merge(collect([
                     'col_0' => __('First of find'),
                     'col_1' => __('Last of find'),
                 ]));
 
-                $keywords->transform(function($item){
+                $keywords->transform(function ($item) {
                     $item->positions_view = collect([
                         'col_0' => $item->positions_data_table->first(),
                         'col_1' => $item->positions_data_table->last(),
@@ -597,10 +615,10 @@ class MonitoringController extends Controller
                 break;
             case "randWeek":
             case "randMonth":
-                $keywords->transform(function($item) use ($mode){
+                $keywords->transform(function ($item) use ($mode) {
                     $positionsRange = collect([]);
-                    foreach ($item->positions_data_table as $p){
-                        if($mode === "randWeek")
+                    foreach ($item->positions_data_table as $p) {
+                        if ($mode === "randWeek")
                             $positionsRange->put($p->created_at->week(), $p);
                         else
                             $positionsRange->put($p->created_at->month, $p);
@@ -615,7 +633,7 @@ class MonitoringController extends Controller
                 foreach ($keywords as $keyword)
                     $getDateForColumns = $getDateForColumns->merge($keyword->positions_view->pluck('created_at'));
 
-                $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique(function($item){
+                $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique(function ($item) {
                     return $item->format('d.m.Y');
                 });
 
@@ -625,10 +643,10 @@ class MonitoringController extends Controller
 
                 $columns = $columns->merge($dateOfColumns);
 
-                foreach ($keywords as $keyword){
+                foreach ($keywords as $keyword) {
                     $lastPosition = collect([]);
-                    foreach ($dateOfColumns as $col => $name){
-                        if($keyword->positions_data_table->has($name))
+                    foreach ($dateOfColumns as $col => $name) {
+                        if ($keyword->positions_data_table->has($name))
                             $lastPosition->put($col, $keyword->positions_data_table[$name]);
                     }
                     $keyword->positions_view = $lastPosition;
@@ -636,18 +654,18 @@ class MonitoringController extends Controller
                 break;
             case "main":
                 $mainColumns = collect([]);
-                $keywords->transform(function($item) use ($region, $mainColumns){
+                $keywords->transform(function ($item) use ($region, $mainColumns) {
 
                     $lastPosition = collect([]);
-                    foreach ($region as $reg){
+                    foreach ($region as $reg) {
 
                         $model = $item->positions()->where('monitoring_searchengine_id', $reg->id)->latest()->get();
                         $col = 'engine_' . $reg->lr;
 
-                        if($model->isNotEmpty()){
+                        if ($model->isNotEmpty()) {
                             $monitoringPosition = $model->first();
 
-                            if($monitoringPosition->id != $model->last()->id)
+                            if ($monitoringPosition->id != $model->last()->id)
                                 $monitoringPosition->diffPosition = ($model->last()->position - $monitoringPosition->position);
                             else
                                 $monitoringPosition->diffPosition = null;
@@ -656,7 +674,7 @@ class MonitoringController extends Controller
                         }
 
                         $city = stristr($reg->location->name, ',', true);
-                        $icon = '<i class="fab d-block fa-'. $reg->engine .' fa-sm"></i>';
+                        $icon = '<i class="fab d-block fa-' . $reg->engine . ' fa-sm"></i>';
 
                         $mainColumns->put($col, implode(' ', [$icon, $city]));
                     }
@@ -672,11 +690,11 @@ class MonitoringController extends Controller
                 break;
             default;
                 $columns = $columns->merge($columnCollection);
-                $keywords->transform(function($item) use ($columnCollection){
+                $keywords->transform(function ($item) use ($columnCollection) {
 
                     $positions = collect([]);
                     foreach ($columnCollection as $col => $name)
-                        if($item->positions_data_table->has($name))
+                        if ($item->positions_data_table->has($name))
                             $positions->put($col, $item->positions_data_table[$name]);
 
                     $this->diffPositionExtension($positions);
@@ -685,18 +703,18 @@ class MonitoringController extends Controller
 
                     return $item;
                 });
-            }
+        }
     }
 
     private function diffPositionExtension(&$positions)
     {
-        if($positions->isEmpty())
+        if ($positions->isEmpty())
             return false;
 
         $pre = 0;
 
-        foreach($positions->reverse() as $p){
-            if($pre > 0)
+        foreach ($positions->reverse() as $p) {
+            if ($pre > 0)
                 $p->diffPosition = ($pre - $p->position);
             else
                 $p->diffPosition = null;
@@ -708,7 +726,7 @@ class MonitoringController extends Controller
     private function generateDataTable($keywords, $columns, $mode)
     {
         $table = [];
-        foreach ($keywords as $keyword){
+        foreach ($keywords as $keyword) {
 
             $id = $keyword->id;
             $table[$id] = $this->generateRowDataTable($columns, $keyword, $mode);
@@ -722,7 +740,7 @@ class MonitoringController extends Controller
         $row = collect([]);
         $collectionPositions = $keyword->positions_view;
 
-        foreach ($columns as $i => $v){
+        foreach ($columns as $i => $v) {
 
             switch ($i) {
                 case 'id':
@@ -738,19 +756,19 @@ class MonitoringController extends Controller
                     $row->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
                     break;
                 case 'url':
-                    if(isset($keyword->urls)){
+                    if (isset($keyword->urls)) {
                         $urls = $keyword->urls;
                         $textClass = 'text-bold';
-                        if($keyword->page && $urls->count()){
+                        if ($keyword->page && $urls->count()) {
                             $lastUrl = $urls->first();
-                            if($lastUrl->url != $keyword->page)
+                            if ($lastUrl->url != $keyword->page)
                                 $textClass = 'text-danger';
                             else
                                 $textClass = 'text-success';
                         }
 
                         $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
-                    }else
+                    } else
                         $row->put($i, '-');
                     break;
                 case 'group':
@@ -761,41 +779,41 @@ class MonitoringController extends Controller
                     break;
                 case 'dynamics':
                     $dynamics = 0;
-                    if($collectionPositions && $collectionPositions->count() > 1)
+                    if ($collectionPositions && $collectionPositions->count() > 1)
                         $dynamics = ($collectionPositions->last()->position - $collectionPositions->first()->position);
 
                     $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
                     break;
                 case 'base':
-                    if(isset($keyword->base))
+                    if (isset($keyword->base))
                         $row->put('base', $keyword->base);
                     else
                         $row->put('base', '-');
                     break;
                 case 'phrasal':
-                    if(isset($keyword->phrasal))
+                    if (isset($keyword->phrasal))
                         $row->put('phrasal', $keyword->phrasal);
                     else
                         $row->put('phrasal', '-');
                     break;
                 case 'exact':
-                    if(isset($keyword->exact))
+                    if (isset($keyword->exact))
                         $row->put('exact', $keyword->exact);
                     else
                         $row->put('exact', '-');
                     break;
                 default:
 
-                    if($mode === "dates" || $mode === "main"){
-                        if(isset($collectionPositions[$i]))
+                    if ($mode === "dates" || $mode === "main") {
+                        if (isset($collectionPositions[$i]))
                             $row->put($i, view('monitoring.partials.show.position_with_date', ['model' => $collectionPositions[$i]])->render());
                         else
                             $row->put($i, '-');
 
-                    }else{
-                        if(isset($collectionPositions[$i])) {
+                    } else {
+                        if (isset($collectionPositions[$i])) {
                             $row->put($i, view('monitoring.partials.show.position', ['model' => $collectionPositions[$i]])->render());
-                        }else
+                        } else
                             $row->put($i, '-');
                     }
             }
@@ -815,11 +833,11 @@ class MonitoringController extends Controller
 
         $urls = $model->groupBy('monitoring_keyword_id');
 
-        $keywords->transform(function($item) use ($urls){
+        $keywords->transform(function ($item) use ($urls) {
 
             $item->urls = collect([]);
 
-            if(isset($urls[$item->id]))
+            if (isset($urls[$item->id]))
                 $item->urls = $urls[$item->id]->unique('url');
 
             return $item;
@@ -835,7 +853,7 @@ class MonitoringController extends Controller
         $project = $user->monitoringProjects()->where('id', $request->input('projectId'))->first();
         $region = $project->searchengines();
 
-        if($request->input('regionId'))
+        if ($request->input('regionId'))
             $region->where('id', $request->input('regionId'));
 
         $region = $region->orderBy('id', 'asc')->first();
@@ -857,9 +875,9 @@ class MonitoringController extends Controller
     {
         $text = '';
 
-        if($keywords){
+        if ($keywords) {
             $query = $keywords->first();
-            if(isset($query['occurrenceCreateAt']))
+            if (isset($query['occurrenceCreateAt']))
                 $text = $query['occurrenceCreateAt']->format('d.m.Y');
         }
 
@@ -883,25 +901,25 @@ class MonitoringController extends Controller
     {
         $columns = $request->input('columns', []);
 
-        foreach ($columns as $column){
+        foreach ($columns as $column) {
 
             switch ($column['data']) {
                 case 'query':
-                    if($column['search']['value'])
-                        $model->where('query', 'like', '%'.$column['search']['value'].'%');
+                    if ($column['search']['value'])
+                        $model->where('query', 'like', '%' . $column['search']['value'] . '%');
                     break;
                 case 'group':
-                    if($column['search']['value'])
+                    if ($column['search']['value'])
                         $model->where('monitoring_group_id', '=', $column['search']['value']);
                     break;
                 case 'url':
-                    if($column['search']['value'])
+                    if ($column['search']['value'])
                         $model->whereIn('id', $this->getKeywordIdsWithNotValidateUrl($project->id, $region->id));
                     break;
                 case 'dynamics':
-                    if($column['search']['value']){
+                    if ($column['search']['value']) {
                         $this->updateKeywordsDynamic($model, $region, $request);
-                        if($column['search']['value'] == 'positive')
+                        if ($column['search']['value'] == 'positive')
                             $model->where('dynamic', '>', 0);
                         elseif ($column['search']['value'] == 'negative')
                             $model->where('dynamic', '<', 0);
@@ -913,20 +931,21 @@ class MonitoringController extends Controller
         return $columns;
     }
 
-    private function navigations()
+    private function navigations(MonitoringProject $project): array
     {
         /** @var User $user */
         $user = $this->user;
-
-        $count = $user->monitoringProjects()->count();
+        $countMonitoringProjects = $user->monitoringProjects()->count();
+        $countBackLinkProjects = $user->backlingProjects()->count();
+        $countCompetitors = count($project->competitors);
 
         $navigations = [
-            ['h3' => $count, 'p' => 'Проекты', 'small' => '', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => '#', 'bg' => 'bg-success'],
+            ['h3' => $countMonitoringProjects, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
+            ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
             ['h3' => '150', 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
             ['h3' => '150', 'p' => 'План продвижения', 'small' => 'В разработке', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
             ['h3' => '150', 'p' => 'Аудит сайта', 'small' => 'В разработке', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
-            ['h3' => '150', 'p' => 'Отслеживание ссылок', 'small' => '', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
+            ['h3' => $countBackLinkProjects, 'p' => 'Отслеживание ссылок', 'small' => '', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
         ];
 
         return $navigations;
@@ -935,8 +954,8 @@ class MonitoringController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
     public function edit($id)
     {
@@ -946,9 +965,9 @@ class MonitoringController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int $id
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -958,8 +977,8 @@ class MonitoringController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
     public function destroy($id)
     {
@@ -988,7 +1007,6 @@ class MonitoringController extends Controller
     }
 
     /**
-     * @param $id
      * @param $project
      * @return mixed
      */
@@ -1001,5 +1019,128 @@ class MonitoringController extends Controller
         $region->load('location');
 
         return $region;
+    }
+
+    public function monitoringCompetitors(MonitoringProject $project)
+    {
+        $countQuery = count($project->keywords);
+        $navigations = $this->navigations($project);
+
+        return view('monitoring.competitors', compact(
+            'navigations',
+            'countQuery',
+            'project'
+        ));
+
+//        foreach ($monitoring->searchengines as $searchengine) {
+//            dd($searchengine->lr);
+//        }
+//        dd();
+//        $results = [];
+//        $competitors = [];
+//        foreach ($monitoring->competitors as $competitor) {
+//            $competitors[] = $competitor->url;
+//            $array = $competitor->positions->toArray();
+//            $results[$array[0]['query']]['competitors'][$competitor->url] = $competitor->avgPositions();
+//        }
+////        count($keyword->positions) -- количество проверок для всех слов одинаково?
+//        foreach ($monitoring->keywords as $keyword) {
+//            $results[$keyword->query]['allCheck'] = count($keyword->positions);
+//            $results[$keyword->query]['avg'] = $keyword->avgPositions();
+//            $results[$keyword->query]['top10'] = $keyword->topPositions(10);
+//            $results[$keyword->query]['top20'] = $keyword->topPositions(20);
+//            $results[$keyword->query]['top30'] = $keyword->topPositions(30);
+//        }
+    }
+
+    public function getCompetitorsInfo(Request $request): JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        if (isset($request->region)) {
+            $engines = MonitoringSearchengine::where('id', '=', $request->region)->get(['lr', 'engine']);
+        } else {
+            $engines = $project->searchengines;
+        }
+        $competitors = [];
+
+        foreach ($engines as $searchengine) {
+            foreach ($project->keywords as $keyword) {
+                $results = SearchIndex::where('lr', '=', $searchengine->lr)
+                    ->where('query', '=', $keyword->query)
+                    ->where('position', '<=', 10)->latest()
+                    ->pluck('query', 'url');
+
+                foreach ($results as $url => $query) {
+                    $host = parse_url(Common::domainFilter($url))['host'];
+                    $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
+                }
+            }
+        }
+
+        foreach ($project->competitors as $competitor) {
+            $url = Common::domainFilter($competitor->url);
+
+            if (array_key_exists($url, $competitors)) {
+                $competitors[$url]['competitor'] = true;
+            }
+        }
+
+        if (array_key_exists($project->url, $competitors)) {
+            $competitors[$project->url]['mainPage'] = true;
+        }
+
+        foreach ($competitors as $key => $urls) {
+            $count = 0;
+            foreach ($urls as $inf => $engines) {
+                if ($inf !== 'urls') {
+                    continue;
+                }
+                foreach ($engines as $words) {
+                    foreach ($words as $word) {
+                        $count += count($word);
+                    }
+                }
+            }
+
+            $competitors[$key]['visibility'] = $count;
+        }
+
+        return response()->json([
+            'data' => $competitors
+        ]);
+    }
+
+    public function addCompetitor(Request $request): ?JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        if ($project->user->id !== Auth::id()) {
+            return abort(403);
+        }
+
+        MonitoringCompetitor::insert([
+            'monitoring_project_id' => $project->id,
+            'url' => $request->url,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        return response()->json([], 201);
+    }
+
+    public function removeCompetitor(Request $request): ?JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        if ($project->user->id !== Auth::id()) {
+            return abort(403);
+        }
+
+        MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
+            ->where('url', $request->url)
+            ->delete();
+
+        return response()->json([], 200);
     }
 }

@@ -69,6 +69,10 @@
             #scroll_top:hover, #scroll_bottom:hover, #scroll_button:hover {
                 opacity: 1;
             }
+
+            .Clusters {
+                background: oldlace;
+            }
         </style>
     @endslot
 
@@ -89,15 +93,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="saveUrlsModalLabel">Modal title</h5>
+                    <h5 class="modal-title"
+                        id="saveUrlsModalLabel">{{ __('Select the url that will be saved for each phrase of this cluster') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="relevanceUrls">
-                        {{ __('Select the url that will be saved for each phrase of this cluster') }}
-                    </label>
                     <select name="relevanceUrls" id="relevanceUrls" class="select custom-select"></select>
                 </div>
                 <div class="modal-footer">
@@ -141,10 +143,6 @@
         <div class="card-body">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                    <div id="progress-bar" style="display: none">
-                        <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
-                        <img src="/img/1485.gif" alt="preloader_gif" width="20">
-                    </div>
 
                     <div id="params" style="display: none">
                         <div class="d-flex w-100 justify-content-between" style="margin-top: 40px;">
@@ -377,7 +375,7 @@
                                 @foreach (json_decode($cluster['result'], true) as $items)
                                     <tr>
                                         <td class="p-0">
-                                            <table class="default-cluster table table-hover text-nowrap no-footer mb-0"
+                                            <table class="default-cluster table table-hover no-footer mb-0"
                                                    id="{{ Str::random() }}">
                                                 <thead>
                                                 <tr>
@@ -475,11 +473,11 @@
                 });
             });
         </script>
+        <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/common.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -493,56 +491,8 @@
                 }, 3000)
             }
 
-            function saveAllUrls(id) {
-                let button = $(this)
-                $('.save-all-urls').unbind().on('click', function () {
-                    button = $(this)
-                    $('#relevanceUrls').html('')
-                    $.each($(this).attr('data-urls').split(','), function (key, value) {
-                        $('#relevanceUrls').append($('<option>', {
-                            value: value,
-                            text: value
-                        }));
-                    })
-                })
-
-                $('#save-cluster-url-button').unbind().on('click', function () {
-                    let phrases = []
-                    $.each(button.parent().parent().parent().parent().children('td').eq(0).children('div').eq(0).children('table').eq(0).children('tbody').children('tr'), function (key, value) {
-                        let thisElem = $(this)
-                        if (thisElem.children('td').eq(4).children('a').eq(0).length === 0) {
-                            if (thisElem.children('td').eq(2).attr('title') !== undefined) {
-                                let phrase = thisElem.children('td').eq(2).attr('title')
-                                phrase = phrase.replace('Ваша фраза "', '')
-                                phrase = phrase.replace('" была изменена', '')
-                                phrases.push(phrase)
-                            } else {
-                                phrases.push(thisElem.children('td').eq(2).children('div').eq(0).children('div').eq(0).html())
-                            }
-                            thisElem.children('td').eq(4).html('<a href="' + $('#relevanceUrls').val() + '" target="_blank">' + $('#relevanceUrls').val() + '</a>')
-                        }
-                    })
-
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('set.cluster.relevance.urls') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            phrases: phrases,
-                            url: $('#relevanceUrls').val(),
-                            projectId: id,
-                        },
-                        success: function () {
-
-                        },
-                        error: function (response) {
-                        }
-                    });
-                })
-            }
-
             $(document).ready(function () {
-                renderResultTable({!! $cluster['result'] !!})
+                renderResultTable_v2({!! $cluster['result'] !!})
 
                 $('#default-hidden').dataTable({
                     'order': [[0, "asc"]],
@@ -653,7 +603,7 @@
                             projectId: {{ $cluster['id'] }},
                         },
                         success: function () {
-                            select.parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
+                            select.parent().parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
                         },
                         error: function (response) {
                         }

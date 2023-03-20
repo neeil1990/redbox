@@ -38,11 +38,9 @@ class RelevanceController extends Controller
         $request->validate([
             'link' => 'required|website',
             'phrase' => 'required|not_website',
-            'siteList' => 'required_without:link',
         ], [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
-            'siteList.required' => __('The list of sites is required to fill in.'),
         ]);
 
         RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Common;
+use App\Exports\FilteredUsersExport;
 use App\Exports\VerifiedUsersExport;
 use App\User;
 use Exception;
@@ -186,10 +187,6 @@ class UsersController extends Controller
         });
     }
 
-    /**
-     * @param $type
-     * @return void
-     */
     public function getFile($type)
     {
         if (User::isUserAdmin()) {
@@ -199,5 +196,15 @@ class UsersController extends Controller
             abort(403);
         }
 
+    }
+
+    public function filterExportsUsers(Request $request)
+    {
+        if (User::isUserAdmin()) {
+            $file = Excel::download(new FilteredUsersExport($request->all()), 'filtered_users.' . $request->fileType);
+            Common::fileExport($file, $request->fileType, 'verified-users');
+        } else {
+            abort(403);
+        }
     }
 }

@@ -25,21 +25,21 @@
                 display: inline;
                 content: "{{ __('Go to the text analyzer') }}";
                 font-weight: normal;
-                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
             }
 
             .third-action::after {
                 display: inline;
                 content: "{{ __('Add to Ignored Domains') }}";
                 font-weight: normal;
-                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
             }
 
             .fourth-action::after {
                 display: inline;
                 content: "{{ __('Exclude from ignored domains') }}";
                 font-weight: normal;
-                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
             }
 
             .RelevanceAnalysis {
@@ -961,6 +961,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
                     $('.pb-3.recommendations').hide()
@@ -1065,11 +1066,12 @@
 
             function startProgress(type) {
                 $.ajax({
-                    type: "GET",
+                    type: "POST",
                     dataType: "json",
                     url: "{{ route('start.relevance.progress') }}",
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
+                        data: getData(),
                     },
                     success: function (response) {
                         $('#hiddenHash').val(response.hash)
@@ -1081,6 +1083,14 @@
                             repeatRelevance()
                         }
                     },
+                    error: function (response) {
+                        $('.toast-message.error-message').html(response.responseJSON.message)
+
+                        $('.toast-top-right.error-message.empty').show(300)
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message.empty').hide(300)
+                        }, 5000)
+                    }
                 });
             }
 
@@ -1119,9 +1129,7 @@
                                 message += value + "<br>"
                             });
 
-                            if (messages['message']) {
-                                message = messages['message']
-                            } else if (message === '') {
+                            if (message === '') {
                                 message = "{{ __('An error has occurred, repeat the request.') }}"
                             }
 

@@ -11,12 +11,12 @@
         </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div id="toast-container" class="toast-top-right success-message">
+    <div id="toast-container" class="toast-top-right success-message" style="display: none">
         <div class="toast toast-success" aria-live="polite">
             <div class="toast-message">{{ __('The result was successfully copied to the clipboard') }}</div>
         </div>
     </div>
-    <div id="toast-container" class="toast-top-right error-message">
+    <div id="toast-container" class="toast-top-right error-message" style="display: none">
         <div class="toast toast-error" aria-live="assertive">
             <div class="toast-message">{{ __('Both lists should not be empty') }}</div>
         </div>

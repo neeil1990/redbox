@@ -48,33 +48,33 @@ abstract class Positions
         $site = $this->domain;
         $results = $this->xml->getByArray();
 
-        if(!isset($results['response']['error'])){
+        if (!isset($results['response']['error'])) {
 
             $positions = $results['response']['results']['grouping']['group'];
 
-            if($this->save)
+            if ($this->save)
                 $this->store($positions);
 
-            $position = array_filter($positions, function($var) use ($site) {
+            $position = array_filter($positions, function ($var) use ($site) {
                 $domain = parse_url($var['doc']['url']);
                 return $this->domainFilter($domain['host']) === $site;
             });
 
-            if(count($position) > 0){
+            if (count($position) > 0) {
                 $posKey = key($position);
                 $position[$posKey]["doc"]["position"] = ($posKey + 1);
 
                 return $position[$posKey]["doc"];
-            }else
+            } else
                 return null;
 
-        }else
+        } else
             throw new ErrorXmlPositionResponseException($results['response']['error']);
     }
 
     private function store($positions)
     {
-        if(!count($positions))
+        if (!count($positions))
             return null;
 
         $create = [];
@@ -83,12 +83,12 @@ abstract class Positions
         $query = $this->query;
         $source = get_class($this);
 
-        foreach ($positions as $index => $position){
+        foreach ($positions as $index => $position) {
 
-            $url = isset($position['doc']['url']) ? $position['doc']['url'] : null;
-            $title = isset($position['doc']['title']) ? $position['doc']['title'] : null;
-            $passages = isset($position['doc']['passages']) ? $position['doc']['passages'] : null;
-            if(isset($passages['passage']))
+            $url = $position['doc']['url'] ?? null;
+            $title = $position['doc']['title'] ?? null;
+            $passages = $position['doc']['passages'] ?? null;
+            if (isset($passages['passage']))
                 $snippet = (is_array($passages['passage'])) ? implode(', ', $passages['passage']) : $passages['passage'];
             else
                 $snippet = null;

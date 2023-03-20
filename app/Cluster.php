@@ -5,6 +5,9 @@ namespace App;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Cluster\ClusterQueue;
 use App\Jobs\Cluster\WaitClusterAnalyseQueue;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Cluster
 {
@@ -269,6 +272,7 @@ class Cluster
         $this->calculateClustersInfo();
         $this->searchGroupName();
         $this->calculateSimilarities();
+        $this->searchGroupName();
         $this->setResult($this->clusters);
         $this->saveResult();
 
@@ -277,6 +281,13 @@ class Cluster
         }
 
         \App\ClusterQueue::where('progress_id', '=', $this->getProgressId())->delete();
+
+        $now = Carbon::now();
+        $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
+
+        $count = ClusterLimit::calculateCountRequests($this->request);
+        ClusterLimit::where('user_id', '=', $this->user->id)
+            ->where('date', '=', "$now->year-$month")->increment('count', $count);
     }
 
     protected function markIgnoredDomains()
@@ -718,10 +729,11 @@ class Cluster
             }
 
             $this->clusters[$key]['finallyResult']['groupName'] = $groupName;
-            $this->clusters[$groupName] = $this->clusters[$key];
+            $swap = $this->clusters[$key];
             if (count($this->clusters[$key]) > 2) {
                 unset($this->clusters[$key]);
             }
+            $this->clusters[$groupName] = $swap;
         }
     }
 

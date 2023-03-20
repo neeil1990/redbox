@@ -68,6 +68,14 @@
                     </li>
                 @endif
             @endforeach
+            <li class="nav-item menu-item">
+                <a class="nav-link search-link" href="{{ route('partners') }}" style="white-space: inherit !important;">
+                    <span>
+                        <i class="fa fa-handshake" style="color: white"></i>
+                        <span class="module-name ml-2"> {{ __('Partners') }}</span>
+                    </span>
+                </a>
+            </li>
         @else
             <li class="nav-item menu-item">
                 <a class="nav-link search-link" href="/login" style="white-space: inherit !important;">

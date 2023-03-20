@@ -7,7 +7,6 @@ namespace App\Classes\Position;
 use App\Classes\Position\Engine\Google;
 use App\Classes\Position\Engine\Yandex;
 use App\MonitoringKeyword;
-use App\MonitoringSearchengine;
 use Illuminate\Support\Arr;
 
 class PositionStore
@@ -51,7 +50,7 @@ class PositionStore
 
     private function getEngine($name, $params = [])
     {
-        if(!Arr::has($params, ['domain', 'query', 'lr']))
+        if (!Arr::has($params, ['domain', 'query', 'lr']))
             throw new \ErrorException('Params domain, query and lr is required.');
 
         switch ($name) {

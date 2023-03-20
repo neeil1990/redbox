@@ -184,8 +184,7 @@ class TextAnalyzer extends Model
     public static function removeStylesAndScripts($html)
     {
         $html = mb_strtolower($html);
-
-        return preg_replace([
+        $preg = [
             "'<style[^>]*?>.*?</style>'si",
             "'<script[^>]*?>.*?</script>'si",
             "'<i [^>]*?>.*?</i>'si",
@@ -193,7 +192,16 @@ class TextAnalyzer extends Model
             "'array.*?\(.*?\)'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
             '/<!--(.|\s)*?-->/',
-        ], "", $html);
+        ];
+
+        foreach ($preg as $rule) {
+            $test = preg_replace($rule, "", $html);
+            if (mb_strlen($test) > 0) {
+                $html = $test;
+            }
+        }
+
+        return $html;
     }
 
     /**

@@ -34,8 +34,11 @@
     </form>
     @slot('js')
         <script src="{{ asset('/plugins/ckeditor/ckeditor.js') }}" type="text/javascript" charset="utf-8"></script>
+        <script src="{{ asset('/plugins/ckeditor/adapters/jquery.js') }}" type="text/javascript" charset="utf-8"></script>
         <script>
-            let editor = CKEDITOR.replace('description');
+            $('#description').ckeditor({
+                language: "{{ $lang }}",
+            });
             $(document).ready(function () {
                 setTimeout(() => {
                     console.clear()

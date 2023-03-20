@@ -2,6 +2,7 @@
 
 namespace App\ViewComposers;
 
+use App\ClusterLimit;
 use App\DomainInformation;
 use App\DomainMonitoring;
 use App\MetaTag;
@@ -80,22 +81,33 @@ class LimitsComposer
                     'position' => 3
                 ];
 
+            case 'Clusters':
+                $now = Carbon::now();
+                $month = strlen($now->month) < 2 ? '0' . $now->month : $now->month;
+
+                return [
+                    'count' => ClusterLimit::where('user_id', '=', Auth::id())
+                            ->where('date', '=', "$now->year-$month")
+                            ->first('count')->count ?? 0,
+                    'position' => 4
+                ];
+
             case 'domainMonitoringProject':
                 return [
                     'count' => (int)DomainMonitoring::where('user_id', '=', $user->id)->count(),
-                    'position' => 4
+                    'position' => 5
                 ];
 
             case 'DomainInformation':
                 return [
                     'count' => (int)DomainInformation::where('user_id', '=', $user->id)->count(),
-                    'position' => 5
+                    'position' => 6
                 ];
 
             case 'MetaTagsProject':
                 return [
                     'count' => MetaTag::where('user_id', '=', Auth::id())->count(),
-                    'position' => 6,
+                    'position' => 7,
                 ];
 
             case 'MetaTagsPages':
@@ -107,67 +119,67 @@ class LimitsComposer
                 }
                 return [
                     'count' => $metaTagsHistoriesCount,
-                    'position' => 7
+                    'position' => 8
                 ];
 
             case 'GeneratorWords':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 8
+                    'position' => 9
                 ];
 
             case 'PasswordGenerator':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 9
+                    'position' => 10
                 ];
 
             case 'TextLength':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 10
+                    'position' => 11
                 ];
 
             case 'ListComparison':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 11
+                    'position' => 12
                 ];
 
             case 'UniqueWords':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 12
+                    'position' => 13
                 ];
 
             case 'HtmlEditor':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 13
+                    'position' => 14
                 ];
 
             case 'RemoveDublicate':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 14
+                    'position' => 15
                 ];
 
             case 'UTM':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 15
+                    'position' => 16
                 ];
 
             case 'ROI':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 16
+                    'position' => 17
                 ];
 
             case 'BacklinkProject':
                 return [
                     'count' => ProjectTracking::where('user_id', '=', $user->id)->count(),
-                    'position' => 17
+                    'position' => 18
                 ];
 
             case 'BacklinkLinks':
@@ -180,18 +192,19 @@ class LimitsComposer
 
                 return [
                     'count' => $projectTrackingLinks,
-                    'position' => 18
+                    'position' => 19
                 ];
 
             case 'behavior':
                 return [
                     'count' => $user->behaviors()->count(),
-                    'position' => 19
+                    'position' => 20
                 ];
+
             case 'HttpHeaders':
                 return [
                     'count' => __('Restrictions are not tracked'),
-                    'position' => 20
+                    'position' => 21
                 ];
 
             default:
@@ -219,56 +232,59 @@ class LimitsComposer
             case 'CompetitorAnalysisPhrases':
                 return 3;
 
-            case 'domainMonitoringProject':
+            case 'Clusters':
                 return 4;
 
-            case 'DomainInformation':
+            case 'domainMonitoringProject':
                 return 5;
 
-            case 'MetaTagsProject':
+            case 'DomainInformation':
                 return 6;
 
-            case 'MetaTagsPages':
+            case 'MetaTagsProject':
                 return 7;
 
-            case 'behavior':
+            case 'MetaTagsPages':
                 return 8;
 
-            case 'BacklinkProject':
-                return 10;
+            case 'behavior':
+                return 9;
 
-            case 'BacklinkLinks':
+            case 'BacklinkProject':
                 return 11;
 
-            case 'UniqueWords':
+            case 'BacklinkLinks':
                 return 12;
 
-            case 'ListComparison':
+            case 'UniqueWords':
                 return 13;
 
-            case 'HttpHeaders':
+            case 'ListComparison':
                 return 14;
 
-            case 'TextLength':
+            case 'HttpHeaders':
                 return 15;
 
-            case 'RemoveDublicate':
+            case 'TextLength':
                 return 16;
 
-            case 'UTM':
+            case 'RemoveDublicate':
                 return 17;
 
-            case 'PasswordGenerator':
+            case 'UTM':
                 return 18;
 
-            case 'HtmlEditor':
+            case 'PasswordGenerator':
                 return 19;
 
-            case 'ROI':
+            case 'HtmlEditor':
                 return 20;
 
-            case 'GeneratorWords':
+            case 'ROI':
                 return 21;
+
+            case 'GeneratorWords':
+                return 22;
 
             default:
                 return 100;

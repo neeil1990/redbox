@@ -10,6 +10,9 @@
             <div>
                 <a href="{{ route('get.verified.users', 'xls') }}" class="btn btn-secondary">Excel</a>
                 <a href="{{ route('get.verified.users', 'csv') }}" class="btn btn-secondary">CSV</a>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exportModal">
+                    Фильтр выгрузки
+                </button>
             </div>
         </div>
 
@@ -109,6 +112,44 @@
                 @endforeach
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Фильтр выгрузки пользователей</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('filter.exports.users') }}" class="modal-body">
+                    @csrf
+                    <div class="group group-required">
+                        <label for="countDays">День последнего онлайна</label>
+                        <input class="form form-control" type="datetime-local" name="lastOnline" required>
+                    </div>
+
+                    <div class="group group-required mt-3">
+                        <label for="verify">Тип файла</label>
+                        <select name="fileType" id="fileType" class="custom custom-select">
+                            <option value="xls">excel</option>
+                            <option value="csv">csv</option>
+                        </select>
+                    </div>
+
+                    <div class="group group-required mt-3">
+                        <label for="verify">Верифицированный пользователь</label>
+                        <input type="checkbox" name="verify" checked>
+                    </div>
+
+                    <div class="pt-3 d-flex justify-content-end">
+                        <button type="button" class="btn btn-default mr-1" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-secondary">Export</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @stop

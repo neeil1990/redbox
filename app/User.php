@@ -240,7 +240,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->delete();
     }
 
-    public function projects()
+    public function backlingProjects()
     {
         return $this->hasMany(ProjectTracking::class);
     }
