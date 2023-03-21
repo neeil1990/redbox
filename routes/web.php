@@ -11,12 +11,6 @@
 |
 */
 
-use App\Classes\Cron\AutoUpdateMonitoringPositions;
-use App\ClusterLimit;
-use App\DomainMonitoring;
-use App\Jobs\AutoUpdatePositionQueue;
-use App\MonitoringSearchengine;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -277,9 +271,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     Route::resource('monitoring', 'MonitoringController');
-    Route::get('/monitoring/{project}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
-    Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
-    Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
     Route::post('/monitoring/add-competitor', 'MonitoringController@addCompetitor')->name('monitoring.add.competitor');
     Route::post('/monitoring/remove-competitor', 'MonitoringController@removeCompetitor')->name('monitoring.remove.competitor');
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
@@ -310,6 +301,11 @@ Route::middleware(['verified'])->group(function () {
     Route::patch('/monitoring/keywords/{project_id}/set-test-positions', 'MonitoringKeywordsController@setTestPositions')->name('keywords.set.test.positions');
 
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
+
+    Route::get('/monitoring/{project}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
+    Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
+    Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
+    Route::post('/monitoring/competitors/visibility', 'MonitoringController@getCompetitorsVisibility')->name('monitoring.get.competitors.visibility');
 
     Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');
     Route::get('/share-my-project-config/{project}', 'SharingController@shareProjectConf')->name('share.project.conf');

@@ -29,6 +29,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use TheSeer\Tokenizer\Exception;
 
 class MonitoringController extends Controller
@@ -942,7 +943,7 @@ class MonitoringController extends Controller
         $navigations = [
             ['h3' => $countMonitoringProjects, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
             ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
-            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
+            ['h3' => $countCompetitors + 1, 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => route('monitoring.competitors.positions', $project->id), 'bg' => 'bg-warning'],
             ['h3' => '150', 'p' => 'План продвижения', 'small' => 'В разработке', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
             ['h3' => '150', 'p' => 'Аудит сайта', 'small' => 'В разработке', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
             ['h3' => $countBackLinkProjects, 'p' => 'Отслеживание ссылок', 'small' => '', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
@@ -1031,26 +1032,6 @@ class MonitoringController extends Controller
             'countQuery',
             'project'
         ));
-
-//        foreach ($monitoring->searchengines as $searchengine) {
-//            dd($searchengine->lr);
-//        }
-//        dd();
-//        $results = [];
-//        $competitors = [];
-//        foreach ($monitoring->competitors as $competitor) {
-//            $competitors[] = $competitor->url;
-//            $array = $competitor->positions->toArray();
-//            $results[$array[0]['query']]['competitors'][$competitor->url] = $competitor->avgPositions();
-//        }
-////        count($keyword->positions) -- количество проверок для всех слов одинаково?
-//        foreach ($monitoring->keywords as $keyword) {
-//            $results[$keyword->query]['allCheck'] = count($keyword->positions);
-//            $results[$keyword->query]['avg'] = $keyword->avgPositions();
-//            $results[$keyword->query]['top10'] = $keyword->topPositions(10);
-//            $results[$keyword->query]['top20'] = $keyword->topPositions(20);
-//            $results[$keyword->query]['top30'] = $keyword->topPositions(30);
-//        }
     }
 
     public function getCompetitorsInfo(Request $request): JsonResponse
@@ -1142,5 +1123,60 @@ class MonitoringController extends Controller
             ->delete();
 
         return response()->json([], 200);
+    }
+
+    public function competitorsPositions(MonitoringProject $project)
+    {
+        $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
+        $navigations = $this->navigations($project);
+
+        return view('monitoring.rating', compact('project', 'competitors', 'navigations'));
+    }
+
+    public function getCompetitorsVisibility(Request $request): JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        $keywords = Common::pullValue(MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query']), 'query');
+        $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
+        array_unshift($competitors, $project->url);
+
+        if (isset($request->region)) {
+            $searchEngines = Common::pullValue(MonitoringSearchengine::where('id', '=', $request->region)->get(['lr'])->toArray(), 'lr');
+        } else {
+            $searchEngines = Common::pullValue(MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['lr'])->toArray(), 'lr');
+        }
+
+        $array = [];
+        foreach ($keywords as $keyword) {
+            foreach ($competitors as $competitor) {
+                $array[$keyword][$competitor] = 0;
+            }
+        }
+
+        foreach ($searchEngines as $searchEngine) {
+            foreach ($keywords as $keyword) {
+                $records = SearchIndex::where('query', $keyword)
+                    ->where('lr', $searchEngine)
+                    ->latest('created_at')
+                    ->take(100)
+                    ->get(['url', 'position', 'created_at'])->toArray();
+
+                foreach ($records as $record) {
+                    $url = Common::domainFilter(parse_url($record['url'])['host']);
+                    if (in_array($url, $competitors)) {
+                        if (isset($array[$keyword][$url])) {
+                            $array[$keyword][$url] += 1;
+                        } else {
+                            $array[$keyword][$url] = 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'data' => $array
+        ]);
     }
 }
