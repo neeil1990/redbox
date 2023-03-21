@@ -124,7 +124,6 @@
                     url: "{{ route('monitoring.get.competitors.visibility') }}",
                     data: data,
                     success: function (response) {
-                        console.log(response.data)
                         renderTableHead(response.data)
                         renderTableBody(response.data)
                         table = initTable()
@@ -160,15 +159,17 @@
                 let index = 1
                 $.each(data, function (query, sites) {
                     $.each(sites, function (site, counter) {
-                        $('#tableHeadRow').append(
-                            '<th class="render">' + site +
-                            '   <span class="remove-competitor ml-1" data-target="' + site + '" data-id="' + index + '">' +
-                            '      <i class="fa fa-trash"></i>' +
-                            '   </span>' +
-                            '</th>'
-                        )
+                        if (site !== '') {
+                            $('#tableHeadRow').append(
+                                '<th class="render">' + site +
+                                '   <span class="remove-competitor ml-1" data-target="' + site + '" data-id="' + index + '">' +
+                                '      <i class="fa fa-trash"></i>' +
+                                '   </span>' +
+                                '</th>'
+                            )
 
-                        index++
+                            index++
+                        }
                     })
                     return false;
                 })
