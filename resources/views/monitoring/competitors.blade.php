@@ -312,8 +312,10 @@
                         1: stub,
                         2: engines,
                         3: val.visibility
-                    }).draw(false)
+                    })
                 })
+
+                table.draw(false)
             }
         </script>
     @endslot
