@@ -180,14 +180,20 @@
                     ],
                 })
 
+                let data = {
+                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                    'projectId': {{ $project->id }},
+                }
+
+                if ($('#searchEngines').val() !== '') {
+                    data.region = $('#searchEngines').val()
+                }
+
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('monitoring.get.competitors') }}",
-                    data: {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'projectId': {{ $project->id }}
-                    },
+                    data: data,
                     success: function (response) {
                         renderTableRows(response.data)
 
