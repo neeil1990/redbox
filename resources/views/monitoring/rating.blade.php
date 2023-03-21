@@ -191,20 +191,19 @@
 
             function initTable() {
                 let res = $('#table').DataTable({
-                    {{--lengthMenu: [10, 25, 50, 100],--}}
-                    {{--pageLength: 50,--}}
-                    {{--order: [[3, 'desc']],--}}
-                    {{--language: {--}}
-                    {{--    lengthMenu: "_MENU_",--}}
-                    {{--    search: "_INPUT_",--}}
-                    {{--    searchPlaceholder: "{{ __('Search') }}",--}}
-                    {{--    paginate: {--}}
-                    {{--        "first": "«",--}}
-                    {{--        "last": "»",--}}
-                    {{--        "next": "»",--}}
-                    {{--        "previous": "«"--}}
-                    {{--    },--}}
-                    {{--},--}}
+                    lengthMenu: [10, 25, 50, 100],
+                    pageLength: 50,
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "{{ __('Search') }}",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
                 })
 
                 $('.remove-competitor').unbind().on('click', function () {
