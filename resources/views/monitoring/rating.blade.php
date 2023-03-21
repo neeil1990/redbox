@@ -179,7 +179,9 @@
                 $.each(data, function (query, info) {
                     let tr = '<tr class="render"><td>' + query + '</td>'
                     $.each(info, function (site, visibility) {
-                        tr += '<td>' + visibility + '</td>'
+                        if (site !== '') {
+                            tr += '<td>' + visibility + '</td>'
+                        }
                     })
                     tr += '</tr>'
 
