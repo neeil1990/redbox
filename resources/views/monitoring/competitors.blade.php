@@ -181,46 +181,7 @@
                             $('#table').show()
                         }, 300)
 
-                        $('.change-domain-state').unbind().on('click', function () {
-                            let url = $(this).attr('data-target')
-                            if ($(this).is(':checked')) {
-                                if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
-                                    $.ajax({
-                                        type: "POST",
-                                        dataType: "json",
-                                        url: "{{ route('monitoring.add.competitor') }}",
-                                        data: {
-                                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                                            'url': url,
-                                            'projectId': {{ $project->id }}
-                                        },
-                                        success: function (response) {
-
-                                        },
-                                    });
-                                } else {
-                                    $(this).prop('checked', false);
-                                }
-                            } else {
-                                if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
-                                    $.ajax({
-                                        type: "POST",
-                                        dataType: "json",
-                                        url: "{{ route('monitoring.remove.competitor') }}",
-                                        data: {
-                                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                                            'url': url,
-                                            'projectId': {{ $project->id }}
-                                        },
-                                        success: function (response) {
-
-                                        },
-                                    });
-                                } else {
-                                    $(this).prop('checked', true);
-                                }
-                            }
-                        })
+                        refreshMethods()
                     },
                 });
 
@@ -401,6 +362,47 @@
 
                     $(this).attr('class', 'ml-2 fa fa-plus-circle get-more-info')
                     refreshMethods()
+                })
+
+                $('.change-domain-state').unbind().on('click', function () {
+                    let url = $(this).attr('data-target')
+                    if ($(this).is(':checked')) {
+                        if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "{{ route('monitoring.add.competitor') }}",
+                                data: {
+                                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                                    'url': url,
+                                    'projectId': {{ $project->id }}
+                                },
+                                success: function (response) {
+
+                                },
+                            });
+                        } else {
+                            $(this).prop('checked', false);
+                        }
+                    } else {
+                        if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "{{ route('monitoring.remove.competitor') }}",
+                                data: {
+                                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                                    'url': url,
+                                    'projectId': {{ $project->id }}
+                                },
+                                success: function (response) {
+
+                                },
+                            });
+                        } else {
+                            $(this).prop('checked', true);
+                        }
+                    }
                 })
             }
         </script>
