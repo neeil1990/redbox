@@ -1117,12 +1117,12 @@ class MonitoringController extends Controller
                     ->where('lr', $searchEngine)
                     ->latest('created_at')
                     ->take(100)
-                    ->get(['url', 'position', 'created_at'])->toArray();
+                    ->get(['url', 'position', 'created_at']);
 
                 foreach ($records as $record) {
                     $url = Common::domainFilter(parse_url($record['url'])['host']);
                     if (in_array($url, $competitors)) {
-                        $array[$keyword][$url] += $record['position'];
+                        $array[$keyword][$url] = $record['position'];
                     }
                 }
             }
