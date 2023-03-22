@@ -297,7 +297,7 @@
                                 $.each(items, function (phrase, info) {
                                     let links = ''
                                     $.each(info, function (key, value) {
-                                        links += '<div><a href="' + value + '" target="_blank">' + value + '</a></div>'
+                                        links += '<div><a href="' + value + '" target="_blank">' + value + '</a></div>' + "\n"
                                     })
 
                                     rows += '<tr>' +

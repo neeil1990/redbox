@@ -54,10 +54,6 @@
                                 <div class="form-group">
                                     <label>{{ __('Search engine') }}:</label>
                                     <select name="region" class="custom-select" id="searchEngines">
-                                        @if($project->searchengines->count() > 1)
-                                            <option value="">{{ __('All search engine and regions') }}</option>
-                                        @endif
-
                                         @foreach($project->searchengines as $search)
                                             @if($search->id == request('region'))
                                                 <option value="{{ $search->id }}"
