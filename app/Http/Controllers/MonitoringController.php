@@ -1122,11 +1122,7 @@ class MonitoringController extends Controller
                 foreach ($records as $record) {
                     $url = Common::domainFilter(parse_url($record['url'])['host']);
                     if (in_array($url, $competitors)) {
-                        if (isset($array[$keyword][$url])) {
-                            $array[$keyword][$url] += 1;
-                        } else {
-                            $array[$keyword][$url] = 1;
-                        }
+                        $array[$keyword][$url] += $record['position'];
                     }
                 }
             }
