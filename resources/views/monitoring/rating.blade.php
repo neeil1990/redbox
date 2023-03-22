@@ -15,6 +15,12 @@
         </style>
     @endslot
 
+    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('Filter applied') }}</div>
+        </div>
+    </div>
+
     <div class="row">
         @foreach($navigations as $navigation)
             <div class="col-lg-2 col-6">
@@ -38,7 +44,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ __('Keywords filter') }}</h3>
+                    <h3 class="card-title">{{ __('Region filter') }}</h3>
                 </div>
 
                 <div class="card-body">
@@ -75,7 +81,7 @@
         </div>
     </div>
 
-    <h3 class="mt-3">
+    <h3 class="mt-3 mr-3">
         {{  __('Project') . " $project->name" }}
     </h3>
 
@@ -106,9 +112,16 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script>
-            var table
+            let table
 
             $(document).ready(function () {
+                let filter = localStorage.getItem('lr_redbox_monitoring_selected_filter')
+
+                if (filter !== null) {
+                    filter = JSON.parse(filter)
+                    $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
+                }
+
                 let data = {
                     '_token': $('meta[name="csrf-token"]').attr('content'),
                     'projectId': {{ $project->id }},
@@ -131,15 +144,26 @@
                 });
 
                 $('#searchEngines').on('change', function () {
+                    let val = $(this).val()
+                    let data = {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'projectId': {{ $project->id }},
+                    }
+
+                    if (val !== '') {
+                        data.region = val
+                        localStorage.setItem('lr_redbox_monitoring_selected_filter', JSON.stringify({
+                            val: val,
+                        }))
+                    } else {
+                        localStorage.removeItem('lr_redbox_monitoring_selected_filter')
+                    }
+
                     $.ajax({
                         type: "POST",
                         dataType: "json",
                         url: "{{ route('monitoring.get.competitors.visibility') }}",
-                        data: {
-                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                            'projectId': {{ $project->id }},
-                            'region': $(this).val()
-                        },
+                        data: data,
                         success: function (response) {
                             if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                                 $('#table').dataTable().fnDestroy()
@@ -149,11 +173,18 @@
                             renderTableHead(response.data)
                             renderTableBody(response.data)
                             table = initTable()
+
+
+                            $('#toast-container').hide()
+                            $('#toast-container').show(300)
+
+                            setTimeout(() => {
+                                $('#toast-container').hide(300)
+                            }, 3000)
                         },
                     });
                 })
             })
-
 
             function renderTableHead(data) {
                 let index = 1

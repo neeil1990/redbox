@@ -7,7 +7,6 @@ use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Common;
 use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
-use App\Location;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
@@ -29,8 +28,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use TheSeer\Tokenizer\Exception;
 
 class MonitoringController extends Controller
 {
@@ -943,7 +940,7 @@ class MonitoringController extends Controller
         $navigations = [
             ['h3' => $countMonitoringProjects, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
             ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
-            ['h3' => $countCompetitors + 1, 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => route('monitoring.competitors.positions', $project->id), 'bg' => 'bg-warning'],
+            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => '#', 'bg' => 'bg-warning'],
             ['h3' => '150', 'p' => 'План продвижения', 'small' => 'В разработке', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
             ['h3' => '150', 'p' => 'Аудит сайта', 'small' => 'В разработке', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
             ['h3' => $countBackLinkProjects, 'p' => 'Отслеживание ссылок', 'small' => '', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
@@ -989,8 +986,8 @@ class MonitoringController extends Controller
     }
 
     /**
-     * @param $id
      * @param $project
+     * @param $regionId
      * @return mixed
      */
     protected function getRegion($project, $regionId = null)
@@ -1034,58 +1031,18 @@ class MonitoringController extends Controller
         ));
     }
 
+    public function getCompetitorInfo(Request $request): JsonResponse
+    {
+        $competitors = MonitoringCompetitor::getCompetitors($request->all());
+
+        return response()->json([
+            'data' => $competitors
+        ]);
+    }
+
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        $project = MonitoringProject::findOrFail($request->projectId);
-
-        if (isset($request->region)) {
-            $engines = MonitoringSearchengine::where('id', '=', $request->region)->get(['lr', 'engine']);
-        } else {
-            $engines = $project->searchengines;
-        }
-        $competitors = [];
-
-        foreach ($engines as $searchengine) {
-            foreach ($project->keywords as $keyword) {
-                $results = SearchIndex::where('lr', '=', $searchengine->lr)
-                    ->where('query', '=', $keyword->query)
-                    ->where('position', '<=', 10)->latest()
-                    ->pluck('query', 'url');
-
-                foreach ($results as $url => $query) {
-                    $host = parse_url(Common::domainFilter($url))['host'];
-                    $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
-                }
-            }
-        }
-
-        foreach ($project->competitors as $competitor) {
-            $url = Common::domainFilter($competitor->url);
-
-            if (array_key_exists($url, $competitors)) {
-                $competitors[$url]['competitor'] = true;
-            }
-        }
-
-        if (array_key_exists($project->url, $competitors)) {
-            $competitors[$project->url]['mainPage'] = true;
-        }
-
-        foreach ($competitors as $key => $urls) {
-            $count = 0;
-            foreach ($urls as $inf => $engines) {
-                if ($inf !== 'urls') {
-                    continue;
-                }
-                foreach ($engines as $words) {
-                    foreach ($words as $word) {
-                        $count += count($word);
-                    }
-                }
-            }
-
-            $competitors[$key]['visibility'] = $count;
-        }
+        $competitors = MonitoringCompetitor::getCompetitors($request->all());
 
         return response()->json([
             'data' => $competitors
