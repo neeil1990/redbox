@@ -39,6 +39,18 @@ class MonitoringCompetitor extends Model
             }
         }
 
+        foreach ($project->competitors as $competitor) {
+            $url = Common::domainFilter($competitor->url);
+
+            if (array_key_exists($url, $competitors)) {
+                $competitors[$url]['competitor'] = true;
+            }
+        }
+
+        if (array_key_exists($project->url, $competitors)) {
+            $competitors[$project->url]['mainPage'] = true;
+        }
+
         foreach ($competitors as $key => $urls) {
             $count = 0;
             foreach ($urls as $inf => $engines) {
