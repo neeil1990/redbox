@@ -57,9 +57,11 @@ class MonitoringCompetitor extends Model
                 if ($inf !== 'urls') {
                     continue;
                 }
-                foreach ($engines as $words) {
-                    foreach ($words as $word) {
+                foreach ($engines as $k => $words) {
+                    foreach ($words as $k1 => $word) {
+                        $word = array_unique($word);
                         $count += count($word);
+                        $competitors[$key][$inf][$k][$k1] = $word;
                     }
                 }
             }
