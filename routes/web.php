@@ -248,8 +248,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/occurrence', 'MonitoringOccurrenceController@update');
 
     // Monitoring export
-    Route::get('/monitoring/export', 'MonitoringExportsController@index');
-    Route::get('/monitoring/export/view', 'MonitoringExportsController@view');
+    Route::get('/monitoring/{id}/export', 'MonitoringExportsController@index');
 
     // Monitoring project creator
     Route::post('monitoring/creator/create', 'MonitoringProjectCreatorController@createProject');

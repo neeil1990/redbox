@@ -54,6 +54,8 @@ class MonitoringKeywordsController extends Controller
     public function setProjectID($id)
     {
         $this->projectID = $id;
+
+        return $this;
     }
 
     public function getProjectID()

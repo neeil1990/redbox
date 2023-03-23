@@ -10,25 +10,21 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class MonitoringExportsController extends MonitoringKeywordsController
 {
-    public function view()
+    public function index($id)
     {
-        $params = collect([
-            'length' => 0,
-            //'region_id' => 52,
-        ]);
-        $this->setProjectID(30);
-        $response = $this->get($params);
-
-        dd($response);
-    }
-
-    public function index()
-    {
-        $id = 30;
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->find($id);
+        $region = $project->searchengines->first();
 
-        return Excel::download(new TestExport, 'test.pdf', \Maatwebsite\Excel\Excel::MPDF);
+        $params = collect([
+            'length' => 0,
+            'region_id' => $region['id'],
+        ]);
+
+        $this->columns->forget(['checkbox', 'btn', 'url']);
+        $response = $this->setProjectID($id)->get($params);
+
+        return Excel::download(new TestExport($response), 'positions.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
 }

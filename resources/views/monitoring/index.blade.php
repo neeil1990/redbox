@@ -256,9 +256,10 @@
                         {
                             width: '120px',
                             title: '{{ __('Reports') }}',
-                            data: null,
+                            data: function (row) {
+                                return '<a class="btn btn-info btn-sm" href="/monitoring/'+ row.id +'/export">{{ __('In progress') }}</a>';
+                            },
                             class: 'project-actions text-right',
-                            defaultContent: '<a class="btn btn-info btn-sm" href="#">{{ __('In progress') }}</a>',
                         },
                         {
                             width: '145px',
