@@ -30,7 +30,7 @@ class MonitoringCompetitor extends Model
                     $host = parse_url(Common::domainFilter($url))['host'];
                     if (isset($request['targetDomain'])) {
                         if ($host === $request['targetDomain']) {
-                            $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
+                            $competitors[$host]['urls'][$keyword->query][$searchengine->engine][] = Common::domainFilter($url);
                         }
                     } else {
                         $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);

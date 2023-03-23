@@ -158,6 +158,18 @@
         <div class="brut-force" style="display: none">
             <div class="form-group required">
                 <label for="gainFactor">{{ __('Gain factor(%)') }}</label>
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle" style="color: grey"></i>
+                    <span class="ui_tooltip __right">
+                        <span class="ui_tooltip_content" style="width: 300px">
+                            {{ __('In order for the clusters to merge, you need N number of matches between phrases that are in different clusters.') }}
+                            {{ __('If you use the gain factor(X):') }} <br>
+                            <b>Х = 0.15</b>
+                            <br>
+                            <b>N = N - ((N / 100) * Х)</b>
+                        </span>
+                    </span>
+                </span>
                 <input class="form form-control" type="number" id="gainFactor" name="gainFactor"
                        value="{{ $config->gain_factor }}">
             </div>
@@ -170,6 +182,16 @@
 
             <div class="form-group required">
                 <label for="reductionRatio">{{ __('Minimum multiplier') }}</label>
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle" style="color: grey"></i>
+                    <span class="ui_tooltip __right">
+                        <span class="ui_tooltip_content" style="width: 300px">
+                           {{ __("'Clustering level' and 'Minimum multiplier' are both from X to Y,") }} <br>
+                            <b>{{ __('where') }} X = 100, {{ __('and') }} Y = 80</b>, {{ __('eg') }} <br>
+                            {{ __('These values determine the minimum threshold for merging clusters, at certain points of verification') }}
+                        </span>
+                    </span>
+                </span>
                 {!! Form::select('reductionRatio', [
                     $config->reduction_ratio => $config->reduction_ratio,
                     'pre-hard' => 'pre-hard',

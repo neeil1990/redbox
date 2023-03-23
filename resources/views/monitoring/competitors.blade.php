@@ -128,7 +128,6 @@
 
         <script>
             let table
-
             let data = {
                 '_token': $('meta[name="csrf-token"]').attr('content'),
                 'projectId': {{ $project->id }},
@@ -291,40 +290,37 @@
                             )
                         },
                         success: function (response) {
-                            let tables = ''
-                            $.each(response.data[targetDomain]['urls'], function (engine, items) {
-                                let rows = ''
-                                $.each(items, function (phrase, info) {
-                                    let links = ''
-                                    $.each(info, function (key, value) {
-                                        links += '<div><a href="' + value + '" target="_blank">' + value + '</a></div>' + "\n"
+                            let rows = ''
+                            $.each(response.data[targetDomain]['urls'], function (phrase, engines) {
+                                rows += '<tr>'
+                                rows += '<td>' + phrase + '</td><td>'
+                                $.each(engines, function (engine, urls) {
+                                    rows += `<b>${engine}: </b>`
+                                    $.each(urls, function (key, url) {
+                                        rows += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
                                     })
-
-                                    rows += '<tr>' +
-                                        '   <td>' + phrase + '</td>' +
-                                        '   <td>' + links + '</td>' +
-                                        '</tr>'
                                 })
-
-                                tables += '<h3>' + engine + '</h3>' +
-                                    '<table class="table table-hover table-bordered no-footer custom-table">' +
-                                    '    <thead>' +
-                                    '        <tr>' +
-                                    '            <th> {{ __('Phrase') }} </th>' +
-                                    '            <th> {{ __('Links') }} </th>' +
-                                    '        </tr>' +
-                                    '    </thead>' +
-                                    '    <tbody>'
-                                    + rows +
-                                    '    </tbody>' +
-                                    '</table>'
+                                rows += '</td></tr>'
                             })
+
+                            let table =
+                                '<table class="table table-hover table-bordered no-footer custom-table">' +
+                                '    <thead>' +
+                                '        <tr>' +
+                                '            <th> {{ __('Phrase') }} </th>' +
+                                '            <th> {{ __('Links') }} </th>' +
+                                '        </tr>' +
+                                '    </thead>' +
+                                '    <tbody>'
+                                + rows +
+                                '    </tbody>' +
+                                '</table>'
 
                             $('#table').find(`.progress-render[data-id='${targetDomain}']`).remove()
                             parent.after(
                                 '<tr class="custom-render" data-id="' + targetDomain + '">' +
                                 '   <td colspan="' + {{ $countQuery + 1 }} + '">'
-                                + tables +
+                                + table +
                                 '   </td>' +
                                 '</tr>'
                             )
