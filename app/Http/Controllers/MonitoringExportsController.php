@@ -8,22 +8,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
-class MonitoringExportsController extends Controller
+class MonitoringExportsController extends MonitoringKeywordsController
 {
-    protected $user;
-
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            $this->user = Auth::user();
-
-            return $next($request);
-        });
-    }
-
     public function view()
     {
-        return view('monitoring.export.test');
+        $params = collect([
+            'length' => 0,
+            //'region_id' => 52,
+        ]);
+        $this->setProjectID(30);
+        $response = $this->get($params);
+
+        dd($response);
     }
 
     public function index()

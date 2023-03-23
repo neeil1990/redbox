@@ -6,17 +6,28 @@ use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\Location;
 use App\MonitoringKeyword;
+use App\MonitoringOccurrence;
 use App\MonitoringPosition;
 use App\MonitoringProject;
+use App\MonitoringProjectSettings;
+use App\MonitoringSearchengine;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class MonitoringKeywordsController extends Controller
 {
     protected $user;
+    protected $project;
+    protected $projectID;
+    protected $queries;
+    protected $regions;
+    protected $columns;
+    protected $mode = "range";
 
     public function __construct()
     {
@@ -25,15 +36,539 @@ class MonitoringKeywordsController extends Controller
 
             return $next($request);
         });
+
+        $this->columns = $this->getColumns();
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    public function setMode(string $mode = null): void
     {
-        //
+        if(strlen($mode) > 1)
+            $this->mode = $mode;
+    }
+
+    public function setColumns(Collection $collection)
+    {
+        $this->columns = $this->columns->merge($collection);
+    }
+
+    public function setProjectID($id)
+    {
+        $this->projectID = $id;
+    }
+
+    public function getProjectID()
+    {
+        if(!$this->projectID)
+            throw new \Exception('Project ID does not exist, insert project ID.');
+
+        return $this->projectID;
+    }
+
+    private function init()
+    {
+        $id = $this->getProjectID();
+        $this->project = $this->user->monitoringProjects()->where('id', $id)->first();
+        $this->regions = $this->project->searchengines()->with('location')->orderBy('id', 'asc')->get();
+        $this->queries = $this->project->keywords();
+    }
+
+    public function showDataTable(Request $request, $id)
+    {
+        $this->setProjectID($id);
+        $request = collect($request->all());
+
+        return $this->get($request);
+    }
+
+    public function get(Collection $collection)
+    {
+        $this->init();
+        $regionID = $collection->get('region_id');
+        $order = $collection->get('order');
+        $start = $collection->get('start');
+        $length = $collection->get('length');
+        $filteredColumns = $collection->get('columns', []);
+        $datesRange = $collection->get('dates_range');
+        $draw = $collection->get('draw');
+
+        $this->setMode($collection->get('mode_range'));
+
+        if($regionID)
+            $this->regions = $this->regions->where('id', $regionID);
+
+        $this->filter($filteredColumns)->order($order);
+
+        $page = ($length) ? ($start / $length) + 1 : false;
+        $this->queries = $this->queries->paginate($length, ['*'], 'page', $page);
+
+        if($length > 1)
+            $this->setSetting($this->getProjectID(), 'length', $length);
+
+        $dates = null;
+        if (strlen($datesRange) > 1)
+            $dates = explode(' - ', $datesRange, 2);
+
+        $this->loadPositions($dates);
+
+        $this->setOccurrence();
+
+        if($this->isMainView()){
+            $this->mainView();
+            $this->columns->forget(['url', 'dynamics']);
+        }else{
+            $this->setUrls();
+            $this->getLatestPositions()->updateDynamics();
+        }
+
+        $table = $this->generateDataTable();
+
+        $data = collect([
+            'region' => $this->regions->values(),
+            'columns' => $this->columns,
+            'data' => collect($table)->values(),
+            'draw' => $draw,
+            'recordsFiltered' => $this->queries->total(),
+            'recordsTotal' => $this->queries->total(),
+        ]);
+
+        return $data;
+    }
+
+    private function isMainView()
+    {
+        return ($this->regions->count() > 1);
+    }
+
+    private function mainView()
+    {
+        $mainColumns = collect([]);
+        $regions = $this->regions;
+        $this->queries->transform(function ($item) use ($regions, $mainColumns) {
+
+            $lastPosition = collect([]);
+            foreach ($regions as $reg) {
+
+                $model = $item->positions()->where('monitoring_searchengine_id', $reg->id)->latest()->get();
+                $col = 'engine_' . $reg->lr;
+
+                if ($model->isNotEmpty()) {
+                    $monitoringPosition = $model->first();
+
+                    if ($monitoringPosition->id != $model->last()->id)
+                        $monitoringPosition->diffPosition = ($model->last()->position - $monitoringPosition->position);
+                    else
+                        $monitoringPosition->diffPosition = null;
+
+                    $lastPosition->put($col, $model->first());
+                }
+
+                $city = stristr($reg->location->name, ',', true);
+                $icon = '<i class="fab d-block fa-' . $reg->engine . ' fa-sm"></i>';
+
+                $mainColumns->put($col, implode(' ', [$icon, $city]));
+            }
+
+            $item->positions_view = $lastPosition;
+
+            return $item;
+        });
+
+        $this->setColumns($mainColumns);
+    }
+
+    private function generateDataTable()
+    {
+        $table = [];
+        foreach ($this->queries as $keyword) {
+            $id = $keyword->id;
+            $table[$id] = $this->generateRowDataTable($keyword);
+        }
+
+        return $table;
+    }
+
+    private function generateRowDataTable($keyword)
+    {
+        $row = collect([]);
+        $collectionPositions = $keyword->positions_view;
+        $columns = $this->columns;
+
+        foreach ($columns as $i => $v) {
+
+            switch ($i) {
+                case 'id':
+                    $row->put('id', $keyword->id);
+                    break;
+                case 'checkbox':
+                    $row->put('checkbox', view('monitoring.partials.show.checkbox', ['id' => $keyword->id])->render());
+                    break;
+                case 'btn':
+                    $row->put('btn', view('monitoring.partials.show.btn', ['key' => $keyword])->render());
+                    break;
+                case 'query':
+                    $row->put('query', view('monitoring.partials.show.query', ['key' => $keyword])->render());
+                    break;
+                case 'url':
+                    if (isset($keyword->urls)) {
+                        $urls = $keyword->urls;
+                        $textClass = 'text-bold';
+                        if ($keyword->page && $urls->count()) {
+                            $lastUrl = $urls->first();
+                            if ($lastUrl->url != $keyword->page)
+                                $textClass = 'text-danger';
+                            else
+                                $textClass = 'text-success';
+                        }
+
+                        $row->put('url', view('monitoring.partials.show.url', ['textClass' => $textClass, 'urls' => $urls])->render());
+                    } else
+                        $row->put($i, '-');
+                    break;
+                case 'group':
+                    $row->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
+                    break;
+                case 'target':
+                    $row->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
+                    break;
+                case 'dynamics':
+                    $dynamics = 0;
+                    if ($keyword['dynamic'])
+                        $dynamics = $keyword['dynamic'];
+
+                    $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
+                    break;
+                case 'base':
+                    if (isset($keyword->base))
+                        $row->put('base', $keyword->base);
+                    else
+                        $row->put('base', '-');
+                    break;
+                case 'phrasal':
+                    if (isset($keyword->phrasal))
+                        $row->put('phrasal', $keyword->phrasal);
+                    else
+                        $row->put('phrasal', '-');
+                    break;
+                case 'exact':
+                    if (isset($keyword->exact))
+                        $row->put('exact', $keyword->exact);
+                    else
+                        $row->put('exact', '-');
+                    break;
+                default:
+                    $mode = $this->mode;
+                    if ($mode === "dates" || $mode === "main") {
+                        if (isset($collectionPositions[$i]))
+                            $row->put($i, view('monitoring.partials.show.position_with_date', ['model' => $collectionPositions[$i]])->render());
+                        else
+                            $row->put($i, '-');
+
+                    } else {
+                        if (isset($collectionPositions[$i])) {
+                            $row->put($i, view('monitoring.partials.show.position', ['model' => $collectionPositions[$i]])->render());
+                        } else
+                            $row->put($i, '-');
+                    }
+            }
+        }
+
+        return $row;
+    }
+
+    private function getLatestPositions()
+    {
+        $dateCollection = collect([]);
+        foreach ($this->queries as &$keyword) {
+
+            $grouped = $keyword->positions->groupBy(function ($item) {
+                return $item->created_at->format('d.m.Y');
+            })->sortByDesc(function ($i, $k) {
+                return Carbon::parse($k)->timestamp;
+            });
+
+            $grouped->transform(function ($item) {
+                return $item->sortByDesc(function ($i) {
+                    return $i->created_at->timestamp;
+                })->values()->first();
+            });
+
+            foreach ($grouped->keys() as $date)
+                if (!$dateCollection->contains($date))
+                    $dateCollection->push($date);
+
+            $keyword->positions_data_table = $grouped;
+        }
+
+        $columnCollection = collect([]);
+        foreach ($dateCollection->sortByDesc(function ($i) {
+            return Carbon::parse($i)->timestamp;
+        }) as $col_idx => $col_date)
+            $columnCollection->put('col_' . $col_idx, $col_date);
+
+        switch ($this->mode) {
+            case "dates":
+                $this->setColumns(collect([
+                    'col_0' => __('First of find'),
+                    'col_1' => __('Last of find'),
+                ]));
+
+                $this->queries->transform(function ($item) {
+                    $item->positions_view = collect([
+                        'col_0' => $item->positions_data_table->first(),
+                        'col_1' => $item->positions_data_table->last(),
+                    ]);
+
+                    return $item;
+                });
+                break;
+            case "randWeek":
+            case "randMonth":
+            $this->queries->transform(function ($item) {
+                    $positionsRange = collect([]);
+                    foreach ($item->positions_data_table as $p) {
+                        if ($this->mode === "randWeek")
+                            $positionsRange->put($p->created_at->week(), $p);
+                        else
+                            $positionsRange->put($p->created_at->month, $p);
+                    }
+
+                    $item->positions_view = $positionsRange;
+
+                    return $item;
+                });
+
+                $getDateForColumns = collect([]);
+                foreach ($this->queries as $keyword)
+                    $getDateForColumns = $getDateForColumns->merge($keyword->positions_view->pluck('created_at'));
+
+                $getDateForColumns = $getDateForColumns->sortByDesc(null)->unique(function ($item) {
+                    return $item->format('d.m.Y');
+                });
+
+                $dateOfColumns = collect([]);
+                foreach ($getDateForColumns as $i => $m)
+                    $dateOfColumns->put('col_' . $i, $m->format('d.m.Y'));
+
+                $this->setColumns($dateOfColumns);
+
+                foreach ($this->queries as $keyword) {
+                    $lastPosition = collect([]);
+                    foreach ($dateOfColumns as $col => $name) {
+                        if ($keyword->positions_data_table->has($name))
+                            $lastPosition->put($col, $keyword->positions_data_table[$name]);
+                    }
+                    $keyword->positions_view = $lastPosition;
+                }
+                break;
+            default;
+                $this->setColumns($columnCollection);
+                $this->queries->transform(function ($item) use ($columnCollection) {
+
+                    $positions = collect([]);
+                    foreach ($columnCollection as $col => $name)
+                        if ($item->positions_data_table->has($name))
+                            $positions->put($col, $item->positions_data_table[$name]);
+
+                    $this->diffPositionExtension($positions);
+
+                    $item->positions_view = $positions;
+
+                    return $item;
+                });
+        }
+
+        return $this;
+    }
+
+    private function diffPositionExtension(&$positions)
+    {
+        if ($positions->isEmpty())
+            return false;
+
+        $pre = 0;
+
+        foreach ($positions->reverse() as $p) {
+            if ($pre > 0)
+                $p->diffPosition = ($pre - $p->position);
+            else
+                $p->diffPosition = null;
+
+            $pre = $p->position;
+        }
+    }
+
+    private function getColumns()
+    {
+        $columns = collect([
+            'checkbox' => '',
+            'btn' => '',
+            'query' => view('monitoring.partials.show.header.query')->render(),
+            'url' => __('URL'),
+            'group' => __('Group'),
+            'target' => __('Target'),
+            'dynamics' => __('Dynamics'),
+            'base' => view('monitoring.partials.show.header.yw', ['ext' => ''])->render(),
+            'phrasal' => view('monitoring.partials.show.header.yw', ['ext' => '"[]"'])->render(),
+            'exact' => view('monitoring.partials.show.header.yw', ['ext' => '"[!]"'])->render(),
+        ]);
+
+        return $columns;
+    }
+
+    private function setOccurrence()
+    {
+        $collection = $this->regions;
+        $this->queries->transform(function ($item) use ($collection) {
+            foreach ($collection as $region) {
+                $occurrence = MonitoringOccurrence::where(['monitoring_keyword_id' => $item->id, 'monitoring_searchengine_id' => $region['id']])->first();
+                if ($occurrence) {
+                    $item->base += $occurrence->base;
+                    $item->phrasal += $occurrence->phrasal;
+                    $item->exact += $occurrence->exact;
+
+                    $item->occurrenceCreateAt = $occurrence->updated_at;
+                }
+            }
+
+            return $item;
+        });
+    }
+
+    private function setUrls()
+    {
+        $ids = $this->queries->pluck('id');
+        $region = $this->regions->first();
+
+        $model = MonitoringPosition::select('monitoring_keyword_id', 'url', 'created_at')
+            ->where('monitoring_searchengine_id', $region['id'])
+            ->whereNotNull('url')
+            ->whereIn('monitoring_keyword_id', $ids)->orderBy('created_at', 'desc')->get();
+
+        $urls = $model->groupBy('monitoring_keyword_id');
+
+        $this->queries->transform(function ($item) use ($urls) {
+
+            $item->urls = collect([]);
+
+            if (isset($urls[$item->id]))
+                $item->urls = $urls[$item->id]->unique('url');
+
+            return $item;
+        });
+    }
+
+    private function loadPositions($dates)
+    {
+        $region = $this->regions->first();
+        $this->queries->load(['positions' => function ($query) use ($region, $dates) {
+
+            if (isset($region->id))
+                $query->where('monitoring_searchengine_id', $region->id);
+
+            if ($this->mode === "datesFind")
+                $query->dateFind($dates);
+            else
+                $query->dateRange($dates);
+        }]);
+    }
+
+    public function setSetting(int $idProject, string $name, string $value)
+    {
+        MonitoringProjectSettings::updateOrCreate(
+            ['monitoring_project_id' => $idProject, 'name' => $name],
+            ['value' => $value]
+        );
+    }
+
+    private function order($by = null)
+    {
+        $dir = 'asc';
+
+        if ($by && is_array($by)) {
+            $order = collect($by)->collapse();
+
+            if ($order->has('dir') && $order['dir'] != $dir)
+                $dir = $order['dir'];
+        }
+
+        $this->queries->orderBy('query', $dir);
+
+        return $this;
+    }
+
+    private function filter(array $columns)
+    {
+        $project = $this->project;
+        $model = $this->queries;
+        $region = $this->regions->first();
+
+        foreach ($columns as $column) {
+
+            switch ($column['data']) {
+                case 'query':
+                    if ($column['search']['value'])
+                        $model->where('query', 'like', '%' . $column['search']['value'] . '%');
+                    break;
+                case 'group':
+                    if ($column['search']['value'])
+                        $model->where('monitoring_group_id', '=', $column['search']['value']);
+                    break;
+                case 'url':
+                    if ($column['search']['value'])
+                        $model->whereIn('id', $this->getKeywordIdsWithNotValidateUrl($project->id, $region->id));
+                    break;
+                case 'dynamics':
+                    if ($column['search']['value']) {
+                        if ($column['search']['value'] == 'positive')
+                            $model->where('dynamic', '>', 0);
+                        elseif ($column['search']['value'] == 'negative')
+                            $model->where('dynamic', '<', 0);
+                    }
+                    break;
+            }
+        }
+
+        return $this;
+    }
+
+    private function updateDynamics()
+    {
+        $queries = $this->queries;
+        foreach ($queries as $keyword) {
+            $dynamics = 0;
+            $model = $keyword->positions_view;
+            if ($model && $model->count() > 1)
+                $dynamics = ($model->last()->position - $model->first()->position);
+
+            MonitoringKeyword::where('id', $keyword->id)->update(['dynamic' => $dynamics]);
+        }
+
+        return $this;
+    }
+
+    private function getKeywordIdsWithNotValidateUrl(int $projectId, int $regionId)
+    {
+        $lastDateUrlPosition = DB::table('monitoring_positions')
+            ->select('monitoring_keyword_id', 'monitoring_searchengine_id', DB::raw('MAX(created_at) created_max'))
+            ->whereNotNull('url')
+            ->where('monitoring_searchengine_id', $regionId)
+            ->groupBy('monitoring_keyword_id');
+
+        $lastUrlPosition = DB::table('monitoring_positions')
+            ->joinSub($lastDateUrlPosition, 'latest_url', function ($join) {
+                $join->on('monitoring_positions.monitoring_keyword_id', '=', 'latest_url.monitoring_keyword_id')
+                    ->on('monitoring_positions.created_at', '=', 'latest_url.created_max');
+            })
+            ->join('monitoring_keywords', function ($join) {
+                $join->on('monitoring_positions.monitoring_keyword_id', '=', 'monitoring_keywords.id')
+                    ->on('monitoring_positions.url', '!=', 'monitoring_keywords.page');
+            })
+            ->where('monitoring_keywords.monitoring_project_id', $projectId)
+            ->where('monitoring_positions.monitoring_searchengine_id', $regionId)
+            ->get()
+            ->pluck('id');
+
+        return $lastUrlPosition;
     }
 
     public function showControlsPanel()
@@ -77,55 +612,6 @@ class MonitoringKeywordsController extends Controller
         }
 
         return $project;
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $user = $this->user;
-
-        $location = new Location();
-        $model = new MonitoringKeyword();
-        $query = $model->where('id', $id)->first();
-
-        if($query->project->user_id !== $user->id)
-            abort(403);
-
-        $positions = $query->positions()->get();
-
-        $data = ['query' => [], 'positions' => []];
-
-        $data['query'] = $query->toArray();
-
-        foreach ($positions as $position){
-            $engine = $position->engine;
-
-            $region = $location->where('lr', $engine->lr)->first();
-
-            if($region){
-                $region = $region->toArray();
-
-                $data['positions'][$engine->lr]['header'] = [
-                    'region' => $region['name'],
-                    'engine' => ucfirst($engine->engine),
-                ];
-
-                $data['positions'][$engine->lr]['item'][] = [
-                    'id' => $position->id,
-                    'engine' => $engine->engine,
-                    'engine_id' => $position->monitoring_searchengine_id,
-                    'position' => $position->position ?: '>100',
-                    'created_at' => $position->created_at->format('d.m.Y H:m:s'),
-                ];
-            }
-        }
-
-        return view('monitoring.positions', compact('data'));
     }
 
     /**
