@@ -454,58 +454,18 @@ class MonitoringController extends Controller
         ));
     }
 
+    public function getCompetitorInfo(Request $request): JsonResponse
+    {
+        $competitors = MonitoringCompetitor::getCompetitors($request->all());
+
+        return response()->json([
+            'data' => $competitors
+        ]);
+    }
+
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        $project = MonitoringProject::findOrFail($request->projectId);
-
-        if (isset($request->region)) {
-            $engines = MonitoringSearchengine::where('id', '=', $request->region)->get(['lr', 'engine']);
-        } else {
-            $engines = $project->searchengines;
-        }
-        $competitors = [];
-
-        foreach ($engines as $searchengine) {
-            foreach ($project->keywords as $keyword) {
-                $results = SearchIndex::where('lr', '=', $searchengine->lr)
-                    ->where('query', '=', $keyword->query)
-                    ->where('position', '<=', 10)->latest()
-                    ->pluck('query', 'url');
-
-                foreach ($results as $url => $query) {
-                    $host = parse_url(Common::domainFilter($url))['host'];
-                    $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
-                }
-            }
-        }
-
-        foreach ($project->competitors as $competitor) {
-            $url = Common::domainFilter($competitor->url);
-
-            if (array_key_exists($url, $competitors)) {
-                $competitors[$url]['competitor'] = true;
-            }
-        }
-
-        if (array_key_exists($project->url, $competitors)) {
-            $competitors[$project->url]['mainPage'] = true;
-        }
-
-        foreach ($competitors as $key => $urls) {
-            $count = 0;
-            foreach ($urls as $inf => $engines) {
-                if ($inf !== 'urls') {
-                    continue;
-                }
-                foreach ($engines as $words) {
-                    foreach ($words as $word) {
-                        $count += count($word);
-                    }
-                }
-            }
-
-            $competitors[$key]['visibility'] = $count;
-        }
+        $competitors = MonitoringCompetitor::getCompetitors($request->all());
 
         return response()->json([
             'data' => $competitors
@@ -580,16 +540,12 @@ class MonitoringController extends Controller
                     ->where('lr', $searchEngine)
                     ->latest('created_at')
                     ->take(100)
-                    ->get(['url', 'position', 'created_at'])->toArray();
+                    ->get(['url', 'position', 'created_at']);
 
                 foreach ($records as $record) {
                     $url = Common::domainFilter(parse_url($record['url'])['host']);
                     if (in_array($url, $competitors)) {
-                        if (isset($array[$keyword][$url])) {
-                            $array[$keyword][$url] += 1;
-                        } else {
-                            $array[$keyword][$url] = 1;
-                        }
+                        $array[$keyword][$url] = $record['position'];
                     }
                 }
             }

@@ -9,8 +9,8 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <style>
-            #table_wrapper .row {
-                opacity: 0;
+            #table_wrapper {
+                display: none;
             }
 
             .custom-info-bg {
@@ -18,6 +18,12 @@
             }
         </style>
     @endslot
+
+    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
+        <div class="toast toast-success" aria-live="polite">
+            <div class="toast-message">{{ __('Filter applied') }}</div>
+        </div>
+    </div>
 
     <div class="row">
         @foreach($navigations as $navigation)
@@ -42,7 +48,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ __('Keywords filter') }}</h3>
+                    <h3 class="card-title">{{ __('Region filter') }}</h3>
                 </div>
 
                 <div class="card-body">
@@ -79,7 +85,11 @@
         </div>
     </div>
 
-    <h3 class="mt-3">
+    <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
+        Сравнение с конкурентами
+    </a>
+
+    <h3 class="mt-3 mr-3">
         {{  __('Project') . " $project->name" }}
     </h3>
 
@@ -100,51 +110,6 @@
         </tr>
         </thead>
         <tbody>
-        {{--        @foreach($competitors as $competitor => $info)--}}
-        {{--            <tr>--}}
-        {{--                <td data-order="@if(isset($info['competitor'])) 1 @else 0 @endif">--}}
-        {{--                    <div>--}}
-        {{--                        <input type="checkbox"--}}
-        {{--                               class="change-domain-state"--}}
-        {{--                               data-target="{{ $competitor }}"--}}
-        {{--                               @if(isset($info['competitor'])) checked @endif>--}}
-        {{--                    </div>--}}
-        {{--                </td>--}}
-        {{--                <td @if(isset($info['mainPage'])) class="custom-info-bg" @endif>--}}
-        {{--                    {{ $competitor }}--}}
-        {{--                            <span class="__helper-link ui_tooltip_w">--}}
-        {{--                                <i class="fa fa-question-circle"></i>--}}
-        {{--                                <span class="ui_tooltip __right" style="width: 460px">--}}
-        {{--                                    <span class="ui_tooltip_content">--}}
-        {{--                                        @foreach($info['urls'] as $engine => $words)--}}
-        {{--                                            <b class="mb-2 text-info"> {{ $engine }}: </b>--}}
-        {{--                                            @foreach($words as $word => $stats)--}}
-        {{--                                                @foreach($stats as $stat)--}}
-        {{--                                                    <div class="mb-2">--}}
-        {{--                                                        {{ $word }}: <a href="{{ $stat }}" target="_blank"> {{ $stat }} </a>--}}
-        {{--                                                    </div>--}}
-        {{--                                                @endforeach--}}
-        {{--                                            @endforeach--}}
-        {{--                                        @endforeach--}}
-        {{--                                    </span>--}}
-        {{--                                </span>--}}
-        {{--                            </span>--}}
-        {{--                </td>--}}
-        {{--                <td>--}}
-        {{--                    @foreach($info['urls'] as $engine => $urls)--}}
-        {{--                        @if($engine === 'google')--}}
-        {{--                            <i class="fab fa-google fa-sm mr-2"></i>--}}
-        {{--                        @endif--}}
-        {{--                        @if($engine === 'yandex')--}}
-        {{--                            <i class="fab fa-yandex fa-sm mr-2"></i>--}}
-        {{--                        @endif--}}
-        {{--                    @endforeach--}}
-        {{--                </td>--}}
-        {{--                <td>--}}
-        {{--                    {{ $info['visibility'] }}--}}
-        {{--                </td>--}}
-        {{--            </tr>--}}
-        {{--        @endforeach--}}
         </tbody>
     </table>
     @slot('js')
@@ -156,9 +121,26 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
         <script>
-            var table
+            let table
+            let data = {
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'projectId': {{ $project->id }},
+            }
+
             $(document).ready(function () {
+                let filter = localStorage.getItem('lr_redbox_monitoring_selected_filter')
+
+                if (filter !== null) {
+                    filter = JSON.parse(filter)
+                    $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
+                }
+
                 table = $('#table').DataTable({
                     fixedHeader: true,
                     lengthMenu: [10, 25, 50, 100],
@@ -180,11 +162,6 @@
                     ],
                 })
 
-                let data = {
-                    '_token': $('meta[name="csrf-token"]').attr('content'),
-                    'projectId': {{ $project->id }},
-                }
-
                 if ($('#searchEngines').val() !== '') {
                     data.region = $('#searchEngines').val()
                 }
@@ -199,72 +176,49 @@
 
                         $('#preloader').hide()
                         setTimeout(() => {
-                            $('#table_wrapper .row').css({
-                                opacity: 1
-                            })
+                            $('#table_wrapper').show()
                             $('#table').show()
                         }, 300)
 
-                        $('.change-domain-state').unbind().on('click', function () {
-                            let url = $(this).attr('data-target')
-                            if ($(this).is(':checked')) {
-                                if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
-                                    $.ajax({
-                                        type: "POST",
-                                        dataType: "json",
-                                        url: "{{ route('monitoring.add.competitor') }}",
-                                        data: {
-                                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                                            'url': url,
-                                            'projectId': {{ $project->id }}
-                                        },
-                                        success: function (response) {
-
-                                        },
-                                    });
-                                } else {
-                                    $(this).prop('checked', false);
-                                }
-                            } else {
-                                if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
-                                    $.ajax({
-                                        type: "POST",
-                                        dataType: "json",
-                                        url: "{{ route('monitoring.remove.competitor') }}",
-                                        data: {
-                                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                                            'url': url,
-                                            'projectId': {{ $project->id }}
-                                        },
-                                        success: function (response) {
-
-                                        },
-                                    });
-                                } else {
-                                    $(this).prop('checked', true);
-                                }
-                            }
-                        })
+                        refreshMethods()
                     },
                 });
-            })
 
-            $('#searchEngines').on('change', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.get.competitors') }}",
-                    data: {
+                $('#searchEngines').on('change', function () {
+                    let val = $(this).val()
+                    let data = {
                         '_token': $('meta[name="csrf-token"]').attr('content'),
                         'projectId': {{ $project->id }},
-                        'region': $(this).val()
-                    },
-                    success: function (response) {
-                        table.rows().remove().draw();
+                    }
 
-                        renderTableRows(response.data)
-                    },
-                });
+                    if (val !== '') {
+                        data.region = val
+                        localStorage.setItem('lr_redbox_monitoring_selected_filter', JSON.stringify({
+                            val: val,
+                        }))
+                    } else {
+                        localStorage.removeItem('lr_redbox_monitoring_selected_filter')
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('monitoring.get.competitors') }}",
+                        data: data,
+                        success: function (response) {
+                            table.rows().remove().draw();
+
+                            renderTableRows(response.data)
+
+                            $('#toast-container').hide()
+                            $('#toast-container').show(300)
+
+                            setTimeout(() => {
+                                $('#toast-container').hide(300)
+                            }, 3000)
+                        },
+                    });
+                })
             })
 
             function renderTableRows(data) {
@@ -281,21 +235,7 @@
 
                     }
 
-                    let stub = key + '<span class="__helper-link ui_tooltip_w"> ' +
-                        '<i class="fa fa-question-circle"></i> ' +
-                        '<span class="ui_tooltip __right" style="width: 460px"> ' +
-                        '<span class="ui_tooltip_content">'
-
-                    $.each(val.urls, function (engine, words) {
-                        stub += '<b class="mb-2 text-info"> ' + engine + ': </b>'
-                        $.each(words, function (word, stats) {
-                            $.each(stats, function (k, stat) {
-                                stub += ' <div class="mb-2">' + word + ': <a href="' + stat + '" target="_blank"> ' + stat + ' </a> </div>'
-                            })
-
-                        })
-                    });
-                    stub += '</span></span></span>'
+                    let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
 
                     let engines = ''
                     $.each(val.urls, function (k, v) {
@@ -316,6 +256,150 @@
                 })
 
                 table.draw(false)
+
+                refreshMethods()
+            }
+
+            function refreshMethods() {
+                $('.fa-plus-circle.get-more-info').unbind().on('click', function () {
+                    $(this).attr('class', 'ml-2 fa fa-minus-circle get-more-info')
+                    let parent = $(this).parents().eq(1)
+                    let targetDomain = $(this).attr('data-target')
+                    let data = {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'projectId': {{ $project->id }},
+                        'targetDomain': targetDomain,
+                    }
+
+                    if ($('#searchEngines').val() !== '') {
+                        data.region = $('#searchEngines').val()
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('monitoring.get.competitors') }}",
+                        data: data,
+                        beforeSend: function () {
+                            parent.after(
+                                '<tr class="progress-render" data-id="' + targetDomain + '">' +
+                                '   <td colspan="' + {{ $countQuery + 1 }} + '">' +
+                                '       <img src="/img/1485.gif" style="width: 50px; height: 50px;">' +
+                                '   </td>' +
+                                '</tr>'
+                            )
+                        },
+                        success: function (response) {
+                            let rows = ''
+                            $.each(response.data[targetDomain]['urls'], function (phrase, engines) {
+                                rows += '<tr>'
+                                rows += '<td>' + phrase + '</td><td>'
+                                $.each(engines, function (engine, urls) {
+                                    rows += `<b>${engine}: </b>`
+                                    $.each(urls, function (key, url) {
+                                        rows += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
+                                    })
+                                })
+                                rows += '</td></tr>'
+                            })
+
+                            let table =
+                                '<table class="table table-hover table-bordered no-footer custom-table">' +
+                                '    <thead>' +
+                                '        <tr>' +
+                                '            <th> {{ __('Phrase') }} </th>' +
+                                '            <th> {{ __('Links') }} </th>' +
+                                '        </tr>' +
+                                '    </thead>' +
+                                '    <tbody>'
+                                + rows +
+                                '    </tbody>' +
+                                '</table>'
+
+                            $('#table').find(`.progress-render[data-id='${targetDomain}']`).remove()
+                            parent.after(
+                                '<tr class="custom-render" data-id="' + targetDomain + '">' +
+                                '   <td colspan="' + {{ $countQuery + 1 }} + '">'
+                                + table +
+                                '   </td>' +
+                                '</tr>'
+                            )
+
+                            $.each($('.custom-table'), function () {
+                                if (!$.fn.DataTable.fnIsDataTable($(this))) {
+                                    $(this).DataTable({
+                                        dom: 'lBfrtip',
+                                        buttons: [
+                                            'copy', 'csv', 'excel'
+                                        ],
+                                        language: {
+                                            lengthMenu: "_MENU_",
+                                            search: "_INPUT_",
+                                            searchPlaceholder: "{{ __('Search') }}",
+                                            paginate: {
+                                                "first": "«",
+                                                "last": "»",
+                                                "next": "»",
+                                                "previous": "«"
+                                            },
+                                        },
+                                    })
+                                }
+                            })
+                        },
+                    });
+
+                    refreshMethods()
+                })
+
+                $('.fa-minus-circle.get-more-info').unbind().on('click', function () {
+                    let dataTarget = $(this).attr('data-target')
+                    $('#table').find(`[data-id='${dataTarget}']`).remove()
+
+                    $(this).attr('class', 'ml-2 fa fa-plus-circle get-more-info')
+                    refreshMethods()
+                })
+
+                $('.change-domain-state').unbind().on('click', function () {
+                    let url = $(this).attr('data-target')
+                    if ($(this).is(':checked')) {
+                        if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "{{ route('monitoring.add.competitor') }}",
+                                data: {
+                                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                                    'url': url,
+                                    'projectId': {{ $project->id }}
+                                },
+                                success: function (response) {
+
+                                },
+                            });
+                        } else {
+                            $(this).prop('checked', false);
+                        }
+                    } else {
+                        if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "{{ route('monitoring.remove.competitor') }}",
+                                data: {
+                                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                                    'url': url,
+                                    'projectId': {{ $project->id }}
+                                },
+                                success: function (response) {
+
+                                },
+                            });
+                        } else {
+                            $(this).prop('checked', true);
+                        }
+                    }
+                })
             }
         </script>
     @endslot
