@@ -85,6 +85,7 @@ class MonitoringKeywordsController extends Controller
     public function get(Collection $collection)
     {
         $this->init();
+        $total = 0;
         $regionID = $collection->get('region_id');
         $order = $collection->get('order');
         $start = $collection->get('start');
@@ -101,7 +102,12 @@ class MonitoringKeywordsController extends Controller
         $this->filter($filteredColumns)->order($order);
 
         $page = ($length) ? ($start / $length) + 1 : false;
-        $this->queries = $this->queries->paginate($length, ['*'], 'page', $page);
+        if($page){
+            $this->queries = $this->queries->paginate($length, ['*'], 'page', $page);
+            $total = $this->queries->total();
+        }else{
+            $this->queries = $this->queries->get();
+        }
 
         if($length > 1)
             $this->setSetting($this->getProjectID(), 'length', $length);
@@ -129,8 +135,8 @@ class MonitoringKeywordsController extends Controller
             'columns' => $this->columns,
             'data' => collect($table)->values(),
             'draw' => $draw,
-            'recordsFiltered' => $this->queries->total(),
-            'recordsTotal' => $this->queries->total(),
+            'recordsFiltered' => $total,
+            'recordsTotal' => $total,
         ]);
 
         return $data;
