@@ -187,7 +187,7 @@
                     <span class="ui_tooltip __right">
                         <span class="ui_tooltip_content" style="width: 300px">
                            {{ __("'Clustering level' and 'Minimum multiplier' are both from X to Y,") }} <br>
-                            <b>{{ __('where') }} X = 100, {{ __('and') }} Y = 80</b>, {{ __('eg') }} <br>
+                            <b>{{ __('where') }} X = 100, {{ __('and') }} Y = 80</b><br>
                             {{ __('These values determine the minimum threshold for merging clusters, at certain points of verification') }}
                         </span>
                     </span>
