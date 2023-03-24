@@ -17,7 +17,7 @@ use Maatwebsite\Excel\Events\BeforeExport;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class TestExport implements FromView, WithDefaultStyles, WithEvents, ShouldAutoSize, WithStyles
+class PositionsExport implements FromView, WithDefaultStyles, WithEvents, ShouldAutoSize, WithStyles
 {
     protected $data;
 
@@ -49,7 +49,8 @@ class TestExport implements FromView, WithDefaultStyles, WithEvents, ShouldAutoS
                 ],
             ],
             'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'horizontal' => Alignment::HORIZONTAL_LEFT,
+                'indent' => 2,
             ],
         ];
     }
@@ -78,10 +79,6 @@ class TestExport implements FromView, WithDefaultStyles, WithEvents, ShouldAutoS
             // Style the first row as bold text.
             1    => [
                 'font' => ['bold' => true],
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_LEFT,
-                    'indent' => 2,
-                ],
             ],
         ];
     }

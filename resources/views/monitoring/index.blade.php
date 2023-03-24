@@ -11,6 +11,8 @@
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+        <!-- Tempusdominus Bootstrap 4 -->
+        <link rel="stylesheet" href="{{ asset('plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
 
         <style>
             .toast {
@@ -81,11 +83,13 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
         <!-- Moment js -->
-        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+        <script src="{{ asset('plugins/moment/moment-with-locales.min.js') }}"></script>
         <!-- Papa parse -->
         <script src="{{ asset('plugins/papaparse/papaparse.min.js') }}"></script>
         <!-- Select2 -->
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+        <!-- Tempusdominus Bootstrap 4 -->
+        <script src="{{ asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 
         <script>
             const LENGTH_MENU = JSON.parse('{{ $lengthMenu }}');
@@ -257,7 +261,16 @@
                             width: '120px',
                             title: '{{ __('Reports') }}',
                             data: function (row) {
-                                return '<a class="btn btn-info btn-sm" href="/monitoring/'+ row.id +'/export">{{ __('In progress') }}</a>';
+
+                                let edit = $('<a />', {
+                                    class: 'btn btn-info btn-sm',
+                                    "data-toggle": 'modal',
+                                    "data-target": '.modal',
+                                    "data-type": 'export-edit',
+                                    "data-id": row.id,
+                                }).text('{{ __('Export') }}');
+
+                                return edit[0].outerHTML;
                             },
                             class: 'project-actions text-right',
                         },
@@ -588,6 +601,19 @@
                             }).catch(function (error) {
                                 console.log(error);
                             });
+                        });
+                    });
+                }
+
+                if(type === 'export-edit'){
+                    axios.get(`/monitoring/${projectId}/export/edit`).then(function (response) {
+                        let content = response.data;
+                        modal.find('.modal-content').html(content);
+
+                        //Date picker
+                        modal.find('#startDatePicker, #endDatePicker').datetimepicker({
+                            format: 'L',
+                            locale: 'ru',
                         });
                     });
                 }
