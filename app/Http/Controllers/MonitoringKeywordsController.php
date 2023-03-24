@@ -240,8 +240,8 @@ class MonitoringKeywordsController extends Controller
                     break;
                 case 'dynamics':
                     $dynamics = 0;
-                    if ($keyword['dynamic'])
-                        $dynamics = $keyword['dynamic'];
+                    if ($collectionPositions && $collectionPositions->count() > 1)
+                        $dynamics = ($collectionPositions->last()->position - $collectionPositions->first()->position);
 
                     $row->put('dynamics', view('monitoring.partials.show.dynamics', ['dynamics' => $dynamics])->render());
                     break;
