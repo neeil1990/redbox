@@ -48,29 +48,57 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="row">
-                        <form action="" style="display: contents;">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label>{{ __('Search engine') }}:</label>
-                                    <select name="region" class="custom-select" id="searchEngines">
-                                        @foreach($project->searchengines as $search)
-                                            @if($search->id == request('region'))
-                                                <option value="{{ $search->id }}"
-                                                        selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                                    [{{$search->lr}}]
-                                                </option>
-                                            @else
-                                                <option
-                                                    value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                                    [{{$search->lr}}]
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>
+                    <form action="" style="display: contents;">
+                        <div class="w-25">
+                            <div class="form-group">
+                                <label>{{ __('Search engine') }}:</label>
+                                <select name="region" class="custom-select" id="searchEngines">
+                                    @foreach($project->searchengines as $search)
+                                        @if($search->id == request('region'))
+                                            <option value="{{ $search->id }}"
+                                                    selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                                [{{$search->lr}}]
+                                            </option>
+                                        @else
+                                            <option
+                                                value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                                [{{$search->lr}}]
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
                             </div>
-                        </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card direct-chat direct-chat-primary collapsed-card">
+        <div class="card-header ui-sortable-handle" style="cursor: move;">
+            <button class="btn btn-default" id="more-info"
+                    data-card-widget="collapse">{{ __('Positions competitors') }}</button>
+        </div>
+        <div class="card-body" style="display: none;">
+            <div>
+                <div id="more-info-block" style="display:none;">
+                    <div class="card-body">
+                        <table class="table table-hover table-bordered no-footer dataTable">
+                            <thead>
+                            <tr>
+                                <th>{{ __('Domains') }}</th>
+                                <th>{{ __('Positions') }}</th>
+                                <th>{{ __('Average position') }}</th>
+                                <th>{{ __('Top') }} 3</th>
+                                <th>{{ __('Top') }} 10</th>
+                                <th>{{ __('Top') }} 100</th>
+                            </tr>
+                            </thead>
+                            <tbody id="more-info-tbody">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -82,7 +110,7 @@
     </h3>
 
     <h4>
-        Количество Конкурентов: {{ count($competitors) }}
+        {{ __('Count competitors') }}: {{ count($competitors) }}
     </h4>
 
     <div class="d-flex justify-content-center align-items-center align-content-center">
@@ -92,7 +120,7 @@
     <table id="table" class="table table-hover table-bordered no-footer" style="display: none">
         <thead>
         <tr id="tableHeadRow">
-            <th>Запрос</th>
+            <th>{{ __('Query') }}</th>
         </tr>
         </thead>
         <tbody id="tableBody">
@@ -180,6 +208,56 @@
                         },
                     });
                 })
+
+                $('#more-info').unbind().on('click', function () {
+                    if ($('#more-info-tbody').html() === '') {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('monitoring.more.info', $project->id) }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'projectId': {{ $project->id }},
+                            },
+                            success: function (response) {
+                                $('.render-more').remove()
+
+                                let iterator = 1;
+                                $.each(response.data, function (domain, values) {
+                                    let row = '<tr class="render-more">'
+                                    let positions = ''
+
+                                    $.each(values['positions'], function (word, position) {
+                                        positions += `<div>${word}: ${position}</div>`
+                                    })
+                                    let td =
+                                        '<td>' +
+                                        '    <p>' +
+                                        '        <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapse' + iterator + '" aria-expanded="false" aria-controls="collapse' + iterator + '">' +
+                                        "{{ __('Positions') }}" +
+                                        '        </button>' +
+                                        '    </p>' +
+                                        '    <div class="collapse" id="collapse' + iterator + '">'
+                                        + positions +
+                                        '    </div>' +
+                                        '</td>'
+
+                                    row += '<td>' + domain + '</td>'
+                                    row += td
+                                    row += '<td>' + values['avg'] + '</td>'
+                                    row += '<td>' + values['top_3'] + '</td>'
+                                    row += '<td>' + values['top_10'] + '</td>'
+                                    row += '<td>' + values['top_100'] + '</td>'
+
+                                    $('#more-info-tbody').append(row)
+                                    iterator++
+                                })
+
+                                $('#more-info-block').show()
+                            },
+                        });
+                    }
+                })
             })
 
             function renderTableHead(data) {
@@ -236,7 +314,7 @@
                 $('.remove-competitor').unbind().on('click', function () {
                     let url = $(this).attr('data-target')
                     let columnIndex = $(this).attr('data-id')
-                    if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
+                    if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
                         $.ajax({
                             type: "POST",
                             dataType: "json",

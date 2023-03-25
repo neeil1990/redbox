@@ -271,10 +271,6 @@
                         'targetDomain': targetDomain,
                     }
 
-                    if ($('#searchEngines').val() !== '') {
-                        data.region = $('#searchEngines').val()
-                    }
-
                     $.ajax({
                         type: "POST",
                         dataType: "json",
@@ -292,15 +288,27 @@
                         success: function (response) {
                             let rows = ''
                             $.each(response.data[targetDomain]['urls'], function (phrase, engines) {
+                                let yandex = ''
+                                let google = ''
+
                                 rows += '<tr>'
-                                rows += '<td>' + phrase + '</td><td>'
+                                rows += '<td>' + phrase + '</td>'
+
                                 $.each(engines, function (engine, urls) {
-                                    rows += `<b>${engine}: </b>`
-                                    $.each(urls, function (key, url) {
-                                        rows += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
-                                    })
+                                    if (engine === 'yandex') {
+                                        $.each(urls, function (key, url) {
+                                            yandex += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
+                                        })
+                                    }
+                                    if (engine === 'google') {
+                                        $.each(urls, function (key, url) {
+                                            google += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
+                                        })
+                                    }
                                 })
-                                rows += '</td></tr>'
+                                rows += '<td>' + yandex + '</td>'
+                                rows += '<td>' + google + '</td>'
+                                rows += '</tr>'
                             })
 
                             let table =
@@ -308,7 +316,8 @@
                                 '    <thead>' +
                                 '        <tr>' +
                                 '            <th> {{ __('Phrase') }} </th>' +
-                                '            <th> {{ __('Links') }} </th>' +
+                                '            <th> {{ __('Yandex') }} </th>' +
+                                '            <th> {{ __('Google') }} </th>' +
                                 '        </tr>' +
                                 '    </thead>' +
                                 '    <tbody>'
@@ -363,7 +372,7 @@
                 $('.change-domain-state').unbind().on('click', function () {
                     let url = $(this).attr('data-target')
                     if ($(this).is(':checked')) {
-                        if (confirm(`Вы собираетесь добавить домен "${url}" в конкуренты`)) {
+                        if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
@@ -381,7 +390,7 @@
                             $(this).prop('checked', false);
                         }
                     } else {
-                        if (confirm(`Вы собираетесь убрать домен "${url}" из конкурентов`)) {
+                        if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",

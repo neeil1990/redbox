@@ -306,6 +306,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
     Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
     Route::post('/monitoring/competitors/visibility', 'MonitoringController@getCompetitorsVisibility')->name('monitoring.get.competitors.visibility');
+    Route::post('/monitoring/{project}/competitors/more-info', 'MonitoringController@moreInfo')->name('monitoring.more.info');
 
     Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');
     Route::get('/share-my-project-config/{project}', 'SharingController@shareProjectConf')->name('share.project.conf');

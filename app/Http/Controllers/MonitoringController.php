@@ -555,4 +555,47 @@ class MonitoringController extends Controller
             'data' => $array
         ]);
     }
+
+    public function moreInfo(Request $request): JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        // top (3/10/100)
+        $keywords = Common::pullValue(MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query']), 'query');
+        $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
+        array_unshift($competitors, $project->url);
+
+        //add filtered values
+        $searchEngines = Common::pullValue(MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['lr'])->toArray(), 'lr');
+
+        $array = [];
+        foreach ($searchEngines as $searchEngine) {
+            foreach ($keywords as $keyword) {
+                $records = SearchIndex::where('query', $keyword)
+                    ->where('lr', $searchEngine)
+                    ->latest('created_at')
+                    ->take(100)
+                    ->get(['url', 'position', 'created_at']);
+
+                foreach ($records as $record) {
+                    $url = Common::domainFilter(parse_url($record['url'])['host']);
+                    if (in_array($url, $competitors)) {
+                        $array[$url]['positions'][$keyword] = $record['position'];
+                        arsort($array[$url]['positions']);
+                    }
+                }
+            }
+        }
+
+        foreach ($array as $key => $item) {
+            $array[$key]['avg'] = array_sum($item['positions']) / count($keywords);
+            $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
+            $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
+            $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
+        }
+
+        return response()->json([
+            'data' => $array
+        ]);
+    }
 }
