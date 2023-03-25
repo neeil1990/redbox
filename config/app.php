@@ -247,6 +247,7 @@ return [
         'Htmldom' => Yangqi\Htmldom\Htmldom::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Carbon' => Carbon\Carbon::class,
     ],
 
 ];

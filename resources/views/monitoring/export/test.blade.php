@@ -7,23 +7,23 @@
     <title>Document</title>
 </head>
 <body>
-
-    <table style="width: 100%;table-layout: fixed;">
+    <table style="width: 100%">
         <thead>
             <tr>
-                @for($i = 0; $i < 250; $i++)
-                    <th>{{ $i }}</th>
-                @endfor
+                @foreach($data['columns'] as $col)
+                    <th>{!! strip_tags($col) !!}</th>
+                @endforeach
             </tr>
         </thead>
         <tbody>
-            <tr>
-                @for($i = 0; $i < 250; $i++)
-                    <td style="background-color: green">{{ $i }}</td>
-                @endfor
-            </tr>
+            @foreach($data['data'] as $query)
+                <tr>
+                    @foreach($query as $field)
+                        <td>{!! strip_tags($field) !!}</td>
+                    @endforeach
+                </tr>
+            @endforeach
         </tbody>
     </table>
-
 </body>
 </html>

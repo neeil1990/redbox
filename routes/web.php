@@ -248,8 +248,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/occurrence', 'MonitoringOccurrenceController@update');
 
     // Monitoring export
-    Route::get('/monitoring/export', 'MonitoringExportsController@index');
-    Route::get('/monitoring/export/view', 'MonitoringExportsController@view');
+    Route::get('/monitoring/{id}/export', 'MonitoringExportsController@download');
+    Route::get('/monitoring/{id}/export/edit', 'MonitoringExportsController@edit');
 
     // Monitoring project creator
     Route::post('monitoring/creator/create', 'MonitoringProjectCreatorController@createProject');
@@ -277,8 +277,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
 
-    Route::get('/monitoring/{project_id}/table', 'MonitoringController@getTableKeywords')->name('monitoring.get.table.keywords');
-    Route::post('/monitoring/{project_id}/table', 'MonitoringController@getTableKeywords')->name('monitoring.get.table.keywords');
+    Route::get('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
+    Route::post('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
 
     Route::post('/monitoring/projects/get-positions-for-calendars', 'MonitoringController@getPositionsForCalendars')->name('monitoring.projects.get.positions.for.calendars');
 

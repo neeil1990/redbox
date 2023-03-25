@@ -475,7 +475,7 @@
 
                         dynamic.append(dynamicSelect);
 
-                        if (!response.data.region.length) {
+                        if (response.data.region.length === 1) {
                             this.closest('.card').find('.card-header').append(dynamic);
                             this.closest('.card').find('.card-header').append(notValidateUrl);
                         }

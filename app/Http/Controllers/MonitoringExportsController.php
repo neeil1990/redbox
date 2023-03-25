@@ -2,37 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\Monitoring\TestExport;
+use App\Exports\Monitoring\PositionsExport;
+use App\MonitoringProject;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
-class MonitoringExportsController extends Controller
+class MonitoringExportsController extends MonitoringKeywordsController
 {
-    protected $user;
+    private $groupColumnIndex = 4;
 
-    public function __construct()
+    public function download(Request $request, $id)
     {
-        $this->middleware(function ($request, $next) {
-            $this->user = Auth::user();
+        $index = $this->groupColumnIndex;
+        $date = implode(' - ', [Carbon::parse($request['startDate'])->locale('ru')->toDateString(), Carbon::parse($request['endDate'])->locale('ru')->toDateString()]);
+        $params = collect([
+            'length' => 0,
+            'mode_range' => $request['mode'],
+            'region_id' => $request['region'],
+            'dates_range' => $date,
+            'columns' => [
+                $index => [
+                    'data' => 'group',
+                    'search' => [
+                        'value' => $request['group']
+                    ]
+                ]
+            ],
+        ]);
 
-            return $next($request);
-        });
+        $this->columns->forget(['checkbox', 'btn', 'url', 'target', 'base', 'phrasal', 'exact']);
+        $response = $this->setProjectID($id)->get($params);
+
+        return Excel::download(new PositionsExport($response), 'positions.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
 
-    public function view()
+    public function edit($id)
     {
-        return view('monitoring.export.test');
-    }
-
-    public function index()
-    {
-        $id = 30;
-        /** @var User $user */
-        $user = $this->user;
-        $project = $user->monitoringProjects()->find($id);
-
-        return Excel::download(new TestExport, 'test.pdf', \Maatwebsite\Excel\Excel::MPDF);
+        $project = MonitoringProject::findOrFail($id);
+        return view('monitoring.export.edit', compact('project'));
     }
 }
