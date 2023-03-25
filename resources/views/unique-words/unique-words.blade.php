@@ -70,8 +70,8 @@
             </div>
         </div>
     </form>
-    <div class="unique-words-filter mt-4 mb-3 card bg-gradient-light">
-        <h3 class="m-3">{{__('Additionally')}}</h3>
+    <div class="unique-words-filter mt-4 mb-3 card bg-gradient-light" id="unique-words-filter" style="display: none">
+        <h3 class="m-3">{{__('Settings for downloading or copying results')}}:</h3>
         <div class="m-3">
             <div class="w-25">
                 <p class="mr-3">{{__('Delete lines where the number of occurrences:')}}</p>
@@ -210,18 +210,18 @@
                                 progressBarClass.css({
                                     opacity: 1
                                 });
-                                progressBarId.show(400)
+                                progressBarId.show(300)
                                 if (evt.lengthComputable) {
                                     let percent = Math.floor((evt.loaded / evt.total) * 100);
                                     setProgressBarStyles(percent)
                                     if (percent === 100) {
-                                        $('#progress-bar-table').show(400)
+                                        $('#progress-bar-table').show(300)
                                         setTimeout(() => {
                                             progressBarClass.css({
                                                 opacity: 0,
                                                 width: 0 + '%'
                                             });
-                                            progressBarId.hide(400)
+                                            progressBarId.hide(300)
                                         }, 2000)
                                     }
                                 }
@@ -229,20 +229,21 @@
                             return xhr;
                         },
                         success: function (response) {
-                            $('fieldset.unique-words-filter.mt-4.mb-3').show(400)
-                            $('div.unique-words-result').show(400)
                             let progressBarTableId = $('#progress-bar-table')
                             let progressBarTable = $('.progress-bar-table')
                             for (const [key, value] of Object.entries(response.list)) {
                                 createRow(key, value)
                             }
                             setTimeout(() => {
-                                progressBarTableId.hide(400);
+                                progressBarTableId.hide();
                                 progressBarTable.css({
                                     opacity: 0,
                                     width: 0 + '%'
                                 });
-                            }, 2000)
+
+                                $('#unique-words-filter').show(300)
+                                $('div.unique-words-result').show(300)
+                            }, 1000)
                         },
                     });
                 });

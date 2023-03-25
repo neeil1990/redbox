@@ -86,6 +86,7 @@ class UniqueWordsController extends Controller
     {
         $string = mb_eregi_replace('[^\w\s\n]', ' ', $string);
         $string = mb_eregi_replace('[ ]+', ' ', $string);
+
         return trim($string);
     }
 
@@ -96,6 +97,7 @@ class UniqueWordsController extends Controller
     public static function getPhrases($string): array
     {
         $string = str_replace(["\r", "\n", "\r\n", "\n*"], PHP_EOL, $string);
+
         return explode(PHP_EOL, $string);
     }
 
@@ -123,7 +125,7 @@ class UniqueWordsController extends Controller
             foreach ($countValues as $key => $value) {
                 if ($word == $key) {
                     $matches = self::searchMatches($phrases, $word);
-                    array_push($t, [$word, $word, $value, $matches]);
+                    $t[] = [$word, $word, $value, $matches];
                 }
             }
         }

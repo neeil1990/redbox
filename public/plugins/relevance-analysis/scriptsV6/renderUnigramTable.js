@@ -293,7 +293,7 @@ function renderMainTr(tBody, key, wordWorm, searchPassages) {
         "   <td>" + key + lockBlock + "</td>" +
         "   <td>" + tf + "</td>" +
         "   <td>" + idf + "</td>" +
-        "   <td>" + numberOccurrences + "" +
+        "   <td data-order='" + numberOccurrences + "'>" + numberOccurrences + "" +
         "       <span class='__helper-link ui_tooltip_w'>" +
         "           <i class='fa fa-paperclip'></i>" +
         "           <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
