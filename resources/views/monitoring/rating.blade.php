@@ -243,7 +243,7 @@
 
                                     row += '<td>' + domain + '</td>'
                                     row += td
-                                    row += '<td>' + values['avg'] + '</td>'
+                                    row += '<td>' + String(values['avg']).substring(0, 5) + '</td>'
                                     row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
                                     row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
                                     row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
