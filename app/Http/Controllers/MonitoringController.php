@@ -516,7 +516,6 @@ class MonitoringController extends Controller
     public function getCompetitorsVisibility(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
-
         $keywords = Common::pullValue(MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query']), 'query');
         $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
         array_unshift($competitors, $project->url);
@@ -559,29 +558,33 @@ class MonitoringController extends Controller
     public function moreInfo(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
-
-        // top (3/10/100)
         $keywords = Common::pullValue(MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query']), 'query');
         $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
-        array_unshift($competitors, $project->url);
-
-        //add filtered values
         $searchEngines = Common::pullValue(MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['lr'])->toArray(), 'lr');
+        array_unshift($competitors, $project->url);
 
         $array = [];
         foreach ($searchEngines as $searchEngine) {
             foreach ($keywords as $keyword) {
+
                 $records = SearchIndex::where('query', $keyword)
                     ->where('lr', $searchEngine)
                     ->latest('created_at')
                     ->take(100)
                     ->get(['url', 'position', 'created_at']);
 
-                foreach ($records as $record) {
-                    $url = Common::domainFilter(parse_url($record['url'])['host']);
-                    if (in_array($url, $competitors)) {
-                        $array[$url]['positions'][$keyword] = $record['position'];
-                        arsort($array[$url]['positions']);
+                foreach ($competitors as $key => $competitor) {
+                    foreach ($records as $record) {
+                        $url = Common::domainFilter(parse_url($record['url'])['host']);
+                        if ($url === $competitor) {
+                            $array[$competitor]['positions'][$keyword] = $record['position'];
+                            arsort($array[$competitor]['positions']);
+
+                            continue 2;
+                        } else if (array_key_last($competitors) === $key) {
+                            $array[$competitor]['positions'][$keyword] = 100;
+                            arsort($array[$competitor]['positions']);
+                        }
                     }
                 }
             }

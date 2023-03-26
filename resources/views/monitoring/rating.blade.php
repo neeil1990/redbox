@@ -76,32 +76,30 @@
     </div>
 
     <div class="card direct-chat direct-chat-primary collapsed-card">
-        <div class="card-header ui-sortable-handle" style="cursor: move;">
-            <button class="btn btn-default" id="more-info"
+        <div class="card-header ui-sortable-handle">
+            <button id="more-info" class="btn btn-default"
                     data-card-widget="collapse">{{ __('Positions competitors') }}</button>
         </div>
         <div class="card-body" style="display: none;">
-            <div>
-                <div id="more-info-block" style="display:none;">
-                    <div class="card-body">
-                        <table class="table table-hover table-bordered no-footer dataTable">
-                            <thead>
-                            <tr>
-                                <th>{{ __('Domains') }}</th>
-                                <th>{{ __('Positions') }}</th>
-                                <th>{{ __('Average position') }}</th>
-                                <th>{{ __('Top') }} 3</th>
-                                <th>{{ __('Top') }} 10</th>
-                                <th>{{ __('Top') }} 100</th>
-                            </tr>
-                            </thead>
-                            <tbody id="more-info-tbody">
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="d-flex justify-content-center align-items-center align-content-center">
+                <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader-competitors"
+                     class="mt-3 mb-3">
             </div>
+            <table class="table table-hover table-bordered no-footer" id="position-table" style="display: none">
+                <thead>
+                <tr>
+                    <th>{{ __('Domains') }}</th>
+                    <th>{{ __('Positions') }}</th>
+                    <th>{{ __('Average position') }}</th>
+                    <th>{{ __('Top') }} 3</th>
+                    <th>{{ __('Top') }} 10</th>
+                    <th>{{ __('Top') }} 100</th>
+                </tr>
+                </thead>
+                <tbody id="more-info-tbody">
+
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -228,6 +226,7 @@
                                     let positions = ''
 
                                     $.each(values['positions'], function (word, position) {
+                                        position = String(position).substring(0, 5)
                                         positions += `<div>${word}: ${position}</div>`
                                     })
                                     let td =
@@ -245,15 +244,17 @@
                                     row += '<td>' + domain + '</td>'
                                     row += td
                                     row += '<td>' + values['avg'] + '</td>'
-                                    row += '<td>' + values['top_3'] + '</td>'
-                                    row += '<td>' + values['top_10'] + '</td>'
-                                    row += '<td>' + values['top_100'] + '</td>'
+                                    row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
+                                    row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
+                                    row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
 
                                     $('#more-info-tbody').append(row)
                                     iterator++
                                 })
 
-                                $('#more-info-block').show()
+
+                                $('#preloader-competitors').hide()
+                                $('#position-table').show()
                             },
                         });
                     }
