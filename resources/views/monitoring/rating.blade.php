@@ -370,7 +370,6 @@
             }
 
             function renderCharts(data) {
-                console.log(data)
                 let colorArray = getColorArray()
 
                 let labels = []
@@ -381,12 +380,14 @@
                 let colors = []
 
                 $.each(data, function (domain, info) {
-                    labels.push(domain)
-                    datas.push(info.avg)
-                    colors.push(colorArray.shift())
-                    top3.push(info.top_3)
-                    top10.push(info.top_10)
-                    top100.push(info.top_100)
+                    if (domain !== "") {
+                        labels.push(domain)
+                        datas.push(info.avg)
+                        colors.push(colorArray.shift())
+                        top3.push(info.top_3)
+                        top10.push(info.top_10)
+                        top100.push(info.top_100)
+                    }
                 })
                 new Chart(document.getElementById("bar-chart"), {
                     type: 'bar',
