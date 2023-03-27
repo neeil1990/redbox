@@ -9,10 +9,13 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Arr;
 
 class MonitoringExportsController extends MonitoringKeywordsController
 {
     private $groupColumnIndex = 4;
+    private $removeColumns = ['checkbox', 'btn', 'url', 'group', 'target', 'dynamics', 'base', 'phrasal', 'exact'];
+    private $type = '.pdf';
 
     public function download(Request $request, $id)
     {
@@ -33,10 +36,16 @@ class MonitoringExportsController extends MonitoringKeywordsController
             ],
         ]);
 
-        $this->columns->forget(['checkbox', 'btn', 'url', 'target', 'base', 'phrasal', 'exact']);
+        foreach ($this->removeColumns as $col){
+            if($request->has($col . 'Col'))
+                unset($this->removeColumns[array_search($col, $this->removeColumns)]);
+        }
+
+        $this->columns->forget($this->removeColumns);
         $response = $this->setProjectID($id)->get($params);
 
-        return Excel::download(new PositionsExport($response), 'positions.pdf', \Maatwebsite\Excel\Excel::MPDF);
+        $file = $this->project['url'] . ' ' . $params['dates_range'] . $this->type;
+        return Excel::download(new PositionsExport($response), $file, \Maatwebsite\Excel\Excel::MPDF);
     }
 
     public function edit($id)

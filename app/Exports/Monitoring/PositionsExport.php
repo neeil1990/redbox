@@ -32,7 +32,7 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, Should
     public function view(): View
     {
         $data = $this->data;
-        return view('monitoring.export.test', compact('data'));
+        return view('monitoring.export.index', compact('data'));
     }
 
     public function defaultStyles(Style $defaultStyle)
