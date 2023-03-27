@@ -414,7 +414,7 @@
                         labels: labels,
                         datasets: [
                             {
-                                label: "{{ __("Top") }} 3",
+                                label: "{{ __("Top") }} 3 (%)",
                                 backgroundColor: colors,
                                 data: top3
                             }
@@ -435,7 +435,7 @@
                         labels: labels,
                         datasets: [
                             {
-                                label: "{{ __("Top") }} 10",
+                                label: "{{ __("Top") }} 10 (%)",
                                 backgroundColor: colors,
                                 data: top10
                             }
@@ -456,7 +456,7 @@
                         labels: labels,
                         datasets: [
                             {
-                                label: "{{ __("Top") }} 100",
+                                label: "{{ __("Top") }} 100 (%)",
                                 backgroundColor: colors,
                                 data: top100
                             }
