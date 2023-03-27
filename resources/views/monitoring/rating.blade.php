@@ -370,6 +370,7 @@
             }
 
             function renderCharts(data) {
+                console.log(data)
                 let colorArray = getColorArray()
 
                 let labels = []
