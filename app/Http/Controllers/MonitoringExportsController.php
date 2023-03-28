@@ -22,7 +22,7 @@ class MonitoringExportsController extends MonitoringKeywordsController
         $this->format = $format;
     }
 
-    public function getFormat($data, $fileName, $extension = 'pdf')
+    public function downloadFile($data, $fileName, $extension = 'pdf')
     {
         switch ($extension) {
             case "xls":
@@ -69,7 +69,7 @@ class MonitoringExportsController extends MonitoringKeywordsController
         $response = $this->setProjectID($id)->get($params);
 
         $file = $this->project['url'] . ' ' . $params['dates_range'];
-        return $this->getFormat($response, $file, $request['format']);
+        return $this->downloadFile($response, $file, $request['format']);
     }
 
     public function edit($id)
