@@ -15,7 +15,11 @@ class MonitoringExportsController extends MonitoringKeywordsController
 {
     private $groupColumnIndex = 4;
     private $removeColumns = ['checkbox', 'btn', 'url', 'group', 'target', 'dynamics', 'base', 'phrasal', 'exact'];
-    private $format;
+
+    /**
+     * @var IFormat
+     */
+    private IFormat $format;
 
     public function setFormat(IFormat $format): void
     {
@@ -26,16 +30,16 @@ class MonitoringExportsController extends MonitoringKeywordsController
     {
         switch ($extension) {
             case "xls":
-                $this->format = new ExportExcel();
+                $this->setFormat(new ExportExcel());
                 break;
             case "html":
-                $this->format = new ExportHtml();
+                $this->setFormat(new ExportHtml());
                 break;
             case "csv":
-                $this->format = new ExportCsv();
+                $this->setFormat(new ExportCsv());
                 break;
             default:
-                $this->format = new ExportPDF();
+                $this->setFormat(new ExportPDF());
         }
 
         return $this->format->download($data, $fileName);
