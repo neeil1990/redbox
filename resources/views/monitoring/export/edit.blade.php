@@ -61,6 +61,16 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label>Формат</label>
+            <select class="custom-select" name="format">
+                <option value="pdf">PDF</option>
+                <option value="xls">Excel</option>
+                <option value="html">HTML</option>
+                <option value="csv">CSV</option>
+            </select>
+        </div>
+
         <div class="row">
             <div class="col-sm-6">
                 <!-- checkbox -->
