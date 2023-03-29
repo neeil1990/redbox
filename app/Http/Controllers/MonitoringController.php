@@ -513,7 +513,9 @@ class MonitoringController extends Controller
 
             $competitors[$key]['visibility'] = $count;
         }
-        Log::debug('resp', $competitors);
+        Log::debug('count', [count($competitors)]);
+        Log::debug('json_encode', [json_encode($competitors)]);
+        Log::debug('$competitors', [$competitors]);
 
 
         return $competitors;
