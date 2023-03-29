@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -25,6 +26,7 @@ class MonitoringCompetitor extends Model
                     ->latest()
                     ->first(['created_at']);
 
+                Log::debug('date', [$date]);
                 $results = SearchIndex::where('lr', '=', $engine['lr'])
                     ->where('query', $keyword)
                     ->where('position', '<=', 10)
