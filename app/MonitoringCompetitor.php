@@ -40,7 +40,7 @@ class MonitoringCompetitor extends Model
                                 $competitors[$host]['urls'][$query][$engine['engine']][] = [$engine['lr'] => Common::domainFilter($url)];
                             }
                         } else {
-                            $competitors[$host]['urls'][$engine['lr']][$query][] = Common::domainFilter($url);
+                            $competitors[$host]['urls'][$engine['engine']][$query][] = Common::domainFilter($url);
                         }
                     }
                 }
