@@ -409,4 +409,4 @@ Route::get('/test/though', function () {
         'count' => $count,
         'countUniqueScanned' => $countScanned
     ]);
-})
+});
