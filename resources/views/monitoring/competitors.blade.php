@@ -124,7 +124,6 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
 
-
         <script>
             let table
             let data = {

@@ -7,12 +7,10 @@ use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Common;
 use App\Jobs\AutoUpdatePositionQueue;
 use App\Jobs\PositionQueue;
-use App\Location;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
-use App\MonitoringOccurrence;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringProjectColumnsSetting;
@@ -22,6 +20,7 @@ use App\MonitoringSettings;
 use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -30,7 +29,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use TheSeer\Tokenizer\Exception;
 
 class MonitoringController extends Controller
 {
@@ -419,8 +417,8 @@ class MonitoringController extends Controller
 
         $navigations = [
             ['h3' => $countMonitoringProjects, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
-            ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => 'В разработке', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
-            ['h3' => $countCompetitors + 1, 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => route('monitoring.competitors.positions', $project->id), 'bg' => 'bg-warning'],
+            ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => '', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
+            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => route('monitoring.competitors.positions', $project->id), 'bg' => 'bg-warning'],
             ['h3' => '150', 'p' => 'План продвижения', 'small' => 'В разработке', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
             ['h3' => '150', 'p' => 'Аудит сайта', 'small' => 'В разработке', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
             ['h3' => $countBackLinkProjects, 'p' => 'Отслеживание ссылок', 'small' => '', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
@@ -507,7 +505,7 @@ class MonitoringController extends Controller
 
     public function competitorsPositions(MonitoringProject $project)
     {
-        $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         $navigations = $this->navigations($project);
 
         return view('monitoring.rating', compact('project', 'competitors', 'navigations'));
@@ -515,37 +513,39 @@ class MonitoringController extends Controller
 
     public function getCompetitorsVisibility(Request $request): JsonResponse
     {
+        $date = Carbon::now()->toDateString();
         $project = MonitoringProject::findOrFail($request->projectId);
-        $keywords = Common::pullValue(MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query']), 'query');
-        $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query')->toArray();
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         array_unshift($competitors, $project->url);
 
-        if (isset($request->region)) {
-            $searchEngines = Common::pullValue(MonitoringSearchengine::where('id', '=', $request->region)->get(['lr'])->toArray(), 'lr');
-        } else {
-            $searchEngines = Common::pullValue(MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['lr'])->toArray(), 'lr');
-        }
+        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+
+//        if (isset($request->region)) {
+//            $searchEngines = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray();
+//        } else {
+//            $searchEngines = MonitoringSearchengine::where('monitoring_project_id', $project->id)->pluck('lr')->toArray();
+//        }
 
         $array = [];
-        foreach ($keywords as $keyword) {
+        foreach ($keywords as $query) {
             foreach ($competitors as $competitor) {
-                $array[$keyword][$competitor] = 0;
+                $array[$query][$competitor] = 0;
             }
         }
 
-        foreach ($searchEngines as $searchEngine) {
-            foreach ($keywords as $keyword) {
-                $records = SearchIndex::where('query', $keyword)
-                    ->where('lr', $searchEngine)
-                    ->latest('created_at')
-                    ->take(100)
-                    ->get(['url', 'position', 'created_at']);
+        foreach ($keywords as $query) {
+            $records = SearchIndex::where('created_at', 'like', "%$date%")
+                ->where('query', $query)
+                ->where('lr', $lr)
+                ->latest('created_at')
+                ->take(100)
+                ->get(['url', 'position', 'created_at']);
 
-                foreach ($records as $record) {
-                    $url = Common::domainFilter(parse_url($record['url'])['host']);
-                    if (in_array($url, $competitors)) {
-                        $array[$keyword][$url] = $record['position'];
-                    }
+            foreach ($records as $record) {
+                $url = Common::domainFilter(parse_url($record['url'])['host']);
+                if (in_array($url, $competitors) && $array[$query][$url] === 0) {
+                    $array[$query][$url] = $record['position'];
                 }
             }
         }
@@ -557,41 +557,39 @@ class MonitoringController extends Controller
 
     public function moreInfo(Request $request): JsonResponse
     {
+        $date = Carbon::now()->toDateString();
         $project = MonitoringProject::findOrFail($request->projectId);
-        $keywords = Common::pullValue(MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query']), 'query');
-        $competitors = Common::pullValue(MonitoringCompetitor::where('monitoring_project_id', $project->id)->get(['url']), 'url');
-        $searchEngines = Common::pullValue(MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['lr'])->toArray(), 'lr');
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query')->toArray();
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+
         array_unshift($competitors, $project->url);
 
         $array = [];
-        foreach ($searchEngines as $searchEngine) {
-            foreach ($keywords as $keyword) {
+        foreach ($keywords as $query) {
+            $records = SearchIndex::where('created_at', 'like', "%$date%")
+                ->where('query', $query)
+                ->where('lr', $lr)
+                ->latest('created_at')
+                ->take(100)
+                ->get(['url', 'position', 'created_at', 'query'])->toArray();
 
-                $records = SearchIndex::where('query', $keyword)
-                    ->where('lr', $searchEngine)
-                    ->latest('created_at')
-                    ->take(100)
-                    ->get(['url', 'position', 'created_at']);
+            foreach ($competitors as $competitor) {
+                foreach ($records as $key => $record) {
+                    $url = Common::domainFilter(parse_url($record['url'])['host']);
+                    if ($url === $competitor) {
+                        $array[$competitor]['positions'][$query] = $record['position'];
 
-                foreach ($competitors as $key => $competitor) {
-                    foreach ($records as $record) {
-                        $url = Common::domainFilter(parse_url($record['url'])['host']);
-                        if ($url === $competitor) {
-                            $array[$competitor]['positions'][$keyword] = $record['position'];
-                            arsort($array[$competitor]['positions']);
-
-                            continue 2;
-                        } else if (array_key_last($competitors) === $key) {
-                            $array[$competitor]['positions'][$keyword] = 100;
-                            arsort($array[$competitor]['positions']);
-                        }
+                        continue 2;
+                    } else if (array_key_last($records) === $key) {
+                        $array[$competitor]['positions'][$query] = 101;
                     }
                 }
             }
         }
 
         foreach ($array as $key => $item) {
-            $array[$key]['avg'] = array_sum($item['positions']) / count($keywords);
+            $array[$key]['avg'] = round(array_sum($item['positions']) / count($item['positions']), 2);
             $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
@@ -599,6 +597,80 @@ class MonitoringController extends Controller
 
         return response()->json([
             'data' => $array
+        ]);
+    }
+
+    public function competitorsHistoryPositions(Request $request): JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+        array_unshift($competitors, $project->url);
+
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
+        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+
+        if (isset($request->dateRange)) {
+            $range = explode(' - ', $request->dateRange);
+            $period = CarbonPeriod::create($range[0], $range[1]);
+            $dates = [];
+            foreach ($period as $date) {
+                $dates[] = $date->format('Y-m-d');
+            }
+        } else {
+            $dates = MonitoringPosition::select(DB::raw('DATE(created_at) as dateOnly'))
+                ->where('monitoring_searchengine_id', $request->region)
+                ->whereIn('monitoring_keyword_id', array_keys($keywords))
+                ->latest('created_at')
+                ->distinct()
+                ->pluck('dateOnly');
+        }
+
+
+        foreach ($dates as $date) {
+            foreach ($keywords as $query) {
+                $records[$date][$query][$lr] = SearchIndex::where('created_at', 'like', "%$date%")
+                    ->where('query', $query)
+                    ->where('lr', $lr)
+                    ->latest('created_at')
+                    ->take(100)
+                    ->get(['url', 'position', 'created_at', 'query'])->toArray();
+            }
+        }
+
+        $results = [];
+
+        foreach ($records as $date => $queries) {
+            foreach ($queries as $lrs) {
+                foreach ($lrs as $positions) {
+                    if (count($positions) === 0) {
+                        continue;
+                    }
+                    foreach ($competitors as $competitor) {
+                        foreach ($positions as $keyPos => $result) {
+                            $url = Common::domainFilter(parse_url($result['url'])['host']);
+                            if ($competitor === $url) {
+                                $results[$date][$competitor]['positions'][] = $result['position'];
+                                continue 2;
+                            } else if (array_key_last($positions) === $keyPos) {
+                                $results[$date][$competitor]['positions'][] = 101;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach ($results as $date => $result) {
+            foreach ($result as $domain => $data) {
+                $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
+                $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
+                $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
+                $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
+            }
+        }
+
+        return response()->json([
+            'data' => array_reverse($results)
         ]);
     }
 }

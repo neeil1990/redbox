@@ -168,17 +168,6 @@ class Common
         return urldecode(str_replace(['www.'], '', strtolower($domain)));
     }
 
-    public static function pullValue($array, $value): array
-    {
-        $res = [];
-
-        foreach ($array as $item) {
-            $res[] = $item[$value];
-        }
-
-        return $res;
-    }
-
     public static function percentHitIn($top, $positions)
     {
         $count = 0;

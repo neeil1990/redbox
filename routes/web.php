@@ -11,12 +11,18 @@
 |
 */
 
+use App\Classes\Cron\AutoUpdateMonitoringPositions;
 use App\Common;
 use App\MonitoringCompetitor;
 use App\MonitoringKeyword;
+use App\MonitoringPosition;
+use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use App\SearchIndex;
+use App\User;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -281,6 +287,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
+    Route::post('/monitoring/competitors/history/positions/', 'MonitoringController@competitorsHistoryPositions')->name('monitoring.competitors.history.positions');
 
     Route::get('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
     Route::post('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
@@ -379,6 +386,70 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
 
-Route::get('/test2', function () {
-
+//запустить новый скан, отрендерить
+Route::get('/test', function () {
+    $period = CarbonPeriod::create('2018-06-14', '2018-06-20');
+    foreach ($period as $date) {
+        dump($date->format('Y-m-d'));
+    }
+//    // история позиций не совпадает с позициями на текущий день.
+//    $project = MonitoringProject::findOrFail(177);
+//    $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+//    array_unshift($competitors, $project->url);
+//
+//    $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
+//    $lr = MonitoringSearchengine::where('id', '=', 276)->pluck('lr')->toArray()[0];
+//
+//    $dates = MonitoringPosition::select(DB::raw('DATE(created_at) as dateOnly'))
+//        ->where('monitoring_searchengine_id', 276)
+//        ->whereIn('monitoring_keyword_id', array_keys($keywords))
+//        ->latest('created_at')
+//        ->distinct()
+//        ->pluck('dateOnly');
+//
+//
+//    foreach ($dates as $date) {
+//        foreach ($keywords as $query) {
+//            $records[$date][$query][$lr] = SearchIndex::where('created_at', 'like', "%$date%")
+//                ->where('query', $query)
+//                ->where('lr', $lr)
+//                ->latest('created_at')
+//                ->take(100)
+//                ->get(['url', 'position', 'created_at', 'query'])->toArray();
+//        }
+//    }
+//
+//    $results = [];
+//
+//    foreach ($records as $date => $queries) {
+//        foreach ($queries as $lrs) {
+//            foreach ($lrs as $positions) {
+//                if (count($positions) === 0) {
+//                    continue;
+//                }
+//                foreach ($competitors as $competitor) {
+//                    foreach ($positions as $keyPos => $result) {
+//                        $url = Common::domainFilter(parse_url($result['url'])['host']);
+//                        if ($competitor === $url) {
+//                            $results[$date][$competitor]['positions'][] = $result['position'];
+//                            continue 2;
+//                        } else if (array_key_last($positions) === $keyPos) {
+//                            $results[$date][$competitor]['positions'][] = 100;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    foreach ($results as $date => $result) {
+//        foreach ($result as $domain => $data) {
+//            $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
+//            $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
+//            $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
+//            $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
+//        }
+//    }
+//
+//    dd($results);
 });
