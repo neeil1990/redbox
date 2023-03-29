@@ -452,7 +452,7 @@ class MonitoringController extends Controller
         ));
     }
 
-    public function getCompetitorsInfo(Request $request): JsonResponse
+    public function getCompetitorsInfo(Request $request)
     {
         $project = MonitoringProject::findOrFail($request['projectId']);
 
@@ -518,9 +518,7 @@ class MonitoringController extends Controller
         }
         Log::debug('competitors4', [count($competitors)]);
 
-        return response()->json([
-            'data' => $competitors
-        ]);
+        return $competitors;
     }
 
     public function addCompetitor(Request $request): ?JsonResponse

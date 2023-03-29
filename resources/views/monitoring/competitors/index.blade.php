@@ -170,7 +170,7 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
-                        renderTableRows(response.data)
+                        renderTableRows(response)
 
                         $('#preloader').hide()
                         setTimeout(() => {
@@ -205,7 +205,7 @@
                         data: data,
                         success: function (response) {
                             table.rows().remove().draw();
-                            renderTableRows(response.data)
+                            renderTableRows(response)
 
                             $('#toast-container').hide()
                             $('#toast-container').show(300)
@@ -287,7 +287,7 @@
                             let yandexTh = false
                             let googleTh = false
 
-                            $.each(response.data[targetDomain]['urls'], function (phrase, engines) {
+                            $.each(response[targetDomain]['urls'], function (phrase, engines) {
                                 $.each(engines, function (engine) {
                                     if (engine === 'yandex') {
                                         yandexTh = true
