@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class Queue
 {
-
     /**
      * @param $row
      * @param $request
@@ -17,20 +16,24 @@ class Queue
      */
     public static function addInQueue($row, $request)
     {
-        $userId = Auth::id();
-        $item = explode(';', $row);
-        $link = parse_url(trim($item[1]));
+        try {
+            $userId = Auth::id();
+            $item = explode(';', $row);
+            $link = parse_url(trim($item[1]));
 
-        if (count($item) == 2 && isset($link['host'])) {
-            $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
+            if (count($item) == 2 && isset($link['host'])) {
+                $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
 
-            RelevanceHistoryQueue::dispatch(
-                $userId,
-                $request->all(),
-                $historyId,
-                trim($item[1]),
-                trim($item[0])
-            )->onQueue(UsersJobs::getPriority($userId));
+                RelevanceHistoryQueue::dispatch(
+                    $userId,
+                    $request->all(),
+                    $historyId,
+                    trim($item[1]),
+                    trim($item[0])
+                )->onQueue(UsersJobs::getPriority($userId));
+            }
+        } catch (\Throwable $e) {
+
         }
     }
 
@@ -70,5 +73,4 @@ class Queue
             0
         );
     }
-
 }
