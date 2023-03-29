@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -39,6 +40,7 @@ class MonitoringCompetitor extends Model
             }
 
         }
+        Log::debug('competitors1', [count($competitors)]);
 
         foreach ($project->competitors as $competitor) {
             $url = Common::domainFilter($competitor->url);
@@ -47,10 +49,12 @@ class MonitoringCompetitor extends Model
                 $competitors[$url]['competitor'] = true;
             }
         }
+        Log::debug('competitors2', [count($competitors)]);
 
         if (array_key_exists($project->url, $competitors)) {
             $competitors[$project->url]['mainPage'] = true;
         }
+        Log::debug('competitors3', [count($competitors)]);
 
         foreach ($competitors as $key => $urls) {
             $count = 0;
@@ -69,6 +73,7 @@ class MonitoringCompetitor extends Model
 
             $competitors[$key]['visibility'] = $count;
         }
+        Log::debug('competitors4', [count($competitors)]);
 
         return json_encode($competitors);
     }

@@ -452,15 +452,6 @@ class MonitoringController extends Controller
         ));
     }
 
-    public function getCompetitorInfo(Request $request): JsonResponse
-    {
-        $competitors = MonitoringCompetitor::getCompetitors($request->all());
-
-        return response()->json([
-            'data' => $competitors
-        ]);
-    }
-
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
         $competitors = MonitoringCompetitor::getCompetitors($request->all());
