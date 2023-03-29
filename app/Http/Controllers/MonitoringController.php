@@ -456,6 +456,8 @@ class MonitoringController extends Controller
     {
         $competitors = MonitoringCompetitor::getCompetitors($request->all());
 
+        Log::debug('competitors5', [$competitors]);
+
         return response()->json([
             'data' => $competitors
         ]);
