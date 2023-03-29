@@ -2,17 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\Monitoring\PositionsExport;
+use App\Exports\Monitoring\Format\ExportCsv;
+use App\Exports\Monitoring\Format\ExportExcel;
+use App\Exports\Monitoring\Format\ExportHtml;
+use App\Exports\Monitoring\Format\ExportPDF;
+use App\Exports\Monitoring\Format\IFormat;
 use App\MonitoringProject;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 
 class MonitoringExportsController extends MonitoringKeywordsController
 {
     private $groupColumnIndex = 4;
+    private $removeColumns = ['checkbox', 'btn', 'url', 'group', 'target', 'dynamics', 'base', 'phrasal', 'exact'];
+
+    /**
+     * @var IFormat
+     */
+    private IFormat $format;
+
+    public function setFormat(IFormat $format): void
+    {
+        $this->format = $format;
+    }
+
+    public function downloadFile($data, $fileName, $extension = 'pdf')
+    {
+        switch ($extension) {
+            case "xls":
+                $this->setFormat(new ExportExcel());
+                break;
+            case "html":
+                $this->setFormat(new ExportHtml());
+                break;
+            case "csv":
+                $this->setFormat(new ExportCsv());
+                break;
+            default:
+                $this->setFormat(new ExportPDF());
+        }
+
+        return $this->format->download($data, $fileName);
+    }
 
     public function download(Request $request, $id)
     {
@@ -33,10 +64,16 @@ class MonitoringExportsController extends MonitoringKeywordsController
             ],
         ]);
 
-        $this->columns->forget(['checkbox', 'btn', 'url', 'target', 'base', 'phrasal', 'exact']);
+        foreach ($this->removeColumns as $col){
+            if($request->has($col . 'Col'))
+                unset($this->removeColumns[array_search($col, $this->removeColumns)]);
+        }
+
+        $this->columns->forget($this->removeColumns);
         $response = $this->setProjectID($id)->get($params);
 
-        return Excel::download(new PositionsExport($response), 'positions.pdf', \Maatwebsite\Excel\Excel::MPDF);
+        $file = $this->project['url'] . ' ' . $params['dates_range'];
+        return $this->downloadFile($response, $file, $request['format']);
     }
 
     public function edit($id)

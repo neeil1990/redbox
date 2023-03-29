@@ -61,6 +61,54 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label>Формат</label>
+            <select class="custom-select" name="format">
+                <option value="pdf">PDF</option>
+                <option value="xls">Excel</option>
+                <option value="html">HTML</option>
+                <option value="csv">CSV</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <!-- checkbox -->
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="targetCol" type="checkbox" id="target" value="1">
+                        <label for="target" class="custom-control-label">{{ __('Target') }}</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="baseCol" type="checkbox" id="base" value="1">
+                        <label for="base" class="custom-control-label">{{ __('YW') }}</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="exactCol" type="checkbox" id="exact" value="1">
+                        <label for="exact" class="custom-control-label">{{ __('YW') }} "[!]"</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <!-- checkbox -->
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="groupCol" type="checkbox" id="group" value="1">
+                        <label for="group" class="custom-control-label">{{ __('Group') }}</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="dynamicsCol" type="checkbox" id="dynamics" value="1">
+                        <label for="dynamics" class="custom-control-label">{{ __('Dynamics') }}</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="phrasalCol" type="checkbox" id="phrasal" value="1">
+                        <label for="phrasal" class="custom-control-label">{{ __('YW') }} "[]"</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="modal-footer justify-content-between">
