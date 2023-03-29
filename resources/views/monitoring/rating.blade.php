@@ -87,9 +87,8 @@
     </h3>
 
     <h4>
-        Статистика за текущее число ({{ \Carbon\Carbon::now()->toDateString() }})
+        Статистика по выбранному региону за текущее число ({{ \Carbon\Carbon::now()->toDateString() }})
     </h4>
-
 
     <div class="d-flex justify-content-center align-items-center align-content-center">
         <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
