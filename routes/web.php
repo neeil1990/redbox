@@ -447,5 +447,5 @@ Route::get('/get-project/test', function () {
         $competitors[$key]['visibility'] = $count;
     }
 
-    return $competitors;
+    dd($competitors);
 });
