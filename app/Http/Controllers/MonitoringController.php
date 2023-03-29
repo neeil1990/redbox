@@ -589,7 +589,7 @@ class MonitoringController extends Controller
         }
 
         foreach ($array as $key => $item) {
-            $array[$key]['avg'] = round(array_sum($item['positions']) / count($item['positions']), 2);
+            $array[$key]['avg'] = round(array_sum($item['positions']) / count($keywords), 2);
             $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
@@ -662,7 +662,7 @@ class MonitoringController extends Controller
 
         foreach ($results as $date => $result) {
             foreach ($result as $domain => $data) {
-                $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
+                $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
                 $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
                 $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
                 $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
