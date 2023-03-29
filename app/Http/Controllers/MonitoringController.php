@@ -519,7 +519,7 @@ class MonitoringController extends Controller
         Log::debug('competitors4', [count($competitors)]);
 
         return response()->json([
-            'data' => json_encode($competitors)
+            'data' => $competitors
         ]);
     }
 

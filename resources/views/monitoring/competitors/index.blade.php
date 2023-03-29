@@ -205,7 +205,6 @@
                         data: data,
                         success: function (response) {
                             table.rows().remove().draw();
-
                             renderTableRows(response.data)
 
                             $('#toast-container').hide()
@@ -263,17 +262,17 @@
                     $(this).attr('class', 'ml-2 fa fa-minus-circle get-more-info')
                     let parent = $(this).parents().eq(1)
                     let targetDomain = $(this).attr('data-target')
-                    let data = {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'projectId': {{ $project->id }},
-                        'targetDomain': targetDomain,
-                    }
 
                     $.ajax({
                         type: "POST",
                         dataType: "json",
                         url: "{{ route('monitoring.get.competitors') }}",
-                        data: data,
+                        data: {
+                            '_token': $('meta[name="csrf-token"]').attr('content'),
+                            'projectId': {{ $project->id }},
+                            'targetDomain': targetDomain,
+                            'region': $('#searchEngines').val()
+                        },
                         beforeSend: function () {
                             parent.after(
                                 '<tr class="progress-render" data-id="' + targetDomain + '">' +
@@ -285,27 +284,46 @@
                         },
                         success: function (response) {
                             let rows = ''
+                            let yandexTh = false
+                            let googleTh = false
+
                             $.each(response.data[targetDomain]['urls'], function (phrase, engines) {
+                                $.each(engines, function (engine) {
+                                    if (engine === 'yandex') {
+                                        yandexTh = true
+                                    }
+                                    if (engine === 'google') {
+                                        googleTh = true
+                                    }
+                                })
+
                                 let yandex = ''
                                 let google = ''
 
-                                rows += '<tr>'
-                                rows += '<td>' + phrase + '</td>'
+                                rows += '<tr><td>' + phrase + '</td>'
 
                                 $.each(engines, function (engine, urls) {
                                     if (engine === 'yandex') {
+                                        yandexTh = true
                                         $.each(urls, function (key, url) {
                                             yandex += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
                                         })
                                     }
                                     if (engine === 'google') {
+                                        googleTh = true
                                         $.each(urls, function (key, url) {
                                             google += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
                                         })
                                     }
                                 })
-                                rows += '<td>' + yandex + '</td>'
-                                rows += '<td>' + google + '</td>'
+                                if (yandexTh) {
+                                    rows += '<td>' + yandex + '</td>'
+                                }
+
+                                if (googleTh) {
+                                    rows += '<td>' + google + '</td>'
+                                }
+
                                 rows += '</tr>'
                             })
 
@@ -313,13 +331,20 @@
                                 '<table class="table table-hover table-bordered no-footer custom-table">' +
                                 '    <thead>' +
                                 '        <tr>' +
-                                '            <th> {{ __('Phrase') }} </th>' +
-                                '            <th> {{ __('Yandex') }} </th>' +
-                                '            <th> {{ __('Google') }} </th>' +
-                                '        </tr>' +
-                                '    </thead>' +
-                                '    <tbody>'
-                                + rows +
+                                '            <th> {{ __('Phrase') }} </th>'
+
+                            if (yandexTh) {
+                                table += '<th> {{ __('Yandex') }} </th>'
+                            }
+
+                            if (googleTh) {
+                                table += '<th> {{ __('Google') }} </th>'
+                            }
+
+                            table += '</tr>' +
+                                '</thead>' +
+                                '    <tbody>' +
+                                rows +
                                 '    </tbody>' +
                                 '</table>'
 
