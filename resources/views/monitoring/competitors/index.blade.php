@@ -170,6 +170,7 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
+                        console.log(response)
                         renderTableRows(response)
 
                         $('#preloader').hide()
