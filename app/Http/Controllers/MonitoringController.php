@@ -483,7 +483,6 @@ class MonitoringController extends Controller
             }
 
         }
-        Log::debug('competitors1', [count($competitors)]);
 
         foreach ($project->competitors as $competitor) {
             $url = Common::domainFilter($competitor->url);
@@ -492,12 +491,10 @@ class MonitoringController extends Controller
                 $competitors[$url]['competitor'] = true;
             }
         }
-        Log::debug('competitors2', [count($competitors)]);
 
         if (array_key_exists($project->url, $competitors)) {
             $competitors[$project->url]['mainPage'] = true;
         }
-        Log::debug('competitors3', [count($competitors)]);
 
         foreach ($competitors as $key => $urls) {
             $count = 0;
@@ -516,12 +513,10 @@ class MonitoringController extends Controller
 
             $competitors[$key]['visibility'] = $count;
         }
-        Log::debug('competitors4', [count($competitors)]);
+        Log::debug('resp', $competitors);
 
-        $response = json_decode(mb_convert_encoding(json_encode($competitors), "UTF-8"), true);
 
-        Log::debug('resp', [$response]);
-        return $response;
+        return $competitors;
     }
 
     public function addCompetitor(Request $request): ?JsonResponse
