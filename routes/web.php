@@ -388,12 +388,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/get-project/test', function () {
-    return ['xn--80ahcbpmjl7b5a.online' => [1]];
-
-    dd(utf8_encode('xn--80ahcbpmjl7b5a.online'));
-    dd('xn--80ahcbpmjl7b5a.online');
-    dd('https://www.медтехника.online/');
-
     $project = MonitoringProject::findOrFail(77);
 
     $engines = MonitoringSearchengine::where('id', '=', 118)->get(['lr', 'engine']);
