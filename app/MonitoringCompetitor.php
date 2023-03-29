@@ -37,8 +37,9 @@ class MonitoringCompetitor extends Model
                         $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
                     }
                 }
-                Log::debug(count($competitors));
             }
+            Log::debug(count($competitors));
+
         }
 
         foreach ($project->competitors as $competitor) {
@@ -71,6 +72,7 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibility'] = $count;
         }
 
+        Log::debug(count($competitors));
         return $competitors;
     }
 }
