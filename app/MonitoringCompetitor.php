@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -36,6 +37,7 @@ class MonitoringCompetitor extends Model
                         $competitors[$host]['urls'][$searchengine->engine][$keyword->query][] = Common::domainFilter($url);
                     }
                 }
+                Log::debug(count($competitors));
             }
         }
 
