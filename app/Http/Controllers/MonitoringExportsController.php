@@ -58,7 +58,7 @@ class MonitoringExportsController extends MonitoringKeywordsController
                 $index => [
                     'data' => 'group',
                     'search' => [
-                        'value' => $request['group']
+                        'value' => ($request['group']) ? implode(',', $request['group']) : null
                     ]
                 ]
             ],

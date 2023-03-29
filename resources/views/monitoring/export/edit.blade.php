@@ -53,8 +53,7 @@
 
         <div class="form-group">
             <label>Группа</label>
-            <select class="custom-select" name="group">
-                <option value="">Все</option>
+            <select multiple class="custom-select" name="group[]">
                 @foreach($project['groups'] as $groups)
                     <option value="{{ $groups['id'] }}">{{ $groups['name'] }}</option>
                 @endforeach

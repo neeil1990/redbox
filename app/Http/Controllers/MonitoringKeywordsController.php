@@ -519,7 +519,7 @@ class MonitoringKeywordsController extends Controller
                     break;
                 case 'group':
                     if ($column['search']['value'])
-                        $model->where('monitoring_group_id', '=', $column['search']['value']);
+                        $model->whereIn('monitoring_group_id', explode(',', $column['search']['value']));
                     break;
                 case 'url':
                     if ($column['search']['value'])
