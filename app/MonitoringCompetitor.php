@@ -3,8 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -30,14 +28,14 @@ class MonitoringCompetitor extends Model
                 $results = SearchIndex::where('lr', '=', $engine['lr'])
                     ->where('query', $keyword)
                     ->where('position', '<=', 10)
-                    ->where('created_at', $date->created_at)
+                    ->where('created_at', '<=', $date->created_at)
                     ->pluck('query', 'url');
 
                 foreach ($results as $url => $query) {
                     $host = parse_url(Common::domainFilter($url))['host'];
                     if (isset($request['targetDomain'])) {
                         if ($host === $request['targetDomain']) {
-                            $competitors[$host]['urls'][$query][$engine['lr']][] = Common::domainFilter($url);
+                            $competitors[$host]['urls'][$query][$engine['engine']][] = [$engine['lr'] => Common::domainFilter($url)];
                         }
                     } else {
                         $competitors[$host]['urls'][$engine['lr']][$query][] = Common::domainFilter($url);

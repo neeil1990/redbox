@@ -170,7 +170,6 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
-                        console.log(response)
                         renderTableRows(response)
 
                         $('#preloader').hide()
@@ -307,13 +306,17 @@
                                     if (engine === 'yandex') {
                                         yandexTh = true
                                         $.each(urls, function (key, url) {
-                                            yandex += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
+                                            $.each(url, function (region, link) {
+                                                yandex += `<div><a href="${link}" target="_blank">${link}<a>(${region})</div>` + "\n\r"
+                                            })
                                         })
                                     }
                                     if (engine === 'google') {
                                         googleTh = true
                                         $.each(urls, function (key, url) {
-                                            google += `<div><a href="${url}" target="_blank">${url}<a></div>` + "\n\r"
+                                            $.each(url, function (region, link) {
+                                                google += `<div><a href="${link}" target="_blank">${link}<a>(${region})</div>` + "\n\r"
+                                            })
                                         })
                                     }
                                 })
