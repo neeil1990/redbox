@@ -100,7 +100,7 @@
     <div class="d-flex justify-content-center align-items-center align-content-center">
         <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
     </div>
-    <table id="table" class="table table-hover table-bordered no-footer" style="display: none">
+    <table id="table" class="table table-bordered no-footer" style="display: none">
         <thead>
         <tr>
             <th>Конкурент?</th>
