@@ -518,7 +518,10 @@ class MonitoringController extends Controller
         }
         Log::debug('competitors4', [count($competitors)]);
 
-        return json_decode(mb_convert_encoding(json_encode($competitors), "UTF-8"), true);
+        $response = json_decode(mb_convert_encoding(json_encode($competitors), "UTF-8"), true);
+
+        Log::debug('resp', [$response]);
+        return $response;
     }
 
     public function addCompetitor(Request $request): ?JsonResponse
