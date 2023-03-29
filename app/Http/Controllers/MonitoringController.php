@@ -454,6 +454,7 @@ class MonitoringController extends Controller
 
     public function getCompetitorsInfo(Request $request)
     {
+        Log::debug('request', $request->all());
         $project = MonitoringProject::findOrFail($request['projectId']);
 
         $engines = isset($request['region'])
@@ -513,10 +514,6 @@ class MonitoringController extends Controller
 
             $competitors[$key]['visibility'] = $count;
         }
-        Log::debug('count', [count($competitors)]);
-        Log::debug('json_encode', [json_encode($competitors)]);
-        Log::debug('$competitors', [$competitors]);
-
 
         return $competitors;
     }
