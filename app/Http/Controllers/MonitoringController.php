@@ -445,7 +445,7 @@ class MonitoringController extends Controller
         $countQuery = count($project->keywords);
         $navigations = $this->navigations($project);
 
-        return view('monitoring.competitors', compact(
+        return view('monitoring.competitors.index', compact(
             'navigations',
             'countQuery',
             'project'
@@ -508,7 +508,7 @@ class MonitoringController extends Controller
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         $navigations = $this->navigations($project);
 
-        return view('monitoring.rating', compact('project', 'competitors', 'navigations'));
+        return view('monitoring.competitors.history', compact('project', 'competitors', 'navigations'));
     }
 
     public function getCompetitorsVisibility(Request $request): JsonResponse

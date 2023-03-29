@@ -104,21 +104,53 @@
         </tbody>
     </table>
 
-    <table class="table table-hover table-bordered no-footer mt-5" id="position-table" style="display: none">
-        <thead>
-        <tr>
-            <th>{{ __('Domains') }}</th>
-            <th>{{ __('Positions') }}</th>
-            <th>{{ __('Average position') }}</th>
-            <th>{{ __('Top') }} 3</th>
-            <th>{{ __('Top') }} 10</th>
-            <th>{{ __('Top') }} 100</th>
-        </tr>
-        </thead>
-        <tbody id="more-info-tbody">
+    <div class="d-flex flex-column">
+        <table class="table table-hover table-bordered no-footer mt-5 w-50" id="position-table">
+            <thead>
+            <tr>
+                <th>{{ __('Domains') }}</th>
+                <th>{{ __('Average position') }}</th>
+            </tr>
+            </thead>
+            <tbody id="more-info-tbody">
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <table class="table table-hover table-bordered no-footer mt-5 w-50" id="top3-position-table">
+            <thead>
+            <tr>
+                <th>{{ __('Domains') }}</th>
+                <th>{{ __('Top') }} 3</th>
+            </tr>
+            </thead>
+            <tbody id="top3-tbody">
+
+            </tbody>
+        </table>
+        <table class="table table-hover table-bordered no-footer mt-5 w-50" id="top10-position-table">
+            <thead>
+            <tr>
+                <th>{{ __('Domains') }}</th>
+                <th>{{ __('Top') }} 10</th>
+            </tr>
+            </thead>
+            <tbody id="top10-tbody">
+
+            </tbody>
+        </table>
+        <table class="table table-hover table-bordered no-footer mt-5 w-50" id="top100-position-table">
+            <thead>
+            <tr>
+                <th>{{ __('Domains') }}</th>
+                <th>{{ __('Top') }} 100</th>
+            </tr>
+            </thead>
+            <tbody id="top100-tbody">
+
+            </tbody>
+        </table>
+    </div>
+
 
     <div class="d-flex flex-column">
         <div class="d-flex flex-row mt-3">
@@ -532,26 +564,8 @@
                         let iterator = 1;
                         $.each(response.data, function (domain, values) {
                             let row = '<tr class="render-more">'
-                            let positions = ''
-
-                            $.each(values['positions'], function (word, position) {
-                                position = String(position).substring(0, 5)
-                                positions += `<div>${word}: ${position}</div>`
-                            })
-                            let td =
-                                '<td>' +
-                                '    <p>' +
-                                '        <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapse' + iterator + '" aria-expanded="false" aria-controls="collapse' + iterator + '">' +
-                                "{{ __('Positions') }}" +
-                                '        </button>' +
-                                '    </p>' +
-                                '    <div class="collapse" id="collapse' + iterator + '">'
-                                + positions +
-                                '    </div>' +
-                                '</td>'
 
                             row += '<td>' + domain + '</td>'
-                            row += td
                             row += '<td>' + String(values['avg']).substring(0, 5) + '</td>'
                             row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
                             row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
