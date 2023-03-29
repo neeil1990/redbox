@@ -3,13 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request): array
+    public static function getCompetitors(array $request): string
     {
         $project = MonitoringProject::findOrFail($request['projectId']);
 
@@ -38,7 +37,6 @@ class MonitoringCompetitor extends Model
                     }
                 }
             }
-            Log::debug(count($competitors));
 
         }
 
@@ -72,7 +70,6 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibility'] = $count;
         }
 
-        Log::debug(count($competitors));
-        return $competitors;
+        return json_encode($competitors);
     }
 }
