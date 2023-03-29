@@ -9,7 +9,7 @@ class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request): string
+    public static function getCompetitors(array $request): array
     {
         $project = MonitoringProject::findOrFail($request['projectId']);
 
@@ -75,6 +75,6 @@ class MonitoringCompetitor extends Model
         }
         Log::debug('competitors4', [count($competitors)]);
 
-        return json_encode($competitors);
+        return $competitors;
     }
 }

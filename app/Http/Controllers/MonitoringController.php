@@ -455,11 +455,10 @@ class MonitoringController extends Controller
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
         $competitors = MonitoringCompetitor::getCompetitors($request->all());
-
         Log::debug('competitors5', [$competitors]);
 
         return response()->json([
-            'data' => $competitors
+            'data' => json_encode($competitors)
         ]);
     }
 
