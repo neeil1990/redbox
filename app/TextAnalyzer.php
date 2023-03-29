@@ -187,7 +187,6 @@ class TextAnalyzer extends Model
         $preg = [
             "'<script.*?</script>'si",
             "'<style[^>]*?>.*?</style>'si",
-            "'<picture[^>]*?>.*?</picture>'si",
             "'<img.*?>.*?</img>'si",
             "'<link.*?/>'si",
             "'<base.*?/>'si",
