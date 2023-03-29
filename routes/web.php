@@ -18,6 +18,7 @@ use App\MonitoringKeyword;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
+use App\ProjectRelevanceThough;
 use App\SearchIndex;
 use App\User;
 use Carbon\CarbonPeriod;
@@ -386,3 +387,26 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
+
+Route::get('/test/though', function () {
+    $though = ProjectRelevanceThough::find(56);
+
+    dd($though->result);
+    $though->result = json_decode(gzuncompress(base64_decode($though->result)), true);
+    $allResult = $though->result;
+    $though->result = array_slice($though->result, 0, count($though->result) / $this->slice);
+    $count = count($though->result);
+    if (count($though->result) > 0) {
+        $countScanned = $though->result[array_key_first($though->result)][array_key_first($though->result)]['total'];
+    } else {
+        $countScanned = 0;
+    }
+
+    return view('relevance-analysis.though.show', [
+        'though' => $though,
+        'allElems' => $allResult,
+        'allCount' => count($allResult),
+        'count' => $count,
+        'countUniqueScanned' => $countScanned
+    ]);
+})
