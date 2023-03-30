@@ -75,8 +75,8 @@
                 <!-- checkbox -->
                 <div class="form-group">
                     <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" name="targetCol" type="checkbox" id="target" value="1">
-                        <label for="target" class="custom-control-label">{{ __('Target') }}</label>
+                        <input class="custom-control-input" name="phrasalCol" type="checkbox" id="phrasal" value="1">
+                        <label for="phrasal" class="custom-control-label">{{ __('YW') }} "[]"</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" name="baseCol" type="checkbox" id="base" value="1">
@@ -99,10 +99,6 @@
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" name="dynamicsCol" type="checkbox" id="dynamics" value="1">
                         <label for="dynamics" class="custom-control-label">{{ __('Dynamics') }}</label>
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" name="phrasalCol" type="checkbox" id="phrasal" value="1">
-                        <label for="phrasal" class="custom-control-label">{{ __('YW') }} "[]"</label>
                     </div>
                 </div>
             </div>

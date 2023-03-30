@@ -10,16 +10,27 @@
     <table style="width: 100%">
         <thead>
             <tr>
+                <th colspan="{{ (count($data['columns']) + 1) }}"></th>
+            </tr>
+            <tr>
+                <th>№</th>
                 @foreach($data['columns'] as $col)
-                    <th>{!! strip_tags($col) !!}</th>
+                    <th>{!! trim(strip_tags($col)) !!}</th>
                 @endforeach
             </tr>
         </thead>
         <tbody>
-            @foreach($data['data'] as $query)
+            @foreach($data['data'] as $ek => $query)
                 <tr>
-                    @foreach($query as $field)
-                        <td>{!! strip_tags($field) !!}</td>
+                    <td>{{ $loop->iteration }}</td>
+                    @foreach($query as $fk => $field)
+                        @if(is_array($field))
+                            <td style="background-color: {{ $field['color'] }}">
+                                @if(count($field) > 2) {{ $field[0] }} [{{ $field[1] }}] @else {{ $field[0] }} @endif
+                            </td>
+                        @else
+                            <td>{{ $field }}</td>
+                        @endif
                     @endforeach
                 </tr>
             @endforeach
