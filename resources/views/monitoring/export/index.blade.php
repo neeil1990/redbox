@@ -15,7 +15,7 @@
             <tr>
                 <th>№</th>
                 @foreach($data['columns'] as $col)
-                    <th>{!! trim(strip_tags($col)) !!}</th>
+                    <th style="padding: 9px">{!! trim(strip_tags($col)) !!}</th>
                 @endforeach
             </tr>
         </thead>
