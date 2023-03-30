@@ -31,8 +31,7 @@ $(document).ready(function () {
             $('#position-filter-after-' + id).val() === '' &&
             $('#position-filter-before-' + id).val() === ''
         ) {
-            let response = prompt('У вас будут удалены ВСЕ результаты проекта. Напишите "Да", если вы хотите подтверить опперацию')
-            if (response !== 'Да') {
+            if (!confirm('У вас будут удалены ВСЕ результаты проекта.')) {
                 getSuccessMessage('Удаление было отменено')
                 return;
             }

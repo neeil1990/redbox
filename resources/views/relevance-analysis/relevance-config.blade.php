@@ -304,7 +304,7 @@
         </div>
     </div>
     @slot('js')
-        <script src="{{ asset('plugins/relevance-analysis/history/common_v2.js') }}"></script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script>
             $('#cleaningInterval').on('change', function () {
                 $.ajax({

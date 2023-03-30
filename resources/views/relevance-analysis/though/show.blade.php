@@ -129,7 +129,7 @@
                     <td>
                         <a data-toggle="collapse" href="#collapseExample{{ $key }}"
                            role="button" aria-expanded="false" aria-controls="collapseExample{{ $key }}">
-                            {{ __('Show') }}
+                            {{ __('show') }}
                         </a>
                         <div class="collapse" id="collapseExample{{ $key }}">
                             <table class="child-table">

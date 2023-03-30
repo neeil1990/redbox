@@ -19,6 +19,10 @@
                 color: #28a745 !important;
                 font-weight: bold;
             }
+
+            .chart-container {
+                width: 50%;
+            }
         </style>
     @endslot
 
@@ -104,40 +108,80 @@
         </tbody>
     </table>
 
-    <table class="table table-hover table-bordered no-footer mt-5" id="position-table" style="display: none">
-        <thead>
-        <tr>
-            <th>{{ __('Domains') }}</th>
-            <th>{{ __('Positions') }}</th>
-            <th>{{ __('Average position') }}</th>
-            <th>{{ __('Top') }} 3</th>
-            <th>{{ __('Top') }} 10</th>
-            <th>{{ __('Top') }} 100</th>
-        </tr>
-        </thead>
-        <tbody id="more-info-tbody">
+    <div id="statistics-table" class="mt-5" style="display: none">
+        <div class="d-flex flex-column col-12">
 
-        </tbody>
-    </table>
+            <div class="d-flex align-items-start">
+                <table class="table table-hover table-bordered w-50">
+                    <thead>
+                    <tr>
+                        <th>{{ __('Domain') }}</th>
+                        <th>{{ __('Average position') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody id="more-info-tbody">
 
-    <div class="d-flex flex-column">
-        <div class="d-flex flex-row mt-3">
-            <div class="col-6">
-                <canvas id="bar-chart"></canvas>
+                    </tbody>
+                </table>
+                <div class="chart-container">
+                    <canvas id="bar-chart" width="20"></canvas>
+                </div>
             </div>
-            <div class="col-6">
-                <canvas id="bar-chart-3"></canvas>
+
+            <div class="d-flex align-items-start">
+                <table class="table table-hover table-bordered w-50">
+                    <thead>
+                    <tr>
+                        <th>{{ __('Domain') }}</th>
+                        <th>Процент попадений в {{ __('Top') }} 3</th>
+                    </tr>
+                    </thead>
+                    <tbody id="top3-tbody">
+
+                    </tbody>
+                </table>
+                <div class="chart-container">
+                    <canvas id="bar-chart-3"></canvas>
+                </div>
             </div>
-        </div>
-        <div class="d-flex flex-row mt-3">
-            <div class="col-6">
-                <canvas id="bar-chart-10"></canvas>
+
+            <div class="d-flex align-items-start">
+                <table class="table table-hover table-bordered w-50">
+                    <thead>
+                    <tr>
+                        <th>{{ __('Domain') }}</th>
+                        <th>Процент попадений в {{ __('Top') }} 10</th>
+                    </tr>
+                    </thead>
+                    <tbody id="top10-tbody">
+
+                    </tbody>
+                </table>
+                <div class="chart-container">
+                    <canvas id="bar-chart-10"></canvas>
+                </div>
             </div>
-            <div class="col-6">
-                <canvas id="bar-chart-100"></canvas>
+
+            <div class="d-flex align-items-start">
+                <table class="table table-hover table-bordered w-50">
+                    <thead>
+                    <tr>
+                        <th>{{ __('Domain') }}</th>
+                        <th>Процент попадений в {{ __('Top') }} 100</th>
+                    </tr>
+                    </thead>
+                    <tbody id="top100-tbody">
+
+                    </tbody>
+                </table>
+                <div class="chart-container">
+                    <canvas id="bar-chart-100"></canvas>
+                </div>
             </div>
         </div>
     </div>
+
+
     <div class="card mt-3">
         <div class="card-header d-flex">
             <div class="w-25">
@@ -376,8 +420,9 @@
                                 suggestedMax: 100
                             },
                         },
-                    }
+                    },
                 });
+
                 chart3 = new Chart($('#bar-chart-3'), {
                     type: 'bar',
                     data: {
@@ -399,6 +444,7 @@
                         },
                     }
                 });
+
                 chart10 = new Chart($('#bar-chart-10'), {
                     type: 'bar',
                     data: {
@@ -420,6 +466,7 @@
                         },
                     }
                 });
+
                 chart100 = new Chart($('#bar-chart-100'), {
                     type: 'bar',
                     data: {
@@ -528,40 +575,32 @@
                     data: data,
                     success: function (response) {
                         $('.render-more').remove()
-
-                        let iterator = 1;
                         $.each(response.data, function (domain, values) {
                             let row = '<tr class="render-more">'
-                            let positions = ''
-
-                            $.each(values['positions'], function (word, position) {
-                                position = String(position).substring(0, 5)
-                                positions += `<div>${word}: ${position}</div>`
-                            })
-                            let td =
-                                '<td>' +
-                                '    <p>' +
-                                '        <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapse' + iterator + '" aria-expanded="false" aria-controls="collapse' + iterator + '">' +
-                                "{{ __('Positions') }}" +
-                                '        </button>' +
-                                '    </p>' +
-                                '    <div class="collapse" id="collapse' + iterator + '">'
-                                + positions +
-                                '    </div>' +
-                                '</td>'
-
                             row += '<td>' + domain + '</td>'
-                            row += td
-                            row += '<td>' + String(values['avg']).substring(0, 5) + '</td>'
-                            row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
-                            row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
-                            row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
-
+                            row += '<td>' + String(values['avg']).substring(0, 5) + '</td></tr>'
                             $('#more-info-tbody').append(row)
-                            iterator++
                         })
-                        $('#position-table').show()
+                        $.each(response.data, function (domain, values) {
+                            let row = '<tr class="render-more">'
+                            row += '<td>' + domain + '</td>'
+                            row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
+                            $('#top3-tbody').append(row)
+                        })
+                        $.each(response.data, function (domain, values) {
+                            let row = '<tr class="render-more">'
+                            row += '<td>' + domain + '</td>'
+                            row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
+                            $('#top10-tbody').append(row)
+                        })
+                        $.each(response.data, function (domain, values) {
+                            let row = '<tr class="render-more">'
+                            row += '<td>' + domain + '</td>'
+                            row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
+                            $('#top100-tbody').append(row)
+                        })
 
+                        $('#statistics-table').show()
                         renderCharts(response.data, destroy)
                     },
                 });
