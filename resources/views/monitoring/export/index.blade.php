@@ -6,16 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
     <table style="width: 100%">
         <thead>
             <tr>
-                <th colspan="{{ (count($data['columns']) + 1) }}"></th>
-            </tr>
-            <tr>
                 <th>№</th>
                 @foreach($data['columns'] as $col)
-                    <th style="padding: 9px">{!! trim(strip_tags($col)) !!}</th>
+                    <th> {!! trim(strip_tags($col)) !!} </th>
                 @endforeach
             </tr>
         </thead>

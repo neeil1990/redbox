@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\FromIterator;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithDefaultStyles;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -25,7 +26,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
-class PositionsExport implements FromView, WithDefaultStyles, WithEvents, ShouldAutoSize, WithStyles, WithTitle
+class PositionsExport implements FromView, WithDefaultStyles, WithEvents, WithStyles, WithTitle, ShouldAutoSize
 {
     protected $data;
     private $green = "#99e4b9";
@@ -95,8 +96,7 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, Should
                 ],
             ],
             'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_LEFT,
-                'indent' => 1,
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
             ],
         ];
     }
@@ -114,7 +114,6 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, Should
 
             AfterSheet::class => function(AfterSheet $event) {
                 //$event->sheet->getDelegate()->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-
             },
         ];
     }
@@ -123,20 +122,25 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, Should
     {
         return [
             // Style the first row as bold text.
-            1    => [
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                ],
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_NONE,
-                    ],
-                ],
-            ],
-            2 => [
+            1 => [
                 'font' => ['bold' => true],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                    'indent' => 1,
+                ],
             ],
-
+            'A' => [
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                    'indent' => 1,
+                ],
+            ],
+            'B' => [
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_LEFT,
+                    'indent' => 1,
+                ],
+            ],
         ];
     }
 
