@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class MonitoringExportsController extends MonitoringKeywordsController
 {
     private $groupColumnIndex = 4;
-    private $removeColumns = ['checkbox', 'btn', 'url', 'group', 'target', 'dynamics', 'base', 'phrasal', 'exact'];
+    private $removeColumns = ['checkbox', 'btn', 'url', 'group', 'dynamics', 'base', 'phrasal', 'exact'];
 
     /**
      * @var IFormat
