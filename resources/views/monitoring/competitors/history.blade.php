@@ -22,6 +22,7 @@
 
             .chart-container {
                 width: 50%;
+                height: 300px;
             }
         </style>
     @endslot
@@ -86,12 +87,8 @@
         </div>
     </div>
 
-    <h3 class="mt-3 mr-3">
-        {{  __('Project') . " $project->name" }}
-    </h3>
-
     <h4>
-        Статистика по выбранному региону за текущее число ({{ \Carbon\Carbon::now()->toDateString() }})
+        Статистика по выбранному региону
     </h4>
 
     <div class="d-flex justify-content-center align-items-center align-content-center">
@@ -245,26 +242,14 @@
                     filter = JSON.parse(filter)
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
-
-                renderInfo({
-                    '_token': $('meta[name="csrf-token"]').attr('content'),
-                    'projectId': PROJECT_ID,
-                    'region': $('#searchEngines').val(),
-                })
+                renderInfo()
 
                 $('#searchEngines').on('change', function () {
                     let val = $(this).val()
-                    let data = {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'projectId': PROJECT_ID,
-                        'region': val,
-                    }
-
                     localStorage.setItem('lr_redbox_monitoring_selected_filter', JSON.stringify({
                         val: val,
                     }))
-
-                    renderInfo(data, true)
+                    renderInfo(true)
                 })
 
                 $('#competitors-history-positions').unbind().on('click', function () {
@@ -420,6 +405,7 @@
                                 suggestedMax: 100
                             },
                         },
+                        maintainAspectRatio: false,
                     },
                 });
 
@@ -442,6 +428,7 @@
                                 suggestedMax: 100
                             },
                         },
+                        maintainAspectRatio: false,
                     }
                 });
 
@@ -464,6 +451,7 @@
                                 suggestedMax: 100
                             },
                         },
+                        maintainAspectRatio: false,
                     }
                 });
 
@@ -486,6 +474,7 @@
                                 suggestedMax: 100
                             },
                         },
+                        maintainAspectRatio: false,
                     }
                 });
             }
@@ -549,7 +538,7 @@
                 return colorArray.sort(() => Math.random() - 0.5);
             }
 
-            function renderInfo(data, destroy = false) {
+            function renderInfo(destroy = false) {
 
                 if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                     $('#table').dataTable().fnDestroy();
@@ -559,49 +548,18 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('monitoring.get.competitors.visibility') }}",
-                    data: data,
-                    success: function (response) {
-                        renderTableHead(response.data)
-                        renderTableBody(response.data)
-                        table = initTable()
+                    url: "{{ route('monitoring.get.competitors.statistics') }}",
+                    data: {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'projectId': PROJECT_ID,
+                        'region': $('#searchEngines').val(),
                     },
-                });
-
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.more.info', $project->id) }}",
-                    data: data,
                     success: function (response) {
-                        $('.render-more').remove()
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['avg']).substring(0, 5) + '</td></tr>'
-                            $('#more-info-tbody').append(row)
-                        })
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
-                            $('#top3-tbody').append(row)
-                        })
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
-                            $('#top10-tbody').append(row)
-                        })
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
-                            $('#top100-tbody').append(row)
-                        })
+                        renderTableHead(response.visibility)
+                        renderTableBody(response.visibility)
+                        table = initTable()
 
-                        $('#statistics-table').show()
-                        renderCharts(response.data, destroy)
+                        renderStatistics(response.statistics, destroy)
                     },
                 });
 
@@ -646,6 +604,37 @@
                 }
 
                 $('#history-block').append(result)
+            }
+
+            function renderStatistics(data, destroy) {
+                $('.render-more').remove()
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['avg']).substring(0, 5) + '</td></tr>'
+                    $('#more-info-tbody').append(row)
+                })
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
+                    $('#top3-tbody').append(row)
+                })
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
+                    $('#top10-tbody').append(row)
+                })
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
+                    $('#top100-tbody').append(row)
+                })
+
+                $('#statistics-table').show()
+                renderCharts(data, destroy)
             }
 
             const DATES = '{{ request('dates', null) }}';

@@ -101,7 +101,7 @@
         <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
     </div>
     <table id="table" class="table table-bordered no-footer" style="display: none">
-        <thead>
+        <thead style="top: 0; position: sticky; background-color: white">
         <tr>
             <th>Конкурент?</th>
             <th>Домен</th>
@@ -170,7 +170,6 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
-                        console.log(response)
                         renderTableRows(response)
 
                         $('#preloader').hide()
@@ -236,11 +235,11 @@
                     let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
 
                     let engines = ''
-                    $.each(val.urls, function (k, v) {
-                        if (k === 'yandex') {
+                    $.each(val.urls, function (engine, v) {
+                        if (engine === 'yandex') {
                             engines += '<i class="fab fa-yandex fa-sm mr-2"></i>'
                         }
-                        if (k === 'google') {
+                        if (engine === 'google') {
                             engines += '<i class="fab fa-google fa-sm mr-2"></i>'
                         }
                     })
@@ -249,7 +248,9 @@
                         0: input,
                         1: stub,
                         2: engines,
-                        3: val.visibility
+                        3: '<div>Общая:' + val.visibility + '</div>' +
+                            '<div> Google:' + val.visibilityGoogle + '</div>' +
+                            '<div> Yandex:' + val.visibilityYandex + '</div>'
                     })
                 })
 
