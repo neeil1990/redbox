@@ -394,7 +394,7 @@ Route::get('/remove-empty-competitors/', function () {
     foreach ($projects as $project) {
         foreach ($project->competitors as $competitor) {
             if ($competitor->url === "") {
-                $competitor->remove();
+                $competitor->delete();
             }
         }
     }
