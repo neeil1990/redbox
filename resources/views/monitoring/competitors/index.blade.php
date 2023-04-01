@@ -143,7 +143,6 @@
                     fixedHeader: true,
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
-                    order: [[1, 'desc']],
                     language: {
                         lengthMenu: "_MENU_",
                         search: "_INPUT_",
@@ -156,7 +155,7 @@
                         },
                     },
                     columnDefs: [
-                        {orderable: false, targets: [0, 2]},
+                        {orderable: false, targets: [0,1,2,3]},
                     ],
                 })
 
