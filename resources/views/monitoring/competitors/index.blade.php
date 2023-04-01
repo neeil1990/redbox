@@ -16,6 +16,10 @@
             .custom-info-bg {
                 background-color: rgba(23, 162, 184, 0.5) !important;
             }
+
+            #table > thead > tr > th.sorting_disabled.sorting_asc {
+                display: none;
+            }
         </style>
     @endslot
 
@@ -155,9 +159,10 @@
                         },
                     },
                     columnDefs: [
-                        {orderable: false, targets: [0,1,2,3]},
+                        {orderable: false, targets: [0, 1, 2, 3]},
                     ],
                 })
+
 
                 if ($('#searchEngines').val() !== '') {
                     data.region = $('#searchEngines').val()
