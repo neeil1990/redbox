@@ -243,7 +243,6 @@ class Relevance
      */
     public function separateLinksFromText()
     {
-
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
@@ -1471,12 +1470,6 @@ class Relevance
      */
     public function saveError($exception)
     {
-        Log::debug('Relevance Error', [
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'message' => $exception->getMessage(),
-        ]);
-
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
         if ($toDay->id) {
             $toDay->count_fails += 1;
@@ -1488,6 +1481,12 @@ class Relevance
         if ($this->queue) {
             UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
         }
+
+        Log::debug('Relevance Error', [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ]);
     }
 
     public static function uncompress($history): array

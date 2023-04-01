@@ -185,19 +185,23 @@ class TextAnalyzer extends Model
     {
         $html = mb_strtolower($html);
         $preg = [
+            "'<script.*?</script>'si",
             "'<style[^>]*?>.*?</style>'si",
-            "'<script[^>]*?>.*?</script>'si",
-            "'<i [^>]*?>.*?</i>'si",
-            "'array\n\(\n.*?\n\)\n'si",
+            "'<picture[^>]*?>.*?</picture>'si",
+            "'<img.*?>.*?</img>'si",
+            "'<link.*?/>'si",
+            "'<base.*?/>'si",
+            "'<meta.*?/>'si",
             "'array.*?\(.*?\)'si",
+            "'array\n\(\n.*?\n\)\n'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
             '/<!--(.|\s)*?-->/',
         ];
 
         foreach ($preg as $rule) {
-            $test = preg_replace($rule, "", $html);
-            if (mb_strlen($test) > 0) {
-                $html = $test;
+            $replaced = preg_replace($rule, "", $html);
+            if (mb_strlen($replaced) !== 0) {
+                $html = $replaced;
             }
         }
 

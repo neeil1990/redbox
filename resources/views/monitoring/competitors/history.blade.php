@@ -1,5 +1,4 @@
 @component('component.card', ['title' => __('Project') . " $project->name" ])
-
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
@@ -22,6 +21,7 @@
 
             .chart-container {
                 width: 50%;
+                height: 300px;
             }
         </style>
     @endslot
@@ -86,12 +86,8 @@
         </div>
     </div>
 
-    <h3 class="mt-3 mr-3">
-        {{  __('Project') . " $project->name" }}
-    </h3>
-
     <h4>
-        Статистика по выбранному региону за текущее число ({{ \Carbon\Carbon::now()->toDateString() }})
+        Статистика по выбранному региону
     </h4>
 
     <div class="d-flex justify-content-center align-items-center align-content-center">
@@ -109,9 +105,11 @@
     </table>
 
     <div id="statistics-table" class="mt-5" style="display: none">
-        <div class="d-flex flex-column col-12">
-
-            <div class="d-flex align-items-start">
+        <div class="d-flex flex-column">
+            <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -123,12 +121,12 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart" width="20"></canvas>
-                </div>
             </div>
 
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart-3"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -140,12 +138,12 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart-3"></canvas>
-                </div>
             </div>
 
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart-10"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -157,12 +155,12 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart-10"></canvas>
-                </div>
             </div>
 
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart-100"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -174,9 +172,6 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart-100"></canvas>
-                </div>
             </div>
         </div>
     </div>
@@ -219,9 +214,14 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <!-- Charts -->
-        <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
-        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-crosshair.js') }}"></script>
-        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
+                integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>--}}
+        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-crosshair.js') }}"></script>--}}
+        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>--}}
         <!-- InputMask -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
@@ -245,26 +245,14 @@
                     filter = JSON.parse(filter)
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
-
-                renderInfo({
-                    '_token': $('meta[name="csrf-token"]').attr('content'),
-                    'projectId': PROJECT_ID,
-                    'region': $('#searchEngines').val(),
-                })
+                renderInfo()
 
                 $('#searchEngines').on('change', function () {
                     let val = $(this).val()
-                    let data = {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'projectId': PROJECT_ID,
-                        'region': val,
-                    }
-
                     localStorage.setItem('lr_redbox_monitoring_selected_filter', JSON.stringify({
                         val: val,
                     }))
-
-                    renderInfo(data, true)
+                    renderInfo(true)
                 })
 
                 $('#competitors-history-positions').unbind().on('click', function () {
@@ -378,6 +366,7 @@
 
                 let labels = []
                 let datas = []
+                let reverseDatas = []
                 let top3 = []
                 let top10 = []
                 let top100 = []
@@ -387,6 +376,7 @@
                     if (domain !== "") {
                         labels.push(domain)
                         datas.push(info.avg)
+                        reverseDatas.push(100 - info.avg)
                         colors.push(colorArray.shift())
                         top3.push(info.top_3)
                         top10.push(info.top_10)
@@ -402,25 +392,64 @@
                 }
 
                 chartAvg = new Chart($('#bar-chart'), {
-                    type: 'bar',
+                    type: "bar",
                     data: {
                         labels: labels,
                         datasets: [
                             {
-                                label: "{{ __("Average position") }}",
-                                backgroundColor: colors,
-                                data: datas
+                                data: datas,
+                                backgroundColor: "transparent"
+                            },
+                            {
+                                data: reverseDatas,
+                                backgroundColor: colors
                             }
                         ]
                     },
                     options: {
-                        scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                        title: {
+                            display: true,
+                            text: "{{ __("Average position") }}"
                         },
-                    },
+                        scales: {
+                            xAxes: [
+                                {
+                                    stacked: true
+                                }
+                            ],
+                            yAxes: [
+                                {
+                                    stacked: true,
+                                    ticks: {
+                                        reverse: true,
+                                        beginAtZero: true,
+                                        stepSize: 10,
+                                        max: 100,
+                                        min: 0
+                                    }
+                                }
+                            ]
+                        },
+                        tooltips: {
+                            callbacks: {
+                                title: function (item, everything) {
+                                    return item[0].xLabel;
+                                },
+                                label: function (item, everything) {
+                                    if (item.datasetIndex === 1) {
+                                        return "{{ __("Average position") }} " + String(100 - item.yLabel).substring(0, 5);
+                                    }
+
+                                    return 'Нужно подняться на ' + 100 - item.yLabel;
+
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        maintainAspectRatio: false,
+                    }
                 });
 
                 chart3 = new Chart($('#bar-chart-3'), {
@@ -433,14 +462,26 @@
                                 backgroundColor: colors,
                                 data: top3
                             }
-                        ]
+                        ],
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: "{{ __("Top") }} 3"
+                        },
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 10,
+                                    max: 100,
+                                    min: 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
                         },
                     }
                 });
@@ -458,11 +499,23 @@
                         ]
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: "{{ __("Top") }} 10"
+                        },
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 10,
+                                    max: 100,
+                                    min: 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
                         },
                     }
                 });
@@ -481,10 +534,22 @@
                     },
                     options: {
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 10,
+                                    max: 100,
+                                    min: 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: "{{ __("Top") }} 100"
                         },
                     }
                 });
@@ -549,7 +614,7 @@
                 return colorArray.sort(() => Math.random() - 0.5);
             }
 
-            function renderInfo(data, destroy = false) {
+            function renderInfo(destroy = false) {
 
                 if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                     $('#table').dataTable().fnDestroy();
@@ -559,49 +624,18 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ route('monitoring.get.competitors.visibility') }}",
-                    data: data,
-                    success: function (response) {
-                        renderTableHead(response.data)
-                        renderTableBody(response.data)
-                        table = initTable()
+                    url: "{{ route('monitoring.get.competitors.statistics') }}",
+                    data: {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'projectId': PROJECT_ID,
+                        'region': $('#searchEngines').val(),
                     },
-                });
-
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.more.info', $project->id) }}",
-                    data: data,
                     success: function (response) {
-                        $('.render-more').remove()
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['avg']).substring(0, 5) + '</td></tr>'
-                            $('#more-info-tbody').append(row)
-                        })
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
-                            $('#top3-tbody').append(row)
-                        })
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
-                            $('#top10-tbody').append(row)
-                        })
-                        $.each(response.data, function (domain, values) {
-                            let row = '<tr class="render-more">'
-                            row += '<td>' + domain + '</td>'
-                            row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
-                            $('#top100-tbody').append(row)
-                        })
+                        renderTableHead(response.visibility)
+                        renderTableBody(response.visibility)
+                        table = initTable()
 
-                        $('#statistics-table').show()
-                        renderCharts(response.data, destroy)
+                        renderStatistics(response.statistics, destroy)
                     },
                 });
 
@@ -646,6 +680,37 @@
                 }
 
                 $('#history-block').append(result)
+            }
+
+            function renderStatistics(data, destroy) {
+                $('.render-more').remove()
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['avg']).substring(0, 5) + '</td></tr>'
+                    $('#more-info-tbody').append(row)
+                })
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
+                    $('#top3-tbody').append(row)
+                })
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
+                    $('#top10-tbody').append(row)
+                })
+                $.each(data, function (domain, values) {
+                    let row = '<tr class="render-more">'
+                    row += '<td>' + domain + '</td>'
+                    row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
+                    $('#top100-tbody').append(row)
+                })
+
+                $('#statistics-table').show()
+                renderCharts(data, destroy)
             }
 
             const DATES = '{{ request('dates', null) }}';

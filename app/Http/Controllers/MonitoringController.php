@@ -28,7 +28,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -498,92 +497,18 @@ class MonitoringController extends Controller
         return view('monitoring.competitors.history', compact('project', 'competitors', 'navigations'));
     }
 
-    public function getCompetitorsVisibility(Request $request): JsonResponse
+    public function getStatistics(Request $request): JsonResponse
     {
-        $date = Carbon::now()->toDateString();
         $project = MonitoringProject::findOrFail($request->projectId);
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query')->toArray();
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id', 'query'])->toArray();
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+        $engine = MonitoringSearchengine::where('id', '=', $request->region)->first(['id', 'lr'])->toArray();
         array_unshift($competitors, $project->url);
-
-        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
-
-//        if (isset($request->region)) {
-//            $searchEngines = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray();
-//        } else {
-//            $searchEngines = MonitoringSearchengine::where('monitoring_project_id', $project->id)->pluck('lr')->toArray();
-//        }
-
-        $array = [];
-        foreach ($keywords as $query) {
-            foreach ($competitors as $competitor) {
-                $array[$query][$competitor] = 0;
-            }
-        }
-
-        foreach ($keywords as $query) {
-            $records = SearchIndex::where('created_at', 'like', "%$date%")
-                ->where('query', $query)
-                ->where('lr', $lr)
-                ->latest('created_at')
-                ->take(100)
-                ->get(['url', 'position', 'created_at']);
-
-            foreach ($records as $record) {
-                $url = Common::domainFilter(parse_url($record['url'])['host']);
-                if (in_array($url, $competitors) && $array[$query][$url] === 0) {
-                    $array[$query][$url] = $record['position'];
-                }
-            }
-        }
+        $statistics = MonitoringCompetitor::calculateStatistics($keywords, $competitors, $engine);
 
         return response()->json([
-            'data' => $array
-        ]);
-    }
-
-    public function moreInfo(Request $request): JsonResponse
-    {
-        $date = Carbon::now()->toDateString();
-        $project = MonitoringProject::findOrFail($request->projectId);
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query')->toArray();
-        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
-        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
-
-        array_unshift($competitors, $project->url);
-
-        $array = [];
-        foreach ($keywords as $query) {
-            $records = SearchIndex::where('created_at', 'like', "%$date%")
-                ->where('query', $query)
-                ->where('lr', $lr)
-                ->latest('created_at')
-                ->take(100)
-                ->get(['url', 'position', 'created_at', 'query'])->toArray();
-
-            foreach ($competitors as $competitor) {
-                foreach ($records as $key => $record) {
-                    $url = Common::domainFilter(parse_url($record['url'])['host']);
-                    if ($url === $competitor) {
-                        $array[$competitor]['positions'][$query] = $record['position'];
-
-                        continue 2;
-                    } else if (array_key_last($records) === $key) {
-                        $array[$competitor]['positions'][$query] = 101;
-                    }
-                }
-            }
-        }
-
-        foreach ($array as $key => $item) {
-            $array[$key]['avg'] = round(array_sum($item['positions']) / count($keywords), 2);
-            $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
-            $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
-            $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
-        }
-
-        return response()->json([
-            'data' => $array
+            'visibility' => $statistics['visibility'],
+            'statistics' => $statistics['statistics'],
         ]);
     }
 
@@ -596,22 +521,16 @@ class MonitoringController extends Controller
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
-        if (isset($request->dateRange)) {
-            $range = explode(' - ', $request->dateRange);
-            $period = CarbonPeriod::create($range[0], $range[1]);
-            $dates = [];
-            foreach ($period as $date) {
-                $dates[] = $date->format('Y-m-d');
-            }
-        } else {
-            $dates = MonitoringPosition::select(DB::raw('DATE(created_at) as dateOnly'))
-                ->where('monitoring_searchengine_id', $request->region)
-                ->whereIn('monitoring_keyword_id', array_keys($keywords))
-                ->latest('created_at')
-                ->distinct()
-                ->pluck('dateOnly');
-        }
+        $records = [];
+        $results = [];
 
+        $range = explode(' - ', $request->dateRange);
+        $period = CarbonPeriod::create($range[0], $range[1]);
+        $dates = [];
+
+        foreach ($period as $date) {
+            $dates[] = $date->format('Y-m-d');
+        }
 
         foreach ($dates as $date) {
             foreach ($keywords as $query) {
@@ -620,11 +539,10 @@ class MonitoringController extends Controller
                     ->where('lr', $lr)
                     ->latest('created_at')
                     ->take(100)
-                    ->get(['url', 'position', 'created_at', 'query'])->toArray();
+                    ->get(['url', 'position', 'created_at', 'query'])
+                    ->toArray();
             }
         }
-
-        $results = [];
 
         foreach ($records as $date => $queries) {
             foreach ($queries as $lrs) {

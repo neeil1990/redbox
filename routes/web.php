@@ -20,6 +20,7 @@ use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use App\ProjectRelevanceThough;
 use App\SearchIndex;
+use App\TextAnalyzer;
 use App\User;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
@@ -319,8 +320,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/{project}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
     Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
     Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
-    Route::post('/monitoring/competitors/visibility', 'MonitoringController@getCompetitorsVisibility')->name('monitoring.get.competitors.visibility');
-    Route::post('/monitoring/{project}/competitors/more-info', 'MonitoringController@moreInfo')->name('monitoring.more.info');
+    Route::post('/monitoring/competitors/visibility', 'MonitoringController@getStatistics')->name('monitoring.get.competitors.statistics');
 
     Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');
     Route::get('/share-my-project-config/{project}', 'SharingController@shareProjectConf')->name('share.project.conf');
@@ -386,27 +386,4 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
-});
-
-Route::get('/test/though', function () {
-    $though = ProjectRelevanceThough::find(56);
-
-    dd($though->result);
-    $though->result = json_decode(gzuncompress(base64_decode($though->result)), true);
-    $allResult = $though->result;
-    $though->result = array_slice($though->result, 0, count($though->result) / $this->slice);
-    $count = count($though->result);
-    if (count($though->result) > 0) {
-        $countScanned = $though->result[array_key_first($though->result)][array_key_first($though->result)]['total'];
-    } else {
-        $countScanned = 0;
-    }
-
-    return view('relevance-analysis.though.show', [
-        'though' => $though,
-        'allElems' => $allResult,
-        'allCount' => count($allResult),
-        'count' => $count,
-        'countUniqueScanned' => $countScanned
-    ]);
 });

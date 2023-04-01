@@ -16,6 +16,14 @@
             .custom-info-bg {
                 background-color: rgba(23, 162, 184, 0.5) !important;
             }
+
+            #table > thead > tr > th.sorting_disabled.sorting_asc:before {
+                display: none;
+            }
+            #table > thead > tr > th.sorting_disabled.sorting_asc:after {
+                display: none;
+            }
+
         </style>
     @endslot
 
@@ -101,7 +109,7 @@
         <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
     </div>
     <table id="table" class="table table-bordered no-footer" style="display: none">
-        <thead>
+        <thead style="top: 0; position: sticky; background-color: white">
         <tr>
             <th>Конкурент?</th>
             <th>Домен</th>
@@ -143,7 +151,6 @@
                     fixedHeader: true,
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
-                    order: [[3, 'desc']],
                     language: {
                         lengthMenu: "_MENU_",
                         search: "_INPUT_",
@@ -156,9 +163,10 @@
                         },
                     },
                     columnDefs: [
-                        {orderable: false, targets: [0, 2]},
+                        {orderable: false, targets: [0, 1, 2, 3]},
                     ],
                 })
+
 
                 if ($('#searchEngines').val() !== '') {
                     data.region = $('#searchEngines').val()
@@ -236,20 +244,44 @@
                     let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
 
                     let engines = ''
-                    $.each(val.urls, function (k, v) {
-                        if (k === 'yandex') {
+                    $.each(val.urls, function (engine, v) {
+                        if (engine === 'yandex') {
                             engines += '<i class="fab fa-yandex fa-sm mr-2"></i>'
                         }
-                        if (k === 'google') {
+                        if (engine === 'google') {
                             engines += '<i class="fab fa-google fa-sm mr-2"></i>'
                         }
                     })
+
+                    let google
+                    if (val.visibilityGoogle.length !== 0) {
+                        google = '<ul>'
+                        $.each(val.visibilityGoogle, function (count, lr) {
+                            google += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                        })
+                        google += '</ul>'
+                    } else {
+                        google = 0
+                    }
+
+                    let yandex
+                    if (val.visibilityYandex.length !== 0) {
+                        yandex = '<ul>'
+                        $.each(val.visibilityYandex, function (count, lr) {
+                            yandex += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                        })
+                        yandex += '</ul>'
+                    } else {
+                        yandex = 0
+                    }
 
                     table.row.add({
                         0: input,
                         1: stub,
                         2: engines,
-                        3: val.visibility
+                        3: '<div>Общая: ' + val.visibility + '</div>' +
+                            '<div> Google: ' + google + '</div>' +
+                            '<div> Yandex: ' + yandex + '</div>'
                     })
                 })
 
