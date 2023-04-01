@@ -1,5 +1,4 @@
 @component('component.card', ['title' => __('Project') . " $project->name" ])
-
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
@@ -106,9 +105,8 @@
     </table>
 
     <div id="statistics-table" class="mt-5" style="display: none">
-        <div class="d-flex flex-column col-12">
-
-            <div class="d-flex align-items-start">
+        <div class="d-flex flex-column">
+            <div class="d-flex align-items-start mt-5">
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -125,7 +123,7 @@
                 </div>
             </div>
 
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mt-5">
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -142,7 +140,7 @@
                 </div>
             </div>
 
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mt-5">
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -159,7 +157,7 @@
                 </div>
             </div>
 
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mt-5">
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -216,9 +214,14 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <!-- Charts -->
-        <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
-        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-crosshair.js') }}"></script>
-        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
+                integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>--}}
+        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-crosshair.js') }}"></script>--}}
+        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>--}}
         <!-- InputMask -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
@@ -363,6 +366,7 @@
 
                 let labels = []
                 let datas = []
+                let reverseDatas = []
                 let top3 = []
                 let top10 = []
                 let top100 = []
@@ -372,6 +376,7 @@
                     if (domain !== "") {
                         labels.push(domain)
                         datas.push(info.avg)
+                        reverseDatas.push(100 - info.avg)
                         colors.push(colorArray.shift())
                         top3.push(info.top_3)
                         top10.push(info.top_10)
@@ -387,26 +392,64 @@
                 }
 
                 chartAvg = new Chart($('#bar-chart'), {
-                    type: 'bar',
+                    type: "bar",
                     data: {
                         labels: labels,
                         datasets: [
                             {
-                                label: "{{ __("Average position") }}",
-                                backgroundColor: colors,
-                                data: datas
+                                data: datas,
+                                backgroundColor: "transparent"
+                            },
+                            {
+                                data: reverseDatas,
+                                backgroundColor: colors
                             }
                         ]
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: "{{ __("Average position") }}"
+                        },
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            xAxes: [
+                                {
+                                    stacked: true
+                                }
+                            ],
+                            yAxes: [
+                                {
+                                    stacked: true,
+                                    ticks: {
+                                        reverse: true,
+                                        beginAtZero: true,
+                                        stepSize: 10,
+                                        max: 100,
+                                        min: 0
+                                    }
+                                }
+                            ]
+                        },
+                        tooltips: {
+                            callbacks: {
+                                title: function (item, everything) {
+                                    return item[0].xLabel;
+                                },
+                                label: function (item, everything) {
+                                    if (item.datasetIndex === 1) {
+                                        return "{{ __("Average position") }} " + String(100 - item.yLabel).substring(0, 5);
+                                    }
+
+                                    return 'Нужно подняться на ' + 100 - item.yLabel;
+
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false
                         },
                         maintainAspectRatio: false,
-                    },
+                    }
                 });
 
                 chart3 = new Chart($('#bar-chart-3'), {
@@ -419,16 +462,27 @@
                                 backgroundColor: colors,
                                 data: top3
                             }
-                        ]
+                        ],
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: "{{ __("Top") }} 3"
+                        },
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 10,
+                                    max: 100,
+                                    min: 0
+                                }
+                            }]
                         },
                         maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
                     }
                 });
 
@@ -445,13 +499,24 @@
                         ]
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: "{{ __("Top") }} 10"
+                        },
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 10,
+                                    max: 100,
+                                    min: 0
+                                }
+                            }]
                         },
                         maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
                     }
                 });
 
@@ -469,12 +534,23 @@
                     },
                     options: {
                         scales: {
-                            y: {
-                                suggestedMin: 0,
-                                suggestedMax: 100
-                            },
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 10,
+                                    max: 100,
+                                    min: 0
+                                }
+                            }]
                         },
                         maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: "{{ __("Top") }} 100"
+                        },
                     }
                 });
             }

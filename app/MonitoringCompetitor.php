@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -33,7 +34,7 @@ class MonitoringCompetitor extends Model
                             $competitors[$host]['urls'][$query][$engine['engine']][] = [$engine['lr'] => Common::domainFilter($url)];
                         }
                     } else {
-                        $competitors[$host]['urls'][$engine['engine']][$query][] = Common::domainFilter($url);
+                        $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['lr'] => Common::domainFilter($url)];
                     }
                 }
             }
@@ -52,25 +53,41 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($competitors as $key => $urls) {
-            $yandex = 0;
-            $google = 0;
+            $total = 0;
+            $yandex = [];
+            $google = [];
             foreach ($urls as $inf => $engines) {
                 if ($inf !== 'urls') {
                     continue;
                 }
-                foreach ($engines as $k => $words) {
+                foreach ($engines as $engine => $words) {
                     foreach ($words as $k1 => $word) {
-                        if ($k === 'yandex') {
-                            $yandex += count($word);
-                        } else if ($k === 'google') {
-                            $google += count($word);
+                        if ($engine === 'yandex') {
+                            foreach ($word as $info) {
+                                $region = array_key_first($info);
+                                if (isset($yandex[$region])) {
+                                    $yandex[$region] += 1;
+                                } else {
+                                    $yandex[$region] = 1;
+                                }
+                            }
+                        } else if ($engine === 'google') {
+                            foreach ($word as $info) {
+                                $region = array_key_first($info);
+                                if (isset($google[$region])) {
+                                    $google[$region] += 1;
+                                } else {
+                                    $google[$region] = 1;
+                                }
+                            }
                         }
-                        $competitors[$key][$inf][$k][$k1] = $word;
+                        $total += count($word);
+                        $competitors[$key][$inf][$engine][$k1] = $word;
                     }
                 }
             }
 
-            $competitors[$key]['visibility'] = $yandex + $google;
+            $competitors[$key]['visibility'] = $total;
             $competitors[$key]['visibilityYandex'] = $yandex;
             $competitors[$key]['visibilityGoogle'] = $google;
         }
@@ -78,9 +95,10 @@ class MonitoringCompetitor extends Model
         return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
     }
 
-    public static function calculateVisibility($keywords, $competitors, $engine): array
+    public static function calculateStatistics($keywords, $competitors, $engine): array
     {
         $visibilityArray = [];
+        $array = [];
         foreach ($keywords as $keyword) {
             foreach ($competitors as $competitor) {
                 $visibilityArray[$keyword['query']][$competitor] = 0;
@@ -92,7 +110,8 @@ class MonitoringCompetitor extends Model
                 ->where('lr', $engine['lr'])
                 ->latest('created_at')
                 ->take(100)
-                ->get(['url', 'position', 'created_at']);
+                ->get(['url', 'position', 'created_at', 'query'])
+                ->toArray();
 
             foreach ($records as $record) {
                 $url = Common::domainFilter(parse_url($record['url'])['host']);
@@ -100,20 +119,6 @@ class MonitoringCompetitor extends Model
                     $visibilityArray[$keyword['query']][$url] = $record['position'];
                 }
             }
-        }
-
-        return $visibilityArray;
-    }
-
-    public static function calculateStatistics($keywords, $competitors, $engine): array
-    {
-        $array = [];
-        foreach ($keywords as $keyword) {
-            $records = SearchIndex::where('query', $keyword['query'])
-                ->where('lr', $engine['lr'])
-                ->latest('created_at')
-                ->take(100)
-                ->get(['url', 'position', 'created_at', 'query'])->toArray();
 
             foreach ($competitors as $competitor) {
                 foreach ($records as $key => $record) {
@@ -136,6 +141,9 @@ class MonitoringCompetitor extends Model
             $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
         }
 
-        return $array;
+        return [
+            'visibility' => $visibilityArray,
+            'statistics' => $array
+        ];
     }
 }

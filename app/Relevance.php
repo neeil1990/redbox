@@ -243,7 +243,6 @@ class Relevance
      */
     public function separateLinksFromText()
     {
-
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));

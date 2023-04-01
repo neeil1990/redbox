@@ -504,10 +504,11 @@ class MonitoringController extends Controller
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         $engine = MonitoringSearchengine::where('id', '=', $request->region)->first(['id', 'lr'])->toArray();
         array_unshift($competitors, $project->url);
+        $statistics = MonitoringCompetitor::calculateStatistics($keywords, $competitors, $engine);
 
         return response()->json([
-            'visibility' => MonitoringCompetitor::calculateVisibility($keywords, $competitors, $engine),
-            'statistics' => MonitoringCompetitor::calculateStatistics($keywords, $competitors, $engine),
+            'visibility' => $statistics['visibility'],
+            'statistics' => $statistics['statistics'],
         ]);
     }
 
@@ -520,22 +521,16 @@ class MonitoringController extends Controller
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
-        if (isset($request->dateRange)) {
-            $range = explode(' - ', $request->dateRange);
-            $period = CarbonPeriod::create($range[0], $range[1]);
-            $dates = [];
-            foreach ($period as $date) {
-                $dates[] = $date->format('Y-m-d');
-            }
-        } else {
-            $dates = MonitoringPosition::select(DB::raw('DATE(created_at) as dateOnly'))
-                ->where('monitoring_searchengine_id', $request->region)
-                ->whereIn('monitoring_keyword_id', array_keys($keywords))
-                ->latest('created_at')
-                ->distinct()
-                ->pluck('dateOnly');
-        }
+        $records = [];
+        $results = [];
 
+        $range = explode(' - ', $request->dateRange);
+        $period = CarbonPeriod::create($range[0], $range[1]);
+        $dates = [];
+
+        foreach ($period as $date) {
+            $dates[] = $date->format('Y-m-d');
+        }
 
         foreach ($dates as $date) {
             foreach ($keywords as $query) {
@@ -548,8 +543,6 @@ class MonitoringController extends Controller
                     ->toArray();
             }
         }
-
-        $results = [];
 
         foreach ($records as $date => $queries) {
             foreach ($queries as $lrs) {

@@ -170,6 +170,7 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
+                        console.log(response)
                         renderTableRows(response)
 
                         $('#preloader').hide()
@@ -244,13 +245,35 @@
                         }
                     })
 
+                    let google
+                    if (val.visibilityGoogle.length !== 0) {
+                        google = '<ul>'
+                        $.each(val.visibilityGoogle, function (count, lr) {
+                            google += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                        })
+                        google += '</ul>'
+                    } else {
+                        google = 0
+                    }
+
+                    let yandex
+                    if (val.visibilityYandex.length !== 0) {
+                        yandex = '<ul>'
+                        $.each(val.visibilityYandex, function (count, lr) {
+                            yandex += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                        })
+                        yandex += '</ul>'
+                    } else {
+                        yandex = 0
+                    }
+
                     table.row.add({
                         0: input,
                         1: stub,
                         2: engines,
-                        3: '<div>Общая:' + val.visibility + '</div>' +
-                            '<div> Google:' + val.visibilityGoogle + '</div>' +
-                            '<div> Yandex:' + val.visibilityYandex + '</div>'
+                        3: '<div>Общая: ' + val.visibility + '</div>' +
+                            '<div> Google: ' + google + '</div>' +
+                            '<div> Yandex: ' + yandex + '</div>'
                     })
                 })
 

@@ -387,9 +387,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
-
-Route::get('/testt', function () {
-    $url = 'https://zveri-korm36.ru/catalog/cats-vet-pro-plan/';
-    header('Content-Type: text/plain');
-    var_dump(TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($url)));
-});
