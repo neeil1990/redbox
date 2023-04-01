@@ -17,9 +17,13 @@
                 background-color: rgba(23, 162, 184, 0.5) !important;
             }
 
-            #table > thead > tr > th.sorting_disabled.sorting_asc {
+            #table > thead > tr > th.sorting_disabled.sorting_asc:before {
                 display: none;
             }
+            #table > thead > tr > th.sorting_disabled.sorting_asc:after {
+                display: none;
+            }
+
         </style>
     @endslot
 
