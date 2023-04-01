@@ -7,6 +7,7 @@ use App\Exports\Monitoring\Format\ExportExcel;
 use App\Exports\Monitoring\Format\ExportHtml;
 use App\Exports\Monitoring\Format\ExportPDF;
 use App\Exports\Monitoring\Format\IFormat;
+use App\Exports\Monitoring\PositionsExportFactory;
 use App\MonitoringProject;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,19 +29,8 @@ class MonitoringExportsController extends MonitoringKeywordsController
 
     public function downloadFile($data, $fileName, $extension = 'pdf')
     {
-        switch ($extension) {
-            case "xls":
-                $this->setFormat(new ExportExcel());
-                break;
-            case "html":
-                $this->setFormat(new ExportHtml());
-                break;
-            case "csv":
-                $this->setFormat(new ExportCsv());
-                break;
-            default:
-                $this->setFormat(new ExportPDF());
-        }
+        $export = new PositionsExportFactory();
+        $this->setFormat($export->createExport($extension));
 
         return $this->format->download($data, $fileName);
     }
