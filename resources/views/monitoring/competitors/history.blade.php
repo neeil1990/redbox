@@ -107,6 +107,9 @@
     <div id="statistics-table" class="mt-5" style="display: none">
         <div class="d-flex flex-column">
             <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -118,12 +121,12 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart" width="20"></canvas>
-                </div>
             </div>
 
             <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart-3"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -135,12 +138,12 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart-3"></canvas>
-                </div>
             </div>
 
             <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart-10"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -152,12 +155,12 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart-10"></canvas>
-                </div>
             </div>
 
             <div class="d-flex align-items-start mt-5">
+                <div class="chart-container">
+                    <canvas id="bar-chart-100"></canvas>
+                </div>
                 <table class="table table-hover table-bordered w-50">
                     <thead>
                     <tr>
@@ -169,9 +172,6 @@
 
                     </tbody>
                 </table>
-                <div class="chart-container">
-                    <canvas id="bar-chart-100"></canvas>
-                </div>
             </div>
         </div>
     </div>
