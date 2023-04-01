@@ -387,3 +387,15 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
+
+Route::get('/remove-empty-competitors/', function () {
+    $projects = MonitoringProject::all();
+
+    foreach ($projects as $project) {
+        foreach ($project->competitors as $competitor) {
+            if ($competitor->url === "") {
+                dd($competitor);
+            }
+        }
+    }
+});
