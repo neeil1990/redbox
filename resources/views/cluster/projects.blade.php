@@ -1,9 +1,8 @@
 @component('component.card', ['title' =>  __('My projects') ])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <!-- DataTables -->
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <style>
             #clusters-table > tbody > tr > td > table > thead:hover {
@@ -601,6 +600,17 @@
                     "order": [[0, "desc"]],
                     "pageLength": 25,
                     "searching": true,
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "{{ __('Search') }}",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        }
+                    }
                 })
                 $('.dt-button.buttons-copy.buttons-html5').addClass('ml-2')
                 $('.dt-button').addClass('btn btn-secondary')

@@ -675,14 +675,14 @@
                                 </div>
                             </div>
                             <div class="switch-container mb-3 d-flex">
-                                <button id="change-sortable" class="btn btn-outline-secondary radius w-25"
+                                <button id="change-sortable" class="btn btn-outline-secondary w-25"
                                         data-action="enable">
                                     {{ __('Moving groups') }}
                                 </button>
-                                <button id="relevance" class="btn btn-outline-secondary radius w-25" data-action="show">
+                                <button id="relevance" class="btn btn-outline-secondary w-25" data-action="show">
                                     {{ __('Show relevant') }}
                                 </button>
-                                <button class="hide-or-show btn btn-outline-secondary w-50 radius w-50"
+                                <button class="hide-or-show btn btn-outline-secondary w-50 w-50"
                                         data-action="hide"
                                         style="float: right">
                                     {{ __('Close groups') }}

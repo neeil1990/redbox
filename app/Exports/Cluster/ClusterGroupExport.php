@@ -7,33 +7,40 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 
 class ClusterGroupExport implements FromCollection
 {
-    protected $clusters;
+    protected array $clusters;
 
-    protected $array;
+    protected array $array;
 
-    protected $nestCounter = 0;
+    protected int $nestCounter;
 
-    protected $chapter = 0;
+    protected int $chapter;
 
     protected $file;
 
-    protected $maxNested;
+    protected int $maxNested;
 
-    protected $clusterNumber = 1;
+    protected int $clusterNumber = 1;
 
     public function __construct($clusters, $array)
     {
+        $this->maxNested = 0;
+        $this->chapter = 0;
         $this->clusters = $clusters;
         $this->array = $array;
     }
 
-    /**
-     * @return Collection
-     */
     public function collection(): Collection
     {
-        $iterator = 1;
-        $this->confirmation();
+        return $this->loopConfirmation();
+    }
+
+    public function loopConfirmation($setMaxNested = true): Collection
+    {
+        if ($setMaxNested) {
+            $this->confirmation();
+        } else {
+            $this->file = [];
+        }
 
         $this->file[] = [
             __('Sequence number'),
@@ -55,16 +62,15 @@ class ClusterGroupExport implements FromCollection
 
         foreach ($this->array as $groupName => $items) {
             $this->chapter = 0;
-            $this->loopArray($items, $iterator, $groupName);
+            $this->loopArray($items, $groupName);
             $this->clusterNumber++;
         }
 
-        return collect($this->file);
+        return $this->checkExtraColumns();
     }
 
     public function confirmation()
     {
-        $this->maxNested = 0;
         foreach ($this->array as $mainPhrase => $items) {
             foreach ($items as $offPhrase => $item) {
                 if (is_array($item)) {
@@ -76,6 +82,7 @@ class ClusterGroupExport implements FromCollection
 
                 unset($this->array[$mainPhrase][$offPhrase]);
             }
+
             if ($this->maxNested < $this->nestCounter) {
                 $this->maxNested = $this->nestCounter;
             }
@@ -110,7 +117,7 @@ class ClusterGroupExport implements FromCollection
         return $res;
     }
 
-    public function loopArray($items, $iterator, $groupName)
+    public function loopArray($items, $groupName)
     {
         foreach ($items as $phrase => $info) {
             if (array_key_exists('based', $info)) {
@@ -156,11 +163,30 @@ class ClusterGroupExport implements FromCollection
             } else {
                 $this->chapter++;
                 $this->clusterNumber++;
-                $this->loopArray($info, $iterator, $phrase);
+                $this->loopArray($info, $phrase);
             }
         }
         if ($this->chapter > 0) {
             $this->chapter--;
         }
+    }
+
+    public function checkExtraColumns(): Collection
+    {
+        $columns = [];
+
+        foreach ($this->file as $item) {
+            $columns[] = count($item);
+        }
+
+        $max = max(array_keys(array_count_values($columns))) - 8;
+        if ($this->maxNested !== $max) {
+            $this->maxNested = $max;
+
+            $this->file = [];
+            return $this->loopConfirmation(false);
+        }
+
+        return collect($this->file);
     }
 }
