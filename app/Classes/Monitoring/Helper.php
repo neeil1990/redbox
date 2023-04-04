@@ -14,6 +14,10 @@ class Helper
         if($positions->isEmpty())
             return 0;
 
+        foreach ($positions as $position)
+            if(!$position)
+                return 0;
+
         $itemsCount = $positions->count();
         $desiredCount = $positions->filter(function ($val) use ($desired){
             return $val <= $desired;
