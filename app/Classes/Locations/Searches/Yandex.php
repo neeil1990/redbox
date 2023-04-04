@@ -29,11 +29,7 @@ class Yandex extends Region
         if($location->count())
             return $location->get();
 
-        $response = Curl::to($this->url)
-            ->withHeader('Authorization: OAuth oauth_token="'. $this->token .'", oauth_client_id="'. $this->client_id .'"')
-            ->withData(['name' => $name])
-            ->asJson()
-            ->get();
+        $response = $this->requestYandex($name);
 
         if(!$response->regions)
             return false;
@@ -50,5 +46,17 @@ class Yandex extends Region
 
         return $regions;
     }
+
+    public function requestYandex(string $name)
+    {
+        $response = Curl::to($this->url)
+            ->withHeader('Authorization: OAuth oauth_token="'. $this->token .'", oauth_client_id="'. $this->client_id .'"')
+            ->withData(['name' => $name])
+            ->asJson()
+            ->get();
+
+        return $response;
+    }
+
 
 }

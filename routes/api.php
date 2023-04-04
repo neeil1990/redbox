@@ -74,3 +74,8 @@ Route::get('yandex-location-update', function(){
             $location->get($city);
     }
 });
+
+Route::get('checkYandexToken/{name?}', function($name = "Воронеж"){
+    $location = new Yandex();
+    dd($location->requestYandex($name));
+});
