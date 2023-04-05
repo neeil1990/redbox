@@ -279,8 +279,7 @@
                     }
 
                     let visibilityCell =
-                        '<div class="d-flex flex-row justify-content-between">' +
-                        '    <div class="mr-1"> Общая: ' + val.visibility + '</div>'
+                        '<div class="d-flex flex-row justify-content-between">'
 
                     if (google !== 0) {
                         visibilityCell += '<div class="mr-1"> Google: ' + google + '</div>'
@@ -289,7 +288,7 @@
                         visibilityCell += '<div> Yandex: ' + yandex + '</div>'
                     }
 
-                    visibilityCell += '</div>'
+                    visibilityCell += '<div class="mr-1"> Общая: ' + val.visibility + '</div></div>'
 
                     table.row.add({
                         0: input,

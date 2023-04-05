@@ -389,6 +389,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
 
+//todo кинуть запросы только к конкретому региону + whereIn (queries)
 Route::get('/test', function () {
     $project = MonitoringProject::findOrFail(177);
     $engines = MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
