@@ -1,4 +1,9 @@
 @component('component.card', ['title' => __('Edit project')])
+    @slot('css')
+        <link rel="stylesheet" type="text/css"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
+    @endslot
     @section('content')
         <h4 class="pt-2 pb-2">{{ __('This module allows you to change the services that are displayed on the main page') }}</h4>
         <span
@@ -16,6 +21,18 @@
                 {!! Form::number("position", $data->position ,["class" => "form-control","required" => "required"]) !!}
             </div>
 
+            <div class="form-group required">
+                <label for="description">{{ __('Controller') }}</label>
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question"></i>
+                    <span class="ui_tooltip __right" style="min-width: 550px;">
+                        <span class="ui_tooltip_content">
+                            Контроллер нужен для того, чтобы вести статистику посещений данного модуля.
+                        </span>
+                    </span>
+                </span>
+                {!! Form::text("controller", $data->controller ,["class" => "form-control","required" => "required"]) !!}
+            </div>
 
             <div class="form-group required">
                 <label for="description">{{ __('Project description') }}</label>
@@ -26,6 +43,7 @@
                 <label for="link">{{ __('Link') }}</label>
                 {!! Form::text("link", $data->link ,["class" => "form-control","required" => "required"]) !!}
             </div>
+
             <div class="form-group required">
                 {!! Form::label("icon") !!}
                 {!! Form::text("icon", $data->icon ,["class" => "form-control","required" => "required", 'placeholder' => '<i class="fas fa-address-book"></i>']) !!}

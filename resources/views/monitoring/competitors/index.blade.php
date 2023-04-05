@@ -20,10 +20,14 @@
             #table > thead > tr > th.sorting_disabled.sorting_asc:before {
                 display: none;
             }
+
             #table > thead > tr > th.sorting_disabled.sorting_asc:after {
                 display: none;
             }
 
+            #table > tbody > tr > td:nth-child(4) {
+                width: 37.5%;
+            }
         </style>
     @endslot
 
@@ -178,7 +182,6 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
-                        console.log(response)
                         renderTableRows(response)
 
                         $('#preloader').hide()
@@ -255,33 +258,44 @@
 
                     let google
                     if (val.visibilityGoogle.length !== 0) {
-                        google = '<ul>'
+                        google = '<div>'
                         $.each(val.visibilityGoogle, function (count, lr) {
-                            google += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                            google += `<div>${lr}<span class="text-muted">(${count})</span></div>`
                         })
-                        google += '</ul>'
+                        google += '</div>'
                     } else {
                         google = 0
                     }
 
                     let yandex
                     if (val.visibilityYandex.length !== 0) {
-                        yandex = '<ul>'
+                        yandex = '<div>'
                         $.each(val.visibilityYandex, function (count, lr) {
-                            yandex += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                            yandex += `<div>${lr}<span class="text-muted">(${count})</span></div>`
                         })
-                        yandex += '</ul>'
+                        yandex += '</div>'
                     } else {
                         yandex = 0
                     }
+
+                    let visibilityCell =
+                        '<div class="d-flex flex-row justify-content-between">' +
+                        '    <div class="mr-1"> Общая: ' + val.visibility + '</div>'
+
+                    if (google !== 0) {
+                        visibilityCell += '<div class="mr-1"> Google: ' + google + '</div>'
+                    }
+                    if (yandex !== 0) {
+                        visibilityCell += '<div> Yandex: ' + yandex + '</div>'
+                    }
+
+                    visibilityCell += '</div>'
 
                     table.row.add({
                         0: input,
                         1: stub,
                         2: engines,
-                        3: '<div>Общая: ' + val.visibility + '</div>' +
-                            '<div> Google: ' + google + '</div>' +
-                            '<div> Yandex: ' + yandex + '</div>'
+                        3: visibilityCell
                     })
                 })
 
