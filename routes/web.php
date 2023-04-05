@@ -56,6 +56,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
+    Route::get('/visit-statistics/{user}', 'UsersController@visitStatistics')->name('visit.statistics');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::resource('users', 'UsersController');
 
@@ -386,4 +387,47 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    $project = MonitoringProject::findOrFail(177);
+    $engines = MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
+
+    $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query')->toArray();
+    $competitors = [];
+    $competitors2 = [];
+
+    foreach ($engines as $engine) {
+        foreach ($keywords as $keyword) {
+            $results = SearchIndex::where('lr', '=', $engine['lr'])
+                ->where('query', $keyword)
+                ->where('position', '<=', 10)
+                ->orderBy('created_at', 'asc')
+                ->limit(10)
+                ->pluck('query', 'url');
+
+            foreach ($results as $url => $query) {
+                $host = parse_url(Common::domainFilter($url))['host'];
+
+                $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => Common::domainFilter($url)];
+            }
+        }
+    }
+
+    foreach ($engines as $engine) {
+        $results = SearchIndex::where('lr', $engine['lr'])
+            ->whereIn('query', $keywords)
+            ->where('position', '<=', 10)
+            ->limit(10 * count($keywords))
+            ->orderBy('created_at', 'asc')
+            ->pluck('query', 'url');
+
+        foreach ($results as $url => $query) {
+            $url = Common::domainFilter($url);
+            $host = parse_url($url)['host'];
+            $competitors2[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => $url];
+        }
+    }
+
+    return 1;
 });

@@ -109,6 +109,7 @@ class UniqueWordsController extends Controller
     {
         $words = str_replace([" ", "\n", "\r\n", "\n*"], ' ', $string);
         $words = explode(' ', $words);
+
         return array_diff($words, array(""));
     }
 
@@ -143,9 +144,10 @@ class UniqueWordsController extends Controller
         $result = [];
         foreach ($phrases as $phrase) {
             if (Str::contains($phrase, $word)) {
-                array_push($result, $phrase);
+                $result[] = $phrase;
             }
         }
+
         return $result;
     }
 
@@ -157,45 +159,10 @@ class UniqueWordsController extends Controller
     {
         $fileName = md5(Carbon::now());
         Storage::put('files\\' . $fileName . '.csv', $text);
+
         return response()->json([
             'fileName' => $fileName
         ]);
-    }
-
-    /**
-     * @param $words
-     * @param $ids
-     */
-    public static function removeExtraItems($words, $ids)
-    {
-        $extraIds = explode(' ', $ids);
-        foreach ($extraIds as $extraId) {
-            $words->pull($extraId);
-        }
-    }
-
-    /**
-     * @param $request
-     * @return string
-     */
-    public static function confirmSubject($request): string
-    {
-        $subject = '';
-        if ($request->uniqueWord === 'on') {
-            $subject .= __('Word') . ';';
-        }
-        if ($request->uniqueWordForms === 'on') {
-            $subject .= __('Word forms') . ';';
-        }
-        if ($request->numberOccurrences === 'on') {
-            $subject .= __('Number of occurrences') . ';';
-        }
-        if ($request->keyPhrases === 'on') {
-            $subject .= __('Key phrases') . ';';
-        }
-        $subject .= "\n";
-
-        return $subject;
     }
 
     /**
