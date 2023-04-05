@@ -152,7 +152,7 @@
                 }
 
                 table = $('#table').DataTable({
-                    fixedHeader: true,
+                    "order": [[1, 'asc']],
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
                     language: {
@@ -167,7 +167,9 @@
                         },
                     },
                     columnDefs: [
-                        {orderable: false, targets: [0, 1, 2, 3]},
+                        {
+                            orderable: false, targets: [0, 2]
+                        },
                     ],
                 })
 
@@ -290,12 +292,14 @@
 
                     visibilityCell += '<div class="mr-1"> Общая: ' + val.visibility + '</div></div>'
 
-                    table.row.add({
-                        0: input,
-                        1: stub,
-                        2: engines,
-                        3: visibilityCell
-                    })
+                    let row = table.row.add($('<tr>' +
+                        '    <td data-order="' + val.competitor + '">' + input + '</td>' +
+                        '    <td data-order="' + key + '">' + stub + '</td>' +
+                        '    <td>' + engines + '</td>' +
+                        '    <td data-order="' + val.visibility + '">' + visibilityCell + '</td>' +
+                        '</tr>')[0]
+                    ).node()
+                    $(row).find('td').eq(3).attr('data-order', val.visibility);
                 })
 
                 table.draw(false)

@@ -20,16 +20,22 @@ class VisitStatistics
      */
     public function handle($request, Closure $next)
     {
-        $project = MainProject::where('controller', class_basename(Route::current()->controller))->first();
-        if (isset($project)) {
+        try {
+            $project = MainProject::where('controller', class_basename(Route::current()->controller))->first();
+            if (isset($project)) {
 
-            VisitStatistic::updateOrCreate([
-                'project_id' => $project->id,
-                'user_id' => Auth::id(),
-                'date' => Carbon::now()->toDateString(),
-            ])->increment('counter');
+                VisitStatistic::updateOrCreate([
+                    'project_id' => $project->id,
+                    'user_id' => Auth::id(),
+                    'date' => Carbon::now()->toDateString(),
+                ])->increment('counter');
+            }
+
+        } catch (\Throwable $e) {
+
         }
 
         return $next($request);
+
     }
 }
