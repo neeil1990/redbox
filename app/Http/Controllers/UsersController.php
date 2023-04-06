@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Common;
 use App\Exports\FilteredUsersExport;
 use App\Exports\VerifiedUsersExport;
+use App\MainProject;
 use App\User;
+use App\VisitStatistic;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
@@ -17,6 +20,7 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -206,5 +210,28 @@ class UsersController extends Controller
         } else {
             abort(403);
         }
+    }
+
+    public function visitStatistics(User $user)
+    {
+        $now = Carbon::now()->toDateString();
+
+        $toDay = VisitStatistic::where('user_id', $user->id)
+            ->where('date', $now)
+            ->with('project')
+            ->get();
+
+        $labels = [];
+        $counters = [];
+
+        foreach ($toDay as $module) {
+            $labels[] = __($module->project->title);
+            $counters[] = $module->counter;
+        }
+
+        $labels = json_encode($labels);
+        $counters = json_encode($counters);
+
+        return view('users.visit', compact('toDay', 'labels', 'counters', 'now'));
     }
 }

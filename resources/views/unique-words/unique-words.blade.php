@@ -11,17 +11,18 @@
             }
         </style>
     @endslot
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message">
         <div class="toast toast-success" aria-live="polite">
             <div class="toast-message">{{ __('The result was successfully copied to the clipboard') }}</div>
         </div>
     </div>
+
     <div id="toast-container" class="toast-top-right error-message">
         <div class="toast toast-error" aria-live="assertive">
             <div class="toast-message">{{ __('The list of keywords should not be empty') }}</div>
         </div>
     </div>
+
     <div class="modal fade" id="modal-default" style="display: none;" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -42,6 +43,7 @@
             </div>
         </div>
     </div>
+
     <form>
         @csrf
         <h2 class="mt-3 mb-3">{{__('Get a list of unique words from the list of keywords')}}</h2>
@@ -70,6 +72,7 @@
             </div>
         </div>
     </form>
+
     <div class="unique-words-filter mt-4 mb-3 card bg-gradient-light" id="unique-words-filter" style="display: none">
         <h3 class="m-3">{{__('Settings for downloading or copying results')}}:</h3>
         <div class="m-3">
@@ -155,6 +158,7 @@
             </div>
         </div>
     </div>
+
     <div class="card mt-3 mb-3 unique-words-result">
         <div class="card-header border-bottom">
             <h2 class="card-title">{{__('Result')}}</h2>
@@ -175,6 +179,7 @@
             </table>
         </div>
     </div>
+
     @slot('js')
         <script src="{{ asset('plugins/unique-words/js/unique-words.js') }}"></script>
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
@@ -396,7 +401,6 @@
 
                 return [separator, title]
             }
-
         </script>
     @endslot
 @endcomponent

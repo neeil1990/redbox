@@ -80,33 +80,40 @@
                                 <i class="fas fa-pencil-alt"></i>
                                 {{ __('Edit') }}
                             </a>
-                            @if(isset($user->metrics))
-                                <a class="btn btn-info btn-sm" data-toggle="collapse"
-                                   href="#collapseExample{{ $user->id }}"
-                                   role="button" aria-expanded="false" aria-controls="collapseExample{{ $user->id }}">
-                                    <i class="fa fa-share-alt"></i>
-                                    {{ __('utm metrics') }}
-                                </a>
-                            @endif
+                            <a class="btn btn-info btn-sm" href="{{ route('visit.statistics', $user->id) }}">
+                                <i class="fas fa-chart-pie"></i>
+                                Статистика посещений
+                            </a>
 
-                            {!! Form::open(['onSubmit' => 'agreeUser(event)', 'class' => 'd-inline', 'method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
-                            {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) !!}
-                            {!! Form::close() !!}
+                            <div class="mt-2">
+                                @if(isset($user->metrics))
+                                    <a class="btn btn-info btn-sm" data-toggle="collapse"
+                                       href="#collapseExample{{ $user->id }}"
+                                       role="button" aria-expanded="false"
+                                       aria-controls="collapseExample{{ $user->id }}">
+                                        <i class="fa fa-share-alt"></i>
+                                        {{ __('utm metrics') }}
+                                    </a>
+                                @endif
 
-                            @if(isset($user->metrics))
-                                <div class="collapse text-left mt-3" id="collapseExample{{ $user->id }}">
-                                    @if(is_array($user->metrics))
-                                        @foreach($user->metrics as $key => $value)
-                                            <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
-                                        @endforeach
-                                    @elseif(strlen($user->metrics) > 2 && $user->metrics != 'null')
-                                        <div>
-                                            {{ $user->metrics }}
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
+                                {!! Form::open(['onSubmit' => 'agreeUser(event)', 'class' => 'd-inline', 'method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
+                                {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) !!}
+                                {!! Form::close() !!}
 
+                                @if(isset($user->metrics))
+                                    <div class="collapse text-left mt-3" id="collapseExample{{ $user->id }}">
+                                        @if(is_array($user->metrics))
+                                            @foreach($user->metrics as $key => $value)
+                                                <div><b>{{ $key }}</b>: {{ urldecode($value) }}</div>
+                                            @endforeach
+                                        @elseif(strlen($user->metrics) > 2 && $user->metrics != 'null')
+                                            <div>
+                                                {{ $user->metrics }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @endforeach

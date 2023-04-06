@@ -11,6 +11,7 @@
                     <td>icon</td>
                     <td>Заголовок</td>
                     <td>Описание</td>
+                    <td>Контроллер</td>
                     <td>Ссылка</td>
                     <td>Показывать обычным пользователям</td>
                     <td style="min-width: 130px">Действия</td>
@@ -25,6 +26,7 @@
                         <td>{!! $row->icon !!}</td>
                         <td>{{ $row->title }}</td>
                         <td class="w-50">{{ $row->description }}</td>
+                        <td>{{ $row->controller }}</td>
                         <td>{{ $row->link }}</td>
                         <td>{{ $row->show ? __('Yes') : __('No') }}</td>
                         <td>

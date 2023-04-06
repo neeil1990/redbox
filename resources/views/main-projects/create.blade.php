@@ -27,6 +27,19 @@
             </div>
 
             <div class="form-group required">
+                <label for="description">{{ __('Controller') }}</label>
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question"></i>
+                    <span class="ui_tooltip __right" style="min-width: 550px;">
+                        <span class="ui_tooltip_content">
+                            Контроллер нужен для того, чтобы вести статистику посещений данного модуля.
+                        </span>
+                    </span>
+                </span>
+                {!! Form::text("controller", null ,["class" => "form-control","required" => "required"]) !!}
+            </div>
+
+            <div class="form-group required">
                 <label for="link">{{ __('Link') }}</label>
                 {!! Form::text("link", null ,["class" => "form-control","required" => "required"]) !!}
             </div>

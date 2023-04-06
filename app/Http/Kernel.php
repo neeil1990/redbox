@@ -11,6 +11,7 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\LastOnline;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\VisitStatistics;
 use \Spatie\Permission\Middlewares\PermissionMiddleware;
 use \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use App\Http\Middleware\SetLocaleToAuthUser;
@@ -68,6 +69,7 @@ class Kernel extends HttpKernel
             DeleteTariffByUsers::class,
             DeleteUsersNoVerify::class,
             LastOnline::class,
+            VisitStatistics::class,
         ],
 
         'api' => [

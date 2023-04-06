@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -24,17 +23,18 @@ class MonitoringCompetitor extends Model
                 $results = SearchIndex::where('lr', '=', $engine['lr'])
                     ->where('query', $keyword)
                     ->where('position', '<=', 10)
-                    ->latest('created_at')
+                    ->orderBy('created_at', 'asc')
+                    ->limit(10)
                     ->pluck('query', 'url');
 
                 foreach ($results as $url => $query) {
                     $host = parse_url(Common::domainFilter($url))['host'];
                     if (isset($request['targetDomain'])) {
                         if ($host === $request['targetDomain']) {
-                            $competitors[$host]['urls'][$query][$engine['engine']][] = [$engine['lr'] => Common::domainFilter($url)];
+                            $competitors[$host]['urls'][$query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($url)];
                         }
                     } else {
-                        $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['lr'] => Common::domainFilter($url)];
+                        $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => Common::domainFilter($url)];
                     }
                 }
             }
@@ -108,8 +108,8 @@ class MonitoringCompetitor extends Model
         foreach ($keywords as $keyword) {
             $records = SearchIndex::where('query', $keyword['query'])
                 ->where('lr', $engine['lr'])
-                ->latest('created_at')
-                ->take(100)
+                ->orderBy('created_at', 'asc')
+                ->limit(100)
                 ->get(['url', 'position', 'created_at', 'query'])
                 ->toArray();
 

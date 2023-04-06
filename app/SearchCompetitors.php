@@ -244,22 +244,6 @@ class SearchCompetitors extends Model
     /**
      * @return void
      */
-    protected function searchDuplicates()
-    {
-        foreach ($this->sites as $phrase => $links) {
-            foreach ($links as $link) {
-                if (isset($this->duplicates[$link])) {
-                    $this->duplicates[$link] = true;
-                } else {
-                    $this->duplicates[$link] = false;
-                }
-            }
-        }
-    }
-
-    /**
-     * @return void
-     */
     protected function analysisNestingDomains()
     {
         $this->pagesCounter = [

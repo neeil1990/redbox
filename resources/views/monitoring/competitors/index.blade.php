@@ -20,10 +20,14 @@
             #table > thead > tr > th.sorting_disabled.sorting_asc:before {
                 display: none;
             }
+
             #table > thead > tr > th.sorting_disabled.sorting_asc:after {
                 display: none;
             }
 
+            #table > tbody > tr > td:nth-child(4) {
+                width: 37.5%;
+            }
         </style>
     @endslot
 
@@ -114,7 +118,8 @@
             <th>Конкурент?</th>
             <th>Домен</th>
             <th>Поисковые системы</th>
-            <th>Видимость</th>
+            <th>Видимость подробная</th>
+            <th>Видимость общая</th>
         </tr>
         </thead>
         <tbody>
@@ -148,7 +153,7 @@
                 }
 
                 table = $('#table').DataTable({
-                    fixedHeader: true,
+                    "order": [[1, 'asc']],
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
                     language: {
@@ -163,7 +168,9 @@
                         },
                     },
                     columnDefs: [
-                        {orderable: false, targets: [0, 1, 2, 3]},
+                        {
+                            orderable: false, targets: [0, 2, 3]
+                        },
                     ],
                 })
 
@@ -178,7 +185,6 @@
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
                     success: function (response) {
-                        console.log(response)
                         renderTableRows(response)
 
                         $('#preloader').hide()
@@ -228,6 +234,7 @@
             })
 
             function renderTableRows(data) {
+                console.log(data)
                 $.each(data, function (key, val) {
                     let input = ''
                     if (val.mainPage) {
@@ -255,34 +262,44 @@
 
                     let google
                     if (val.visibilityGoogle.length !== 0) {
-                        google = '<ul>'
+                        google = '<div>'
                         $.each(val.visibilityGoogle, function (count, lr) {
-                            google += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                            google += `<div>${lr}<span class="text-muted">(${count})</span></div>`
                         })
-                        google += '</ul>'
+                        google += '</div>'
                     } else {
                         google = 0
                     }
 
                     let yandex
                     if (val.visibilityYandex.length !== 0) {
-                        yandex = '<ul>'
+                        yandex = '<div>'
                         $.each(val.visibilityYandex, function (count, lr) {
-                            yandex += `<li>${lr}<span class="text-muted">(${count})</span></li>`
+                            yandex += `<div>${lr}<span class="text-muted">(${count})</span></div>`
                         })
-                        yandex += '</ul>'
+                        yandex += '</div>'
                     } else {
                         yandex = 0
                     }
 
-                    table.row.add({
-                        0: input,
-                        1: stub,
-                        2: engines,
-                        3: '<div>Общая: ' + val.visibility + '</div>' +
-                            '<div> Google: ' + google + '</div>' +
-                            '<div> Yandex: ' + yandex + '</div>'
-                    })
+                    let visibilityCell =
+                        '<div class="d-flex flex-row justify-content-between">'
+
+                    if (google !== 0) {
+                        visibilityCell += '<div class="mr-1"> Google: ' + google + '</div>'
+                    }
+                    if (yandex !== 0) {
+                        visibilityCell += '<div> Yandex: ' + yandex + '</div>'
+                    }
+
+                    table.row.add($('<tr>' +
+                        '    <td data-order="' + val.competitor + '">' + input + '</td>' +
+                        '    <td data-order="' + key + '">' + stub + '</td>' +
+                        '    <td>' + engines + '</td>' +
+                        '    <td>' + visibilityCell + '</td>' +
+                        '    <td data-order="' + Number(val.visibility) + '">' + val.visibility + '</td>' +
+                        '</tr>')[0]
+                    ).node()
                 })
 
                 table.draw(false)

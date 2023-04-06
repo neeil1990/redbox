@@ -470,14 +470,15 @@ class MonitoringController extends Controller
         return view('monitoring.competitors.history', compact('project', 'competitors', 'navigations'));
     }
 
+    //start page
     public function getStatistics(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id', 'query'])->toArray();
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
-        $engine = MonitoringSearchengine::where('id', '=', $request->region)->first(['id', 'lr'])->toArray();
+        $region = MonitoringSearchengine::where('id', '=', $request->region)->first(['id', 'lr'])->toArray();
         array_unshift($competitors, $project->url);
-        $statistics = MonitoringCompetitor::calculateStatistics($keywords, $competitors, $engine);
+        $statistics = MonitoringCompetitor::calculateStatistics($keywords, $competitors, $region);
 
         return response()->json([
             'visibility' => $statistics['visibility'],
@@ -485,14 +486,14 @@ class MonitoringController extends Controller
         ]);
     }
 
+    //story
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
-        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
-        array_unshift($competitors, $project->url);
-
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+        array_unshift($competitors, $project->url);
 
         $records = [];
         $results = [];
@@ -510,8 +511,8 @@ class MonitoringController extends Controller
                 $records[$date][$query][$lr] = SearchIndex::where('created_at', 'like', "%$date%")
                     ->where('query', $query)
                     ->where('lr', $lr)
-                    ->latest('created_at')
-                    ->take(100)
+                    ->orderBy('created_at', 'asc')
+                    ->limit(100)
                     ->get(['url', 'position', 'created_at', 'query'])
                     ->toArray();
             }
