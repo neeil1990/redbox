@@ -23,6 +23,13 @@
                 width: 50%;
                 height: 300px;
             }
+
+            #history-block > table > thead > tr:nth-child(1) > th:nth-child(2),
+            #history-block > table > thead > tr:nth-child(1) > th:nth-child(3),
+            #history-block > table > thead > tr:nth-child(1) > th:nth-child(4),
+            #history-block > table > thead > tr:nth-child(1) > th:nth-child(5) {
+                text-align: center;
+            }
         </style>
     @endslot
 
@@ -176,6 +183,7 @@
         </div>
     </div>
 
+    <h3>Изменения по топу и дате</h3>
     <div class="card mt-3">
         <div class="card-header d-flex">
             <div class="w-25">
@@ -213,14 +221,9 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <!-- Charts -->
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
                 integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>--}}
-        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-crosshair.js') }}"></script>--}}
-        {{--        <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>--}}
         <!-- InputMask -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
@@ -646,36 +649,56 @@
                 if (data.length !== undefined) {
                     result = '<b id="history-results">Результаты отсутсвтуют</b>'
                 } else {
-                    result = '<table class="table table-bordered" id="history-results"><thead><tr><th>{{ __('Date') }}</th><th></th></tr><tbody>'
-                    $.each(data, function (date, info) {
-                        let childTable = '<table class="table table-hover table-bordered" style="margin-bottom: 0"><thead>' +
-                            '<tr>' +
-                            '    <th>{{ __('Domain') }}</th>' +
-                            '    <th>{{ __('Average position') }}</th>' +
-                            '    <th>{{ __('Top') }} 3</th>' +
-                            '    <th>{{ __('Top') }} 10</th>' +
-                            '    <th>{{ __('Top') }} 100</th>' +
-                            '</tr>' +
-                            '<tbody>'
-                        $.each(info, function (domain, positions) {
-                            childTable +=
-                                '<tr>' +
-                                '    <td>' + domain + '</td>' +
-                                '    <td>' + positions['avg'] + '</td>' +
-                                '    <td>' + positions['top_3'] + '</td>' +
-                                '    <td>' + positions['top_10'] + '</td>' +
-                                '    <td>' + positions['top_100'] + '</td>' +
-                                '</tr>'
+                    let length = 0
+                    for (let key in data) {
+                        length += 1
+                    }
+                    let domains = []
+                    let dates = []
+
+                    let bottomHead = ''
+                    $.each(data, function (k, v) {
+                        bottomHead += '<td>' + k + '</td>'
+                        dates.push(k)
+                        $.each(v, function (k1, v1) {
+                            domains.push(k1)
                         })
-
-                        childTable += '</table>'
-
-                        result += '<tr>' +
-                            '    <td><b>' + date + '</b></td>' +
-                            '    <td style="padding: 0">' + childTable + '</td>' +
-                            '</tr>'
                     })
-                    result += '</tbody>'
+
+                    domains = getUniqueValues(domains)
+                    dates = getUniqueValues(dates)
+
+                    let keys = ['avg', 'top_3', 'top_10', 'top_100']
+                    let trs = ''
+                    $.each(domains, function (k, domain) {
+                        trs += '<tr><td>' + domain + '</td>'
+                        $.each(keys, function (key, name) {
+                            $.each(dates, function (k1, date) {
+                                trs += '<td>' + data[date][domain][name] + '</td>'
+                            })
+                        })
+                        trs += "</tr>"
+                    })
+
+                    result =
+                        '<table class="table table-hover table-bordered w-100" id="history-results">' +
+                        '    <thead>' +
+                        '        <tr>' +
+                        '            <th>Домен</th>' +
+                        '            <th colspan="' + length + '">Средняя позиция</th>' +
+                        '            <th colspan="' + length + '">Топ 3</th>' +
+                        '            <th colspan="' + length + '">Топ 10</th>' +
+                        '            <th colspan="' + length + '">Топ 100</th>' +
+                        '        </tr>' +
+                        '        <tr><td></td>' +
+                        bottomHead +
+                        bottomHead +
+                        bottomHead +
+                        bottomHead +
+                        '        </tr>' +
+                        '    </thead>' +
+                        '    <tbody>' + trs + '</tbody>' +
+                        '</table>'
                 }
 
                 $('#history-block').append(result)
@@ -711,15 +734,8 @@
                 $('#statistics-table').show()
                 renderCharts(data, destroy)
             }
-
-            const DATES = '{{ request('dates', null) }}';
             let startDate = null;
             let endDate = null;
-            if (DATES) {
-                let dates = DATES.split(" - ");
-                startDate = moment(dates[0]);
-                endDate = moment(dates[1]);
-            }
 
             let range = $('#date-range');
             range.daterangepicker({
@@ -820,6 +836,12 @@
                     });
                 })
             });
+
+            function getUniqueValues(data) {
+                data = new Set([...data])
+
+                return [...data]
+            }
         </script>
     @endslot
 @endcomponent

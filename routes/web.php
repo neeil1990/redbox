@@ -399,36 +399,45 @@ Route::get('/test', function () {
     $competitors2 = [];
 
     foreach ($engines as $engine) {
+//        dump($engine['lr']);
         foreach ($keywords as $keyword) {
             $results = SearchIndex::where('lr', '=', $engine['lr'])
                 ->where('query', $keyword)
                 ->where('position', '<=', 10)
+                ->take(10)
                 ->orderBy('created_at', 'asc')
-                ->limit(10)
-                ->pluck('query', 'url');
+                ->get()
+                ->toArray();
 
-            foreach ($results as $url => $query) {
-                $host = parse_url(Common::domainFilter($url))['host'];
-
-                $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => Common::domainFilter($url)];
-            }
+//            dump($results);
+//            foreach ($results as $url => $query) {
+//                $host = parse_url(Common::domainFilter($url))['host'];
+//
+//                $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => Common::domainFilter($url)];
+//            }
         }
     }
 
+    //придумать как вытаскивать самую свежую позицию
     foreach ($engines as $engine) {
         $results = SearchIndex::where('lr', $engine['lr'])
             ->whereIn('query', $keywords)
             ->where('position', '<=', 10)
-            ->limit(10 * count($keywords))
             ->orderBy('created_at', 'asc')
-            ->pluck('query', 'url');
+            ->take(10 * count($keywords))
+            ->get()
+            ->toArray();
 
-        foreach ($results as $url => $query) {
-            $url = Common::domainFilter($url);
-            $host = parse_url($url)['host'];
-            $competitors2[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => $url];
-        }
+        dump($engine['lr']);
+        dump($results);
+//        foreach ($results as $url => $query) {
+//            $url = Common::domainFilter($url);
+//            $host = parse_url($url)['host'];
+//            $competitors2[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => $url];
+//        }
     }
 
+//    dump($competitors);
+//    dd($competitors2);
     return 1;
 });

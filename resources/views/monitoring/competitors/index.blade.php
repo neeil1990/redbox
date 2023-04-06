@@ -118,7 +118,8 @@
             <th>Конкурент?</th>
             <th>Домен</th>
             <th>Поисковые системы</th>
-            <th>Видимость</th>
+            <th>Видимость подробная</th>
+            <th>Видимость общая</th>
         </tr>
         </thead>
         <tbody>
@@ -168,7 +169,7 @@
                     },
                     columnDefs: [
                         {
-                            orderable: false, targets: [0, 2]
+                            orderable: false, targets: [0, 2, 3]
                         },
                     ],
                 })
@@ -233,6 +234,7 @@
             })
 
             function renderTableRows(data) {
+                console.log(data)
                 $.each(data, function (key, val) {
                     let input = ''
                     if (val.mainPage) {
@@ -290,16 +292,14 @@
                         visibilityCell += '<div> Yandex: ' + yandex + '</div>'
                     }
 
-                    visibilityCell += '<div class="mr-1"> Общая: ' + val.visibility + '</div></div>'
-
-                    let row = table.row.add($('<tr>' +
+                    table.row.add($('<tr>' +
                         '    <td data-order="' + val.competitor + '">' + input + '</td>' +
                         '    <td data-order="' + key + '">' + stub + '</td>' +
                         '    <td>' + engines + '</td>' +
-                        '    <td data-order="' + val.visibility + '">' + visibilityCell + '</td>' +
+                        '    <td>' + visibilityCell + '</td>' +
+                        '    <td data-order="' + Number(val.visibility) + '">' + val.visibility + '</td>' +
                         '</tr>')[0]
                     ).node()
-                    $(row).find('td').eq(3).attr('data-order', val.visibility);
                 })
 
                 table.draw(false)

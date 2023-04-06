@@ -108,8 +108,8 @@ class MonitoringCompetitor extends Model
         foreach ($keywords as $keyword) {
             $records = SearchIndex::where('query', $keyword['query'])
                 ->where('lr', $engine['lr'])
-                ->latest('created_at')
-                ->take(100)
+                ->orderBy('created_at', 'asc')
+                ->limit(100)
                 ->get(['url', 'position', 'created_at', 'query'])
                 ->toArray();
 
