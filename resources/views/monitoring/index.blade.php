@@ -434,23 +434,6 @@
                     });
                 });
 
-                $('.parse-positions').click(function () {
-
-                    let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
-                    let data = rows.data();
-
-                    $.each(data, function (index, row) {
-                        axios.post('/monitoring/parse/positions/project', {
-                            projectId: row.id
-                        });
-                    });
-
-                    if (data.length)
-                        toastr.success("{{ __('Task add in queue') }}");
-                    else
-                        toastr.error("{{ __('Selected project') }}");
-                });
-
                 $('.checkbox-delete').click(function () {
 
                     let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
