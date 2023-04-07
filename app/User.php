@@ -7,6 +7,7 @@ use App\Mail\VerifyEmail;
 use App\Notifications\BrokenDomainNotification;
 use App\Notifications\BrokenLinkNotification;
 use App\Notifications\DomainInformationNotification;
+use App\Notifications\MonitoringLimitExhaustedNotification;
 use App\Notifications\RegisterPasswordEmail;
 use App\Notifications\RepairDomainNotification;
 use App\Notifications\sendNotificationAboutChangeDNS;
@@ -143,6 +144,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendNotificationAboutChangeDNS($project)
     {
         $this->notify(new sendNotificationAboutChangeDNS($project));
+    }
+
+    public function sendMonitoringLimitExhaustedNotification()
+    {
+        $this->notify(new MonitoringLimitExhaustedNotification());
     }
 
     /**
