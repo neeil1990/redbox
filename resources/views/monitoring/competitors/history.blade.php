@@ -21,7 +21,7 @@
 
             .chart-container {
                 width: 50%;
-                height: 300px;
+                height: 400px;
             }
 
             #history-block > table > thead > tr:nth-child(1) > th:nth-child(2),
@@ -30,6 +30,15 @@
             #history-block > table > thead > tr:nth-child(1) > th:nth-child(5) {
                 text-align: center;
             }
+
+            .grow-color {
+                background-color: rgb(153, 228, 185);
+            }
+
+            .shrink-color {
+                background-color: rgb(251, 225, 223);
+            }
+
         </style>
     @endslot
 
@@ -183,7 +192,7 @@
         </div>
     </div>
 
-    <h3>Изменения по топу и дате</h3>
+    <h3 class="mt-3">Изменения по топу и дате</h3>
     <div class="card mt-3">
         <div class="card-header d-flex">
             <div class="w-25">
@@ -205,6 +214,23 @@
             </div>
         </div>
         <div class="card-body" id="history-block">
+            <div class="mb-2 btn-group" id="visibility-buttons" style="display: none">
+                <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
+                    Домен
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    Средняя позиция
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    Топ 3
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    Топ 10
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    Топ 100
+                </button>
+            </div>
             <div class="d-flex justify-content-center align-items-center align-content-center">
                 <img src="/img/1485.gif" style="width: 50px; height: 50px; display: none" id="preloader-history"
                      class="mt-3 mb-3">
@@ -231,6 +257,7 @@
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
 
         <script>
+            let historyTable
             let table
             let chartAvg
             let chart3
@@ -270,10 +297,14 @@
                         },
                         beforeSend: function () {
                             $('#preloader-history').show()
-                            $('#history-results').remove()
                         },
                         success: function (response) {
                             $('#preloader-history').hide()
+                            if ($.fn.DataTable.fnIsDataTable($('#history-results'))) {
+                                $('#history-results').dataTable().fnDestroy()
+                            }
+                            $('#history-results').remove()
+
                             renderHistoryPositions(response.data)
                         },
                     });
@@ -359,6 +390,8 @@
 
                 $('#table').show()
                 $('#preloader').hide()
+
+                $('#table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
 
                 return res;
             }
@@ -617,7 +650,6 @@
             }
 
             function renderInfo(destroy = false) {
-
                 if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                     $('#table').dataTable().fnDestroy();
                     $('.render').remove()
@@ -644,15 +676,21 @@
                 return table
             }
 
+            //todo что будет если нет результатов?
             function renderHistoryPositions(data) {
                 let result
+
                 if (data.length !== undefined) {
-                    result = '<b id="history-results">Результаты отсутсвтуют</b>'
+                    result = '<b id="history-results">Результаты отсутствуют</b>'
+                    $('#history-block').append(result)
+                    $('#visibility-buttons').hide()
                 } else {
                     let length = 0
+
                     for (let key in data) {
                         length += 1
                     }
+
                     let domains = []
                     let dates = []
 
@@ -699,9 +737,88 @@
                         '    </thead>' +
                         '    <tbody>' + trs + '</tbody>' +
                         '</table>'
-                }
 
-                $('#history-block').append(result)
+                    $('#history-block').append(result)
+
+                    historyTable = $('#history-results').DataTable({
+                        bSort: false,
+                        lengthMenu: [10, 25, 50, 100],
+                        pageLength: 50,
+                        language: {
+                            lengthMenu: "_MENU_",
+                            search: "_INPUT_",
+                            searchPlaceholder: "{{ __('Search') }}",
+                            paginate: {
+                                "first": "«",
+                                "last": "»",
+                                "next": "»",
+                                "previous": "«"
+                            },
+                        },
+                    })
+
+                    $.each($('#history-results > tbody > tr'), function (k, v) {
+                        for (let j = 0; j < 4; j++) {
+                            let res = length * j
+                            let bool = j >= 1
+                            colorCells($(this), 1 + res, 2 + res, length * (j + 1), bool)
+                        }
+                    })
+
+                    setDataOrders(length)
+
+                    $('.column-visible').unbind().on('click', function () {
+                        if ($(this).attr('data-action') === 'hide') {
+                            $(this).attr('data-action', 'show')
+                            historyTable.columns(String($(this).attr('data-order')).split(',')).visible(false);
+                        } else {
+                            String($(this).attr('data-order')).split(',')
+                            $(this).attr('data-action', 'hide')
+                            historyTable.columns(String($(this).attr('data-order')).split(',')).visible(true);
+                        }
+
+                        $('#table').css({
+                            'width': '100%'
+                        })
+                    })
+
+                    $('#visibility-buttons').show()
+                }
+            }
+
+            function colorCells(elem, start, secondStart, end, inverse) {
+                let iterator = start
+                for (let i = secondStart; i <= end; i++) {
+                    let element = elem.children('td').eq(iterator)
+                    let first = Number(element.text())
+                    let second = Number(elem.children('td').eq(i).text())
+
+                    let result = String(first - second).substring(0, 5)
+
+                    if (inverse) {
+                        if (result > 0) {
+                            element.addClass('grow-color')
+                            result = '+' + result
+                            element.text(first + '(' + result + ')')
+
+                        } else if (result < 0) {
+                            element.addClass('shrink-color')
+                            element.text(first + '(' + result + ')')
+                        }
+                    } else {
+                        if (result < 0) {
+                            element.addClass('grow-color')
+                            element.text(first + '(' + result + ')')
+
+                        } else if (result > 0) {
+                            element.addClass('shrink-color')
+                            result = '+' + result
+                            element.text(first + '(' + result + ')')
+                        }
+                    }
+
+                    iterator++;
+                }
             }
 
             function renderStatistics(data, destroy) {
@@ -734,6 +851,20 @@
                 $('#statistics-table').show()
                 renderCharts(data, destroy)
             }
+
+            function setDataOrders(length) {
+                let buttonCounter = 1;
+                $.each($('.add-order'), function (k, v) {
+                    let orders = buttonCounter
+                    for (let i = 1; i < length; i++) {
+                        buttonCounter++
+                        orders += ',' + buttonCounter
+                    }
+                    $(this).attr('data-order', orders)
+                    buttonCounter++
+                })
+            }
+
             let startDate = null;
             let endDate = null;
 

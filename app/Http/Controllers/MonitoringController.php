@@ -28,6 +28,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -464,14 +465,59 @@ class MonitoringController extends Controller
             return abort(403);
         }
 
-        MonitoringCompetitor::insert([
-            'monitoring_project_id' => $project->id,
-            'url' => $request->url,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        $parse = parse_url($request->url);
+        $domain = $parse['host'] ?? $parse['path'];
+        $url = Common::domainFilter($domain);
+
+        $record = MonitoringCompetitor::where('monitoring_project_id', $project->id)
+            ->where('url', $url)
+            ->first();
+
+        if (empty($record)) {
+            MonitoringCompetitor::insert([
+                'monitoring_project_id' => $project->id,
+                'url' => $url,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
 
         return response()->json([], 201);
+    }
+
+    public function addCompetitors(Request $request): ?JsonResponse
+    {
+        $project = MonitoringProject::findOrFail($request->projectId);
+        $urls = [];
+        if ($project->user->id !== Auth::id()) {
+            return abort(403);
+        }
+
+        foreach ($request->domains as $domain) {
+            if ($domain === null) {
+                continue;
+            }
+            $parse = parse_url($domain);
+            $domain = $parse['host'] ?? $parse['path'];
+            $url = Common::domainFilter($domain);
+            $record = MonitoringCompetitor::where('monitoring_project_id', $project->id)
+                ->where('url', $url)
+                ->first();
+
+            if (empty($record)) {
+                $urls[] = $url;
+                MonitoringCompetitor::insert([
+                    'monitoring_project_id' => $project->id,
+                    'url' => $url,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
+        }
+
+        return response()->json([
+            'urls' => $urls
+        ], 201);
     }
 
     public function removeCompetitor(Request $request): ?JsonResponse
@@ -497,7 +543,6 @@ class MonitoringController extends Controller
         return view('monitoring.competitors.history', compact('project', 'competitors', 'navigations'));
     }
 
-    //start page
     public function getStatistics(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
@@ -513,7 +558,6 @@ class MonitoringController extends Controller
         ]);
     }
 
-    //story
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
@@ -538,7 +582,7 @@ class MonitoringController extends Controller
                 $records[$date][$query][$lr] = SearchIndex::where('created_at', 'like', "%$date%")
                     ->where('query', $query)
                     ->where('lr', $lr)
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('created_at', 'desc')
                     ->limit(100)
                     ->get(['url', 'position', 'created_at', 'query'])
                     ->toArray();

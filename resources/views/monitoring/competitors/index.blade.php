@@ -9,10 +9,6 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <style>
-            #table_wrapper {
-                display: none;
-            }
-
             .custom-info-bg {
                 background-color: rgba(23, 162, 184, 0.5) !important;
             }
@@ -62,7 +58,6 @@
                 <div class="card-header">
                     <h3 class="card-title">{{ __('Region filter') }}</h3>
                 </div>
-
                 <div class="card-body">
                     <div class="row">
                         <form action="" style="display: contents;">
@@ -97,9 +92,62 @@
         </div>
     </div>
 
-    <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
-        Сравнение с конкурентами
-    </a>
+    <div class="d-flex flex-row">
+        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->id) }}">
+            Сравнение с конкурентами
+        </a>
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
+                    data-target="#competitorsModal">
+                Поиск конкуркетов
+            </button>
+            <button type="button" class="btn btn-secondary">
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle" style="color:white;"></i>
+                    <span class="ui_tooltip __right" style="width: 200px;">
+                        <span class="ui_tooltip_content">
+                            Мы автоматически определим 5 ваших ближайших конкурентов
+                        </span>
+                    </span>
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="competitorsModal" tabindex="-1" aria-labelledby="competitorsModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="competitorsModalLabel">Добавление новых конкурентов</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="competitors-textarea"><b>Ваши ближайшие конкуренты</b></label>
+                        <textarea name="competitors-textarea"
+                                  id="competitors-textarea"
+                                  class="form form-control"
+                                  cols="8" rows="8"></textarea>
+                    </div>
+                    <div>
+                        <div class="mt-3 mb-1">
+                            <b>{{ __('Domain') }}: Сколько раз встретился</b>
+                        </div>
+                        <div id="competitors-list"></div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" id="add-competitors" class="btn btn-secondary"
+                            data-dismiss="modal">{{ __('Add') }} </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <h3 class="mt-3 mr-3">
         {{  __('Project') . " $project->name" }}
@@ -112,14 +160,14 @@
     <div class="d-flex justify-content-center align-items-center align-content-center">
         <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
     </div>
+
     <table id="table" class="table table-bordered no-footer" style="display: none">
         <thead style="top: 0; position: sticky; background-color: white">
         <tr>
             <th>Конкурент?</th>
             <th>Домен</th>
             <th>Поисковые системы</th>
-            <th>Видимость подробная</th>
-            <th>Видимость общая</th>
+            <th>Видимость по выбранным регионам</th>
         </tr>
         </thead>
         <tbody>
@@ -151,29 +199,6 @@
                     filter = JSON.parse(filter)
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
-
-                table = $('#table').DataTable({
-                    "order": [[1, 'asc']],
-                    lengthMenu: [10, 25, 50, 100],
-                    pageLength: 50,
-                    language: {
-                        lengthMenu: "_MENU_",
-                        search: "_INPUT_",
-                        searchPlaceholder: "{{ __('Search') }}",
-                        paginate: {
-                            "first": "«",
-                            "last": "»",
-                            "next": "»",
-                            "previous": "«"
-                        },
-                    },
-                    columnDefs: [
-                        {
-                            orderable: false, targets: [0, 2, 3]
-                        },
-                    ],
-                })
-
 
                 if ($('#searchEngines').val() !== '') {
                     data.region = $('#searchEngines').val()
@@ -219,7 +244,11 @@
                         url: "{{ route('monitoring.get.competitors') }}",
                         data: data,
                         success: function (response) {
-                            table.rows().remove().draw();
+                            if ($.fn.DataTable.fnIsDataTable($('#table'))) {
+                                $('#table').dataTable().fnDestroy();
+                                $('#table > tbody').html('')
+                            }
+
                             renderTableRows(response)
 
                             $('#toast-container').hide()
@@ -231,10 +260,42 @@
                         },
                     });
                 })
+
+                $('#searchCompetitors').on('click', function () {
+                    let competitors = getMaxValues()
+
+                    let textAreaText = ''
+                    let competitorsList = ''
+
+                    for (let i = 0; i < competitors.length; i++) {
+                        textAreaText += competitors[i][0] + "\n"
+                        competitorsList += "<div>" + competitors[i][0] + ": " + competitors[i][1] + "</div>"
+                    }
+
+                    $('#competitors-textarea').text(textAreaText)
+                    $('#competitors-list').html(competitorsList)
+                })
+
+                $('#add-competitors').on('click', function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('monitoring.add.competitors') }}",
+                        data: {
+                            '_token': $('meta[name="csrf-token"]').attr('content'),
+                            'projectId': {{ $project->id }},
+                            'domains': $('#competitors-textarea').val().split('\n')
+                        },
+                        success: function (response) {
+                            $.each(response.urls, function (k, domain) {
+                                $("input[data-target='" + domain + "']").prop('checked', true)
+                            })
+                        },
+                    });
+                })
             })
 
             function renderTableRows(data) {
-                console.log(data)
                 $.each(data, function (key, val) {
                     let input = ''
                     if (val.mainPage) {
@@ -263,8 +324,8 @@
                     let google
                     if (val.visibilityGoogle.length !== 0) {
                         google = '<div>'
-                        $.each(val.visibilityGoogle, function (count, lr) {
-                            google += `<div>${lr}<span class="text-muted">(${count})</span></div>`
+                        $.each(val.visibilityGoogle, function (lr, count) {
+                            google += `<div>${count}<span class="text-muted">(${lr})</span></div>`
                         })
                         google += '</div>'
                     } else {
@@ -274,8 +335,8 @@
                     let yandex
                     if (val.visibilityYandex.length !== 0) {
                         yandex = '<div>'
-                        $.each(val.visibilityYandex, function (count, lr) {
-                            yandex += `<div>${lr}<span class="text-muted">(${count})</span></div>`
+                        $.each(val.visibilityYandex, function (lr, count) {
+                            yandex += `<div>${count}<span class="text-muted">(${lr})</span></div>`
                         })
                         yandex += '</div>'
                     } else {
@@ -292,17 +353,35 @@
                         visibilityCell += '<div> Yandex: ' + yandex + '</div>'
                     }
 
-                    table.row.add($('<tr>' +
+                    $('#table > tbody').append('<tr>' +
                         '    <td data-order="' + val.competitor + '">' + input + '</td>' +
                         '    <td data-order="' + key + '">' + stub + '</td>' +
                         '    <td>' + engines + '</td>' +
-                        '    <td>' + visibilityCell + '</td>' +
-                        '    <td data-order="' + Number(val.visibility) + '">' + val.visibility + '</td>' +
-                        '</tr>')[0]
-                    ).node()
+                        '    <td data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
+                        '</tr>')
                 })
 
-                table.draw(false)
+                table = $('#table').DataTable({
+                    "order": [[1, 'asc']],
+                    lengthMenu: [10, 25, 50, 100],
+                    pageLength: 50,
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "{{ __('Search') }}",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false, targets: [0, 2]
+                        },
+                    ],
+                })
 
                 refreshMethods()
             }
@@ -486,6 +565,29 @@
                         }
                     }
                 })
+            }
+
+            function getMaxValues() {
+                let domains = []
+
+                $.each($('#table > tbody > tr > td:nth-child(4)'), function (k, v) {
+                    if (!$(this).parent('tr').eq(0).children('td').eq(0).children('input').eq(0).is(':checked')) {
+                        domains[$(this).attr('data-action')] = Number($(this).attr('data-order'))
+                    }
+                })
+
+                let tuples = [];
+
+                for (let key in domains) tuples.push([key, domains[key]]);
+
+                tuples.sort(function (a, b) {
+                    a = a[1];
+                    b = b[1];
+
+                    return a < b ? -1 : (a > b ? 1 : 0);
+                });
+
+                return tuples.reverse().slice(0, 5);
             }
         </script>
     @endslot
