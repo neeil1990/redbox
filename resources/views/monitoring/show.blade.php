@@ -296,9 +296,9 @@
                                         }).then(function (response) {
                                             m.modal('hide');
                                             if (response.data.status)
-                                                toastr.success('Задание добавленно в очередь');
+                                                toastr.success(response.data.msg + " -" + response.data.count);
                                             else
-                                                toastr.error('Something went wrong!');
+                                                toastr.error(response.data.error);
                                         });
                                     }
                                 });
@@ -324,8 +324,11 @@
                                     keys: arrKeys,
                                     region: region,
                                 }).then(function (response) {
-                                    toastr.success('Задание добавленно в очередь.');
-                                    keys.prop('checked', false);
+                                    if (response.data.status) {
+                                        toastr.success(response.data.msg + " -" + response.data.count);
+                                        keys.prop('checked', false);
+                                    }else
+                                        toastr.error(response.data.error);
                                 });
                             });
 
@@ -1229,10 +1232,12 @@
                 axios.post('/monitoring/occurrence', {
                     action: action,
                     id: PROJECT_ID,
-                })
-                    .then(function (response) {
-                        toastr.success('Очередь добавлена!');
-                    });
+                }).then(function (response) {
+                    if(response.data.status){
+                        toastr.success(response.data.msg + " -" + response.data.count);
+                    }else
+                        toastr.error(response.data.error);
+                });
             });
         </script>
     @endslot

@@ -306,7 +306,6 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/monitoring/project/update-data-table', 'MonitoringController@updateDataTableProjects');
     Route::post('/monitoring/parse/positions/project', 'MonitoringController@parsePositionsInProject');
-    Route::post('/monitoring/parse/positions/all/projects', 'MonitoringController@parsePositionsAllProject');
     Route::post('/monitoring/parse/positions/project/keys', 'MonitoringController@parsePositionsInProjectKeys');
 
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');

@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
 use App\Jobs\AutoUpdatePositionQueue;
-use App\Jobs\PositionQueue;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
@@ -54,15 +54,6 @@ class MonitoringController extends Controller
      */
     public function index()
     {
-        //$model = new MonitoringSearchengine();
-        //$searchengine = $model->find('62');
-
-        //$model = new MonitoringKeyword();
-        //$query = $model->where('id', 5600)->first();
-
-        //(new PositionStore(false))->saveByQuery($query);
-        //dispatch((new PositionQueue($query))->onQueue('position_high'));
-
         $lengthMenu = $this->getPaginationMenu();
         $length = (new MonitoringSettings())->getValue('pagination_project');
 
@@ -79,12 +70,14 @@ class MonitoringController extends Controller
 
         $engines = $project->searchengines()->whereIn('id', $request->input('regions'))->get();
 
+        $queue = new PositionsDispatch($user['id'], 'position_high');
         foreach ($engines as $engine) {
             foreach ($project->keywords as $query)
-                dispatch((new AutoUpdatePositionQueue($query, $engine))->onQueue('position_high'));
+                $queue->addQueryWithRegion($query, $engine);
         }
+        $queue->dispatch();
 
-        return collect(['status' => true]);
+        return $queue->notify();
     }
 
     public function parsePositionsInProjectKeys(Request $request)
@@ -95,37 +88,13 @@ class MonitoringController extends Controller
         $keywords = $project->keywords()->whereIn('id', $request->input('keys'))->get();
         $engine = $project->searchengines()->find($request->input('region'));
 
+        $queue = new PositionsDispatch($user['id'], 'position_high');
         foreach ($keywords as $keyword)
-            dispatch((new AutoUpdatePositionQueue($keyword, $engine))->onQueue('position_high'));
+            $queue->addQueryWithRegion($keyword, $engine);
 
-        return collect([
-            'status' => true
-        ]);
-    }
+        $queue->dispatch();
 
-    public function parsePositionsAllProject()
-    {
-        /** @var User $user */
-        $user = $this->user;
-        $projects = $user->monitoringProjects()->get();
-
-        foreach ($projects as $project)
-            $this->parsePositionsOfKeywordsByProjectQueue($project->id);
-
-        return collect([
-            'status' => true
-        ]);
-    }
-
-    public function parsePositionsOfKeywordsByProjectQueue(int $projectId): void
-    {
-        /** @var User $user */
-        $user = $this->user;
-        $project = $user->monitoringProjects()->where('id', $projectId)->first();
-        $project->load('keywords');
-
-        foreach ($project->keywords as $keyword)
-            dispatch((new PositionQueue($keyword))->onQueue('position_low'));
+        return $queue->notify();
     }
 
     public function getProjects(Request $request)
@@ -195,6 +164,10 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
+        $tariff = $user->tariff()->getAsArray();
+
+        dd($tariff);
+
         $project = $user->monitoringProjects()->find($project_id);
         $engines = $project->searchengines()->with('location')->get();
         $section = $project->groups()->find($group_id);

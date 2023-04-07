@@ -2,6 +2,7 @@
 
 namespace App\ViewComposers;
 
+use App\Classes\Monitoring\PositionLimit;
 use App\ClusterLimit;
 use App\DomainInformation;
 use App\DomainMonitoring;
@@ -204,6 +205,12 @@ class LimitsComposer
             case 'HttpHeaders':
                 return [
                     'count' => __('Restrictions are not tracked'),
+                    'position' => 21
+                ];
+
+            case 'monitoring':
+                return [
+                    'count' => (new PositionLimit(Auth::id()))->getCounter(),
                     'position' => 21
                 ];
 

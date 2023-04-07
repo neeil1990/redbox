@@ -3,6 +3,7 @@
 
 namespace App\Classes\Cron;
 
+use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Jobs\AutoUpdatePositionQueue;
 
 class AutoUpdateMonitoringPositions
@@ -19,7 +20,10 @@ class AutoUpdateMonitoringPositions
         $engine = $this->engine;
         $project = $engine->project;
 
+        $queue = new PositionsDispatch($project['user_id'], 'position_low');
         foreach ($project->keywords as $query)
-            dispatch((new AutoUpdatePositionQueue($query, $engine))->onQueue('position_low'));
+            $queue->addQueryWithRegion($query, $engine);
+
+        $queue->dispatch();
     }
 }

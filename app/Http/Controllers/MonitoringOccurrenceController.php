@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 
+use App\Classes\Monitoring\Queues\OccurrenceDispatch;
+use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Jobs\OccurrenceQueue;
 use App\MonitoringProject;
 use App\User;
@@ -24,7 +26,7 @@ class MonitoringOccurrenceController extends Controller
 
     public function update(Request $request)
     {
-        $this->updateByProjectId($request->input('id'));
+        return $this->updateByProjectId($request->input('id'));
     }
 
     protected function updateByProjectId($id)
@@ -34,10 +36,14 @@ class MonitoringOccurrenceController extends Controller
         $project = $user->monitoringProjects()->find($id);
         $regions = $project->searchengines->where('engine', 'yandex');
 
+        $queue = new OccurrenceDispatch($user['id'], 'high');
         foreach ($regions as $region){
             foreach ($project->keywords as $query)
-                dispatch((new OccurrenceQueue($query, $region))->onQueue('high'));
+                $queue->addQueryWithRegion($query, $region);
         }
+        $queue->dispatch();
+
+        return $queue->notify();
     }
 
 }

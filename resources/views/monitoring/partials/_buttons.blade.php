@@ -16,10 +16,6 @@
         </button>
     </div>
 
-    <button type="submit" class="btn btn-default btn-sm parse-positions" data-toggle="tooltip" title="{{ __('Update selected project') }}">
-        <i class="fas fa-sync-alt"></i>
-    </button>
-
     <div class="btn-group">
         @foreach ([
             ['name' => 'engines', 'text' => __('Search engine')],
