@@ -594,7 +594,7 @@ class MonitoringController extends Controller
                 }
             }
         } catch (\Throwable $e) {
-            Log::debug('monitoring date error', [
+            Log::debug('error message', [
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile()
