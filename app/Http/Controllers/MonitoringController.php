@@ -164,7 +164,6 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $tariff = $user->tariff()->getAsArray();
 
         $project = $user->monitoringProjects()->find($project_id);
         $engines = $project->searchengines()->with('location')->get();
@@ -549,14 +548,18 @@ class MonitoringController extends Controller
         }
 
         foreach ($dates as $date) {
-            foreach ($keywords as $query) {
-                $records[$date][$query][$lr] = SearchIndex::where('created_at', 'like', "%$date%")
-                    ->where('query', $query)
-                    ->where('lr', $lr)
-                    ->orderBy('created_at', 'desc')
-                    ->limit(100)
-                    ->get(['url', 'position', 'created_at', 'query'])
-                    ->toArray();
+            $results = DB::table('search_indices')
+                ->where('created_at', 'like', "%$date%")
+                ->where('lr', '=', $lr)
+                ->whereIn('query', $keywords)
+                ->where('position', '<=', 100)
+                ->orderBy('id', 'desc')
+                ->limit(count($keywords) * 100)
+                ->get(['url', 'position', 'created_at', 'query'])
+                ->toArray();
+
+            foreach ($results as $result) {
+                $records[$date][$result->query][$lr][] = $result;
             }
         }
 
@@ -568,9 +571,9 @@ class MonitoringController extends Controller
                     }
                     foreach ($competitors as $competitor) {
                         foreach ($positions as $keyPos => $result) {
-                            $url = Common::domainFilter(parse_url($result['url'])['host']);
+                            $url = Common::domainFilter(parse_url($result->url)['host']);
                             if ($competitor === $url) {
-                                $results[$date][$competitor]['positions'][] = $result['position'];
+                                $results[$date][$competitor]['positions'][] = $result->position;
                                 continue 2;
                             } else if (array_key_last($positions) === $keyPos) {
                                 $results[$date][$competitor]['positions'][] = 101;

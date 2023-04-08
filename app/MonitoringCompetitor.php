@@ -2,10 +2,8 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -22,31 +20,23 @@ class MonitoringCompetitor extends Model
         $competitors = [];
 
         foreach ($engines as $engine) {
-//            DB::table('search_indices')
-//                ->where('lr', '=', $engine['lr'])
-//                ->whereIn('query', $keywords)
-//                ->where('position', '<=', 10)
-//                ->orderBy('id', 'desc')
-//                ->limit(count($keywords) * 10)
-//                ->pluck('query', 'url');
+            $results = DB::table('search_indices')
+                ->where('lr', '=', $engine['lr'])
+                ->whereIn('query', $keywords)
+                ->where('position', '<=', 10)
+                ->orderBy('id', 'desc')
+                ->limit(count($keywords) * 10)
+                ->get(['query', 'url'])
+                ->toArray();
 
-            foreach ($keywords as $keyword) {
-                $results = SearchIndex::where('lr', '=', $engine['lr'])
-                    ->where('query', $keyword)
-                    ->where('position', '<=', 10)
-                    ->orderBy('id', 'desc')
-                    ->limit(10)
-                    ->pluck('query', 'url');
-
-                foreach ($results as $url => $query) {
-                    $host = parse_url(Common::domainFilter($url))['host'];
-                    if (isset($request['targetDomain'])) {
-                        if ($host === $request['targetDomain']) {
-                            $competitors[$host]['urls'][$query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($url)];
-                        }
-                    } else {
-                        $competitors[$host]['urls'][$engine['engine']][$query][] = [$engine['location']['name'] => Common::domainFilter($url)];
+            foreach ($results as $result) {
+                $host = parse_url(Common::domainFilter($result->url))['host'];
+                if (isset($request['targetDomain'])) {
+                    if ($host === $request['targetDomain']) {
+                        $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                     }
+                } else {
+                    $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                 }
             }
         }

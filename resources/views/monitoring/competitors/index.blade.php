@@ -149,13 +149,7 @@
         </div>
     </div>
 
-    <h3 class="mt-3 mr-3">
-        {{  __('Project') . " $project->name" }}
-    </h3>
-
-    <h4>
-        Количество фраз: {{ $countQuery }}
-    </h4>
+    <h3 class="mt-5">Количество вождений в топ 10 у всех встреченных доменов</h3>
 
     <div class="d-flex justify-content-center align-items-center align-content-center">
         <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
