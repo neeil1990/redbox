@@ -4,6 +4,8 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -27,6 +29,14 @@ class MonitoringCompetitor extends Model
                     ->orderBy('created_at', 'asc')
                     ->limit(10)
                     ->pluck('query', 'url');
+
+//                $results = DB::table('search_indices')
+//                    ->where('lr', '=', $engine['lr'])
+//                    ->whereIn('query', $keywords)
+//                    ->where('position', '<=', 10)
+//                    ->orderBy('id', 'desc')
+//                    ->limit(count($keywords) * 10)
+//                    ->pluck('query', 'url');
 
                 foreach ($results as $url => $query) {
                     $host = parse_url(Common::domainFilter($url))['host'];

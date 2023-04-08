@@ -166,8 +166,6 @@ class MonitoringController extends Controller
         $user = $this->user;
         $tariff = $user->tariff()->getAsArray();
 
-        dd($tariff);
-
         $project = $user->monitoringProjects()->find($project_id);
         $engines = $project->searchengines()->with('location')->get();
         $section = $project->groups()->find($group_id);

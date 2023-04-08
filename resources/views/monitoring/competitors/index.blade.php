@@ -571,7 +571,7 @@
                 let domains = []
 
                 $.each($('#table > tbody > tr > td:nth-child(4)'), function (k, v) {
-                    if ($(this).parent('tr').eq(0).children('td').eq(0).children('input').length !== 0 &&!$(this).parent('tr').eq(0).children('td').eq(0).children('input').eq(0).is(':checked')) {
+                    if ($(this).parent('tr').eq(0).children('td').eq(0).children('input').length !== 0 && !$(this).parent('tr').eq(0).children('td').eq(0).children('input').eq(0).is(':checked')) {
                         domains[$(this).attr('data-action')] = Number($(this).attr('data-order'))
                     }
                 })
