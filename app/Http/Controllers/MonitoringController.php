@@ -530,68 +530,77 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $project = MonitoringProject::findOrFail($request->projectId);
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
-        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
-        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
-        array_unshift($competitors, $project->url);
+        try {
+            $project = MonitoringProject::findOrFail($request->projectId);
+            $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
+            $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+            $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+            array_unshift($competitors, $project->url);
 
-        $records = [];
-        $results = [];
+            $records = [];
+            $results = [];
 
-        $range = explode(' - ', $request->dateRange);
-        $period = CarbonPeriod::create($range[0], $range[1]);
-        $dates = [];
+            $range = explode(' - ', $request->dateRange);
+            $period = CarbonPeriod::create($range[0], $range[1]);
+            $dates = [];
 
-        foreach ($period as $date) {
-            $dates[] = $date->format('Y-m-d');
-        }
-
-        foreach ($dates as $date) {
-            $results = DB::table('search_indices')
-                ->where('created_at', 'like', "%$date%")
-                ->where('lr', '=', $lr)
-                ->whereIn('query', $keywords)
-                ->where('position', '<=', 100)
-                ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100)
-                ->get(['url', 'position', 'created_at', 'query'])
-                ->toArray();
-
-            foreach ($results as $result) {
-                $records[$date][$result->query][$lr][] = $result;
+            foreach ($period as $date) {
+                $dates[] = $date->format('Y-m-d');
             }
-        }
 
-        foreach ($records as $date => $queries) {
-            foreach ($queries as $lrs) {
-                foreach ($lrs as $positions) {
-                    if (count($positions) === 0) {
-                        continue;
-                    }
-                    foreach ($competitors as $competitor) {
-                        foreach ($positions as $keyPos => $result) {
-                            $url = Common::domainFilter(parse_url($result->url)['host']);
-                            if ($competitor === $url) {
-                                $results[$date][$competitor]['positions'][] = $result->position;
-                                continue 2;
-                            } else if (array_key_last($positions) === $keyPos) {
-                                $results[$date][$competitor]['positions'][] = 101;
+            foreach ($dates as $date) {
+                $results = DB::table('search_indices')
+                    ->where('created_at', 'like', "%$date%")
+                    ->where('lr', '=', $lr)
+                    ->whereIn('query', $keywords)
+                    ->where('position', '<=', 100)
+                    ->orderBy('id', 'desc')
+                    ->limit(count($keywords) * 100)
+                    ->get(['url', 'position', 'created_at', 'query'])
+                    ->toArray();
+
+                foreach ($results as $result) {
+                    $records[$date][$result->query][$lr][] = $result;
+                }
+            }
+
+            foreach ($records as $date => $queries) {
+                foreach ($queries as $lrs) {
+                    foreach ($lrs as $positions) {
+                        if (count($positions) === 0) {
+                            continue;
+                        }
+                        foreach ($competitors as $competitor) {
+                            foreach ($positions as $keyPos => $result) {
+                                $url = Common::domainFilter(parse_url($result->url)['host']);
+                                if ($competitor === $url) {
+                                    $results[$date][$competitor]['positions'][] = $result->position;
+                                    continue 2;
+                                } else if (array_key_last($positions) === $keyPos) {
+                                    $results[$date][$competitor]['positions'][] = 101;
+                                }
                             }
                         }
                     }
                 }
             }
+
+            foreach ($results as $date => $result) {
+                foreach ($result as $domain => $data) {
+                    $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
+                    $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
+                    $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
+                    $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::debug('monitoring date error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
         }
 
-        foreach ($results as $date => $result) {
-            foreach ($result as $domain => $data) {
-                $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
-                $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
-                $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
-                $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
-            }
-        }
 
         return response()->json([
             'data' => array_reverse($results)
