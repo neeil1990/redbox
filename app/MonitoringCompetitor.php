@@ -96,8 +96,14 @@ class MonitoringCompetitor extends Model
         return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
     }
 
-    public static function calculateStatistics($keywords, $competitors, $engine): array
+    public static function calculateStatistics(array $request): array
     {
+        $project = MonitoringProject::findOrFail($request['projectId']);
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id', 'query'])->toArray();
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+        $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
+        array_unshift($competitors, $project->url);
+
         $visibilityArray = [];
         $array = [];
         foreach ($keywords as $keyword) {
@@ -106,37 +112,38 @@ class MonitoringCompetitor extends Model
             }
         }
 
-        foreach ($keywords as $keyword) {
-            $records = SearchIndex::where('query', $keyword['query'])
-                ->where('lr', $engine['lr'])
-                ->orderBy('created_at', 'desc')
-                ->limit(100)
-                ->get(['url', 'position', 'created_at', 'query'])
-                ->toArray();
+        $keywords = array_column($keywords, 'query');
+        $countKeyWords = count($keywords);
 
-            foreach ($records as $record) {
-                $url = Common::domainFilter(parse_url($record['url'])['host']);
-                if (in_array($url, $competitors) && $visibilityArray[$keyword['query']][$url] === 0) {
-                    $visibilityArray[$keyword['query']][$url] = $record['position'];
-                }
+        $records = SearchIndex::whereIn('query', $keywords)
+            ->where('lr', $engine['lr'])
+            ->orderBy('created_at', 'desc')
+            ->limit($countKeyWords * 100)
+            ->get(['url', 'position', 'created_at', 'query'])
+            ->toArray();
+
+        foreach ($records as $record) {
+            $url = Common::domainFilter(parse_url($record['url'])['host']);
+            if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
+                $visibilityArray[$record['query']][$url] = $record['position'];
             }
+        }
 
-            foreach ($competitors as $competitor) {
-                foreach ($records as $key => $record) {
-                    $url = Common::domainFilter(parse_url($record['url'])['host']);
-                    if ($url === $competitor) {
-                        $array[$competitor]['positions'][$keyword['query']] = $record['position'];
+        foreach ($competitors as $competitor) {
+            foreach ($records as $key => $record) {
+                $url = Common::domainFilter(parse_url($record['url'])['host']);
+                if ($url === $competitor) {
+                    $array[$competitor]['positions'][$record['query']] = $record['position'];
 
-                        continue 2;
-                    } else if (array_key_last($records) === $key) {
-                        $array[$competitor]['positions'][$keyword['query']] = 101;
-                    }
+                    continue 2;
+                } else if (array_key_last($records) === $key) {
+                    $array[$competitor]['positions'][$record['query']] = 101;
                 }
             }
         }
 
         foreach ($array as $key => $item) {
-            $array[$key]['avg'] = round(array_sum($item['positions']) / count($keywords), 2);
+            $array[$key]['avg'] = round(array_sum($item['positions']) / $countKeyWords, 2);
             $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
