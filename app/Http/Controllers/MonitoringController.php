@@ -531,9 +531,6 @@ class MonitoringController extends Controller
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
         array_unshift($competitors, $project->url);
 
-        $records = [];
-        $results = [];
-
         $range = explode(' - ', $request->dateRange);
         $period = CarbonPeriod::create($range[0], $range[1]);
         $dates = [];
@@ -541,6 +538,8 @@ class MonitoringController extends Controller
         foreach ($period as $date) {
             $dates[] = $date->format('Y-m-d');
         }
+
+        $records = [];
 
         foreach ($dates as $date) {
             $results = DB::table('search_indices')
@@ -558,6 +557,8 @@ class MonitoringController extends Controller
             }
         }
 
+        $response = [];
+
         foreach ($records as $date => $queries) {
             foreach ($queries as $lrs) {
                 foreach ($lrs as $positions) {
@@ -568,10 +569,10 @@ class MonitoringController extends Controller
                         foreach ($positions as $keyPos => $result) {
                             $url = Common::domainFilter(parse_url($result->url)['host']);
                             if ($competitor === $url) {
-                                $results[$date][$competitor]['positions'][] = $result->position;
+                                $response[$date][$competitor]['positions'][] = $result->position;
                                 continue 2;
                             } else if (array_key_last($positions) === $keyPos) {
-                                $results[$date][$competitor]['positions'][] = 101;
+                                $response[$date][$competitor]['positions'][] = 101;
                             }
                         }
                     }
@@ -579,17 +580,17 @@ class MonitoringController extends Controller
             }
         }
 
-        foreach ($results as $date => $result) {
+        foreach ($response as $date => $result) {
             foreach ($result as $domain => $data) {
-                    $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
-                    $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
-                    $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
-                    $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
+                    $response[$date][$domain]['avg'] = max(round(array_sum($data['positions']) / count($keywords), 2), 1);
+                    $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
+                    $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
+                    $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
             }
         }
 
         return response()->json([
-            'data' => array_reverse($results)
+            'data' => array_reverse($response)
         ]);
     }
 }
