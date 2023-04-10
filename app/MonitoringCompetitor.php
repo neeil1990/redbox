@@ -143,7 +143,7 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($array as $key => $item) {
-            $array[$key]['avg'] = max(round(array_sum($item['positions']) / $countKeyWords, 2), 1);
+            $array[$key]['avg'] = round(array_sum($item['positions']) / $countKeyWords, 2);
             $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
