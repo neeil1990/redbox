@@ -192,48 +192,50 @@
         </div>
     </div>
 
-    <h3 class="mt-3">Изменения по топу и дате</h3>
-    <div class="card mt-3">
-        <div class="card-header d-flex">
-            <div class="w-25">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
+    <div id="dateRange" style="display: none">
+        <h3 class="mt-3">Изменения по топу и дате</h3>
+        <div class="card mt-3">
+            <div class="card-header d-flex">
+                <div class="w-25">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
                           <span class="input-group-text">
                             <i class="far fa-calendar-alt"></i>
                           </span>
+                            </div>
+                            <input type="text" class="form-control float-right" id="date-range">
                         </div>
-                        <input type="text" class="form-control float-right" id="date-range">
                     </div>
                 </div>
+                <div>
+                    <button id="competitors-history-positions" class="btn btn-default ml-3">
+                        {{ __('show') }}
+                    </button>
+                </div>
             </div>
-            <div>
-                <button id="competitors-history-positions" class="btn btn-default ml-3">
-                    {{ __('show') }}
-                </button>
-            </div>
-        </div>
-        <div class="card-body" id="history-block">
-            <div class="mb-2 btn-group" id="visibility-buttons" style="display: none">
-                <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
-                    Домен
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    Средняя позиция
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    Топ 3
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    Топ 10
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    Топ 100
-                </button>
-            </div>
-            <div class="d-flex justify-content-center align-items-center align-content-center">
-                <img src="/img/1485.gif" style="width: 50px; height: 50px; display: none" id="preloader-history"
-                     class="mt-3 mb-3">
+            <div class="card-body" id="history-block">
+                <div class="mb-2 btn-group" id="visibility-buttons" style="display: none">
+                    <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
+                        Домен
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        Средняя позиция
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        Топ 3
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        Топ 10
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        Топ 100
+                    </button>
+                </div>
+                <div class="d-flex justify-content-center align-items-center align-content-center">
+                    <img src="/img/1485.gif" style="width: 50px; height: 50px; display: none" id="preloader-history"
+                         class="mt-3 mb-3">
+                </div>
             </div>
         </div>
     </div>
@@ -309,6 +311,8 @@
                         },
                     });
                 })
+
+                $('#dateRange').show()
             })
 
             function renderTableHead(data) {
