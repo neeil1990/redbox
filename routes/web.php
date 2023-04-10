@@ -445,6 +445,7 @@ Route::get('/test', function () {
         }
     }
 
+    dd($results);
     foreach ($results as $date => $result) {
         foreach ($result as $domain => $data) {
             $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
