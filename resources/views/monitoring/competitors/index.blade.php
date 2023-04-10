@@ -180,7 +180,6 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
 
         <script>
-            let table
             let data = {
                 '_token': $('meta[name="csrf-token"]').attr('content'),
                 'projectId': {{ $project->id }},
@@ -256,18 +255,25 @@
                 })
 
                 $('#searchCompetitors').on('click', function () {
-                    let competitors = getMaxValues()
+                    let table = $('#table').DataTable()
+                    table.on('draw.dt', function() {
+                        let competitors = getMaxValues()
 
-                    let textAreaText = ''
-                    let competitorsList = ''
+                        let textAreaText = ''
+                        let competitorsList = ''
 
-                    for (let i = 0; i < competitors.length; i++) {
-                        textAreaText += competitors[i][0] + "\n"
-                        competitorsList += "<div>" + competitors[i][0] + ": " + competitors[i][1] + "</div>"
-                    }
+                        for (let i = 0; i < competitors.length; i++) {
+                            textAreaText += competitors[i][0] + "\n"
+                            competitorsList += "<div>" + competitors[i][0] + ": " + competitors[i][1] + "</div>"
+                        }
 
-                    $('#competitors-textarea').text(textAreaText)
-                    $('#competitors-list').html(competitorsList)
+                        $('#competitors-textarea').text(textAreaText)
+                        $('#competitors-list').html(competitorsList)
+
+                        table.off('draw.dt');
+                    });
+
+                    table.order([3, 'desc']).draw();
                 })
 
                 $('#add-competitors').on('click', function () {
@@ -355,7 +361,7 @@
                         '</tr>')
                 })
 
-                table = $('#table').DataTable({
+                $('#table').DataTable({
                     "order": [[1, 'asc']],
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
