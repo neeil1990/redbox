@@ -669,7 +669,6 @@
                         'region': $('#searchEngines').val(),
                     },
                     success: function (response) {
-                        console.log(response)
                         renderTableHead(response.visibility)
                         renderTableBody(response.visibility)
                         table = initTable()
@@ -760,6 +759,8 @@
                             },
                         },
                     })
+
+                    $('#history-results').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
 
                     $.each($('#history-results > tbody > tr'), function (k, v) {
                         for (let j = 0; j < 4; j++) {
