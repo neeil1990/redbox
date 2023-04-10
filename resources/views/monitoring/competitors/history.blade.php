@@ -669,6 +669,7 @@
                         'region': $('#searchEngines').val(),
                     },
                     success: function (response) {
+                        console.log(response)
                         renderTableHead(response.visibility)
                         renderTableBody(response.visibility)
                         table = initTable()

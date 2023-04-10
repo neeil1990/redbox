@@ -105,7 +105,6 @@ class MonitoringCompetitor extends Model
         array_unshift($competitors, $project->url);
 
         $visibilityArray = [];
-        $array = [];
         foreach ($keywords as $keyword) {
             foreach ($competitors as $competitor) {
                 $visibilityArray[$keyword['query']][$competitor] = 0;
@@ -129,29 +128,23 @@ class MonitoringCompetitor extends Model
             }
         }
 
-        foreach ($competitors as $competitor) {
-            foreach ($records as $key => $record) {
-                $url = Common::domainFilter(parse_url($record['url'])['host']);
-                if ($url === $competitor) {
-                    $array[$competitor]['positions'][$record['query']] = $record['position'];
-
-                    continue 2;
-                } else if (array_key_last($records) === $key) {
-                    $array[$competitor]['positions'][$record['query']] = 101;
-                }
+        $competitorStatistics = [];
+        foreach ($visibilityArray as $query => $positions) {
+            foreach ($competitors as $competitor) {
+                $competitorStatistics[$competitor]['positions'][$query] = $positions[$competitor] === 0 ? 101 : $positions[$competitor];
             }
         }
 
-        foreach ($array as $key => $item) {
-            $array[$key]['avg'] = round(array_sum($item['positions']) / $countKeyWords, 2);
-            $array[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
-            $array[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
-            $array[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
+        foreach ($competitorStatistics as $key => $item) {
+            $competitorStatistics[$key]['avg'] = round(array_sum($item['positions']) / $countKeyWords, 2);
+            $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
+            $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
+            $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
         }
 
         return [
             'visibility' => $visibilityArray,
-            'statistics' => $array
+            'statistics' => $competitorStatistics
         ];
     }
 }

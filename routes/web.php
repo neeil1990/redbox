@@ -388,3 +388,50 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
+Route::get('/test', function () {
+    $project = MonitoringProject::findOrFail(177);
+    $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id', 'query'])->toArray();
+    $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+    $engine = MonitoringSearchengine::where('id', '=', 276)->first(['lr'])->toArray();
+    array_unshift($competitors, $project->url);
+
+    $visibilityArray = [];
+    foreach ($keywords as $keyword) {
+        foreach ($competitors as $competitor) {
+            $visibilityArray[$keyword['query']][$competitor] = 0;
+        }
+    }
+
+    $keywords = array_column($keywords, 'query');
+    $countKeyWords = count($keywords);
+
+    $records = SearchIndex::whereIn('query', $keywords)
+        ->where('lr', $engine['lr'])
+        ->orderBy('created_at', 'desc')
+        ->limit($countKeyWords * 100)
+        ->get(['url', 'position', 'created_at', 'query'])
+        ->toArray();
+
+    foreach ($records as $record) {
+        $url = Common::domainFilter(parse_url($record['url'])['host']);
+        if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
+            $visibilityArray[$record['query']][$url] = $record['position'];
+        }
+    }
+
+    $competitorPositions = [];
+    foreach ($visibilityArray as $query => $positions) {
+        foreach ($competitors as $competitor) {
+            $competitorPositions[$competitor]['positions'][$query] = $positions[$competitor] === 0 ? 101 : $positions[$competitor];
+        }
+    }
+
+    foreach ($competitorPositions as $key => $item) {
+        $competitorPositions[$key]['avg'] = round(array_sum($item['positions']) / $countKeyWords, 2);
+        $competitorPositions[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
+        $competitorPositions[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
+        $competitorPositions[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
+    }
+
+    dd($competitorPositions);
+});
