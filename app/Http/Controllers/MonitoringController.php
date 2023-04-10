@@ -579,23 +579,18 @@ class MonitoringController extends Controller
             }
         }
 
-        try {
-            foreach ($results as $date => $result) {
-                foreach ($result as $domain => $data) {
+        foreach ($results as $date => $result) {
+            foreach ($result as $domain => $data) {
+                try {
                     $results[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
                     $results[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
                     $results[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
                     $results[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
-                }
-            }
-        } catch (\Throwable $e){
-            dump($result);
-            dump($data);
+                } catch (\Throwable $e) {
 
-            Log::debug('error message', [
-                'result' => $result,
-                'data' => $data
-            ]);
+                }
+
+            }
         }
 
 
