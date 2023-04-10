@@ -89,7 +89,7 @@ class DomainMonitoringController extends Controller
             $project = DomainMonitoring::findOrFail($id);
             DomainMonitoring::httpCheck($project);
         } catch (Exception $exception) {
-            flash()->overlay(__('Error'), ' ')->success();
+            flash()->overlay(__('Error'), ' ')->error();
         }
 
         return Redirect::back();

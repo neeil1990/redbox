@@ -118,9 +118,11 @@ class DomainMonitoring extends Model
 
         DomainMonitoring::calculateTotalTimeLastBreakdown($project, $oldState);
         DomainMonitoring::calculateUpTime($project);
-        DomainMonitoring::sendNotifications($project, $oldState);
         $project->last_check = Carbon::now();
         $project->save();
+
+        DomainMonitoring::sendNotifications($project, $oldState);
+
     }
 
     public static function curlInit($project): ?array
