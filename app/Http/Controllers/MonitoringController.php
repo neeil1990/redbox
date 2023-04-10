@@ -532,29 +532,23 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project->url);
 
         $range = explode(' - ', $request->dateRange);
-        $period = CarbonPeriod::create($range[0], $range[1]);
-        $dates = [];
-
-        foreach ($period as $date) {
-            $dates[] = $date->format('Y-m-d');
-        }
+        $countDays = count(CarbonPeriod::create($range[0], $range[1]));
 
         $records = [];
+        $results = DB::table('search_indices')
+            ->whereBetween('created_at', [
+                date('Y-m-d H:i:s', strtotime($range[0] . ' 00:00:00')),
+                date('Y-m-d H:i:s', strtotime($range[1] . ' 23:59:59'))
+            ])
+            ->where('lr', '=', $lr)
+            ->whereIn('query', $keywords)
+            ->where('position', '<=', 100)
+            ->orderBy('id', 'desc')
+            ->limit(count($keywords) * $countDays * 100)
+            ->get(['url', 'position', 'created_at', 'query']);
 
-        foreach ($dates as $date) {
-            $results = DB::table('search_indices')
-                ->where('created_at', 'like', "%$date%")
-                ->where('lr', '=', $lr)
-                ->whereIn('query', $keywords)
-                ->where('position', '<=', 100)
-                ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100)
-                ->get(['url', 'position', 'created_at', 'query'])
-                ->toArray();
-
-            foreach ($results as $result) {
-                $records[$date][$result->query][$lr][] = $result;
-            }
+        foreach ($results as $result) {
+            $records[explode(' ', $result->created_at)[0]][$result->query][$lr][] = $result;
         }
 
         $response = [];
@@ -582,10 +576,10 @@ class MonitoringController extends Controller
 
         foreach ($response as $date => $result) {
             foreach ($result as $domain => $data) {
-                    $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
-                    $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
-                    $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
-                    $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
+                $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
+                $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
+                $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
+                $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
             }
         }
 
