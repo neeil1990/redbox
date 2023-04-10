@@ -390,7 +390,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $project = MonitoringProject::findOrFail(177);
+    $project = MonitoringProject::findOrFail(91);
     $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
     $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
     $lr = MonitoringSearchengine::where('id', '=', 138)->pluck('lr')->toArray()[0];
