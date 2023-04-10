@@ -39,6 +39,9 @@
                 background-color: rgb(251, 225, 223);
             }
 
+            #history-results > tbody > tr > td {
+                min-width: 75px;
+            }
         </style>
     @endslot
 

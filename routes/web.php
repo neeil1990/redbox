@@ -22,6 +22,8 @@ use App\ProjectRelevanceThough;
 use App\SearchIndex;
 use App\TextAnalyzer;
 use App\User;
+use App\VisitStatistic;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +59,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
     Route::get('/visit-statistics/{user}', 'UsersController@visitStatistics')->name('visit.statistics');
+    Route::get('/get-data-range-visit-statistics/{user}', 'UsersController@getDateRangeVisitStatistics')->name('visit.statistics.date.range');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::resource('users', 'UsersController');
 
