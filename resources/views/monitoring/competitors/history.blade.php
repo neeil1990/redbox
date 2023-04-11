@@ -39,6 +39,9 @@
                 background-color: rgb(251, 225, 223);
             }
 
+            #history-results > tbody > tr > td {
+                min-width: 75px;
+            }
         </style>
     @endslot
 
@@ -200,18 +203,17 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                          <span class="input-group-text">
-                            <i class="far fa-calendar-alt"></i>
-                          </span>
+                              <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                              </span>
                             </div>
-                            <input type="text" class="form-control float-right" id="date-range">
+                            <input type="text" class="form-control" id="date-range">
+                            <button id="competitors-history-positions" class="btn btn-default"
+                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0">
+                                {{ __('show') }}
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <button id="competitors-history-positions" class="btn btn-default ml-3">
-                        {{ __('show') }}
-                    </button>
                 </div>
             </div>
             <div class="card-body" id="history-block">
@@ -765,8 +767,8 @@
                     $.each($('#history-results > tbody > tr'), function (k, v) {
                         for (let j = 0; j < 4; j++) {
                             let res = length * j
-                            let bool = j >= 1
-                            colorCells($(this), 1 + res, 2 + res, length * (j + 1), bool)
+                            let bool = j === 0
+                            colorCells($(this), 1 + res, length * (j + 1), bool)
                         }
                     })
 
@@ -791,38 +793,33 @@
                 }
             }
 
-            function colorCells(elem, start, secondStart, end, inverse) {
-                let iterator = start
-                for (let i = secondStart; i <= end; i++) {
-                    let element = elem.children('td').eq(iterator)
-                    let first = Number(element.text())
-                    let second = Number(elem.children('td').eq(i).text())
+            function colorCells(elem, start, end, inverse) {
+                for (let i = end; i > start; i--) {
+                    let targetElement = elem.children('td').eq(i)
+                    let beforeElement = elem.children('td').eq(i - 1)
 
-                    let result = String(first - second).substring(0, 5)
+                    let result = Number(targetElement.text()) - Number(beforeElement.text())
+                    if (result !== 0) {
 
-                    if (inverse) {
-                        if (result > 0) {
-                            element.addClass('grow-color')
-                            result = '+' + result
-                            element.text(first + '(' + result + ')')
-
-                        } else if (result < 0) {
-                            element.addClass('shrink-color')
-                            element.text(first + '(' + result + ')')
-                        }
-                    } else {
-                        if (result < 0) {
-                            element.addClass('grow-color')
-                            element.text(first + '(' + result + ')')
-
-                        } else if (result > 0) {
-                            element.addClass('shrink-color')
-                            result = '+' + result
-                            element.text(first + '(' + result + ')')
+                        let substring = String(result).substring(0, 5)
+                        if (inverse) {
+                            if (result > 0) {
+                                targetElement.addClass('shrink-color')
+                                targetElement.text(targetElement.text() + ' (+' + substring + ')')
+                            } else {
+                                targetElement.addClass('grow-color')
+                                targetElement.text(targetElement.text() + ' (' + substring + ')')
+                            }
+                        } else {
+                            if (result > 0) {
+                                targetElement.addClass('grow-color')
+                                targetElement.text(targetElement.text() + ' (+' + substring + ')')
+                            } else {
+                                targetElement.addClass('shrink-color')
+                                targetElement.text(targetElement.text() + ' (' + substring + ')')
+                            }
                         }
                     }
-
-                    iterator++;
                 }
             }
 

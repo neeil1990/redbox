@@ -6,15 +6,10 @@
             }
         </style>
     @endslot
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div>
-        <h2>{{__("Enter text")}}</h2>
+        <h3>{{__("Enter text")}}</h3>
         <form>
-            <textarea name="text"
-                      class="form-control col-12"
-                      id="text"
-                      rows="10"
-                      required></textarea>
+            <textarea name="text" class="form-control col-12" id="text" rows="10" required></textarea>
             <br>
             <input class="btn btn-secondary mr-2" type="button" value="{{__('Calculate')}}">
             <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
