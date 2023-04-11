@@ -286,6 +286,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     Route::resource('monitoring', 'MonitoringController');
+
+    Route::get('/monitoring/{id}/count', 'MonitoringController@getCountProject');
+
     Route::post('/monitoring/add-competitor', 'MonitoringController@addCompetitor')->name('monitoring.add.competitor');
     Route::post('/monitoring/add-competitors', 'MonitoringController@addCompetitors')->name('monitoring.add.competitors');
     Route::post('/monitoring/remove-competitor', 'MonitoringController@removeCompetitor')->name('monitoring.remove.competitor');
