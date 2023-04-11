@@ -80,7 +80,7 @@
                                 <i class="fas fa-pencil-alt"></i>
                                 {{ __('Edit') }}
                             </a>
-                            <a class="btn btn-info btn-sm" href="{{ route('visit.statistics', $user->id) }}">
+                            <a class="btn btn-info btn-sm" href="{{ route('visit.statistics', $user->id) }}" target="_blank">
                                 <i class="fas fa-chart-pie"></i>
                                 Статистика посещений
                             </a>
