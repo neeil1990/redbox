@@ -1,28 +1,29 @@
 @component('component.card', ['title' =>  'Статистика пользователя '. $user->email ])
-    @slot('css')
-        <!-- Toastr -->
-        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
-        <!-- DataTables -->
-        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
-
-        <!-- daterange picker -->
-        <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
-
-        <style>
-            .exist-position {
-                color: #28a745 !important;
-                font-weight: bold;
-            }
-
-            #actions-table_wrapper {
-                width: 75%;
-            }
-        </style>
-    @endslot
     @if(count($summedCollection) > 0)
+        @slot('css')
+            <!-- Toastr -->
+            <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+            <!-- DataTables -->
+            <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+            <link rel="stylesheet"
+                  href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+
+            <!-- daterange picker -->
+            <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
+
+            <style>
+                .exist-position {
+                    color: #28a745 !important;
+                    font-weight: bold;
+                }
+
+                #actions-table_wrapper {
+                    width: 75%;
+                }
+            </style>
+        @endslot
         <div class="d-flex flex-column">
             <div class="d-flex w-100">
                 <div class="col-8">
@@ -100,11 +101,7 @@
                     </div>
                 </div>
             </div>
-        @else
-                Нет данных
-            @endif
         </div>
-
         @slot('js')
             <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
             <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
@@ -210,226 +207,227 @@
                     })
                 });
             </script>
-            @if(count($summedCollection) > 0)
-                <!-- datatables -->
-                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-                <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+            <!-- datatables -->
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 
-                <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
-                <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
-                <script>
-                    $(document).ready(function () {
-                        $('#table').DataTable({
-                            "order": [[1, 'desc']],
-                            lengthMenu: [10, 25, 50, 100],
-                            pageLength: 10,
-                            language: {
-                                lengthMenu: "_MENU_",
-                                search: "_INPUT_",
-                                searchPlaceholder: "{{ __('Search') }}",
-                                paginate: {
-                                    "first": "«",
-                                    "last": "»",
-                                    "next": "»",
-                                    "previous": "«"
-                                },
+            <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#table').DataTable({
+                        "order": [[1, 'desc']],
+                        lengthMenu: [10, 25, 50, 100],
+                        pageLength: 10,
+                        language: {
+                            lengthMenu: "_MENU_",
+                            search: "_INPUT_",
+                            searchPlaceholder: "{{ __('Search') }}",
+                            paginate: {
+                                "first": "«",
+                                "last": "»",
+                                "next": "»",
+                                "previous": "«"
                             },
-                        })
-                    })
-                </script>
-
-                <!-- Charts -->
-                <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
-
-                <script>
-                    let historyChart
-                    let labels = [];
-                    let colors = []
-                    let colorsArray = getColorArray()
-                    for (let i = 0; i < {{ count($summedCollection) }}; i++) {
-                        colors.push(colorsArray.shift())
-                    }
-
-                    new Chart(document.getElementById("doughnut-chart"), {
-                        type: 'doughnut',
-                        data: {
-                            labels: {!! $labels !!},
-                            datasets: [
-                                {
-                                    backgroundColor: colors,
-                                    data: {!! $counters !!}
-                                }
-                            ]
                         },
-                        options: {
-                            title: {
-                                display: false,
+                    })
+                })
+            </script>
+
+            <!-- Charts -->
+            <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
+
+            <script>
+                let historyChart
+                let labels = [];
+                let colors = []
+                let colorsArray = getColorArray()
+                for (let i = 0; i < {{ count($summedCollection) }}; i++) {
+                    colors.push(colorsArray.shift())
+                }
+
+                new Chart(document.getElementById("doughnut-chart"), {
+                    type: 'doughnut',
+                    data: {
+                        labels: {!! $labels !!},
+                        datasets: [
+                            {
+                                backgroundColor: colors,
+                                data: {!! $counters !!}
                             }
+                        ]
+                    },
+                    options: {
+                        title: {
+                            display: false,
+                        }
+                    }
+                });
+
+                $('#show-actions').on('click', function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/user-actions-history",
+                        data: {
+                            dateRange: $('#date-range').val(),
+                        },
+                        success: function (response) {
+                            let doughnutLabels = []
+                            let targetBody = $('#history-actions-tbody')
+                            let counters = response.counters;
+                            let labels = response.labels;
+                            let trs = ''
+
+                            if (counters.length > 0) {
+                                if ($.fn.DataTable.fnIsDataTable($('#actions-table'))) {
+                                    $('#actions-table').dataTable().fnDestroy();
+                                    targetBody.html('')
+                                }
+
+                                let iterator = 0;
+
+                                $.each(labels, function (link, name) {
+                                    doughnutLabels.push(name)
+                                    trs += '<tr>' +
+                                        '<td class="border">' +
+                                        '    <a href="' + link + '" target="_blank">' + name + '</a>' +
+                                        '</td>' +
+                                        '<td class="border">' + counters[iterator] + '</td>' +
+                                        '<tr>'
+                                    iterator++;
+                                })
+                                targetBody.append(trs)
+
+                                $('#history-actions-tbody tr').each(function () {
+                                    if (!$.trim($(this).text())) $(this).remove();
+                                });
+
+                                $('#actions-table').DataTable({
+                                    "order": [[1, 'desc']],
+                                    lengthMenu: [10, 25, 50, 100],
+                                    pageLength: 10,
+                                    language: {
+                                        lengthMenu: "_MENU_",
+                                        search: "_INPUT_",
+                                        searchPlaceholder: "{{ __('Search') }}",
+                                        paginate: {
+                                            "first": "«",
+                                            "last": "»",
+                                            "next": "»",
+                                            "previous": "«"
+                                        },
+                                    },
+                                })
+
+
+                                try {
+                                    historyChart.destroy()
+                                } catch (e) {
+
+                                }
+
+                                historyChart = new Chart(document.getElementById("history-doughnut-chart"), {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: doughnutLabels,
+                                        datasets: [
+                                            {
+                                                backgroundColor: colors,
+                                                data: counters
+                                            }
+                                        ]
+                                    },
+                                    options: {
+                                        title: {
+                                            display: false,
+                                        }
+                                    }
+                                });
+                            } else {
+                                targetBody.append(
+                                    '<tr>' +
+                                    '<td>Нет данных</td>' +
+                                    '<td>Нет данных</td>' +
+                                    '</tr>')
+
+                                try {
+                                    historyChart.destroy()
+                                } catch (e) {
+
+                                }
+                            }
+
+                            $('#history-actions').show()
+
                         }
                     });
+                })
 
-                    $('#show-actions').on('click', function () {
-                        $.ajax({
-                            type: "POST",
-                            url: "/user-actions-history",
-                            data: {
-                                dateRange: $('#date-range').val(),
-                            },
-                            success: function (response) {
-                                let doughnutLabels = []
-                                let targetBody = $('#history-actions-tbody')
-                                let counters = response.counters;
-                                let labels = response.labels;
-                                let trs = ''
+                function getColorArray() {
+                    let colorArray = [
+                        "rgba(220, 51, 10, 0.6)",
+                        "rgb(203,60,25)",
+                        "rgba(121, 25, 6, 1)",
+                        "rgba(214, 96, 110, 0.6)",
+                        "rgba(214, 96, 110, 1)",
+                        "rgba(252, 170, 153, 0.6)",
+                        "rgba(252, 170, 153, 1)",
+                        "rgba(214, 2, 86, 0.6)",
+                        "rgba(214, 2, 86, 1)",
+                        "rgba(147,50,88, 1)",
+                        "rgba(247, 220, 163, 1)",
+                        "rgba(204, 118, 32, 0.6)",
+                        "rgba(204, 118, 32, 1)",
+                        "rgba(255,89,0,0.6)",
+                        "rgba(255, 89, 0, 1)",
+                        "rgba(164, 58 ,1, 1)",
+                        "rgba(73, 28, 1, 0.6)",
+                        "rgba(178, 135, 33, 0.6)",
+                        "rgba(178, 135, 33, 1)",
+                        "rgba(246, 223, 78, 1)",
+                        "rgba(1, 253, 215, 0.6)",
+                        "rgba(1, 253, 215, 1)",
+                        "rgba(1, 148, 130, 0.6)",
+                        "rgba(1, 79, 66, 0.6)",
+                        "rgba(139, 150, 24, 0.6)",
+                        "rgba(154, 205, 50, 0.6)",
+                        "rgba(154, 205, 50, 1)",
+                        "rgb(17, 255, 0)",
+                        "rgba(151, 186, 229, 1)",
+                        "rgba(0, 69, 255, 0.6)",
+                        "rgba(0, 69, 255, 1)",
+                        "rgba(1, 45, 152, 0.6)",
+                        "rgba(157, 149, 226, 1)",
+                        "rgba(6, 136, 165, 0.6)",
+                        "rgba(64, 97, 206, 1)",
+                        "rgba(19,212,224, 0.6)",
+                        "rgba(19,212,224, 1)",
+                        "rgba(2, 97, 214, 0.6)",
+                        "rgba(159, 112, 216, 0.6)",
+                        "rgba(239, 50, 223, 0.6)",
+                        "rgba(239, 50, 223, 1)",
+                        "rgba(209, 46, 127, 0.6)",
+                        "rgba(209, 46, 127, 1)",
+                        "rgba(194, 85, 237, 1)",
+                        "rgba(252, 194, 243, 1)",
+                        "rgba(244, 139, 200, 0.6)",
+                        "rgba(244, 139, 200, 1)",
+                        "rgba(87, 64, 64, 0.6)",
+                        "rgba(239, 211, 211, 0.6)",
+                        "rgba(163, 209, 234, 0.6)",
+                        "rgba(234,163,163,0.6)",
+                        "rgba(232,194,90,0.6)",
+                    ]
 
-                                if (counters.length > 0) {
-                                    if ($.fn.DataTable.fnIsDataTable($('#actions-table'))) {
-                                        $('#actions-table').dataTable().fnDestroy();
-                                        targetBody.html('')
-                                    }
-
-                                    let iterator = 0;
-
-                                    $.each(labels, function (link, name) {
-                                        doughnutLabels.push(name)
-                                        trs += '<tr>' +
-                                            '<td class="border">' +
-                                            '    <a href="' + link + '" target="_blank">' + name + '</a>' +
-                                            '</td>' +
-                                            '<td class="border">' + counters[iterator] + '</td>' +
-                                            '<tr>'
-                                        iterator++;
-                                    })
-                                    targetBody.append(trs)
-
-                                    $('#history-actions-tbody tr').each(function () {
-                                        if (!$.trim($(this).text())) $(this).remove();
-                                    });
-
-                                    $('#actions-table').DataTable({
-                                        "order": [[1, 'desc']],
-                                        lengthMenu: [10, 25, 50, 100],
-                                        pageLength: 10,
-                                        language: {
-                                            lengthMenu: "_MENU_",
-                                            search: "_INPUT_",
-                                            searchPlaceholder: "{{ __('Search') }}",
-                                            paginate: {
-                                                "first": "«",
-                                                "last": "»",
-                                                "next": "»",
-                                                "previous": "«"
-                                            },
-                                        },
-                                    })
-
-
-                                    try {
-                                        historyChart.destroy()
-                                    } catch (e) {
-
-                                    }
-
-                                    historyChart = new Chart(document.getElementById("history-doughnut-chart"), {
-                                        type: 'doughnut',
-                                        data: {
-                                            labels: doughnutLabels,
-                                            datasets: [
-                                                {
-                                                    backgroundColor: colors,
-                                                    data: counters
-                                                }
-                                            ]
-                                        },
-                                        options: {
-                                            title: {
-                                                display: false,
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    targetBody.append(
-                                        '<tr>' +
-                                        '<td>Нет данных</td>' +
-                                        '<td>Нет данных</td>' +
-                                        '</tr>')
-
-                                    try {
-                                        historyChart.destroy()
-                                    } catch (e) {
-
-                                    }
-                                }
-
-                                $('#history-actions').show()
-
-                            }
-                        });
-                    })
-
-                    function getColorArray() {
-                        let colorArray = [
-                            "rgba(220, 51, 10, 0.6)",
-                            "rgb(203,60,25)",
-                            "rgba(121, 25, 6, 1)",
-                            "rgba(214, 96, 110, 0.6)",
-                            "rgba(214, 96, 110, 1)",
-                            "rgba(252, 170, 153, 0.6)",
-                            "rgba(252, 170, 153, 1)",
-                            "rgba(214, 2, 86, 0.6)",
-                            "rgba(214, 2, 86, 1)",
-                            "rgba(147,50,88, 1)",
-                            "rgba(247, 220, 163, 1)",
-                            "rgba(204, 118, 32, 0.6)",
-                            "rgba(204, 118, 32, 1)",
-                            "rgba(255,89,0,0.6)",
-                            "rgba(255, 89, 0, 1)",
-                            "rgba(164, 58 ,1, 1)",
-                            "rgba(73, 28, 1, 0.6)",
-                            "rgba(178, 135, 33, 0.6)",
-                            "rgba(178, 135, 33, 1)",
-                            "rgba(246, 223, 78, 1)",
-                            "rgba(1, 253, 215, 0.6)",
-                            "rgba(1, 253, 215, 1)",
-                            "rgba(1, 148, 130, 0.6)",
-                            "rgba(1, 79, 66, 0.6)",
-                            "rgba(139, 150, 24, 0.6)",
-                            "rgba(154, 205, 50, 0.6)",
-                            "rgba(154, 205, 50, 1)",
-                            "rgb(17, 255, 0)",
-                            "rgba(151, 186, 229, 1)",
-                            "rgba(0, 69, 255, 0.6)",
-                            "rgba(0, 69, 255, 1)",
-                            "rgba(1, 45, 152, 0.6)",
-                            "rgba(157, 149, 226, 1)",
-                            "rgba(6, 136, 165, 0.6)",
-                            "rgba(64, 97, 206, 1)",
-                            "rgba(19,212,224, 0.6)",
-                            "rgba(19,212,224, 1)",
-                            "rgba(2, 97, 214, 0.6)",
-                            "rgba(159, 112, 216, 0.6)",
-                            "rgba(239, 50, 223, 0.6)",
-                            "rgba(239, 50, 223, 1)",
-                            "rgba(209, 46, 127, 0.6)",
-                            "rgba(209, 46, 127, 1)",
-                            "rgba(194, 85, 237, 1)",
-                            "rgba(252, 194, 243, 1)",
-                            "rgba(244, 139, 200, 0.6)",
-                            "rgba(244, 139, 200, 1)",
-                            "rgba(87, 64, 64, 0.6)",
-                            "rgba(239, 211, 211, 0.6)",
-                            "rgba(163, 209, 234, 0.6)",
-                            "rgba(234,163,163,0.6)",
-                            "rgba(232,194,90,0.6)",
-                        ]
-
-                        return colorArray.sort(() => Math.random() - 0.5);
-                    }
-                </script>
-            @endif
+                    return colorArray.sort(() => Math.random() - 0.5);
+                }
+            </script>
         @endslot
-        @endcomponent
+    @else
+        Нет данных
+    @endif
+@endcomponent
