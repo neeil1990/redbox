@@ -285,20 +285,24 @@
                                         const formData = new FormData(m.find('form').get(0));
                                         let regions = formData.getAll('regions');
 
-                                        if (!regions.length || !window.confirm("Вы собираетесь добавить в очередь все запросы, подтвердите ваше действие")) {
-                                            m.modal('hide');
-                                            return false;
-                                        }
+                                        axios.get(`/monitoring/${PROJECT_ID}/count`).then(function (response) {
+                                            let limits = (response.data.queries * regions.length);
 
-                                        axios.post('/monitoring/parse/positions/project', {
-                                            projectId: PROJECT_ID,
-                                            regions: regions,
-                                        }).then(function (response) {
-                                            m.modal('hide');
-                                            if (response.data.status)
-                                                toastr.success(response.data.msg + " -" + response.data.count);
-                                            else
-                                                toastr.error(response.data.error);
+                                            if (!limits || !window.confirm(`Будет списанно ${limits} лимитов`)) {
+                                                m.modal('hide');
+                                                return false;
+                                            }
+
+                                            axios.post('/monitoring/parse/positions/project', {
+                                                projectId: PROJECT_ID,
+                                                regions: regions,
+                                            }).then(function (response) {
+                                                m.modal('hide');
+                                                if (response.data.status)
+                                                    toastr.success(response.data.msg + " -" + response.data.count);
+                                                else
+                                                    toastr.error(response.data.error);
+                                            });
                                         });
                                     }
                                 });
@@ -318,6 +322,10 @@
                                 $.each(keys, function (i, item) {
                                     arrKeys.push($(item).val())
                                 });
+
+                                if (!window.confirm(`Будет списанно ${arrKeys.length} лимитов`)) {
+                                    return false;
+                                }
 
                                 axios.post('/monitoring/parse/positions/project/keys', {
                                     projectId: PROJECT_ID,
@@ -1228,15 +1236,24 @@
 
             $('#occurrence-update').click(function () {
                 let action = 'all';
+                let YWCount = 3;
 
-                axios.post('/monitoring/occurrence', {
-                    action: action,
-                    id: PROJECT_ID,
-                }).then(function (response) {
-                    if(response.data.status){
-                        toastr.success(response.data.msg + " -" + response.data.count);
-                    }else
-                        toastr.error(response.data.error);
+                axios.get(`/monitoring/${PROJECT_ID}/count`).then(function (response) {
+                    let limits = (response.data.queries * response.data.region_yandex) * YWCount;
+
+                    if (!limits || !window.confirm(`Будет списанно ${limits} лимитов`)) {
+                        return false;
+                    }
+
+                    axios.post('/monitoring/occurrence', {
+                        action: action,
+                        id: PROJECT_ID,
+                    }).then(function (response) {
+                        if(response.data.status){
+                            toastr.success(response.data.msg + " -" + response.data.count);
+                        }else
+                            toastr.error(response.data.error);
+                    });
                 });
             });
         </script>

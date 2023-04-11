@@ -133,6 +133,27 @@ class MonitoringController extends Controller
         return $data;
     }
 
+    public function getCountProject($id)
+    {
+        $collection = collect([
+            'queries' => 0,
+            'regions' => 0,
+            'region_google' => 0,
+            'region_yandex' => 0,
+        ]);
+
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->findOrFail($id);
+
+        $collection->put('queries', $project->keywords()->count());
+        $collection->put('regions', $project->searchengines()->count());
+        $collection->put('region_google', $project->searchengines()->where('engine', 'google')->count());
+        $collection->put('region_yandex', $project->searchengines()->where('engine', 'yandex')->count());
+
+        return $collection;
+    }
+
     protected function loadSearchEnginesToProjects($projects)
     {
         $projects->transform(function ($item) {
