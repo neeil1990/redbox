@@ -52,7 +52,7 @@
                         <button class="btn btn-default" type="button" data-toggle="collapse"
                                 data-target="#collapseExample{{ $date }}" aria-expanded="false"
                                 aria-controls="collapseExample{{ $date }}">
-                            Посетители
+                            Пользователи
                         </button>
 
                         <div class="collapse mt-3" id="collapseExample{{ $date }}">
