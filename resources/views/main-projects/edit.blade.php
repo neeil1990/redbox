@@ -31,7 +31,7 @@
                         </span>
                     </span>
                 </span>
-                {!! Form::text("controller", $data->controller ,["class" => "form-control","required" => "required"]) !!}
+                {!! Form::textarea("controller", $data->controller ,["class" => "form-control","required" => "required"]) !!}
             </div>
 
             <div class="form-group required">

@@ -21,9 +21,9 @@ class VisitStatistics
     public function handle($request, Closure $next)
     {
         try {
-            $project = MainProject::where('controller', class_basename(Route::current()->controller))->first();
+            $project = MainProject::where('controller', 'like', '%' . class_basename(Route::current()->controller) . '%')->first();
             if (isset($project)) {
-
+//                explode('@', Route::current()->action['controller']);
                 VisitStatistic::updateOrCreate([
                     'project_id' => $project->id,
                     'user_id' => Auth::id(),
