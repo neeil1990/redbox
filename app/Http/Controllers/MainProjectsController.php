@@ -96,7 +96,6 @@ class MainProjectsController extends Controller
             ->groupBy('date')
             ->toArray();
 
-        $result = [];
 
         foreach ($statistics as $date => $info) {
             $result[$date]['counter'] = 0;
@@ -104,6 +103,7 @@ class MainProjectsController extends Controller
 
             foreach ($info as $elem) {
                 $result[$date]['counter'] += $elem['counter'];
+                $elem['user']['count'] = $elem['counter'];
                 $users[] = $elem['user'];
             }
 

@@ -62,6 +62,7 @@
                                     <th>Имя</th>
                                     <th>Фамилия</th>
                                     <th>Email</th>
+                                    <th>Количество действий</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -70,6 +71,7 @@
                                         <td>{{ $user['name'] }}</td>
                                         <td>{{ $user['last_name'] }}</td>
                                         <td>{{ $user['email'] }}</td>
+                                        <td>{{ $user['count'] }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
