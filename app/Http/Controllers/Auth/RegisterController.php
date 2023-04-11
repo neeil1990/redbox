@@ -138,7 +138,7 @@ class RegisterController extends Controller
             $utmMetrics = json_encode($utmMetrics);
         } catch (Throwable $e) {
             Log::debug('Произошёл сбой подготовки данных метрики', [$metrics]);
-            $utmMetrics = $metrics;
+            $utmMetrics = json_encode($metrics);
         }
 
         return $utmMetrics;
