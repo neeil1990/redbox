@@ -114,19 +114,18 @@ class MonitoringCompetitor extends Model
         $keywords = array_column($keywords, 'query');
         $countKeyWords = count($keywords);
 
-        $records = SearchIndex::whereIn('query', $keywords)
+        SearchIndex::whereIn('query', $keywords)
             ->where('lr', $engine['lr'])
             ->orderBy('created_at', 'desc')
             ->limit($countKeyWords * 100)
-            ->get(['url', 'position', 'created_at', 'query'])
-            ->toArray();
-
-        foreach ($records as $record) {
-            $url = Common::domainFilter(parse_url($record['url'])['host']);
-            if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
-                $visibilityArray[$record['query']][$url] = $record['position'];
-            }
-        }
+            ->chunk(500, function ($records) use ($competitors, &$visibilityArray) {
+                foreach ($records as $record) {
+                    $url = Common::domainFilter(parse_url($record['url'])['host']);
+                    if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
+                        $visibilityArray[$record['query']][$url] = $record['position'];
+                    }
+                }
+            });
 
         $competitorStatistics = [];
         foreach ($visibilityArray as $query => $positions) {
