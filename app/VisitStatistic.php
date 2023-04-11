@@ -15,6 +15,10 @@ class VisitStatistic extends Model
     {
         return $this->hasOne(MainProject::class, 'id', 'project_id');
     }
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
     public static function getModulesInfo($summedCollection, $encode = true): array
     {

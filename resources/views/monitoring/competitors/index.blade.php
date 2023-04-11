@@ -99,7 +99,7 @@
         <div class="btn-group">
             <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
                     data-target="#competitorsModal">
-                Поиск конкуркетов
+                Поиск конкурентов
             </button>
             <button type="button" class="btn btn-secondary">
                 <span class="__helper-link ui_tooltip_w">

@@ -231,7 +231,6 @@ class UsersController extends Controller
                 return $firstItem;
             });
 
-
         $info = VisitStatistic::getModulesInfo($summedCollection);
 
         $labels = $info['labels'];

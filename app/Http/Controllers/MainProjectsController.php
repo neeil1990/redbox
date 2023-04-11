@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\MainProject;
+use App\VisitStatistic;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -83,6 +84,32 @@ class MainProjectsController extends Controller
     public function destroy($id): RedirectResponse
     {
         MainProject::where('id', $id)->delete();
+
         return redirect()->route('main-projects.index');
+    }
+
+    public function statistics(MainProject $project)
+    {
+        $statistics = VisitStatistic::where('project_id', $project->id)
+            ->with('user')
+            ->get(['date', 'user_id', 'counter'])
+            ->groupBy('date')
+            ->toArray();
+
+        $result = [];
+
+        foreach ($statistics as $date => $info) {
+            $result[$date]['counter'] = 0;
+            $users = [];
+
+            foreach ($info as $elem) {
+                $result[$date]['counter'] += $elem['counter'];
+                $users[] = $elem['user'];
+            }
+
+            $result[$date]['users'] = $users;
+        }
+
+        return view('main-projects.statistics', compact('result', 'project'));
     }
 }
