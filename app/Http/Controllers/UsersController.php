@@ -216,7 +216,7 @@ class UsersController extends Controller
 
     public function visitStatistics(User $user)
     {
-        if (Auth::id() !== $user->id) {
+        if (Auth::id() !== $user->id && !User::isUserAdmin()) {
             return abort(403);
         }
 
@@ -270,7 +270,7 @@ class UsersController extends Controller
 
     public function getDateRangeVisitStatistics(User $user): JsonResponse
     {
-        if (Auth::id() !== $user->id) {
+        if (Auth::id() !== $user->id && !User::isUserAdmin()) {
             return abort(403);
         }
 
