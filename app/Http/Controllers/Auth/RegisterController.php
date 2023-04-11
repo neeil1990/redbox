@@ -128,10 +128,13 @@ class RegisterController extends Controller
                 $array = explode(':', $metric);
                 if ($array[0] === 'utm_source' || $array[0] === 'utm_campaign' || $array[0] === 'utm_medium' || $array[0] === 'utm_content') {
                     $utmMetrics[$array[0]] = $array[1];
+
                 } else if ($array[0] === 'utm_term') {
                     $term = explode('_', $array[1]);
                     $utmMetrics['utm_term_keyword'] = $term[0];
-                    $utmMetrics['utm_term_source'] = $term[1];
+                    if (count($term) > 1) {
+                        $utmMetrics['utm_term_source'] = $term[1];
+                    }
                 }
             }
 
