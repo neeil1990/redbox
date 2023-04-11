@@ -15,4 +15,32 @@ class VisitStatistic extends Model
     {
         return $this->hasOne(MainProject::class, 'id', 'project_id');
     }
+
+    public static function getModulesInfo($summedCollection, $encode = true): array
+    {
+        $labels = [];
+        $counters = [];
+
+        if ($encode) {
+            foreach ($summedCollection as $module) {
+                $labels[] = __($module->project->title);
+                $counters[] = $module->counter;
+            }
+
+            return [
+                'labels' => json_encode($labels),
+                'counters' => json_encode($counters)
+            ];
+        }
+
+        foreach ($summedCollection as $module) {
+            $labels[$module->project->link] = __($module->project->title);
+            $counters[] = $module->counter;
+        }
+
+        return [
+            'labels' => $labels,
+            'counters' => $counters
+        ];
+    }
 }

@@ -9,10 +9,12 @@ use App\MainProject;
 use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -214,24 +216,69 @@ class UsersController extends Controller
 
     public function visitStatistics(User $user)
     {
-        $now = Carbon::now()->toDateString();
-
-        $toDay = VisitStatistic::where('user_id', $user->id)
-            ->where('date', $now)
-            ->with('project')
-            ->get();
-
-        $labels = [];
-        $counters = [];
-
-        foreach ($toDay as $module) {
-            $labels[] = __($module->project->title);
-            $counters[] = $module->counter;
+        if (Auth::id() !== $user->id) {
+            return abort(403);
         }
 
-        $labels = json_encode($labels);
-        $counters = json_encode($counters);
+        $summedCollection = VisitStatistic::where('user_id', $user->id)
+            ->with('project')
+            ->get()
+            ->groupBy('project_id')
+            ->map(function ($group) {
+                $sum = $group->sum('counter');
+                $firstItem = $group->first();
+                $firstItem->counter = $sum;
+                return $firstItem;
+            });
 
-        return view('users.visit', compact('toDay', 'labels', 'counters', 'now'));
+
+        $info = VisitStatistic::getModulesInfo($summedCollection);
+
+        $labels = $info['labels'];
+        $counters = $info['counters'];
+
+        return view('users.visit', compact('summedCollection', 'labels', 'counters', 'user'));
+    }
+
+    public function userActionsHistory(Request $request): JsonResponse
+    {
+        $range = explode(' - ', $request->dateRange);
+
+        $collection = VisitStatistic::whereBetween('date', [
+            date('Y-m-d', strtotime($range[0])),
+            date('Y-m-d', strtotime($range[1]))
+        ])
+            ->where('user_id', Auth::id())
+            ->with('project')
+            ->get()
+            ->groupBy('project_id')
+            ->map(function ($group) {
+                $sum = $group->sum('counter');
+                $firstItem = $group->first();
+                $firstItem->counter = $sum;
+                return $firstItem;
+            });
+
+        $info = VisitStatistic::getModulesInfo($collection, false);
+
+        return response()->json([
+            'collection' => $collection,
+            'labels' => $info['labels'],
+            'counters' => $info['counters']
+        ]);
+    }
+
+    public function getDateRangeVisitStatistics(User $user): JsonResponse
+    {
+        if (Auth::id() !== $user->id) {
+            return abort(403);
+        }
+
+        return response()->json([
+            'dates' => VisitStatistic::where('user_id', $user->id)
+                ->groupBy('date')
+                ->get('date')
+                ->toArray()
+        ]);
     }
 }

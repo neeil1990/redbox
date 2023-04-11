@@ -59,6 +59,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
     Route::get('/visit-statistics/{user}', 'UsersController@visitStatistics')->name('visit.statistics');
+    Route::post('/user-actions-history', 'UsersController@userActionsHistory')->name('user.actions.history');
     Route::get('/get-data-range-visit-statistics/{user}', 'UsersController@getDateRangeVisitStatistics')->name('visit.statistics.date.range');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::resource('users', 'UsersController');
