@@ -6,6 +6,10 @@ function renderPhrasesTable(phrases, count, words) {
     })
 
     $(document).ready(function () {
+        if ($.fn.DataTable.fnIsDataTable($('#phrases'))) {
+            $('#phrases').dataTable().fnDestroy();
+        }
+
         var table = $('#phrases').DataTable({
             "order": [[1, "desc"]],
             "pageLength": count,
