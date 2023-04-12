@@ -91,9 +91,8 @@ class ClusterController extends Controller
             ]);
         }
 
-        $count = ClusterQueue::where('progress_id', '=', $id)->count();
         return response()->json([
-            'count' => $count,
+            'count' => ClusterQueue::where('progress_id', '=', $id)->count(),
         ]);
     }
 
@@ -109,9 +108,8 @@ class ClusterController extends Controller
             ]);
         }
 
-        $count = ClusterQueue::where('progress_id', '=', $id)->count();
         return response()->json([
-            'count' => $count,
+            'count' => ClusterQueue::where('progress_id', '=', $id)->count(),
         ]);
     }
 

@@ -123,10 +123,6 @@ class MetaTagsController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return array|Factory|View|mixed
-     */
     public function index()
     {
         $meta = Auth::user()->metaTags()->latest()->get();

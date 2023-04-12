@@ -174,7 +174,6 @@ class BehaviorController extends Controller
      */
     public function edit(Behavior $behavior)
     {
-
         return view('behavior.edit', compact('behavior'));
     }
 

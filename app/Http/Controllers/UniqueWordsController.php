@@ -174,6 +174,7 @@ class UniqueWordsController extends Controller
         if ($request->text) {
             return self::uploadFIle($request->text);
         }
+
         return self::uploadFIle($request->keyPhrases);
     }
 

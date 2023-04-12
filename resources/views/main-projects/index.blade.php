@@ -18,7 +18,6 @@
                     <th>icon</th>
                     <th>Заголовок</th>
                     <th>Описание</th>
-                    <th>Контроллер</th>
                     <th>Ссылка</th>
                     <th>Показывать обычным пользователям</th>
                     <th>Действия</th>
@@ -33,7 +32,6 @@
                         <td>{!! $row->icon !!}</td>
                         <td>{{ $row->title }}</td>
                         <td>{{ $row->description }}</td>
-                        <td>{{ $row->controller }}</td>
                         <td>{{ $row->link }}</td>
                         <td>{{ $row->show ? __('Yes') : __('No') }}</td>
                         <td class="d-flex border-0">

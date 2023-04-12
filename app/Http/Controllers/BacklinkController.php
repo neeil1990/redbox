@@ -151,11 +151,7 @@ class BacklinkController extends Controller
         return response()->json([], 400);
     }
 
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
-    public function removeLink($id)
+    public function removeLink($id): RedirectResponse
     {
         $link = LinkTracking::findOrFail($id);
         $project = ProjectTracking::findOrFail($link->project_tracking_id);
@@ -197,6 +193,7 @@ class BacklinkController extends Controller
         }
 
         flash()->overlay(__('Tracking was successfully created'), ' ')->success();
+
         return Redirect::route('backlink');
     }
 
@@ -252,6 +249,7 @@ class BacklinkController extends Controller
                 'yandex' => $params[5],
                 'google' => $params[6],
             ]);
+
             $tracking->save();
         }
     }
@@ -285,6 +283,7 @@ class BacklinkController extends Controller
                 'yandex' => $request['yandex_' . $i],
                 'google' => $request['google_' . $i],
             ]);
+
             $tracking->save();
         }
     }

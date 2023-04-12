@@ -68,6 +68,7 @@ class TextEditorController extends Controller
     public function editProjectView(int $id)
     {
         $project = Project::findOrFail($id);
+
         return view('html-editor.edit-project', compact('project'));
     }
 
@@ -184,6 +185,7 @@ class TextEditorController extends Controller
         }
 
         $projects = Project::where('user_id', $user->id)->get();
+
         return view('html-editor.create-description', compact('lang'))->with('projects', $projects);
     }
 

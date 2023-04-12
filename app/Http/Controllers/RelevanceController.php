@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Jobs\Relevance\RelevanceAnalyseQueue;
 use App\Queue;
-use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceAnalysisConfig;
 use App\RelevanceHistory;
-use App\RelevanceProgress;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
