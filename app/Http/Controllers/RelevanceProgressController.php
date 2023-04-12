@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\ProjectRelevanceHistory;
 use App\Relevance;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
@@ -10,7 +9,6 @@ use App\RelevanceProgress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceProgressController extends Controller
 {

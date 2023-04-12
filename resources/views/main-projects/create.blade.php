@@ -32,7 +32,15 @@
                     <i class="fa fa-question"></i>
                     <span class="ui_tooltip __right" style="min-width: 550px;">
                         <span class="ui_tooltip_content">
-                            Контроллер нужен для того, чтобы вести статистику посещений данного модуля.
+                            Контроллер - связан с модулем, если контроллер указан, тогда для модуля начнёт собираться статистика.<br>
+                            Пример: <br>
+                            MyController - <span class="text-muted">Название контроллера</span> <br>
+                            @index - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
+                            @store - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
+                            !getProgress - <span class="text-muted">Метод, который будет игнорироваться</span> <br> <br>
+
+                            <span class="text-muted">Путь до кода - app/Http/Middleware/VisitStatistics.php</span> <br> <br>
+                            <span class="text-info">Методы контроллера которые не были описани при помощи дирректив (@, !) будут накапливать счётчик действий</span>
                         </span>
                     </span>
                 </span>
