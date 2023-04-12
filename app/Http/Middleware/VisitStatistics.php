@@ -6,28 +6,44 @@ use App\MainProject;
 use App\VisitStatistic;
 use Carbon\Carbon;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Throwable;
 
 class VisitStatistics
 {
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         try {
-            $project = MainProject::where('controller', 'like', '%' . class_basename(Route::current()->controller) . '%')->first();
+            $targetController = class_basename(Route::current()->controller);
+            $project = MainProject::where('controller', 'like', '%' . $targetController . '%')->first();
             if (isset($project)) {
-                $actions = explode("\r\n", $project->controller);
+                $config = explode("\r\n", $project->controller);
                 $callAction = explode('\\', Route::current()->action['controller']);
-                $callAction = end($callAction);
+                $callAction = explode('@', end($callAction))[1];
 
-                if (in_array($callAction, $actions)) {
+                $forbidden = [];
+                $access = [];
+                foreach ($config as $action) {
+                    $action = str_replace($targetController, '', $action);
+                    if ($action != '' && str_contains($action, '!')) {
+                        $forbidden[] = str_replace('!', '', $action);
+                    } else if($action != '' && str_contains($action, '@')) {
+                        $access[] = str_replace('@', '', $action);
+                    }
+                }
+
+                if (in_array($callAction, $forbidden)) {
+                    return $next($request);
+                } else if (in_array($callAction, $access)) {
                     VisitStatistic::updateOrCreate([
                         'project_id' => $project->id,
                         'user_id' => Auth::id(),
@@ -42,7 +58,7 @@ class VisitStatistics
                 }
             }
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
 
         }
 
