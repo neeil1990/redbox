@@ -141,18 +141,16 @@
                     </div>
                 </td>
                 <td>
-                    <form action="{{ route('check.domain', $project->id)}}" method="get"
-                          class="__helper-link ui_tooltip_w  d-inline">
-                        @csrf
-                        <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
-                            <i aria-hidden="true" class="fa fa-search"></i>
-                            <span class="ui_tooltip __left __l">
+
+                    <button class="btn btn-default __helper-link ui_tooltip_w check" type="submit"
+                            data-target="{{ $project->id }}">
+                        <i aria-hidden="true" class="fa fa-search"></i>
+                        <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
                                 {{__('Run the check manually')}}
                             </span>
                         </span>
-                        </button>
-                    </form>
+                    </button>
                     <button class="btn btn-default __helper-link ui_tooltip_w d-inline" data-toggle="modal"
                             data-target="#remove-project-id-{{$project->id}}">
                         <i class="fa fa-trash"></i>
@@ -282,6 +280,38 @@
                     }
                 });
             });
+
+            $('.check').on('click', function () {
+                let parentRow = $(this).parents().eq(1)
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('check.domain') }}",
+                    data: {
+                        projectId: $(this).attr('data-target'),
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        let content
+
+                        if (response.broken) {
+                            content = '<span class="text-danger">' +
+                                '<div> ' + response.status + '</div>' +
+                                '<div> http code: ' + response.code + '</div>' +
+                                '<div> {{ __('Uptime') }} : ' + response.uptime + '</div>' +
+                                '</span>'
+                        } else {
+                            content = '<span class="text-info">' +
+                                '<div> ' + response.status + '</div>' +
+                                '<div> http code: ' + response.code + '</div>' +
+                                '<div> {{ __('Uptime') }} : ' + response.uptime + '</div>' +
+                                '</span>'
+                        }
+
+                        parentRow.children('td').eq(6).html(content)
+                    },
+                });
+
+            })
         </script>
         <script defer src="{{ asset('plugins/site-monitoring/js/localstorage.js') }}"></script>
     @endslot

@@ -121,7 +121,11 @@ class DomainMonitoring extends Model
         $project->last_check = Carbon::now();
         $project->save();
 
-        DomainMonitoring::sendNotifications($project, $oldState);
+        try {
+            DomainMonitoring::sendNotifications($project, $oldState);
+        } catch (\Throwable $e) {
+
+        }
 
     }
 

@@ -33,16 +33,28 @@
                         <tr>
                             <th>Модуль</th>
                             <th>
+                                Количество обновлений страницы
+                                <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 400px">
+                                            Учитывается переход на страницу и её обновление
+                                        </span>
+                                    </span>
+                                </span>
+                            </th>
+                            <th>
                                 Количество действий
                                 <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                                     <i class="fa fa-question-circle" style="color: grey"></i>
                                     <span class="ui_tooltip __bottom">
                                         <span class="ui_tooltip_content" style="width: 400px">
-                                            Учитываются обновления страницы, <br> нажатия кнопок для получения дополнительной инфомрации из бд и т.п.
+                                            Учитывается нажатие кнопок для получения дополнительной инфомрации из бд и т.п.
                                         </span>
                                     </span>
                                 </span>
                             </th>
+                            <th>Всего действий</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,7 +64,9 @@
                                     <a href="{{ $module->project->link }}"
                                        target="_blank">{{ __($module->project->title) }}</a>
                                 </td>
-                                <td>{{ $module->counter }}</td>
+                                <td>{{ $module->refreshPageCounter }}</td>
+                                <td>{{ $module->actionsCounter }}</td>
+                                <td>{{ $module->actionsCounter + $module->refreshPageCounter }}</td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -87,8 +101,10 @@
                         <table id="actions-table" class="table table-hover border">
                             <thead>
                             <tr>
-                                <th>Модуль</th>
-                                <th>Количество действий</th>
+                                <th class="border">Модуль</th>
+                                <th class="border">Количество обновлений страницы</th>
+                                <th class="border">Количество действий</th>
+                                <th class="border">Всего действий</th>
                             </tr>
                             </thead>
                             <tbody id="history-actions-tbody">
@@ -220,7 +236,7 @@
             <script>
                 $(document).ready(function () {
                     $('#table').DataTable({
-                        "order": [[1, 'desc']],
+                        "order": [[3, 'desc']],
                         lengthMenu: [10, 25, 50, 100],
                         pageLength: 10,
                         language: {
@@ -281,6 +297,7 @@
                             let counters = response.counters;
                             let labels = response.labels;
                             let trs = ''
+                            let sum = []
 
                             if (counters.length > 0) {
                                 if ($.fn.DataTable.fnIsDataTable($('#actions-table'))) {
@@ -291,12 +308,17 @@
                                 let iterator = 0;
 
                                 $.each(labels, function (link, name) {
+                                    let targetSum = counters[iterator]['refreshPageCounter'] + counters[iterator]['actionsCounter']
+                                    sum.push(targetSum)
                                     doughnutLabels.push(name)
+
                                     trs += '<tr>' +
                                         '<td class="border">' +
                                         '    <a href="' + link + '" target="_blank">' + name + '</a>' +
                                         '</td>' +
-                                        '<td class="border">' + counters[iterator] + '</td>' +
+                                        '<td class="border">' + counters[iterator]['refreshPageCounter'] + '</td>' +
+                                        '<td class="border">' + counters[iterator]['actionsCounter'] + '</td>' +
+                                        '<td class="border">' + targetSum + '</td>' +
                                         '<tr>'
                                     iterator++;
                                 })
@@ -323,7 +345,6 @@
                                     },
                                 })
 
-
                                 try {
                                     historyChart.destroy()
                                 } catch (e) {
@@ -337,7 +358,7 @@
                                         datasets: [
                                             {
                                                 backgroundColor: colors,
-                                                data: counters
+                                                data: sum
                                             }
                                         ]
                                     },
@@ -372,37 +393,25 @@
                         "rgba(220, 51, 10, 0.6)",
                         "rgb(203,60,25)",
                         "rgba(121, 25, 6, 1)",
-                        "rgba(214, 96, 110, 0.6)",
                         "rgba(214, 96, 110, 1)",
                         "rgba(252, 170, 153, 0.6)",
                         "rgba(252, 170, 153, 1)",
                         "rgba(214, 2, 86, 0.6)",
                         "rgba(214, 2, 86, 1)",
-                        "rgba(147,50,88, 1)",
                         "rgba(247, 220, 163, 1)",
                         "rgba(204, 118, 32, 0.6)",
-                        "rgba(204, 118, 32, 1)",
-                        "rgba(255,89,0,0.6)",
                         "rgba(255, 89, 0, 1)",
                         "rgba(164, 58 ,1, 1)",
                         "rgba(73, 28, 1, 0.6)",
                         "rgba(178, 135, 33, 0.6)",
-                        "rgba(178, 135, 33, 1)",
                         "rgba(246, 223, 78, 1)",
-                        "rgba(1, 253, 215, 0.6)",
                         "rgba(1, 253, 215, 1)",
-                        "rgba(1, 148, 130, 0.6)",
                         "rgba(1, 79, 66, 0.6)",
                         "rgba(139, 150, 24, 0.6)",
-                        "rgba(154, 205, 50, 0.6)",
                         "rgba(154, 205, 50, 1)",
                         "rgb(17, 255, 0)",
-                        "rgba(151, 186, 229, 1)",
-                        "rgba(0, 69, 255, 0.6)",
-                        "rgba(0, 69, 255, 1)",
                         "rgba(1, 45, 152, 0.6)",
                         "rgba(157, 149, 226, 1)",
-                        "rgba(6, 136, 165, 0.6)",
                         "rgba(64, 97, 206, 1)",
                         "rgba(19,212,224, 0.6)",
                         "rgba(19,212,224, 1)",
@@ -410,11 +419,7 @@
                         "rgba(159, 112, 216, 0.6)",
                         "rgba(239, 50, 223, 0.6)",
                         "rgba(239, 50, 223, 1)",
-                        "rgba(209, 46, 127, 0.6)",
-                        "rgba(209, 46, 127, 1)",
                         "rgba(194, 85, 237, 1)",
-                        "rgba(252, 194, 243, 1)",
-                        "rgba(244, 139, 200, 0.6)",
                         "rgba(244, 139, 200, 1)",
                         "rgba(87, 64, 64, 0.6)",
                         "rgba(239, 211, 211, 0.6)",

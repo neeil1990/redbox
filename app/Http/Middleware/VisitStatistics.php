@@ -23,12 +23,23 @@ class VisitStatistics
         try {
             $project = MainProject::where('controller', 'like', '%' . class_basename(Route::current()->controller) . '%')->first();
             if (isset($project)) {
-//                explode('@', Route::current()->action['controller']);
-                VisitStatistic::updateOrCreate([
-                    'project_id' => $project->id,
-                    'user_id' => Auth::id(),
-                    'date' => Carbon::now()->toDateString(),
-                ])->increment('counter');
+                $actions = explode("\r\n", $project->controller);
+                $callAction = explode('\\', Route::current()->action['controller']);
+                $callAction = end($callAction);
+
+                if (in_array($callAction, $actions)) {
+                    VisitStatistic::updateOrCreate([
+                        'project_id' => $project->id,
+                        'user_id' => Auth::id(),
+                        'date' => Carbon::now()->toDateString(),
+                    ])->increment('refresh_page_counter');
+                } else {
+                    VisitStatistic::updateOrCreate([
+                        'project_id' => $project->id,
+                        'user_id' => Auth::id(),
+                        'date' => Carbon::now()->toDateString(),
+                    ])->increment('actions_counter');
+                }
             }
 
         } catch (\Throwable $e) {

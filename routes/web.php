@@ -158,7 +158,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('add-site-monitoring', 'DomainMonitoringController@createView')->name('add.site.monitoring.view');
     Route::post('add-site-monitoring', 'DomainMonitoringController@store')->name('add.site.monitoring');
     Route::get('delete-site-monitoring/{id}', 'DomainMonitoringController@remove')->name('delete.site.monitoring');
-    Route::get('check-site-monitoring/{id}', 'DomainMonitoringController@checkLink')->name('check.domain');
+    Route::post('check-site-monitoring', 'DomainMonitoringController@checkLink')->name('check.domain');
     Route::post('edit-site-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
     Route::post('delete-domains-monitoring', 'DomainMonitoringController@removeDomains')->name('delete.sites.monitoring');
 

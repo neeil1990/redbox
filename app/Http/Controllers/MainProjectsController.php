@@ -92,18 +92,23 @@ class MainProjectsController extends Controller
     {
         $statistics = VisitStatistic::where('project_id', $project->id)
             ->with('user')
-            ->get(['date', 'user_id', 'counter'])
+            ->get(['date', 'user_id', 'actions_counter', 'refresh_page_counter'])
             ->groupBy('date')
             ->toArray();
 
 
         foreach ($statistics as $date => $info) {
-            $result[$date]['counter'] = 0;
+            $result[$date]['actionsCounter'] = 0;
+            $result[$date]['refreshPageCounter'] = 0;
             $users = [];
 
             foreach ($info as $elem) {
-                $result[$date]['counter'] += $elem['counter'];
-                $elem['user']['count'] = $elem['counter'];
+                $result[$date]['actionsCounter'] += $elem['actions_counter'];
+                $result[$date]['refreshPageCounter'] += $elem['refresh_page_counter'];
+
+                $elem['user']['actionsCounter'] = $elem['actions_counter'];
+                $elem['user']['refreshPageCounter'] = $elem['refresh_page_counter'];
+
                 $users[] = $elem['user'];
             }
 

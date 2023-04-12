@@ -15,6 +15,7 @@ class VisitStatistic extends Model
     {
         return $this->hasOne(MainProject::class, 'id', 'project_id');
     }
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
@@ -28,7 +29,7 @@ class VisitStatistic extends Model
         if ($encode) {
             foreach ($summedCollection as $module) {
                 $labels[] = __($module->project->title);
-                $counters[] = $module->counter;
+                $counters[] = $module->actionsCounter + $module->refreshPageCounter;
             }
 
             return [
@@ -39,7 +40,7 @@ class VisitStatistic extends Model
 
         foreach ($summedCollection as $module) {
             $labels[$module->project->link] = __($module->project->title);
-            $counters[] = $module->counter;
+            $counters[] = ['actionsCounter' => $module->actionsCounter, 'refreshPageCounter' => $module->refreshPageCounter];
         }
 
         return [

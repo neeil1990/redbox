@@ -30,16 +30,28 @@
             <tr>
                 <th>Дата</th>
                 <th>
+                    Количество обновлений страницы
+                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                        <i class="fa fa-question-circle" style="color: grey"></i>
+                        <span class="ui_tooltip __bottom">
+                            <span class="ui_tooltip_content" style="width: 400px">
+                                Учитывается переход на страницу и её обновление
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>
                     Количество действий
                     <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                         <i class="fa fa-question-circle" style="color: grey"></i>
                         <span class="ui_tooltip __bottom">
                             <span class="ui_tooltip_content" style="width: 400px">
-                                Учитываются обновления страницы, <br> нажатия кнопок для получения дополнительной инфомрации из бд и т.п.
+                                Учитывается нажатие кнопок для получения дополнительной инфомрации из бд и т.п.
                             </span>
                         </span>
                     </span>
                 </th>
+                <th>Всего действий</th>
                 <th>Пользователи</th>
             </tr>
             </thead>
@@ -47,7 +59,9 @@
             @foreach($result as $date => $info)
                 <tr>
                     <td data-order="{{ strtotime($date) }}">{{ $date }}</td>
-                    <td>{{ $info['counter'] }}</td>
+                    <td>{{ $info['refreshPageCounter'] }}</td>
+                    <td>{{ $info['actionsCounter'] }}</td>
+                    <td>{{ $info['refreshPageCounter'] + $info['actionsCounter'] }}</td>
                     <td>
                         <button class="btn btn-default" type="button" data-toggle="collapse"
                                 data-target="#collapseExample{{ $date }}" aria-expanded="false"
@@ -59,26 +73,24 @@
                             <table class="table table-striped no-footer border">
                                 <thead>
                                 <tr>
-                                    <th>Имя</th>
-                                    <th>Фамилия</th>
                                     <th>Email</th>
-                                    <th>Количество действий</th>
+                                    <th>Обновления страницы</th>
+                                    <th>Другие действия</th>
+                                    <th>Всего действий</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($info['users'] as $user)
                                     <tr>
-                                        <td>{{ $user['name'] }}</td>
-                                        <td>{{ $user['last_name'] }}</td>
                                         <td>{{ $user['email'] }}</td>
-                                        <td>{{ $user['count'] }}</td>
+                                        <td>{{ $user['refreshPageCounter'] }}</td>
+                                        <td>{{ $user['actionsCounter'] }}</td>
+                                        <td>{{ $user['refreshPageCounter'] + $user['actionsCounter'] }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
                             </table>
-
                         </div>
-
                     </td>
                 </tr>
             @endforeach

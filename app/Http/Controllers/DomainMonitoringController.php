@@ -79,20 +79,17 @@ class DomainMonitoringController extends Controller
         return Redirect::route('site.monitoring');
     }
 
-    /**
-     * @param $id
-     * @return RedirectResponse
-     */
-    public function checkLink($id): RedirectResponse
+    public function checkLink(Request $request): JsonResponse
     {
-        try {
-            $project = DomainMonitoring::findOrFail($id);
-            DomainMonitoring::httpCheck($project);
-        } catch (Exception $exception) {
-            flash()->overlay(__('Error'), ' ')->error();
-        }
+        $project = DomainMonitoring::findOrFail($request->projectId);
+        DomainMonitoring::httpCheck($project);
 
-        return Redirect::back();
+        return response()->json([
+            'status' => __($project->status),
+            'code' => $project->code,
+            'uptime' => round($project->uptime_percent, 2),
+            'broken' => $project->broken,
+        ]);
     }
 
     /**

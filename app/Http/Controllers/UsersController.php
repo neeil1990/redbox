@@ -225,9 +225,12 @@ class UsersController extends Controller
             ->get()
             ->groupBy('project_id')
             ->map(function ($group) {
-                $sum = $group->sum('counter');
+                $sumActions = $group->sum('actions_counter');
+                $sumRefresh = $group->sum('refresh_page_counter');
                 $firstItem = $group->first();
-                $firstItem->counter = $sum;
+                $firstItem->actionsCounter = $sumActions;
+                $firstItem->refreshPageCounter = $sumRefresh;
+
                 return $firstItem;
             });
 
@@ -252,9 +255,12 @@ class UsersController extends Controller
             ->get()
             ->groupBy('project_id')
             ->map(function ($group) {
-                $sum = $group->sum('counter');
+                $sumActions = $group->sum('actions_counter');
+                $sumRefresh = $group->sum('refresh_page_counter');
                 $firstItem = $group->first();
-                $firstItem->counter = $sum;
+                $firstItem->actionsCounter = $sumActions;
+                $firstItem->refreshPageCounter = $sumRefresh;
+
                 return $firstItem;
             });
 
