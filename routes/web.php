@@ -384,7 +384,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $user = \App\User::find(2751);
     event(new Verified($user));
     $user->read_letter = 1;
     $user->save();
