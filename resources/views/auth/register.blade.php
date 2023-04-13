@@ -277,6 +277,7 @@
                     data: getData(),
                     url: "{{ route('validate.registration.form') }}",
                     error: function (response) {
+                        console.log(response)
                         if (messages !== JSON.stringify(response.responseJSON.errors)) {
                             messages = JSON.stringify(response.responseJSON.errors);
                             $(".render-li").remove()
