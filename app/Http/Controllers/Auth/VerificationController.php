@@ -95,6 +95,8 @@ class VerificationController extends Controller
         }
 
         session()->forget('verificationCode');
+        $request->user()->read_letter = 1;
+        $request->user()->save();
 
         return redirect($this->redirectPath())->with('verified', true);
     }
