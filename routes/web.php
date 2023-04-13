@@ -10,24 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-use App\Classes\Cron\AutoUpdateMonitoringPositions;
-use App\Common;
-use App\MonitoringCompetitor;
-use App\MonitoringKeyword;
-use App\MonitoringPosition;
-use App\MonitoringProject;
-use App\MonitoringSearchengine;
-use App\ProjectRelevanceThough;
-use App\SearchIndex;
-use App\TextAnalyzer;
-use App\User;
-use App\VisitStatistic;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+
 
 Route::get('info', function () {
     phpinfo();

@@ -92,6 +92,8 @@ class VerificationController extends Controller
 
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
+            $request->user()->read_letter = 1;
+            $request->user()->save();
         }
 
         session()->forget('verificationCode');
