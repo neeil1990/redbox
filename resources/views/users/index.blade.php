@@ -56,9 +56,9 @@
                                 <span class="badge bg-primary">{{ __('The letter has been read') }}</span>
                             @endif
                         </td>
-                        <td data-target="{{ $user->created_at->format('d.m.Y') }}">
+                        <td data-target="{{ strtotime($user->created_at) }}">
                             {{ $user->created_at->format('d.m.Y H:m:s') }}
-                            <br/>
+                            <br>
                             <small>{{ $user->created_at->diffForHumans() }}</small>
                         </td>
                         <td class="project-state">
@@ -66,7 +66,7 @@
                                 <span class="badge badge-success">{{ __($role) }}</span>
                             @endforeach
                         </td>
-                        <td data-target="{{ $user->last_online_at->format('d.m.Y') }}">
+                        <td data-target="{{ strtotime($user->last_online_at) }}">
                             {{ $user->last_online_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
