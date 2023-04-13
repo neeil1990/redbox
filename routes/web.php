@@ -11,6 +11,7 @@
 |
 */
 
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -380,4 +381,11 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    $user = \App\User::find(2750);
+    event(new Verified($user));
+    $user->read_letter = 1;
+    $user->save();
 });
