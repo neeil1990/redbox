@@ -219,21 +219,7 @@ class UsersController extends Controller
         if (Auth::id() !== $user->id && !User::isUserAdmin()) {
             return abort(403);
         }
-
-        $summedCollection = VisitStatistic::where('user_id', $user->id)
-            ->with('project')
-            ->get()
-            ->groupBy('project_id')
-            ->map(function ($group) {
-                $sumActions = $group->sum('actions_counter');
-                $sumRefresh = $group->sum('refresh_page_counter');
-                $firstItem = $group->first();
-                $firstItem->actionsCounter = $sumActions;
-                $firstItem->refreshPageCounter = $sumRefresh;
-
-                return $firstItem;
-            });
-
+        $summedCollection = $this->getActions('20-03-2023 - ' . Carbon::now()->format('d-m-Y'));
         $info = VisitStatistic::getModulesInfo($summedCollection);
 
         return view('users.visit', compact('summedCollection', 'info', 'user'));
@@ -241,25 +227,7 @@ class UsersController extends Controller
 
     public function userActionsHistory(Request $request): JsonResponse
     {
-        $range = explode(' - ', $request->dateRange);
-
-        $collection = VisitStatistic::whereBetween('date', [
-            date('Y-m-d', strtotime($range[0])),
-            date('Y-m-d', strtotime($range[1]))
-        ])
-            ->where('user_id', Auth::id())
-            ->with('project')
-            ->get()
-            ->groupBy('project_id')
-            ->map(function ($group) {
-                $sumActions = $group->sum('actions_counter');
-                $sumRefresh = $group->sum('refresh_page_counter');
-                $firstItem = $group->first();
-                $firstItem->actionsCounter = $sumActions;
-                $firstItem->refreshPageCounter = $sumRefresh;
-
-                return $firstItem;
-            });
+        $collection = $this->getActions($request->dateRange);
 
         return response()->json([
             'collection' => $collection,
@@ -279,5 +247,30 @@ class UsersController extends Controller
                 ->get('date')
                 ->toArray()
         ]);
+    }
+
+    private function getActions($dateRange)
+    {
+        $range = explode(' - ', $dateRange);
+
+        $collection = VisitStatistic::whereBetween('date', [
+            date('Y-m-d', strtotime($range[0])),
+            date('Y-m-d', strtotime($range[1]))
+        ])
+            ->where('user_id', Auth::id())
+            ->with('project')
+            ->get()
+            ->groupBy('project_id')
+            ->map(function ($group) {
+                $sumActions = $group->sum('actions_counter');
+                $sumRefresh = $group->sum('refresh_page_counter');
+                $firstItem = $group->first();
+                $firstItem->actionsCounter = $sumActions;
+                $firstItem->refreshPageCounter = $sumRefresh;
+
+                return $firstItem;
+            });
+
+        return $collection;
     }
 }
