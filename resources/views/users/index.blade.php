@@ -167,7 +167,6 @@
     <script>
         $(document).ready(function () {
             $('#service-users').DataTable({
-                "order": [[1, 'asc']],
                 lengthMenu: [10, 25, 50, 100],
                 pageLength: 100,
                 language: {
