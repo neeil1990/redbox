@@ -23,13 +23,13 @@ class VisitStatistics
      */
     public function handle(Request $request, Closure $next)
     {
-        $targetController = class_basename(Route::current()->controller);
-        $controllerAction = last(explode('\\', Route::current()->action['controller']));
-        $project = MainProject::where('controller', $controllerAction)
-            ->orWhere('controller', 'like', '%' . $targetController . '%')
-            ->first();
-
         try {
+            $targetController = class_basename(Route::current()->controller);
+            $controllerAction = last(explode('\\', Route::current()->action['controller']));
+            $project = MainProject::where('controller', $controllerAction)
+                ->orWhere('controller', 'like', '%' . $targetController . '%')
+                ->first();
+
             if (empty($project)) {
                 return $next($request);
             }
@@ -67,9 +67,9 @@ class VisitStatistics
                 $e->getMessage(),
                 $e->getFile(),
                 $e->getLine(),
-                'controller' => $targetController,
-                'project' => $project,
-                'action' => $action
+                'controller' => $targetController ?? null,
+                'project' => $project ?? null,
+                'action' => $action ?? null
             ]);
         }
 
