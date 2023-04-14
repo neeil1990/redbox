@@ -131,6 +131,8 @@ class DomainMonitoring extends Model
 
     public static function curlInit($project): ?array
     {
+        $refers = ['google.com', 'yandex.ru'];
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $project->link);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -142,6 +144,7 @@ class DomainMonitoring extends Model
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_TIMEOUT, $project->waiting_time);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        curl_setopt($curl, CURLOPT_REFERER, $refers[array_rand($refers)]);
 
         return DomainMonitoring::tryConnect($curl);
     }
