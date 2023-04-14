@@ -19,6 +19,8 @@ class TextAnalyzer extends Model
      */
     public static function curlInit($link)
     {
+        $refers = ['google.com', 'yandex.ru'];
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
         curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
@@ -34,6 +36,7 @@ class TextAnalyzer extends Model
         curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_REFERER, $refers[array_rand($refers)]);
 
         return TextAnalyzer::curlConnect($curl);
     }
