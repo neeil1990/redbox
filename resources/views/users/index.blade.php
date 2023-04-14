@@ -44,10 +44,10 @@
                 @foreach($users as $user)
                     <tr>
                         <td>{{ $user->id }}</td>
-                        <td data-target="{{ $user->name }}">
+                        <td>
                             {{ $user->name }} {{ $user->last_name }}
                         </td>
-                        <td data-target="{{ $user->email }}">
+                        <td>
                             {{ $user->email }}
                             @if($user->email_verified_at)
                                 <span class="badge bg-success">{{ __('VERIFIED') }}</span>
@@ -56,7 +56,7 @@
                                 <span class="badge bg-primary">{{ __('The letter has been read') }}</span>
                             @endif
                         </td>
-                        <td data-target="{{ $user->id }}">
+                        <td data-order="{{ $user->id }}">
                             {{ $user->created_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->created_at->diffForHumans() }}</small>
@@ -66,7 +66,7 @@
                                 <span class="badge badge-success">{{ __($role) }}</span>
                             @endforeach
                         </td>
-                        <td data-target="{{ (int) strtotime($user->last_online_at) }}">
+                        <td data-order="{{ strtotime($user->last_online_at) }}">
                             {{ $user->last_online_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
@@ -167,7 +167,20 @@
     <script>
         $(document).ready(function () {
             $('#service-users').DataTable({
-                "pageLength": 100,
+                "order": [[1, 'asc']],
+                lengthMenu: [10, 25, 50, 100],
+                pageLength: 100,
+                language: {
+                    lengthMenu: "_MENU_",
+                    search: "_INPUT_",
+                    searchPlaceholder: "{{ __('Search') }}",
+                    paginate: {
+                        "first": "«",
+                        "last": "»",
+                        "next": "»",
+                        "previous": "«"
+                    },
+                },
             })
 
             $('#service-users_length').css({
