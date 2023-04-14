@@ -56,7 +56,7 @@
                                 <span class="badge bg-primary">{{ __('The letter has been read') }}</span>
                             @endif
                         </td>
-                        <td data-target="{{ strtotime($user->created_at) }}">
+                        <td data-target="{{ $user->id }}">
                             {{ $user->created_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->created_at->diffForHumans() }}</small>
@@ -66,7 +66,7 @@
                                 <span class="badge badge-success">{{ __($role) }}</span>
                             @endforeach
                         </td>
-                        <td data-target="{{ strtotime($user->last_online_at) }}">
+                        <td data-target="{{ (int) strtotime($user->last_online_at) }}">
                             {{ $user->last_online_at->format('d.m.Y H:m:s') }}
                             <br>
                             <small>{{ $user->last_online_at->diffForHumans() }}</small>
@@ -80,7 +80,8 @@
                                 <i class="fas fa-pencil-alt"></i>
                                 {{ __('Edit') }}
                             </a>
-                            <a class="btn btn-info btn-sm" href="{{ route('visit.statistics', $user->id) }}" target="_blank">
+                            <a class="btn btn-info btn-sm" href="{{ route('visit.statistics', $user->id) }}"
+                               target="_blank">
                                 <i class="fas fa-chart-pie"></i>
                                 Статистика посещений
                             </a>
