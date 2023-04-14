@@ -41,6 +41,7 @@ class MainProjectsController extends Controller
         $this->validate($request, [
             'title' => ['required'],
             'position' => ['required', 'unique:main_projects'],
+            'color' => ['required', 'unique:main_projects'],
             'link' => ['required'],
             'icon' => ['required'],
         ], [
@@ -67,6 +68,7 @@ class MainProjectsController extends Controller
         $this->validate($request, [
             'title' => ['required'],
             'position' => Rule::unique('main_projects')->ignore($project->position, 'position'),
+            'color' => Rule::unique('main_projects')->ignore($project->color, 'color'),
             'link' => ['required'],
             'icon' => ['required'],
         ], [

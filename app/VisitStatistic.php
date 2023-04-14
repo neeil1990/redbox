@@ -25,27 +25,32 @@ class VisitStatistic extends Model
     {
         $labels = [];
         $counters = [];
+        $colors = [];
 
         if ($encode) {
             foreach ($summedCollection as $module) {
+                $colors[] = $module->project->color;
                 $labels[] = __($module->project->title);
                 $counters[] = $module->actionsCounter + $module->refreshPageCounter;
             }
 
             return [
                 'labels' => json_encode($labels),
-                'counters' => json_encode($counters)
+                'counters' => json_encode($counters),
+                'colors' => json_encode($colors),
             ];
         }
 
         foreach ($summedCollection as $module) {
+            $colors[] = $module->project->color;
             $labels[$module->project->link] = __($module->project->title);
             $counters[] = ['actionsCounter' => $module->actionsCounter, 'refreshPageCounter' => $module->refreshPageCounter];
         }
 
         return [
             'labels' => $labels,
-            'counters' => $counters
+            'counters' => $counters,
+            'colors' => $colors
         ];
     }
 }

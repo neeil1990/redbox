@@ -43,6 +43,11 @@
             </div>
 
             <div class="form-group required">
+                <label for="color">{{ __('Color module') }}</label>
+                <input type="color" id="color" name="color" class="form form-control col-1" value="{{ $data->color }}">
+            </div>
+
+            <div class="form-group required">
                 <label for="description">{{ __('Project description') }}</label>
                 {!! Form::textarea("description", $data->description ,["class" => "form-control","required" => "required"]) !!}
             </div>

@@ -36,7 +36,6 @@
                             Пример: <br>
                             MyController - <span class="text-muted">Название контроллера</span> <br>
                             @index - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
-                            @store - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
                             !getProgress - <span class="text-muted">Метод, который будет игнорироваться</span> <br> <br>
 
                             <span class="text-muted">Путь до кода - app/Http/Middleware/VisitStatistics.php</span> <br> <br>
@@ -45,6 +44,11 @@
                     </span>
                 </span>
                 {!! Form::textarea("controller", null ,["class" => "form-control","required" => "required"]) !!}
+            </div>
+
+            <div class="form-group required">
+                <label for="color">{{ __('Color module') }}</label>
+                <input type="color" id="color" name="color" class="form form-control col-1">
             </div>
 
             <div class="form-group required">

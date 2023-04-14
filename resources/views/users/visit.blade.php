@@ -259,21 +259,16 @@
 
             <script>
                 let historyChart
-                let labels = [];
                 let colors = []
-                let colorsArray = getColorArray()
-                for (let i = 0; i < {{ count($summedCollection) }}; i++) {
-                    colors.push(colorsArray.shift())
-                }
 
                 new Chart(document.getElementById("doughnut-chart"), {
                     type: 'doughnut',
                     data: {
-                        labels: {!! $labels !!},
+                        labels: {!! $info['labels'] !!},
                         datasets: [
                             {
-                                backgroundColor: colors,
-                                data: {!! $counters !!}
+                                backgroundColor: {!! $info['colors'] !!},
+                                data: {!! $info['counters'] !!}
                             }
                         ]
                     },
@@ -294,8 +289,8 @@
                         success: function (response) {
                             let doughnutLabels = []
                             let targetBody = $('#history-actions-tbody')
-                            let counters = response.counters;
-                            let labels = response.labels;
+                            let counters = response.info.counters;
+                            let labels = response.info.labels;
                             let trs = ''
                             let sum = []
 
@@ -306,7 +301,6 @@
                                 }
 
                                 let iterator = 0;
-
                                 $.each(labels, function (link, name) {
                                     let targetSum = counters[iterator]['refreshPageCounter'] + counters[iterator]['actionsCounter']
                                     sum.push(targetSum)
@@ -357,7 +351,7 @@
                                         labels: doughnutLabels,
                                         datasets: [
                                             {
-                                                backgroundColor: colors,
+                                                backgroundColor: response.info.colors,
                                                 data: sum
                                             }
                                         ]
@@ -387,49 +381,6 @@
                         }
                     });
                 })
-
-                function getColorArray() {
-                    let colorArray = [
-                        "rgba(220, 51, 10, 0.6)",
-                        "rgb(203,60,25)",
-                        "rgba(121, 25, 6, 1)",
-                        "rgba(214, 96, 110, 1)",
-                        "rgba(252, 170, 153, 0.6)",
-                        "rgba(252, 170, 153, 1)",
-                        "rgba(214, 2, 86, 0.6)",
-                        "rgba(214, 2, 86, 1)",
-                        "rgba(247, 220, 163, 1)",
-                        "rgba(204, 118, 32, 0.6)",
-                        "rgba(255, 89, 0, 1)",
-                        "rgba(164, 58 ,1, 1)",
-                        "rgba(73, 28, 1, 0.6)",
-                        "rgba(178, 135, 33, 0.6)",
-                        "rgba(246, 223, 78, 1)",
-                        "rgba(1, 253, 215, 1)",
-                        "rgba(1, 79, 66, 0.6)",
-                        "rgba(139, 150, 24, 0.6)",
-                        "rgba(154, 205, 50, 1)",
-                        "rgb(17, 255, 0)",
-                        "rgba(1, 45, 152, 0.6)",
-                        "rgba(157, 149, 226, 1)",
-                        "rgba(64, 97, 206, 1)",
-                        "rgba(19,212,224, 0.6)",
-                        "rgba(19,212,224, 1)",
-                        "rgba(2, 97, 214, 0.6)",
-                        "rgba(159, 112, 216, 0.6)",
-                        "rgba(239, 50, 223, 0.6)",
-                        "rgba(239, 50, 223, 1)",
-                        "rgba(194, 85, 237, 1)",
-                        "rgba(244, 139, 200, 1)",
-                        "rgba(87, 64, 64, 0.6)",
-                        "rgba(239, 211, 211, 0.6)",
-                        "rgba(163, 209, 234, 0.6)",
-                        "rgba(234,163,163,0.6)",
-                        "rgba(232,194,90,0.6)",
-                    ]
-
-                    return colorArray.sort(() => Math.random() - 0.5);
-                }
             </script>
         @endslot
     @else

@@ -236,10 +236,7 @@ class UsersController extends Controller
 
         $info = VisitStatistic::getModulesInfo($summedCollection);
 
-        $labels = $info['labels'];
-        $counters = $info['counters'];
-
-        return view('users.visit', compact('summedCollection', 'labels', 'counters', 'user'));
+        return view('users.visit', compact('summedCollection', 'info', 'user'));
     }
 
     public function userActionsHistory(Request $request): JsonResponse
@@ -264,12 +261,9 @@ class UsersController extends Controller
                 return $firstItem;
             });
 
-        $info = VisitStatistic::getModulesInfo($collection, false);
-
         return response()->json([
             'collection' => $collection,
-            'labels' => $info['labels'],
-            'counters' => $info['counters']
+            'info' => VisitStatistic::getModulesInfo($collection, false),
         ]);
     }
 
