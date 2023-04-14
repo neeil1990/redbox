@@ -683,22 +683,22 @@ class Relevance
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
-                        $htmlCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['html'] . ' ');
+                        $htmlCount = substr_count(' ' . $this->sites[$key]['html'] . ' ', " $word ");
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
                         }
 
-                        $hiddenTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['hiddenText'] . ' ');
+                        $hiddenTextCount = substr_count(' ' . $this->sites[$key]['hiddenText'] . ' ', " $word ");
                         if ($hiddenTextCount > 0) {
                             $numberTextOccurrences += $hiddenTextCount;
                         }
 
-                        $linkTextCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['linkText'] . ' ');
+                        $linkTextCount = substr_count(' ' . $this->sites[$key]['linkText'] . ' ', " $word ");
                         if ($linkTextCount > 0) {
                             $numberLinkOccurrences += $linkTextCount;
                         }
 
-                        $passagesCount = preg_match_all("( $word )", ' ' . $this->sites[$key]['passages'] . ' ');
+                        $passagesCount = substr_count(' ' . $this->sites[$key]['passages'] . ' ', " $word ");
                         if ($passagesCount > 0) {
                             $numberPassageOccurrences += $passagesCount;
                         }
@@ -749,7 +749,7 @@ class Relevance
         $this->coverageInfo['sum'] = 0;
 
         foreach ($this->wordForms as $key => $wordForm) {
-            $tf = $idf = $reSpam = $numberOccurrences = $repeatInPassages = $repeatInText = $repeatInLink = $avgInText = $avgInPassages = 0;
+            $tf = $idf = $reSpam = $repeatInPassages = $repeatInText = $repeatInLink = $avgInText = $avgInPassages = 0;
             $avgInLink = $avgInTotalCompetitors = $totalRepeatMainPage = 0;
             $occurrences = [];
 
@@ -810,8 +810,7 @@ class Relevance
         $collection = collect($this->wordForms);
 
         $this->wordForms = $collection->sortBy(
-            function ($key, $value) {
-            },
+            function ($key, $value) {},
             SORT_REGULAR,
             true
         )->toArray();
