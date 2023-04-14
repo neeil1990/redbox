@@ -184,23 +184,11 @@ class TextAnalyzer extends Model
     public static function removeStylesAndScripts($html)
     {
         $html = mb_strtolower($html);
-        $preg = [
-            "'<script.*?</script>'si",
-            "'<style[^>]*?>.*?</style>'si",
-            "'array.*?\(.*?\)'si",
-            "'array\n\(\n.*?\n\)\n'si",
-            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
-            '/<!--(.|\s)*?-->/',
-        ];
+        $clean_html = preg_replace('/<!--.*?-->/', '', $html);
+        $clean_html = preg_replace('/<style\b[^>]*>([\s\S]*?)<\/style>/i', '', $clean_html);
+        $clean_html = preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $clean_html);
 
-        foreach ($preg as $rule) {
-            $replaced = preg_replace($rule, "", $html);
-            if (mb_strlen($replaced) !== 0) {
-                $html = $replaced;
-            }
-        }
-
-        return $html;
+        return preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $clean_html);
     }
 
     /**

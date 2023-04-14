@@ -11,6 +11,7 @@
 |
 */
 
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -380,4 +381,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    header('Content-type: text/plain; charset=utf-8');
+    echo TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://gorexpert.ru/services/ocenka-nedvijemosti/'));
 });
