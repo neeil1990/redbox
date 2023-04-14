@@ -11,6 +11,7 @@
 |
 */
 
+use App\TextAnalyzer;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 

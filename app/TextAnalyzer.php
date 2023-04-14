@@ -187,9 +187,6 @@ class TextAnalyzer extends Model
         $preg = [
             "'<script.*?</script>'si",
             "'<style[^>]*?>.*?</style>'si",
-            "'<link.*?/>'si",
-//            "'<base.*?/>'si",
-//            "'<meta.*?/>'si",
             "'array.*?\(.*?\)'si",
             "'array\n\(\n.*?\n\)\n'si",
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
