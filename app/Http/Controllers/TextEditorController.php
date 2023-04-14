@@ -38,11 +38,6 @@ class TextEditorController extends Controller
         return view('html-editor.projects', compact('projects'));
     }
 
-    public function test()
-    {
-        return view('html-editor.test');
-    }
-
     /**
      * @param boolean $showButton
      * @return array|false|Application|Factory|RedirectResponse|View|mixed

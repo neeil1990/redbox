@@ -592,7 +592,7 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    public static function checkAccess($request)
+    public static function checkAccess($request): JsonResponse
     {
         $userId = Auth::id();
         $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();

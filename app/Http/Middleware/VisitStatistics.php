@@ -8,8 +8,9 @@ use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Throwable;
+use Illuminate\Support\Str;
 
 class VisitStatistics
 {
@@ -22,47 +23,71 @@ class VisitStatistics
      */
     public function handle(Request $request, Closure $next)
     {
-        try {
-            $targetController = class_basename(Route::current()->controller);
-            $project = MainProject::where('controller', 'like', '%' . $targetController . '%')->first();
-            if (isset($project)) {
-                $config = explode("\r\n", $project->controller);
-                $callAction = explode('\\', Route::current()->action['controller']);
-                $callAction = explode('@', end($callAction))[1];
+        $targetController = class_basename(Route::current()->controller);
+        $controllerAction = last(explode('\\', Route::current()->action['controller']));
+        $project = MainProject::where('controller', $controllerAction)
+            ->orWhere('controller', 'like', '%' . $targetController . '%')
+            ->first();
 
-                $forbidden = [];
-                $access = [];
+        try {
+            if (empty($project)) {
+                return $next($request);
+            }
+
+            if ($project->controller === $controllerAction) {
+                $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
+            } else {
+                $config = explode("\r\n", $project->controller);
+                $callAction = last(explode('@', Route::current()->action['controller']));
+
                 foreach ($config as $action) {
+                    if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
+                        continue;
+                    }
+
                     $action = str_replace($targetController, '', $action);
-                    if ($action != '' && str_contains($action, '!')) {
-                        $forbidden[] = str_replace('!', '', $action);
-                    } else if($action != '' && str_contains($action, '@')) {
-                        $access[] = str_replace('@', '', $action);
+
+                    if ($action === '') {
+                        continue;
+                    }
+
+                    if ($this->findAction('!', $action, $callAction)) {
+                        return $next($request);
+                    } else if ($this->findAction('@', $action, $callAction)) {
+                        $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
+                        return $next($request);
                     }
                 }
 
-                if (in_array($callAction, $forbidden)) {
-                    return $next($request);
-                } else if (in_array($callAction, $access)) {
-                    VisitStatistic::updateOrCreate([
-                        'project_id' => $project->id,
-                        'user_id' => Auth::id(),
-                        'date' => Carbon::now()->toDateString(),
-                    ])->increment('refresh_page_counter');
-                } else {
-                    VisitStatistic::updateOrCreate([
-                        'project_id' => $project->id,
-                        'user_id' => Auth::id(),
-                        'date' => Carbon::now()->toDateString(),
-                    ])->increment('actions_counter');
-                }
+                $this->updateOrCreateVisitStatistic($project, 'actions_counter');
             }
-
-        } catch (Throwable $e) {
-
+            return $next($request);
+        } catch (\Throwable $e) {
+            Log::debug('visit statistics error', [
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                'controller' => $targetController,
+                'project' => $project,
+                'action' => $action
+            ]);
         }
 
         return $next($request);
 
+    }
+
+    private function updateOrCreateVisitStatistic($project, $incrementField)
+    {
+        VisitStatistic::updateOrCreate([
+            'project_id' => $project->id,
+            'user_id' => Auth::id(),
+            'date' => Carbon::now()->toDateString(),
+        ])->increment($incrementField);
+    }
+
+    private function findAction($rule, $action, $callAction): bool
+    {
+        return Str::contains($action, $rule) && $callAction === str_replace($rule, '', $action);
     }
 }
