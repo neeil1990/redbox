@@ -123,6 +123,36 @@
 @endunless
 <!-- AdminLTE -->
 <script src="{{ asset('js/adminlte.js') }}"></script>
+<script>
+    let secondsTrackingRedbox = 0;
+    let timeTrackingRedboxInterval
+
+    timeTrackingRedboxInterval = setInterval(() => {
+        secondsTrackingRedbox += 1;
+    }, 1000)
+
+    $(window).bind('focus', function () {
+        timeTrackingRedboxInterval = setInterval(() => {
+            secondsTrackingRedbox += 1;
+        }, 1000)
+    });
+
+    $(window).bind('blur', function () {
+        clearInterval(timeTrackingRedboxInterval)
+    });
+
+    $(window).on('beforeunload', function () {
+        $.ajax({
+            url: "{{ route('update.statistics') }}",
+            method: 'POST',
+            data: {
+                seconds: secondsTrackingRedbox,
+                controllerAction: "{{ $controllerAction }}",
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+        });
+    });
+</script>
 
 <!-- OPTIONAL SCRIPTS -->
 {{--<script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>--}}
@@ -208,35 +238,5 @@
     </noscript>
     <!-- /Yandex.Metrika counter -->
 @endif
-<script>
-    let secondsTrackingRedbox = 0;
-    let timeTrackingRedboxInterval
-
-    timeTrackingRedboxInterval = setInterval(() => {
-        secondsTrackingRedbox += 1;
-    }, 1000)
-
-    $(window).bind('focus', function () {
-        timeTrackingRedboxInterval = setInterval(() => {
-            secondsTrackingRedbox += 1;
-        }, 1000)
-    });
-
-    $(window).bind('blur', function () {
-        clearInterval(timeTrackingRedboxInterval)
-    });
-
-    $(window).on('beforeunload', function () {
-        $.ajax({
-            url: "{{ route('update.statistics') }}",
-            method: 'POST',
-            data: {
-                seconds: secondsTrackingRedbox,
-                controllerAction: "{{ $controllerAction }}",
-                _token: $('meta[name="csrf-token"]').attr('content'),
-            },
-        });
-    });
-</script>
 </body>
 </html>
