@@ -123,7 +123,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('edit-description/{id}', 'TextEditorController@editDescriptionView')->name('edit.description');
     Route::post('edit-description', 'TextEditorController@editDescription')->name('save.edit.description');
-    Route::delete('description/delete{id}', 'TextEditorController@destroyDescription')->name('delete.description');
+    Route::delete('description/delete/{id}', 'TextEditorController@destroyDescription')->name('delete.description');
     Route::get('create-description', 'TextEditorController@createDescriptionView')->name('create.description');
     Route::post('save-description', 'TextEditorController@createDescription')->name('save.description');
 
