@@ -283,6 +283,7 @@ class UsersController extends Controller
             ->first();
 
         Log::debug('project', [$project]);
+        Log::debug('Auth::id()', [Auth::id()]);
         if (isset($project)) {
             VisitStatistic::where('project_id', $project->id)
                 ->where('user_id', Auth::id())
