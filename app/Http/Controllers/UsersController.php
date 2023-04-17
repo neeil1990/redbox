@@ -277,10 +277,12 @@ class UsersController extends Controller
 
     public function updateStatistics(Request $request)
     {
+        Log::debug('requeest', $request->all());
         $project = MainProject::where('controller', $request->controllerAction)
             ->orWhere('controller', 'like', '%' . $request->controllerAction . '%')
             ->first();
 
+        Log::debug('project', [$project]);
         if (isset($project)) {
             VisitStatistic::where('project_id', $project->id)
                 ->where('user_id', Auth::id())
