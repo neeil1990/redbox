@@ -209,21 +209,21 @@
     <!-- /Yandex.Metrika counter -->
 @endif
 <script>
-    let seconds = 0;
-    let interval
+    let secondsTrackingRedbox = 0;
+    let timeTrackingRedboxInterval
 
-    interval = setInterval(() => {
-        seconds += 1;
+    timeTrackingRedboxInterval = setInterval(() => {
+        secondsTrackingRedbox += 1;
     }, 1000)
 
     $(window).bind('focus', function () {
-        interval = setInterval(() => {
-            seconds += 1;
+        timeTrackingRedboxInterval = setInterval(() => {
+            secondsTrackingRedbox += 1;
         }, 1000)
     });
 
     $(window).bind('blur', function () {
-        clearInterval(interval)
+        clearInterval(timeTrackingRedboxInterval)
     });
 
     $(window).on('beforeunload', function () {
@@ -231,7 +231,7 @@
             url: "{{ route('update.statistics') }}",
             method: 'POST',
             data: {
-                seconds: seconds,
+                seconds: secondsTrackingRedbox,
                 controllerAction: "{{ $controllerAction }}",
                 _token: $('meta[name="csrf-token"]').attr('content'),
             },
