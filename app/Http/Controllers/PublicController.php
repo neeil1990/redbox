@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Behavior;
 use App\HttpHeader;
+use App\MainProject;
+use App\VisitStatistic;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class PublicController extends Controller
@@ -64,5 +68,19 @@ class PublicController extends Controller
         $behavior = Behavior::where('domain', $site)->firstOrFail();
         $phrases = $behavior->phrases()->where('status', 0)->firstOrFail();
         return $phrases;
+    }
+
+    public function updateStatistics(Request $request)
+    {
+        $project = MainProject::where('controller', $request->controllerAction)
+            ->orWhere('controller', 'like', '%' . $request->controllerAction . '%')
+            ->first();
+
+        if (isset($project)) {
+            VisitStatistic::where('project_id', $project->id)
+                ->where('user_id', Auth::id())
+                ->where('date', Carbon::now()->toDateString())
+                ->increment('seconds', $request->seconds);
+        }
     }
 }

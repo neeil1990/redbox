@@ -274,18 +274,4 @@ class UsersController extends Controller
                 return $firstItem;
             });
     }
-
-    public function updateStatistics(Request $request)
-    {
-        $project = MainProject::where('controller', $request->controllerAction)
-            ->orWhere('controller', 'like', '%' . $request->controllerAction . '%')
-            ->first();
-
-        if (isset($project)) {
-            VisitStatistic::where('project_id', $project->id)
-                ->where('user_id', Auth::id())
-                ->where('date', Carbon::now()->toDateString())
-                ->increment('seconds', $request->seconds);
-        }
-    }
 }
