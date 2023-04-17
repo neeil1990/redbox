@@ -281,13 +281,7 @@ class UsersController extends Controller
             ->orWhere('controller', 'like', '%' . $request->controllerAction . '%')
             ->first();
 
-        Log::debug('controllerAction', [$request->controllerAction]);
-        Log::debug('seconds', [$request->seconds]);
-
         if (isset($project)) {
-            Log::debug('$project->id', [$project->id]);
-            Log::debug('Auth::id()', [Auth::id()]);
-
             VisitStatistic::where('project_id', $project->id)
                 ->where('user_id', Auth::id())
                 ->where('date', Carbon::now()->toDateString())

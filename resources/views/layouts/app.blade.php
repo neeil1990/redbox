@@ -141,7 +141,7 @@
         clearInterval(timeTrackingRedboxInterval)
     });
 
-    $(window).on('beforeunload', function () {
+    window.onbeforeunload = function () {
         $.ajax({
             url: "{{ route('update.statistics') }}",
             method: 'POST',
@@ -151,7 +151,7 @@
                 _token: $('meta[name="csrf-token"]').attr('content'),
             },
         });
-    });
+    };
 </script>
 
 <!-- OPTIONAL SCRIPTS -->
