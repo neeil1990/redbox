@@ -278,7 +278,7 @@ class UsersController extends Controller
     public function updateStatistics(Request $request)
     {
         $project = MainProject::where('controller', $request->controllerAction)
-            ->orWhere('controller', 'like', '%' . last(explode('@', $request->controllerAction)) . '%')
+            ->orWhere('controller', 'like', '%' . $request->controllerAction . '%')
             ->first();
 
         if (isset($project)) {

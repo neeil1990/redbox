@@ -192,6 +192,7 @@ class Common
         $carbon1 = Carbon::now();
         $carbon2 = $carbon1->copy()->addSeconds($seconds);
         $diff = $carbon1->diff($carbon2);
+
         return $diff->h . ':' . $diff->i . ':' . $diff->s;
     }
 }
