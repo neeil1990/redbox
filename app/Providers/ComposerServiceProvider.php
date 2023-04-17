@@ -3,6 +3,12 @@
 namespace App\Providers;
 
 
+use App\ViewComposers\CountUnreadNewsComposer;
+use App\ViewComposers\DescriptionComposer;
+use App\ViewComposers\LimitsComposer;
+use App\ViewComposers\MenuComposer;
+use App\ViewComposers\StatisticsComposer;
+use App\ViewComposers\UserPanelComposer;
 use Illuminate\Support\ServiceProvider;
 
 class ComposerServiceProvider extends ServiceProvider
@@ -24,11 +30,12 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        view()->composer('component.card', '\App\ViewComposers\DescriptionComposer');
-        view()->composer('users.panel', '\App\ViewComposers\UserPanelComposer');
-        view()->composer('navigation.menu-right', '\App\ViewComposers\UserPanelComposer');
-        view()->composer('navigation.menu-right', '\App\ViewComposers\LimitsComposer');
-        view()->composer('navigation.sidebar', '\App\ViewComposers\MenuComposer');
-        view()->composer('navigation.menu', '\App\ViewComposers\CountUnreadNewsComposer');
+        view()->composer('component.card', DescriptionComposer::class);
+        view()->composer('users.panel', UserPanelComposer::class);
+        view()->composer('navigation.menu-right', UserPanelComposer::class);
+        view()->composer('navigation.menu-right', LimitsComposer::class);
+        view()->composer('navigation.sidebar', MenuComposer::class);
+        view()->composer('navigation.menu', CountUnreadNewsComposer::class);
+        view()->composer('layouts.app', StatisticsComposer::class);
     }
 }

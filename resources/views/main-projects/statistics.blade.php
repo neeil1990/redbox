@@ -30,6 +30,18 @@
             <tr>
                 <th>Дата</th>
                 <th>
+                    Время
+                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                        <i class="fa fa-question-circle" style="color: grey"></i>
+                        <span class="ui_tooltip __bottom">
+                            <span class="ui_tooltip_content" style="width: 400px">
+                                Счётчик времени проведённого в модуле <br>
+                                Формат - часы:минуты:секунды
+                            </span>
+                        </span>
+                    </span>
+                </th>
+                <th>
                     Количество обновлений страницы
                     <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                         <i class="fa fa-question-circle" style="color: grey"></i>
@@ -52,13 +64,14 @@
                     </span>
                 </th>
                 <th>Всего действий</th>
-                <th>Пользователи</th>
+                <th>Пользовател</th>
             </tr>
             </thead>
             <tbody>
             @foreach($result as $date => $info)
                 <tr>
                     <td data-order="{{ strtotime($date) }}">{{ $date }}</td>
+                    <td>{{ $info['time'] }}</td>
                     <td>{{ $info['refreshPageCounter'] }}</td>
                     <td>{{ $info['actionsCounter'] }}</td>
                     <td>{{ $info['refreshPageCounter'] + $info['actionsCounter'] }}</td>
@@ -74,6 +87,7 @@
                                 <thead>
                                 <tr>
                                     <th>Email</th>
+                                    <th>Время проведённое на станице</th>
                                     <th>Обновления страницы</th>
                                     <th>Другие действия</th>
                                     <th>Всего действий</th>
@@ -83,6 +97,7 @@
                                 @foreach($info['users'] as $user)
                                     <tr>
                                         <td>{{ $user['email'] }}</td>
+                                        <td>{{ $user['time'] }}</td>
                                         <td>{{ $user['refreshPageCounter'] }}</td>
                                         <td>{{ $user['actionsCounter'] }}</td>
                                         <td>{{ $user['refreshPageCounter'] + $user['actionsCounter'] }}</td>

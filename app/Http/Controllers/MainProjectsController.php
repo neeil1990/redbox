@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Common;
 use App\MainProject;
 use App\VisitStatistic;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
 
 class MainProjectsController extends Controller
@@ -94,27 +91,34 @@ class MainProjectsController extends Controller
     {
         $statistics = VisitStatistic::where('project_id', $project->id)
             ->with('user')
-            ->get(['date', 'user_id', 'actions_counter', 'refresh_page_counter'])
+            ->get(['date', 'user_id', 'actions_counter', 'refresh_page_counter', 'seconds'])
             ->groupBy('date')
             ->toArray();
 
-
+        $result = [];
         foreach ($statistics as $date => $info) {
             $result[$date]['actionsCounter'] = 0;
             $result[$date]['refreshPageCounter'] = 0;
+            $result[$date]['time'] = 0;
             $users = [];
 
             foreach ($info as $elem) {
                 $result[$date]['actionsCounter'] += $elem['actions_counter'];
                 $result[$date]['refreshPageCounter'] += $elem['refresh_page_counter'];
+                $result[$date]['time'] += $elem['seconds'];
 
                 $elem['user']['actionsCounter'] = $elem['actions_counter'];
                 $elem['user']['refreshPageCounter'] = $elem['refresh_page_counter'];
+                $elem['user']['time'] = Common::getTime($elem['seconds']);
 
                 $users[] = $elem['user'];
             }
 
             $result[$date]['users'] = $users;
+        }
+
+        foreach ($result as $date => $info) {
+            $result[$date]['time'] = Common::getTime($info['time']);
         }
 
         return view('main-projects.statistics', compact('result', 'project'));

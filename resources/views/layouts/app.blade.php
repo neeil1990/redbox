@@ -208,5 +208,38 @@
     </noscript>
     <!-- /Yandex.Metrika counter -->
 @endif
+<script>
+    $(function () {
+        let seconds = 0;
+        let interval
+
+        interval = setInterval(() => {
+            seconds += 1;
+        }, 1000)
+
+        $(window).bind('focus', function () {
+            interval = setInterval(() => {
+                seconds += 1;
+            }, 1000)
+        });
+
+        $(window).bind('blur', function () {
+            clearInterval(interval)
+        });
+
+        $(window).on('beforeunload', function () {
+            $.ajax({
+                url: "{{ route('update.statistics') }}",
+                method: 'POST',
+                data: {
+                    seconds: seconds,
+                    controllerAction: "{{ $controllerAction }}",
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+            });
+        });
+    });
+
+</script>
 </body>
 </html>

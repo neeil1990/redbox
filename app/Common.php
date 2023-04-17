@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Carbon\Carbon;
+
 class Common
 {
     public static function fileExport($file, string $type, string $name = '')
@@ -183,5 +185,13 @@ class Common
         }
 
         return 0;
+    }
+
+    public static function getTime($seconds): string
+    {
+        $carbon1 = Carbon::now();
+        $carbon2 = $carbon1->copy()->addSeconds($seconds);
+        $diff = $carbon1->diff($carbon2);
+        return $diff->h . ':' . $diff->i . ':' . $diff->s;
     }
 }

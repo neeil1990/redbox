@@ -26,6 +26,7 @@ class VisitStatistic extends Model
         $labels = [];
         $counters = [];
         $colors = [];
+        $time = [];
 
         if ($encode) {
             foreach ($summedCollection as $module) {
@@ -45,12 +46,14 @@ class VisitStatistic extends Model
             $colors[] = $module->project->color;
             $labels[$module->project->link] = __($module->project->title);
             $counters[] = ['actionsCounter' => $module->actionsCounter, 'refreshPageCounter' => $module->refreshPageCounter];
+            $time[] = $module->time;
         }
 
         return [
             'labels' => $labels,
             'counters' => $counters,
-            'colors' => $colors
+            'colors' => $colors,
+            'time' => $time,
         ];
     }
 }

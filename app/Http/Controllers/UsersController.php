@@ -219,6 +219,7 @@ class UsersController extends Controller
         if (Auth::id() !== $user->id && !User::isUserAdmin()) {
             return abort(403);
         }
+
         $summedCollection = $this->getActions('20-03-2023 - ' . Carbon::now()->format('d-m-Y'));
         $info = VisitStatistic::getModulesInfo($summedCollection);
 
@@ -253,7 +254,7 @@ class UsersController extends Controller
     {
         $range = explode(' - ', $dateRange);
 
-        $collection = VisitStatistic::whereBetween('date', [
+        return VisitStatistic::whereBetween('date', [
             date('Y-m-d', strtotime($range[0])),
             date('Y-m-d', strtotime($range[1]))
         ])
@@ -264,13 +265,27 @@ class UsersController extends Controller
             ->map(function ($group) {
                 $sumActions = $group->sum('actions_counter');
                 $sumRefresh = $group->sum('refresh_page_counter');
+                $countSeconds = $group->sum('seconds');
                 $firstItem = $group->first();
                 $firstItem->actionsCounter = $sumActions;
                 $firstItem->refreshPageCounter = $sumRefresh;
+                $firstItem->time = Common::getTime($countSeconds);
 
                 return $firstItem;
             });
+    }
 
-        return $collection;
+    public function updateStatistics(Request $request)
+    {
+        $project = MainProject::where('controller', $request->controllerAction)
+            ->orWhere('controller', 'like', '%' . last(explode('@', $request->controllerAction)) . '%')
+            ->first();
+
+        if (isset($project)) {
+            VisitStatistic::where('project_id', $project->id)
+                ->where('user_id', Auth::id())
+                ->where('date', Carbon::now()->toDateString())
+                ->increment('seconds', $request->seconds);
+        }
     }
 }

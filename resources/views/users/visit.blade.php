@@ -33,6 +33,18 @@
                         <tr>
                             <th>Модуль</th>
                             <th>
+                                Время
+                                <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 400px">
+                                            Счётчик времени проведённого в модуле <br>
+                                            Формат - часы:минуты:секунды
+                                        </span>
+                                    </span>
+                                </span>
+                            </th>
+                            <th>
                                 Количество обновлений страницы
                                 <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                                     <i class="fa fa-question-circle" style="color: grey"></i>
@@ -64,6 +76,7 @@
                                     <a href="{{ $module->project->link }}"
                                        target="_blank">{{ __($module->project->title) }}</a>
                                 </td>
+                                <td>{{ $module->time }}</td>
                                 <td>{{ $module->refreshPageCounter }}</td>
                                 <td>{{ $module->actionsCounter }}</td>
                                 <td>{{ $module->actionsCounter + $module->refreshPageCounter }}</td>
@@ -101,10 +114,42 @@
                         <table id="actions-table" class="table table-hover border">
                             <thead>
                             <tr>
-                                <th class="border">Модуль</th>
-                                <th class="border">Количество обновлений страницы</th>
-                                <th class="border">Количество действий</th>
-                                <th class="border">Всего действий</th>
+                                <th>Модуль</th>
+                                <th>
+                                    Время
+                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 400px">
+                                            Счётчик времени проведённого в модуле <br>
+                                            Формат - часы:минуты:секунды
+                                        </span>
+                                    </span>
+                                </span>
+                                </th>
+                                <th>
+                                    Количество обновлений страницы
+                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 400px">
+                                            Учитывается переход на страницу и её обновление
+                                        </span>
+                                    </span>
+                                </span>
+                                </th>
+                                <th>
+                                    Количество действий
+                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
+                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                    <span class="ui_tooltip __bottom">
+                                        <span class="ui_tooltip_content" style="width: 400px">
+                                            Учитывается нажатие кнопок для получения дополнительной инфомрации из бд и т.п.
+                                        </span>
+                                    </span>
+                                </span>
+                                </th>
+                                <th>Всего действий</th>
                             </tr>
                             </thead>
                             <tbody id="history-actions-tbody">
@@ -310,6 +355,7 @@
                                         '<td class="border">' +
                                         '    <a href="' + link + '" target="_blank">' + name + '</a>' +
                                         '</td>' +
+                                        '<td class="border">' + response.info.time[iterator] + '</td>' +
                                         '<td class="border">' + counters[iterator]['refreshPageCounter'] + '</td>' +
                                         '<td class="border">' + counters[iterator]['actionsCounter'] + '</td>' +
                                         '<td class="border">' + targetSum + '</td>' +
@@ -323,7 +369,7 @@
                                 });
 
                                 $('#actions-table').DataTable({
-                                    "order": [[1, 'desc']],
+                                    "order": [[4, 'desc']],
                                     lengthMenu: [10, 25, 50, 100],
                                     pageLength: 10,
                                     language: {
