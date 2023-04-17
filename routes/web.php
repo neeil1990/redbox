@@ -382,3 +382,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
+Route::get('/test', function () {
+    dd(Auth::id());
+});
