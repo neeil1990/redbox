@@ -327,9 +327,10 @@
                 $('#show-actions').on('click', function () {
                     $.ajax({
                         type: "POST",
-                        url: "/user-actions-history",
+                        url: "{{ route('user.actions.history') }}",
                         data: {
                             dateRange: $('#date-range').val(),
+                            userId: {{ $user->id }}
                         },
                         success: function (response) {
                             let doughnutLabels = []

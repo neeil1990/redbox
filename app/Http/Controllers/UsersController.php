@@ -220,7 +220,7 @@ class UsersController extends Controller
             return abort(403);
         }
 
-        $summedCollection = $this->getActions('20-03-2023 - ' . Carbon::now()->format('d-m-Y'));
+        $summedCollection = $this->getActions('20-03-2023 - ' . Carbon::now()->format('d-m-Y'), $user->id);
         $info = VisitStatistic::getModulesInfo($summedCollection);
 
         return view('users.visit', compact('summedCollection', 'info', 'user'));
@@ -228,7 +228,7 @@ class UsersController extends Controller
 
     public function userActionsHistory(Request $request): JsonResponse
     {
-        $collection = $this->getActions($request->dateRange);
+        $collection = $this->getActions($request->dateRange, $request->userId);
 
         return response()->json([
             'collection' => $collection,
@@ -250,7 +250,7 @@ class UsersController extends Controller
         ]);
     }
 
-    private function getActions($dateRange)
+    private function getActions($dateRange, $userId)
     {
         $range = explode(' - ', $dateRange);
 
@@ -258,7 +258,7 @@ class UsersController extends Controller
             date('Y-m-d', strtotime($range[0])),
             date('Y-m-d', strtotime($range[1]))
         ])
-            ->where('user_id', Auth::id())
+            ->where('user_id', $userId)
             ->with('project')
             ->get()
             ->groupBy('project_id')
