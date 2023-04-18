@@ -47,7 +47,7 @@
                 display: inline;
                 content: " {{ __('Go to the text analyzer') }}";
                 font-weight: normal;
-                font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" !important;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
             }
 
             #scanned-sites {
@@ -56,6 +56,12 @@
 
             .RelevanceAnalysis {
                 background: oldlace;
+            }
+
+            thead th {
+                overflow: auto;
+                position: sticky;
+                top: 0;
             }
         </style>
     @endslot
@@ -189,7 +195,7 @@
                         <div class="d-flex flex-column pb-3">
                             <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3"
                                     style="cursor: pointer">
-                                Облака tf-idf сайтов из топа и посадочной страницы
+                                {{ __('TF-idf clouds of sites from the top and landing page') }}
                             </button>
                             <div class="tf-idf-clouds" style="display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -283,7 +289,7 @@
 
                     <div id="rec" style="display: none" class="mb-3">
                         <h2>{{ __('TLP Recommendations and Spam check') }}</h2>
-                        <button class="btn btn-secondary" id="recButton">Показать</button>
+                        <button class="btn btn-secondary" id="recButton">{{ __('Show') }}</button>
                     </div>
 
                     <div class="pb-3 recommendations" style="display:none;">
@@ -296,7 +302,7 @@
                                     {{ __("You can delete a word from the table if it has been worked out") }}
                                 </span>
                                 </th>
-                                <th>Слово</th>
+                                <th>{{ __('Word') }}</th>
                                 <th>Tf</th>
                                 <th>{{ __('Average number of repetitions of competitors') }}</th>
                                 <th>{{ __('The number you have on the page') }}</th>

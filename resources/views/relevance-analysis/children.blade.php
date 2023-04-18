@@ -237,7 +237,6 @@
                         'copy', 'csv', 'excel'
                     ]
                 });
-                $('#unigram-children').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
                 $('.buttons-html5').addClass('btn btn-secondary')
 
 

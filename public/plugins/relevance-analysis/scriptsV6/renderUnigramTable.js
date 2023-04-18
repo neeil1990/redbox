@@ -65,7 +65,6 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
                 "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
             }
         });
-        $('#unigram').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {
                 $(this).append("<a class='btn btn-secondary' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");

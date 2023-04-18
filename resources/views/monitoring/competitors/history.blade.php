@@ -397,8 +397,6 @@
                 $('#table').show()
                 $('#preloader').hide()
 
-                $('#table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
-
                 return res;
             }
 

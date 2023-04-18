@@ -63,11 +63,6 @@ function renderRecommendationsTable(recommendations, count, words) {
         }
     });
 
-    setTimeout(() => {
-        $('#recommendations').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
-    }, 500);
-
-
     $('#recommendations tbody').on('click', '.fa.fa-trash.remove-recommendation', function () {
         table.row($(this).parents('tr')).remove().draw();
     });

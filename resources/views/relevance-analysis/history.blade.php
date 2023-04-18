@@ -1531,8 +1531,6 @@
                                             }
                                         });
 
-                                        $('#history_table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
-
                                         $('#history_table_length').before(
                                             "<span>" +
                                             "<a href='/get-file/" + storyId + "/csv' class='btn btn-secondary ml-1'>CSV</a>" +
@@ -1654,8 +1652,6 @@
                                         scrollTo('#history-list-subject')
 
                                         customFiltersWithoutComment('list-history', listTable, 'List', 1)
-                                        $('#list-history').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
-
                                         $('#list-history').unbind().on('click', 'td.dt-control', function () {
                                             let tr = $(this).closest('tr');
                                             let row = listTable.row(tr);

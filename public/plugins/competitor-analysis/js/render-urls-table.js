@@ -29,8 +29,6 @@ function renderUrlsTable(urls, pageLength) {
             "pageLength": pageLength,
             "searching": true,
         })
-
-        $('#urls-table').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
     })
 
     $('.urls.mt-5').show()
