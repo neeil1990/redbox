@@ -8888,6 +8888,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ResponseHttpCode",
   props: {
@@ -8907,6 +8922,12 @@ __webpack_require__.r(__webpack_exports__);
       type: String
     },
     exportBtn: {
+      type: String
+    },
+    openNewPage: {
+      type: String
+    },
+    more: {
       type: String
     }
   },
@@ -76098,11 +76119,39 @@ var render = function() {
               ),
               _vm._v(" "),
               _c("div", { staticClass: "card-body" }, [
+                _c("div", { staticClass: "mailbox-controls pl-0" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-default btn-sm",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.ExportItems.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [
+                      _c("i", { staticClass: "fas fa-file-download" }),
+                      _vm._v(
+                        " " +
+                          _vm._s(_vm.exportBtn) +
+                          "\n                        "
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
                 _c("table", { staticClass: "table dataTable table-bordered" }, [
                   _c("thead", [
                     _c("tr", [
                       _c("th", { staticStyle: { width: "10px" } }, [
                         _vm._v("#")
+                      ]),
+                      _vm._v(" "),
+                      _c("th", { staticStyle: { width: "50px" } }, [
+                        _vm._v(_vm._s(_vm.more))
                       ]),
                       _vm._v(" "),
                       _c("th", [_vm._v(_vm._s(_vm.urlTitle))]),
@@ -76131,6 +76180,33 @@ var render = function() {
                       return _c("tr", { key: item.id }, [
                         _c("td", [_vm._v(_vm._s(item.id + 1))]),
                         _vm._v(" "),
+                        _c("td", [
+                          _c("div", { staticClass: "btn-group" }, [
+                            _vm._m(0, true),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "dropdown-menu",
+                                attrs: { role: "menu" }
+                              },
+                              [
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass: "dropdown-item",
+                                    attrs: {
+                                      href: "?url=" + item.url,
+                                      target: "_blank"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(_vm.openNewPage))]
+                                )
+                              ]
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(item.url))]),
                         _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(item.code))]),
@@ -76156,28 +76232,7 @@ var render = function() {
                     }),
                     0
                   )
-                ]),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    staticClass: "btn btn-info btn-sm",
-                    on: {
-                      click: function($event) {
-                        $event.preventDefault()
-                        return _vm.ExportItems.apply(null, arguments)
-                      }
-                    }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-file-download" }),
-                    _vm._v(
-                      "\n                        " +
-                        _vm._s(_vm.exportBtn) +
-                        "\n                    "
-                    )
-                  ]
-                )
+                ])
               ])
             ])
           : _vm._e()
@@ -76185,7 +76240,26 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "btn btn-default btn-sm rounded",
+        attrs: {
+          type: "button",
+          "data-toggle": "dropdown",
+          "data-offset": "-52",
+          "aria-expanded": "false"
+        }
+      },
+      [_c("i", { staticClass: "fas fa-bars" })]
+    )
+  }
+]
 render._withStripped = true
 
 

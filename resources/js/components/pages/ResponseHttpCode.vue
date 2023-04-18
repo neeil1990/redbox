@@ -34,10 +34,19 @@
                         </span>
                     </div>
                     <div class="card-body">
+
+                        <div class="mailbox-controls pl-0">
+                            <!-- /.btn-group -->
+                            <button type="button" class="btn btn-default btn-sm" @click.prevent="ExportItems">
+                                <i class="fas fa-file-download"></i> {{ exportBtn }}
+                            </button>
+                        </div>
+
                         <table class="table dataTable table-bordered">
                             <thead>
                             <tr>
                                 <th style="width: 10px">#</th>
+                                <th style="width: 50px">{{ more }}</th>
                                 <th>{{ urlTitle }}</th>
                                 <th class="sorting" @click.prevent="Sorting">{{ codeTitle }}</th>
                                 <th style="width: 40px"></th>
@@ -47,6 +56,16 @@
                             <tbody>
                             <tr v-for="item in items" :key="item.id">
                                 <td>{{ item.id + 1 }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-sm rounded" data-toggle="dropdown" data-offset="-52" aria-expanded="false">
+                                            <i class="fas fa-bars"></i>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="">
+                                            <a :href="`?url=${item.url}`" target="_blank" class="dropdown-item">{{ openNewPage }}</a>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>{{ item.url }}</td>
                                 <td>{{ item.code }}</td>
                                 <td>
@@ -60,10 +79,6 @@
                             </tr>
                             </tbody>
                         </table>
-                        <a class="btn btn-info btn-sm" @click.prevent="ExportItems">
-                            <i class="fas fa-file-download"></i>
-                            {{ exportBtn }}
-                        </a>
                     </div>
                 </div>
             </div>
@@ -92,7 +107,13 @@ export default {
         },
         exportBtn: {
             type: String
-        }
+        },
+        openNewPage: {
+            type: String
+        },
+        more: {
+            type: String
+        },
     },
     data() {
         return {
