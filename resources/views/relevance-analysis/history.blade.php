@@ -1537,6 +1537,8 @@
                                             "<a href='/get-file/" + storyId + "/xls' class='btn btn-secondary ml-1'>Excel</a>" +
                                             "</span>"
                                         )
+                                        $('#history_table').wrap('<div style="width:100%; overflow: auto"></div>')
+
 
                                         $(".dt-button").addClass('btn btn-secondary')
 
