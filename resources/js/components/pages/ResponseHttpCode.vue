@@ -35,13 +35,6 @@
                     </div>
                     <div class="card-body">
 
-                        <div class="mailbox-controls pl-0">
-                            <!-- /.btn-group -->
-                            <button type="button" class="btn btn-default btn-sm" @click.prevent="ExportItems">
-                                <i class="fas fa-file-download"></i> {{ exportBtn }}
-                            </button>
-                        </div>
-
                         <table class="table dataTable table-bordered">
                             <thead>
                             <tr>
@@ -123,6 +116,7 @@ export default {
             arUrls: [],
             items: [],
             codes: {},
+            table: {},
         }
     },
     computed: {
@@ -132,13 +126,6 @@ export default {
         }
     },
     methods: {
-        ExportItems() {
-            let str = JSON.stringify(this.items);
-            let buf = new Buffer(str);
-            let base64data = buf.toString('base64');
-
-            window.location.href = "http-headers/" + base64data + "/export/";
-        },
         ShowHttpResponse() {
             var app = this;
 
@@ -191,6 +178,46 @@ export default {
             if (this.urls.length)
                 this.arUrls = _.compact(this.urls.split(/[\r\n]+/));
         }
+    },
+    updated() {
+        this.$nextTick(function () {
+            let table = $(this.$el).find('.table');
+
+            if(table.length > 0 && (this.arUrls.length === this.items.length)){
+
+                this.table = table.DataTable({
+                    destroy: true,
+                    dom: 'BtB',
+                    ordering: false,
+                    searching: false,
+                    paging: false,
+                    buttons: [
+                        {
+                            extend: 'csv',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'excel',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'pdf',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'copy',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'print',
+                            className: 'btn btn-default btn-sm',
+                        },
+                    ],
+                });
+
+                this.table.buttons().container().addClass('mailbox-controls pl-0');
+            }
+        });
     }
 }
 </script>

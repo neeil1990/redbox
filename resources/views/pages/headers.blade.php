@@ -8,6 +8,14 @@
         <link rel="stylesheet" href="{{ asset('plugins/jquery-ui/jquery-ui.css') }}">
         <!-- DataTables -->
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+        <style>
+            .dt-buttons {
+                padding: 5px 0;
+            }
+        </style>
     @endslot
 
     @if(Auth()->check())
@@ -32,7 +40,7 @@
                         text-title="{{ __('Bulk check up to 500 pieces at a time') }}"
                         timeout-title="{{ __('Timeout between requests in ms') }}"
                         export-btn="{{ __('Export') }}"
-                        open-new-page="{{ __('Open a Page in a New Window') }}"
+                        open-new-page="{{ __('Open in a new window') }}"
                         more="{{ __('More') }}"
     ></response-http-code>
 
@@ -97,6 +105,7 @@
             <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
             <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
             <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+
             <script>
                 $(function () {
                     // CodeMirror
@@ -133,4 +142,17 @@
             </script>
         @endslot
     @endif
+
+    @slot('js')
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/jszip/jszip.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.js') }}"></script>
+    @endslot
+
+
 @endcomponent

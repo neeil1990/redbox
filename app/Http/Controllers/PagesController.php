@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Tariffs\FreeTariff;
-use App\Classes\Tariffs\OptimalTariff;
 use App\HttpHeader;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use App\Classes\Curl\CurlFacade;
 use Illuminate\View\View;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\HttpHeadersExport;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 
 class PagesController extends Controller
 {
-
     /**
      * @param Request $request
      * @param HttpHeader $header
@@ -30,12 +25,6 @@ class PagesController extends Controller
         $id = $header->saveData($response);
 
         return view('pages.headers', compact('response', 'id'));
-    }
-
-    public function httpHeadersExport($object)
-    {
-        $items = json_decode(base64_decode($object), true);
-        return Excel::download(new HttpHeadersExport($items), 'http_headers.csv');
     }
 
     /**
