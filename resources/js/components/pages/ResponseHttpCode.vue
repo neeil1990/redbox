@@ -55,7 +55,7 @@
                                             <i class="fas fa-bars"></i>
                                         </button>
                                         <div class="dropdown-menu" role="menu" style="">
-                                            <a :href="`?url=${item.url}`" target="_blank" class="dropdown-item">{{ openNewPage }}</a>
+                                            <a :href="`?url=${item.url}#response-code`" target="_blank" class="dropdown-item">{{ openNewPage }}</a>
                                         </div>
                                     </div>
                                 </td>

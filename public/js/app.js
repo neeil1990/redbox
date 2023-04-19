@@ -76191,7 +76191,8 @@ var render = function() {
                                   {
                                     staticClass: "dropdown-item",
                                     attrs: {
-                                      href: "?url=" + item.url,
+                                      href:
+                                        "?url=" + item.url + "#response-code",
                                       target: "_blank"
                                     }
                                   },
