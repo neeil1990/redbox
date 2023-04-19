@@ -34,10 +34,12 @@
                         </span>
                     </div>
                     <div class="card-body">
+
                         <table class="table dataTable table-bordered">
                             <thead>
                             <tr>
                                 <th style="width: 10px">#</th>
+                                <th style="width: 50px">{{ more }}</th>
                                 <th>{{ urlTitle }}</th>
                                 <th class="sorting" @click.prevent="Sorting">{{ codeTitle }}</th>
                                 <th style="width: 40px"></th>
@@ -47,6 +49,16 @@
                             <tbody>
                             <tr v-for="item in items" :key="item.id">
                                 <td>{{ item.id + 1 }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-sm rounded" data-toggle="dropdown" data-offset="-52" aria-expanded="false">
+                                            <i class="fas fa-bars"></i>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="">
+                                            <a :href="`?url=${item.url}#response-code`" target="_blank" class="dropdown-item">{{ openNewPage }}</a>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>{{ item.url }}</td>
                                 <td>{{ item.code }}</td>
                                 <td>
@@ -60,10 +72,6 @@
                             </tr>
                             </tbody>
                         </table>
-                        <a class="btn btn-info btn-sm" @click.prevent="ExportItems">
-                            <i class="fas fa-file-download"></i>
-                            {{ exportBtn }}
-                        </a>
                     </div>
                 </div>
             </div>
@@ -92,7 +100,13 @@ export default {
         },
         exportBtn: {
             type: String
-        }
+        },
+        openNewPage: {
+            type: String
+        },
+        more: {
+            type: String
+        },
     },
     data() {
         return {
@@ -102,6 +116,7 @@ export default {
             arUrls: [],
             items: [],
             codes: {},
+            table: {},
         }
     },
     computed: {
@@ -111,13 +126,6 @@ export default {
         }
     },
     methods: {
-        ExportItems() {
-            let str = JSON.stringify(this.items);
-            let buf = new Buffer(str);
-            let base64data = buf.toString('base64');
-
-            window.location.href = "http-headers/" + base64data + "/export/";
-        },
         ShowHttpResponse() {
             var app = this;
 
@@ -170,6 +178,46 @@ export default {
             if (this.urls.length)
                 this.arUrls = _.compact(this.urls.split(/[\r\n]+/));
         }
+    },
+    updated() {
+        this.$nextTick(function () {
+            let table = $(this.$el).find('.table');
+
+            if(table.length > 0 && (this.arUrls.length === this.items.length)){
+
+                this.table = table.DataTable({
+                    destroy: true,
+                    dom: 'BtB',
+                    ordering: false,
+                    searching: false,
+                    paging: false,
+                    buttons: [
+                        {
+                            extend: 'csv',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'excel',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'pdf',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'copy',
+                            className: 'btn btn-default btn-sm',
+                        },
+                        {
+                            extend: 'print',
+                            className: 'btn btn-default btn-sm',
+                        },
+                    ],
+                });
+
+                this.table.buttons().container().addClass('mailbox-controls pl-0');
+            }
+        });
     }
 }
 </script>

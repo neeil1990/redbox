@@ -16,8 +16,9 @@ class PublicController extends Controller
 {
     public function httpHeaders($id, HttpHeader $header)
     {
+        $lang = \request('lang', $header->lang);
         $response = $header->getData($id);
-        return view('pages.headers', compact('response', 'id'));
+        return view('pages.headers', compact('response', 'id', 'lang'));
     }
 
     public function checkBehavior($id)

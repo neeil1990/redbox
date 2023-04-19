@@ -8815,7 +8815,15 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(Buffer) {//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8908,6 +8916,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     exportBtn: {
       type: String
+    },
+    openNewPage: {
+      type: String
+    },
+    more: {
+      type: String
     }
   },
   data: function data() {
@@ -8917,7 +8931,8 @@ __webpack_require__.r(__webpack_exports__);
       urls: '',
       arUrls: [],
       items: [],
-      codes: {}
+      codes: {},
+      table: {}
     };
   },
   computed: {
@@ -8926,12 +8941,6 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    ExportItems: function ExportItems() {
-      var str = JSON.stringify(this.items);
-      var buf = new Buffer(str);
-      var base64data = buf.toString('base64');
-      window.location.href = "http-headers/" + base64data + "/export/";
-    },
     ShowHttpResponse: function ShowHttpResponse() {
       var app = this;
       app.items = [];
@@ -8971,9 +8980,40 @@ __webpack_require__.r(__webpack_exports__);
     StringToArray: function StringToArray() {
       if (this.urls.length) this.arUrls = _.compact(this.urls.split(/[\r\n]+/));
     }
+  },
+  updated: function updated() {
+    this.$nextTick(function () {
+      var table = $(this.$el).find('.table');
+
+      if (table.length > 0 && this.arUrls.length === this.items.length) {
+        this.table = table.DataTable({
+          destroy: true,
+          dom: 'BtB',
+          ordering: false,
+          searching: false,
+          paging: false,
+          buttons: [{
+            extend: 'csv',
+            className: 'btn btn-default btn-sm'
+          }, {
+            extend: 'excel',
+            className: 'btn btn-default btn-sm'
+          }, {
+            extend: 'pdf',
+            className: 'btn btn-default btn-sm'
+          }, {
+            extend: 'copy',
+            className: 'btn btn-default btn-sm'
+          }, {
+            extend: 'print',
+            className: 'btn btn-default btn-sm'
+          }]
+        });
+        this.table.buttons().container().addClass('mailbox-controls pl-0');
+      }
+    });
   }
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../node_modules/buffer/index.js */ "./node_modules/buffer/index.js").Buffer))
 
 /***/ }),
 
@@ -75286,9 +75326,11 @@ var render = function() {
                                   [
                                     _c("thead", [
                                       _c("tr", [
-                                        _c("th", [
-                                          _vm._v(_vm._s(_vm.lang.tag))
-                                        ]),
+                                        _c(
+                                          "th",
+                                          { staticStyle: { width: "150px" } },
+                                          [_vm._v(_vm._s(_vm.lang.tag))]
+                                        ),
                                         _vm._v(" "),
                                         _c("th", [
                                           _vm._v(_vm._s(_vm.lang.content))
@@ -76105,6 +76147,10 @@ var render = function() {
                         _vm._v("#")
                       ]),
                       _vm._v(" "),
+                      _c("th", { staticStyle: { width: "50px" } }, [
+                        _vm._v(_vm._s(_vm.more))
+                      ]),
+                      _vm._v(" "),
                       _c("th", [_vm._v(_vm._s(_vm.urlTitle))]),
                       _vm._v(" "),
                       _c(
@@ -76131,6 +76177,34 @@ var render = function() {
                       return _c("tr", { key: item.id }, [
                         _c("td", [_vm._v(_vm._s(item.id + 1))]),
                         _vm._v(" "),
+                        _c("td", [
+                          _c("div", { staticClass: "btn-group" }, [
+                            _vm._m(0, true),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "dropdown-menu",
+                                attrs: { role: "menu" }
+                              },
+                              [
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass: "dropdown-item",
+                                    attrs: {
+                                      href:
+                                        "?url=" + item.url + "#response-code",
+                                      target: "_blank"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(_vm.openNewPage))]
+                                )
+                              ]
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(item.url))]),
                         _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(item.code))]),
@@ -76156,28 +76230,7 @@ var render = function() {
                     }),
                     0
                   )
-                ]),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    staticClass: "btn btn-info btn-sm",
-                    on: {
-                      click: function($event) {
-                        $event.preventDefault()
-                        return _vm.ExportItems.apply(null, arguments)
-                      }
-                    }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-file-download" }),
-                    _vm._v(
-                      "\n                        " +
-                        _vm._s(_vm.exportBtn) +
-                        "\n                    "
-                    )
-                  ]
-                )
+                ])
               ])
             ])
           : _vm._e()
@@ -76185,7 +76238,26 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "btn btn-default btn-sm rounded",
+        attrs: {
+          type: "button",
+          "data-toggle": "dropdown",
+          "data-offset": "-52",
+          "aria-expanded": "false"
+        }
+      },
+      [_c("i", { staticClass: "fas fa-bars" })]
+    )
+  }
+]
 render._withStripped = true
 
 
