@@ -50,11 +50,10 @@
                 <div class="form-group">
                     <label>{{ __('Copy link') }}:</label>
                     <div class="input-group input-group-sm">
-                        <input type="text" id="inputCopy" value="{{ request()->getHost() }}/public/http-headers/{{$id}}"
+                        <input type="text" id="inputCopy" value="{{ request()->getHost() }}/public/http-headers/{{$id}}?lang={{ $lang }}"
                                class="form-control">
                         <div class="input-group-append">
-                            <span class="input-group-text" onclick="copy()" style="cursor: pointer"><i
-                                    class="fas fa-copy"></i></span>
+                            <span class="input-group-text" onclick="copy()" style="cursor: pointer"><i class="fas fa-copy"></i></span>
                         </div>
                     </div>
                 </div>
@@ -98,52 +97,15 @@
                 </div>
             </div>
         </div>
-
-        @slot('js')
-            <!-- CodeMirror -->
-            <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
-            <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
-            <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
-            <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
-
-            <script>
-                $(function () {
-                    // CodeMirror
-                    CodeMirror.fromTextArea(document.getElementById("code"), {
-                        mode: "htmlmixed",
-                        //theme: "monokai",
-                        lineNumbers: true,
-                    });
-                })
-            </script>
-
-            <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
-            <script>
-                $(function () {
-                    $(".CodeMirror").resizable();
-                });
-
-                function copy() {
-                    var copyText = document.getElementById("inputCopy");
-
-                    copyText.select();
-                    copyText.setSelectionRange(0, 99999);
-                    document.execCommand("copy");
-
-                    $(document).Toasts('create', {
-                        class: 'bg-success',
-                        title: "{{ __('Copied link') }}",
-                        subtitle: "{{ __('Close') }}",
-                        body: copyText.value,
-                        autohide: true,
-                        delay: 2000,
-                    });
-                }
-            </script>
-        @endslot
     @endif
 
     @slot('js')
+        <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
+        <!-- CodeMirror -->
+        <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
+        <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
+        <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
+        <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
@@ -152,6 +114,38 @@
         <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.js') }}"></script>
+
+        <script>
+            $(function () {
+                // CodeMirror
+                if(document.getElementById("code")){
+                    CodeMirror.fromTextArea(document.getElementById("code"), {
+                        mode: "htmlmixed",
+                        //theme: "monokai",
+                        lineNumbers: true,
+                    });
+                }
+
+                $(".CodeMirror").resizable();
+            });
+
+            function copy() {
+                let copyText = document.getElementById("inputCopy");
+
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+
+                $(document).Toasts('create', {
+                    class: 'bg-success',
+                    title: "{{ __('Copied link') }}",
+                    subtitle: "{{ __('Close') }}",
+                    body: copyText.value,
+                    autohide: true,
+                    delay: 2000,
+                });
+            }
+        </script>
     @endslot
 
 

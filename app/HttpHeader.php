@@ -7,14 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class HttpHeader extends Model
 {
-    /**
-     * @var array
-     */
+    public $lang = "ru";
     protected $fillable = ['data'];
-
-    /**
-     * @var int
-     */
     protected $deleteDays = 60;
 
     /**

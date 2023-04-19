@@ -6,6 +6,7 @@ use App\HttpHeader;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use App\Classes\Curl\CurlFacade;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 
@@ -18,13 +19,18 @@ class PagesController extends Controller
      */
     public function httpHeaders(Request $request, HttpHeader $header)
     {
+        $lang = $header->lang;
+        $user = Auth::user();
+        if($user)
+            $lang = $user['lang'];
+
         if($request->input('http', false))
             return (new CurlFacade($request->input('url')))->httpCode();
 
         $response = (new CurlFacade($request->input('url')))->run();
         $id = $header->saveData($response);
 
-        return view('pages.headers', compact('response', 'id'));
+        return view('pages.headers', compact('response', 'id', 'lang'));
     }
 
     /**
