@@ -75326,9 +75326,11 @@ var render = function() {
                                   [
                                     _c("thead", [
                                       _c("tr", [
-                                        _c("th", [
-                                          _vm._v(_vm._s(_vm.lang.tag))
-                                        ]),
+                                        _c(
+                                          "th",
+                                          { staticStyle: { width: "150px" } },
+                                          [_vm._v(_vm._s(_vm.lang.tag))]
+                                        ),
                                         _vm._v(" "),
                                         _c("th", [
                                           _vm._v(_vm._s(_vm.lang.content))
