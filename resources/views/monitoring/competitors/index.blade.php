@@ -59,33 +59,39 @@
                     <h3 class="card-title">{{ __('Region filter') }}</h3>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <form action="" style="display: contents;">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label>{{ __('Search engine') }}:</label>
-                                    <select name="region" class="custom-select" id="searchEngines">
-                                        @if($project->searchengines->count() > 1)
-                                            <option value="">{{ __('All search engine and regions') }}</option>
-                                        @endif
+                    <div class="d-flex flex-row justify-content-start align-items-center">
+                        <div class="col-4 mr-3">
+                            <div class="form-group">
+                                <label>{{ __('Search engine') }}:</label>
+                                <select name="region" class="custom-select" id="searchEngines">
+                                    @if($project->searchengines->count() > 1)
+                                        <option value="">{{ __('All search engine and regions') }}</option>
+                                    @endif
 
-                                        @foreach($project->searchengines as $search)
-                                            @if($search->id == request('region'))
-                                                <option value="{{ $search->id }}"
-                                                        selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                                    [{{$search->lr}}]
-                                                </option>
-                                            @else
-                                                <option
-                                                    value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                                    [{{$search->lr}}]
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>
+                                    @foreach($project->searchengines as $search)
+                                        @if($search->id == request('region'))
+                                            <option value="{{ $search->id }}"
+                                                    selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                                [{{$search->lr}}]
+                                            </option>
+                                        @else
+                                            <option
+                                                value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                                [{{$search->lr}}]
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
                             </div>
-                        </form>
+                        </div>
+                        <div id="download-results" style="display: none;">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <img src="/img/1485.gif" style="width: 40px; height: 40px;">
+                            </div>
+                            <div>
+                                загрузка результатов
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -216,6 +222,7 @@
                 });
 
                 $('#searchEngines').on('change', function () {
+                    $('#download-results').show()
                     let val = $(this).val()
                     let data = {
                         '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -243,8 +250,8 @@
                             }
 
                             renderTableRows(response)
-
                             $('#toast-container').hide()
+                            $('#download-results').hide()
                             $('#toast-container').show(300)
 
                             setTimeout(() => {
@@ -256,7 +263,7 @@
 
                 $('#searchCompetitors').on('click', function () {
                     let table = $('#table').DataTable()
-                    table.on('draw.dt', function() {
+                    table.on('draw.dt', function () {
                         let competitors = getMaxValues()
 
                         let textAreaText = ''
@@ -290,6 +297,8 @@
                             $.each(response.urls, function (k, domain) {
                                 $("input[data-target='" + domain + "']").prop('checked', true)
                             })
+
+                            refreshMethods()
                         },
                     });
                 })
@@ -306,7 +315,6 @@
                         } else {
                             input = '<input type="checkbox" data-target="' + key + '" class="change-domain-state">'
                         }
-
                     }
 
                     let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
@@ -321,43 +329,24 @@
                         }
                     })
 
-                    let google
-                    if (val.visibilityGoogle.length !== 0) {
-                        google = '<div>'
-                        $.each(val.visibilityGoogle, function (lr, count) {
-                            google += `<div>${count}<span class="text-muted">(${lr})</span></div>`
-                        })
-                        google += '</div>'
-                    } else {
-                        google = 0
-                    }
-
-                    let yandex
-                    if (val.visibilityYandex.length !== 0) {
-                        yandex = '<div>'
-                        $.each(val.visibilityYandex, function (lr, count) {
-                            yandex += `<div>${count}<span class="text-muted">(${lr})</span></div>`
-                        })
-                        yandex += '</div>'
-                    } else {
-                        yandex = 0
-                    }
+                    let google = renderRegions(val.visibilityGoogle)
+                    let yandex = renderRegions(val.visibilityYandex)
 
                     let visibilityCell =
                         '<div class="d-flex flex-row justify-content-between">'
 
                     if (google !== 0) {
-                        visibilityCell += '<div class="mr-1"> Google: ' + google + '</div>'
+                        visibilityCell += '<div class="w-50 border-right p-2"> Google: ' + google + '</div>'
                     }
                     if (yandex !== 0) {
-                        visibilityCell += '<div> Yandex: ' + yandex + '</div>'
+                        visibilityCell += '<div class="w-50 border-right p-2"> Yandex: ' + yandex + '</div>'
                     }
 
                     $('#table > tbody').append('<tr>' +
                         '    <td data-order="' + val.competitor + '">' + input + '</td>' +
                         '    <td data-order="' + key + '">' + stub + '</td>' +
                         '    <td>' + engines + '</td>' +
-                        '    <td data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
+                        '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
                         '</tr>')
                 })
 
@@ -588,6 +577,21 @@
                 });
 
                 return tuples.reverse().slice(0, 5);
+            }
+
+            function renderRegions(val) {
+                let region
+                if (val.length !== 0) {
+                    region = '<div>'
+                    $.each(val, function (lr, count) {
+                        region += `<div>${count}<span class="text-muted" title="${lr}"> ${lr.split(',')[0]}</span></div>`
+                    })
+                    region += '</div>'
+                } else {
+                    region = 0
+                }
+
+                return region
             }
         </script>
     @endslot

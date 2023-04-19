@@ -625,7 +625,7 @@ class Relevance
 
                 $root = $m->base($key);
                 if ($root == null) {
-                    continue;
+                    $root = $key;
                 }
 
                 $wordWorms[$root][$key] = $item;

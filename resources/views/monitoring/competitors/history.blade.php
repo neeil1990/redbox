@@ -42,6 +42,45 @@
             #history-results > tbody > tr > td {
                 min-width: 75px;
             }
+
+            .col-sm-12 {
+                overflow: auto;
+                width: 100%;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            thead {
+                position: sticky;
+                top: 0;
+                background-color: white;
+            }
+
+            #avg-position_wrapper,
+            #top3_wrapper,
+            #top10_wrapper,
+            #top100_wrapper {
+                width: 50%;
+            }
+
+            #avg-position,
+            #top3,
+            #top10,
+            #top100 {
+                width: 100% !important;
+            }
+
+            #tableHeadRow th {
+                min-width: 100px;
+                max-width: 100px;
+            }
+
+            .min-value {
+                background-color: #ebf0f5;
+            }
         </style>
     @endslot
 
@@ -76,10 +115,9 @@
                 <div class="card-header">
                     <h3 class="card-title">{{ __('Region filter') }}</h3>
                 </div>
-
-                <div class="card-body d-flex">
-                    <form action="" style="display: contents;">
-                        <div class="w-25">
+                <div class="card-body">
+                    <div class="d-flex flex-row justify-content-start align-items-center">
+                        <div class="col-4 mr-3">
                             <div class="form-group">
                                 <label>{{ __('Search engine') }}:</label>
                                 <select name="region" class="custom-select" id="searchEngines">
@@ -99,7 +137,15 @@
                                 </select>
                             </div>
                         </div>
-                    </form>
+                        <div id="download-results">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <img src="/img/1485.gif" style="width: 40px; height: 40px;">
+                            </div>
+                            <div>
+                                загрузка результатов
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,14 +175,14 @@
                 <div class="chart-container">
                     <canvas id="bar-chart"></canvas>
                 </div>
-                <table class="table table-hover table-bordered w-50">
+                <table class="table table-hover table-bordered w-50" id="avg-position">
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
                         <th>{{ __('Average position') }}</th>
                     </tr>
                     </thead>
-                    <tbody id="more-info-tbody">
+                    <tbody id="avg-position-tbody">
 
                     </tbody>
                 </table>
@@ -146,7 +192,7 @@
                 <div class="chart-container">
                     <canvas id="bar-chart-3"></canvas>
                 </div>
-                <table class="table table-hover table-bordered w-50">
+                <table class="table table-hover table-bordered w-50" id="top3">
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
@@ -163,7 +209,7 @@
                 <div class="chart-container">
                     <canvas id="bar-chart-10"></canvas>
                 </div>
-                <table class="table table-hover table-bordered w-50">
+                <table class="table table-hover table-bordered w-50" id="top10">
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
@@ -180,7 +226,7 @@
                 <div class="chart-container">
                     <canvas id="bar-chart-100"></canvas>
                 </div>
-                <table class="table table-hover table-bordered w-50">
+                <table class="table table-hover table-bordered w-50" id="top100">
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
@@ -237,6 +283,9 @@
                     <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
                         Топ 100
                     </button>
+                    <button data-action="off" class="btn btn-default btn-sm" id="switch-color">
+                        Выключить поцветку
+                    </button>
                 </div>
             </div>
         </div>
@@ -268,7 +317,6 @@
             let chart10
             let chart100
 
-            const MODE = '{{ request('mode', null) }}';
             const PROJECT_ID = {{ $project->id }};
             const REGION_ID = '{{ request('region', null) }}';
 
@@ -285,6 +333,7 @@
                     localStorage.setItem('lr_redbox_monitoring_selected_filter', JSON.stringify({
                         val: val,
                     }))
+
                     renderInfo(true)
                 })
 
@@ -354,6 +403,32 @@
             }
 
             function initTable() {
+                let $table = $('#table');
+                let $rows = $table.find('tr');
+
+                $rows.each(function (rowIndex) {
+                    if (rowIndex !== 0) {
+                        let $row = $(this);
+                        let $cells = $row.find('td');
+
+                        let array = []
+                        $cells.each(function (cellIndex) {
+                            let $cell = $(this);
+                            let cellVal = parseFloat($cell.text()); // преобразуем значение ячейки в число
+
+                            if (!isNaN(cellVal) && cellVal !== 0) {
+                                array.push({
+                                    cellIndex: cellIndex + 1,
+                                    cellVal: cellVal
+                                })
+                            }
+                        });
+
+                        array.sort((prev, next) => prev.cellVal - next.cellVal);
+                        $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
+                    }
+                });
+
                 let res = $('#table').DataTable({
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
@@ -398,6 +473,37 @@
                 $('#preloader').hide()
 
                 return res;
+            }
+
+            function renderTable(tableId, body, data, key) {
+                let rows = ''
+                $.each(data, function (domain, values) {
+                    rows += '<tr class="render-more">'
+                    rows += '<td>' + domain + '</td>'
+                    rows += '<td>' + String(values[key]).substring(0, 5) + '</td></tr>'
+                })
+                $(body).append(rows)
+
+                if ($.fn.DataTable.fnIsDataTable($(tableId))) {
+                    $(tableId).dataTable().fnDestroy();
+                }
+
+                $(tableId).DataTable({
+                    order: [[1, 'desc']],
+                    lengthMenu: [10, 25, 50, 100],
+                    pageLength: 10,
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "{{ __('Search') }}",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                })
             }
 
             function renderCharts(data, destroy) {
@@ -654,6 +760,7 @@
             }
 
             function renderInfo(destroy = false) {
+                $('#download-results').show()
                 if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                     $('#table').dataTable().fnDestroy();
                     $('.render').remove()
@@ -674,9 +781,9 @@
                         table = initTable()
 
                         renderStatistics(response.statistics, destroy)
+                        $('#download-results').hide()
                     },
                 });
-
                 return table
             }
 
@@ -787,6 +894,22 @@
                         })
                     })
 
+                    $('#switch-color').unbind().on('click', function () {
+                        let action = $(this).attr('data-action')
+
+                        if (action === 'off') {
+                            $(this).text('Включить поцветку')
+                            $(this).attr('data-action', 'on')
+                            $('.grow-color').addClass('grow-color-hide').removeClass('grow-color')
+                            $('.shrink-color').addClass('shrink-color-hide').removeClass('shrink-color')
+                        } else {
+                            $(this).text('Выключить поцветку')
+                            $(this).attr('data-action', 'off')
+                            $('.grow-color-hide').addClass('grow-color').removeClass('grow-color-hide')
+                            $('.shrink-color-hide').addClass('shrink-color').removeClass('shrink-color-hide')
+                        }
+                    })
+
                     $('#visibility-buttons').show()
                 }
             }
@@ -823,30 +946,11 @@
 
             function renderStatistics(data, destroy) {
                 $('.render-more').remove()
-                $.each(data, function (domain, values) {
-                    let row = '<tr class="render-more">'
-                    row += '<td>' + domain + '</td>'
-                    row += '<td>' + String(values['avg']).substring(0, 5) + '</td></tr>'
-                    $('#more-info-tbody').append(row)
-                })
-                $.each(data, function (domain, values) {
-                    let row = '<tr class="render-more">'
-                    row += '<td>' + domain + '</td>'
-                    row += '<td>' + String(values['top_3']).substring(0, 5) + '</td>'
-                    $('#top3-tbody').append(row)
-                })
-                $.each(data, function (domain, values) {
-                    let row = '<tr class="render-more">'
-                    row += '<td>' + domain + '</td>'
-                    row += '<td>' + String(values['top_10']).substring(0, 5) + '</td>'
-                    $('#top10-tbody').append(row)
-                })
-                $.each(data, function (domain, values) {
-                    let row = '<tr class="render-more">'
-                    row += '<td>' + domain + '</td>'
-                    row += '<td>' + String(values['top_100']).substring(0, 5) + '</td>'
-                    $('#top100-tbody').append(row)
-                })
+
+                renderTable('#avg-position', '#avg-position-tbody', data, 'avg')
+                renderTable('#top3', '#top3-tbody', data, 'top_3')
+                renderTable('#top10', '#top10-tbody', data, 'top_10')
+                renderTable('#top100', '#top100-tbody', data, 'top_100')
 
                 $('#statistics-table').show()
                 renderCharts(data, destroy)

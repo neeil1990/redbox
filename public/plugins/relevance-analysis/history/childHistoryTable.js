@@ -674,5 +674,4 @@ function getColor(result, ideal) {
     }
 
     return 'rgba(220,53,69,0.5)';
-
 }
