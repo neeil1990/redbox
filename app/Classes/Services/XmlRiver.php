@@ -21,7 +21,7 @@ class XmlRiver
         $this->user = config('xmlriver.user');
         $this->key = config('xmlriver.key');
 
-        $this->query = $query;
+        $this->query = $this->filterQuery($query);
         $this->regions = $regions;
     }
 
@@ -47,8 +47,15 @@ class XmlRiver
         }else{
             if(isset($response->error))
                 throw new XmlRiverException($response->error);
+            elseif(isset($response->mods->error) && $response->mods->error === 'yes')
+                throw new XmlRiverException($response->content);
             else
                 throw new XmlRiverException("Something went wrong!");
         }
+    }
+
+    protected function filterQuery(string $str): string
+    {
+        return str_replace(['+'], '', $str);
     }
 }
