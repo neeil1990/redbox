@@ -40,22 +40,23 @@ class XmlRiver
             ->asJson()
             ->get();
 
-        if(isset($response->content)) {
-            $info = collect($response->content->includingPhrases->info)->last();
+        if(isset($response->mods->error) && $response->mods->error === 'yes')
+            throw new XmlRiverException($response->content->query);
+        elseif(isset($response->error))
+            throw new XmlRiverException($response->error);
+        else{
+            if(isset($response->content)) {
+                $info = collect($response->content->includingPhrases->info)->last();
 
-            return filter_var($info, FILTER_SANITIZE_NUMBER_INT);
-        }else{
-            if(isset($response->error))
-                throw new XmlRiverException($response->error);
-            elseif(isset($response->mods->error) && $response->mods->error === 'yes')
-                throw new XmlRiverException($response->content);
-            else
+                return filter_var($info, FILTER_SANITIZE_NUMBER_INT);
+            }else{
                 throw new XmlRiverException("Something went wrong!");
+            }
         }
     }
 
     protected function filterQuery(string $str): string
     {
-        return str_replace(['+'], '', $str);
+        return str_replace(['+', ','], '', $str);
     }
 }
