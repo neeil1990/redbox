@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Classes\Services\XmlRiver;
+use App\Exceptions\XmlRiverException;
 use App\MonitoringKeyword;
 use App\MonitoringOccurrence;
 use App\MonitoringSearchengine;
