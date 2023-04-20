@@ -20,8 +20,8 @@
             }
 
             .chart-container {
-                width: 50%;
-                height: 400px;
+                width: 100%;
+                height: 527px;
             }
 
             #history-block > table > thead > tr:nth-child(1) > th:nth-child(2),
@@ -80,6 +80,11 @@
 
             .min-value {
                 background-color: #ebf0f5;
+            }
+
+            table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
             }
         </style>
     @endslot
@@ -559,8 +564,13 @@
                         scales: {
                             xAxes: [
                                 {
-                                    stacked: true
-                                }
+                                    stacked: true,
+                                    ticks: {
+                                        maxRotation: 45,
+                                        minRotation: 45,
+                                        fontSize: 10
+                                    }
+                                },
                             ],
                             yAxes: [
                                 {
@@ -601,33 +611,22 @@
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
-                                label: "{{ __("Top") }} 3 (%)",
-                                backgroundColor: colors,
-                                data: top3
-                            }
-                        ],
+                        datasets: [{
+                            label: "{{ __("Top") }} 3 (%)",
+                            data: top3,
+                            backgroundColor: colors,
+                        }]
                     },
                     options: {
-                        title: {
-                            display: true,
-                            text: "{{ __("Top") }} 3"
-                        },
                         scales: {
-                            yAxes: [{
+                            xAxes: [{
                                 ticks: {
-                                    beginAtZero: true,
-                                    stepSize: 10,
-                                    max: 100,
-                                    min: 0
+                                    maxRotation: 45,
+                                    minRotation: 45,
+                                    fontSize: 10
                                 }
                             }]
-                        },
-                        maintainAspectRatio: false,
-                        legend: {
-                            display: false
-                        },
+                        }
                     }
                 });
 
@@ -635,33 +634,22 @@
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
-                                label: "{{ __("Top") }} 10 (%)",
-                                backgroundColor: colors,
-                                data: top10
-                            }
-                        ]
+                        datasets: [{
+                            label: "{{ __("Top") }} 10 (%)",
+                            data: top10,
+                            backgroundColor: colors,
+                        }]
                     },
                     options: {
-                        title: {
-                            display: true,
-                            text: "{{ __("Top") }} 10"
-                        },
                         scales: {
-                            yAxes: [{
+                            xAxes: [{
                                 ticks: {
-                                    beginAtZero: true,
-                                    stepSize: 10,
-                                    max: 100,
-                                    min: 0
+                                    maxRotation: 45,
+                                    minRotation: 45,
+                                    fontSize: 10
                                 }
                             }]
-                        },
-                        maintainAspectRatio: false,
-                        legend: {
-                            display: false
-                        },
+                        }
                     }
                 });
 
@@ -669,33 +657,22 @@
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
-                                label: "{{ __("Top") }} 100 (%)",
-                                backgroundColor: colors,
-                                data: top100
-                            }
-                        ]
+                        datasets: [{
+                            label: "{{ __("Top") }} 100 (%)",
+                            data: top100,
+                            backgroundColor: colors,
+                        }]
                     },
                     options: {
                         scales: {
-                            yAxes: [{
+                            xAxes: [{
                                 ticks: {
-                                    beginAtZero: true,
-                                    stepSize: 10,
-                                    max: 100,
-                                    min: 0
+                                    maxRotation: 45,
+                                    minRotation: 45,
+                                    fontSize: 10
                                 }
                             }]
-                        },
-                        maintainAspectRatio: false,
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: "{{ __("Top") }} 100"
-                        },
+                        }
                     }
                 });
             }
@@ -822,7 +799,12 @@
                         trs += '<tr><td>' + domain + '</td>'
                         $.each(keys, function (key, name) {
                             $.each(dates, function (k1, date) {
-                                trs += '<td>' + data[date][domain][name] + '</td>'
+                                let firstElement = k1 === 0;
+                                if (firstElement) {
+                                    trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
+                                }else {
+                                    trs += '<td>' + data[date][domain][name] + '</td>'
+                                }
                             })
                         })
                         trs += "</tr>"
@@ -833,10 +815,10 @@
                         '    <thead>' +
                         '        <tr>' +
                         '            <th>Домен</th>' +
-                        '            <th colspan="' + length + '">Средняя позиция</th>' +
-                        '            <th colspan="' + length + '">Топ 3</th>' +
-                        '            <th colspan="' + length + '">Топ 10</th>' +
-                        '            <th colspan="' + length + '">Топ 100</th>' +
+                        '            <th colspan="' + length + '" class="text-center">Средняя позиция</th>' +
+                        '            <th colspan="' + length + '" class="text-center">Топ 3</th>' +
+                        '            <th colspan="' + length + '" class="text-center">Топ 10</th>' +
+                        '            <th colspan="' + length + '" class="text-center">Топ 100</th>' +
                         '        </tr>' +
                         '        <tr><td></td>' +
                         bottomHead +

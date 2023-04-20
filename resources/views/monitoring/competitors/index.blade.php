@@ -138,8 +138,20 @@
                                   class="form form-control"
                                   cols="8" rows="8"></textarea>
                     </div>
-                    <div>
-                        <div class="mt-3 mb-1">
+                    <div class="mt-3">
+                        <button class="btn btn-default mb-3" type="button" data-toggle="collapse"
+                                data-target="#collapseIgnoredDomains" aria-expanded="false"
+                                aria-controls="collapseIgnoredDomains">
+                            Игнорируемые домены
+                        </button>
+                        <div class="collapse" id="collapseIgnoredDomains">
+                        <textarea id="ignored-domains" name="ignored-domains" class="form form-control" cols="8"
+                                  rows="8" disabled>{{ $ignoredDomains }}</textarea>
+                        </div>
+
+                    </div>
+                    <div class="mt-3">
+                        <div>
                             <b>{{ __('Domain') }}: Сколько раз встретился</b>
                         </div>
                         <div id="competitors-list"></div>
@@ -311,15 +323,17 @@
                         input = 'Ваш сайт'
                     } else {
                         if (val.competitor) {
-                            input = '<input type="checkbox" data-target="' + key + '" class="change-domain-state" checked>'
+                            input = '<input type="checkbox" checked>'
                         } else {
-                            input = '<input type="checkbox" data-target="' + key + '" class="change-domain-state">'
+                            input = '<input type="checkbox">'
                         }
                     }
 
                     let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
 
                     let engines = ''
+                    let firstBlock = false
+
                     $.each(val.urls, function (engine, v) {
                         if (engine === 'yandex') {
                             engines += '<i class="fab fa-yandex fa-sm mr-2"></i>'
@@ -336,14 +350,19 @@
                         '<div class="d-flex flex-row justify-content-between">'
 
                     if (google !== 0) {
-                        visibilityCell += '<div class="w-50 border-right p-2"> Google: ' + google + '</div>'
+                        firstBlock = true
+                        visibilityCell += '<div class="w-50 p-2"> Google: ' + google + '</div>'
                     }
                     if (yandex !== 0) {
-                        visibilityCell += '<div class="w-50 border-right p-2"> Yandex: ' + yandex + '</div>'
+                        let border = 'border-0'
+                        if (firstBlock) {
+                            border = 'border-left'
+                        }
+                        visibilityCell += '<div class="w-50 p-2 ' + border + '"> Yandex: ' + yandex + '</div>'
                     }
 
                     $('#table > tbody').append('<tr>' +
-                        '    <td data-order="' + val.competitor + '">' + input + '</td>' +
+                        '    <td data-order="' + val.competitor + '" class="change-domain-state" data-target="' + key + '">' + input + '</td>' +
                         '    <td data-order="' + key + '">' + stub + '</td>' +
                         '    <td>' + engines + '</td>' +
                         '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
@@ -516,7 +535,10 @@
 
                 $('.change-domain-state').unbind().on('click', function () {
                     let url = $(this).attr('data-target')
-                    if ($(this).is(':checked')) {
+                    let targetInput = $(this).children('input').eq(0)
+                    let state = targetInput.is(':checked')
+
+                    if (!state) {
                         if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
                             $.ajax({
                                 type: "POST",
@@ -528,11 +550,11 @@
                                     'projectId': {{ $project->id }}
                                 },
                                 success: function (response) {
-
+                                    targetInput.prop('checked', true)
                                 },
                             });
                         } else {
-                            $(this).prop('checked', false);
+                            targetInput.prop('checked', state)
                         }
                     } else {
                         if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
@@ -546,11 +568,11 @@
                                     'projectId': {{ $project->id }}
                                 },
                                 success: function (response) {
-
+                                    targetInput.prop('checked', false)
                                 },
                             });
                         } else {
-                            $(this).prop('checked', true);
+                            targetInput.prop('checked', state)
                         }
                     }
                 })
@@ -558,9 +580,14 @@
 
             function getMaxValues() {
                 let domains = []
+                let ignoredDomains = $('#ignored-domains').val().split('\n')
 
                 $.each($('#table > tbody > tr > td:nth-child(4)'), function (k, v) {
-                    if ($(this).parent('tr').eq(0).children('td').eq(0).children('input').length !== 0 && !$(this).parent('tr').eq(0).children('td').eq(0).children('input').eq(0).is(':checked')) {
+                    if (
+                        !ignoredDomains.includes($(this).attr('data-action')) &&
+                        $(this).parent('tr').eq(0).children('td').eq(0).children('input').length !== 0 &&
+                        !$(this).parent('tr').eq(0).children('td').eq(0).children('input').eq(0).is(':checked')
+                    ) {
                         domains[$(this).attr('data-action')] = Number($(this).attr('data-order'))
                     }
                 })

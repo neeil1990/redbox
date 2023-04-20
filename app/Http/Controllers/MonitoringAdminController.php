@@ -30,7 +30,7 @@ class MonitoringAdminController extends Controller
 
     public function statPage(Request $request)
     {
-        if($request->ajax())
+        if ($request->ajax())
             return $this->getQueuesForDataTable($request);
 
         $statistics = $this->getStatCollection();
@@ -60,33 +60,34 @@ class MonitoringAdminController extends Controller
             ['type' => 'number', 'name' => 'pagination_project', 'label' => 'Количество элементов на странице проекты', 'placeholder' => '10'],
             ['type' => 'number', 'name' => 'pagination_query', 'label' => 'Количество элементов на странице запросы', 'placeholder' => '100'],
             ['type' => 'time', 'name' => 'data_projects', 'label' => 'Обновление данных проекты', 'placeholder' => 'Format time 24Hr'],
+            ['type' => 'textarea', 'name' => 'ignored_domains', 'label' => 'Игнорируемые домены', 'placeholder' => 'example.com'],
         ]);
     }
 
     public function deleteQueues(Request $request)
     {
-        if($request->has('delete_queues')){
+        if ($request->has('delete_queues')) {
 
             $this->jobs->delete();
             flash()->overlay(__('Delete successfully'), __('Delete queues'))->success();
-        }else{
+        } else {
 
             $queues = collect([]);
-            if($request->filled(['user', 'project'])){
+            if ($request->filled(['user', 'project'])) {
 
-                $queues = $this->jobs->get()->filter(function($item) use ($request){
+                $queues = $this->jobs->get()->filter(function ($item) use ($request) {
 
                     $jobData = unserialize($item->payload['data']['command']);
                     $keyword = $jobData->getModel();
 
                     return ($keyword->project->url == $request->input('project') && $keyword->project->user->id == $request->input('user'));
                 });
-            }else{
+            } else {
 
                 $params = collect($request->only(['user', 'project']))->filter();
-                if($params->isNotEmpty()){
+                if ($params->isNotEmpty()) {
 
-                    $queues = $this->jobs->get()->filter(function($item) use ($params){
+                    $queues = $this->jobs->get()->filter(function ($item) use ($params) {
 
                         $jobData = unserialize($item->payload['data']['command']);
                         $keyword = $jobData->getModel();
@@ -101,7 +102,7 @@ class MonitoringAdminController extends Controller
                 }
             }
 
-            if($queues->isNotEmpty()){
+            if ($queues->isNotEmpty()) {
                 $this->jobs->whereIn('id', $queues->pluck('id'))->delete();
                 flash()->overlay('Удалено ' . $queues->count(), __('Delete queues'))->success();
             }
@@ -117,7 +118,7 @@ class MonitoringAdminController extends Controller
         $page = ($request->input('start') / $request->input('length')) + 1;
         $queues = $this->getQueuesOnPage($request->input('length', 1), $page);
 
-        foreach ($queues->getCollection() as $item){
+        foreach ($queues->getCollection() as $item) {
 
             $dataTable->push([
                 'id' => $item->id,
@@ -158,7 +159,7 @@ class MonitoringAdminController extends Controller
             return $item;
         });
 
-        if(count($forgetKeys) > 0)
+        if (count($forgetKeys) > 0)
             $jobs->forget($forgetKeys);
 
         return $jobs;

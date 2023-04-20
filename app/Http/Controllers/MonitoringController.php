@@ -17,7 +17,6 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
-use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -28,7 +27,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -435,10 +433,12 @@ class MonitoringController extends Controller
     {
         $countQuery = count($project->keywords);
         $navigations = $this->navigations($project);
+        $ignoredDomains = MonitoringSettings::where('name', '=', 'ignored_domains')->first('value')['value'];
 
         return view('monitoring.competitors.index', compact(
             'navigations',
             'countQuery',
+            'ignoredDomains',
             'project'
         ));
     }
@@ -531,7 +531,7 @@ class MonitoringController extends Controller
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         $navigations = $this->navigations($project);
 
-        return view('monitoring.competitors.history', compact('project', 'competitors', 'navigations'));
+        return view('monitoring.competitors.statistics', compact('project', 'competitors', 'navigations'));
     }
 
     public function getStatistics(Request $request): JsonResponse
