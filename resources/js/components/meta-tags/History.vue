@@ -42,7 +42,7 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>{{ lang.tag }}</th>
+                                        <th style="width: 150px;">{{ lang.tag }}</th>
                                         <th>{{ lang.content }}</th>
                                         <th style="width: 40px">{{ lang.count }}</th>
                                         <th style="width: 150px">{{ lang.main_problems }}</th>

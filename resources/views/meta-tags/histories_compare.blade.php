@@ -85,7 +85,7 @@
                                                 <th colspan="4">{{$item['card']['date']}} ({{$item['card']['id']}})</th>
                                             </tr>
                                             <tr>
-                                                <th>{{ __('Tag') }}</th>
+                                                <th style="width: 150px;">{{ __('Tag') }}</th>
                                                 <th>{{ __('Content') }}</th>
                                                 <th style="width: 40px">{{ __('Count') }}</th>
                                                 <th style="width: 150px">{{ __('Main problems') }}</th>
@@ -127,7 +127,7 @@
                                                 <th colspan="4">{{$item['card_compare']['date']}} ({{$item['card_compare']['id']}})</th>
                                             </tr>
                                             <tr>
-                                                <th>{{ __('Tag') }}</th>
+                                                <th style="width: 150px;">{{ __('Tag') }}</th>
                                                 <th>{{ __('Content') }}</th>
                                                 <th style="width: 40px">{{ __('Count') }}</th>
                                                 <th style="width: 150px">{{ __('Main problems') }}</th>
