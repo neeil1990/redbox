@@ -3,6 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
+use App\Classes\Monitoring\PanelButtons\CompetitorButton;
+use App\Classes\Monitoring\PanelButtons\LinkTrackingButtons;
+use App\Classes\Monitoring\PanelButtons\ProjectButton;
+use App\Classes\Monitoring\PanelButtons\PromotionPlanButtons;
+use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
+use App\Classes\Monitoring\PanelButtons\SiteAuditButtons;
+use App\Classes\Monitoring\PanelButtons\TopAnalysisButton;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
@@ -400,20 +407,9 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $countMonitoringProjects = $user->monitoringProjects()->count();
-        $countBackLinkProjects = $user->backlingProjects()->count();
-        $countCompetitors = count($project->competitors);
+        $buttons = new SimpleButtonsFactory();
 
-        $navigations = [
-            ['h3' => $countMonitoringProjects, 'p' => 'Проекты', 'icon' => 'fas fa-bezier-curve', 'href' => route('monitoring.index'), 'bg' => 'bg-info'],
-            ['h3' => $countCompetitors, 'p' => 'Мои конкуренты', 'small' => '', 'icon' => 'fas fa-user-secret', 'href' => route('monitoring.competitors', $project->id), 'bg' => 'bg-success'],
-            ['h3' => '150', 'p' => 'Анализ ТОП-100', 'small' => 'В разработке', 'icon' => 'fas fa-chart-pie', 'href' => route('monitoring.competitors.positions', $project->id), 'bg' => 'bg-warning'],
-            ['h3' => '150', 'p' => 'План продвижения', 'small' => 'В разработке', 'icon' => 'far fa-check-square', 'href' => '#', 'bg' => 'bg-danger'],
-            ['h3' => '150', 'p' => 'Аудит сайта', 'small' => 'В разработке', 'icon' => 'fas fa-tasks', 'href' => '#', 'bg' => 'bg-info'],
-            ['h3' => $countBackLinkProjects, 'p' => 'Отслеживание ссылок', 'small' => '', 'icon' => 'fas fa-link', 'href' => route('backlink'), 'bg' => 'bg-purple-light'],
-        ];
-
-        return $navigations;
+        return $buttons->createButtons($user, $project);
     }
 
     /**
