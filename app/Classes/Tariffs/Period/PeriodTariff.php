@@ -74,7 +74,7 @@ abstract class PeriodTariff implements Period
 
     public function days(): int
     {
-        $carbon = Carbon::now();
+        $carbon = Carbon::now()->endOfDay();
 
         if($this->months)
            $days = $carbon->add('months', $this->months)->diffInDays();

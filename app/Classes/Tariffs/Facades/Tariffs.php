@@ -10,6 +10,7 @@ use App\Classes\Tariffs\MaximumTariff;
 use App\Classes\Tariffs\OptimalTariff;
 use App\Classes\Tariffs\Period\FiveDaysTariff;
 use App\Classes\Tariffs\Period\OneDayTariff;
+use App\Classes\Tariffs\Period\OneMonthsTariff;
 use App\Classes\Tariffs\Period\SixMonthsTariff;
 use App\Classes\Tariffs\Period\ThreeMonthsTariff;
 use App\Classes\Tariffs\Period\TwelveMonthsTariff;
@@ -27,12 +28,12 @@ class Tariffs
     public function __construct()
     {
         // all of tariffs
-        $this->setTariffs(new FreeTariff());
         $this->setTariffs(new OptimalTariff());
         $this->setTariffs(new UltimateTariff());
         $this->setTariffs(new MaximumTariff());
 
         // all of periods
+        $this->setPeriods(new OneMonthsTariff());
         $this->setPeriods(new ThreeMonthsTariff());
         $this->setPeriods(new SixMonthsTariff());
         $this->setPeriods(new TwelveMonthsTariff());

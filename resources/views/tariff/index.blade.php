@@ -39,10 +39,8 @@
                 <div class="card-body">
 
                     @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h5><i class="icon fas fa-ban"></i> {{ __('Error') }}!</h5>
-                            {{ session('error') }}
+                        <div class="callout callout-danger callout-dismissible">
+                            <h5 class="mb-0">{{ session('error') }}</h5>
                         </div>
                     @endif
 
