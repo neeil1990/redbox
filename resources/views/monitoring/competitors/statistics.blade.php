@@ -43,14 +43,11 @@
                 min-width: 75px;
             }
 
-            .col-sm-12 {
-                overflow: auto;
-                width: 100%;
-            }
-
             table {
                 width: 100%;
-                border-collapse: collapse;
+                border-collapse: separate !important;
+                table-layout: fixed;
+                border-spacing: 0 !important;
             }
 
             thead {
@@ -82,9 +79,22 @@
                 background-color: #ebf0f5;
             }
 
-            table {
-                border-collapse: separate !important;
-                border-spacing: 0 !important;
+            #tableHeadRow th,
+            #tableBody td {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+            }
+
+            #table_wrapper > div:nth-child(2) > div {
+                overflow: auto;
+                width: 100%;
+                max-height: 1200px;
+            }
+            #history-results_wrapper > div:nth-child(2) > div {
+                overflow: auto;
+                width: 100%;
+                max-height: 1200px;
             }
         </style>
     @endslot
@@ -201,7 +211,7 @@
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
-                        <th>Процент попадений в {{ __('Top') }} 3</th>
+                        <th>{{ __('Percentage of getting into the top') }} 3</th>
                     </tr>
                     </thead>
                     <tbody id="top3-tbody">
@@ -218,7 +228,7 @@
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
-                        <th>Процент попадений в {{ __('Top') }} 10</th>
+                        <th>{{ __('Percentage of getting into the top') }} 10</th>
                     </tr>
                     </thead>
                     <tbody id="top10-tbody">
@@ -235,7 +245,7 @@
                     <thead>
                     <tr>
                         <th>{{ __('Domain') }}</th>
-                        <th>Процент попадений в {{ __('Top') }} 100</th>
+                        <th>{{ __('Percentage of getting into the top') }} 100</th>
                     </tr>
                     </thead>
                     <tbody id="top100-tbody">
@@ -480,7 +490,7 @@
                 return res;
             }
 
-            function renderTable(tableId, body, data, key) {
+            function renderTable(tableId, body, data, key, sortType = 'desc') {
                 let rows = ''
                 $.each(data, function (domain, values) {
                     rows += '<tr class="render-more">'
@@ -494,7 +504,7 @@
                 }
 
                 $(tableId).DataTable({
-                    order: [[1, 'desc']],
+                    order: [[1, sortType]],
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 10,
                     language: {
@@ -566,9 +576,9 @@
                                 {
                                     stacked: true,
                                     ticks: {
-                                        maxRotation: 45,
-                                        minRotation: 45,
-                                        fontSize: 10
+                                        maxRotation: 60,
+                                        minRotation: 60,
+                                        fontSize: 12
                                     }
                                 },
                             ],
@@ -607,72 +617,39 @@
                     }
                 });
 
-                chart3 = new Chart($('#bar-chart-3'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "{{ __("Top") }} 3 (%)",
-                            data: top3,
-                            backgroundColor: colors,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 45,
-                                    fontSize: 10
-                                }
-                            }]
-                        }
-                    }
-                });
+                chart3 = renderChart(labels, colors, top3, '#bar-chart-3', "{{ __('Percentage of getting into the top') }} 3")
+                chart10 = renderChart(labels, colors, top10, '#bar-chart-10', "{{ __('Percentage of getting into the top') }} 10")
+                chart100 = renderChart(labels, colors, top100, '#bar-chart-100', "{{ __('Percentage of getting into the top') }} 100")
+            }
 
-                chart10 = new Chart($('#bar-chart-10'), {
+            function renderChart(labels, colors, data, target, label) {
+                return new Chart($(target), {
                     type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: "{{ __("Top") }} 10 (%)",
-                            data: top10,
-                            backgroundColor: colors,
+                            data: data,
+                            backgroundColor: colors
                         }]
                     },
                     options: {
+                        title: {
+                            display: true,
+                            text: label
+                        },
                         scales: {
                             xAxes: [{
                                 ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 45,
-                                    fontSize: 10
+                                    maxRotation: 60,
+                                    minRotation: 60,
+                                    fontSize: 12
                                 }
                             }]
-                        }
-                    }
-                });
-
-                chart100 = new Chart($('#bar-chart-100'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "{{ __("Top") }} 100 (%)",
-                            data: top100,
-                            backgroundColor: colors,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 45,
-                                    fontSize: 10
-                                }
-                            }]
-                        }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        maintainAspectRatio: false,
                     }
                 });
             }
@@ -802,7 +779,7 @@
                                 let firstElement = k1 === 0;
                                 if (firstElement) {
                                     trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
-                                }else {
+                                } else {
                                     trs += '<td>' + data[date][domain][name] + '</td>'
                                 }
                             })
@@ -848,8 +825,6 @@
                             },
                         },
                     })
-
-                    $('#history-results').wrap("<div style='width: 100%; overflow-x: scroll;'></div>")
 
                     $.each($('#history-results > tbody > tr'), function (k, v) {
                         for (let j = 0; j < 4; j++) {
@@ -929,7 +904,7 @@
             function renderStatistics(data, destroy) {
                 $('.render-more').remove()
 
-                renderTable('#avg-position', '#avg-position-tbody', data, 'avg')
+                renderTable('#avg-position', '#avg-position-tbody', data, 'avg', 'asc')
                 renderTable('#top3', '#top3-tbody', data, 'top_3')
                 renderTable('#top10', '#top10-tbody', data, 'top_10')
                 renderTable('#top100', '#top100-tbody', data, 'top_100')

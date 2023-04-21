@@ -198,6 +198,7 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
 
         <script>
+
             let data = {
                 '_token': $('meta[name="csrf-token"]').attr('content'),
                 'projectId': {{ $project->id }},
@@ -323,9 +324,9 @@
                         input = 'Ваш сайт'
                     } else {
                         if (val.competitor) {
-                            input = '<input type="checkbox" checked>'
+                            input = '<input type="checkbox" class="change-domain-state-checkbox" data-target="' + key + '" checked>'
                         } else {
-                            input = '<input type="checkbox">'
+                            input = '<input type="checkbox" class="change-domain-state-checkbox" data-target="' + key + '">'
                         }
                     }
 
@@ -361,8 +362,10 @@
                         visibilityCell += '<div class="w-50 p-2 ' + border + '"> Yandex: ' + yandex + '</div>'
                     }
 
+                    let bool = val.competitor ?? false
+
                     $('#table > tbody').append('<tr>' +
-                        '    <td data-order="' + val.competitor + '" class="change-domain-state" data-target="' + key + '">' + input + '</td>' +
+                        '    <td data-order="' + bool + '" class="change-domain-state-cell" data-target="' + key + '">' + input + '</td>' +
                         '    <td data-order="' + key + '">' + stub + '</td>' +
                         '    <td>' + engines + '</td>' +
                         '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
@@ -533,10 +536,11 @@
                     refreshMethods()
                 })
 
-                $('.change-domain-state').unbind().on('click', function () {
+                $('.change-domain-state-cell').unbind().on('click', function (e) {
                     let url = $(this).attr('data-target')
                     let targetInput = $(this).children('input').eq(0)
-                    let state = targetInput.is(':checked')
+                    let targetBlock = $(this)
+                    let state = targetBlock.attr('data-order') === 'true'
 
                     if (!state) {
                         if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
@@ -551,6 +555,7 @@
                                 },
                                 success: function (response) {
                                     targetInput.prop('checked', true)
+                                    targetBlock.attr('data-order', 'true')
                                 },
                             });
                         } else {
@@ -569,6 +574,7 @@
                                 },
                                 success: function (response) {
                                     targetInput.prop('checked', false)
+                                    targetBlock.attr('data-order', 'false')
                                 },
                             });
                         } else {
