@@ -433,7 +433,11 @@ class MonitoringController extends Controller
     {
         $countQuery = count($project->keywords);
         $navigations = $this->navigations($project);
-        $ignoredDomains = MonitoringSettings::where('name', '=', 'ignored_domains')->first('value')['value'];
+        $ignoredDomains = MonitoringSettings::where('name', '=', 'ignored_domains')->first('value');
+
+        if (isset($ignoredDomains)) {
+            $ignoredDomains = $ignoredDomains['value'];
+        }
 
         return view('monitoring.competitors.index', compact(
             'navigations',
