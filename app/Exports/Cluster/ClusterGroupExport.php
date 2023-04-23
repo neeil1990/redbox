@@ -27,6 +27,7 @@ class ClusterGroupExport implements FromCollection
         $this->chapter = 0;
         $this->clusters = $clusters;
         $this->array = $array;
+        $this->nestCounter = 0;
     }
 
     public function collection(): Collection
