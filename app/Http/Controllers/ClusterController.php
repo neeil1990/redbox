@@ -524,12 +524,20 @@ class ClusterController extends Controller
 
     public function downloadClusterGroup(Request $request)
     {
-        $cluster = ClusterResults::find($request->input('id'));
-        $clusters = Cluster::unpackCluster($cluster->result);
-        $array = json_decode($request->json, true);
-        $file = Excel::download(new ClusterGroupExport($clusters, $array), "group_results.$request->type");
+        try {
+            $cluster = ClusterResults::find($request->input('id'));
+            $clusters = Cluster::unpackCluster($cluster->result);
+            $array = json_decode($request->json, true);
+            $file = Excel::download(new ClusterGroupExport($clusters, $array), "group_results.$request->type");
 
-        Common::fileExport($file, $request->type, 'group_results');
+            Common::fileExport($file, $request->type, 'group_results');
+        } catch (\Throwable $e) {
+            dd([
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ]);
+        }
     }
 
     public function saveTree(Request $request): JsonResponse
