@@ -193,7 +193,7 @@ class ClusterController extends Controller
             $cluster->request = json_decode($cluster->request, true);
 
             if ($id = 489) {
-                dd($cluster->request);
+                dd($cluster);
             }
             return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
         }
