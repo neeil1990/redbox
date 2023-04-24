@@ -492,7 +492,7 @@
             }
 
             $(document).ready(function () {
-                if(!{{ $cluster['id'] === 489 }}){
+                if({{ $cluster['id'] }} == 489){
                     renderResultTable_v2({!! $cluster['result'] !!})
 
                     $('#default-hidden').dataTable({
