@@ -684,7 +684,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="switch-container mb-3 d-flex btn-group">
+                            <div class="switch-container mb-3 d-flex">
                                 <button id="change-sortable" class="btn btn-outline-secondary w-25"
                                         data-action="enable">
                                     {{ __('Moving groups') }}

@@ -11,7 +11,7 @@ class ClusterResults extends Model
 
     protected $guarded = [];
 
-    public $clusters;
+    public array $clusters;
 
     public function setClusters($default_result)
     {
@@ -31,7 +31,6 @@ class ClusterResults extends Model
 
         return $html;
     }
-
 
     public static function generateHeader($mainPhrase): string
     {
@@ -92,7 +91,7 @@ class ClusterResults extends Model
             $boolean = true;
         }
 
-        $ol = '<ol id="' . Str::random(10) . '" class="list-group list-group-flush show">';
+        $ol = '<ol id="' . Str::random(7) . '" class="list-group list-group-flush show">';
 
         foreach ($items as $key => $phrase) {
             if (is_array($phrase)) {
