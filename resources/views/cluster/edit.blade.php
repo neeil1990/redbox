@@ -189,9 +189,9 @@
                     <span class="text-danger">{{ __('This action cannot be undone.') }}</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Cancel') }}</button>
-                    <button type="button" class="btn btn-primary" id="resetAllChanges"
-                            data-dismiss="modal">{{ __('Roll back changes') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-secondary"
+                            id="confirmResetChanges">{{ __('Roll back changes') }}</button>
                 </div>
             </div>
         </div>
@@ -561,6 +561,15 @@
                                                     </span>
                                                 </span>
                                             </span>
+                                            <span class="__helper-link ui_tooltip_w">
+                                                <i class="fa fa-arrow-right move-group mr-2"
+                                                   style="color: white; padding-top: 5px"></i>
+                                                <span class="ui_tooltip __bottom">
+                                                    <span class="ui_tooltip_content">
+                                                        {{ __('Move the entire group') }}
+                                                    </span>
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -574,7 +583,8 @@
                                             @if($phrase === 'finallyResult')
                                                 @continue
                                             @endif
-                                            <div class="list-group-item" data-target="{{ $phrase }}" data-action="alone">
+                                            <div class="list-group-item" data-target="{{ $phrase }}"
+                                                 data-action="alone">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <div class="phrase-for-color" style="width: 440px">
                                                         {{ $phrase }}
@@ -595,9 +605,9 @@
                                                         <span>{{ $item['target']['number'] ?? $item['target'] }}</span>
                                                         <span class="ui_tooltip __bottom">
                                                             <span class="ui_tooltip_content">
-                                                                <span>{{ __('based') }}</span> /
-                                                                <span>{{ __('phrased') }}</span> /
-                                                                <span>{{ __('target') }}</span>
+                                                                <span>{{ __('Base') }}</span> /
+                                                                <span>{{ __('Phrasal') }}</span> /
+                                                                <span>{{ __('Target') }}</span>
                                                             </span>
                                                         </span>
                                                     </span>
@@ -626,8 +636,7 @@
                                                                 {{ __('Cancel selection') }}
                                                             </button>
                                                         </div>
-                                                        <i class="fa fa-arrow-right move-phrase"
-                                                           data-target="{{ $phrase }}"></i>
+                                                        <i class="fa fa-arrow-right move-phrase" data-target="{{ $phrase }}"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -661,7 +670,7 @@
                                                     <i class="fa fa-question-circle" style="color: white"></i>
                                                     <span class="ui_tooltip __bottom">
                                                         <span class="ui_tooltip_content">
-                                                            {{ __('You will be redirected to the Competitor Analysis page') }} <br>
+                                                            {{ __('You will be redirected to the "Competitor Analysis"') }} <br>
                                                             {{ __('The selected phrases will be filled in automatically.') }}
                                                         </span>
                                                     </span>
@@ -924,7 +933,7 @@
 
                             recalculateFrequency()
 
-                            saveHtml("{{ __('Successfully') }}")
+                            saveClusters("{{ __('Successfully') }}")
                         },
                     });
                 }
@@ -941,7 +950,7 @@
                 $('#clusterFilter').val('')
             })
 
-            $('#resetAllChanges').on('click', function () {
+            $('#confirmResetChanges').on('click', function () {
                 $.ajax({
                     type: "POST",
                     url: "{{ route('reset.all.cluster.changes') }}",
@@ -1002,7 +1011,7 @@
                 onDrop: function ($item, container, _super) {
                     container.el.removeClass("active");
                     _super($item, container);
-                    saveHtml("{{ __('Successfully') }}")
+                    saveClusters("{{ __('Successfully') }}")
                 },
                 onMouseDown: function ($item, _super, event) {
                     console.log(322)
@@ -1113,7 +1122,7 @@
                     },
                     success: function () {
                         select.parent().parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                        saveHtml("{{ __('Successfully') }}")
+                        saveClusters("{{ __('Successfully') }}")
                     },
                     error: function (response) {
                     }
@@ -1165,12 +1174,12 @@
                         })
 
                         targetButton.remove()
-                        saveHtml()
+                        saveClusters()
                     },
                 });
             })
 
-            function saveHtml(message, interval = 3000) {
+            function saveClusters(message, interval = 3000) {
                 $.ajax({
                     type: "POST",
                     url: "{{ route('save.clusters.tree') }}",
@@ -1355,7 +1364,7 @@
                         '<li class="work-place-li" style="display: none" data-target="' + $(this).attr('data-target') + '">' +
                         '    <div style="float: left">' +
                         '        <i class="fa fa-arrow-left move-back mr-2" data-target="' + $(this).attr('data-target') + '"></i>' +
-                        '        <i class="fa fa-down-left-and-up-right-to-center mr-2 move-to-selected-group" data-target="' + $(this).attr('data-target') + '"></i>' +
+                        '        <i style="display: none" class="fa fa-down-left-and-up-right-to-center mr-2 move-to-selected-group render-merge-i" data-target="' + $(this).attr('data-target') + '"></i>' +
                         '        <i class="fa fa-brush" data-target="' + $(this).attr('data-target') + '"></i>' +
                         '    </div>' +
                         '    <div style="float: right"><div class="phrase-for-color">' + $(this).attr('data-target') + '</div></div>' +
@@ -1480,7 +1489,7 @@
                                 }
 
                                 refreshMethods()
-                                saveHtml("{{ __('A phrase similar to the name of the group was automatically added to the group') }}", 5000)
+                                saveClusters("{{ __('A phrase similar to the name of the group was automatically added to the group') }}", 5000)
                             },
                             error: function () {
                                 errorMessage("{{ __('A group with the same name already exists or the name contains numbers') }}")
@@ -1565,7 +1574,7 @@
                         success: function (response) {
                             moveNewGroup(phrases, newGroupName, response.groupId)
                             recalculateFrequency()
-                            saveHtml("{{ __('Successfully') }}")
+                            saveClusters("{{ __('Successfully') }}")
                         },
                         error: function (response) {
                         }
@@ -1603,7 +1612,9 @@
                     }
 
                     $.each(group.children('ol').eq(0).children('div'), function () {
-                        $(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).trigger('click')
+                        if ($(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).is(':visible')) {
+                            $(this).children('div').eq(0).children('div').eq(3).children('i').eq(1).trigger('click')
+                        }
                     })
 
                     $('#addNewGroupButton').hide()
@@ -1640,7 +1651,10 @@
                         $('#clusters-block div > div > div.btn-group').show()
                         $('.btn-group.btn-group-toggle.w-75').hide()
                         $('.work-place-li').unbind()
-                        saveHtml("{{ __('Changes saved') }}")
+                        $('.render-merge-i').hide()
+                        $('.move-back').show()
+                        $('.move-group').show()
+                        saveClusters("{{ __('Changes saved') }}")
                     } else {
                         selectedGroup = $(this).parent().parent().parent().parent().parent().attr('id')
                         $('#change-sortable').attr('disabled', 'disabled')
@@ -1654,7 +1668,9 @@
                         $(this).parent().parent().parent().parent().parent().addClass('selected-group-list')
 
                         $('.list-group-item').children('div,div.btn-group').append('<i class="fa fa-down-left-and-up-right-to-center elem"></i>')
-
+                        $('.render-merge-i').show()
+                        $('.move-back').hide()
+                        $('.move-group').hide()
                         $('.fa-down-left-and-up-right-to-center.elem').unbind().on('click', function () {
                             let element = $(this).parent().parent()
                             let phrase = element.attr('data-target')

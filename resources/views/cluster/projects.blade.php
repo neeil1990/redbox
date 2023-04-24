@@ -2,6 +2,8 @@
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <!-- DataTables -->
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <style>

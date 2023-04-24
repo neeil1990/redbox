@@ -11,7 +11,7 @@ class ClusterResults extends Model
 
     protected $guarded = [];
 
-    public $clusters;
+    public array $clusters;
 
     public function setClusters($default_result)
     {
@@ -31,7 +31,6 @@ class ClusterResults extends Model
 
         return $html;
     }
-
 
     public static function generateHeader($mainPhrase): string
     {
@@ -87,14 +86,14 @@ class ClusterResults extends Model
 
     public function generateOl($items, $mainPhrase): string
     {
-        if ($mainPhrase == 'Нераспределённые слова' || $mainPhrase == 'Unallocated words') {
+        $boolean = false;
+        if ($mainPhrase == 'Нераспределённые слова' || $mainPhrase == 'Unallocated words' || $mainPhrase == 'нераспределённые слова') {
             $boolean = true;
-        } else {
-            $boolean = false;
         }
 
-        $ol = '<ol id="' . Str::random(10) . '" class="list-group list-group-flush show">';
-        foreach ($items as $key => $phrase) {
+        $ol = '<ol id="' . Str::random(7) . '" class="list-group list-group-flush show">';
+
+        foreach ($items as $phrase) {
             if (is_array($phrase)) {
                 $ol .= $this->parseTree($phrase);
             } else {
@@ -108,9 +107,9 @@ class ClusterResults extends Model
                                <div class="hide">' . implode("\n", array_keys($this->searchElement($phrase, true))) . '</div>
                                <div>
                                     <span class="__helper-link ui_tooltip_w frequency">
-                                        <span>0</span> /
-                                        <span>0</span> /
-                                        <span>0</span>
+                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['based']) . '</span> /
+                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['phrased']) . '</span> /
+                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['target']) . '</span>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
                                                 <span>' . __("Base") . '</span> /
@@ -159,6 +158,15 @@ class ClusterResults extends Model
 
         if ($similarities) {
             return $item['similarities'] ?? [];
+        }
+
+        return $item;
+    }
+
+    private static function getVisibilityCounter($item)
+    {
+        if (isset($item['number'])) {
+            return $item['number'];
         }
 
         return $item;

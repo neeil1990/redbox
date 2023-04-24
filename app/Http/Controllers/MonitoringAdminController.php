@@ -60,7 +60,7 @@ class MonitoringAdminController extends Controller
             ['type' => 'number', 'name' => 'pagination_project', 'label' => 'Количество элементов на странице проекты', 'placeholder' => '10'],
             ['type' => 'number', 'name' => 'pagination_query', 'label' => 'Количество элементов на странице запросы', 'placeholder' => '100'],
             ['type' => 'time', 'name' => 'data_projects', 'label' => 'Обновление данных проекты', 'placeholder' => 'Format time 24Hr'],
-            ['type' => 'textarea', 'name' => 'ignored_domains', 'label' => 'Игнорируемые домены', 'placeholder' => 'example.com'],
+            ['type' => 'textarea', 'name' => 'ignored_domains', 'label' => 'Игнорируемые домены (Мои конкуренты)', 'placeholder' => 'example.com'],
         ]);
     }
 
