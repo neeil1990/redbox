@@ -4,6 +4,7 @@ function renderResultTable_v2(data) {
     let copyRelevanceBool = false
     let alone = {}
     let colspan = 4
+    let newRows = []
 
     $.each(data, function (key, result) {
         let count = 0;
@@ -218,12 +219,13 @@ function renderResultTable_v2(data) {
                 '   </td>' +
                 '</tr>'
 
-            $('#clusters-table-tbody').append(newRow)
+            newRows.push(newRow)
         } else {
             alone[key] = result
         }
     })
 
+    $('#clusters-table-tbody').html(newRows.join(' '))
     renderAlonePhrases(alone, iterator, colspan)
     coloredPhrases()
     copyBased()
@@ -249,7 +251,9 @@ function renderResultTable_v2(data) {
 }
 
 function renderAlonePhrases(alone, iterator, colspan) {
-    let count = 0;
+    let count = 0
+    let newRows = []
+
     for (let res in alone) {
         count++
     }
@@ -433,8 +437,10 @@ function renderAlonePhrases(alone, iterator, colspan) {
             '   </td>' +
             '</tr>'
 
-        $('#clusters-table-tbody').append(newRow)
+        newRows.push(newRow)
     }
+
+    $('#clusters-table-tbody').html(newRows.join(' '))
 }
 
 function coloredPhrases() {
