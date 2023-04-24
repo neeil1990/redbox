@@ -174,15 +174,24 @@ class ClusterController extends Controller
         ]);
     }
 
-    public function showResult(ClusterResults $cluster): View
+    public function showResult(int $id): View
     {
+        $cluster = ClusterResults::where('id', $id)->first([
+            'count_clusters', 'count_phrases',
+            'default_result', 'result',
+            'request', 'user_id',
+            'id', 'show'
+        ]);
+
         if (($cluster->user_id == Auth::id() || User::isUserAdmin()) && $cluster->show === 1) {
-            if (isset($cluster->default_result)) {
-                $cluster->result = gzuncompress(base64_decode($cluster->default_result));
-            } else {
-                $cluster->result = gzuncompress(base64_decode($cluster->result));
-            }
+
+            $cluster->result = isset($cluster->default_result)
+                ? Common::uncompressArray($cluster->default_result, false)
+                : Common::uncompressArray($cluster->result, false);
+            unset($cluster->default_result);
+
             $cluster->request = json_decode($cluster->request, true);
+
             return view('cluster.show', ['cluster' => $cluster->toArray(), 'admin' => User::isUserAdmin()]);
         }
 

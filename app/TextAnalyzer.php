@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DOMDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -180,18 +181,19 @@ class TextAnalyzer extends Model
         return preg_replace('| +|', ' ', $text);
     }
 
-    /**
-     * @param $html
-     * @return array|string|string[]|null
-     */
-    public static function removeStylesAndScripts($html)
+    public static function removeStylesAndScripts($html): string
     {
-        $html = mb_strtolower($html);
-        $clean_html = preg_replace('/<!--.*?-->/', '', $html);
-        $clean_html = preg_replace('/<style\b[^>]*>([\s\S]*?)<\/style>/i', '', $clean_html);
-        $clean_html = preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $clean_html);
+        $html = preg_replace('/<!--.*?-->/', '', $html);
+        $html = preg_replace('/<style\b[^>]*>([\s\S]*?)<\/style>/i', '', $html);
+        $html = preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $html);
+        $html = preg_replace('/<script.*?>(.*?)<\/script>/is', '', $html);
 
-        return preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $clean_html);
+        // специфичные сайты
+        $html = preg_replace("'array.*?\(.*?\)'si", '', $html);
+        $html = preg_replace('/<pre\s+style="display:none;">.*?<\/pre>/is', '', $html);
+        $html = preg_replace("'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si", '', $html);
+
+        return $html;
     }
 
     /**
