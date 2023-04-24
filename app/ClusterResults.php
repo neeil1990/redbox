@@ -108,9 +108,9 @@ class ClusterResults extends Model
                                <div class="hide">' . implode("\n", array_keys($this->searchElement($phrase, true))) . '</div>
                                <div>
                                     <span class="__helper-link ui_tooltip_w frequency">
-                                        <span>' . $this->clusters[$mainPhrase][$phrase]['based']['number'] . '</span> /
-                                        <span>' . $this->clusters[$mainPhrase][$phrase]['phrased']['number'] . '</span> /
-                                        <span>' . $this->clusters[$mainPhrase][$phrase]['target']['number'] . '</span>
+                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['based']) . '</span> /
+                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['phrased']) . '</span> /
+                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['target']) . '</span>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
                                                 <span>' . __("Base") . '</span> /
@@ -162,6 +162,15 @@ class ClusterResults extends Model
 
         if ($similarities) {
             return $item['similarities'] ?? [];
+        }
+
+        return $item;
+    }
+
+    private static function getVisibilityCounter($item)
+    {
+        if (isset($item['number'])) {
+            return $item['number'];
         }
 
         return $item;
