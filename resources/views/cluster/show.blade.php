@@ -492,6 +492,7 @@
             }
 
             $(document).ready(function () {
+                console.log('rdy')
                 renderResultTable_v2({!! $cluster['result'] !!})
 
                 $('#default-hidden').dataTable({
