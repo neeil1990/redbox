@@ -492,166 +492,170 @@
             }
 
             $(document).ready(function () {
-                renderResultTable_v2({!! $cluster['result'] !!})
+                if(!{{ $cluster['id'] === 489 }}){
+                    renderResultTable_v2({!! $cluster['result'] !!})
 
-                $('#default-hidden').dataTable({
-                    'order': [[0, "asc"]],
-                    'bPaginate': false,
-                    'dom': 'lBfrtip',
-                    'buttons': [
-                        'copy', 'csv', 'excel'
-                    ]
-                })
-                $('.dt-button').addClass('btn btn-secondary')
-                $('.dt-buttons').addClass('pb-3')
-                $('#default-hidden_filter').remove()
+                    $('#default-hidden').dataTable({
+                        'order': [[0, "asc"]],
+                        'bPaginate': false,
+                        'dom': 'lBfrtip',
+                        'buttons': [
+                            'copy', 'csv', 'excel'
+                        ]
+                    })
+                    $('.dt-button').addClass('btn btn-secondary')
+                    $('.dt-buttons').addClass('pb-3')
+                    $('#default-hidden_filter').remove()
 
-                $('#copyUsedPhrases').click(function () {
-                    let object = $('#usedPhrases')
-                    if (object.html() === '') {
-                        $.ajax({
-                            type: "POST",
-                            url: "/download-cluster-phrases",
-                            dataType: 'json',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                projectId: {{ $cluster['id'] }},
-                            },
-                            success: function (response) {
-                                let phrases = response.phrases
-                                object.html(' ')
-                                object.html(phrases.join("\n"))
-                                object.css('display', 'block')
-                                let text = document.getElementById("usedPhrases");
-                                text.select();
-                                document.execCommand("copy");
-                                object.css('display', 'none')
-                                successCopiedMessage()
-                            },
-                            error: function (response) {
-                            }
-                        });
-                    } else {
-                        object.css('display', 'block')
-                        let text = document.getElementById("usedPhrases");
-                        text.select();
-                        document.execCommand("copy");
-                        object.css('display', 'none')
-                        successCopiedMessage()
-                    }
-                })
-
-                let oldValue = 1
-                $('#brutForce').on('click', function () {
-                    if ($(this).is(':checked')) {
-                        $('#brutForceCount').val(oldValue)
-                        $('#brutForceCountBlock').show(300)
-                    } else {
-                        $('#brutForceCountBlock').hide(300)
-                        oldValue = $('#brutForceCount').val()
-                        $('#brutForceCount').val(1)
-                    }
-                })
-
-                $('#brutForceFast').on('click', function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('fast.scan.clusters') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            count: {{ $cluster['request']['count'] ?? 40 }},
-                            clusteringLevel: $('#clusteringLevelFast').val(),
-                            engineVersion: $('#engineVersionFast').val(),
-                            resultId: {{ $cluster['id'] }},
-                            brutForce: $('#brutForce').is(':checked'),
-                            mode: 'professional',
-                            brutForceCount: $('#brutForceCount').val(),
-                            reductionRatio: $('#reductionRatio').val(),
-                            ignoredDomains: $('#ignoredDomains').val(),
-                            gainFactor: $('#gainFactor').val(),
-                            ignoredWords: $('#ignoredWords').val(),
-                        },
-                        success: function (response) {
-                            $('#clusters-table-default').show()
-                            $('#hidden-result-fast').dataTable().fnDestroy()
-                            $('.fast-render').remove()
-                            $.each($('.render-table-fast'), function (key, value) {
-                                $('#' + $(this).attr('id')).dataTable().fnDestroy()
-                                $('#' + $(this).attr('id')).remove()
-                            })
-
-                            renderResultTableFast(response['sites'], response['count'])
-                            renderHiddenFast(response['sites'])
-                            $("html, body").animate({scrollTop: $('#clusters-table-default').offset().top}, {duration: 600,});
-
-                            $('#scroll_button').trigger('click')
-                        },
-                    });
-                })
-
-                $('.save-relevance-url').unbind().on('click', function () {
-                    let phrase = $(this).attr('data-order')
-                    let select = $('#' + phrase.replaceAll(' ', '-'))
-
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('set.cluster.relevance.url') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            phrase: $(this).attr('data-order'),
-                            url: select.val(),
-                            projectId: {{ $cluster['id'] }},
-                        },
-                        success: function () {
-                            select.parent().parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
-                        },
-                        error: function (response) {
+                    $('#copyUsedPhrases').click(function () {
+                        let object = $('#usedPhrases')
+                        if (object.html() === '') {
+                            $.ajax({
+                                type: "POST",
+                                url: "/download-cluster-phrases",
+                                dataType: 'json',
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    projectId: {{ $cluster['id'] }},
+                                },
+                                success: function (response) {
+                                    let phrases = response.phrases
+                                    object.html(' ')
+                                    object.html(phrases.join("\n"))
+                                    object.css('display', 'block')
+                                    let text = document.getElementById("usedPhrases");
+                                    text.select();
+                                    document.execCommand("copy");
+                                    object.css('display', 'none')
+                                    successCopiedMessage()
+                                },
+                                error: function (response) {
+                                }
+                            });
+                        } else {
+                            object.css('display', 'block')
+                            let text = document.getElementById("usedPhrases");
+                            text.select();
+                            document.execCommand("copy");
+                            object.css('display', 'none')
+                            successCopiedMessage()
                         }
-                    });
-                })
+                    })
 
-                saveAllUrls({{ $cluster['id'] }})
+                    let oldValue = 1
+                    $('#brutForce').on('click', function () {
+                        if ($(this).is(':checked')) {
+                            $('#brutForceCount').val(oldValue)
+                            $('#brutForceCountBlock').show(300)
+                        } else {
+                            $('#brutForceCountBlock').hide(300)
+                            oldValue = $('#brutForceCount').val()
+                            $('#brutForceCount').val(1)
+                        }
+                    })
 
-                $('.copy-full-urls').unbind().on('click', function () {
-                    let target = $(this).attr('data-action')
-                    downloadSites({{ $cluster['id'] }}, target, 'copy')
-                })
-
-                $('.fa.fa-paperclip').hover(function () {
-                    let target = $(this).attr('data-action')
-                    downloadSites({{ $cluster['id'] }}, target, 'download')
-                });
-
-                $('.all-competitors').unbind().on('click', function () {
-                    downloadAllCompetitors({{ $cluster['id'] }}, $(this).attr('data-action'))
-                })
-
-                $("#show-all-phrases").unbind().hover(function () {
-                    if ($('#all-phrases').html() === '') {
+                    $('#brutForceFast').on('click', function () {
                         $.ajax({
                             type: "POST",
-                            url: "/download-cluster-phrases",
-                            dataType: 'json',
+                            url: "{{ route('fast.scan.clusters') }}",
                             data: {
                                 _token: $('meta[name="csrf-token"]').attr('content'),
-                                projectId: {{ $cluster['id'] }},
+                                count: {{ $cluster['request']['count'] ?? 40 }},
+                                clusteringLevel: $('#clusteringLevelFast').val(),
+                                engineVersion: $('#engineVersionFast').val(),
+                                resultId: {{ $cluster['id'] }},
+                                brutForce: $('#brutForce').is(':checked'),
+                                mode: 'professional',
+                                brutForceCount: $('#brutForceCount').val(),
+                                reductionRatio: $('#reductionRatio').val(),
+                                ignoredDomains: $('#ignoredDomains').val(),
+                                gainFactor: $('#gainFactor').val(),
+                                ignoredWords: $('#ignoredWords').val(),
                             },
                             success: function (response) {
-                                let phrases = response.phrases
-                                $('#all-phrases').html(' ')
-                                $('#all-phrases').html(phrases.join("<br>"))
+                                $('#clusters-table-default').show()
+                                $('#hidden-result-fast').dataTable().fnDestroy()
+                                $('.fast-render').remove()
+                                $.each($('.render-table-fast'), function (key, value) {
+                                    $('#' + $(this).attr('id')).dataTable().fnDestroy()
+                                    $('#' + $(this).attr('id')).remove()
+                                })
+
+                                renderResultTableFast(response['sites'], response['count'])
+                                renderHiddenFast(response['sites'])
+                                $("html, body").animate({scrollTop: $('#clusters-table-default').offset().top}, {duration: 600,});
+
+                                $('#scroll_button').trigger('click')
+                            },
+                        });
+                    })
+
+                    $('.save-relevance-url').unbind().on('click', function () {
+                        let phrase = $(this).attr('data-order')
+                        let select = $('#' + phrase.replaceAll(' ', '-'))
+
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('set.cluster.relevance.url') }}",
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                phrase: $(this).attr('data-order'),
+                                url: select.val(),
+                                projectId: {{ $cluster['id'] }},
+                            },
+                            success: function () {
+                                select.parent().parent().html('<a href="' + select.val() + '" target="_blank">' + select.val() + '</a>')
                             },
                             error: function (response) {
                             }
                         });
-                    }
-                })
+                    })
 
-                setTimeout(() => {
-                    $('#loader-block').hide(300)
-                    $('#result-table').show()
-                    $('#block-for-downloads-files').show()
-                }, 1000)
+                    saveAllUrls({{ $cluster['id'] }})
+
+                    $('.copy-full-urls').unbind().on('click', function () {
+                        let target = $(this).attr('data-action')
+                        downloadSites({{ $cluster['id'] }}, target, 'copy')
+                    })
+
+                    $('.fa.fa-paperclip').hover(function () {
+                        let target = $(this).attr('data-action')
+                        downloadSites({{ $cluster['id'] }}, target, 'download')
+                    });
+
+                    $('.all-competitors').unbind().on('click', function () {
+                        downloadAllCompetitors({{ $cluster['id'] }}, $(this).attr('data-action'))
+                    })
+
+                    $("#show-all-phrases").unbind().hover(function () {
+                        if ($('#all-phrases').html() === '') {
+                            $.ajax({
+                                type: "POST",
+                                url: "/download-cluster-phrases",
+                                dataType: 'json',
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    projectId: {{ $cluster['id'] }},
+                                },
+                                success: function (response) {
+                                    let phrases = response.phrases
+                                    $('#all-phrases').html(' ')
+                                    $('#all-phrases').html(phrases.join("<br>"))
+                                },
+                                error: function (response) {
+                                }
+                            });
+                        }
+                    })
+
+                    setTimeout(() => {
+                        $('#loader-block').hide(300)
+                        $('#result-table').show()
+                        $('#block-for-downloads-files').show()
+                    }, 1000)
+                } else {
+                    console.log('ready')
+                }
             })
         </script>
     @endslot
