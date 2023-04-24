@@ -59,7 +59,6 @@
             }
 
             thead th {
-                overflow: auto;
                 position: sticky;
                 top: 0;
             }
