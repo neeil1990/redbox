@@ -6,8 +6,8 @@ namespace App\Classes\Monitoring\PanelButtons\Templates;
 
 class DefaultButtonTemplate implements ButtonTemplate
 {
-    public $h3 = 0;
-    public $p = 'Untitled';
+    public $h3 = '';
+    public $content = 'Untitled';
     public $icon = 'fas fa-home';
     public $href = '#';
     public $bg = 'bg-info';
@@ -17,7 +17,7 @@ class DefaultButtonTemplate implements ButtonTemplate
     {
         return [
             'h3' => $this->h3,
-            'p' => $this->p,
+            'content' => $this->content,
             'icon' => $this->icon,
             'href' => $this->href,
             'bg' => $this->bg,

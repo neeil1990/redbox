@@ -14,7 +14,7 @@ class CompetitorButton extends Buttons
         $temp = new DefaultButtonTemplate();
 
         $temp->h3 = $this->getCount();
-        $temp->p = __('My competitors');
+        $temp->content = $this->wrapTag(__('My competitors'), 'p');
         $temp->href = route('monitoring.competitors', $this->project->id);
         $temp->icon = 'fas fa-user-secret';
         $temp->bg = 'bg-success';

@@ -61,7 +61,7 @@
                 <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}" style="min-height: 137px">
                     <div class="inner">
                         <h3>{{ $navigation['h3'] }}</h3>
-                        <p>{{ $navigation['p'] }}</p>
+                        {!! $navigation['content'] !!}
                         @isset($navigation['small'])
                             <small>{{ $navigation['small'] }}</small>
                         @endisset

@@ -14,7 +14,7 @@ class PromotionPlanButtons extends Buttons
     {
         $temp = new DefaultButtonTemplate();
 
-        $temp->p = __('Promotion plan');
+        $temp->content = $this->wrapTag(__('Promotion plan'), 'p');
         $temp->small = __('In developing');
         $temp->icon = 'far fa-check-square';
         $temp->bg = 'bg-danger';
