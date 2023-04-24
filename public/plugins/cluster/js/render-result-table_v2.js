@@ -1,5 +1,4 @@
 function renderResultTable_v2(data) {
-    console.log('render start')
     let iterator = 0
     let copyGroupBool = true
     let copyRelevanceBool = false
@@ -247,7 +246,6 @@ function renderResultTable_v2(data) {
         })
     });
 
-    console.log('render end')
 }
 
 function renderAlonePhrases(alone, iterator, colspan) {
