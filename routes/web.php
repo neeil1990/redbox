@@ -11,6 +11,7 @@
 |
 */
 
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -342,7 +343,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/cluster-projects', 'ClusterController@clusterProjects')->name('cluster.projects');
     Route::post('/edit-cluster-project', 'ClusterController@edit')->name('cluster.edit');
     Route::post('/get-cluster-request/', 'ClusterController@getClusterRequest')->name('get.cluster.request');
-    Route::get('/show-cluster-result/{cluster}', 'ClusterController@showResult')->name('show.cluster.result');
+    Route::get('/show-cluster-result/{id}', 'ClusterController@showResult')->name('show.cluster.result');
     Route::get('/wait-cluster-result/id', 'ClusterController@waitClusterResult')->name('wait.cluster.result');
     Route::get('/download-cluster-result/{cluster}/{type}', 'ClusterController@downloadClusterResult')->name('download.cluster.result');
     Route::get('/cluster-configuration', 'ClusterController@clusterConfiguration')->name('cluster.configuration');

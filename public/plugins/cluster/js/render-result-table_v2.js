@@ -245,6 +245,7 @@ function renderResultTable_v2(data) {
             })
         })
     });
+
 }
 
 function renderAlonePhrases(alone, iterator, colspan) {

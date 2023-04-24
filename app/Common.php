@@ -30,9 +30,13 @@ class Common
         unlink($newFileName);
     }
 
-    public static function uncompressArray($string): array
+    public static function uncompressArray($string, $decode = true)
     {
-        return json_decode(gzuncompress(base64_decode($string)), true);
+        if ($decode) {
+            return json_decode(gzuncompress(base64_decode($string)), true);
+        }
+
+        return gzuncompress(base64_decode($string));
     }
 
     public static function getRegionName(string $id): string

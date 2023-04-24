@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DOMDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -180,18 +181,27 @@ class TextAnalyzer extends Model
         return preg_replace('| +|', ' ', $text);
     }
 
-    /**
-     * @param $html
-     * @return array|string|string[]|null
-     */
-    public static function removeStylesAndScripts($html)
+    public static function removeStylesAndScripts($html): string
     {
         $html = mb_strtolower($html);
-        $clean_html = preg_replace('/<!--.*?-->/', '', $html);
-        $clean_html = preg_replace('/<style\b[^>]*>([\s\S]*?)<\/style>/i', '', $clean_html);
-        $clean_html = preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $clean_html);
 
-        return preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $clean_html);
+        $regex = [
+            '/<!--.*?-->/si',
+            '/<script.*?>(.*?)<\/script>/is',
+            '/<style.*?>(.*?)<\/style>/is',
+            '/<pre\s+style="display:none;">.*?<\/pre>/is',
+            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+        ];
+
+        foreach ($regex as $rule) {
+            $newHtml = preg_replace($rule, '', $html);
+
+            if (strlen($newHtml) > 0) {
+                $html = $newHtml;
+            }
+        }
+
+        return $html;
     }
 
     /**
