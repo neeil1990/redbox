@@ -86,21 +86,22 @@ class ClusterResults extends Model
 
     public function generateOl($items, $mainPhrase): string
     {
-        $boolean = false;
-        if ($mainPhrase == 'Нераспределённые слова' || $mainPhrase == 'Unallocated words' ||  $mainPhrase ==  'нераспределённые слова') {
-            $boolean = true;
-        }
+        try {
+            $boolean = false;
+            if ($mainPhrase == 'Нераспределённые слова' || $mainPhrase == 'Unallocated words' || $mainPhrase == 'нераспределённые слова') {
+                $boolean = true;
+            }
 
-        $ol = '<ol id="' . Str::random(7) . '" class="list-group list-group-flush show">';
+            $ol = '<ol id="' . Str::random(7) . '" class="list-group list-group-flush show">';
 
-        foreach ($items as $key => $phrase) {
-            if (is_array($phrase)) {
-                $ol .= $this->parseTree($phrase);
-            } else {
-                if ($boolean) {
-                    $mainPhrase = $phrase;
-                }
-                $ol .= '<div data-target="' . $phrase . '" data-action="' . $mainPhrase . '" class="list-group-item">
+            foreach ($items as $key => $phrase) {
+                if (is_array($phrase)) {
+                    $ol .= $this->parseTree($phrase);
+                } else {
+                    if ($boolean) {
+                        $mainPhrase = $phrase;
+                    }
+                    $ol .= '<div data-target="' . $phrase . '" data-action="' . $mainPhrase . '" class="list-group-item">
                            <div class="d-flex justify-content-between align-items-center">
                                <div class="phrase-for-color">' . $phrase . '</div>
                                <span class="relevance-link hide">' . Cluster::getRelevanceLink($this->searchElement($phrase)) . '</span>
@@ -139,11 +140,14 @@ class ClusterResults extends Model
                                </div>
                           </div>
                      </div>';
+                }
             }
-        }
-        $ol .= '</ol>';
+            $ol .= '</ol>';
 
-        return $ol;
+            return $ol;
+        } catch (\Throwable $e) {
+            dd($this->clusters[$mainPhrase][$phrase]);
+        }
     }
 
     public function searchElement($ph, $similarities = false): array

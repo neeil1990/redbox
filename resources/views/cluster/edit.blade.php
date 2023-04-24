@@ -636,8 +636,7 @@
                                                                 {{ __('Cancel selection') }}
                                                             </button>
                                                         </div>
-                                                        <i class="fa fa-arrow-right move-phrase"
-                                                           data-target="{{ $phrase }}"></i>
+                                                        <i class="fa fa-arrow-right move-phrase" data-target="{{ $phrase }}"></i>
                                                     </div>
                                                 </div>
                                             </div>
