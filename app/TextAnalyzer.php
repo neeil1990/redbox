@@ -183,15 +183,20 @@ class TextAnalyzer extends Model
 
     public static function removeStylesAndScripts($html): string
     {
-        $html = preg_replace('/<!--.*?-->/', '', $html);
-        $html = preg_replace('/<style\b[^>]*>([\s\S]*?)<\/style>/i', '', $html);
-        $html = preg_replace('/<script\b[^>]*>([\s\S]*?)<\/script>/i', '', $html);
-        $html = preg_replace('/<script.*?>(.*?)<\/script>/is', '', $html);
+        $html = mb_strtolower($html);
 
-        // специфичные сайты
-        $html = preg_replace("'array.*?\(.*?\)'si", '', $html);
-        $html = preg_replace('/<pre\s+style="display:none;">.*?<\/pre>/is', '', $html);
-        $html = preg_replace("'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si", '', $html);
+        $regex = [
+            '/<!--.*?-->/si',
+            '/<script.*?>(.*?)<\/script>/is',
+            '/<style.*?>(.*?)<\/style>/is',
+            "'array.*?\(.*?\)'si",
+            '/<pre\s+style="display:none;">.*?<\/pre>/is',
+            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+        ];
+
+        foreach ($regex as $rule) {
+            $html = preg_replace($rule, '', $html);
+        }
 
         return $html;
     }
