@@ -87,13 +87,13 @@ class ClusterResults extends Model
 
     public function generateOl($items, $mainPhrase): string
     {
-        if ($mainPhrase == 'Нераспределённые слова' || $mainPhrase == 'Unallocated words') {
+        $boolean = false;
+        if ($mainPhrase == 'Нераспределённые слова' || $mainPhrase == 'Unallocated words' ||  $mainPhrase ==  'нераспределённые слова') {
             $boolean = true;
-        } else {
-            $boolean = false;
         }
 
         $ol = '<ol id="' . Str::random(10) . '" class="list-group list-group-flush show">';
+
         foreach ($items as $key => $phrase) {
             if (is_array($phrase)) {
                 $ol .= $this->parseTree($phrase);
@@ -108,9 +108,9 @@ class ClusterResults extends Model
                                <div class="hide">' . implode("\n", array_keys($this->searchElement($phrase, true))) . '</div>
                                <div>
                                     <span class="__helper-link ui_tooltip_w frequency">
-                                        <span>0</span> /
-                                        <span>0</span> /
-                                        <span>0</span>
+                                        <span>' . $this->clusters[$mainPhrase][$phrase]['based']['number'] . '</span> /
+                                        <span>' . $this->clusters[$mainPhrase][$phrase]['phrased']['number'] . '</span> /
+                                        <span>' . $this->clusters[$mainPhrase][$phrase]['target']['number'] . '</span>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
                                                 <span>' . __("Base") . '</span> /

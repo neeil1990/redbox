@@ -888,25 +888,30 @@ class Cluster
      */
     public static function getRelevanceLink($item): string
     {
-        if (isset($item['link'])) {
-            return '<a href="' . $item['link'] . '" target="_blank">' . $item['link'] . '</a>';
-        }
-
-        if (is_array($item['relevance'])) {
-            $select = '<div class="d-flex">' .
-                '<select style="border-radius: 0 !important;" class="custom-select">';
-
-            foreach ($item['relevance'] as $link) {
-                $select .= '<option value="' . $link . '">' . $link . '</option>';
+        try {
+            if (isset($item['link'])) {
+                return '<a href="' . $item['link'] . '" target="_blank">' . $item['link'] . '</a>';
             }
-            $select .= '</select>' .
-                '<button style="border-radius: 0 !important;" class="btn btn-secondary save-relevance-url">' .
-                '    <i class="fa fa-save" style="color: white"></i>' .
-                '</button></div>';
 
-            return $select;
+            if (is_array($item['relevance'])) {
+                $select = '<div class="d-flex">' .
+                    '<select style="border-radius: 0 !important;" class="custom-select">';
+
+                foreach ($item['relevance'] as $link) {
+                    $select .= '<option value="' . $link . '">' . $link . '</option>';
+                }
+                $select .= '</select>' .
+                    '<button style="border-radius: 0 !important;" class="btn btn-secondary save-relevance-url">' .
+                    '    <i class="fa fa-save" style="color: white"></i>' .
+                    '</button></div>';
+
+                return $select;
+            }
+
+            return '';
+        } catch (\Throwable $e) {
+            return '';
         }
 
-        return '';
     }
 }
