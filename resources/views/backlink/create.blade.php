@@ -17,6 +17,10 @@
             {!! Form::label(__('Project name')) !!}
             {!! Form::text('project_name', null, ['class' => 'form form-control','required','placeholder' => __('Project name')]) !!}
         </div>
+        <div class='form-group'>
+            {!! Form::label('Связать проект с сайтом из мониторинга позиций') !!}
+            {!! Form::select('monitoring_project_id', $monitoring, null, ['class' => 'form-control']) !!}
+        </div>
         <div class='form-group required'>
             {!! Form::label(__('Loading links with a list')) !!}
             {!! Form::textarea('params', null,[
@@ -58,6 +62,10 @@
             'class' => 'form form-control',
             'required'
             ]) !!}
+        </div>
+        <div class='form-group w-50'>
+            {!! Form::label('Связать проект с сайтом из мониторинга позиций') !!}
+            {!! Form::select('monitoring_project_id', $monitoring, null, ['class' => 'form-control']) !!}
         </div>
         <input type="hidden" name="countRows" id="countRows" value="1">
         <table id="example2"

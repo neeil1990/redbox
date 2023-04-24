@@ -65,7 +65,9 @@ class BacklinkController extends Controller
             }
         }
 
-        return view('backlink.create');
+        $monitoring = $this->getMonitoringOptions();
+
+        return view('backlink.create', compact('monitoring'));
     }
 
     /**
@@ -96,8 +98,9 @@ class BacklinkController extends Controller
     public function show($id)
     {
         $project = ProjectTracking::findOrFail($id);
+        $monitoring = $this->getMonitoringOptions();
 
-        return view('backlink.show', compact('project'));
+        return view('backlink.show', compact('project', 'monitoring'));
     }
 
     /**
@@ -142,13 +145,11 @@ class BacklinkController extends Controller
      */
     public function editBacklink(Request $request): JsonResponse
     {
-        if (strlen($request->option) > 0) {
-            ProjectTracking::where('id', $request->id)->update([
-                $request->name => $request->option
-            ]);
-            return response()->json([]);
-        }
-        return response()->json([], 400);
+        ProjectTracking::where('id', $request->id)->update([
+            $request->name => $request->option
+        ]);
+
+        return response()->json([]);
     }
 
     public function removeLink($id): RedirectResponse
@@ -227,6 +228,7 @@ class BacklinkController extends Controller
         if (empty($request->id)) {
             $projectTracking = new ProjectTracking();
             $projectTracking->user_id = Auth::id();
+            $projectTracking->monitoring_project_id = $request->input('monitoring_project_id', null);
             $projectTracking->project_name = $request->project_name;
             $projectTracking->total_link = count($phrases);
             $projectTracking->save();
@@ -263,6 +265,7 @@ class BacklinkController extends Controller
         if (empty($request['id'])) {
             $projectTracking = new ProjectTracking();
             $projectTracking->user_id = Auth::id();
+            $projectTracking->monitoring_project_id = $request['monitoring_project_id'];
             $projectTracking->project_name = $request['project_name'];
             $projectTracking->total_link = (integer)$request['countRows'];
             $projectTracking->save();
@@ -491,6 +494,18 @@ class BacklinkController extends Controller
         if ($article->total_broken_link != 0) {
             $article->decrement('total_broken_link');
         }
+    }
+
+    private function getMonitoringOptions(): array
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        $options = [null => __('Select value')];
+
+        foreach ($user->monitoringProjects as $item)
+            $options[$item['id']] = $item['name'];
+
+        return $options;
     }
 
 }
