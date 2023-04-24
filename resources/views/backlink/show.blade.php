@@ -25,6 +25,10 @@
         <div class='form-group required d-flex align-items-center' projectId="{{ $project->id }}">
             {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-3 project-name']) !!}
         </div>
+        <div class='form-group' projectId="{{ $project->id }}">
+            {!! Form::label('Связать проект с сайтом из мониторинга позиций') !!}
+            {!! Form::select('monitoring_project_id', $monitoring, $project->monitoring_project_id, ['class' => 'form-control col-3 project-name']) !!}
+        </div>
         <table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid"
                aria-describedby="example1_info">
             <thead>
@@ -100,8 +104,20 @@
             $(document).ready(function () {
                 $(".form-control.col-3.project-name").focus(function () {
                     oldProjectName = $(this).val()
-                })
+                });
+
                 $(".form-control.col-3.project-name").blur(function () {
+
+                    if($(this).attr('name') === 'project_name'){
+                        if(!$(this).val().length){
+                            $('.toast-top-right.error-message').show()
+                            setTimeout(() => {
+                                $('.toast-top-right.error-message').hide(300)
+                            }, 4000);
+                            return false;
+                        }
+                    }
+
                     if (oldProjectName !== $(this).val()) {
                         $.ajax({
                             type: "POST",

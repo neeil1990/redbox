@@ -32,4 +32,9 @@ class MonitoringProject extends Model
     {
         return $this->hasMany(MonitoringGroup::class);
     }
+
+    public function backlinks()
+    {
+        return $this->hasMany(ProjectTracking::class);
+    }
 }

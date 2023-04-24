@@ -18,7 +18,7 @@ class ProjectTracking extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'project_name', 'total_link',
+        'user_id', 'monitoring_project_id', 'project_name', 'total_link',
     ];
 
     protected $guarded = [];
