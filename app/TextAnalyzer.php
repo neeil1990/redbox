@@ -189,13 +189,16 @@ class TextAnalyzer extends Model
             '/<!--.*?-->/si',
             '/<script.*?>(.*?)<\/script>/is',
             '/<style.*?>(.*?)<\/style>/is',
-            "'array.*?\(.*?\)'si",
             '/<pre\s+style="display:none;">.*?<\/pre>/is',
             "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
         ];
 
         foreach ($regex as $rule) {
-            $html = preg_replace($rule, '', $html);
+            $newHtml = preg_replace($rule, '', $html);
+
+            if (strlen($newHtml) > 0) {
+                $html = $newHtml;
+            }
         }
 
         return $html;
