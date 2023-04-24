@@ -13,17 +13,19 @@ class LinkTrackingButtons extends Buttons
     {
         $temp = new DefaultButtonTemplate();
 
-        $temp->h3 = $this->getCount();
-        $temp->p = __('Link tracking');
+        $temp->h3 = $this->user->backlingProjects()->count();
+        $temp->content = $this->content();
         $temp->icon = 'fas fa-link';
         $temp->bg = 'bg-purple-light';
         $temp->href = route('backlink');
+        $temp->small = __('Link tracking');
 
         return $temp;
     }
 
-    private function getCount()
+    private function content(): string
     {
-        return $this->user->backlingProjects()->count();
+        $data = [];
+        return view('monitoring.buttons-panel.link_tracking_content', compact('data'));
     }
 }

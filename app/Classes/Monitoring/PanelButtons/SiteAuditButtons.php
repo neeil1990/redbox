@@ -14,7 +14,7 @@ class SiteAuditButtons extends Buttons
     {
         $temp = new DefaultButtonTemplate();
 
-        $temp->p = __('Site audit');
+        $temp->content = $this->wrapTag(__('Site audit'), 'p');
         $temp->icon = 'fas fa-tasks';
         $temp->bg = 'bg-info';
         $temp->small = __('In developing');

@@ -14,7 +14,7 @@ class ProjectButton extends Buttons
         $temp = new DefaultButtonTemplate();
 
         $temp->h3 = $this->getCount();
-        $temp->p = __('Projects');
+        $temp->content = $this->wrapTag(__('Projects'), 'p');
         $temp->href = route('monitoring.index');
 
         return $temp;
