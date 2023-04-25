@@ -1,10 +1,10 @@
 function renderResultTable_v2(data) {
+    let alone = {}
+    let newRows = []
     let iterator = 0
+    let colspan = 4
     let copyGroupBool = true
     let copyRelevanceBool = false
-    let alone = {}
-    let colspan = 4
-    let newRows = []
 
     $.each(data, function (key, result) {
         let count = 0;
@@ -150,15 +150,11 @@ function renderResultTable_v2(data) {
                 }
             })
 
-            let groupButton
-
-            if (copyGroupBool) {
-                groupButton = '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-                    '   <i class="fa fa-copy pr-1"></i>группу' +
-                    '</p>'
-            } else {
-                groupButton = ''
-            }
+            let groupButton = copyGroupBool ?
+                '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+                '   <i class="fa fa-copy pr-1"></i>группу' +
+                '</p>'
+                : ''
 
             if (addColspan) {
                 colspan = 5
@@ -223,9 +219,13 @@ function renderResultTable_v2(data) {
         } else {
             alone[key] = result
         }
+
+        if (newRows.length > 50) {
+            $('#clusters-table-tbody').html(newRows.join(' '))
+            newRows = []
+        }
     })
 
-    $('#clusters-table-tbody').html(newRows.join(' '))
     renderAlonePhrases(alone, iterator, colspan)
     coloredPhrases()
     copyBased()
