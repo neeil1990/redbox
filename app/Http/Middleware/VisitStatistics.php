@@ -27,7 +27,8 @@ class VisitStatistics
             $targetController = class_basename(Route::current()->controller);
             $controllerAction = last(explode('\\', Route::current()->action['controller']));
             $project = MainProject::where('controller', $controllerAction)
-                ->orWhere('controller', 'like', $targetController . '%')
+                ->orWhere('controller', 'like', '%' . $targetController . "\n%")
+                ->orWhere('controller', 'like', "%\n" . $targetController . '%')
                 ->first();
 
             if (empty($project)) {
