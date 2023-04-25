@@ -127,21 +127,31 @@
     let secondsTrackingRedbox = 0;
     let timeTrackingRedboxInterval
 
-    timeTrackingRedboxInterval = setInterval(() => {
-        secondsTrackingRedbox += 1;
-    }, 1000)
+    timeTrackingRedboxInterval = startTracking()
 
     $(window).bind('focus', function () {
-        timeTrackingRedboxInterval = setInterval(() => {
-            secondsTrackingRedbox += 1;
-        }, 1000)
+        timeTrackingRedboxInterval = startTracking()
     });
 
     $(window).bind('blur', function () {
         clearInterval(timeTrackingRedboxInterval)
+        updateStatistics(secondsTrackingRedbox)
     });
 
     window.onbeforeunload = function () {
+        updateStatistics(secondsTrackingRedbox)
+    };
+
+    function startTracking() {
+        return setInterval(() => {
+            secondsTrackingRedbox += 1;
+            if (secondsTrackingRedbox === 300) {
+                updateStatistics(secondsTrackingRedbox)
+            }
+        }, 1000)
+    }
+
+    function updateStatistics() {
         $.ajax({
             url: "{{ route('update.statistics') }}",
             method: 'POST',
@@ -151,7 +161,9 @@
                 _token: $('meta[name="csrf-token"]').attr('content'),
             },
         });
-    };
+
+        secondsTrackingRedbox = 0;
+    }
 </script>
 
 <!-- OPTIONAL SCRIPTS -->
