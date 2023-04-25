@@ -439,8 +439,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         newRows.push(newRow)
     }
-
-    $('#clusters-table-tbody').html(newRows.join(' '))
+    $('#clusters-table-tbody').append(newRows.join(' '))
 }
 
 function coloredPhrases() {

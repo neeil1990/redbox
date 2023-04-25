@@ -112,7 +112,7 @@
                                             {{ __('View results') }}
                                         </a>
                                         <a href="{{ route('edit.clusters', $project->id) }}"
-                                           class="btn btn-secondary mb-2">
+                                           class="btn btn-secondary mb-2"  target="_blank">
                                             {{ __('Hands editor') }}
                                         </a>
                                         <button type="button"
