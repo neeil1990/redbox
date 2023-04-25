@@ -221,7 +221,7 @@ function renderResultTable_v2(data) {
         }
 
         console.log(newRows.length)
-        if (newRows.length > 250) {
+        if (newRows.length > 100) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
