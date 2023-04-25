@@ -492,7 +492,9 @@
             }
 
             $(document).ready(function () {
+                console.time('1')
                 renderResultTable_v2({!! $cluster['result'] !!})
+                console.timeEnd('1')
 
                 $('#default-hidden').dataTable({
                     'order': [[0, "asc"]],
