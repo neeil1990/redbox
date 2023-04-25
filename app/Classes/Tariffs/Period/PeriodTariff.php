@@ -16,6 +16,9 @@ abstract class PeriodTariff implements Period
 
     public function name(): string
     {
+        if(!$this->percent)
+            return __("$this->months Months");
+
         return __("$this->months Months with discount $this->percent%");
     }
 
