@@ -123,48 +123,50 @@
 @endunless
 <!-- AdminLTE -->
 <script src="{{ asset('js/adminlte.js') }}"></script>
-<script>
-    let secondsTrackingRedbox = 0;
-    let timeTrackingRedboxInterval
+@if(\App\User::find(Auth::id())['statistic'])
+    <script>
+        let secondsTrackingRedbox = 0;
+        let timeTrackingRedboxInterval
 
-    timeTrackingRedboxInterval = startTracking()
-
-    $(window).bind('focus', function () {
         timeTrackingRedboxInterval = startTracking()
-    });
 
-    $(window).bind('blur', function () {
-        clearInterval(timeTrackingRedboxInterval)
-        updateStatistics(secondsTrackingRedbox)
-    });
-
-    window.onbeforeunload = function () {
-        updateStatistics(secondsTrackingRedbox)
-    };
-
-    function startTracking() {
-        return setInterval(() => {
-            secondsTrackingRedbox += 1;
-            if (secondsTrackingRedbox === 300) {
-                updateStatistics(secondsTrackingRedbox)
-            }
-        }, 1000)
-    }
-
-    function updateStatistics() {
-        $.ajax({
-            url: "{{ route('update.statistics') }}",
-            method: 'POST',
-            data: {
-                seconds: secondsTrackingRedbox,
-                controllerAction: "{{ $controllerAction }}",
-                _token: $('meta[name="csrf-token"]').attr('content'),
-            },
+        $(window).bind('focus', function () {
+            timeTrackingRedboxInterval = startTracking()
         });
 
-        secondsTrackingRedbox = 0;
-    }
-</script>
+        $(window).bind('blur', function () {
+            clearInterval(timeTrackingRedboxInterval)
+            updateStatistics(secondsTrackingRedbox)
+        });
+
+        window.onbeforeunload = function () {
+            updateStatistics(secondsTrackingRedbox)
+        };
+
+        function startTracking() {
+            return setInterval(() => {
+                secondsTrackingRedbox += 1;
+                if (secondsTrackingRedbox === 300) {
+                    updateStatistics(secondsTrackingRedbox)
+                }
+            }, 1000)
+        }
+
+        function updateStatistics() {
+            $.ajax({
+                url: "{{ route('update.statistics') }}",
+                method: 'POST',
+                data: {
+                    seconds: secondsTrackingRedbox,
+                    controllerAction: "{{ $controllerAction }}",
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+            });
+
+            secondsTrackingRedbox = 0;
+        }
+    </script>
+@endif
 
 <!-- OPTIONAL SCRIPTS -->
 {{--<script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>--}}

@@ -141,21 +141,19 @@ class UsersController extends Controller
         ]);
 
         $user->update($request->all());
-
         $user->syncRoles($request->input('role'));
 
         if ($request->input('password') !== null && in_array(3, Auth::user()->role->toArray())) {
             $user->password = Hash::make($request->input('password'));
-
             $user->setRememberToken(Str::random(60));
 
             $user->save();
         }
 
         if ($user->lang == 'en') {
-            flash()->overlay('User update successfully', ' ')->success();
+            flash()->overlay('User update successfully', 'Notification')->success();
         } else {
-            flash()->overlay('Даные пользователя успешно обновлены', ' ')->success();
+            flash()->overlay('Даные пользователя успешно обновлены', 'Уведомление')->success();
         }
 
         return redirect('users');

@@ -35,6 +35,17 @@
                         @error('email') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                     </div>
 
+                    @if($user::isUserAdmin())
+                        <div class="form-group">
+                            {!! Form::label('statistic', __('Track statistic')) !!}
+                            <select name="statistic" id="statistic" class="custom custom-select">
+                                <option value="1" @if($user->statistic) selected @endif>{{ __('Yes') }}</option>
+                                <option value="0" @if(!$user->statistic) selected @endif>{{ __('No') }}</option>
+                            </select>
+                            @error('email') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                        </div>
+                    @endif
+
                     @if($superAdmin)
                         <div class="form-group">
                             {!! Form::label('password', __('Password')) !!}
