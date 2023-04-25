@@ -4,6 +4,9 @@
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
         <style>
             .BacklinkProject, .BacklinkLinks {
@@ -18,8 +21,7 @@
             {!! Form::text('project_name', null, ['class' => 'form form-control','required','placeholder' => __('Project name')]) !!}
         </div>
         <div class='form-group'>
-            {!! Form::label('Связать проект с сайтом из мониторинга позиций') !!}
-            {!! Form::select('monitoring_project_id', $monitoring, null, ['class' => 'form-control']) !!}
+            @include('backlink._monitoring_options', ['options' => $monitoring, 'value' => null, 'class' => ['form-control']])
         </div>
         <div class='form-group required'>
             {!! Form::label(__('Loading links with a list')) !!}
@@ -64,8 +66,7 @@
             ]) !!}
         </div>
         <div class='form-group w-50'>
-            {!! Form::label('Связать проект с сайтом из мониторинга позиций') !!}
-            {!! Form::select('monitoring_project_id', $monitoring, null, ['class' => 'form-control']) !!}
+            @include('backlink._monitoring_options', ['options' => $monitoring, 'value' => null, 'class' => ['form-control']])
         </div>
         <input type="hidden" name="countRows" id="countRows" value="1">
         <table id="example2"
@@ -119,6 +120,9 @@
         {!! Form::close() !!}
     </div>
     @slot('js')
+        <!-- Select2 -->
+        <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+
         <script>
             var countRows = 1
             $('.text-info').click(function () {
@@ -153,6 +157,18 @@
                 if (countRows == 1) {
                     $('#removeRow').hide(100)
                 }
+            });
+
+            $('.monitoring-options').select2({
+                theme: 'bootstrap4',
+                selectOnClose: true,
+                sorter: function(el){
+                    return el.sort((a, b) => {
+                        a = a.text.toLowerCase();
+                        b = b.text.toLowerCase();
+                        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                    });
+                },
             });
         </script>
     @endslot
