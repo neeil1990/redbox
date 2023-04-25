@@ -220,13 +220,13 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        console.log(newRows.length)
         if (newRows.length > 100) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
     })
 
+    $('#clusters-table-tbody').append(newRows.join(' '))
     renderAlonePhrases(alone, iterator, colspan)
     coloredPhrases()
     copyBased()
@@ -237,18 +237,6 @@ function renderResultTable_v2(data) {
     if (copyGroupBool) {
         copyGroup()
     }
-
-    $(document).ready(function () {
-        $.each($('.render-table'), function (key, value) {
-            $('#' + $(this).attr('id')).dataTable({
-                'order': [[0, "asc"]],
-                'bPaginate': false,
-                'orderCellsTop': true,
-                'sDom': '<"top"i>rt<"bottom"lp><"clear">'
-            })
-        })
-    });
-
 }
 
 function renderAlonePhrases(alone, iterator, colspan) {

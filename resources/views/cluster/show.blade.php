@@ -205,7 +205,7 @@
                     <a class="btn btn-secondary mb-2"
                        href="/download-cluster-result/{{ $cluster['id'] }}/xls"
                        target="_blank">{{ __('Download xls') }}</a>
-                    <div style="width: 100%; overflow-x: scroll;">
+                    <div>
                         <table id="clusters-table" class="table table-bordered dtr-inline">
                             <thead>
                             <tr>
@@ -261,7 +261,7 @@
                                         </div>
 
                                         <div class="form-group required">
-                                            <label for="ignoredDomains">Игнорируемые домены</label>
+                                            <label for="ignoredDomains">{{ __('Ignored domains') }}</label>
                                             <textarea class="form form-control" name="ignoredDomains"
                                                       id="ignoredDomains" cols="8"
                                                       rows="8">{{ $cluster['request']['ignoredDomains'] ?? '' }}</textarea>
@@ -269,7 +269,7 @@
 
                                         <div id="ignoredWordsBlock">
                                             <div class="form-group required">
-                                                <label for="ignoredWords">Игнорируемые слова</label>
+                                                <label for="ignoredWords">{{ __('Ignored words') }}</label>
                                                 <textarea class="form form-control" name="ignoredWords"
                                                           id="ignoredWords" cols="8"
                                                           rows="8">{{ $cluster['request']['ignoredWords'] ?? '' }}</textarea>
@@ -292,7 +292,7 @@
                                         </div>
                                         <div class="form-group required" id="brutForceCountBlock" style="display: none">
                                             <div class="form-group required">
-                                                <label for="gainFactor">коэффициент усиления(%)</label>
+                                                <label for="gainFactor">{{ __('Gain factor(%)') }}</label>
                                                 <input class="form form-control" type="number" id="gainFactor"
                                                        name="gainFactor"
                                                        value="{{ $cluster['request']['gainFactor'] ?? 40 ?? 10 }}"
@@ -301,14 +301,14 @@
 
                                             <div class="form-group required">
                                                 <label for="brutForceCount">
-                                                    Минимальный размер кластера для повторной переборки
+                                                    {{ __("Minimum cluster size for re-bulkhead") }}
                                                 </label>
                                                 <input type="number" name="brutForceCount" id="brutForceCount"
                                                        class="form form-control" value="1">
                                             </div>
                                             <div>
                                                 <label for="reductionRatio">
-                                                    Минимальный множитель
+                                                    {{ __('Minimum multiplier') }}
                                                 </label>
                                                 <select name="reductionRatio" id="reductionRatio"
                                                         class="select custom-select">
@@ -492,9 +492,7 @@
             }
 
             $(document).ready(function () {
-                console.time('1')
                 renderResultTable_v2({!! $cluster['result'] !!})
-                console.timeEnd('1')
 
                 $('#default-hidden').dataTable({
                     'order': [[0, "asc"]],
