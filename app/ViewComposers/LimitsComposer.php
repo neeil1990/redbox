@@ -123,9 +123,9 @@ class LimitsComposer
                     'position' => 8
                 ];
 
-            case 'GeneratorWords':
+            case 'monitoring':
                 return [
-                    'count' => __('Restrictions are not tracked'),
+                    'count' => (new PositionLimit(Auth::id()))->getCounter(),
                     'position' => 9
                 ];
 
@@ -208,10 +208,10 @@ class LimitsComposer
                     'position' => 21
                 ];
 
-            case 'monitoring':
+            case 'GeneratorWords':
                 return [
-                    'count' => (new PositionLimit(Auth::id()))->getCounter(),
-                    'position' => 21
+                    'count' => __('Restrictions are not tracked'),
+                    'position' => 22
                 ];
 
             default:
@@ -263,7 +263,7 @@ class LimitsComposer
             case 'BacklinkLinks':
                 return 12;
 
-            case 'UniqueWords':
+            case 'monitoring':
                 return 13;
 
             case 'ListComparison':
@@ -292,6 +292,9 @@ class LimitsComposer
 
             case 'GeneratorWords':
                 return 22;
+
+            case 'UniqueWords':
+                return 23;
 
             default:
                 return 100;
