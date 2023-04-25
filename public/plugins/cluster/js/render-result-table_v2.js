@@ -220,7 +220,7 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        if (newRows.length > 50) {
+        if (newRows.length > 250) {
             $('#clusters-table-tbody').html(newRows.join(' '))
             newRows = []
         }
