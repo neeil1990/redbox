@@ -128,7 +128,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exportModalLabel">Фильтр выгрузки пользователей</h5>
+                    <h5 class="modal-title" id="exportModalLabel">{{ __('User Upload Filter') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -136,12 +136,12 @@
                 <form method="POST" action="{{ route('filter.exports.users') }}" class="modal-body">
                     @csrf
                     <div class="group group-required">
-                        <label for="countDays">День последнего онлайна</label>
+                        <label for="countDays">{{ __('The day of the last online') }}</label>
                         <input class="form form-control" type="datetime-local" name="lastOnline" required>
                     </div>
 
                     <div class="group group-required mt-3">
-                        <label for="verify">Тип файла</label>
+                        <label for="verify">{{ __('File Type') }}</label>
                         <select name="fileType" id="fileType" class="custom custom-select">
                             <option value="xls">excel</option>
                             <option value="csv">csv</option>
@@ -149,13 +149,13 @@
                     </div>
 
                     <div class="group group-required mt-3">
-                        <label for="verify">Верифицированный пользователь</label>
+                        <label for="verify">{{ __('Verified user') }}</label>
                         <input type="checkbox" name="verify" checked>
                     </div>
 
                     <div class="pt-3 d-flex justify-content-end">
-                        <button type="button" class="btn btn-default mr-1" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-secondary">Export</button>
+                        <button type="button" class="btn btn-default mr-1" data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="submit" class="btn btn-secondary">{{ __('Export') }}</button>
                     </div>
                 </form>
             </div>
