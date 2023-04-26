@@ -42,7 +42,6 @@
                         @isset($navigation['p'])
                             {{ $navigation['p'] }}
                         @endisset
-                        <p>{{ $navigation['p'] }}</p>
                         @isset($navigation['small'])
                             <small>{{ $navigation['small'] }}</small>
                         @endisset
