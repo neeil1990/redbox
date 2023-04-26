@@ -50,6 +50,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/user-actions-history', 'UsersController@userActionsHistory')->name('user.actions.history');
     Route::get('/get-data-range-visit-statistics/{user}', 'UsersController@getDateRangeVisitStatistics')->name('visit.statistics.date.range');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
+    Route::get('/visits-statistics/', 'UsersController@userVisitStatistics')->name('users.statistics');
     Route::resource('users', 'UsersController');
 
     Route::post('/manage-access/assignPermission', 'ManageAccessController@assignPermission');

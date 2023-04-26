@@ -191,7 +191,7 @@ class Common
         return 0;
     }
 
-    public static function getTime($seconds): string
+    public static function secondsToDate($seconds): string
     {
         $carbon1 = Carbon::now();
         $carbon2 = $carbon1->copy()->addSeconds($seconds);

@@ -74,8 +74,6 @@ class PublicController extends Controller
 
     public function updateStatistics(Request $request)
     {
-        Log::debug('request', $request->all());
-
         $project = MainProject::where('controller', $request->controllerAction)
             ->orWhere('controller', 'like', '%' . $request->controllerAction . "\n%")
             ->orWhere('controller', 'like', "%\n" . $request->controllerAction . '%')

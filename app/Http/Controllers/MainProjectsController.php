@@ -109,7 +109,7 @@ class MainProjectsController extends Controller
 
                 $elem['user']['actionsCounter'] = $elem['actions_counter'];
                 $elem['user']['refreshPageCounter'] = $elem['refresh_page_counter'];
-                $elem['user']['time'] = Common::getTime($elem['seconds']);
+                $elem['user']['time'] = Common::secondsToDate($elem['seconds']);
 
                 $users[] = $elem['user'];
             }
@@ -118,7 +118,7 @@ class MainProjectsController extends Controller
         }
 
         foreach ($result as $date => $info) {
-            $result[$date]['time'] = Common::getTime($info['time']);
+            $result[$date]['time'] = Common::secondsToDate($info['time']);
         }
 
         return view('main-projects.statistics', compact('result', 'project'));

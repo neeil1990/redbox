@@ -18,7 +18,7 @@ class VisitStatistic extends Model
 
     public function user(): HasOne
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id')->select('id', 'name', 'last_name', 'email', 'metrics');
     }
 
     public static function getModulesInfo($summedCollection, $encode = true): array

@@ -24,8 +24,11 @@ class VisitStatistics
     public function handle(Request $request, Closure $next)
     {
         try {
-            $targetController = class_basename(Route::current()->controller);
             $controllerAction = last(explode('\\', Route::current()->action['controller']));
+            if ($controllerAction === 'PublicController@updateStatistics') {
+                return $next($request);
+            }
+            $targetController = class_basename(Route::current()->controller);
             $project = MainProject::where('controller', $controllerAction)
                 ->orWhere('controller', 'like', '%' . $targetController . "\n%")
                 ->orWhere('controller', 'like', "%\n" . $targetController . '%')
@@ -45,9 +48,7 @@ class VisitStatistics
                     if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
                         continue;
                     }
-
                     $action = str_replace($targetController, '', $action);
-
                     if ($action === '') {
                         continue;
                     }

@@ -13,6 +13,7 @@
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exportModal">
                     Фильтр выгрузки
                 </button>
+                <a href="{{ route('users.statistics') }}" class="btn btn-secondary">Общая статистика посещений</a>
             </div>
         </div>
 

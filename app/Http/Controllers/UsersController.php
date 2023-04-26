@@ -267,9 +267,59 @@ class UsersController extends Controller
                 $firstItem = $group->first();
                 $firstItem->actionsCounter = $sumActions;
                 $firstItem->refreshPageCounter = $sumRefresh;
-                $firstItem->time = Common::getTime($countSeconds);
+                $firstItem->time = Common::secondsToDate($countSeconds);
 
                 return $firstItem;
             });
+    }
+
+    public function userVisitStatistics()
+    {
+        $users = User::with('roles')->get(['id', 'name', 'last_name', 'email', 'metrics'])->groupBy('id')->toArray();
+        $statistics = VisitStatistic::get()->groupBy('user_id');
+        $results = [];
+
+        foreach ($statistics as $userId => $statistic) {
+            foreach ($statistic as $info) {
+                if (isset($results[$userId]['stat']['actions_counter'])) {
+                    $results[$userId]['stat']['actions_counter'] += $info['actions_counter'];
+                } else {
+                    $results[$userId]['stat']['actions_counter'] = $info['actions_counter'];
+                }
+
+                if (isset($results[$userId]['stat']['refresh_page_counter'])) {
+                    $results[$userId]['stat']['refresh_page_counter'] += $info['refresh_page_counter'];
+                } else {
+                    $results[$userId]['stat']['refresh_page_counter'] = $info['refresh_page_counter'];
+                }
+
+                if (isset($results[$userId]['stat']['seconds'])) {
+                    $results[$userId]['stat']['seconds'] += $info['seconds'];
+                } else {
+                    $results[$userId]['stat']['seconds'] = $info['seconds'];
+                }
+
+                if (empty($results[$userId]['userInfo'])) {
+                    $results[$userId]['userInfo'] = $info['user']->toArray();
+                }
+
+                if (empty($results[$userId]['userInfo']['tariff'])) {
+                    $results[$userId]['userInfo']['tariff'] = self::getRoles($users[$userId][0]['roles']);
+                }
+            }
+        }
+
+        return view('users.statistics', compact('results'));
+    }
+
+    public static function getRoles(array $array): array
+    {
+        $roles = [];
+
+        foreach ($array as $item) {
+            $roles[] = $item['name'];
+        }
+
+        return $roles;
     }
 }
