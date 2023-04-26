@@ -3,6 +3,9 @@
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/list-comparison/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/backlink/css/backlink.css') }}">
         <style>
             .BacklinkProject, .BacklinkLinks {
@@ -26,8 +29,7 @@
             {!! Form::text('project_name', $project->project_name ,['class' => 'form-control col-3 project-name']) !!}
         </div>
         <div class='form-group' projectId="{{ $project->id }}">
-            {!! Form::label('Связать проект с сайтом из мониторинга позиций') !!}
-            {!! Form::select('monitoring_project_id', $monitoring, $project->monitoring_project_id, ['class' => 'form-control col-3 project-name']) !!}
+            @include('backlink._monitoring_options', ['options' => $monitoring, 'value' => $project->monitoring_project_id, 'class' => ['form-control', 'col-3']])
         </div>
         <table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid"
                aria-describedby="example1_info">
@@ -98,52 +100,38 @@
         </div>
     </div>
     @slot('js')
+        <!-- Select2 -->
+        <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+
         <script>
-            var oldValue = ''
-            var oldProjectName = ''
+            let oldValue = '';
+            let oldProjectName = '';
+            let projectEl = $(".form-control.col-3.project-name");
+
             $(document).ready(function () {
-                $(".form-control.col-3.project-name").focus(function () {
+                projectEl.focus(function () {
                     oldProjectName = $(this).val()
                 });
 
-                $(".form-control.col-3.project-name").blur(function () {
+                projectEl.blur(function () {
 
-                    if($(this).attr('name') === 'project_name'){
-                        if(!$(this).val().length){
-                            $('.toast-top-right.error-message').show()
-                            setTimeout(() => {
-                                $('.toast-top-right.error-message').hide(300)
-                            }, 4000);
-                            return false;
-                        }
+                    if(!$(this).val().length){
+                        $('.toast-top-right.error-message').show();
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message').hide(300)
+                        }, 4000);
+                        return false;
                     }
 
                     if (oldProjectName !== $(this).val()) {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('edit.backlink') }}",
-                            data: {
-                                id: $(this).parent().attr("projectId"),
-                                name: $(this).attr('name'),
-                                option: $(this).val(),
-                                _token: $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function () {
-                                $('.toast-top-right.success-message').show(300)
-                                setTimeout(() => {
-                                    $('.toast-top-right.success-message').hide(300)
-                                }, 4000)
-                            },
-                            error: function () {
-                                $('.toast-top-right.error-message').show()
-                                setTimeout(() => {
-                                    $('.toast-top-right.error-message').hide(300)
-                                }, 4000)
-                            }
+                        updateProject("{{ route('edit.backlink') }}", {
+                            id: $(this).parent().attr("projectId"),
+                            name: $(this).attr('name'),
+                            option: $(this).val(),
                         });
                     }
-                })
+                });
+
                 $(".backlink").focus(function () {
                     oldValue = $(this).val()
                 })
@@ -174,7 +162,57 @@
                         });
                     }
                 });
+
+                $('.monitoring-options').select2({
+                    theme: 'bootstrap4',
+                    allowClear: true,
+                    selectOnClose: true,
+                    placeholder: {
+                        id: 'null',
+                    },
+                    sorter: function(el){
+                        return el.sort((a, b) => {
+                            a = a.text.toLowerCase();
+                            b = b.text.toLowerCase();
+                            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                        });
+                    },
+                }).on('select2:select', function (e) {
+                    updateProject("{{ route('edit.backlink') }}", {
+                        id: e.target.closest('.form-group').getAttribute('projectid'),
+                        name: e.target.getAttribute('name'),
+                        option: e.params.data.id,
+                    });
+                }).on('select2:clear', function (e) {
+                    updateProject("{{ route('edit.backlink') }}", {
+                        id: e.target.closest('.form-group').getAttribute('projectid'),
+                        name: e.target.getAttribute('name'),
+                        option: null,
+                    });
+                });
             });
+
+            function updateProject(url, data = {})
+            {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: url,
+                    data: $.extend(data, { _token : $('meta[name="csrf-token"]').attr('content')}),
+                    success: function () {
+                        $('.toast-top-right.success-message').show(300);
+                        setTimeout(() => {
+                            $('.toast-top-right.success-message').hide(300);
+                        }, 4000);
+                    },
+                    error: function () {
+                        $('.toast-top-right.error-message').show();
+                        setTimeout(() => {
+                            $('.toast-top-right.error-message').hide(300);
+                        }, 4000);
+                    }
+                });
+            }
         </script>
     @endslot
 @endcomponent

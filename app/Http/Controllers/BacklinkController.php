@@ -500,7 +500,7 @@ class BacklinkController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        $options = [null => __('Select value')];
+        $options = [null => ' ' . __('Select an option')];
 
         foreach ($user->monitoringProjects as $item)
             $options[$item['id']] = $item['name'];
