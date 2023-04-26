@@ -275,6 +275,9 @@ class UsersController extends Controller
 
     public function userVisitStatistics()
     {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
         $users = User::with('roles')->get(['id', 'name', 'last_name', 'email', 'metrics'])->groupBy('id')->toArray();
         $statistics = VisitStatistic::get()->groupBy('user_id');
         $results = [];
