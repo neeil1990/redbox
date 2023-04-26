@@ -38,10 +38,12 @@
             <div class="col-lg-2 col-6">
                 <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}" style="min-height: 137px">
                     <div class="inner">
-                        <h3>{{ $navigation['h3'] }}</h3>
-                        @isset($navigation['p'])
-                            {{ $navigation['p'] }}
-                        @endisset
+                        @if($navigation['h3'])
+                            <h3 class="mb-0">{{ $navigation['h3'] }}</h3>
+                        @endif
+
+                        {!! $navigation['content'] !!}
+
                         @isset($navigation['small'])
                             <small>{{ $navigation['small'] }}</small>
                         @endisset
@@ -53,6 +55,7 @@
             </div>
         @endforeach
     </div>
+
 
     <div class="row">
         <div class="col-12">
