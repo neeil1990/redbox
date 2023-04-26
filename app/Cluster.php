@@ -895,6 +895,9 @@ class Cluster
 
             if (is_array($item['relevance'])) {
                 $select = '<div class="d-flex">' .
+                    '<button style="border-radius: 0 !important;" class="btn btn-secondary show-phrase-links" data-toggle="modal" data-target="#showPhraseLinks">' .
+                    '   <i class="fa fa-magnifying-glass" style="color: white"></i>' .
+                    '</button>' .
                     '<select style="border-radius: 0 !important;" class="custom-select">';
 
                 foreach ($item['relevance'] as $link) {
@@ -903,7 +906,8 @@ class Cluster
                 $select .= '</select>' .
                     '<button style="border-radius: 0 !important;" class="btn btn-secondary save-relevance-url">' .
                     '    <i class="fa fa-save" style="color: white"></i>' .
-                    '</button></div>';
+                    '</button>' .
+                    '</div>';
 
                 return $select;
             }

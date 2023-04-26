@@ -91,7 +91,7 @@ class ClusterResults extends Model
             $boolean = true;
         }
 
-        $ol = '<ol id="' . Str::random(7) . '" class="list-group list-group-flush show">';
+        $ol = '<ol id="' . Str::random(5) . '" class="list-group list-group-flush show">';
 
         foreach ($items as $phrase) {
             if (is_array($phrase)) {

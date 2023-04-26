@@ -305,6 +305,26 @@
         </div>
     </div>
 
+    <div class="modal fade" id="showPhraseLinks" tabindex="-1" aria-labelledby="showPhraseLinksLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="showPhraseLinksLabel">Ссылки для просмотра</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="phraseLinksBlock">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <form action="{{ route('download.cluster.group') }}" method="POST" style="display: none">
         @csrf
         <input type="text" name="type" id="fileType">
@@ -636,7 +656,8 @@
                                                                 {{ __('Cancel selection') }}
                                                             </button>
                                                         </div>
-                                                        <i class="fa fa-arrow-right move-phrase" data-target="{{ $phrase }}"></i>
+                                                        <i class="fa fa-arrow-right move-phrase"
+                                                           data-target="{{ $phrase }}"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -938,7 +959,6 @@
                     });
                 }
             })
-
 
             $('#searchPhrases').on('click', function () {
                 searchPhrases()
@@ -1748,8 +1768,6 @@
                 }, 5000)
             }
 
-            refreshMethods()
-
             function defaultWorkPlace() {
                 $('#workPlace').html("{{ __('Workspace') }}")
                 $('#work-place-ul').html("")
@@ -1759,6 +1777,17 @@
                 $('#change-sortable').removeAttr('disabled')
                 refreshMethods()
             }
+
+            $('.show-phrase-links').on('click', function () {
+                let links = []
+                $.each($(this).parent('div').eq(0).children('select').eq(0).children('option'), function () {
+                    links.push('<div> <a href="' + $(this).val() + '" target="_blank">' + $(this).val() + '</a></div>')
+                })
+
+                $('#phraseLinksBlock').html(links.join(' '))
+            })
+
+            refreshMethods()
         </script>
     @endslot
 @endcomponent
