@@ -39,10 +39,6 @@
                 background-color: rgb(251, 225, 223);
             }
 
-            #history-results > tbody > tr > td {
-                min-width: 75px;
-            }
-
             table {
                 width: 100%;
                 border-collapse: separate !important;
@@ -76,7 +72,7 @@
             }
 
             .min-value {
-                background-color: #ebf0f5;
+                background-color: rgb(153, 228, 185);
             }
 
             #tableHeadRow th,
@@ -91,10 +87,17 @@
                 width: 100%;
                 max-height: 1200px;
             }
+
             #history-results_wrapper > div:nth-child(2) > div {
                 overflow: auto;
                 width: 100%;
                 max-height: 1200px;
+            }
+
+            .story-cell {
+                min-width: 180px !important;
+                max-width: 180px !important;
+                width: 180px !important;
             }
         </style>
     @endslot
@@ -127,7 +130,6 @@
             </div>
         @endforeach
     </div>
-
 
     <div class="row">
         <div class="col-12">
@@ -175,10 +177,6 @@
         Статистика по выбранному региону
     </h4>
 
-    <div class="d-flex justify-content-center align-items-center align-content-center">
-        <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
-    </div>
-
     <table id="table" class="table table-hover table-bordered no-footer" style="display: none">
         <thead>
         <tr id="tableHeadRow">
@@ -191,78 +189,105 @@
 
     <div id="statistics-table" class="mt-5" style="display: none">
         <div class="d-flex flex-column">
-            <div class="d-flex align-items-start mt-5">
-                <div class="chart-container">
-                    <canvas id="bar-chart"></canvas>
-                </div>
-                <table class="table table-hover table-bordered w-50" id="avg-position">
-                    <thead>
-                    <tr>
-                        <th>{{ __('Domain') }}</th>
-                        <th>{{ __('Average position') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody id="avg-position-tbody">
+            <button class="btn btn-outline-secondary col-2 mb-2 collapsed chart-button" type="button"
+                    data-toggle="collapse" data-target="#avgCollapse"
+                    aria-expanded="false" aria-controls="avgCollapse">
+                {{ __('Average position') }}
+            </button>
+            <div id="avgCollapse" class="collapse">
+                <div class="d-flex align-items-start mt-5">
+                    <div class="chart-container">
+                        <canvas id="bar-chart"></canvas>
+                    </div>
+                    <table class="table table-hover table-bordered w-50" id="avg-position">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Domain') }}</th>
+                            <th>{{ __('Average position') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody id="avg-position-tbody">
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="d-flex align-items-start mt-5">
-                <div class="chart-container">
-                    <canvas id="bar-chart-3"></canvas>
-                </div>
-                <table class="table table-hover table-bordered w-50" id="top3">
-                    <thead>
-                    <tr>
-                        <th>{{ __('Domain') }}</th>
-                        <th>{{ __('Percentage of getting into the top') }} 3</th>
-                    </tr>
-                    </thead>
-                    <tbody id="top3-tbody">
+            <button class="btn btn-outline-secondary col-2 mb-2 collapsed chart-button" type="button"
+                    data-toggle="collapse" data-target="#top3Collapse"
+                    aria-expanded="false" aria-controls="top3Collapse">
+                {{ __('Percentage of getting into the top') }} 3
+            </button>
+            <div id="top3Collapse" class="collapse">
+                <div class="d-flex align-items-start mt-5">
+                    <div class="chart-container">
+                        <canvas id="bar-chart-3"></canvas>
+                    </div>
+                    <table class="table table-hover table-bordered w-50" id="top3">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Domain') }}</th>
+                            <th>{{ __('Percentage of getting into the top') }} 3</th>
+                        </tr>
+                        </thead>
+                        <tbody id="top3-tbody">
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="d-flex align-items-start mt-5">
-                <div class="chart-container">
-                    <canvas id="bar-chart-10"></canvas>
-                </div>
-                <table class="table table-hover table-bordered w-50" id="top10">
-                    <thead>
-                    <tr>
-                        <th>{{ __('Domain') }}</th>
-                        <th>{{ __('Percentage of getting into the top') }} 10</th>
-                    </tr>
-                    </thead>
-                    <tbody id="top10-tbody">
+            <button class="btn btn-outline-secondary col-2 mb-2 collapsed chart-button" type="button"
+                    data-toggle="collapse" data-target="#top10Collapse"
+                    aria-expanded="false" aria-controls="top10Collapse">
+                {{ __('Percentage of getting into the top') }} 10
+            </button>
+            <div id="top10Collapse" class="collapse">
+                <div class="d-flex align-items-start mt-5">
+                    <div class="chart-container">
+                        <canvas id="bar-chart-10"></canvas>
+                    </div>
+                    <table class="table table-hover table-bordered w-50" id="top10">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Domain') }}</th>
+                            <th>{{ __('Percentage of getting into the top') }} 10</th>
+                        </tr>
+                        </thead>
+                        <tbody id="top10-tbody">
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="d-flex align-items-start mt-5">
-                <div class="chart-container">
-                    <canvas id="bar-chart-100"></canvas>
+            <button class="btn btn-outline-secondary col-2 mb-2 collapsed chart-button" type="button"
+                    data-toggle="collapse" data-target="#top100Collapse"
+                    aria-expanded="false" aria-controls="top100Collapse">
+                {{ __('Percentage of getting into the top') }} 100
+            </button>
+            <div id="top100Collapse" class="collapse">
+                <div class="d-flex align-items-start mt-5">
+                    <div class="chart-container">
+                        <canvas id="bar-chart-100"></canvas>
+                    </div>
+                    <table class="table table-hover table-bordered w-50" id="top100">
+                        <thead>
+                        <tr>
+                            <th>{{ __('Domain') }}</th>
+                            <th>{{ __('Percentage of getting into the top') }} 100</th>
+                        </tr>
+                        </thead>
+                        <tbody id="top100-tbody">
+                        </tbody>
+                    </table>
                 </div>
-                <table class="table table-hover table-bordered w-50" id="top100">
-                    <thead>
-                    <tr>
-                        <th>{{ __('Domain') }}</th>
-                        <th>{{ __('Percentage of getting into the top') }} 100</th>
-                    </tr>
-                    </thead>
-                    <tbody id="top100-tbody">
-
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 
     <div id="dateRange" style="display: none">
-        <h3 class="mt-3">Изменения по топу и дате</h3>
+        <h3 class="mt-3">{{ __('Changes by top and date') }}</h3>
         <div class="card mt-3">
             <div class="card-header d-flex">
                 <div class="w-25">
@@ -283,28 +308,24 @@
                 </div>
             </div>
             <div class="card-body" id="history-block">
-                <div class="d-flex justify-content-center align-items-center align-content-center">
-                    <img src="/img/1485.gif" style="width: 50px; height: 50px; display: none" id="preloader-history"
-                         class="mt-3 mb-3">
-                </div>
                 <div class="mb-2 btn-group" id="visibility-buttons" style="display: none">
                     <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
-                        Домен
+                        {{ __('Domain') }}
                     </button>
                     <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        Средняя позиция
+                        {{ __('Average position') }}
                     </button>
                     <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        Топ 3
+                        {{ __('Top') }} 3
                     </button>
                     <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        Топ 10
+                        {{ __('Top') }} 10
                     </button>
                     <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        Топ 100
+                        {{ __('Top') }} 100
                     </button>
                     <button data-action="off" class="btn btn-default btn-sm" id="switch-color">
-                        Выключить поцветку
+                        {{ __('Turn off the coloring') }}
                     </button>
                 </div>
             </div>
@@ -328,7 +349,6 @@
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
         <!-- date-range-picker -->
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
-
         <script>
             let historyTable
             let table
@@ -368,11 +388,7 @@
                             'region': $('#searchEngines').val(),
                             'dateRange': $('#date-range').val(),
                         },
-                        beforeSend: function () {
-                            $('#preloader-history').show()
-                        },
                         success: function (response) {
-                            $('#preloader-history').hide()
                             if ($.fn.DataTable.fnIsDataTable($('#history-results'))) {
                                 $('#history-results').dataTable().fnDestroy()
                             }
@@ -409,6 +425,7 @@
             }
 
             function renderTableBody(data) {
+                let trs = []
                 $.each(data, function (query, info) {
                     let tr = '<tr class="render"><td>' + query + '</td>'
                     $.each(info, function (site, visibility) {
@@ -418,8 +435,9 @@
                     })
                     tr += '</tr>'
 
-                    $('#tableBody').append(tr)
+                    trs.push(tr)
                 })
+                $('#tableBody').html(trs.join(' '))
             }
 
             function initTable() {
@@ -434,7 +452,7 @@
                         let array = []
                         $cells.each(function (cellIndex) {
                             let $cell = $(this);
-                            let cellVal = parseFloat($cell.text()); // преобразуем значение ячейки в число
+                            let cellVal = parseFloat($cell.text());
 
                             if (!isNaN(cellVal) && cellVal !== 0) {
                                 array.push({
@@ -490,7 +508,6 @@
                 $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
 
                 $('#table').show()
-                $('#preloader').hide()
 
                 return res;
             }
@@ -750,7 +767,7 @@
                 let result
 
                 if (data.length !== undefined) {
-                    result = '<b id="history-results">Результаты отсутствуют</b>'
+                    result = '<b id="history-results">{{ __('There are no results') }}</b>'
                     $('#history-block').append(result)
                     $('#visibility-buttons').hide()
                 } else {
@@ -783,9 +800,9 @@
                             $.each(dates, function (k1, date) {
                                 let firstElement = k1 === 0;
                                 if (firstElement) {
-                                    trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
+                                    trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;" class="story-cell">' + data[date][domain][name] + '</td>'
                                 } else {
-                                    trs += '<td>' + data[date][domain][name] + '</td>'
+                                    trs += '<td class="story-cell">' + data[date][domain][name] + '</td>'
                                 }
                             })
                         })
@@ -796,11 +813,11 @@
                         '<table class="table table-hover table-bordered w-100" id="history-results">' +
                         '    <thead>' +
                         '        <tr>' +
-                        '            <th>Домен</th>' +
-                        '            <th colspan="' + length + '" class="text-center">Средняя позиция</th>' +
-                        '            <th colspan="' + length + '" class="text-center">Топ 3</th>' +
-                        '            <th colspan="' + length + '" class="text-center">Топ 10</th>' +
-                        '            <th colspan="' + length + '" class="text-center">Топ 100</th>' +
+                        '            <th>{{ __('Domain') }}</th>' +
+                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Average position') }}</th>' +
+                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Top') }} 3</th>' +
+                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Top') }} 10</th>' +
+                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Top') }} 100</th>' +
                         '        </tr>' +
                         '        <tr><td></td>' +
                         bottomHead +
@@ -860,12 +877,12 @@
                         let action = $(this).attr('data-action')
 
                         if (action === 'off') {
-                            $(this).text('Включить поцветку')
+                            $(this).text("{{ __("Turn on the coloring") }}")
                             $(this).attr('data-action', 'on')
                             $('.grow-color').addClass('grow-color-hide').removeClass('grow-color')
                             $('.shrink-color').addClass('shrink-color-hide').removeClass('shrink-color')
                         } else {
-                            $(this).text('Выключить поцветку')
+                            $(this).text("{{ __('Turn off the coloring') }}")
                             $(this).attr('data-action', 'off')
                             $('.grow-color-hide').addClass('grow-color').removeClass('grow-color-hide')
                             $('.shrink-color-hide').addClass('shrink-color').removeClass('shrink-color-hide')
@@ -1039,6 +1056,24 @@
 
                 return [...data]
             }
+
+            function checkChartState(id) {
+                let avg = localStorage.getItem('lk_redbox_button_' + id) ?? 'false'
+                if (avg === 'false') {
+                    $("button[data-target='" + id + "']").trigger('click')
+                }
+            }
+
+            checkChartState('#avgCollapse')
+            checkChartState('#top3Collapse')
+            checkChartState('#top10Collapse')
+            checkChartState('#top100Collapse')
+
+            $('.chart-button').on('click', function () {
+                setTimeout(() => {
+                    localStorage.setItem('lk_redbox_button_' + $(this).attr('data-target'), $(this).hasClass('collapsed'))
+                }, 300)
+            })
         </script>
     @endslot
 @endcomponent
