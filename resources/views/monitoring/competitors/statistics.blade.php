@@ -448,32 +448,29 @@
                 let $table = $('#table');
                 let $rows = $table.find('tr');
 
-                if ($rows.length > 0) {
-                    $rows.each(function (rowIndex) {
-                        if (rowIndex !== 0) {
-                            let $row = $(this);
-                            let $cells = $row.find('td');
+                $rows.each(function (rowIndex) {
+                    if (rowIndex !== 0) {
+                        let $row = $(this);
+                        let $cells = $row.find('td');
 
-                            let array = []
-                            console.log($cells)
-                            $cells.each(function (cellIndex) {
-                                let $cell = $(this);
-                                let cellVal = parseFloat($cell.text());
+                        let array = []
+                        console.log($cells)
+                        $cells.each(function (cellIndex) {
+                            let $cell = $(this);
+                            let cellVal = parseFloat($cell.text());
 
-                                if (!isNaN(cellVal) && cellVal !== 0) {
-                                    array.push({
-                                        cellIndex: cellIndex + 1,
-                                        cellVal: cellVal
-                                    })
-                                }
-                            });
+                            if (!isNaN(cellVal) && cellVal !== 0) {
+                                array.push({
+                                    cellIndex: cellIndex + 1,
+                                    cellVal: cellVal
+                                })
+                            }
+                        });
 
-                            array.sort((prev, next) => prev.cellVal - next.cellVal);
-                            $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
-                        }
-                    });
-                }
-
+                        array.sort((prev, next) => prev.cellVal - next.cellVal);
+                        $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
+                    }
+                });
                 let res = $('#table').DataTable({
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
