@@ -448,7 +448,6 @@
                 let $table = $('#table');
                 let $rows = $table.find('tr');
 
-                console.log($rows)
                 if ($rows.length > 0) {
                     $rows.each(function (rowIndex) {
                         if (rowIndex !== 0) {
@@ -456,6 +455,7 @@
                             let $cells = $row.find('td');
 
                             let array = []
+                            console.log($cells)
                             $cells.each(function (cellIndex) {
                                 let $cell = $(this);
                                 let cellVal = parseFloat($cell.text());
