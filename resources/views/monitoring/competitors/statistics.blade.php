@@ -456,6 +456,7 @@
                         let array = []
                         console.log($cells)
                         $cells.each(function (cellIndex) {
+                            console.log(cellIndex)
                             let $cell = $(this);
                             let cellVal = parseFloat($cell.text());
 
