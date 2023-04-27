@@ -79,8 +79,10 @@ class Tariffs
 
         /** @var Tariff $tariff */
         foreach ($this->getTariffs() as $tariff){
-            if($user->hasRole($tariff->code()))
+            if($user->hasRole($tariff->code())){
+                $tariff->setUser($user);
                 return $tariff;
+            }
         }
 
         if($user->hasRole('Free'))

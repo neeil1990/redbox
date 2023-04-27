@@ -36,9 +36,9 @@ class MaximumTariff extends Tariff
         return $this->name;
     }
 
-    public function settings(): Settings
+    protected function settings(): Settings
     {
-        return new MaximumSettings($this->code());
+        return new MaximumSettings($this->code(), $this->user);
     }
 
     public function code(): string

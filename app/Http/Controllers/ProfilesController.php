@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\TariffSetting;
+use App\TariffSettingUserValue;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
@@ -48,7 +50,16 @@ class ProfilesController extends Controller
         $name = ($tariff) ? $tariff->name() : null;
         self::checkTelegramToken($user);
 
-        return view('profile.index', compact('user', 'lang', 'name'));
+        $tariffProperties = [];
+        $tariffSettings = $user->tariffSettings()->get();
+        foreach ($tariffSettings as $tariffSetting){
+            $property = $tariffSetting->field->property;
+            $tariffProperties[$property['id']]['setting'] = $property;
+            $tariffProperties[$property['id']]['ids'][] = $tariffSetting['id'];
+            $tariffProperties[$property['id']]['fields'][] = $tariffSetting;
+        }
+
+        return view('profile.index', compact('user', 'lang', 'name', 'tariffProperties'));
     }
 
     /**
@@ -98,8 +109,8 @@ class ProfilesController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Profile $profile
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request)
     {

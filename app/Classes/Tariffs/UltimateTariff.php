@@ -40,8 +40,8 @@ class UltimateTariff extends Tariff
         return $this->code;
     }
 
-    public function settings(): Settings
+    protected function settings(): Settings
     {
-        return new UltimateSettings($this->code());
+        return new UltimateSettings($this->code(), $this->user);
     }
 }

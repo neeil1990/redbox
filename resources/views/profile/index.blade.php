@@ -155,49 +155,58 @@
                 {!! Form::close() !!}
             </div>
         </div>
-    </div>
-    <div class="card card-primary w-50">
-        <div class="card-header">
-            <h3 class="card-title">{{ __('Telegram bot') }}</h3>
+
+        @hasanyrole('Super Admin|admin')
+        <div class="col-md-6">
+            @include('profile._tariff')
         </div>
-        @if(!$user->telegram_bot_active)
-            <div class="card-body">
-                <div>{{ __("This is your special token, don't show it to anyone!") }}<br>
-                    <div class="text-info d-flex">
-                        <input type="text" value="{{ $user->telegram_token }}" id="special-token" class="form form-control w-75 d-inline">
-                        <button class="btn btn-default ml-2" id="saveInBufferButton">
-                            <i class="fa fa-copy"></i>
-                        </button>
-                    </div>
+        @endhasanyrole
+
+        <div class="col-md-6">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">{{ __('Telegram bot') }}</h3>
                 </div>
-                <p>{{ __('send it to our telegram bot') }}
-                    <span>
+                @if(!$user->telegram_bot_active)
+                    <div class="card-body">
+                        <div>{{ __("This is your special token, don't show it to anyone!") }}<br>
+                            <div class="text-info d-flex">
+                                <input type="text" value="{{ $user->telegram_token }}" id="special-token" class="form form-control w-75 d-inline">
+                                <button class="btn btn-default ml-2" id="saveInBufferButton">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p>{{ __('send it to our telegram bot') }}
+                            <span>
                     <a href="https://t.me/RedboxNotificationBot" target="_blank">
                         @RedboxNotificationBot
                     </a>
                 </span>
-                    {{ __('in order to receive notifications') }}</p>
+                            {{ __('in order to receive notifications') }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="{{ route('verification.token', $user->telegram_token)}}"
+                              method="get">
+                            @csrf
+                            <button class="btn btn-secondary" type="submit">
+                                {{ __('I sent the token to the bot') }}
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <div class="card-body">
+                        <p>{{ __('You have set up receiving notifications from the bot') }}</p>
+                        <p>
+                            {{ __('Want to') }}
+                            <a href="{{ route('reset.notification', $user->telegram_token) }}">
+                                {{ __('stop receiving notifications') }}
+                            </a>
+                            ?</p>
+                    </div>
+                @endif
             </div>
-            <div class="card-footer">
-                <form action="{{ route('verification.token', $user->telegram_token)}}"
-                      method="get">
-                    @csrf
-                    <button class="btn btn-secondary" type="submit">
-                        {{ __('I sent the token to the bot') }}
-                    </button>
-                </form>
-            </div>
-        @else
-            <div class="card-body">
-                <p>{{ __('You have set up receiving notifications from the bot') }}</p>
-                <p>
-                    {{ __('Want to') }}
-                    <a href="{{ route('reset.notification', $user->telegram_token) }}">
-                        {{ __('stop receiving notifications') }}
-                    </a>
-                    ?</p>
-            </div>
-        @endif
+        </div>
     </div>
 @stop
 

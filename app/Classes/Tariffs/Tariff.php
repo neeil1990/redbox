@@ -12,6 +12,7 @@ abstract class Tariff
     protected $responses;
     protected $price = 0;
     protected $period;
+    protected $user = null;
 
     public function __construct(Period $period)
     {
@@ -44,7 +45,7 @@ abstract class Tariff
         return $this->price;
     }
 
-    abstract public function settings(): Settings;
+    abstract protected function settings(): Settings;
 
     public function getAsArray()
     {
@@ -54,6 +55,11 @@ abstract class Tariff
         $this->responses['settings'] = $settings->get();
 
         return $this->responses;
+    }
+
+    public function setUser($user): void
+    {
+        $this->user = $user;
     }
 
     public function setPeriod(Period $period)
