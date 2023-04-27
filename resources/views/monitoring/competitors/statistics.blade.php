@@ -82,6 +82,12 @@
                 max-width: 150px;
             }
 
+            #history-results td {
+                width: 100px !important;
+                min-width: 100px !important;
+                max-width: 100px !important;
+            }
+
             #table_wrapper > div:nth-child(2) > div {
                 overflow: auto;
                 width: 100%;
@@ -94,10 +100,8 @@
                 max-height: 1200px;
             }
 
-            .story-cell {
-                min-width: 180px !important;
-                max-width: 180px !important;
-                width: 180px !important;
+            #history-results {
+                width: auto;
             }
         </style>
     @endslot
@@ -444,6 +448,7 @@
                 let $table = $('#table');
                 let $rows = $table.find('tr');
 
+                console.log($rows)
                 if ($rows.length > 0) {
                     $rows.each(function (rowIndex) {
                         if (rowIndex !== 0) {
@@ -784,7 +789,7 @@
 
                     let bottomHead = ''
                     $.each(data, function (k, v) {
-                        bottomHead += '<td class="story-cell">' + k + '</td>'
+                        bottomHead += '<td>' + k + '</td>'
                         dates.push(k)
                         $.each(v, function (k1, v1) {
                             domains.push(k1)
@@ -802,9 +807,9 @@
                             $.each(dates, function (k1, date) {
                                 let firstElement = k1 === 0;
                                 if (firstElement) {
-                                    trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;" class="story-cell">' + data[date][domain][name] + '</td>'
+                                    trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
                                 } else {
-                                    trs += '<td class="story-cell">' + data[date][domain][name] + '</td>'
+                                    trs += '<td>' + data[date][domain][name] + '</td>'
                                 }
                             })
                         })
@@ -815,7 +820,7 @@
                         '<table class="table table-hover table-bordered" id="history-results">' +
                         '    <thead>' +
                         '        <tr>' +
-                        '            <th>{{ __('Domain') }}</th>' +
+                        '            <th class="text-center">{{ __('Domain') }}</th>' +
                         '            <th colspan="' + length + '" class="text-center">{{ __('Average position') }}</th>' +
                         '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 3</th>' +
                         '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 10</th>' +
@@ -834,6 +839,7 @@
                     $('#history-block').append(result)
 
                     historyTable = $('#history-results').DataTable({
+                        bAutoWidth: false,
                         bSort: false,
                         lengthMenu: [10, 25, 50, 100],
                         pageLength: 50,
