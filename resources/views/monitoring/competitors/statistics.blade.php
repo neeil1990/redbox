@@ -444,28 +444,30 @@
                 let $table = $('#table');
                 let $rows = $table.find('tr');
 
-                $rows.each(function (rowIndex) {
-                    if (rowIndex !== 0) {
-                        let $row = $(this);
-                        let $cells = $row.find('td');
+                if ($rows.length > 0) {
+                    $rows.each(function (rowIndex) {
+                        if (rowIndex !== 0) {
+                            let $row = $(this);
+                            let $cells = $row.find('td');
 
-                        let array = []
-                        $cells.each(function (cellIndex) {
-                            let $cell = $(this);
-                            let cellVal = parseFloat($cell.text());
+                            let array = []
+                            $cells.each(function (cellIndex) {
+                                let $cell = $(this);
+                                let cellVal = parseFloat($cell.text());
 
-                            if (!isNaN(cellVal) && cellVal !== 0) {
-                                array.push({
-                                    cellIndex: cellIndex + 1,
-                                    cellVal: cellVal
-                                })
-                            }
-                        });
+                                if (!isNaN(cellVal) && cellVal !== 0) {
+                                    array.push({
+                                        cellIndex: cellIndex + 1,
+                                        cellVal: cellVal
+                                    })
+                                }
+                            });
 
-                        array.sort((prev, next) => prev.cellVal - next.cellVal);
-                        $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
-                    }
-                });
+                            array.sort((prev, next) => prev.cellVal - next.cellVal);
+                            $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
+                        }
+                    });
+                }
 
                 let res = $('#table').DataTable({
                     lengthMenu: [10, 25, 50, 100],
@@ -782,7 +784,7 @@
 
                     let bottomHead = ''
                     $.each(data, function (k, v) {
-                        bottomHead += '<td>' + k + '</td>'
+                        bottomHead += '<td class="story-cell">' + k + '</td>'
                         dates.push(k)
                         $.each(v, function (k1, v1) {
                             domains.push(k1)
@@ -810,14 +812,14 @@
                     })
 
                     result =
-                        '<table class="table table-hover table-bordered w-100" id="history-results">' +
+                        '<table class="table table-hover table-bordered" id="history-results">' +
                         '    <thead>' +
                         '        <tr>' +
                         '            <th>{{ __('Domain') }}</th>' +
-                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Average position') }}</th>' +
-                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Top') }} 3</th>' +
-                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Top') }} 10</th>' +
-                        '            <th colspan="' + length + '" class="text-center story-cell">{{ __('Top') }} 100</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Average position') }}</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 3</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 10</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 100</th>' +
                         '        </tr>' +
                         '        <tr><td></td>' +
                         bottomHead +
