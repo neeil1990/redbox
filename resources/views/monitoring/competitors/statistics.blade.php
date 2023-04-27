@@ -454,9 +454,7 @@
                         let $cells = $row.find('td');
 
                         let array = []
-                        console.log($cells)
                         $cells.each(function (cellIndex) {
-                            console.log(cellIndex)
                             let $cell = $(this);
                             let cellVal = parseFloat($cell.text());
 
@@ -468,8 +466,10 @@
                             }
                         });
 
-                        array.sort((prev, next) => prev.cellVal - next.cellVal);
-                        $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
+                        if (array.length > 0) {
+                            array.sort((prev, next) => prev.cellVal - next.cellVal);
+                            $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
+                        }
                     }
                 });
                 let res = $('#table').DataTable({
