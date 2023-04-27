@@ -553,23 +553,26 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project->url);
 
         $range = explode(' - ', $request->dateRange);
-        $countDays = count(CarbonPeriod::create($range[0], $range[1]));
+        $period = CarbonPeriod::create($range[0], $range[1]);
 
         $records = [];
-        $results = DB::table('search_indices')
-            ->whereBetween('created_at', [
-                date('Y-m-d H:i:s', strtotime($range[0] . ' 00:00:00')),
-                date('Y-m-d H:i:s', strtotime($range[1] . ' 23:59:59'))
-            ])
-            ->where('lr', '=', $lr)
-            ->whereIn('query', $keywords)
-            ->where('position', '<=', 100)
-            ->orderBy('id', 'desc')
-            ->limit(count($keywords) * $countDays * 100)
-            ->get(['url', 'position', 'created_at', 'query']);
 
-        foreach ($results as $result) {
-            $records[explode(' ', $result->created_at)[0]][$result->query][$lr][] = $result;
+        foreach (array_reverse($period->toArray()) as $date) {
+            $results = DB::table('search_indices')
+                ->whereBetween('created_at', [
+                    date('Y-m-d H:i:s', strtotime($date->format('Y-m-d') . ' 00:00:00')),
+                    date('Y-m-d H:i:s', strtotime($date->format('Y-m-d') . ' 23:59:59'))
+                ])
+                ->where('lr', '=', $lr)
+                ->whereIn('query', $keywords)
+                ->where('position', '<=', 100)
+                ->orderBy('id', 'desc')
+                ->limit(count($keywords) * 100)
+                ->get(['url', 'position', 'created_at', 'query']);
+
+            foreach ($results as $result) {
+                $records[explode(' ', $result->created_at)[0]][$result->query][$lr][] = $result;
+            }
         }
 
         $response = [];

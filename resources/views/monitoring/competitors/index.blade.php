@@ -56,7 +56,6 @@
         @endforeach
     </div>
 
-
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -203,6 +202,52 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
 
         <script>
+            function changeCellState(elem) {
+                let targetBlock = $(elem)
+                let url = targetBlock.attr('data-target')
+                let targetInput = targetBlock.children('input').eq(0)
+                let state = targetBlock.attr('data-order') === 'true'
+
+                if (!state) {
+                    if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('monitoring.add.competitor') }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'url': url,
+                                'projectId': {{ $project->id }}
+                            },
+                            success: function (response) {
+                                targetInput.prop('checked', true)
+                                targetBlock.attr('data-order', 'true')
+                            },
+                        });
+                    } else {
+                        targetInput.prop('checked', state)
+                    }
+                } else {
+                    if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('monitoring.remove.competitor') }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'url': url,
+                                'projectId': {{ $project->id }}
+                            },
+                            success: function (response) {
+                                targetInput.prop('checked', false)
+                                targetBlock.attr('data-order', 'false')
+                            },
+                        });
+                    } else {
+                        targetInput.prop('checked', state)
+                    }
+                }
+            }
 
             let data = {
                 '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -323,15 +368,16 @@
             })
 
             function renderTableRows(data) {
+                let tableRows = []
                 $.each(data, function (key, val) {
                     let input = ''
                     if (val.mainPage) {
                         input = 'Ваш сайт'
                     } else {
                         if (val.competitor) {
-                            input = '<input type="checkbox" class="change-domain-state-checkbox" data-target="' + key + '" checked>'
+                            input = '<input type="checkbox" data-target="' + key + '" checked>'
                         } else {
-                            input = '<input type="checkbox" class="change-domain-state-checkbox" data-target="' + key + '">'
+                            input = '<input type="checkbox" data-target="' + key + '">'
                         }
                     }
 
@@ -369,16 +415,18 @@
 
                     let bool = val.competitor ?? false
 
-                    $('#table > tbody').append('<tr>' +
-                        '    <td data-order="' + bool + '" class="change-domain-state-cell" data-target="' + key + '">' + input + '</td>' +
+                    tableRows.push('<tr>' +
+                        '    <td data-order="' + bool + '" onclick="changeCellState(this)" data-target="' + key + '">' + input + '</td>' +
                         '    <td data-order="' + key + '">' + stub + '</td>' +
                         '    <td>' + engines + '</td>' +
                         '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
                         '</tr>')
                 })
 
+                $('#table > tbody').html(tableRows.join(' '))
+
                 $('#table').DataTable({
-                    "order": [[1, 'asc']],
+                    "order": [[3, 'desc']],
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
                     language: {
@@ -539,53 +587,6 @@
 
                     $(this).attr('class', 'ml-2 fa fa-plus-circle get-more-info')
                     refreshMethods()
-                })
-
-                $('.change-domain-state-cell').unbind().on('click', function (e) {
-                    let url = $(this).attr('data-target')
-                    let targetInput = $(this).children('input').eq(0)
-                    let targetBlock = $(this)
-                    let state = targetBlock.attr('data-order') === 'true'
-
-                    if (!state) {
-                        if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "{{ route('monitoring.add.competitor') }}",
-                                data: {
-                                    '_token': $('meta[name="csrf-token"]').attr('content'),
-                                    'url': url,
-                                    'projectId': {{ $project->id }}
-                                },
-                                success: function (response) {
-                                    targetInput.prop('checked', true)
-                                    targetBlock.attr('data-order', 'true')
-                                },
-                            });
-                        } else {
-                            targetInput.prop('checked', state)
-                        }
-                    } else {
-                        if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "{{ route('monitoring.remove.competitor') }}",
-                                data: {
-                                    '_token': $('meta[name="csrf-token"]').attr('content'),
-                                    'url': url,
-                                    'projectId': {{ $project->id }}
-                                },
-                                success: function (response) {
-                                    targetInput.prop('checked', false)
-                                    targetBlock.attr('data-order', 'false')
-                                },
-                            });
-                        } else {
-                            targetInput.prop('checked', state)
-                        }
-                    }
                 })
             }
 
