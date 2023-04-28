@@ -102,7 +102,6 @@ class MonitoringCompetitor extends Model
         $competitors = $request['competitors'];
         $keywords = $request['keywords'];
         $countKeyWords = count($keywords);
-        Log::debug('count keywords', [$countKeyWords]);
         $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
 
         $visibilityArray = [];
