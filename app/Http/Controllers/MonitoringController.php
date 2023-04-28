@@ -34,6 +34,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -529,9 +530,18 @@ class MonitoringController extends Controller
     public function competitorsPositions(MonitoringProject $project)
     {
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+        array_unshift($competitors, $project->url);
         $navigations = $this->navigations($project);
 
-        return view('monitoring.competitors.statistics', compact('project', 'competitors', 'navigations'));
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $keywords = array_chunk(array_column($keywords, 'query'), 100);
+
+        return view('monitoring.competitors.statistics', [
+            'project' => $project,
+            'competitors' => $competitors,
+            'navigations' => $navigations,
+            'keywords' => json_encode($keywords)
+        ]);
     }
 
     public function getStatistics(Request $request): JsonResponse

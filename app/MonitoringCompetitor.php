@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -98,21 +99,17 @@ class MonitoringCompetitor extends Model
 
     public static function calculateStatistics(array $request): array
     {
-        $project = MonitoringProject::findOrFail($request['projectId']);
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id', 'query'])->toArray();
-        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
+        $keywords = $request['keywords'];
+        $countKeyWords = count($keywords);
+        $competitors = $request['competitors'];
         $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
-        array_unshift($competitors, $project->url);
 
         $visibilityArray = [];
         foreach ($keywords as $keyword) {
             foreach ($competitors as $competitor) {
-                $visibilityArray[$keyword['query']][$competitor] = 0;
+                $visibilityArray[$keyword][$competitor] = 0;
             }
         }
-
-        $keywords = array_column($keywords, 'query');
-        $countKeyWords = count($keywords);
 
         $records = SearchIndex::whereIn('query', $keywords)
             ->where('lr', $engine['lr'])
