@@ -133,8 +133,7 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($competitorStatistics as $key => $item) {
-            Log::debug('pos', $item['positions']);
-            $competitorStatistics[$key]['avg'] = array_sum($item['positions']) / count($item['positions']);
+            $competitorStatistics[$key]['avg'] = array_sum($item['positions']) / $request['totalWords'];
             $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);

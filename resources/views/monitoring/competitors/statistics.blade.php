@@ -755,10 +755,10 @@
                             'projectId': PROJECT_ID,
                             'region': $('#searchEngines').val(),
                             'keywords': words,
-                            'competitors': {!! json_encode($competitors) !!}
+                            'competitors': {!! json_encode($competitors) !!},
+                            'totalWords': {{ $totalWords }}
                         },
                         success: function (response) {
-                            console.log(response)
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
