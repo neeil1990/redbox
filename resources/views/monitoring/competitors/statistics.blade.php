@@ -801,9 +801,9 @@
 
                 $.each(results, function (k, v) {
                     results[k]['avg'] = results[k]['sum'] / Number("{{ $totalWords }}")
-                    results[k]['top_3'] = results[k]['top_3'] / array.length
-                    results[k]['top_10'] = results[k]['top_10'] / array.length
-                    results[k]['top_100'] = results[k]['top_100'] / array.length
+                    results[k]['top_3'] /= Number("{{ $totalWords }}")
+                    results[k]['top_10'] /= Number("{{ $totalWords }}")
+                    results[k]['top_100'] /= Number("{{ $totalWords }}")
                 })
 
                 console.log(results)

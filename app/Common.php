@@ -174,7 +174,7 @@ class Common
         return urldecode(str_replace(['www.'], '', strtolower($domain)));
     }
 
-    public static function percentHitIn($top, $positions)
+    public static function percentHitIn($top, $positions): int
     {
         $count = 0;
         foreach ($positions as $position) {
@@ -183,11 +183,7 @@ class Common
             }
         }
 
-        if ($count !== 0) {
-            return round(($count / count($positions)), 2);
-        }
-
-        return 0;
+        return $count;
     }
 
     public static function secondsToDate($seconds): string
