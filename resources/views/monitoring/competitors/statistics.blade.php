@@ -767,6 +767,7 @@
                     $('#download-results').hide()
                     table = initTable();
 
+                    console.log(array)
                     let results = calculateAvgValues(array)
                     renderStatistics(results, destroy)
                 });
@@ -969,7 +970,6 @@
             }
 
             function renderStatistics(data, destroy) {
-                console.log(data)
                 renderChartTable('#avg-position', '#avg-position-tbody', data, 'avg', 'asc')
                 renderChartTable('#top3', '#top3-tbody', data, 'top_3')
                 renderChartTable('#top10', '#top10-tbody', data, 'top_10')
