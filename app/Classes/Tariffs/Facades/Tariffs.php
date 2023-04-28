@@ -85,8 +85,11 @@ class Tariffs
             }
         }
 
-        if($user->hasRole('Free'))
-            return new FreeTariff();
+        if($user->hasRole('Free')){
+            $free = new FreeTariff();
+            $free->setUser($user);
+            return $free;
+        }
 
         return null;
     }
