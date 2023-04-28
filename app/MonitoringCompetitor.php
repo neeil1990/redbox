@@ -137,7 +137,8 @@ class MonitoringCompetitor extends Model
             $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
-            $competitorStatistics[$key]['new_key'] = count($item['positions']);
+            $competitorStatistics[$key]['positions'] = count($item['positions']);
+            $competitorStatistics[$key]['array_sum'] = array_sum($item['positions']);
         }
 
         return [
