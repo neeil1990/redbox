@@ -806,6 +806,7 @@
                     results[k]['top_100'] = results[k]['top_100'] / array.length
                 })
 
+                console.log(results)
                 return results;
             }
 
