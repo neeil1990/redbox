@@ -99,9 +99,9 @@ class MonitoringCompetitor extends Model
 
     public static function calculateStatistics(array $request): array
     {
+        $competitors = $request['competitors'];
         $keywords = $request['keywords'];
         $countKeyWords = count($keywords);
-        $competitors = $request['competitors'];
         $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
 
         $visibilityArray = [];
@@ -113,7 +113,7 @@ class MonitoringCompetitor extends Model
 
         $records = SearchIndex::whereIn('query', $keywords)
             ->where('lr', $engine['lr'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->limit($countKeyWords * 100)
             ->get(['url', 'position', 'created_at', 'query'])
             ->toArray();
@@ -133,7 +133,7 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($competitorStatistics as $key => $item) {
-            $competitorStatistics[$key]['avg'] = round(array_sum($item['positions']) / $countKeyWords, 2);
+            $competitorStatistics[$key]['sum'] = array_sum($item['positions']) ;
             $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
@@ -141,7 +141,7 @@ class MonitoringCompetitor extends Model
 
         return [
             'visibility' => $visibilityArray,
-            'statistics' => $competitorStatistics
+            'statistics' => $competitorStatistics,
         ];
     }
 }

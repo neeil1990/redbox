@@ -34,7 +34,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -534,13 +533,15 @@ class MonitoringController extends Controller
         $navigations = $this->navigations($project);
 
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $totalWords = count($keywords);
         $keywords = array_chunk(array_column($keywords, 'query'), 50);
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
             'competitors' => $competitors,
             'navigations' => $navigations,
-            'keywords' => json_encode($keywords)
+            'keywords' => json_encode($keywords),
+            'totalWords' => $totalWords,
         ]);
     }
 
@@ -611,9 +612,9 @@ class MonitoringController extends Controller
         foreach ($response as $date => $result) {
             foreach ($result as $domain => $data) {
                 $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
-                $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
-                $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
-                $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
+                $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], true);
+                $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], true);
+                $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], true);
             }
         }
 

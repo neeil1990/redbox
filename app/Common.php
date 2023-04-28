@@ -174,21 +174,19 @@ class Common
         return urldecode(str_replace(['www.'], '', strtolower($domain)));
     }
 
-    public static function percentHitIn($top, $positions)
+    public static function percentHitIn($top, $positions, $additional = false): int
     {
         $count = 0;
-
         foreach ($positions as $position) {
             if ($position <= $top) {
                 $count++;
             }
         }
-
-        if ($count !== 0) {
+        if ($additional && $count !== 0) {
             return round((100 / count($positions)) * $count, 2);
         }
 
-        return 0;
+        return $count;
     }
 
     public static function secondsToDate($seconds): string

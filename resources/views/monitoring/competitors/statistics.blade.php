@@ -513,17 +513,18 @@
             }
 
             function renderChartTable(tableId, body, data, key, sortType = 'desc') {
+                if ($.fn.DataTable.fnIsDataTable($(tableId))) {
+                    $(tableId).dataTable().fnDestroy();
+                    $(tableId + ' .render-more').remove();
+                }
+
                 let rows = ''
                 $.each(data, function (domain, values) {
-                    rows += '<tr class="render">'
+                    rows += '<tr class="render-more">'
                     rows += '<td>' + domain + '</td>'
                     rows += '<td>' + String(values[key]).substring(0, 5) + '</td></tr>'
                 })
                 $(body).html(rows)
-
-                if ($.fn.DataTable.fnIsDataTable($(tableId))) {
-                    $(tableId).dataTable().fnDestroy();
-                }
 
                 $(tableId).DataTable({
                     order: [[1, sortType]],
@@ -754,7 +755,8 @@
                             'projectId': PROJECT_ID,
                             'region': $('#searchEngines').val(),
                             'keywords': words,
-                            'competitors': {!! json_encode($competitors) !!}
+                            'competitors': {!! json_encode($competitors) !!},
+                            'totalWords': {{ $totalWords }}
                         },
                         success: function (response) {
                             renderTableBody(response.visibility)
@@ -785,12 +787,12 @@
                 })
 
                 $.each(domains, function (k, v) {
-                    results[v] = {'avg': 0, 'top_3': 0, 'top_10': 0, 'top_100': 0}
+                    results[v] = {'avg': 0, 'top_3': 0, 'top_10': 0, 'top_100': 0, 'sum': 0}
                 })
 
                 for (let i = 0; i < array.length; i++) {
                     $.each(domains, function (k, v) {
-                        results[v]['avg'] += array[i][v]['avg']
+                        results[v]['sum'] += array[i][v]['sum']
                         results[v]['top_3'] += array[i][v]['top_3']
                         results[v]['top_10'] += array[i][v]['top_10']
                         results[v]['top_100'] += array[i][v]['top_100']
@@ -798,10 +800,10 @@
                 }
 
                 $.each(results, function (k, v) {
-                    results[k]['avg'] = results[k]['avg'] / array.length
-                    results[k]['top_3'] = results[k]['top_3'] / array.length
-                    results[k]['top_10'] = results[k]['top_10'] / array.length
-                    results[k]['top_100'] = results[k]['top_100'] / array.length
+                    results[k]['avg'] = results[k]['sum'] / Number("{{ $totalWords }}")
+                    results[k]['top_3'] = (results[k]['top_3'] / Number("{{ $totalWords }}")) * 100
+                    results[k]['top_10'] = (results[k]['top_10'] / Number("{{ $totalWords }}")) * 100
+                    results[k]['top_100'] = (results[k]['top_100'] / Number("{{ $totalWords }}")) * 100
                 })
 
                 return results;
@@ -969,7 +971,6 @@
             }
 
             function renderStatistics(data, destroy) {
-                console.log(data)
                 renderChartTable('#avg-position', '#avg-position-tbody', data, 'avg', 'asc')
                 renderChartTable('#top3', '#top3-tbody', data, 'top_3')
                 renderChartTable('#top10', '#top10-tbody', data, 'top_10')
