@@ -113,7 +113,7 @@ class MonitoringCompetitor extends Model
 
         $records = SearchIndex::whereIn('query', $keywords)
             ->where('lr', $engine['lr'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->limit($countKeyWords * 100)
             ->get(['url', 'position', 'created_at', 'query'])
             ->toArray();
