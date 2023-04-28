@@ -792,7 +792,7 @@
 
                 for (let i = 0; i < array.length; i++) {
                     $.each(domains, function (k, v) {
-                        results[v]['avg'] += array[i][v]['avg']
+                        results[v]['sum'] += array[i][v]['sum']
                         results[v]['top_3'] += array[i][v]['top_3']
                         results[v]['top_10'] += array[i][v]['top_10']
                         results[v]['top_100'] += array[i][v]['top_100']
@@ -800,7 +800,7 @@
                 }
 
                 $.each(results, function (k, v) {
-                    results[k]['avg'] = results[k]['avg'] / array.length
+                    results[k]['avg'] = results[k]['sum'] / Number("{{ $totalWords }}")
                     results[k]['top_3'] = results[k]['top_3'] / array.length
                     results[k]['top_10'] = results[k]['top_10'] / array.length
                     results[k]['top_100'] = results[k]['top_100'] / array.length
