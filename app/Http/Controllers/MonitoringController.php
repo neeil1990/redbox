@@ -541,7 +541,6 @@ class MonitoringController extends Controller
             'competitors' => $competitors,
             'navigations' => $navigations,
             'keywords' => json_encode($keywords),
-            'totalWords' => $totalWords,
         ]);
     }
 
