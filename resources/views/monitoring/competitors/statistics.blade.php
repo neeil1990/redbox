@@ -759,6 +759,7 @@
                             'totalWords': {{ $totalWords }}
                         },
                         success: function (response) {
+                            console.log(response.statistics)
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
