@@ -513,17 +513,18 @@
             }
 
             function renderChartTable(tableId, body, data, key, sortType = 'desc') {
+                if ($.fn.DataTable.fnIsDataTable($(tableId))) {
+                    $(tableId).dataTable().fnDestroy();
+                    $(tableId + ' .render-more').remove();
+                }
+
                 let rows = ''
                 $.each(data, function (domain, values) {
-                    rows += '<tr class="render">'
+                    rows += '<tr class="render-more">'
                     rows += '<td>' + domain + '</td>'
                     rows += '<td>' + String(values[key]).substring(0, 5) + '</td></tr>'
                 })
                 $(body).html(rows)
-
-                if ($.fn.DataTable.fnIsDataTable($(tableId))) {
-                    $(tableId).dataTable().fnDestroy();
-                }
 
                 $(tableId).DataTable({
                     order: [[1, sortType]],
@@ -767,7 +768,6 @@
                     $('#download-results').hide()
                     table = initTable();
 
-                    console.log(array)
                     let results = calculateAvgValues(array)
                     renderStatistics(results, destroy)
                 });
