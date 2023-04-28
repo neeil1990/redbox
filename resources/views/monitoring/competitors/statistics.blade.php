@@ -91,13 +91,13 @@
             #table_wrapper > div:nth-child(2) > div {
                 overflow: auto;
                 width: 100%;
-                max-height: 1200px;
+                max-height: 950px;
             }
 
             #history-results_wrapper > div:nth-child(2) > div {
                 overflow: auto;
                 width: 100%;
-                max-height: 1200px;
+                max-height: 950px;
             }
 
             #history-results {
@@ -168,7 +168,7 @@
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
                             <div>
-                                загрузка результатов
+                                {{ __('Analysis of results') }}
                             </div>
                         </div>
                     </div>
@@ -178,13 +178,20 @@
     </div>
 
     <h4 class="mt-5 mb-2">
-        Статистика по выбранному региону
+        {{ __('Statistics for the selected region') }}
     </h4>
 
     <table id="table" class="table table-hover table-bordered no-footer" style="display: none">
         <thead>
         <tr id="tableHeadRow">
             <th>{{ __('Query') }}</th>
+            @foreach($competitors as $key => $competitor)
+                <th> {{ $competitor }}
+                    <span class="remove-competitor ml-1" data-target="{{ $competitor }}" data-id="{{ $key }}">
+                        <i class="fa fa-trash"></i>
+                     </span>
+                </th>
+            @endforeach
         </tr>
         </thead>
         <tbody id="tableBody">
@@ -294,20 +301,26 @@
         <h3 class="mt-3">{{ __('Changes by top and date') }}</h3>
         <div class="card mt-3">
             <div class="card-header d-flex">
-                <div class="w-25">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
                               <span class="input-group-text">
                                 <i class="far fa-calendar-alt"></i>
                               </span>
-                            </div>
-                            <input type="text" class="form-control" id="date-range">
-                            <button id="competitors-history-positions" class="btn btn-default"
-                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0">
-                                {{ __('show') }}
-                            </button>
                         </div>
+                        <input type="text" class="form-control" id="date-range">
+                        <button id="competitors-history-positions" class="btn btn-default"
+                                style="border-top-left-radius: 0; border-bottom-left-radius: 0">
+                            {{ __('show') }}
+                        </button>
+                    </div>
+                </div>
+                <div id="story-preloader" style="display: none" class="ml-2">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="/img/1485.gif" style="width: 40px; height: 40px;">
+                    </div>
+                    <div>
+                        {{ __('Analysis of results') }}
                     </div>
                 </div>
             </div>
@@ -392,6 +405,9 @@
                             'region': $('#searchEngines').val(),
                             'dateRange': $('#date-range').val(),
                         },
+                        beforeSend: function () {
+                            $('#story-preloader').show(300)
+                        },
                         success: function (response) {
                             if ($.fn.DataTable.fnIsDataTable($('#history-results'))) {
                                 $('#history-results').dataTable().fnDestroy()
@@ -399,34 +415,13 @@
                             $('#history-results').remove()
 
                             renderHistoryPositions(response.data)
+                            $('#story-preloader').hide(300)
                         },
                     });
                 })
 
                 $('#dateRange').show()
             })
-
-            function renderTableHead(data) {
-                $('.render').remove()
-
-                let index = 1
-                $.each(data, function (query, sites) {
-                    $.each(sites, function (site, counter) {
-                        if (site !== '') {
-                            $('#tableHeadRow').append(
-                                '<th class="render">' + site +
-                                '   <span class="remove-competitor ml-1" data-target="' + site + '" data-id="' + index + '">' +
-                                '      <i class="fa fa-trash"></i>' +
-                                '   </span>' +
-                                '</th>'
-                            )
-
-                            index++
-                        }
-                    })
-                    return false;
-                })
-            }
 
             function renderTableBody(data) {
                 let trs = []
@@ -441,7 +436,7 @@
 
                     trs.push(tr)
                 })
-                $('#tableBody').html(trs.join(' '))
+                $('#tableBody').append(trs.join(' '))
             }
 
             function initTable() {
@@ -517,14 +512,14 @@
                 return res;
             }
 
-            function renderTable(tableId, body, data, key, sortType = 'desc') {
+            function renderChartTable(tableId, body, data, key, sortType = 'desc') {
                 let rows = ''
                 $.each(data, function (domain, values) {
-                    rows += '<tr class="render-more">'
+                    rows += '<tr class="render">'
                     rows += '<td>' + domain + '</td>'
                     rows += '<td>' + String(values[key]).substring(0, 5) + '</td></tr>'
                 })
-                $(body).append(rows)
+                $(body).html(rows)
 
                 if ($.fn.DataTable.fnIsDataTable($(tableId))) {
                     $(tableId).dataTable().fnDestroy();
@@ -552,7 +547,7 @@
                 let colorArray = getColorArray()
 
                 let labels = []
-                let datas = []
+                let avg = []
                 let reverseDatas = []
                 let top3 = []
                 let top10 = []
@@ -562,7 +557,7 @@
                 $.each(data, function (domain, info) {
                     if (domain !== "") {
                         labels.push(domain)
-                        datas.push(info.avg)
+                        avg.push(info.avg)
                         reverseDatas.push(100 - info.avg)
                         colors.push(colorArray.shift())
                         top3.push(info.top_3)
@@ -584,7 +579,7 @@
                         labels: labels,
                         datasets: [
                             {
-                                data: datas,
+                                data: avg,
                                 backgroundColor: "transparent"
                             },
                             {
@@ -747,25 +742,69 @@
                     $('.render').remove()
                 }
 
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.get.competitors.statistics') }}",
-                    data: {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'projectId': PROJECT_ID,
-                        'region': $('#searchEngines').val(),
-                    },
-                    success: function (response) {
-                        renderTableHead(response.visibility)
-                        renderTableBody(response.visibility)
-                        table = initTable()
-
-                        renderStatistics(response.statistics, destroy)
-                        $('#download-results').hide()
-                    },
+                let ajaxRequests = []
+                let array = [];
+                $.each({!! $keywords !!}, function (k, words) {
+                    ajaxRequests.push($.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('monitoring.get.competitors.statistics') }}",
+                        data: {
+                            '_token': $('meta[name="csrf-token"]').attr('content'),
+                            'projectId': PROJECT_ID,
+                            'region': $('#searchEngines').val(),
+                            'keywords': words,
+                            'competitors': {!! json_encode($competitors) !!}
+                        },
+                        success: function (response) {
+                            renderTableBody(response.visibility)
+                            array.push(response.statistics)
+                        },
+                    }));
                 });
-                return table
+
+                $.when.apply($, ajaxRequests).done(function () {
+                    $('#download-results').hide()
+                    table = initTable();
+
+                    let results = calculateAvgValues(array)
+                    renderStatistics(results, destroy)
+                });
+
+            }
+
+            function calculateAvgValues(array) {
+                let domains = []
+                let results = {}
+
+                $.each(array, function (key, values) {
+                    $.each(values, function (domain, info) {
+                        domains.push(domain)
+                    })
+                    return false;
+                })
+
+                $.each(domains, function (k, v) {
+                    results[v] = {'avg': 0, 'top_3': 0, 'top_10': 0, 'top_100': 0}
+                })
+
+                for (let i = 0; i < array.length; i++) {
+                    $.each(domains, function (k, v) {
+                        results[v]['avg'] += array[i][v]['avg']
+                        results[v]['top_3'] += array[i][v]['top_3']
+                        results[v]['top_10'] += array[i][v]['top_10']
+                        results[v]['top_100'] += array[i][v]['top_100']
+                    })
+                }
+
+                $.each(results, function (k, v) {
+                    results[k]['avg'] = results[k]['avg'] / array.length
+                    results[k]['top_3'] = results[k]['top_3'] / array.length
+                    results[k]['top_10'] = results[k]['top_10'] / array.length
+                    results[k]['top_100'] = results[k]['top_100'] / array.length
+                })
+
+                return results;
             }
 
             function renderHistoryPositions(data) {
@@ -930,12 +969,11 @@
             }
 
             function renderStatistics(data, destroy) {
-                $('.render-more').remove()
-
-                renderTable('#avg-position', '#avg-position-tbody', data, 'avg', 'asc')
-                renderTable('#top3', '#top3-tbody', data, 'top_3')
-                renderTable('#top10', '#top10-tbody', data, 'top_10')
-                renderTable('#top100', '#top100-tbody', data, 'top_100')
+                console.log(data)
+                renderChartTable('#avg-position', '#avg-position-tbody', data, 'avg', 'asc')
+                renderChartTable('#top3', '#top3-tbody', data, 'top_3')
+                renderChartTable('#top10', '#top10-tbody', data, 'top_10')
+                renderChartTable('#top100', '#top100-tbody', data, 'top_100')
 
                 $('#statistics-table').show()
                 renderCharts(data, destroy)
