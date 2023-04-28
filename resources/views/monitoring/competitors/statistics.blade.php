@@ -769,7 +769,7 @@
                     $('#download-results').hide()
                     table = initTable();
 
-                    let results = calculateAvgValues([].concat(...array))
+                    let results = calculateAvgValues(array)
                     renderStatistics(results, destroy)
                 });
 

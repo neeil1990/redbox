@@ -34,7 +34,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -534,7 +533,7 @@ class MonitoringController extends Controller
         $navigations = $this->navigations($project);
 
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $keywords = array_chunk(array_column($keywords, 'query'), 167);
+        $keywords = array_chunk(array_column($keywords, 'query'), 50);
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
