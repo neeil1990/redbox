@@ -745,7 +745,9 @@
 
                 let ajaxRequests = []
                 let array = [];
+                console.log({!! $keywords !!})
                 $.each({!! $keywords !!}, function (k, words) {
+                    console.log(words)
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
