@@ -758,6 +758,7 @@
                             'competitors': {!! json_encode($competitors) !!}
                         },
                         success: function (response) {
+                            console.log(response)
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
