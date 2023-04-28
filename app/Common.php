@@ -177,7 +177,6 @@ class Common
     public static function percentHitIn($top, $positions)
     {
         $count = 0;
-
         foreach ($positions as $position) {
             if ($position <= $top) {
                 $count++;
@@ -185,7 +184,7 @@ class Common
         }
 
         if ($count !== 0) {
-            return round((100 / count($positions)) * $count, 2);
+            return round(($count / count($positions)), 2);
         }
 
         return 0;
