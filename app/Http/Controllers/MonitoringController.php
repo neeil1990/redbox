@@ -534,7 +534,7 @@ class MonitoringController extends Controller
         $navigations = $this->navigations($project);
 
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $keywords = array_chunk(array_column($keywords, 'query'), 50);
+        $keywords = array_chunk(array_column($keywords, 'query'), 167);
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
