@@ -768,7 +768,6 @@
                     table = initTable();
 
                     let results = calculateAvgValues(array)
-
                     renderStatistics(results, destroy)
                 });
 
@@ -799,10 +798,10 @@
                 }
 
                 $.each(results, function (k, v) {
-                    results[k]['avg'] = Number(results[k]['avg'] / array.length).toFixed(2)
-                    results[k]['top_3'] = Number(results[k]['top_3'] / array.length).toFixed(2)
-                    results[k]['top_10'] = Number(results[k]['top_10'] / array.length).toFixed(2)
-                    results[k]['top_100'] = Number(results[k]['top_100'] / array.length).toFixed(2)
+                    results[k]['avg'] = results[k]['avg'] / array.length
+                    results[k]['top_3'] = results[k]['top_3'] / array.length
+                    results[k]['top_10'] = results[k]['top_10'] / array.length
+                    results[k]['top_100'] = results[k]['top_100'] / array.length
                 })
 
                 return results;
