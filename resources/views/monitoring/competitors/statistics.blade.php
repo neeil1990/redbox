@@ -745,9 +745,7 @@
 
                 let ajaxRequests = []
                 let array = [];
-                console.log({!! $keywords !!})
                 $.each({!! $keywords !!}, function (k, words) {
-                    console.log(words)
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
@@ -770,7 +768,7 @@
                     $('#download-results').hide()
                     table = initTable();
 
-                    let results = calculateAvgValues(array)
+                    let results = calculateAvgValues([].concat(...array))
                     renderStatistics(results, destroy)
                 });
 
