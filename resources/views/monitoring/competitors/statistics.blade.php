@@ -759,7 +759,6 @@
                             'totalWords': {{ $totalWords }}
                         },
                         success: function (response) {
-                            console.log(response.statistics)
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
@@ -788,7 +787,7 @@
                 })
 
                 $.each(domains, function (k, v) {
-                    results[v] = {'avg': 0, 'top_3': 0, 'top_10': 0, 'top_100': 0}
+                    results[v] = {'avg': 0, 'top_3': 0, 'top_10': 0, 'top_100': 0, 'sum': 0}
                 })
 
                 for (let i = 0; i < array.length; i++) {
