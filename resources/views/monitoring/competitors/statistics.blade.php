@@ -801,12 +801,11 @@
 
                 $.each(results, function (k, v) {
                     results[k]['avg'] = results[k]['sum'] / Number("{{ $totalWords }}")
-                    results[k]['top_3'] /= Number("{{ $totalWords }}")
-                    results[k]['top_10'] /= Number("{{ $totalWords }}")
-                    results[k]['top_100'] /= Number("{{ $totalWords }}")
+                    results[k]['top_3'] = (results[k]['top_3'] / Number("{{ $totalWords }}")) * 100
+                    results[k]['top_10'] = (results[k]['top_10'] / Number("{{ $totalWords }}")) * 100
+                    results[k]['top_100'] = (results[k]['top_100'] / Number("{{ $totalWords }}")) * 100
                 })
 
-                console.log(results)
                 return results;
             }
 
