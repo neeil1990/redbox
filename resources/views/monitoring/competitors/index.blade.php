@@ -358,7 +358,6 @@
                         },
                         success: function (response) {
                             $.each(response.urls, function (k, domain) {
-                                console.log(domain)
                                 $("input[data-target='" + domain + "']").prop('checked', true)
                                 $("td[data-target='" + domain + "']").attr('data-order', 'true')
                             })
