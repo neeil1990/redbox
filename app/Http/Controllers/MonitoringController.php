@@ -552,25 +552,29 @@ class MonitoringController extends Controller
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
         $first = microtime(true);
+
         $project = MonitoringProject::where('id', $request->projectId)->first(['id', 'url']);
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
         array_unshift($competitors, $project['url']);
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
-        $records = [];
-        $last = microtime(true);
 
-        Log::debug('foreach-start', [$last - $first]);
-        foreach ($request->keywords as $keywords) {
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project['id'])->get(['query'])->toArray();
+        $keywords = array_chunk(array_column($keywords, 'query'), 10);
+
+        Log::debug('foreach-start', [microtime(true) - $first]);
+
+        $records = [];
+        foreach ($keywords as $words) {
             $first = microtime(true);
             $results = SearchIndex::whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                 date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
             ])
                 ->where('lr', '=', $lr)
-                ->whereIn('query', $keywords)
+                ->whereIn('query', $words)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100)
+                ->limit(count($words) * 100)
                 ->get(['url', 'position', 'created_at', 'query']);
 
             if (count($results) === 0) {
@@ -580,9 +584,8 @@ class MonitoringController extends Controller
             foreach ($results as $result) {
                 $records[$request->date][$result->query][$lr][] = $result;
             }
-            $last = microtime(true);
 
-            Log::debug('competitorsHistoryPositions foreach', [$last - $first]);
+            Log::debug('competitorsHistoryPositions foreach', [microtime(true) - $first]);
         }
 
         $response = [];
