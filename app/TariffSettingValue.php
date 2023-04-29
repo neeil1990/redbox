@@ -12,4 +12,9 @@ class TariffSettingValue extends Model
     {
         return $this->belongsTo(TariffSetting::class, 'tariff_setting_id');
     }
+
+    public function userValues()
+    {
+        return $this->hasMany(TariffSettingUserValue::class);
+    }
 }

@@ -183,6 +183,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return (new Tariffs())->getTariffByUser($this);
     }
 
+    public function tariffSettings()
+    {
+        return $this->hasMany(TariffSettingUserValue::class);
+    }
+
     /**
      * @return HasMany
      */

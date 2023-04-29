@@ -41,9 +41,9 @@ class FreeTariff extends Tariff
     /**
      * @return Settings
      */
-    public function settings(): Settings
+    protected function settings(): Settings
     {
-        return new FreeSettings($this->code());
+        return new FreeSettings($this->code(), $this->user);
     }
 
     public function code(): string

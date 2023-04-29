@@ -251,6 +251,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/tariff/{confirm?}/unsubscribe', 'TariffPayController@confirmUnsubscribe')->name('tariff.unsubscribe');
     Route::post('/tariff/total', 'TariffPayController@total')->name('tariff.total');
     Route::resource('tariff', 'TariffPayController');
+    Route::resource('profile/user-tariff', 'TariffSettingUserValuesController')->only([
+        'create', 'show', 'store', 'destroy'
+    ]);
 
     Route::post('/monitoring/stat/delete-queues', 'MonitoringAdminController@deleteQueues')->name('monitoring.stat.deleteQueues');
     Route::get('/monitoring/stat', 'MonitoringAdminController@statPage')->name('monitoring.stat');

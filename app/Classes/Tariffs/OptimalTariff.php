@@ -41,9 +41,9 @@ class OptimalTariff extends Tariff
     /**
      * @return Settings
      */
-    public function settings(): Settings
+    protected function settings(): Settings
     {
-        return new OptimalSettings($this->code());
+        return new OptimalSettings($this->code(), $this->user);
     }
 
     public function code(): string
