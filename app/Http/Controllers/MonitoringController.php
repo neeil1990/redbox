@@ -6,6 +6,7 @@ use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
+use App\Classes\MyBuilder;
 use App\Common;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
@@ -26,8 +27,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class MonitoringController extends Controller
 {
@@ -551,6 +552,7 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
+        $start = microtime(true);
         $project = MonitoringProject::where('id', $request->projectId)->first(['id', 'url']);
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
         array_unshift($competitors, $project['url']);
@@ -559,21 +561,25 @@ class MonitoringController extends Controller
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
         $items = array_chunk(array_column($keywords, 'query'), 5);
 
+        $end = microtime(true);
+        Log::debug('start', [$end - $start]);
         $records = [];
         foreach ($items as $keywords) {
             $start = microtime(true);
-            $results = SearchIndex::whereBetween('created_at', [
-                date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
-                date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
-            ])->where('lr', '=', $lr)
+            $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                ->whereBetween('created_at', [
+                    date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
+                    date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
+                ])
+                ->where('lr', '=', $lr)
                 ->whereIn('query', $keywords)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
-                ->get(['url', 'position', 'created_at', 'query']);
+                ->select(DB::raw('url, position, created_at, query'))
+                ->get();
 
             $end = microtime(true);
-
             Log::debug('forach iteration', [$end - $start]);
 //            $sql = str_replace('?', '%s', $results->toSql());
 //            $values = $results->getBindings();
