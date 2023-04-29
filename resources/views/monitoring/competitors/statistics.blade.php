@@ -558,7 +558,7 @@
                 $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
 
                 $('#table').show()
-                $('#statistics-table').show()
+                $('h4.mt-5.mb-2').show()
 
                 return res;
             }
