@@ -570,6 +570,11 @@ class MonitoringController extends Controller
             ->limit(count($keywords) * 100)
             ->get(['url', 'position', 'created_at', 'query']);
 
+        if (count($results) === 0) {
+            return response()->json([
+                'data' => []
+            ]);
+        }
         foreach ($results as $result) {
             $records[$request->date][$result->query][$lr][] = $result;
         }
@@ -605,14 +610,8 @@ class MonitoringController extends Controller
             }
         }
 
-        if (count($response) > 0) {
-            return response()->json([
-                'data' => $response[array_key_first($response)]
-            ]);
-        }
-
         return response()->json([
-            'data' => []
+            'data' => $response[array_key_first($response)]
         ]);
     }
 }
