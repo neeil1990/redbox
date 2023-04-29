@@ -580,10 +580,6 @@ class MonitoringController extends Controller
                 ->get();
 
             $end = microtime(true);
-            $sql = str_replace('?', '%s', $results->toSql());
-            $values = $results->getBindings();
-            $fullSql = vsprintf($sql, $values);
-            Log::debug('sql', [$fullSql]);
 
             Log::debug('foreach iteration', [$end - $start]);
 
