@@ -561,6 +561,7 @@ class MonitoringController extends Controller
 
         $records = [];
         foreach ($items as $keywords) {
+            $start = microtime(true);
             $results = SearchIndex::whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                 date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
@@ -572,6 +573,9 @@ class MonitoringController extends Controller
                 ->limit(count($keywords) * 100)
                 ->get(['url', 'position', 'created_at', 'query']);
 
+            $end = microtime(true);
+
+            Log::debug('forach iteration', [$end - $start]);
 //            $sql = str_replace('?', '%s', $results->toSql());
 //            $values = $results->getBindings();
 //            $fullSql = vsprintf($sql, $values);
