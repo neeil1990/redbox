@@ -397,12 +397,14 @@
                 })
 
                 $('#competitors-history-positions').unbind().on('click', function () {
+                    $('#percent-date-request').html(0)
                     let dates = ($('#date-range').val()).split(' - ')
                     let ajaxRequests = []
                     let results = {}
                     dates = getDates(dates[0], dates[1])
                     let totalRequests = dates.length
                     let countRequest = 0
+
                     $.each(dates, function (k, date) {
                         ajaxRequests.push($.ajax({
                             type: "POST",
