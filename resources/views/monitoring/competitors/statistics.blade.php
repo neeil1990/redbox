@@ -172,7 +172,7 @@
                             <div class="d-flex justify-content-center align-items-center">
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
-                            <div class="d-flex percentage-block" >
+                            <div class="d-flex percentage-block">
                                 <div id="ready-percent"></div>
                                 %
                             </div>
@@ -420,6 +420,7 @@
                                 'projectId': PROJECT_ID,
                                 'region': $('#searchEngines').val(),
                                 'date': date,
+                                'keywords': {!! $keywords !!}
                             },
                             beforeSend: function () {
                                 $('#story-preloader').show(300)

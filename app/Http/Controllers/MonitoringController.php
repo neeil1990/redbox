@@ -20,7 +20,6 @@ use App\MonitoringSettings;
 use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -28,7 +27,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -553,30 +551,33 @@ class MonitoringController extends Controller
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query', 'id')->toArray();
+
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
-        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
         array_unshift($competitors, $project->url);
+
+        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+
         $records = [];
 
-        $results = SearchIndex::whereBetween('created_at', [
-            date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
-            date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
-        ])
-            ->where('lr', '=', $lr)
-            ->whereIn('query', $keywords)
-            ->where('position', '<=', 100)
-            ->orderBy('id', 'desc')
-            ->limit(count($keywords) * 100)
-            ->get(['url', 'position', 'created_at', 'query']);
+        foreach ($request->keywords as $keywords) {
+            $results = SearchIndex::whereBetween('created_at', [
+                date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
+                date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
+            ])
+                ->where('lr', '=', $lr)
+                ->whereIn('query', $keywords)
+                ->where('position', '<=', 100)
+                ->orderBy('id', 'desc')
+                ->limit(count($keywords) * 100)
+                ->get(['url', 'position', 'created_at', 'query']);
 
-        if (count($results) === 0) {
-            return response()->json([
-                'data' => []
-            ]);
-        }
-        foreach ($results as $result) {
-            $records[$request->date][$result->query][$lr][] = $result;
+            if (count($results) === 0) {
+                continue;
+            }
+
+            foreach ($results as $result) {
+                $records[$request->date][$result->query][$lr][] = $result;
+            }
         }
 
         $response = [];
@@ -603,15 +604,21 @@ class MonitoringController extends Controller
 
         foreach ($response as $date => $result) {
             foreach ($result as $domain => $data) {
-                $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($keywords), 2);
+                $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
                 $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], true);
                 $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], true);
                 $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], true);
             }
         }
 
+        if (count($response) > 0) {
+            return response()->json([
+                'data' => $response[array_key_first($response)]
+            ]);
+        }
+
         return response()->json([
-            'data' => $response[array_key_first($response)]
+            'data' => []
         ]);
     }
 }
