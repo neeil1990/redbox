@@ -556,8 +556,11 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project['url']);
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
+        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $items = array_chunk(array_column($keywords, 'query'), 5);
+
         $records = [];
-        foreach ($request->keywords as $keywords) {
+        foreach ($items as $keywords) {
             $results = SearchIndex::whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                 date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
@@ -566,19 +569,14 @@ class MonitoringController extends Controller
                 ->whereIn('query', $keywords)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100);
-//                ->get(['url', 'position', 'created_at', 'query']);
+                ->limit(count($keywords) * 100)
+                ->get(['url', 'position', 'created_at', 'query']);
 
-            $sql = str_replace('?', '%s', $results->toSql());
-            $values = $results->getBindings();
-            $fullSql = vsprintf($sql, $values);
-
-            Log::debug('sql', [$fullSql]);
-
-            return response()->json([
-                'data' => []
-            ]);
-
+//            $sql = str_replace('?', '%s', $results->toSql());
+//            $values = $results->getBindings();
+//            $fullSql = vsprintf($sql, $values);
+//
+//            Log::debug('sql', [$fullSql]);
             if (count($results) === 0) {
                 continue;
             }

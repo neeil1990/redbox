@@ -420,7 +420,6 @@
                                 'projectId': PROJECT_ID,
                                 'region': $('#searchEngines').val(),
                                 'date': date,
-                                'keywords': {!! $keywords !!}
                             },
                             beforeSend: function () {
                                 $('#story-preloader').show(300)
