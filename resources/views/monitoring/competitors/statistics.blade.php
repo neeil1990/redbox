@@ -788,6 +788,7 @@
 
             function renderInfo(destroy = false) {
                 $('#download-results').show()
+                $('#table').hide()
                 if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                     $('#table').dataTable().fnDestroy();
                     $('.render').remove()
@@ -826,7 +827,6 @@
                     let results = calculateAvgValues(array)
                     renderStatistics(results, destroy)
                 });
-
             }
 
             function calculateAvgValues(array) {
