@@ -562,11 +562,13 @@ class MonitoringController extends Controller
         $records = [];
         foreach ($items as $keywords) {
             $start = microtime(true);
-            $results = SearchIndex::whereBetween('created_at', [
-                date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
-                date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
-            ])
-                ->where('lr', $lr)
+            $results = SearchIndex::
+//            whereBetween('created_at', [
+//                date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
+//                date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
+//            ])
+//                ->
+                where('lr', $lr)
                 ->whereIn('query', $keywords)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
