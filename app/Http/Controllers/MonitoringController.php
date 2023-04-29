@@ -559,7 +559,7 @@ class MonitoringController extends Controller
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $items = array_chunk(array_column($keywords, 'query'), 50);
+        $items = array_chunk(array_column($keywords, 'query'), 25);
 
         $end = microtime(true);
         Log::debug('start', [$end - $start]);
