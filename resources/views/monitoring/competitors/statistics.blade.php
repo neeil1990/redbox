@@ -306,8 +306,8 @@
     <div id="dateRange" style="display: none">
         <h3 class="mt-3">{{ __('Changes by top and date') }}</h3>
         <div class="card mt-3">
-            <div class="card-header d-flex">
-                <div class="form-group">
+            <div class="card-header d-flex flex-row justify-content-start align-items-center">
+                <div>
                     <div class="input-group">
                         <div class="input-group-prepend">
                               <span class="input-group-text">
