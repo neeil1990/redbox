@@ -27,6 +27,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -550,16 +551,17 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $project = MonitoringProject::findOrFail($request->projectId);
-
-        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
-        array_unshift($competitors, $project->url);
-
+        $first = microtime(true);
+        $project = MonitoringProject::where('id', $request->projectId)->first(['id', 'url']);
+        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
+        array_unshift($competitors, $project['url']);
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
-
         $records = [];
+        $last = microtime(true);
 
+        Log::debug('foreach-start', [$last - $first]);
         foreach ($request->keywords as $keywords) {
+            $first = microtime(true);
             $results = SearchIndex::whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                 date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
@@ -578,6 +580,9 @@ class MonitoringController extends Controller
             foreach ($results as $result) {
                 $records[$request->date][$result->query][$lr][] = $result;
             }
+            $last = microtime(true);
+
+            Log::debug('competitorsHistoryPositions foreach', [$last - $first]);
         }
 
         $response = [];
