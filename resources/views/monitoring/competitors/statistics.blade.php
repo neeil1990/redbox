@@ -103,6 +103,11 @@
             #history-results {
                 width: auto;
             }
+
+            .percentage-block {
+                text-align: center;
+                justify-content: center;
+            }
         </style>
     @endslot
 
@@ -168,7 +173,7 @@
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
                             <div class="d-flex">
-                                <div id="ready-percent"></div>
+                                <div id="ready-percent percentage-block"></div>
                                 %
                             </div>
                         </div>
@@ -320,7 +325,7 @@
                     <div class="d-flex justify-content-center align-items-center">
                         <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                     </div>
-                    <div class="d-flex">
+                    <div class="d-flex percentage-block">
                         <div id="percent-date-request"></div>
                         %
                     </div>
