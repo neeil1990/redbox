@@ -558,6 +558,7 @@
                 $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
 
                 $('#table').show()
+                $('#statistics-table').show()
 
                 return res;
             }
@@ -789,6 +790,9 @@
             function renderInfo(destroy = false) {
                 $('#download-results').show()
                 $('#table').hide()
+                $('#statistics-table').hide()
+                $('h4.mt-5.mb-2').hide()
+
                 if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                     $('#table').dataTable().fnDestroy();
                     $('.render').remove()
