@@ -172,8 +172,8 @@
                             <div class="d-flex justify-content-center align-items-center">
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
-                            <div class="d-flex">
-                                <div id="ready-percent percentage-block"></div>
+                            <div class="d-flex percentage-block" >
+                                <div id="ready-percent"></div>
                                 %
                             </div>
                         </div>
