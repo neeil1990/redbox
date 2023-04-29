@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\MainProject;
+use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
 use Closure;
@@ -23,6 +24,10 @@ class VisitStatistics
      */
     public function handle(Request $request, Closure $next)
     {
+        if (!Auth::check()) {
+            return $next($request);
+        }
+
         try {
             $controllerAction = last(explode('\\', Route::current()->action['controller']));
             if ($controllerAction === 'PublicController@updateStatistics') {

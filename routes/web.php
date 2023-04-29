@@ -16,10 +16,12 @@ use App\MonitoringCompetitor;
 use App\MonitoringKeyword;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
+use App\SearchIndex;
 use App\TextAnalyzer;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 Route::get('info', function () {

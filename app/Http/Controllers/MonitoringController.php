@@ -3,17 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
-use App\Classes\Monitoring\PanelButtons\CompetitorButton;
-use App\Classes\Monitoring\PanelButtons\LinkTrackingButtons;
-use App\Classes\Monitoring\PanelButtons\ProjectButton;
-use App\Classes\Monitoring\PanelButtons\PromotionPlanButtons;
 use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
-use App\Classes\Monitoring\PanelButtons\SiteAuditButtons;
-use App\Classes\Monitoring\PanelButtons\TopAnalysisButton;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
-use App\Jobs\AutoUpdatePositionQueue;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
@@ -24,6 +17,7 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
+use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -34,6 +28,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -562,32 +557,24 @@ class MonitoringController extends Controller
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project->id)->pluck('url')->toArray();
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
         array_unshift($competitors, $project->url);
-
-        $range = explode(' - ', $request->dateRange);
-        $period = CarbonPeriod::create($range[0], $range[1]);
-
         $records = [];
 
-        foreach (array_reverse($period->toArray()) as $date) {
-            $results = DB::table('search_indices')
-                ->whereBetween('created_at', [
-                    date('Y-m-d H:i:s', strtotime($date->format('Y-m-d') . ' 00:00:00')),
-                    date('Y-m-d H:i:s', strtotime($date->format('Y-m-d') . ' 23:59:59'))
-                ])
-                ->where('lr', '=', $lr)
-                ->whereIn('query', $keywords)
-                ->where('position', '<=', 100)
-                ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100)
-                ->get(['url', 'position', 'created_at', 'query']);
+        $results = SearchIndex::whereBetween('created_at', [
+            date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
+            date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
+        ])
+            ->where('lr', '=', $lr)
+            ->whereIn('query', $keywords)
+            ->where('position', '<=', 100)
+            ->orderBy('id', 'desc')
+            ->limit(count($keywords) * 100)
+            ->get(['url', 'position', 'created_at', 'query']);
 
-            foreach ($results as $result) {
-                $records[explode(' ', $result->created_at)[0]][$result->query][$lr][] = $result;
-            }
+        foreach ($results as $result) {
+            $records[$request->date][$result->query][$lr][] = $result;
         }
 
         $response = [];
-
         foreach ($records as $date => $queries) {
             foreach ($queries as $lrs) {
                 foreach ($lrs as $positions) {
@@ -618,8 +605,14 @@ class MonitoringController extends Controller
             }
         }
 
+        if (count($response) > 0) {
+            return response()->json([
+                'data' => $response[array_key_first($response)]
+            ]);
+        }
+
         return response()->json([
-            'data' => array_reverse($response)
+            'data' => []
         ]);
     }
 }

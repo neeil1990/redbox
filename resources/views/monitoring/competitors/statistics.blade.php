@@ -167,8 +167,9 @@
                             <div class="d-flex justify-content-center align-items-center">
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
-                            <div>
-                                {{ __('Analysis of results') }}
+                            <div class="d-flex">
+                                <div id="ready-percent"></div>
+                                %
                             </div>
                         </div>
                     </div>
@@ -319,8 +320,9 @@
                     <div class="d-flex justify-content-center align-items-center">
                         <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                     </div>
-                    <div>
-                        {{ __('Analysis of results') }}
+                    <div class="d-flex">
+                        <div id="percent-date-request"></div>
+                        %
                     </div>
                 </div>
             </div>
@@ -395,33 +397,74 @@
                 })
 
                 $('#competitors-history-positions').unbind().on('click', function () {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('monitoring.competitors.history.positions') }}",
-                        data: {
-                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                            'projectId': PROJECT_ID,
-                            'region': $('#searchEngines').val(),
-                            'dateRange': $('#date-range').val(),
-                        },
-                        beforeSend: function () {
-                            $('#story-preloader').show(300)
-                        },
-                        success: function (response) {
-                            if ($.fn.DataTable.fnIsDataTable($('#history-results'))) {
-                                $('#history-results').dataTable().fnDestroy()
-                            }
-                            $('#history-results').remove()
+                    let dates = ($('#date-range').val()).split(' - ')
+                    let ajaxRequests = []
+                    let results = {}
+                    dates = getDates(dates[0], dates[1])
+                    let totalRequests = dates.length
+                    let countRequest = 0
+                    $.each(dates, function (k, date) {
+                        ajaxRequests.push($.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('monitoring.competitors.history.positions') }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'projectId': PROJECT_ID,
+                                'region': $('#searchEngines').val(),
+                                'date': date,
+                            },
+                            beforeSend: function () {
+                                $('#story-preloader').show(300)
+                            },
+                            success: function (response) {
+                                countRequest++;
+                                $('#percent-date-request').html(Number(countRequest / totalRequests) * 100).toFixed()
+                                if (response.data.length !== 0) {
+                                    results[date] = response.data
+                                }
+                            },
+                        }));
+                    });
 
-                            renderHistoryPositions(response.data)
-                            $('#story-preloader').hide(300)
-                        },
+                    $.when.apply($, ajaxRequests).done(function () {
+                        if ($.fn.DataTable.fnIsDataTable($('#history-results'))) {
+                            $('#history-results').dataTable().fnDestroy()
+                        }
+                        $('#history-results').remove()
+
+                        renderHistoryPositions(results)
+                        $('#story-preloader').hide(300)
                     });
                 })
 
                 $('#dateRange').show()
             })
+
+            function getDates($start, $end) {
+                let start = $start.split('-')
+                const startDate = new Date();
+                startDate.setDate(start[0]);
+                startDate.setMonth(start[1]);
+                startDate.setFullYear(start[2]);
+
+                let end = $end.split('-')
+                const endDate = new Date();
+                endDate.setDate(end[0]);
+                endDate.setMonth(end[1]);
+                endDate.setFullYear(end[2]);
+
+                let dates = []
+                while (startDate <= endDate) {
+                    let day = startDate.getDate() < 10 ? '0' + startDate.getDate() : startDate.getDate()
+                    let month = startDate.getMonth() < 10 ? '0' + startDate.getMonth() : startDate.getMonth()
+
+                    dates.push(day + '-' + (month) + '-' + startDate.getFullYear())
+                    startDate.setDate(startDate.getDate() + 1);
+                }
+
+                return dates;
+            }
 
             function renderTableBody(data) {
                 let trs = []
@@ -743,8 +786,10 @@
                     $('.render').remove()
                 }
 
+                let countReadyWords = 0
                 let ajaxRequests = []
                 let array = [];
+                $('#ready-percent').html(0)
                 $.each({!! $keywords !!}, function (k, words) {
                     ajaxRequests.push($.ajax({
                         type: "POST",
@@ -759,6 +804,8 @@
                             'totalWords': {{ $totalWords }}
                         },
                         success: function (response) {
+                            countReadyWords += words.length
+                            $('#ready-percent').html((countReadyWords / {{ $totalWords }}) * 100)
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
@@ -811,23 +858,24 @@
 
             function renderHistoryPositions(data) {
                 let result
-
-                if (data.length !== undefined) {
+                if (data && Object.keys(data).length === 0 && Object.getPrototypeOf(data) === Object.prototype) {
                     result = '<b id="history-results">{{ __('There are no results') }}</b>'
                     $('#history-block').append(result)
                     $('#visibility-buttons').hide()
                 } else {
+                    const sortedKeys = Object.keys(data).sort((a, b) => new Date(a.split('-').reverse().join('-')) - new Date(b.split('-').reverse().join('-')));
+                    const sortedData = {};
                     let length = 0
-
-                    for (let key in data) {
-                        length += 1
-                    }
+                    sortedKeys.forEach(key => {
+                        sortedData[key] = data[key];
+                        length++;
+                    });
 
                     let domains = []
                     let dates = []
 
                     let bottomHead = ''
-                    $.each(data, function (k, v) {
+                    $.each(sortedData, function (k, v) {
                         bottomHead += '<td>' + k + '</td>'
                         dates.push(k)
                         $.each(v, function (k1, v1) {
