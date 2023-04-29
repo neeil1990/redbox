@@ -419,7 +419,8 @@
                                 '_token': $('meta[name="csrf-token"]').attr('content'),
                                 'projectId': PROJECT_ID,
                                 'region': $('#searchEngines').val(),
-                                'date': date
+                                'date': date,
+                                'keywords': {!! $keywords !!}
                             },
                             beforeSend: function () {
                                 $('#story-preloader').show(300)

@@ -558,24 +558,27 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project['url']);
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project['id'])->get(['query'])->toArray();
-        $keywords = array_chunk(array_column($keywords, 'query'), 10);
-
         Log::debug('foreach-start', [microtime(true) - $first]);
 
         $records = [];
-        foreach ($keywords as $words) {
+        foreach ($request->keywords as $keywords) {
             $first = microtime(true);
             $results = SearchIndex::whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                 date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
             ])
-                ->where('lr', '=', $lr)
-                ->whereIn('query', $words)
+                ->where('lr', $lr)
+                ->whereIn('query', $keywords)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
-                ->limit(count($words) * 100)
-                ->get(['url', 'position', 'created_at', 'query']);
+                ->limit(count($keywords) * 100)
+                ->toSql();
+
+            Log::debug('res', [$results]);
+            return response()->json([
+                'data' => []
+            ]);
+//                ->get(['url', 'position', 'created_at', 'query']);
 
             if (count($results) === 0) {
                 continue;
