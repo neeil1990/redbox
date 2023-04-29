@@ -559,7 +559,7 @@ class MonitoringController extends Controller
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $items = array_chunk(array_column($keywords, 'query'), 5);
+        $items = array_chunk(array_column($keywords, 'query'), 50);
 
         $end = microtime(true);
         Log::debug('start', [$end - $start]);
@@ -581,11 +581,12 @@ class MonitoringController extends Controller
 
             $end = microtime(true);
             Log::debug('forach iteration', [$end - $start]);
+
 //            $sql = str_replace('?', '%s', $results->toSql());
 //            $values = $results->getBindings();
 //            $fullSql = vsprintf($sql, $values);
-//
 //            Log::debug('sql', [$fullSql]);
+
             if (count($results) === 0) {
                 continue;
             }
