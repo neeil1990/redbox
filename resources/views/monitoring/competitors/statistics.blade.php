@@ -503,7 +503,7 @@
                             let $cell = $(this);
                             let cellVal = parseFloat($cell.text());
 
-                            if (!isNaN(cellVal) && cellVal !== 0 && isNumeric(cellVal)) {
+                            if (!isNaN(cellVal) && cellVal !== 0 && cellIndex !== 0) {
                                 array.push({
                                     cellIndex: cellIndex + 1,
                                     cellVal: cellVal
@@ -560,10 +560,6 @@
                 $('#table').show()
 
                 return res;
-            }
-
-            function isNumeric(str) {
-                return /^\d+$/.test(str);
             }
 
             function renderChartTable(tableId, body, data, key, sortType = 'desc') {
