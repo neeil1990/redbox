@@ -566,8 +566,8 @@ class MonitoringController extends Controller
                 ->whereIn('query', $keywords)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100)
-                ->get(['url', 'position', 'created_at', 'query']);
+                ->limit(count($keywords) * 100);
+//                ->get(['url', 'position', 'created_at', 'query']);
 
             $sql = str_replace('?', '%s', $results->toSql());
             $values = $results->getBindings();
