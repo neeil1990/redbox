@@ -419,7 +419,7 @@
                             },
                             success: function (response) {
                                 countRequest++;
-                                $('#percent-date-request').html(Number(countRequest / totalRequests) * 100).toFixed()
+                                $('#percent-date-request').html(Number(countRequest / totalRequests * 100).toFixed())
                                 if (response.data.length !== 0) {
                                     results[date] = response.data
                                 }
@@ -805,7 +805,7 @@
                         },
                         success: function (response) {
                             countReadyWords += words.length
-                            $('#ready-percent').html((countReadyWords / {{ $totalWords }}) * 100)
+                            $('#ready-percent').html(Number(countReadyWords / {{ $totalWords }} * 100).toFixed())
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
