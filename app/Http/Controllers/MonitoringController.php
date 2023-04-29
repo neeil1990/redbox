@@ -551,18 +551,13 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $first = microtime(true);
-
         $project = MonitoringProject::where('id', $request->projectId)->first(['id', 'url']);
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
         array_unshift($competitors, $project['url']);
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
-        Log::debug('foreach-start', [microtime(true) - $first]);
-
         $records = [];
         foreach ($request->keywords as $keywords) {
-            $first = microtime(true);
             $results = SearchIndex::whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                 date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
@@ -572,13 +567,17 @@ class MonitoringController extends Controller
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
-                ->toSql();
+                ->get(['url', 'position', 'created_at', 'query']);
 
-            Log::debug('res', [$results]);
+            $sql = str_replace('?', '%s', $results->toSql());
+            $values = $results->getBindings();
+            $fullSql = vsprintf($sql, $values);
+
+            Log::debug('sql', [$fullSql]);
+
             return response()->json([
                 'data' => []
             ]);
-//                ->get(['url', 'position', 'created_at', 'query']);
 
             if (count($results) === 0) {
                 continue;
@@ -587,8 +586,6 @@ class MonitoringController extends Controller
             foreach ($results as $result) {
                 $records[$request->date][$result->query][$lr][] = $result;
             }
-
-            Log::debug('competitorsHistoryPositions foreach', [microtime(true) - $first]);
         }
 
         $response = [];
