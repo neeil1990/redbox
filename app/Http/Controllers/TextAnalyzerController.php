@@ -9,7 +9,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -47,9 +46,9 @@ class TextAnalyzerController extends Controller
         if ($request['type'] === 'url') {
             $html = TextAnalyzer::curlInit($request['url']);
             if (!$html) {
-                flash()->overlay(__('connection attempt failed'), ' ')->error();
+                flash()->overlay($request['url'], __('connection attempt failed'))->error();
 
-                return Redirect::back();
+                return view('text-analyse.index');
             } else {
                 $html = TextAnalyzer::removeStylesAndScripts($html);
                 $response = TextAnalyzer::analyze($html, $request);
@@ -64,7 +63,7 @@ class TextAnalyzerController extends Controller
 
     /**
      * @param $url
-     * @return array|false|Application|Factory|View|mixed
+     * @return Application|array|Factory|false|View
      */
     public function redirectToAnalyse($url)
     {
