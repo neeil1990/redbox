@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -118,11 +119,21 @@ class MonitoringCompetitor extends Model
             ->toArray();
 
         foreach ($records as $record) {
-            $url = Common::domainFilter(parse_url($record['url'])['host']);
-            if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
-                $visibilityArray[$record['query']][$url] = $record['position'];
+            try {
+                $url = Common::domainFilter(parse_url($record['url'])['host']);
+                if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
+                    $visibilityArray[$record['query']][$url] = $record['position'];
+                }
+            } catch (\Throwable $e) {
+                Log::debug('req', [
+                    'line' => $e->getLine(),
+                    $record,
+                    $url,
+                    $competitors,
+                ]);
             }
         }
+
 
         $competitorStatistics = [];
         foreach ($visibilityArray as $query => $positions) {
@@ -132,7 +143,7 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($competitorStatistics as $key => $item) {
-            $competitorStatistics[$key]['sum'] = array_sum($item['positions']) ;
+            $competitorStatistics[$key]['sum'] = array_sum($item['positions']);
             $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
             $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
             $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
