@@ -173,7 +173,7 @@
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
                             <div class="d-flex percentage-block">
-                                <div id="ready-percent"></div>
+                                <div id="ready-percent">0</div>
                                 %
                             </div>
                         </div>
