@@ -397,6 +397,7 @@ Route::middleware(['verified'])->group(function () {
 
 Route::get('/test', function () {
 
+    $start = microtime(true);
     $keywords = ['ремонт форсунок сименс', 'ремонт дизельных форсунок сименс', 'форсунки сименс дизель ремонт', 'ремонт форсунок siemens', 'ремонт дизельных форсунок siemens', 'ремонт форсунок common rail siemens', 'ремонт топливных форсунок siemens', 'громко работает дизельный двигатель', 'течет ТНВД', 'форсунка стучит'];
 
     $explain = DB::table(DB::raw('explain search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
@@ -405,7 +406,7 @@ Route::get('/test', function () {
             date('Y-m-d H:i:s', strtotime('2023-04-29 23:59:59')),
         ])
         ->where(193)
-        ->whereIn('query',$keywords)
+        ->whereIn('query', $keywords)
         ->where('position', '<=', 100)
         ->orderBy('id', 'desc')
         ->limit(count($keywords) * 100)
@@ -413,5 +414,7 @@ Route::get('/test', function () {
 
     $native = str_replace_array('?', $explain->getBindings(), $explain->toSql());
 
+    dump($native);
     dump($explain->get());
+    dd(microtime(true) - $start);
 });
