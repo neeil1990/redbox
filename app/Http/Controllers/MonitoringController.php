@@ -26,6 +26,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -559,7 +560,8 @@ class MonitoringController extends Controller
 
         $records = [];
         foreach ($items as $keywords) {
-            $sql = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+            $start = microtime(true);
+            $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->whereBetween('created_at', [
                     date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                     date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
@@ -569,8 +571,8 @@ class MonitoringController extends Controller
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
-                ->select(DB::raw('url, position, created_at, query'));
-            $results = $sql->get();
+                ->select(DB::raw('url, position, created_at, query'))->get();
+            Log::debug('microtime', [microtime(true) - $start]);
 
             if (count($results) === 0) {
                 continue;
