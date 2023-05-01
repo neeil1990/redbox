@@ -175,7 +175,7 @@ class Common
         return urldecode(str_replace(['www.'], '', strtolower($domain)));
     }
 
-    public static function percentHitIn($top, $positions, $calculate = false): int
+    public static function percentHitIn($top, $positions, $calculate = false): float
     {
         $count = 0;
         foreach ($positions as $position) {
