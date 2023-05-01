@@ -908,7 +908,7 @@
                                 if (firstElement) {
                                     trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
                                 } else {
-                                    trs += '<td>' + data[date][domain][name] / TOTAL_WORDS + '</td>'
+                                    trs += '<td>' + data[date][domain][name] + '</td>'
                                 }
                             })
                         })
