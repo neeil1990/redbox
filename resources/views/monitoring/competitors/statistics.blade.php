@@ -416,7 +416,6 @@
                             dataType: "json",
                             url: "{{ route('monitoring.competitors.history.positions') }}",
                             data: {
-                                '_token': $('meta[name="csrf-token"]').attr('content'),
                                 'projectId': PROJECT_ID,
                                 'region': $('#searchEngines').val(),
                                 'date': date,
