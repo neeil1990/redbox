@@ -383,6 +383,8 @@
 
             const PROJECT_ID = {{ $project->id }};
             const REGION_ID = '{{ request('region', null) }}';
+            const KEYWORDS = {!! $keywords !!};
+            const TOTAL_WORDS = {{ $totalWords }};
 
             $(document).ready(function () {
                 let filter = localStorage.getItem('lr_redbox_monitoring_selected_filter')
@@ -801,7 +803,7 @@
                 let ajaxRequests = []
                 let array = [];
                 $('#ready-percent').html(0)
-                $.each({!! $keywords !!}, function (k, words) {
+                $.each(KEYWORDS, function (k, words) {
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
@@ -812,11 +814,11 @@
                             'region': $('#searchEngines').val(),
                             'keywords': words,
                             'competitors': {!! json_encode($competitors) !!},
-                            'totalWords': {{ $totalWords }}
+                            'totalWords':TOTAL_WORDS
                         },
                         success: function (response) {
                             countReadyWords += words.length
-                            $('#ready-percent').html(Number(countReadyWords / {{ $totalWords }} * 100).toFixed())
+                            $('#ready-percent').html(Number(countReadyWords /TOTAL_WORDS * 100).toFixed())
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
@@ -857,10 +859,10 @@
                 }
 
                 $.each(results, function (k, v) {
-                    results[k]['avg'] = results[k]['sum'] / Number("{{ $totalWords }}")
-                    results[k]['top_3'] = (results[k]['top_3'] / Number("{{ $totalWords }}")) * 100
-                    results[k]['top_10'] = (results[k]['top_10'] / Number("{{ $totalWords }}")) * 100
-                    results[k]['top_100'] = (results[k]['top_100'] / Number("{{ $totalWords }}")) * 100
+                    results[k]['avg'] = results[k]['sum'] / Number(TOTAL_WORDS)
+                    results[k]['top_3'] = (results[k]['top_3'] / Number(TOTAL_WORDS)) * 100
+                    results[k]['top_10'] = (results[k]['top_10'] / Number(TOTAL_WORDS)) * 100
+                    results[k]['top_100'] = (results[k]['top_100'] / Number(TOTAL_WORDS)) * 100
                 })
 
                 return results;
@@ -906,7 +908,7 @@
                                 if (firstElement) {
                                     trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
                                 } else {
-                                    trs += '<td>' + data[date][domain][name] + '</td>'
+                                    trs += '<td>' + data[date][domain][name] / TOTAL_WORDS + '</td>'
                                 }
                             })
                         })
