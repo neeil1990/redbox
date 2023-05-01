@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Common
 {
@@ -184,6 +185,7 @@ class Common
         }
 
         if ($calculate !== false) {
+            Log::debug($count, [100 / $calculate * $count]);
             return 100 / $calculate * $count;
         }
 
