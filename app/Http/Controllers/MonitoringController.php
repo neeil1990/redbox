@@ -556,7 +556,7 @@ class MonitoringController extends Controller
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $items = array_chunk(array_column($words, 'query'), 10);
+        $items = array_chunk(array_column($words, 'query'), 100);
 
         $records = [];
         foreach ($items as $keywords) {
@@ -572,7 +572,7 @@ class MonitoringController extends Controller
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
                 ->select(DB::raw('url, position, created_at, query'))->get();
-            Log::debug('microtime 10 * 100', [microtime(true) - $start]);
+            Log::debug('microtime 100 * 100', [microtime(true) - $start]);
 
             if (count($results) === 0) {
                 continue;
