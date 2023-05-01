@@ -420,6 +420,5 @@ Route::get('/test', function () {
 
     $results = $query->get();
 
-    dd($explain, $results);
-    dd(microtime(true) - $start);
+    dd($explain, $results, microtime(true) - $start);
 });
