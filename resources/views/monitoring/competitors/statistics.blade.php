@@ -869,6 +869,7 @@
             }
 
             function renderHistoryPositions(data) {
+                console.log(data)
                 let result
                 if (data && Object.keys(data).length === 0 && Object.getPrototypeOf(data) === Object.prototype) {
                     result = '<b id="history-results">{{ __('There are no results') }}</b>'
