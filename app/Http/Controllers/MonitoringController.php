@@ -608,9 +608,9 @@ class MonitoringController extends Controller
         foreach ($response as $date => $result) {
             foreach ($result as $domain => $data) {
                 $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
-                $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], count($keywords));
-                $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], count($keywords));
-                $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], count($keywords));
+                $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions']);
+                $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions']);
+                $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions']);
             }
         }
 
