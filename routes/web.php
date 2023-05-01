@@ -400,21 +400,26 @@ Route::get('/test', function () {
     $start = microtime(true);
     $keywords = ['ремонт форсунок сименс', 'ремонт дизельных форсунок сименс', 'форсунки сименс дизель ремонт', 'ремонт форсунок siemens', 'ремонт дизельных форсунок siemens', 'ремонт форсунок common rail siemens', 'ремонт топливных форсунок siemens', 'громко работает дизельный двигатель', 'течет ТНВД', 'форсунка стучит'];
 
-    $explain = DB::table(DB::raw('explain search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+    DB::connection()->enableQueryLog();
+
+    $query = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
         ->whereBetween('created_at', [
             date('Y-m-d H:i:s', strtotime('2023-04-29 00:00:00')),
             date('Y-m-d H:i:s', strtotime('2023-04-29 23:59:59')),
         ])
-        ->where(193)
+        ->where('lr', 193)
         ->whereIn('query', $keywords)
         ->where('position', '<=', 100)
         ->orderBy('id', 'desc')
         ->limit(count($keywords) * 100)
         ->select(DB::raw('url, position, created_at, query'));
 
-    $native = str_replace_array('?', $explain->getBindings(), $explain->toSql());
+    $explain_query = 'EXPLAIN ' . $query->toSql();
+    $bindings = $query->getBindings();
+    $explain = DB::select($explain_query, $bindings);
 
-    dump($native);
-    dump($explain->get());
+    $results = $query->get();
+
+    dd($explain, $results);
     dd(microtime(true) - $start);
 });

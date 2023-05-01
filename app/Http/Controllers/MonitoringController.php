@@ -564,7 +564,7 @@ class MonitoringController extends Controller
                     date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
                     date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
                 ])
-                ->where('lr', '=', $lr)
+                ->where('lr', $lr)
                 ->whereIn('query', $keywords)
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
