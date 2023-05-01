@@ -185,7 +185,6 @@ class Common
         }
 
         if ($calculate !== false) {
-            Log::debug($count, [$count / 100 * $calculate]);
             return $count / 100 * $calculate;
         }
 

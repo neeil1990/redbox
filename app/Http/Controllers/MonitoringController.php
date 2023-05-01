@@ -555,8 +555,8 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project['url']);
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $items = array_chunk(array_column($keywords, 'query'), 100);
+        $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $items = array_chunk(array_column($words, 'query'), 100);
 
         $records = [];
         foreach ($items as $keywords) {
