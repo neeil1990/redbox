@@ -127,6 +127,7 @@ class MonitoringCompetitor extends Model
             } catch (\Throwable $e) {
                 Log::debug('req', [
                     'line' => $e->getLine(),
+                    'message' => $e->getMessage(),
                     $record,
                     $url,
                     $competitors,
