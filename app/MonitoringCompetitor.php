@@ -17,27 +17,30 @@ class MonitoringCompetitor extends Model
             ? MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray()
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
 
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->pluck('query')->toArray();
+        $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $words = array_chunk($words, 100);
         $competitors = [];
 
         foreach ($engines as $engine) {
-            $results = DB::table('search_indices')
-                ->where('lr', '=', $engine['lr'])
-                ->whereIn('query', $keywords)
-                ->where('position', '<=', 10)
-                ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 10)
-                ->get(['query', 'url'])
-                ->toArray();
+            foreach ($words as $keywords) {
+                $results = DB::table('search_indices')
+                    ->where('lr', '=', $engine['lr'])
+                    ->whereIn('query', $keywords)
+                    ->where('position', '<=', 10)
+                    ->orderBy('id', 'desc')
+                    ->limit(count($keywords) * 10)
+                    ->get(['query', 'url'])
+                    ->toArray();
 
-            foreach ($results as $result) {
-                $host = parse_url(Common::domainFilter($result->url))['host'];
-                if (isset($request['targetDomain'])) {
-                    if ($host === $request['targetDomain']) {
-                        $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+                foreach ($results as $result) {
+                    $host = parse_url(Common::domainFilter($result->url))['host'];
+                    if (isset($request['targetDomain'])) {
+                        if ($host === $request['targetDomain']) {
+                            $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+                        }
+                    } else {
+                        $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                     }
-                } else {
-                    $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                 }
             }
         }
@@ -124,7 +127,8 @@ class MonitoringCompetitor extends Model
                 if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
                     $visibilityArray[$record['query']][$url] = $record['position'];
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
 

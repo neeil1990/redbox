@@ -396,29 +396,110 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
+    $project = MonitoringProject::findOrFail(177);
+    $engines = MonitoringSearchengine::where('id', '=', 276)->get(['engine', 'lr', 'id'])->toArray();
 
-    $start = microtime(true);
-    $keywords = ['ремонт форсунок сименс', 'ремонт дизельных форсунок сименс', 'форсунки сименс дизель ремонт', 'ремонт форсунок siemens', 'ремонт дизельных форсунок siemens', 'ремонт форсунок common rail siemens', 'ремонт топливных форсунок siemens', 'громко работает дизельный двигатель', 'течет ТНВД', 'форсунка стучит'];
+    $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+    $words = array_chunk($words, 100);
+    $competitors = [];
 
-    DB::connection()->enableQueryLog();
+    foreach ($engines as $engine) {
+        foreach ($words as $keywords) {
+            $results = DB::table('search_indices')
+                ->where('lr', '=', $engine['lr'])
+                ->whereIn('query', $keywords)
+                ->where('position', '<=', 10)
+                ->orderBy('id', 'desc')
+                ->limit(count($keywords) * 10)
+                ->get(['query', 'url'])
+                ->toArray();
 
-    $query = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-        ->whereBetween('created_at', [
-            date('Y-m-d H:i:s', strtotime('2023-04-29 00:00:00')),
-            date('Y-m-d H:i:s', strtotime('2023-04-29 23:59:59')),
-        ])
-        ->where('lr', 193)
-        ->whereIn('query', $keywords)
-        ->where('position', '<=', 100)
-        ->orderBy('id', 'desc')
-        ->limit(count($keywords) * 100)
-        ->select(DB::raw('url, position, created_at, query'));
+            foreach ($results as $result) {
+                $host = parse_url(Common::domainFilter($result->url))['host'];
+                if (isset($request['targetDomain'])) {
+                    if ($host === $request['targetDomain']) {
+                        $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+                    }
+                } else {
+                    $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+                }
+            }
+        }
+    }
 
-    $explain_query = 'EXPLAIN ' . $query->toSql();
-    $bindings = $query->getBindings();
-    $explain = DB::select($explain_query, $bindings);
+    foreach ($engines as $engine) {
+        $results = DB::table('search_indices')
+            ->where('lr', '=', $engine['lr'])
+            ->whereIn('query', $keywords)
+            ->where('position', '<=', 10)
+            ->orderBy('id', 'desc')
+            ->limit(count($keywords) * 10)
+            ->get(['query', 'url'])
+            ->toArray();
 
-    $results = $query->get();
+        foreach ($results as $result) {
+            $host = parse_url(Common::domainFilter($result->url))['host'];
+            if (isset($request['targetDomain'])) {
+                if ($host === $request['targetDomain']) {
+                    $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+                }
+            } else {
+                $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+            }
+        }
+    }
 
-    dd($explain, $results, microtime(true) - $start);
+    foreach ($project->competitors as $competitor) {
+        $url = Common::domainFilter($competitor->url);
+
+        if (array_key_exists($url, $competitors)) {
+            $competitors[$url]['competitor'] = true;
+        }
+    }
+
+    if (array_key_exists($project->url, $competitors)) {
+        $competitors[$project->url]['mainPage'] = true;
+    }
+
+    foreach ($competitors as $key => $urls) {
+        $total = 0;
+        $yandex = [];
+        $google = [];
+        foreach ($urls as $inf => $engines) {
+            if ($inf !== 'urls') {
+                continue;
+            }
+            foreach ($engines as $engine => $words) {
+                foreach ($words as $k1 => $word) {
+                    if ($engine === 'yandex') {
+                        foreach ($word as $info) {
+                            $region = array_key_first($info);
+                            if (isset($yandex[$region])) {
+                                $yandex[$region] += 1;
+                            } else {
+                                $yandex[$region] = 1;
+                            }
+                        }
+                    } else if ($engine === 'google') {
+                        foreach ($word as $info) {
+                            $region = array_key_first($info);
+                            if (isset($google[$region])) {
+                                $google[$region] += 1;
+                            } else {
+                                $google[$region] = 1;
+                            }
+                        }
+                    }
+                    $total += count($word);
+                    $competitors[$key][$inf][$engine][$k1] = $word;
+                }
+            }
+        }
+
+        $competitors[$key]['visibility'] = $total;
+        $competitors[$key]['visibilityYandex'] = $yandex;
+        $competitors[$key]['visibilityGoogle'] = $google;
+    }
+
+    dd($competitors);
 });
