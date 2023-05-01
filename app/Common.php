@@ -183,7 +183,7 @@ class Common
             }
         }
         if ($additional && $count !== 0) {
-            return 100 / count($positions) * $count;
+            return round((100 / count($positions)) * $count, 2);
         }
 
         return $count;
