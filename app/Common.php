@@ -185,7 +185,7 @@ class Common
         }
 
         if ($calculate) {
-            return $count / count($positions);
+            return round($count / count($positions) * 100, 2);
         }
 
         return $count;
