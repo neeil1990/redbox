@@ -560,7 +560,6 @@ class MonitoringController extends Controller
 
         $records = [];
         foreach ($items as $keywords) {
-            $start = microtime(true);
             $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->whereBetween('created_at', [
                     date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
@@ -572,7 +571,6 @@ class MonitoringController extends Controller
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
                 ->select(DB::raw('url, position, created_at, query'))->get();
-            Log::debug('microtime 10 * 100', [microtime(true) - $start]);
 
             if (count($results) === 0) {
                 continue;

@@ -88,12 +88,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="download-results" style="display: none;">
+                        <div id="download-results">
                             <div class="d-flex justify-content-center align-items-center">
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
                             <div>
-                                загрузка результатов
+                                {{ __('loading results') }}
                             </div>
                         </div>
                     </div>
@@ -104,19 +104,19 @@
 
     <div class="d-flex flex-row">
         <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->id) }}">
-            Сравнение с конкурентами
+            {{ __('Comparison with competitors') }}
         </a>
         <div class="btn-group">
             <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
                     data-target="#competitorsModal">
-                Поиск конкурентов
+                {{ __('Search for competitors') }}
             </button>
             <button type="button" class="btn btn-secondary">
                 <span class="__helper-link ui_tooltip_w">
                     <i class="fa fa-question-circle" style="color:white;"></i>
                     <span class="ui_tooltip __right" style="width: 200px;">
                         <span class="ui_tooltip_content">
-                            Мы автоматически определим 5 ваших ближайших конкурентов
+                            {{ __('We will automatically identify 5 of your closest competitors') }}
                         </span>
                     </span>
                 </span>
@@ -129,14 +129,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="competitorsModalLabel">Добавление новых конкурентов</h5>
+                    <h5 class="modal-title" id="competitorsModalLabel">{{ __('Adding new competitors') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div>
-                        <label for="competitors-textarea"><b>Ваши ближайшие конкуренты</b></label>
+                        <label for="competitors-textarea"><b>{{ __('Your closest competitors') }}</b></label>
                         <textarea name="competitors-textarea"
                                   id="competitors-textarea"
                                   class="form form-control"
@@ -146,7 +146,7 @@
                         <button class="btn btn-default mb-3" type="button" data-toggle="collapse"
                                 data-target="#collapseIgnoredDomains" aria-expanded="false"
                                 aria-controls="collapseIgnoredDomains">
-                            Игнорируемые домены
+                            {{ __('Ignored domains') }}
                         </button>
                         <div class="collapse" id="collapseIgnoredDomains">
                         <textarea id="ignored-domains" name="ignored-domains" class="form form-control" cols="8"
@@ -156,7 +156,7 @@
                     </div>
                     <div class="mt-3">
                         <div>
-                            <b>{{ __('Domain') }}: Сколько раз встретился</b>
+                            <b>{{ __('Domain') }}: {{ __('How many times have I met') }}</b>
                         </div>
                         <div id="competitors-list"></div>
 
@@ -171,24 +171,21 @@
         </div>
     </div>
 
-    <h3 class="mt-5">Количество вождений в топ 10 у всех встреченных доменов</h3>
-
-    <div class="d-flex justify-content-center align-items-center align-content-center">
-        <img src="/img/1485.gif" style="width: 50px; height: 50px;" id="preloader">
+    <div id="tableBlock" style="display: none">
+        <h3 class="mt-5">{{ __('Domains ranked in the top 10 (based on your phrases)') }}</h3>
+        <table id="table" class="table table-bordered no-footer">
+            <thead style="top: 0; position: sticky; background-color: white">
+            <tr>
+                <th>{{ __('Competitor') }}?</th>
+                <th>{{ __('Domain') }}</th>
+                <th>{{ __('Search engines') }}</th>
+                <th>{{ __('Visibility by selected regions') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
-
-    <table id="table" class="table table-bordered no-footer" style="display: none">
-        <thead style="top: 0; position: sticky; background-color: white">
-        <tr>
-            <th>Конкурент?</th>
-            <th>Домен</th>
-            <th>Поисковые системы</th>
-            <th>Видимость по выбранным регионам</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
     @slot('js')
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
@@ -274,10 +271,10 @@
                     success: function (response) {
                         renderTableRows(response)
 
-                        $('#preloader').hide()
+                        $('#download-results').hide()
                         setTimeout(() => {
                             $('#table_wrapper').show()
-                            $('#table').show()
+                            $('#tableBlock').show()
                         }, 300)
 
                         refreshMethods()
@@ -306,12 +303,13 @@
                         dataType: "json",
                         url: "{{ route('monitoring.get.competitors') }}",
                         data: data,
-                        success: function (response) {
+                        beforeSend: function () {
                             if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                                 $('#table').dataTable().fnDestroy();
                                 $('#table > tbody').html('')
                             }
-
+                        },
+                        success: function (response) {
                             renderTableRows(response)
                             $('#toast-container').hide()
                             $('#download-results').hide()
@@ -373,7 +371,7 @@
                 $.each(data, function (key, val) {
                     let input = ''
                     if (val.mainPage) {
-                        input = 'Ваш сайт'
+                        input = "{{ __('Your website') }}"
                     } else {
                         if (val.competitor) {
                             input = '<input type="checkbox" data-target="' + key + '" checked>'
