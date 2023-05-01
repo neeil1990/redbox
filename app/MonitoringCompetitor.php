@@ -124,15 +124,7 @@ class MonitoringCompetitor extends Model
                 if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
                     $visibilityArray[$record['query']][$url] = $record['position'];
                 }
-            } catch (\Throwable $e) {
-                Log::debug('req', [
-                    'line' => $e->getLine(),
-                    'message' => $e->getMessage(),
-                    $record,
-                    $url,
-                    $competitors,
-                ]);
-            }
+            } catch (\Throwable $e) {}
         }
 
 
