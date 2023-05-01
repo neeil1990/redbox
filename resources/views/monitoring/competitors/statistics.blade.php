@@ -869,7 +869,6 @@
             }
 
             function renderHistoryPositions(data) {
-                console.log(data)
                 let result
                 if (data && Object.keys(data).length === 0 && Object.getPrototypeOf(data) === Object.prototype) {
                     result = '<b id="history-results">{{ __('There are no results') }}</b>'
@@ -909,7 +908,7 @@
                                 if (firstElement) {
                                     trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
                                 } else {
-                                    trs += '<td>' + data[date][domain][name] + '</td>'
+                                    trs += '<td>' + data[date][domain][name] + ' %</td>'
                                 }
                             })
                         })
