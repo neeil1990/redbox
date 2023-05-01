@@ -184,8 +184,8 @@ class Common
             }
         }
 
-        if ($calculate !== false) {
-            return $count / 100 * $calculate;
+        if ($calculate) {
+            return $count / $positions;
         }
 
         return $count;
