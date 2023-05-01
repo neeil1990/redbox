@@ -6,7 +6,6 @@ use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
-use App\Classes\MyBuilder;
 use App\Common;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
@@ -18,7 +17,6 @@ use App\MonitoringProjectColumnsSetting;
 use App\MonitoringProjectSettings;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
-use App\SearchIndex;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -27,7 +25,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class MonitoringController extends Controller
@@ -552,7 +549,6 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $start = microtime(true);
         $project = MonitoringProject::where('id', $request->projectId)->first(['id', 'url']);
         $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
         array_unshift($competitors, $project['url']);
@@ -561,11 +557,8 @@ class MonitoringController extends Controller
         $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
         $items = array_chunk(array_column($keywords, 'query'), 10);
 
-        $end = microtime(true);
-        Log::debug('start', [$end - $start]);
         $records = [];
         foreach ($items as $keywords) {
-            $start = microtime(true);
             $sql = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->whereBetween('created_at', [
                     date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
@@ -577,16 +570,7 @@ class MonitoringController extends Controller
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
                 ->select(DB::raw('url, position, created_at, query'));
-
-            $native = str_replace_array('?', $sql->getBindings(), $sql->toSql());
-
-            Log::debug('native', [$native]);
-
             $results = $sql->get();
-
-            $end = microtime(true);
-
-            Log::debug('foreach iteration', [$end - $start]);
 
             if (count($results) === 0) {
                 continue;

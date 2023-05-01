@@ -394,3 +394,24 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
+
+Route::get('/test', function () {
+
+    $keywords = ['ремонт форсунок сименс', 'ремонт дизельных форсунок сименс', 'форсунки сименс дизель ремонт', 'ремонт форсунок siemens', 'ремонт дизельных форсунок siemens', 'ремонт форсунок common rail siemens', 'ремонт топливных форсунок siemens', 'громко работает дизельный двигатель', 'течет ТНВД', 'форсунка стучит'];
+
+    $explain = DB::table(DB::raw('explain search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+        ->whereBetween('created_at', [
+            date('Y-m-d H:i:s', strtotime('2023-04-29 00:00:00')),
+            date('Y-m-d H:i:s', strtotime('2023-04-29 23:59:59')),
+        ])
+        ->where(193)
+        ->whereIn('query',$keywords)
+        ->where('position', '<=', 100)
+        ->orderBy('id', 'desc')
+        ->limit(count($keywords) * 100)
+        ->select(DB::raw('url, position, created_at, query'));
+
+    $native = str_replace_array('?', $explain->getBindings(), $explain->toSql());
+
+    dump($explain->get());
+});
