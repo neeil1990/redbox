@@ -193,11 +193,7 @@
 
                     <div id="loader-block" class="text-center">
                         <img src="/img/1485.gif" alt="preloader_gif">
-                        <div>{{ __('Load..') }}</div>
-                        <div class="d-flex justify-content-center align-items-center">
-                            <div id="renderedClusters">0</div> /
-                            <div id="totalClusters">{{ $cluster['count_phrases'] }}</div>
-                        </div>
+                        <div>{{ __('Render data') }}</div>
                     </div>
                 </div>
 

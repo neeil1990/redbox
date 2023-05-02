@@ -215,18 +215,15 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        if (counter >= 50) {
-            $('#renderedClusters').html(iterator)
-            // $('#clusters-table-tbody').append(newRows.join(' '))
+        if (counter >= 25) {
+            $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
             counter = 0
         }
     })
 
     if (counter > 0) {
-        console.log('extra:' + iterator)
-        $('#renderedClusters').html(iterator)
-        // $('#clusters-table-tbody').append(newRows.join(' '))
+        $('#clusters-table-tbody').append(newRows.join(' '))
         newRows = []
     }
 
@@ -432,14 +429,12 @@ function renderAlonePhrases(alone, iterator, colspan) {
         newRows.push(newRow)
 
         if (Object.keys(newRows).length > 100) {
-            $('#renderedClusters').html(iterator)
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
     }
 
     if (Object.keys(newRows).length > 0) {
-        $('#renderedClusters').html(iterator)
         $('#clusters-table-tbody').append(newRows.join(' '))
     }
 }
