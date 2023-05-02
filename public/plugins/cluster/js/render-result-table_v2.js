@@ -215,7 +215,9 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
+        console.log(counter)
         if (counter >= 50) {
+            console.log('classic:' + iterator)
             $('#renderedClusters').html(iterator)
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
@@ -224,7 +226,8 @@ function renderResultTable_v2(data) {
     })
 
     if (counter > 0) {
-        $('#renderedClusters').html(counter)
+        console.log('extra:' + iterator)
+        $('#renderedClusters').html(iterator)
         $('#clusters-table-tbody').append(newRows.join(' '))
         newRows = []
     }
