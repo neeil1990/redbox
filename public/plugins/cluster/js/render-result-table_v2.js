@@ -220,13 +220,15 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        if (newRows.length > 100) {
+        if (newRows.length > 10) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
     })
 
-    $('#clusters-table-tbody').append(newRows.join(' '))
+    if (newRows.length > 0) {
+        $('#clusters-table-tbody').append(newRows.join(' '))
+    }
     renderAlonePhrases(alone, iterator, colspan)
     coloredPhrases()
     copyBased()
