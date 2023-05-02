@@ -1,5 +1,4 @@
 function renderResultTable_v2(data) {
-    console.log(data)
     let alone = {}
     let newRows = []
     let iterator = 0
@@ -218,7 +217,7 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        if (Object.keys(newRows).length > 10) {
+        if (Object.keys(newRows).length > 100) {
             $('#renderedClusters').html(iterator)
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
@@ -432,7 +431,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         newRows.push(newRow)
 
-        if (Object.keys(newRows).length > 10) {
+        if (Object.keys(newRows).length > 100) {
             $('#renderedClusters').html(iterator)
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
