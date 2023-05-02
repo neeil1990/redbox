@@ -14,7 +14,7 @@ class AddColumnSortToTariffSettingValuesTable extends Migration
     public function up()
     {
         Schema::table('tariff_setting_values', function (Blueprint $table) {
-            $table->integer('sort')->default(1)->unsigned()->after('value');
+            $table->integer('sort')->default(500)->unsigned()->after('value');
         });
     }
 
