@@ -215,20 +215,21 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        console.log(counter)
         if (counter >= 50) {
-            console.log('classic:' + iterator)
             $('#renderedClusters').html(iterator)
-            $('#clusters-table-tbody').append(newRows.join(' '))
+            setTimeout(() => {
+                $('#clusters-table-tbody').append(newRows.join(' '))
+            }, 300)
             newRows = []
             counter = 0
         }
     })
 
     if (counter > 0) {
-        console.log('extra:' + iterator)
         $('#renderedClusters').html(iterator)
-        $('#clusters-table-tbody').append(newRows.join(' '))
+        setTimeout(() => {
+            $('#clusters-table-tbody').append(newRows.join(' '))
+        }, 300)
         newRows = []
     }
 
