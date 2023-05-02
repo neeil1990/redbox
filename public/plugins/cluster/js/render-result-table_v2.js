@@ -1,4 +1,5 @@
 function renderResultTable_v2(data) {
+    console.log(data)
     let alone = {}
     let newRows = []
     let iterator = 0
@@ -13,16 +14,15 @@ function renderResultTable_v2(data) {
         }
 
         if (count > 2) {
-            let clusterIterator = 0
-            let newTableRows = ''
-            let newRow = ''
-            let clusterId = (Math.random() + 1).toString(36).substring(7)
+            let clusterId = (Math.random() + 1).toString(36).substring(5)
             let allRelevanceUrls = []
-            let groupHeader = ''
-            let groupName = ''
+            let clusterIterator = 0
+            let addColspan = false
             let relevanceHeader = ''
             let saveUrlButton = ''
-            let addColspan = false
+            let newTableRows = ''
+            let groupHeader = ''
+            let groupName = ''
 
             $.each(result, function (phrase, information) {
                 if (phrase !== 'finallyResult') {
@@ -151,75 +151,85 @@ function renderResultTable_v2(data) {
             })
 
             let groupButton = copyGroupBool ?
-                '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-                '   <i class="fa fa-copy pr-1"></i>группу' +
-                '</p>'
+                '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse"><i class="fa fa-copy pr-1"></i>группу</p>'
                 : ''
 
             if (addColspan) {
                 colspan = 5
             }
 
-            newRow +=
+            let newRow =
                 '<tr class="render">' +
-                '   <td class="p-0">' +
-                '       <table class="table table-hover render-table" id="render-table' + key + '" style="width: 100%">' +
-                '       <thead>' +
-                '           <tr>' +
-                '               <th colspan="' + colspan + '" style="border-bottom: 0; border-top: 0;"></th>' +
-                '               <th class="centered-text border-0" colspan="3">Частотность</th>' +
-                '           </tr>' +
-                '           <tr>' +
-                '               <th style="border-top-width: 2px;min-width: 25px;">#</th>' +
-                '               <th style="border-top-width: 2px;min-width: 30px;">##</th>' +
-                '               <th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
+                '<td class="p-0">' +
+                '<table class="table table-hover render-table" id="render-table' + key + '" style="width: 100%">' +
+                '<thead>' +
+                '<tr>' +
+                '<th colspan="' + colspan + '" style="border-bottom: 0; border-top: 0;"></th>' +
+                '<th class="centered-text border-0" colspan="3">Частотность</th>' +
+                '</tr>' +
+                '<tr>' +
+                '<th style="border-top-width: 2px;min-width: 25px;">#</th>' +
+                '<th style="border-top-width: 2px;min-width: 30px;">##</th>' +
+                '<th style="border-top-width: 2px;min-width: 250px;">Ключевой запрос</th>' +
                 groupHeader +
                 relevanceHeader +
-                '               <th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
-                '               <th style="border-top-width: 2px;min-width: 100px;">"Фразовая"</th>' +
-                '               <th style="border-top-width: 2px;min-width: 100px;">"!Точная"</th>' +
-                '           </tr>' +
-                '       </thead>' +
-                '       <tbody>' + newTableRows + '</tbody>' +
-                '       </table>' +
-                '   </td>' +
-                '   <td>' +
-                '       <div class="row" style="cursor: pointer">' +
-                '            <p class="copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
-                '                <i class="fa fa-copy pr-1"></i>ключевой запрос' +
-                '            </p>'
+                '<th style="border-top-width: 2px;min-width: 70px;">Базовая</th>' +
+                '<th style="border-top-width: 2px;min-width: 100px;">"Фразовая"</th>' +
+                '<th style="border-top-width: 2px;min-width: 100px;">"!Точная"</th>' +
+                '</tr>' +
+                '</thead>' +
+                '<tbody>' + newTableRows + '</tbody>' +
+                '</table>' +
+                '</td>' +
+                '<td>' +
+                '<div class="row" style="cursor: pointer">' +
+                '<p class="copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+                '<i class="fa fa-copy pr-1"></i>ключевой запрос' +
+                '</p>'
                 + groupButton +
-                '       </div>' +
-                '       <div class="row" style="cursor: pointer">' +
-                '              <p class="copy-based col" data-target="' + clusterId + '" data-toggle="collapse">' +
-                '                   <i class="fa fa-copy pr-1"></i>базовую' +
-                '              </p>' +
-                '              <p class="copy-phrase col" data-target="' + clusterId + '" data-toggle="collapse">' +
-                '                   <i class="fa fa-copy pr-1"></i>фразовую' +
-                '              </p>' +
-                '              <p class="copy-target col" data-target="' + clusterId + '" data-toggle="collapse">' +
-                '                   <i class="fa fa-copy pr-1"></i>точную' +
-                '              </p>' +
-                '       </div>' +
-                '        <div class="row" style="cursor: pointer">' +
-                '            <div class="col-6"> ' +
-                '                <a class="btn btn-secondary all-competitors" data-action="' + key + '" data-toggle="collapse"' +
-                '                   href="#competitors-' + key.replaceAll(' ', '-') + '" role="button" aria-expanded="false"' +
-                '                   aria-controls="competitors-' + key.replaceAll(' ', '-') + '">' +
-                '                   Конкуренты' +
-                '               </a>' +
-                '            </div>' +
-                '           <div class="col-6">' + saveUrlButton + '</div>' +
-                '       </div>' +
-                '       <div class="collapse" id="competitors-' + key.replaceAll(' ', '-') + '"> </div>' +
-                '   </td>' +
+                '</div>' +
+                '<div class="row" style="cursor: pointer">' +
+                '<p class="copy-based col" data-target="' + clusterId + '" data-toggle="collapse">' +
+                '<i class="fa fa-copy pr-1"></i>базовую' +
+                '</p>' +
+                '<p class="copy-phrase col" data-target="' + clusterId + '" data-toggle="collapse">' +
+                '<i class="fa fa-copy pr-1"></i>фразовую' +
+                '</p>' +
+                '<p class="copy-target col" data-target="' + clusterId + '" data-toggle="collapse">' +
+                '<i class="fa fa-copy pr-1"></i>точную' +
+                '</p>' +
+                '</div>' +
+                '<div class="row" style="cursor: pointer">' +
+                '<div class="col-6"> ' +
+                '<a class="btn btn-secondary all-competitors" data-action="' + key + '" data-toggle="collapse"' +
+                ' href="#competitors-' + key.replaceAll(' ', '-') + '" role="button" aria-expanded="false"' +
+                ' aria-controls="competitors-' + key.replaceAll(' ', '-') + '">' +
+                ' Конкуренты' +
+                '</a>' +
+                '</div>' +
+                '<div class="col-6">' + saveUrlButton + '</div>' +
+                '</div>' +
+                '<div class="collapse" id="competitors-' + key.replaceAll(' ', '-') + '"> </div>' +
+                '</td>' +
                 '</tr>'
 
-            $('#clusters-table-tbody').append(newRow)
+            newRows.push(newRow)
         } else {
             alone[key] = result
         }
+
+        if (Object.keys(newRows).length > 10) {
+            $('#renderedClusters').html(iterator)
+            $('#clusters-table-tbody').append(newRows.join(' '))
+            newRows = []
+        }
     })
+
+    if (Object.keys(newRows).length > 0) {
+        $('#renderedClusters').html(iterator)
+        $('#clusters-table-tbody').append(newRows.join(' '))
+        newRows = []
+    }
 
     renderAlonePhrases(alone, iterator, colspan)
     coloredPhrases()
@@ -421,8 +431,18 @@ function renderAlonePhrases(alone, iterator, colspan) {
             '</tr>'
 
         newRows.push(newRow)
+
+        if (Object.keys(newRows).length > 10) {
+            $('#renderedClusters').html(iterator)
+            $('#clusters-table-tbody').append(newRows.join(' '))
+            newRows = []
+        }
     }
-    $('#clusters-table-tbody').append(newRows.join(' '))
+
+    if (Object.keys(newRows).length > 0) {
+        $('#renderedClusters').html(iterator)
+        $('#clusters-table-tbody').append(newRows.join(' '))
+    }
 }
 
 function coloredPhrases() {
