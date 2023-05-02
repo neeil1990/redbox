@@ -1,4 +1,5 @@
 function renderResultTable_v2(data) {
+    let counter = 0
     let alone = {}
     let newRows = []
     let iterator = 0
@@ -156,9 +157,8 @@ function renderResultTable_v2(data) {
             if (addColspan) {
                 colspan = 5
             }
-
-            let newRow =
-                '<tr class="render">' +
+            counter++
+            newRows.push('<tr class="render">' +
                 '<td class="p-0">' +
                 '<table class="table table-hover render-table" id="render-table' + key + '" style="width: 100%">' +
                 '<thead>' +
@@ -210,24 +210,21 @@ function renderResultTable_v2(data) {
                 '</div>' +
                 '<div class="collapse" id="competitors-' + key.replaceAll(' ', '-') + '"> </div>' +
                 '</td>' +
-                '</tr>'
-
-            newRows.push(newRow)
+                '</tr>')
         } else {
             alone[key] = result
         }
 
-        if (Object.keys(newRows).length > 100) {
+        if (counter >= 50) {
             $('#renderedClusters').html(iterator)
-            console.log('смена состояния')
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
+            counter = 0
         }
     })
 
-    if (Object.keys(newRows).length > 0) {
-        $('#renderedClusters').html(iterator)
-        console.log('смена состояния')
+    if (counter > 0) {
+        $('#renderedClusters').html(counter)
         $('#clusters-table-tbody').append(newRows.join(' '))
         newRows = []
     }
@@ -435,7 +432,6 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         if (Object.keys(newRows).length > 100) {
             $('#renderedClusters').html(iterator)
-            console.log('смена состояния')
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
@@ -443,7 +439,6 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
     if (Object.keys(newRows).length > 0) {
         $('#renderedClusters').html(iterator)
-        console.log('смена состояния')
         $('#clusters-table-tbody').append(newRows.join(' '))
     }
 }
