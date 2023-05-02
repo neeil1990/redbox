@@ -219,6 +219,7 @@ function renderResultTable_v2(data) {
 
         if (Object.keys(newRows).length > 100) {
             $('#renderedClusters').html(iterator)
+            console.log('смена состояния')
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
@@ -226,6 +227,7 @@ function renderResultTable_v2(data) {
 
     if (Object.keys(newRows).length > 0) {
         $('#renderedClusters').html(iterator)
+        console.log('смена состояния')
         $('#clusters-table-tbody').append(newRows.join(' '))
         newRows = []
     }
@@ -433,6 +435,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         if (Object.keys(newRows).length > 100) {
             $('#renderedClusters').html(iterator)
+            console.log('смена состояния')
             $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
         }
@@ -440,6 +443,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
     if (Object.keys(newRows).length > 0) {
         $('#renderedClusters').html(iterator)
+        console.log('смена состояния')
         $('#clusters-table-tbody').append(newRows.join(' '))
     }
 }
