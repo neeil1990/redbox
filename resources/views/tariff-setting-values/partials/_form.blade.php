@@ -6,6 +6,12 @@
 </div>
 
 <div class="form-group">
+    {!! Form::label('sort', 'Сортировка') !!}
+    {!! Form::number('sort', 1, ['class' => 'form-control', 'min' => 1]) !!}
+    @error('sort') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+</div>
+
+<div class="form-group">
     {!! Form::label('value', 'Основное значение') !!}
     {!! Form::number('value', 0, ['class' => 'form-control', 'min' => 0]) !!}
     @error('value') <span class="error invalid-feedback">{{ $message }}</span> @enderror

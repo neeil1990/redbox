@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
 use App\Classes\Tariffs\FreeTariff;
+use App\TariffSetting;
 use App\TariffSettingValue;
 use Illuminate\Http\Request;
 
@@ -49,7 +50,12 @@ class TariffSettingValuesController extends Controller
             TariffSettingValue::create($request->all());
         }
 
-        return redirect()->route('tariff-settings.index');
+        $params = '#';
+        $setting = TariffSetting::find($id);
+        if($setting)
+            $params .= $setting['code'];
+
+        return redirect('tariff-settings' . $params);
     }
 
     /**

@@ -66,7 +66,7 @@ class TariffSettingUserValuesController extends Controller
     public function show($id)
     {
         $settings = $this->settings->find($id);
-        return view('profile.tariff.partials._fields', ['fields' => $settings->fields]);
+        return view('profile.tariff.partials._fields', ['fields' => $settings->fields->sortBy('sort')]);
     }
 
     /**

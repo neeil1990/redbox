@@ -30,7 +30,7 @@
         </thead>
         <tbody>
         @foreach($settings as $setting)
-            <tr>
+            <tr id="{{$setting->code}}">
                 <td>{{$setting->id}}</td>
                 <td>{{$setting->name}}</td>
                 <td class="copy">
@@ -57,7 +57,7 @@
                                 <i class="fas fa-question-circle"></i>
                             </th>
                         </tr>
-                        @foreach($setting->fields as $field)
+                        @foreach($setting->fields->sortBy('sort') as $field)
                             <tr>
                                 <td>{{$field->tariff}}</td>
                                 <td>{{$field->value}}</td>
