@@ -217,19 +217,16 @@ function renderResultTable_v2(data) {
 
         if (counter >= 50) {
             $('#renderedClusters').html(iterator)
-            setTimeout(() => {
-                $('#clusters-table-tbody').append(newRows.join(' '))
-            }, 300)
+            // $('#clusters-table-tbody').append(newRows.join(' '))
             newRows = []
             counter = 0
         }
     })
 
     if (counter > 0) {
+        console.log('extra:' + iterator)
         $('#renderedClusters').html(iterator)
-        setTimeout(() => {
-            $('#clusters-table-tbody').append(newRows.join(' '))
-        }, 300)
+        // $('#clusters-table-tbody').append(newRows.join(' '))
         newRows = []
     }
 
