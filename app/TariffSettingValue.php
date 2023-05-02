@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TariffSettingValue extends Model
 {
-    protected $fillable = ['tariff_setting_id', 'tariff', 'value'];
+    protected $fillable = ['tariff_setting_id', 'tariff', 'value', 'sort'];
 
     public function property()
     {
