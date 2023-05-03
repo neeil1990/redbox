@@ -43,7 +43,8 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::all()->slice(0, 10);
+
         foreach ($users as $key => $user) {
             $metrics = json_decode($user['metrics'], true);
             if ($metrics !== null) {

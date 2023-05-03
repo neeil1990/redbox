@@ -10,15 +10,22 @@
 
 @section('content')
     <div class="card">
-        <div class="p-3 border-bottom d-flex justify-content-between w-100 align-items-center">
+        <div class="card-header">
             <h3 class="card-title">{{ __('Users') }}</h3>
-            <div>
-                <a href="{{ route('get.verified.users', 'xls') }}" class="btn btn-secondary">Excel</a>
-                <a href="{{ route('get.verified.users', 'csv') }}" class="btn btn-secondary">CSV</a>
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exportModal">
-                    Фильтр выгрузки
-                </button>
-                <a href="{{ route('users.statistics') }}" class="btn btn-secondary">{{ __('General statistics of visits') }}</a>
+
+            <div class="card-tools">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown" data-offset="-200">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="dropdown-menu" role="menu">
+                        <a href="{{ route('get.verified.users', 'xls') }}" class="dropdown-item">Excel</a>
+                        <a href="{{ route('get.verified.users', 'csv') }}" class="dropdown-item">CSV</a>
+                        <a type="button" class="dropdown-item" data-toggle="modal" data-target="#exportModal">Фильтр выгрузки</a>
+                        <a type="button" class="dropdown-item" data-toggle="modal" data-target="#assignTariffModal">{{ __('Assign tariff')  }}</a>
+                        <a href="{{ route('users.statistics') }}" class="dropdown-item">{{ __('General statistics of visits') }}</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -90,6 +97,10 @@
                                 <i class="fas fa-chart-pie"></i>
                             </a>
 
+                            <a class="btn btn-info btn-sm" href="#" title="{{ __('Assign tariff') }}">
+                                <i class="fas fa-tarp"></i>
+                            </a>
+
                             @if(isset($user->metrics))
                                 <a class="btn btn-info btn-sm"
                                    title="{{ __('utm metrics') }}"
@@ -129,43 +140,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exportModalLabel">{{ __('User Upload Filter') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form method="POST" action="{{ route('filter.exports.users') }}" class="modal-body">
-                    @csrf
-                    <div class="group group-required">
-                        <label for="countDays">{{ __('The day of the last online') }}</label>
-                        <input class="form form-control" type="datetime-local" name="lastOnline" required>
-                    </div>
-
-                    <div class="group group-required mt-3">
-                        <label for="verify">{{ __('File Type') }}</label>
-                        <select name="fileType" id="fileType" class="custom custom-select">
-                            <option value="xls">excel</option>
-                            <option value="csv">csv</option>
-                        </select>
-                    </div>
-
-                    <div class="group group-required mt-3">
-                        <label for="verify">{{ __('Verified user') }}</label>
-                        <input type="checkbox" name="verify" checked>
-                    </div>
-
-                    <div class="pt-3 d-flex justify-content-end">
-                        <button type="button" class="btn btn-default mr-1" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button type="submit" class="btn btn-secondary">{{ __('Export') }}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('users.modal.index', ['id' => 'exportModal', 'action' => route('filter.exports.users'), 'title' => __('User Upload Filter')])
+    @include('users.modal.index', ['id' => 'assignTariffModal', 'action' => '', 'title' => __('Assign tariff')])
 @stop
 
 @section('js')
