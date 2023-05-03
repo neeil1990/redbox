@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -21,6 +22,7 @@ class MonitoringCompetitor extends Model
         $competitors = [];
 
         foreach ($engines as $engine) {
+            $start = microtime(true);
             foreach ($words as $keywords) {
                 $results = DB::table('search_indices')
                     ->where('lr', '=', $engine['lr'])
@@ -42,6 +44,7 @@ class MonitoringCompetitor extends Model
                     }
                 }
             }
+            Log::debug(microtime(true) - $start);
         }
 
         foreach ($project->competitors as $competitor) {
