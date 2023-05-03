@@ -45,6 +45,16 @@ class ClusterResults extends Model
                          <button class="btn btn-secondary edit-group-name">' . __('Change') . '</button>
                     </div>
                     <div class="d-flex justify-content-between">
+                       <span class="__helper-link ui_tooltip_w">
+                           <i class="fa fa-filter mr-2" style="color: white"
+                              data-action="desc"></i>
+                           <span class="ui_tooltip __bottom">
+                               <span class="ui_tooltip_content">
+                                   ' . __("Sort") . '
+                               </span>
+                           </span>
+                       </span>
+
                         <span class="__helper-link ui_tooltip_w">
                             <i data-action="hide" class="fa fa-eye mr-2" style="color: white;"></i>
                             <span class="ui_tooltip __bottom">

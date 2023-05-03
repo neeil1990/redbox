@@ -324,7 +324,6 @@
         </div>
     </div>
 
-
     <form action="{{ route('download.cluster.group') }}" method="POST" style="display: none">
         @csrf
         <input type="text" name="type" id="fileType">
@@ -442,15 +441,24 @@
                                                 </button>
                                             </div>
                                             <div class="d-flex justify-content-between">
-                                            <span class="__helper-link ui_tooltip_w">
-                                                <i class="fa fa-eye mr-2" style="color: white" data-action="hide">
-                                                </i>
-                                                <span class="ui_tooltip __bottom">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('Hide a group') }}
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-filter mr-2" style="color: white"
+                                                       data-action="desc"></i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            {{ __('Sort') }}
+                                                        </span>
                                                     </span>
                                                 </span>
-                                            </span>
+                                                <span class="__helper-link ui_tooltip_w">
+                                                    <i class="fa fa-eye mr-2" style="color: white" data-action="hide">
+                                                    </i>
+                                                    <span class="ui_tooltip __bottom">
+                                                        <span class="ui_tooltip_content">
+                                                            {{ __('Hide a group') }}
+                                                        </span>
+                                                    </span>
+                                                </span>
                                                 <span class="__helper-link ui_tooltip_w">
                                                 <i class="fa fa-edit change-group-name mr-2"
                                                    style="color: white; padding-top: 5px"></i>
@@ -1034,7 +1042,6 @@
                     saveClusters("{{ __('Successfully') }}")
                 },
                 onMouseDown: function ($item, _super, event) {
-                    console.log(322)
                 }
             })
 
@@ -1375,6 +1382,12 @@
 
                 return result;
             }
+
+            jQuery.fn.outerHTML = function (s) {
+                return s
+                    ? this.before(s).remove()
+                    : jQuery("<p>").append(this.eq(0).clone()).html();
+            };
 
             function refreshMethods() {
                 $('.move-phrase').unbind().on('click', function () {
@@ -1722,6 +1735,48 @@
                     if ($('#selected-phrases-block').is(':visible') === false) {
                         $('#selected-phrases-i').trigger('click')
                     }
+                })
+
+                $('i.fa-filter').unbind('click').on('click', function () {
+                    let elem = $(this)
+                    let parent = elem.parents().eq(4)
+                    let elems = parent.children('ol').eq(0).children('div')
+                    let object = []
+
+                    $.each(elems, function (k, elem) {
+                        let parentSpan = $(this).children('div').eq(0).children('div').eq(2)
+                        let sum = Number(parentSpan.children('span').eq(0).children('span').eq(0).html())
+                            + Number(parentSpan.children('span').eq(0).children('span').eq(1).html())
+                            + Number(parentSpan.children('span').eq(0).children('span').eq(2).html())
+                        object[k] = {
+                            html: $(this).outerHTML(),
+                            sum: sum
+                        }
+                    })
+
+                    object.sort((x, y) => x.sum - y.sum);
+
+                    if (elem.attr('data-action') === 'desc') {
+                        elem.attr('data-action', 'asc')
+                        object = object.reverse()
+                    } else {
+                        elem.attr('data-action', 'desc')
+                    }
+
+                    let newHtml = ''
+                    $.each(object, function (k, v) {
+                        newHtml += v.html
+                    })
+
+                    if (parent.children('ol').eq(0).children('li').length > 0) {
+                        parent.children('ol').eq(0).children('div').remove()
+                        parent.children('ol').eq(0).children('li').eq(0).before(newHtml)
+
+                    } else {
+                        parent.children('ol').eq(0).html(newHtml)
+                    }
+
+                    saveClusters("{{ __('Successfully') }}")
                 })
             }
 
