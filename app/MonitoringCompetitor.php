@@ -26,8 +26,8 @@ class MonitoringCompetitor extends Model
         $competitors = [];
 
         foreach ($engines as $engine) {
-            $start = microtime(true);
             foreach ($words as $keywords) {
+                $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . ' 00:00:00')
                     ->where('lr', $engine['lr'])
@@ -48,8 +48,8 @@ class MonitoringCompetitor extends Model
                         $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                     }
                 }
+                Log::debug(microtime(true) - $start);
             }
-            Log::debug(microtime(true) - $start);
         }
 
         foreach ($project->competitors as $competitor) {
