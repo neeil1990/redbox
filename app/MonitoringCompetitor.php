@@ -23,7 +23,7 @@ class MonitoringCompetitor extends Model
             ->select(DB::raw('created_at, id'))
             ->whereIn('lr', array_column($engines, 'lr'))
             ->where('query', $words[0])
-            ->where('created_at', '>=', Carbon::now()->subDays(30)->toDateString() . ' 00:00:00')
+            ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . ' 00:00:00')
             ->orderBy('id', 'desc')
             ->first();
 
@@ -35,7 +35,6 @@ class MonitoringCompetitor extends Model
 
             foreach ($engines as $engine) {
                 foreach ($words as $keywords) {
-                    $start = microtime(true);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
                         ->where('position', '<=', 10)
@@ -44,7 +43,6 @@ class MonitoringCompetitor extends Model
                         ->limit(count($keywords) * 10)
                         ->get(['query', 'url'])
                         ->toArray();
-                    Log::debug('microtime', [microtime(true) - $start]);
 
                     foreach ($results as $result) {
                         $host = parse_url(Common::domainFilter($result->url))['host'];
