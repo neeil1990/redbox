@@ -29,7 +29,7 @@ class MonitoringCompetitor extends Model
             $start = microtime(true);
             foreach ($words as $keywords) {
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                    ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . '00:00:00')
+                    ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . ' 00:00:00')
                     ->where('lr', $engine['lr'])
                     ->whereIn('query', $keywords)
                     ->where('position', '<=', 10)
