@@ -35,6 +35,7 @@ class MonitoringCompetitor extends Model
 
             foreach ($engines as $engine) {
                 foreach ($words as $keywords) {
+                    $start = microtime(true);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
                         ->where('position', '<=', 10)
@@ -43,6 +44,7 @@ class MonitoringCompetitor extends Model
                         ->limit(count($keywords) * 10)
                         ->get(['query', 'url'])
                         ->toArray();
+                    Log::debug(microtime(true) - $start);
 
                     foreach ($results as $result) {
                         $host = parse_url(Common::domainFilter($result->url))['host'];
