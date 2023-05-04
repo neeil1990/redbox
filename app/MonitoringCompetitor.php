@@ -129,12 +129,9 @@ class MonitoringCompetitor extends Model
             ->toArray();
 
         foreach ($records as $record) {
-            try {
-                $url = Common::domainFilter(parse_url($record['url'])['host']);
-                if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
-                    $visibilityArray[$record['query']][$url] = $record['position'];
-                }
-            } catch (Throwable $e) {
+            $url = Common::domainFilter(parse_url($record['url'])['host']);
+            if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
+                $visibilityArray[$record['query']][$url] = $record['position'];
             }
         }
 
