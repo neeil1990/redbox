@@ -6,6 +6,7 @@ namespace App\Classes\Tariffs;
 
 use App\Classes\Tariffs\Interfaces\Period;
 use App\Classes\Tariffs\Interfaces\Settings;
+use App\User;
 
 abstract class Tariff
 {
@@ -72,11 +73,23 @@ abstract class Tariff
         return $this->period;
     }
 
+    public function assignRoleByUser(User $user)
+    {
+        $roles = $user->getRoleNames();
+
+        foreach ($roles as $role)
+            $user->removeRole($role);
+
+        $user->assignRole($this->code());
+    }
+
     public function assignRole()
     {
         $user = auth()->user();
+        $roles = $user->getRoleNames();
 
-        $user->removeRole('Free');
+        foreach ($roles as $role)
+            $user->removeRole($role);
 
         $user->assignRole($this->code());
     }

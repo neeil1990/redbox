@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Tariffs\Facades\Tariffs;
+use App\Classes\Tariffs\Period\OneDayTariff;
+use App\Classes\Tariffs\Period\PeriodTariff;
+use App\Classes\Tariffs\Tariff;
 use App\Common;
 use App\Exports\FilteredUsersExport;
 use App\Exports\VerifiedUsersExport;
@@ -33,9 +37,14 @@ use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
+    protected $tariff;
+
     public function __construct()
     {
         $this->middleware(['permission:Users']);
+
+        $this->tariff = new Tariffs();
+        $this->tariff->setPeriods(new OneDayTariff());
     }
 
     /**
@@ -52,7 +61,55 @@ class UsersController extends Controller
             }
         }
 
-        return view('users.index', compact('users'));
+        $tariffSelect = $this->tariffSelectData();
+
+        return view('users.index', compact('users', 'tariffSelect'));
+    }
+
+    public function storeTariff(Request $request)
+    {
+        foreach ($request['users'] as $user){
+            $user = User::find($user);
+            $this->assignTariffByUser($user, $request['tariff'], $request['period']);
+        }
+
+        return redirect()->back();
+    }
+
+    private function assignTariffByUser(User $user, string $tariffCode, string $periodCode): void
+    {
+        $tariff = $this->tariff->getTariffByCode($tariffCode);
+        $tariff->setPeriod($this->tariff->getPeriodByCode($periodCode));
+
+        $user->pay()->update(['status' => false]);
+
+        $user->pay()->create([
+            'status' => true,
+            'class_tariff' => get_class($tariff),
+            'class_period' => get_class($tariff->getPeriod()),
+            'sum' => 0,
+            'active_to' => Carbon::now()->addDays($tariff->getPeriod()->days())
+        ]);
+
+        $tariff->assignRoleByUser($user);
+    }
+
+    private function tariffSelectData(): array
+    {
+        $select = [
+            'tariff' => [],
+            'period' => [],
+        ];
+
+        /* @var Tariff $tariff*/
+        foreach ($this->tariff->getTariffs() as $tariff)
+            $select['tariff'][$tariff->code()] = $tariff->name();
+
+        /* @var PeriodTariff $period*/
+        foreach ($this->tariff->getPeriods() as $period)
+            $select['period'][$period->code()] = $period->name();
+
+        return $select;
     }
 
     /**

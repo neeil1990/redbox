@@ -6,6 +6,9 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
     <!-- Toastr -->
     <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.css') }}">
 @endsection
 
 @section('content')
@@ -61,8 +64,8 @@
                             @endif
                         </td>
                         <td>
-                            <span class="badge badge-warning">{{ $user->tariff()->name() }}</span><br>
                             @if($pay = $user->pay->where('status', true)->first())
+                                <span class="badge badge-warning">{{ $user->tariff()->name() }}</span><br>
                                 @if($pay)
                                     <small>Активность до:</small><br>
                                     <small>{{ $pay->active_to->format('d.m.Y H:i') }}</small><br>
@@ -95,10 +98,6 @@
                             </a>
                             <a class="btn btn-info btn-sm" href="{{ route('visit.statistics', $user->id) }}" target="_blank" title="Статистика посещений">
                                 <i class="fas fa-chart-pie"></i>
-                            </a>
-
-                            <a class="btn btn-info btn-sm" href="#" title="{{ __('Assign tariff') }}">
-                                <i class="fas fa-tarp"></i>
                             </a>
 
                             @if(isset($user->metrics))
@@ -141,12 +140,14 @@
     </div>
 
     @include('users.modal.index', ['id' => 'exportModal', 'action' => route('filter.exports.users'), 'title' => __('User Upload Filter')])
-    @include('users.modal.index', ['id' => 'assignTariffModal', 'action' => '', 'title' => __('Assign tariff')])
+    @include('users.modal.index', ['id' => 'assignTariffModal', 'action' => route('users.tariff'), 'title' => __('Assign tariff')])
 @stop
 
 @section('js')
     <!-- Toastr -->
     <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ asset('plugins/select2/js/select2.js') }}"></script>
     <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script>
         $(document).ready(function () {
@@ -199,6 +200,10 @@
                 'margin-right': '15px',
                 'margin-top': '15px',
                 'margin-bottom': '15px',
+            });
+
+            $("#select-users").select2({
+                theme: 'bootstrap4',
             });
         });
 
