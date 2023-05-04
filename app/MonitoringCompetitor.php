@@ -2,8 +2,10 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -15,88 +17,102 @@ class MonitoringCompetitor extends Model
         $engines = isset($request['region'])
             ? MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray()
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
-
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $words = array_chunk($words, 100);
-        $competitors = [];
 
-        foreach ($engines as $engine) {
-            foreach ($words as $keywords) {
-                $results = DB::table('search_indices')
-                    ->where('lr', '=', $engine['lr'])
-                    ->whereIn('query', $keywords)
-                    ->where('position', '<=', 10)
-                    ->orderBy('id', 'desc')
-                    ->limit(count($keywords) * 10)
-                    ->get(['query', 'url'])
-                    ->toArray();
+        $start = microtime(true);
+        $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+            ->select(DB::raw('created_at, DATE(created_at) as lastDate'))
+            ->whereIn('query', $words)
+            ->whereIn('lr', array_column($engines, 'lr'))
+            ->orderBy('id', 'desc')
+            ->first();
 
-                foreach ($results as $result) {
-                    $host = parse_url(Common::domainFilter($result->url))['host'];
-                    if (isset($request['targetDomain'])) {
-                        if ($host === $request['targetDomain']) {
-                            $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
-                        }
-                    } else {
-                        $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
-                    }
-                }
-            }
-        }
+        Log::debug('lastDate', [$latest->lastDate]);
+        Log::debug(microtime(true) - $start, [Carbon::parse($latest->lastDate)->diff(Carbon::now())->days]);
+        if (Carbon::parse($latest->lastDate)->diff(Carbon::now())->days >= 30) {
+            return json_encode([]);
+        } else {
+            $words = array_chunk($words, 100);
+            $competitors = [];
 
-        foreach ($project->competitors as $competitor) {
-            $url = Common::domainFilter($competitor->url);
+            foreach ($engines as $engine) {
+                foreach ($words as $keywords) {
+                    $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                        ->where('lr', $engine['lr'])
+                        ->where('position', '<=', 10)
+                        ->whereIn('query', $keywords)
+                        ->orderBy('id', 'desc')
+                        ->limit(count($keywords) * 10)
+                        ->get(['query', 'url'])
+                        ->toArray();
 
-            if (array_key_exists($url, $competitors)) {
-                $competitors[$url]['competitor'] = true;
-            }
-        }
-
-        if (array_key_exists($project->url, $competitors)) {
-            $competitors[$project->url]['mainPage'] = true;
-        }
-
-        foreach ($competitors as $key => $urls) {
-            $total = 0;
-            $yandex = [];
-            $google = [];
-            foreach ($urls as $inf => $engines) {
-                if ($inf !== 'urls') {
-                    continue;
-                }
-                foreach ($engines as $engine => $words) {
-                    foreach ($words as $k1 => $word) {
-                        if ($engine === 'yandex') {
-                            foreach ($word as $info) {
-                                $region = array_key_first($info);
-                                if (isset($yandex[$region])) {
-                                    $yandex[$region] += 1;
-                                } else {
-                                    $yandex[$region] = 1;
-                                }
+                    foreach ($results as $result) {
+                        $host = parse_url(Common::domainFilter($result->url))['host'];
+                        if (isset($request['targetDomain'])) {
+                            if ($host === $request['targetDomain']) {
+                                $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                             }
-                        } else if ($engine === 'google') {
-                            foreach ($word as $info) {
-                                $region = array_key_first($info);
-                                if (isset($google[$region])) {
-                                    $google[$region] += 1;
-                                } else {
-                                    $google[$region] = 1;
-                                }
-                            }
+                        } else {
+                            $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                         }
-                        $total += count($word);
-                        $competitors[$key][$inf][$engine][$k1] = $word;
                     }
                 }
             }
 
-            $competitors[$key]['visibility'] = $total;
-            $competitors[$key]['visibilityYandex'] = $yandex;
-            $competitors[$key]['visibilityGoogle'] = $google;
-        }
+            foreach ($project->competitors as $competitor) {
+                $url = Common::domainFilter($competitor->url);
 
-        return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
+                if (array_key_exists($url, $competitors)) {
+                    $competitors[$url]['competitor'] = true;
+                }
+            }
+
+            if (array_key_exists($project->url, $competitors)) {
+                $competitors[$project->url]['mainPage'] = true;
+            }
+
+            foreach ($competitors as $key => $urls) {
+                $total = 0;
+                $yandex = [];
+                $google = [];
+                foreach ($urls as $inf => $engines) {
+                    if ($inf !== 'urls') {
+                        continue;
+                    }
+                    foreach ($engines as $engine => $words) {
+                        foreach ($words as $k1 => $word) {
+                            if ($engine === 'yandex') {
+                                foreach ($word as $info) {
+                                    $region = array_key_first($info);
+                                    if (isset($yandex[$region])) {
+                                        $yandex[$region] += 1;
+                                    } else {
+                                        $yandex[$region] = 1;
+                                    }
+                                }
+                            } else if ($engine === 'google') {
+                                foreach ($word as $info) {
+                                    $region = array_key_first($info);
+                                    if (isset($google[$region])) {
+                                        $google[$region] += 1;
+                                    } else {
+                                        $google[$region] = 1;
+                                    }
+                                }
+                            }
+                            $total += count($word);
+                            $competitors[$key][$inf][$engine][$k1] = $word;
+                        }
+                    }
+                }
+
+                $competitors[$key]['visibility'] = $total;
+                $competitors[$key]['visibilityYandex'] = $yandex;
+                $competitors[$key]['visibilityGoogle'] = $google;
+            }
+
+            return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
+        }
     }
 
     public static function calculateStatistics(array $request): array
@@ -126,10 +142,8 @@ class MonitoringCompetitor extends Model
                 if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
                     $visibilityArray[$record['query']][$url] = $record['position'];
                 }
-            } catch (\Throwable $e) {
-            }
+            } catch (\Throwable $e) {}
         }
-
 
         $competitorStatistics = [];
         foreach ($visibilityArray as $query => $positions) {
