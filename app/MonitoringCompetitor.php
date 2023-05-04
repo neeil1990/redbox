@@ -19,6 +19,7 @@ class MonitoringCompetitor extends Model
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
 
+        $start = microtime(true);
         $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
             ->select(DB::raw('created_at, DATE(created_at) as lastDate'))
             ->whereIn('query', $words)
@@ -27,7 +28,7 @@ class MonitoringCompetitor extends Model
             ->first();
 
         Log::debug('lastDate', [$latest->lastDate]);
-        Log::debug('difference', [Carbon::parse($latest->lastDate)->diff(Carbon::now())->days]);
+        Log::debug(microtime(true) - $start, [Carbon::parse($latest->lastDate)->diff(Carbon::now())->days]);
         if (Carbon::parse($latest->lastDate)->diff(Carbon::now())->days >= 30) {
             return json_encode([]);
         } else {
