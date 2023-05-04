@@ -441,7 +441,6 @@
                         }
                         $('#history-results').remove()
 
-                        console.log(results)
                         renderHistoryPositions(results)
                         $('#story-preloader').hide(300)
                     });

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -22,14 +23,21 @@ class MonitoringCompetitor extends Model
 
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
-                $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                $start = microtime(true);
+                $sql = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
                     ->where('position', '<=', 10)
                     ->whereIn('query', $keywords)
                     ->orderBy('id', 'desc')
-                    ->limit(count($keywords) * 10)
-                    ->get(['query', 'url'])
-                    ->toArray();
+                    ->limit(count($keywords) * 10);
+
+                $results = $sql->get(['query', 'url'])->toArray();
+                Log::debug('request to bd', [microtime(true) - $start]);
+
+
+                $replacedSql = str_replace('?', '%s', $sql->toSql());
+                $values = $sql->getBindings();
+                Log::debug('sql', [vsprintf($replacedSql, $values)]);
 
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
