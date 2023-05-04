@@ -20,14 +20,15 @@ class MonitoringCompetitor extends Model
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
 
         $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-            ->select(DB::raw('*, DATE(created_at) as dateOnly'))
+            ->select(DB::raw('created_at, DATE(created_at) as lastDate'))
             ->whereIn('query', $words)
             ->whereIn('lr', array_column($engines, 'lr'))
             ->orderBy('id', 'desc')
             ->first();
 
-        Log::debug('latest', [$latest]);
-        if (Carbon::parse($latest->created_at)->diff(Carbon::now())->days >= 30) {
+        Log::debug('lastDate', [$latest->lastDate]);
+        Log::debug('difference', [Carbon::parse($latest->lastDate)->diff(Carbon::now())->days]);
+        if (Carbon::parse($latest->lastDate)->diff(Carbon::now())->days >= 30) {
             return json_encode([]);
         } else {
             $words = array_chunk($words, 100);
