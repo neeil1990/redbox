@@ -26,6 +26,7 @@ class MonitoringCompetitor extends Model
             ->orderBy('id', 'desc')
             ->first();
 
+        Log::debug('latest', [$latest]);
         if (Carbon::parse($latest->created_at)->diff(Carbon::now())->days >= 30) {
             return json_encode([]);
         } else {
@@ -34,14 +35,14 @@ class MonitoringCompetitor extends Model
 
             foreach ($engines as $engine) {
                 foreach ($words as $keywords) {
-                    $sql = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                    $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
                         ->where('position', '<=', 10)
                         ->whereIn('query', $keywords)
                         ->orderBy('id', 'desc')
-                        ->limit(count($keywords) * 10);
-
-                    $results = $sql->get(['query', 'url'])->toArray();
+                        ->limit(count($keywords) * 10)
+                        ->get(['query', 'url'])
+                        ->toArray();
 
                     foreach ($results as $result) {
                         $host = parse_url(Common::domainFilter($result->url))['host'];
