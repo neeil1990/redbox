@@ -34,10 +34,9 @@ class MonitoringCompetitor extends Model
                 $results = $sql->get(['query', 'url'])->toArray();
                 Log::debug('request to bd', [microtime(true) - $start]);
 
-
                 $replacedSql = str_replace('?', '%s', $sql->toSql());
                 $values = $sql->getBindings();
-                Log::debug('sql', [vsprintf($replacedSql, $values)]);
+                Log::debug(count($results), [vsprintf($replacedSql, $values)]);
 
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
