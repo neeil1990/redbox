@@ -570,7 +570,8 @@ class MonitoringController extends Controller
                 ->where('position', '<=', 100)
                 ->orderBy('id', 'desc')
                 ->limit(count($keywords) * 100)
-                ->select(DB::raw('url, position, created_at, query'))->get();
+                ->select(DB::raw('url, position, created_at, query'))
+                ->get();
 
             if (count($results) === 0) {
                 continue;
