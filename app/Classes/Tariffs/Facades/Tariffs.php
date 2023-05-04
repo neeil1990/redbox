@@ -11,6 +11,7 @@ use App\Classes\Tariffs\OptimalTariff;
 use App\Classes\Tariffs\Period\FiveDaysTariff;
 use App\Classes\Tariffs\Period\OneDayTariff;
 use App\Classes\Tariffs\Period\OneMonthsTariff;
+use App\Classes\Tariffs\Period\PeriodTariff;
 use App\Classes\Tariffs\Period\SixMonthsTariff;
 use App\Classes\Tariffs\Period\ThreeMonthsTariff;
 use App\Classes\Tariffs\Period\TwelveMonthsTariff;
@@ -51,7 +52,7 @@ class Tariffs
      * @param Tariff $tariffs
      * @return void
      */
-    private function setTariffs(Tariff $tariffs): void
+    public function setTariffs(Tariff $tariffs): void
     {
         $this->tariffs[] = $tariffs;
     }
@@ -67,7 +68,7 @@ class Tariffs
     /**
      * @param array $periods
      */
-    private function setPeriods(Period $periods): void
+    public function setPeriods(Period $periods): void
     {
         $this->periods[] = $periods;
     }
@@ -89,6 +90,28 @@ class Tariffs
             $free = new FreeTariff();
             $free->setUser($user);
             return $free;
+        }
+
+        return null;
+    }
+
+    public function getTariffByCode(string $code): ?Tariff
+    {
+        /** @var Tariff $tariff */
+        foreach ($this->getTariffs() as $tariff){
+            if($tariff->code() === $code)
+                return $tariff;
+        }
+
+        return null;
+    }
+
+    public function getPeriodByCode(string $code): ?PeriodTariff
+    {
+        /** @var PeriodTariff $period */
+        foreach ($this->getPeriods() as $period){
+            if($period->code() === $code)
+                return $period;
         }
 
         return null;

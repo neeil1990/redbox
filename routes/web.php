@@ -62,6 +62,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/get-data-range-visit-statistics/{user}', 'UsersController@getDateRangeVisitStatistics')->name('visit.statistics.date.range');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::get('/visits-statistics/', 'UsersController@userVisitStatistics')->name('users.statistics');
+    Route::post('users/tariff', 'UsersController@storeTariff')->name('users.tariff');
     Route::resource('users', 'UsersController');
 
     Route::post('/manage-access/assignPermission', 'ManageAccessController@assignPermission');
