@@ -271,6 +271,7 @@
                     beforeSend: function (){
                         $('#render-state').html("{{ __('loading results') }}")
                         $('#searchCompetitors').prop('disabled', true)
+                        $('#tableBlock').hide()
                     },
                     success: function (response) {
                         renderTableRows(response)
@@ -306,6 +307,7 @@
                             }
                             $('#render-state').html("{{ __('loading results') }}")
                             $('#searchCompetitors').prop('disabled', true)
+                            $('#tableBlock').hide()
                         },
                         success: function (response) {
                             renderTableRows(response)

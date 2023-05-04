@@ -20,7 +20,9 @@ class MonitoringCompetitor extends Model
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
 
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $words = array_chunk($words, 100);
+        Log::debug('words', [count($words)]);
+        $words = array_chunk($words, 1);
+        Log::debug('words', [count($words)]);
         $competitors = [];
 
         foreach ($engines as $engine) {
