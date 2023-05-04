@@ -433,7 +433,7 @@
                             "next": "»",
                             "previous": "«"
                         },
-                        "emptyTable": "{{ __('More than 30 days have passed since the last withdrawal, use the history of changes by dates on the "Comparison with competitors" page') }}"
+                        "emptyTable": "{{ __('More than 30 days have passed since the last withdrawal') }}"
                     },
                     columnDefs: [
                         {
