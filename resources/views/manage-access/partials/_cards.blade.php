@@ -1,4 +1,4 @@
-<div class="card" id="{{ $id }}">
+<div class="card sticky-top" id="{{ $id }}">
     <div class="card-header">
         <h3 class="card-title">
             <i class="ion ion-clipboard mr-1"></i>
