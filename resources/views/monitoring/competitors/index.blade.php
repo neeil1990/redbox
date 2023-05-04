@@ -92,7 +92,7 @@
                             <div class="d-flex justify-content-center align-items-center">
                                 <img src="/img/1485.gif" style="width: 40px; height: 40px;">
                             </div>
-                            <div>
+                            <div id="render-state">
                                 {{ __('loading results') }}
                             </div>
                         </div>
@@ -108,7 +108,7 @@
         </a>
         <div class="btn-group">
             <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
-                    data-target="#competitorsModal">
+                    data-target="#competitorsModal" disabled>
                 {{ __('Search for competitors') }}
             </button>
             <button type="button" class="btn btn-secondary">
@@ -268,16 +268,12 @@
                     dataType: "json",
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
+                    beforeSend: function (){
+                        $('#render-state').html("{{ __('loading results') }}")
+                        $('#searchCompetitors').prop('disabled', true)
+                    },
                     success: function (response) {
                         renderTableRows(response)
-
-                        $('#download-results').hide()
-                        setTimeout(() => {
-                            $('#table_wrapper').show()
-                            $('#tableBlock').show()
-                        }, 300)
-
-                        refreshMethods()
                     },
                 });
 
@@ -308,16 +304,11 @@
                                 $('#table').dataTable().fnDestroy();
                                 $('#table > tbody').html('')
                             }
+                            $('#render-state').html("{{ __('loading results') }}")
+                            $('#searchCompetitors').prop('disabled', true)
                         },
                         success: function (response) {
                             renderTableRows(response)
-                            $('#toast-container').hide()
-                            $('#download-results').hide()
-                            $('#toast-container').show(300)
-
-                            setTimeout(() => {
-                                $('#toast-container').hide(300)
-                            }, 3000)
                         },
                     });
                 })
@@ -367,6 +358,8 @@
             })
 
             function renderTableRows(data) {
+                $('#render-state').html("{{ __('Render data') }}")
+
                 let tableRows = []
                 $.each(data, function (key, val) {
                     let input = ''
@@ -446,7 +439,13 @@
                     ],
                 })
 
-                refreshMethods()
+                setTimeout(() => {
+                    $('#download-results').hide()
+                    $('#table_wrapper').show()
+                    $('#tableBlock').show()
+                    $('#searchCompetitors').prop('disabled', false)
+                    refreshMethods()
+                }, 300)
             }
 
             function refreshMethods() {
