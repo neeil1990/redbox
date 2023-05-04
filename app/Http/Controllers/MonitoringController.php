@@ -556,7 +556,8 @@ class MonitoringController extends Controller
         $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
 
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $items = array_chunk(array_column($words, 'query'), 10);
+        $words = array_column($words, 'query');
+        $items = array_chunk($words, 10);
 
         $records = [];
         foreach ($items as $keywords) {
@@ -578,49 +579,49 @@ class MonitoringController extends Controller
             }
 
             foreach ($results as $result) {
-                $records[$request->date][$result->query][$lr][] = $result;
+                $records[$result->query][$lr][] = $result;
             }
         }
 
         $response = [];
-        foreach ($records as $date => $queries) {
-            foreach ($queries as $lrs) {
-                foreach ($lrs as $positions) {
-                    if (count($positions) === 0) {
-                        continue;
-                    }
-                    foreach ($competitors as $competitor) {
-                        foreach ($positions as $keyPos => $result) {
-                            $url = Common::domainFilter(parse_url($result->url)['host']);
-                            if ($competitor === $url) {
-                                $response[$date][$competitor]['positions'][] = $result->position;
-                                continue 2;
-                            } else if (array_key_last($positions) === $keyPos) {
-                                $response[$date][$competitor]['positions'][] = 101;
-                            }
+        foreach ($records as $word => $lrs) {
+            foreach ($lrs as $positions) {
+                if (count($positions) === 0) {
+                    continue;
+                }
+                foreach ($competitors as $competitor) {
+                    foreach ($positions as $keyPos => $result) {
+                        $url = Common::domainFilter(parse_url($result->url)['host']);
+                        if ($competitor === $url) {
+                            $response[$competitor]['positions'][$word] = $result->position;
+                            continue 2;
+                        } else if (array_key_last($positions) === $keyPos) {
+                            $response[$competitor]['positions'][$word] = 101;
                         }
                     }
                 }
             }
         }
 
-        foreach ($response as $date => $result) {
-            foreach ($result as $domain => $data) {
-                $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
-                $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], true);
-                $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], true);
-                $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], true);
+        foreach ($response as $domainKey => $domains) {
+            foreach ($domains as $positions) {
+                foreach ($words as $word) {
+                    if (!array_key_exists($word, $positions)) {
+                        $response[$domainKey]['positions'][$word] = 101;
+                    }
+                }
             }
         }
 
-        if (count($response) > 0) {
-            return response()->json([
-                'data' => $response[array_key_first($response)]
-            ]);
+        foreach ($response as $domain => $data) {
+            $response[$domain]['avg'] = round(array_sum($data['positions']) / count($words), 2);
+            $response[$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], true);
+            $response[$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], true);
+            $response[$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], true);
         }
 
         return response()->json([
-            'data' => []
+            'data' => $response
         ]);
     }
 }

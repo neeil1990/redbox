@@ -441,6 +441,7 @@
                         }
                         $('#history-results').remove()
 
+                        console.log(results)
                         renderHistoryPositions(results)
                         $('#story-preloader').hide(300)
                     });
@@ -921,9 +922,9 @@
                         '        <tr>' +
                         '            <th class="text-center">{{ __('Domain') }}</th>' +
                         '            <th colspan="' + length + '" class="text-center">{{ __('Average position') }}</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 3</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 10</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Top') }} 100</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Percentage of getting into the top') }} 3</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Percentage of getting into the top') }} 10</th>' +
+                        '            <th colspan="' + length + '" class="text-center">{{ __('Percentage of getting into the top') }} 100</th>' +
                         '        </tr>' +
                         '        <tr><td></td>' +
                         bottomHead +

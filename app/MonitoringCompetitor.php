@@ -2,11 +2,8 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class MonitoringCompetitor extends Model
 {
@@ -20,16 +17,12 @@ class MonitoringCompetitor extends Model
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
 
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        Log::debug('words', [count($words)]);
         $words = array_chunk($words, 100);
-        Log::debug('words', [count($words)]);
         $competitors = [];
 
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
-                $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                    ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . ' 00:00:00')
                     ->where('lr', $engine['lr'])
                     ->where('position', '<=', 10)
                     ->whereIn('query', $keywords)
@@ -48,7 +41,6 @@ class MonitoringCompetitor extends Model
                         $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                     }
                 }
-                Log::debug(microtime(true) - $start);
             }
         }
 
