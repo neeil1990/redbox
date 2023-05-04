@@ -268,7 +268,7 @@
                     dataType: "json",
                     url: "{{ route('monitoring.get.competitors') }}",
                     data: data,
-                    beforeSend: function (){
+                    beforeSend: function () {
                         $('#render-state').html("{{ __('loading results') }}")
                         $('#searchCompetitors').prop('disabled', true)
                         $('#tableBlock').hide()
@@ -433,6 +433,7 @@
                             "next": "»",
                             "previous": "«"
                         },
+                        "emptyTable": "{{ __('More than 30 days have passed since the last withdrawal, use the history of changes by dates on the "Comparison with competitors" page') }}"
                     },
                     columnDefs: [
                         {
