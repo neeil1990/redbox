@@ -22,7 +22,7 @@ class MonitoringCompetitor extends Model
         $start = microtime(true);
         $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
             ->select(DB::raw('created_at, DATE(created_at) as lastDate'))
-            ->whereIn('query', $words)
+            ->where('query', $words[0])
             ->whereIn('lr', array_column($engines, 'lr'))
             ->orderBy('id', 'desc')
             ->first();
