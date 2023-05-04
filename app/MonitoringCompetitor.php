@@ -19,17 +19,16 @@ class MonitoringCompetitor extends Model
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
 
-        $start = microtime(true);
         $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-            ->select(DB::raw('created_at, DATE(created_at) as lastDate'))
-            ->where('query', $words[0])
+            ->select(DB::raw('created_at, id'))
             ->whereIn('lr', array_column($engines, 'lr'))
+            ->where('query', $words[0])
+            ->where('created_at', '>=', Carbon::now()->subDays(30)->toDateString() . ' 00:00:00')
             ->orderBy('id', 'desc')
             ->first();
 
-        Log::debug('lastDate', [$latest->lastDate]);
-        Log::debug(microtime(true) - $start, [Carbon::parse($latest->lastDate)->diff(Carbon::now())->days]);
-        if (Carbon::parse($latest->lastDate)->diff(Carbon::now())->days >= 30) {
+        Log::debug('lastDate', [$latest]);
+        if (empty($latest)) {
             return json_encode([]);
         } else {
             $words = array_chunk($words, 100);
@@ -142,7 +141,8 @@ class MonitoringCompetitor extends Model
                 if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
                     $visibilityArray[$record['query']][$url] = $record['position'];
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
         $competitorStatistics = [];
