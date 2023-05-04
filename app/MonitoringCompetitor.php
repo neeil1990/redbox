@@ -21,7 +21,7 @@ class MonitoringCompetitor extends Model
 
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
         Log::debug('words', [count($words)]);
-        $words = array_chunk($words, 1);
+        $words = array_chunk($words, 100);
         Log::debug('words', [count($words)]);
         $competitors = [];
 
