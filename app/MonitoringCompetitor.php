@@ -121,8 +121,7 @@ class MonitoringCompetitor extends Model
             }
         }
 
-        $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-            ->whereIn('query', $keywords)
+        $records = SearchIndex::whereIn('query', $keywords)
             ->where('lr', $engine['lr'])
             ->orderBy('id', 'desc')
             ->limit($countKeyWords * 100)
