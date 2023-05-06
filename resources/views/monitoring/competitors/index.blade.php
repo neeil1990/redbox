@@ -263,20 +263,7 @@
                     data.region = $('#searchEngines').val()
                 }
 
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.get.competitors') }}",
-                    data: data,
-                    beforeSend: function () {
-                        $('#render-state').html("{{ __('loading results') }}")
-                        $('#searchCompetitors').prop('disabled', true)
-                        $('#tableBlock').hide()
-                    },
-                    success: function (response) {
-                        renderTableRows(response)
-                    },
-                });
+                getCompetitorsInfo(data)
 
                 $('#searchEngines').on('change', function () {
                     $('#download-results').show()
@@ -295,24 +282,7 @@
                         localStorage.removeItem('lr_redbox_monitoring_selected_filter')
                     }
 
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('monitoring.get.competitors') }}",
-                        data: data,
-                        beforeSend: function () {
-                            if ($.fn.DataTable.fnIsDataTable($('#table'))) {
-                                $('#table').dataTable().fnDestroy();
-                                $('#table > tbody').html('')
-                            }
-                            $('#render-state').html("{{ __('loading results') }}")
-                            $('#searchCompetitors').prop('disabled', true)
-                            $('#tableBlock').hide()
-                        },
-                        success: function (response) {
-                            renderTableRows(response)
-                        },
-                    });
+                    getCompetitorsInfo(data)
                 })
 
                 $('#searchCompetitors').on('click', function () {
@@ -433,7 +403,7 @@
                             "next": "»",
                             "previous": "«"
                         },
-                        "emptyTable": "{{ __('More than 30 days have passed since the last withdrawal') }}"
+                        "emptyTable": "{{ __('More than 15 days have passed since the last withdrawal') }}"
                     },
                     columnDefs: [
                         {
@@ -632,6 +602,37 @@
                 }
 
                 return region
+            }
+
+            function getCompetitorsInfo(data) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('monitoring.get.competitors') }}",
+                    data: data,
+                    beforeSend: function () {
+                        if ($.fn.DataTable.fnIsDataTable($('#table'))) {
+                            $('#table').dataTable().fnDestroy();
+                            $('#table > tbody').html('')
+                        }
+                        $('#render-state').html("{{ __('loading results') }}")
+                        $('#searchCompetitors').prop('disabled', true)
+                        $('#tableBlock').hide()
+                    },
+                    success: function (response) {
+                        $('.oldest-info').remove()
+                        if (response.oldest.length !== 0) {
+                            let block = '<div class="text-info mt-5 oldest-info"> Данные устарели, нужно переснять: <ul>'
+                            $.each(response.oldest, function (region, name) {
+                                block += '<li>' + name + ' (' + region + ')</li>'
+                            })
+                            block += '</ul></div>'
+                            $('#tableBlock').before(block)
+                        }
+
+                        renderTableRows(JSON.parse(response.results))
+                    },
+                });
             }
         </script>
     @endslot

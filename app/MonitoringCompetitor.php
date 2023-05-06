@@ -5,21 +5,21 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request): string
+    public static function getCompetitors(array $request): array
     {
+        $oldest = [];
         $project = MonitoringProject::findOrFail($request['projectId']);
         $engines = isset($request['region'])
             ? MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray()
             : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
         $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
 
-        foreach ($engines as $engine) {
+        foreach ($engines as $key => $engine) {
             $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->select(DB::raw('created_at, id'))
                 ->where('lr', $engine['lr'])
@@ -29,7 +29,8 @@ class MonitoringCompetitor extends Model
                 ->first();
 
             if (empty($latest)) {
-                return json_encode([]);
+                $oldest[$engine['lr']] = $engine['location']['name'];
+                unset($engines[$key]);
             }
         }
 
@@ -38,7 +39,6 @@ class MonitoringCompetitor extends Model
 
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
-                $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
                     ->where('position', '<=', 10)
@@ -47,7 +47,6 @@ class MonitoringCompetitor extends Model
                     ->limit(count($keywords) * 10)
                     ->get(['query', 'url'])
                     ->toArray();
-                Log::debug(microtime(true) - $start);
 
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
@@ -114,7 +113,10 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibilityGoogle'] = $google;
         }
 
-        return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
+        return [
+            'results' => json_encode($competitors, JSON_INVALID_UTF8_IGNORE),
+            'oldest' => $oldest
+        ];
     }
 
     public static function calculateStatistics(array $request): array

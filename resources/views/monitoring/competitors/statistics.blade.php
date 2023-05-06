@@ -108,6 +108,10 @@
                 text-align: center;
                 justify-content: center;
             }
+
+            .fa.fa-trash {
+                cursor: pointer;
+            }
         </style>
     @endslot
 
@@ -317,21 +321,44 @@
                         <input type="text" class="form-control" id="date-range">
                         <button id="competitors-history-positions" class="btn btn-default"
                                 style="border-top-left-radius: 0; border-bottom-left-radius: 0">
-                            {{ __('show') }}
+                            {{ __('Analyse') }}
                         </button>
-                    </div>
-                </div>
-                <div id="story-preloader" style="display: none" class="ml-2">
-                    <div class="d-flex justify-content-center align-items-center">
-                        <img src="/img/1485.gif" style="width: 40px; height: 40px;">
-                    </div>
-                    <div class="d-flex percentage-block">
-                        <div id="percent-date-request"></div>
-                        %
                     </div>
                 </div>
             </div>
             <div class="card-body" id="history-block">
+                <table class="table table-bordered w-50">
+                    <thead>
+                    <tr>
+                        <th>{{ __('Date range') }}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="changeDatesTbody">
+                    @foreach($project->dates as $result)
+                        <tr @if($result['state'] === 'in queue' || $result['state'] === 'in process') class="need-check"
+                            data-id="{{ $result['id'] }}"
+                            id="analyse-in-queue-{{ $result['id'] }}" @endif>
+                            <td>{{ $result['range'] }}</td>
+                            <td class="text-center">
+                                @if($result['state'] === 'ready')
+                                    <a href="{{ route('monitoring.changes.dates.result', $result['id']) }}"
+                                       target="_blank">{{ __('show') }}</a>
+                                @elseif($result['state'] === 'in queue')
+                                    {{ __("In queue") }}
+                                    <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                                @elseif($result['state'] === 'in process')
+                                    {{ __("In process") }}
+                                    <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                                @else
+                                    {{ __('Fail') }}
+                                    <i class="fa fa-trash remove-error-results" data-id="{{ $result['id'] }}"></i>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
                 <div class="mb-2 btn-group" id="visibility-buttons" style="display: none">
                     <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
                         {{ __('Domain') }}
@@ -404,74 +431,87 @@
                 })
 
                 $('#competitors-history-positions').unbind().on('click', function () {
-                    $('#percent-date-request').html(0)
-                    let dates = ($('#date-range').val()).split(' - ')
-                    let ajaxRequests = []
-                    let results = {}
-                    dates = getDates(dates[0], dates[1])
-                    let totalRequests = dates.length
-                    let countRequest = 0
-
-                    $.each(dates, function (k, date) {
-                        ajaxRequests.push($.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('monitoring.competitors.history.positions') }}",
-                            data: {
-                                'projectId': PROJECT_ID,
-                                'region': $('#searchEngines').val(),
-                                'date': date,
-                            },
-                            beforeSend: function () {
-                                $('#story-preloader').show(300)
-                            },
-                            success: function (response) {
-                                countRequest++;
-                                $('#percent-date-request').html(Number(countRequest / totalRequests * 100).toFixed())
-                                if (response.data.length !== 0) {
-                                    results[date] = response.data
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('monitoring.competitors.history.positions') }}",
+                        data: {
+                            'projectId': PROJECT_ID,
+                            'region': $('#searchEngines').val(),
+                            'dateRange': $('#date-range').val(),
+                        },
+                        success: function (response) {
+                            if (response.redirect) {
+                                let question = confirm('Вы уже анализровали ваш проект по выбранному диапазону дат, перенаправить вас на страницу a?')
+                                if (question) {
+                                    window.open('/monitoring/competitors/result-analyse/' + response.id, '_blank');
                                 }
-                            },
-                        }));
-                    });
-
-                    $.when.apply($, ajaxRequests).done(function () {
-                        if ($.fn.DataTable.fnIsDataTable($('#history-results'))) {
-                            $('#history-results').dataTable().fnDestroy()
-                        }
-                        $('#history-results').remove()
-
-                        renderHistoryPositions(results)
-                        $('#story-preloader').hide(300)
-                    });
+                                return;
+                            } else {
+                                $('#changeDatesTbody').append(
+                                    '<tr id="analyse-in-queue-' + response.analyseId + '">' +
+                                    '   <td>' + $('#date-range').val() + '</td>' +
+                                    '   <td class="text-center">' + "{{ __('In queue') }}" + ' <img src="/img/1485.gif" style="width: 20px; height: 20px;"></td>' +
+                                    '</tr>')
+                                waitFinishAnalyse(response.analyseId)
+                            }
+                        },
+                    })
                 })
 
                 $('#dateRange').show()
+                removeErrorResults()
+                needCheck()
             })
 
-            function getDates($start, $end) {
-                let start = $start.split('-')
-                const startDate = new Date();
-                startDate.setDate(start[0]);
-                startDate.setMonth(start[1]);
-                startDate.setFullYear(start[2]);
+            function waitFinishAnalyse(recordId) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('monitoring.changes.dates.check') }}",
+                    data: {
+                        'id': recordId,
+                    },
+                    success: function (response) {
+                        if (response.state === 'ready') {
+                            $('#analyse-in-queue-' + recordId).children('td').eq(1).html('<a href="/monitoring/competitors/result-analyse/' + recordId + '" target="_blank">{{ __('show') }}</a>')
+                        } else if (response.state === 'in process') {
+                            $('#analyse-in-queue-' + recordId).children('td').eq(1).html("{{ __('In process') }}" + ' <img src="/img/1485.gif" style="width: 20px; height: 20px;">')
+                            setTimeout(() => {
+                                waitFinishAnalyse(recordId)
+                            }, 1000)
+                        } else if (response.state === 'fail') {
+                            $('#analyse-in-queue-' + recordId).children('td').eq(1).html("{{ __('Fail') }}" + ' <i class="fa fa-trash remove-error-results" data-id="' + recordId + '"></i>')
+                            removeErrorResults()
+                        } else {
+                            setTimeout(() => {
+                                waitFinishAnalyse(recordId)
+                            }, 1000)
+                        }
+                    },
+                })
+            }
 
-                let end = $end.split('-')
-                const endDate = new Date();
-                endDate.setDate(end[0]);
-                endDate.setMonth(end[1]);
-                endDate.setFullYear(end[2]);
+            function removeErrorResults() {
+                $('.remove-error-results').unbind().on('click', function () {
+                    let $elem = $(this)
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('monitoring.changes.dates.remove') }}",
+                        data: {
+                            'id': $(this).attr('data-id'),
+                        },
+                        success: function () {
+                            $elem.parents().eq(1).remove()
+                        }
+                    })
 
-                let dates = []
-                while (startDate <= endDate) {
-                    let day = startDate.getDate() < 10 ? '0' + startDate.getDate() : startDate.getDate()
-                    let month = startDate.getMonth() < 10 ? '0' + startDate.getMonth() : startDate.getMonth()
+                })
+            }
 
-                    dates.push(day + '-' + (month) + '-' + startDate.getFullYear())
-                    startDate.setDate(startDate.getDate() + 1);
-                }
-
-                return dates;
+            function needCheck() {
+                $.each($('.need-check'), function (k, v) {
+                    waitFinishAnalyse($(this).attr('data-id'))
+                })
             }
 
             function renderTableBody(data) {
@@ -814,11 +854,11 @@
                             'region': $('#searchEngines').val(),
                             'keywords': words,
                             'competitors': {!! json_encode($competitors) !!},
-                            'totalWords':TOTAL_WORDS
+                            'totalWords': TOTAL_WORDS
                         },
                         success: function (response) {
                             countReadyWords += words.length
-                            $('#ready-percent').html(Number(countReadyWords /TOTAL_WORDS * 100).toFixed())
+                            $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
                             renderTableBody(response.visibility)
                             array.push(response.statistics)
                         },
@@ -866,168 +906,6 @@
                 })
 
                 return results;
-            }
-
-            function renderHistoryPositions(data) {
-                let result
-                if (data && Object.keys(data).length === 0 && Object.getPrototypeOf(data) === Object.prototype) {
-                    result = '<b id="history-results">{{ __('There are no results') }}</b>'
-                    $('#history-block').append(result)
-                    $('#visibility-buttons').hide()
-                } else {
-                    const sortedKeys = Object.keys(data).sort((a, b) => new Date(a.split('-').reverse().join('-')) - new Date(b.split('-').reverse().join('-')));
-                    const sortedData = {};
-                    let length = 0
-                    sortedKeys.forEach(key => {
-                        sortedData[key] = data[key];
-                        length++;
-                    });
-
-                    let domains = []
-                    let dates = []
-
-                    let bottomHead = ''
-                    $.each(sortedData, function (k, v) {
-                        bottomHead += '<td>' + k + '</td>'
-                        dates.push(k)
-                        $.each(v, function (k1, v1) {
-                            domains.push(k1)
-                        })
-                    })
-
-                    domains = getUniqueValues(domains)
-                    dates = getUniqueValues(dates)
-
-                    let keys = ['avg', 'top_3', 'top_10', 'top_100']
-                    let trs = ''
-                    $.each(domains, function (k, domain) {
-                        trs += '<tr><td>' + domain + '</td>'
-                        $.each(keys, function (key, name) {
-                            $.each(dates, function (k1, date) {
-                                let firstElement = k1 === 0;
-                                if (firstElement) {
-                                    trs += '<td style="border-left: 2px solid grey; box-sizing: border-box;">' + data[date][domain][name] + '</td>'
-                                } else {
-                                    trs += '<td>' + data[date][domain][name] + '</td>'
-                                }
-                            })
-                        })
-                        trs += "</tr>"
-                    })
-
-                    result =
-                        '<table class="table table-hover table-bordered" id="history-results">' +
-                        '    <thead>' +
-                        '        <tr>' +
-                        '            <th class="text-center">{{ __('Domain') }}</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Average position') }}</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Percentage of getting into the top') }} 3</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Percentage of getting into the top') }} 10</th>' +
-                        '            <th colspan="' + length + '" class="text-center">{{ __('Percentage of getting into the top') }} 100</th>' +
-                        '        </tr>' +
-                        '        <tr><td></td>' +
-                        bottomHead +
-                        bottomHead +
-                        bottomHead +
-                        bottomHead +
-                        '        </tr>' +
-                        '    </thead>' +
-                        '    <tbody>' + trs + '</tbody>' +
-                        '</table>'
-
-                    $('#history-block').append(result)
-
-                    historyTable = $('#history-results').DataTable({
-                        bAutoWidth: false,
-                        bSort: false,
-                        lengthMenu: [10, 25, 50, 100],
-                        pageLength: 50,
-                        language: {
-                            lengthMenu: "_MENU_",
-                            search: "_INPUT_",
-                            searchPlaceholder: "{{ __('Search') }}",
-                            paginate: {
-                                "first": "«",
-                                "last": "»",
-                                "next": "»",
-                                "previous": "«"
-                            },
-                        },
-                    })
-
-                    $.each($('#history-results > tbody > tr'), function (k, v) {
-                        for (let j = 0; j < 4; j++) {
-                            let res = length * j
-                            let bool = j === 0
-                            colorCells($(this), 1 + res, length * (j + 1), bool)
-                        }
-                    })
-
-                    setDataOrders(length)
-
-                    $('.column-visible').unbind().on('click', function () {
-                        if ($(this).attr('data-action') === 'hide') {
-                            $(this).attr('data-action', 'show')
-                            historyTable.columns(String($(this).attr('data-order')).split(',')).visible(false);
-                        } else {
-                            String($(this).attr('data-order')).split(',')
-                            $(this).attr('data-action', 'hide')
-                            historyTable.columns(String($(this).attr('data-order')).split(',')).visible(true);
-                        }
-
-                        $('#table').css({
-                            'width': '100%'
-                        })
-                    })
-
-                    $('#switch-color').unbind().on('click', function () {
-                        let action = $(this).attr('data-action')
-
-                        if (action === 'off') {
-                            $(this).text("{{ __("Turn on the coloring") }}")
-                            $(this).attr('data-action', 'on')
-                            $('.grow-color').addClass('grow-color-hide').removeClass('grow-color')
-                            $('.shrink-color').addClass('shrink-color-hide').removeClass('shrink-color')
-                        } else {
-                            $(this).text("{{ __('Turn off the coloring') }}")
-                            $(this).attr('data-action', 'off')
-                            $('.grow-color-hide').addClass('grow-color').removeClass('grow-color-hide')
-                            $('.shrink-color-hide').addClass('shrink-color').removeClass('shrink-color-hide')
-                        }
-                    })
-
-                    $('#visibility-buttons').show()
-                }
-            }
-
-            function colorCells(elem, start, end, inverse) {
-                for (let i = end; i > start; i--) {
-                    let targetElement = elem.children('td').eq(i)
-                    let beforeElement = elem.children('td').eq(i - 1)
-
-                    let result = Number(targetElement.text()) - Number(beforeElement.text())
-                    if (result !== 0) {
-
-                        let substring = String(result).substring(0, 5)
-                        if (inverse) {
-                            if (result > 0) {
-                                targetElement.addClass('shrink-color')
-                                targetElement.text(targetElement.text() + ' (+' + substring + ')')
-                            } else {
-                                targetElement.addClass('grow-color')
-                                targetElement.text(targetElement.text() + ' (' + substring + ')')
-                            }
-                        } else {
-                            if (result > 0) {
-                                targetElement.addClass('grow-color')
-                                targetElement.text(targetElement.text() + ' (+' + substring + ')')
-                            } else {
-                                targetElement.addClass('shrink-color')
-                                targetElement.text(targetElement.text() + ' (' + substring + ')')
-                            }
-                        }
-                    }
-                }
             }
 
             function renderStatistics(data, destroy) {

@@ -37,4 +37,9 @@ class MonitoringProject extends Model
     {
         return $this->hasMany(ProjectTracking::class);
     }
+
+    public function dates()
+    {
+        return $this->hasMany(MonitoringChangesDate::class);
+    }
 }

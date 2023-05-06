@@ -11,20 +11,7 @@
 |
 */
 
-use App\Common;
-use App\MonitoringCompetitor;
-use App\MonitoringKeyword;
-use App\MonitoringProject;
-use App\MonitoringSearchengine;
-use App\SearchIndex;
-use App\TextAnalyzer;
-use Carbon\CarbonPeriod;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-
 
 Route::get('info', function () {
     phpinfo();
@@ -302,6 +289,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
     Route::post('/monitoring/competitors/history/positions/', 'MonitoringController@competitorsHistoryPositions')->name('monitoring.competitors.history.positions');
+    Route::post('/monitoring/competitors/check-analyse-state', 'MonitoringController@checkChangesDatesState')->name('monitoring.changes.dates.check');
+    Route::post('/monitoring/competitors/remove-analyse', 'MonitoringController@removeChangesDatesState')->name('monitoring.changes.dates.remove');
+    Route::get('/monitoring/competitors/result-analyse/{project}', 'MonitoringController@resultChangesDatesState')->name('monitoring.changes.dates.result');
 
     Route::get('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
     Route::post('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');

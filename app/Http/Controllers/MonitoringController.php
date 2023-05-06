@@ -7,6 +7,8 @@ use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
+use App\Jobs\MonitoringChangesDateQueue;
+use App\MonitoringChangesDate;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
 use App\MonitoringDataTableColumnsProject;
@@ -26,6 +28,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -435,7 +438,7 @@ class MonitoringController extends Controller
         ));
     }
 
-    public function getCompetitorsInfo(Request $request): string
+    public function getCompetitorsInfo(Request $request): array
     {
         return MonitoringCompetitor::getCompetitors($request->all());
     }
@@ -534,6 +537,7 @@ class MonitoringController extends Controller
             'navigations' => $navigations,
             'keywords' => json_encode($keywords),
             'totalWords' => $totalWords,
+            'changesDates' => $project->dates
         ]);
     }
 
@@ -549,78 +553,70 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $project = MonitoringProject::where('id', $request->projectId)->first(['id', 'url']);
-        $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
-        array_unshift($competitors, $project['url']);
-        $lr = MonitoringSearchengine::where('id', '=', $request->region)->pluck('lr')->toArray()[0];
+        $project = MonitoringChangesDate::where('range', $request['dateRange'])->first();
 
-        $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $words = array_column($words, 'query');
-        $items = array_chunk($words, 10);
-
-        $records = [];
-        foreach ($items as $keywords) {
-            $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                ->whereBetween('created_at', [
-                    date('Y-m-d H:i:s', strtotime($request->date . ' 00:00:00')),
-                    date('Y-m-d H:i:s', strtotime($request->date . ' 23:59:59')),
-                ])
-                ->where('lr', $lr)
-                ->whereIn('query', $keywords)
-                ->where('position', '<=', 100)
-                ->orderBy('id', 'desc')
-                ->limit(count($keywords) * 100)
-                ->select(DB::raw('url, position, created_at, query'))
-                ->get();
-
-            if (count($results) === 0) {
-                continue;
-            }
-
-            foreach ($results as $result) {
-                $records[$result->query][$lr][] = $result;
-            }
+        if (isset($project)) {
+            return response()->json([
+                'id' => $project->id,
+                'redirect' => true
+            ]);
         }
 
-        $response = [];
-        foreach ($records as $word => $lrs) {
-            foreach ($lrs as $positions) {
-                if (count($positions) === 0) {
-                    continue;
-                }
-                foreach ($competitors as $competitor) {
-                    foreach ($positions as $keyPos => $result) {
-                        $url = Common::domainFilter(parse_url($result->url)['host']);
-                        if ($competitor === $url) {
-                            $response[$competitor]['positions'][$word] = $result->position;
-                            continue 2;
-                        } else if (array_key_last($positions) === $keyPos) {
-                            $response[$competitor]['positions'][$word] = 101;
-                        }
-                    }
-                }
-            }
-        }
+        $newRecord = new MonitoringChangesDate([
+            'monitoring_project_id' => $request->projectId,
+            'range' => $request->dateRange,
+            'request' => json_encode($request->all(), true)
+        ]);
+        $newRecord->save();
 
-        foreach ($response as $domainKey => $domains) {
-            foreach ($domains as $positions) {
-                foreach ($words as $word) {
-                    if (!array_key_exists($word, $positions)) {
-                        $response[$domainKey]['positions'][$word] = 101;
-                    }
-                }
-            }
-        }
+        MonitoringChangesDateQueue::dispatch(
+            $newRecord,
+            $request->all()
+        )->onQueue('monitoring_change_dates');
 
-        foreach ($response as $domain => $data) {
-            $response[$domain]['avg'] = round(array_sum($data['positions']) / count($words), 2);
-            $response[$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], true);
-            $response[$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], true);
-            $response[$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], true);
+        return response()->json([
+            'analyseId' => $newRecord->id,
+            'redirect' => false,
+        ]);
+    }
+
+    public function checkChangesDatesState(Request $request): JsonResponse
+    {
+        $record = MonitoringChangesDate::where('id', $request['id'])->first();
+
+        if (isset($record) && $record->state === 'ready' || $record->state === 'in process') {
+            return response()->json([
+                'state' => $record->state,
+                'range' => $record->range,
+                'result' => json_decode($record->result, true),
+                'id' => $record->id
+            ]);
         }
 
         return response()->json([
-            'data' => $response
+            'state' => 'in queue',
         ]);
+    }
+
+    public function removeChangesDatesState(Request $request): JsonResponse
+    {
+        $count = MonitoringChangesDate::where('id', $request['id'])
+            ->where('state', 'fail')
+            ->delete();
+
+        if ($count === 1) {
+            return response()->json([], 200);
+        }
+
+        return response()->json([], 415);
+    }
+
+    public function resultChangesDatesState(MonitoringChangesDate $project)
+    {
+        $request = json_decode($project->request, true);
+        $request['region'] = MonitoringSearchengine::where('id', $request['region'])->first()->location->name;
+        $navigations = $this->navigations(MonitoringProject::find($project->monitoring_project_id));
+
+        return view('monitoring.competitors.dates', compact('project', 'request', 'navigations'));
     }
 }
