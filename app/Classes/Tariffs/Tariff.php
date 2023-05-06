@@ -77,8 +77,12 @@ abstract class Tariff
     {
         $roles = $user->getRoleNames();
 
-        foreach ($roles as $role)
+        foreach ($roles as $role){
+            if($role === 'user')
+                continue;
+
             $user->removeRole($role);
+        }
 
         $user->assignRole($this->code());
     }
@@ -86,10 +90,8 @@ abstract class Tariff
     public function assignRole()
     {
         $user = auth()->user();
-        $roles = $user->getRoleNames();
 
-        foreach ($roles as $role)
-            $user->removeRole($role);
+        $user->removeRole('Free');
 
         $user->assignRole($this->code());
     }
