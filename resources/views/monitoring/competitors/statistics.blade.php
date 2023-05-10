@@ -863,7 +863,7 @@
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
-                        timeout: 4000,
+                        timeout: 60000,
                         url: "{{ route('monitoring.get.competitors.statistics') }}",
                         data: {
                             '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -881,7 +881,6 @@
                             results.push(response.statistics)
                         },
                         error: function () {
-                            console.log(words)
                             failRequests++
                             newArray.push(words)
                         }
@@ -900,7 +899,7 @@
 
                             setTimeout(() => {
                                 $('#toast-container').hide(300)
-                            }, 5000)
+                            }, 50000)
 
                             ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }

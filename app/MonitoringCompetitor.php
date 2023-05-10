@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -133,18 +134,21 @@ class MonitoringCompetitor extends Model
             }
         }
 
-        $records = SearchIndex::whereIn('query', $keywords)
+        $start = microtime(true);
+        $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index)'))
             ->where('lr', $engine['lr'])
+            ->whereIn('query', $keywords)
             ->orderBy('id', 'desc')
             ->limit($countKeyWords * 100)
             ->get(['url', 'position', 'created_at', 'query'])
             ->toArray();
+        Log::debug('microtime', [microtime(true) - $start]);
 
         foreach ($records as $record) {
             try {
-                $url = Common::domainFilter(parse_url($record['url'])['host']);
-                if (in_array($url, $competitors) && $visibilityArray[$record['query']][$url] === 0) {
-                    $visibilityArray[$record['query']][$url] = $record['position'];
+                $url = Common::domainFilter(parse_url($record->url)['host']);
+                if (in_array($url, $competitors) && $visibilityArray[$record->query][$url] === 0) {
+                    $visibilityArray[$record->query][$url] = $record->position;
                 }
             } catch (\Throwable $e) {
             }
