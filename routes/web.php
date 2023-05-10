@@ -11,7 +11,9 @@
 |
 */
 
+use App\MonitoringPosition;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -386,4 +388,19 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    $project = \App\MonitoringProject::find(41);
+    $region = $project->searchengines->toArray();
+    $keywordsId = $project->keywords->pluck('id');
+
+    $positions = MonitoringPosition::select(DB::raw('monitoring_searchengine_id, DATE(created_at) as dateOnly'))
+        ->whereIn('monitoring_keyword_id', $keywordsId)
+        ->whereIn('monitoring_searchengine_id', array_column($region, 'id'))
+        ->groupBy('monitoring_searchengine_id')
+        ->get();
+
+
+    dd($positions);
 });
