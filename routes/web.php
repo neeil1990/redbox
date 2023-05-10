@@ -402,5 +402,6 @@ Route::get('/test', function () {
         ->get();
 
 
+    dump($region);
     dd($positions);
 });
