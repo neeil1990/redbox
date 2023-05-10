@@ -529,7 +529,7 @@ class MonitoringController extends Controller
 
         $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query', 'id'])->toArray();
         $totalWords = count($allWords);
-        $keywords = array_chunk(array_column($allWords, 'query'), 50);
+        $keywords = array_chunk(array_column($allWords, 'query'), 100);
         $keywordsId = array_column($allWords, 'id');
 
         $lastChecks = [];

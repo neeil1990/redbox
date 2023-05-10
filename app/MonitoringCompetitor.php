@@ -141,6 +141,7 @@ class MonitoringCompetitor extends Model
             }
         }
 
+        Log::debug('last date', [$lastDate]);
         $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index)'))
             ->where('lr', $engine['lr'])
             ->whereBetween('created_at', [
