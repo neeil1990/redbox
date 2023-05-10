@@ -249,6 +249,7 @@
             let data = {
                 '_token': $('meta[name="csrf-token"]').attr('content'),
                 'projectId': {{ $project->id }},
+                'lastChecks': {!! json_encode($lastCheck) !!}
             }
 
             $(document).ready(function () {
@@ -271,6 +272,7 @@
                     let data = {
                         '_token': $('meta[name="csrf-token"]').attr('content'),
                         'projectId': {{ $project->id }},
+                        'lastChecks': {!! json_encode($lastCheck) !!}
                     }
 
                     if (val !== '') {
@@ -447,6 +449,7 @@
                             )
                         },
                         success: function (response) {
+                            console.log(response)
                             let rows = ''
                             let yandexTh = false
                             let googleTh = false
@@ -620,17 +623,7 @@
                         $('#tableBlock').hide()
                     },
                     success: function (response) {
-                        $('.oldest-info').remove()
-                        if (response.oldest.length !== 0) {
-                            let block = '<div class="text-info mt-5 oldest-info"> Данные устарели, нужно переснять: <ul>'
-                            $.each(response.oldest, function (region, name) {
-                                block += '<li>' + name + ' (' + region + ')</li>'
-                            })
-                            block += '</ul></div>'
-                            $('#tableBlock').before(block)
-                        }
-
-                        renderTableRows(JSON.parse(response.results))
+                        renderTableRows(response)
                     },
                 });
             }

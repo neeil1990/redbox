@@ -430,15 +430,18 @@ class MonitoringController extends Controller
             $ignoredDomains = $ignoredDomains['value'];
         }
 
+        $lastCheck = MonitoringProject::getLastDates($project);
+
         return view('monitoring.competitors.index', compact(
             'navigations',
             'countQuery',
             'ignoredDomains',
-            'project'
+            'project',
+            'lastCheck'
         ));
     }
 
-    public function getCompetitorsInfo(Request $request): array
+    public function getCompetitorsInfo(Request $request): string
     {
         return MonitoringCompetitor::getCompetitors($request->all());
     }
@@ -527,20 +530,9 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project->url);
         $navigations = $this->navigations($project);
 
-        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query', 'id'])->toArray();
+        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
         $totalWords = count($allWords);
         $keywords = array_chunk(array_column($allWords, 'query'), 100);
-        $keywordsId = array_column($allWords, 'id');
-
-        $lastChecks = [];
-        foreach ($project->searchengines->pluck('id') as $region) {
-            $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
-                ->where('monitoring_searchengine_id', $region)
-                ->whereIn('monitoring_keyword_id', $keywordsId)
-                ->orderBy('id', 'desc');
-
-            $lastChecks[] = $positions->first()->toArray();
-        }
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
@@ -549,7 +541,7 @@ class MonitoringController extends Controller
             'keywords' => json_encode($keywords),
             'totalWords' => $totalWords,
             'changesDates' => $project->dates,
-            'lastChecks' => $lastChecks
+            'lastChecks' => MonitoringProject::getLastDates($project)
         ]);
     }
 

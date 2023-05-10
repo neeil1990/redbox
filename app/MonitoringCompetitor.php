@@ -2,47 +2,42 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request): array
+    public static function getCompetitors(array $request): string
     {
-        $oldest = [];
         $project = MonitoringProject::findOrFail($request['projectId']);
-        $engines = isset($request['region'])
-            ? MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray()
-            : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
-        $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
 
-        foreach ($engines as $key => $engine) {
-            $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                ->select(DB::raw('created_at, id'))
-                ->where('lr', $engine['lr'])
-                ->where('query', $words[0])
-                ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . ' 00:00:00')
-                ->orderBy('id', 'desc')
-                ->first();
-
-            if (empty($latest)) {
-                $oldest[$engine['lr']] = $engine['location']['name'];
-                unset($engines[$key]);
-            }
+        if (isset($request['region'])) {
+            $engines = MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray();
+        } else {
+            $engines = MonitoringSearchengine::where('monitoring_project_id', $request['projectId'])->get(['engine', 'lr', 'id'])->toArray();
         }
-
         $words = array_chunk($words, 100);
         $competitors = [];
 
         foreach ($engines as $engine) {
+            foreach ($request['lastChecks'] as $check) {
+                if ($check['monitoring_searchengine_id'] == $engine['id']) {
+                    $lastDate = $check['dateOnly'];
+                    break;
+                }
+            }
+
             foreach ($words as $keywords) {
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
                     ->where('position', '<=', 10)
+                    ->whereBetween('created_at', [
+                        date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
+                        date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
+                    ])
                     ->whereIn('query', $keywords)
                     ->orderBy('id', 'desc')
                     ->limit(count($keywords) * 10)
@@ -114,10 +109,7 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibilityGoogle'] = $google;
         }
 
-        return [
-            'results' => json_encode($competitors, JSON_INVALID_UTF8_IGNORE),
-            'oldest' => $oldest
-        ];
+        return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
     }
 
     public static function calculateStatistics(array $request): array
@@ -141,8 +133,7 @@ class MonitoringCompetitor extends Model
             }
         }
 
-        Log::debug('last date', [$lastDate]);
-        $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index)'))
+        $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
             ->where('lr', $engine['lr'])
             ->whereBetween('created_at', [
                 date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
