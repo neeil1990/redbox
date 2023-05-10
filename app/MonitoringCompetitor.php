@@ -37,7 +37,7 @@ class MonitoringCompetitor extends Model
                 Log::info($lastDate);
                 foreach ($words as $keywords) {
                     $start = microtime(true);
-                    $results = DB::table(DB::raw('search_indices use index(search_indices_lr_index, search_indices_position_index)'))
+                    $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
                         ->where('position', '<=', 10)
                         ->whereBetween('created_at', [
