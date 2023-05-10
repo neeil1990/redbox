@@ -895,7 +895,7 @@
                             renderStatistics(calculateAvgValues(results), destroy)
                         } else {
                             $('#toast-container').show(300)
-                            $('.toast-message').html("{{ __('Data could not be received, the request was duplicated') }}")
+                            $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
 
                             setTimeout(() => {
                                 $('#toast-container').hide(300)

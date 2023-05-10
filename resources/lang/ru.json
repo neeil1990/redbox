@@ -7,7 +7,7 @@
     "In queue": "В очереди",
     "In process": "В процессе",
     "Date range": "Диапазон дат",
-    "Data could not be received, the request was duplicated": "Данные не удалось получить, запрос был продублирован",
+    "Data could not be retrieved, the request was duplicated": "Не удалось получить данные, запрос был продублирован",
     "State": "Состояние",
     "Have you already analyzed your project by the selected date range, should I redirect you to the results page?": "Вы уже анализировали ваш проект по выбранному диапазону дат, перенаправить вас на страницу результатов?",
     "Ready": "Готово",

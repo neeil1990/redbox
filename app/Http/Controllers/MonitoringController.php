@@ -543,6 +543,7 @@ class MonitoringController extends Controller
 
     public function getStatistics(Request $request): JsonResponse
     {
+        return response()->json([], 504);
         $statistics = MonitoringCompetitor::calculateStatistics($request->all());
 
         return response()->json([
