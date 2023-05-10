@@ -12,6 +12,8 @@ class MonitoringCompetitor extends Model
 
     public static function getCompetitors(array $request): string
     {
+        Log::debug('start');
+
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
 
@@ -32,7 +34,9 @@ class MonitoringCompetitor extends Model
             }
 
             if (isset($lastDate)) {
+                Log::info($lastDate);
                 foreach ($words as $keywords) {
+                    $start = microtime(true);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
                         ->where('position', '<=', 10)
@@ -45,6 +49,8 @@ class MonitoringCompetitor extends Model
                         ->limit(count($keywords) * 10)
                         ->get(['query', 'url'])
                         ->toArray();
+
+                    Log::debug(microtime(true) - $start);
 
                     foreach ($results as $result) {
                         $host = parse_url(Common::domainFilter($result->url))['host'];
@@ -117,7 +123,6 @@ class MonitoringCompetitor extends Model
 
     public static function calculateStatistics(array $request): array
     {
-        Log::debug('start');
         $competitors = $request['competitors'];
         $keywords = $request['keywords'];
         $countKeyWords = count($keywords);
@@ -139,7 +144,6 @@ class MonitoringCompetitor extends Model
         }
 
         if (isset($lastDate)) {
-            Log::info($lastDate);
             $start = microtime(true);
             $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->where('lr', $engine['lr'])
@@ -153,7 +157,6 @@ class MonitoringCompetitor extends Model
                 ->get(['url', 'position', 'created_at', 'query'])
                 ->toArray();
 
-            Log::debug(microtime(true) - $start);
             foreach ($records as $record) {
                 try {
                     $url = Common::domainFilter(parse_url($record->url)['host']);
