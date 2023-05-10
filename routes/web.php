@@ -396,12 +396,13 @@ Route::get('/test', function () {
     $regions = $project->searchengines->pluck('id');
     $keywordsId = $project->keywords->pluck('id');
 
-    $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
-        ->whereIn('monitoring_searchengine_id', $regions)
-        ->whereIn('monitoring_keyword_id', $keywordsId)
-        ->orderBy(DB::raw('DATE(created_at)'))
-        ->orderBy('id', 'desc')
-        ->get();
+    foreach ($regions as $region) {
+        $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
+            ->where('monitoring_searchengine_id', $region)
+            ->whereIn('monitoring_keyword_id', $keywordsId)
+            ->orderBy(DB::raw('DATE(created_at)'))
+            ->get();
 
-    dd($positions);
+        dump($positions);
+    }
 });
