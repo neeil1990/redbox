@@ -56,9 +56,10 @@ class MonitoringProject extends Model
                 ->whereIn('monitoring_keyword_id', $keywordsId)
                 ->orderBy('id', 'desc');
 
-            $lastChecks[] = $positions->first()->toArray();
+            dump($positions);
+//            $lastChecks[] = $positions->first()->toArray();
         }
-
+        dd(1);
         return $lastChecks;
     }
 }
