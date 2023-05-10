@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -12,7 +11,6 @@ class MonitoringCompetitor extends Model
 
     public static function getCompetitors(array $request): string
     {
-        Log::debug('start');
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
 
@@ -33,9 +31,7 @@ class MonitoringCompetitor extends Model
             }
 
             if (isset($lastDate)) {
-                Log::info($lastDate);
                 foreach ($words as $keywords) {
-                    $start = microtime(true);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
                         ->where('created_at', '<=', date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')))
@@ -46,8 +42,6 @@ class MonitoringCompetitor extends Model
                         ->limit(count($keywords) * 10)
                         ->get(['query', 'url'])
                         ->toArray();
-
-                    Log::debug(microtime(true) - $start);
 
                     foreach ($results as $result) {
                         $host = parse_url(Common::domainFilter($result->url))['host'];
