@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -124,6 +125,13 @@ class MonitoringCompetitor extends Model
         $competitors = $request['competitors'];
         $keywords = $request['keywords'];
         $countKeyWords = count($keywords);
+        foreach ($request['lastChecks'] as $check) {
+            if ($check['monitoring_searchengine_id'] === $request['region']) {
+                $lastDate = $check['dateOnly'];
+                break;
+            }
+        }
+
         $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
 
         $visibilityArray = [];
@@ -135,6 +143,10 @@ class MonitoringCompetitor extends Model
 
         $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index)'))
             ->where('lr', $engine['lr'])
+            ->whereBetween('created_at', [
+                date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
+                date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
+            ])
             ->whereIn('query', $keywords)
             ->orderBy('id', 'desc')
             ->limit($countKeyWords * 100)

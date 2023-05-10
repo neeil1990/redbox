@@ -527,9 +527,20 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project->url);
         $navigations = $this->navigations($project);
 
-        $keywords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-        $totalWords = count($keywords);
-        $keywords = array_chunk(array_column($keywords, 'query'), 50);
+        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query', 'id'])->toArray();
+        $totalWords = count($allWords);
+        $keywords = array_chunk(array_column($allWords, 'query'), 50);
+        $keywordsId = array_column($allWords, 'id');
+
+        $lastChecks = [];
+        foreach ($project->searchengines->pluck('id') as $region) {
+            $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
+                ->where('monitoring_searchengine_id', $region)
+                ->whereIn('monitoring_keyword_id', $keywordsId)
+                ->orderBy('id', 'desc');
+
+            $lastChecks[] = $positions->first()->toArray();
+        }
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
@@ -537,7 +548,8 @@ class MonitoringController extends Controller
             'navigations' => $navigations,
             'keywords' => json_encode($keywords),
             'totalWords' => $totalWords,
-            'changesDates' => $project->dates
+            'changesDates' => $project->dates,
+            'lastChecks' => $lastChecks
         ]);
     }
 

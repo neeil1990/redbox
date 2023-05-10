@@ -871,7 +871,8 @@
                             'region': $('#searchEngines').val(),
                             'keywords': words,
                             'competitors': {!! json_encode($competitors) !!},
-                            'totalWords': TOTAL_WORDS
+                            'totalWords': TOTAL_WORDS,
+                            'lastChecks': {!! json_encode($lastChecks) !!}
                         },
                         success: function (response) {
                             successRequests++

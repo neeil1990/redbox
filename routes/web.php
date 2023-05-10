@@ -390,18 +390,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
-
-Route::get('/test', function () {
-    $project = MonitoringProject::find(41);
-    $regions = $project->searchengines->pluck('id');
-    $keywordsId = $project->keywords->pluck('id');
-
-    foreach ($regions as $region) {
-        $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
-            ->where('monitoring_searchengine_id', $region)
-            ->whereIn('monitoring_keyword_id', $keywordsId)
-            ->orderBy('id', 'desc');
-
-        dump($positions->first()->toArray());
-    }
-});
