@@ -392,16 +392,14 @@ Route::middleware(['verified'])->group(function () {
 
 Route::get('/test', function () {
     $project = \App\MonitoringProject::find(41);
-    $region = $project->searchengines->toArray();
-    $keywordsId = $project->keywords->pluck('id');
+    $engines = $project->searchengines()->with('location')->get();
 
-    $positions = MonitoringPosition::select(DB::raw('monitoring_searchengine_id, DATE(created_at) as dateOnly'))
-        ->whereIn('monitoring_keyword_id', $keywordsId)
-        ->whereIn('monitoring_searchengine_id', array_column($region, 'id'))
-        ->groupBy('monitoring_searchengine_id')
-        ->get();
+    $groups = collect([]);
+    foreach ($engines as $engine) {
+        $engine->data = collect([]);
+        $positions = $engine->positions()->whereNotNull('position');
 
-
-    dump($region);
-    dd($positions);
+        $positions = $positions->get();
+        dump($positions);
+    }
 });
