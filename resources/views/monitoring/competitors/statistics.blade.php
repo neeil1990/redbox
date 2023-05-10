@@ -859,12 +859,11 @@
                 let successRequests = 0
                 let failRequests = 0
                 let totalRequests = oldArray.length
-
                 $.each(oldArray, function (k, words) {
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
-                        timeout: 1000,
+                        timeout: 4000,
                         url: "{{ route('monitoring.get.competitors.statistics') }}",
                         data: {
                             '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -882,7 +881,7 @@
                             results.push(response.statistics)
                         },
                         error: function () {
-                            console.log('no time')
+                            console.log(words)
                             failRequests++
                             newArray.push(words)
                         }
