@@ -864,6 +864,7 @@
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
+                        timeout: 1000,
                         url: "{{ route('monitoring.get.competitors.statistics') }}",
                         data: {
                             '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -881,6 +882,7 @@
                             results.push(response.statistics)
                         },
                         error: function () {
+                            console.log('no time')
                             failRequests++
                             newArray.push(words)
                         }
