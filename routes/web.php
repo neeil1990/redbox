@@ -395,7 +395,7 @@ Route::get('/test', function () {
     $region = $project->searchengines->toArray();
     $keywordsId = $project->keywords->pluck('id');
 
-    $positions = MonitoringPosition::select(DB::raw('monitoring_searchengine_id, DATE(created_at) as dateOnly'))
+    $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
         ->where('monitoring_keyword_id', $keywordsId[0])
         ->whereIn('monitoring_searchengine_id', array_column($region, 'id'))
         ->orderBy('id', 'desc')
