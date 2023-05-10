@@ -5,7 +5,6 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -134,7 +133,6 @@ class MonitoringCompetitor extends Model
             }
         }
 
-        $start = microtime(true);
         $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index)'))
             ->where('lr', $engine['lr'])
             ->whereIn('query', $keywords)
@@ -142,7 +140,6 @@ class MonitoringCompetitor extends Model
             ->limit($countKeyWords * 100)
             ->get(['url', 'position', 'created_at', 'query'])
             ->toArray();
-        Log::debug('microtime', [microtime(true) - $start]);
 
         foreach ($records as $record) {
             try {
