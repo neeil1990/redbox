@@ -899,7 +899,7 @@
 
                             setTimeout(() => {
                                 $('#toast-container').hide(300)
-                            }, 50000)
+                            }, 5000)
 
                             ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }
