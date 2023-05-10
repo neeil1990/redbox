@@ -54,12 +54,13 @@ class MonitoringProject extends Model
             $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
                 ->where('monitoring_searchengine_id', $region)
                 ->whereIn('monitoring_keyword_id', $keywordsId)
-                ->orderBy('id', 'desc');
+                ->orderBy('id', 'desc')
+                ->first();
 
-            dump($positions->first());
-//            $lastChecks[] = $positions->first()->toArray();
+            if(isset($positions)){
+                $lastChecks[] = $positions->toArray();
+            }
         }
-        dd(1);
         return $lastChecks;
     }
 }
