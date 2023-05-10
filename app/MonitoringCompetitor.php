@@ -13,7 +13,6 @@ class MonitoringCompetitor extends Model
     public static function getCompetitors(array $request): string
     {
         Log::debug('start');
-
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
 
@@ -39,11 +38,9 @@ class MonitoringCompetitor extends Model
                     $start = microtime(true);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
+                        ->where('created_at', '<=', date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')))
+                        ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')))
                         ->where('position', '<=', 10)
-                        ->whereBetween('created_at', [
-                            date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
-                            date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
-                        ])
                         ->whereIn('query', $keywords)
                         ->orderBy('id', 'desc')
                         ->limit(count($keywords) * 10)

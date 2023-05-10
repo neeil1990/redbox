@@ -437,7 +437,8 @@
                             '_token': $('meta[name="csrf-token"]').attr('content'),
                             'projectId': {{ $project->id }},
                             'targetDomain': targetDomain,
-                            'region': $('#searchEngines').val()
+                            'region': $('#searchEngines').val(),
+                            'lastChecks': {!! json_encode($lastCheck) !!}
                         },
                         beforeSend: function () {
                             parent.after(
