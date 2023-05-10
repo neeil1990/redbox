@@ -12,6 +12,7 @@
 */
 
 use App\MonitoringPosition;
+use App\MonitoringProject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -391,15 +392,14 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $project = \App\MonitoringProject::find(41);
-    $region = $project->searchengines->toArray();
+    $project = MonitoringProject::find(41);
+    $region = $project->searchengines()->orderBy('id', 'asc')->first();
     $keywordsId = $project->keywords->pluck('id');
 
     $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
-        ->where('monitoring_keyword_id', $keywordsId[0])
-        ->whereIn('monitoring_searchengine_id', array_column($region, 'id'))
-        ->orderBy('id', 'desc')
-        ->groupBy('monitoring_searchengine_id')
+        ->where('monitoring_searchengine_id', $region->id)
+        ->whereIn('monitoring_keyword_id', $keywordsId)
+        ->groupBy(DB::raw('DATE(created_at)'))
         ->get();
 
     dd($positions);
