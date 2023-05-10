@@ -397,12 +397,11 @@ Route::get('/test', function () {
     $keywordsId = $project->keywords->pluck('id');
 
     foreach ($regions as $region) {
-        $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
+        $positions = MonitoringPosition::select(DB::raw('*'))
             ->where('monitoring_searchengine_id', $region)
             ->whereIn('monitoring_keyword_id', $keywordsId)
-            ->orderBy(DB::raw('DATE(created_at)'))
-            ->get();
+            ->orderBy('id', 'desc');
 
-        dump($positions);
+        dump($positions->first()->toArray());
     }
 });
