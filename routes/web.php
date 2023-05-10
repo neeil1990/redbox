@@ -399,6 +399,7 @@ Route::get('/test', function () {
     $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
         ->whereIn('monitoring_searchengine_id', $regions)
         ->whereIn('monitoring_keyword_id', $keywordsId)
+        ->orderBy(DB::raw('DATE(created_at)'))
         ->orderBy('id', 'desc')
         ->get();
 
