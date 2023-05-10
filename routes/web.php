@@ -392,7 +392,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $project = MonitoringProject::find(177);
+    $project = MonitoringProject::find(41);
     $regions = $project->searchengines->pluck('id');
     $keywordsId = $project->keywords->pluck('id');
 
