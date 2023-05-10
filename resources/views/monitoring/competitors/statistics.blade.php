@@ -115,9 +115,9 @@
         </style>
     @endslot
 
-    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">{{ __('Filter applied') }}</div>
+    <div id="toast-container" class="toast-top-right error-message" style="display:none;">
+        <div class="toast toast-error" aria-live="polite">
+            <div class="toast-message">}</div>
         </div>
     </div>
 
@@ -335,28 +335,34 @@
                     </tr>
                     </thead>
                     <tbody id="changeDatesTbody">
-                    @foreach($project->dates as $result)
-                        <tr @if($result['state'] === 'in queue' || $result['state'] === 'in process') class="need-check"
-                            data-id="{{ $result['id'] }}"
-                            id="analyse-in-queue-{{ $result['id'] }}" @endif>
-                            <td>{{ $result['range'] }}</td>
-                            <td class="text-center">
-                                @if($result['state'] === 'ready')
-                                    <a href="{{ route('monitoring.changes.dates.result', $result['id']) }}"
-                                       target="_blank">{{ __('show') }}</a>
-                                @elseif($result['state'] === 'in queue')
-                                    {{ __("In queue") }}
-                                    <img src="/img/1485.gif" style="width: 20px; height: 20px;">
-                                @elseif($result['state'] === 'in process')
-                                    {{ __("In process") }}
-                                    <img src="/img/1485.gif" style="width: 20px; height: 20px;">
-                                @else
-                                    {{ __('Fail') }}
-                                    <i class="fa fa-trash remove-error-results" data-id="{{ $result['id'] }}"></i>
-                                @endif
-                            </td>
+                    @if(count($project->dates) > 0)
+                        @foreach($project->dates as $result)
+                            <tr @if($result['state'] === 'in queue' || $result['state'] === 'in process') class="need-check"
+                                data-id="{{ $result['id'] }}"
+                                id="analyse-in-queue-{{ $result['id'] }}" @endif>
+                                <td>{{ $result['range'] }}</td>
+                                <td class="text-center">
+                                    @if($result['state'] === 'ready')
+                                        <a href="{{ route('monitoring.changes.dates.result', $result['id']) }}"
+                                           target="_blank">{{ __('show') }}</a>
+                                    @elseif($result['state'] === 'in queue')
+                                        {{ __("In queue") }}
+                                        <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                                    @elseif($result['state'] === 'in process')
+                                        {{ __("In process") }}
+                                        <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                                    @else
+                                        {{ __('Fail') }}
+                                        <i class="fa fa-trash remove-error-results" data-id="{{ $result['id'] }}"></i>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr id="empty-row">
+                            <td class="text-center" colspan="2">{{ __('Empty') }}</td>
                         </tr>
-                    @endforeach
+                    @endif
                     </tbody>
                 </table>
                 <div class="mb-2 btn-group" id="visibility-buttons" style="display: none">
@@ -442,12 +448,13 @@
                         },
                         success: function (response) {
                             if (response.redirect) {
-                                let question = confirm('Вы уже анализровали ваш проект по выбранному диапазону дат, перенаправить вас на страницу a?')
+                                let question = confirm("{{ __('Have you already analyzed your project by the selected date range, should I redirect you to the results page?') }}")
                                 if (question) {
                                     window.open('/monitoring/competitors/result-analyse/' + response.id, '_blank');
                                 }
                                 return;
                             } else {
+                                $('#empty-row').remove()
                                 $('#changeDatesTbody').append(
                                     '<tr id="analyse-in-queue-' + response.analyseId + '">' +
                                     '   <td>' + $('#date-range').val() + '</td>' +
@@ -478,14 +485,14 @@
                             $('#analyse-in-queue-' + recordId).children('td').eq(1).html("{{ __('In process') }}" + ' <img src="/img/1485.gif" style="width: 20px; height: 20px;">')
                             setTimeout(() => {
                                 waitFinishAnalyse(recordId)
-                            }, 1000)
+                            }, 10000)
                         } else if (response.state === 'fail') {
                             $('#analyse-in-queue-' + recordId).children('td').eq(1).html("{{ __('Fail') }}" + ' <i class="fa fa-trash remove-error-results" data-id="' + recordId + '"></i>')
                             removeErrorResults()
                         } else {
                             setTimeout(() => {
                                 waitFinishAnalyse(recordId)
-                            }, 1000)
+                            }, 10000)
                         }
                     },
                 })
@@ -636,7 +643,7 @@
                 })
             }
 
-            function renderCharts(data, destroy) {
+            function renderCharts(data, destroy = false) {
                 let colorArray = getColorArray()
 
                 let labels = []
@@ -840,10 +847,20 @@
                 }
 
                 let countReadyWords = 0
-                let ajaxRequests = []
                 let array = [];
                 $('#ready-percent').html(0)
-                $.each(KEYWORDS, function (k, words) {
+
+                ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy)
+            }
+
+            function ifIssetNotReady(oldArray, countReadyWords, results, destroy) {
+                let ajaxRequests = []
+                let newArray = []
+                let successRequests = 0
+                let failRequests = 0
+                let totalRequests = oldArray.length
+
+                $.each(oldArray, function (k, words) {
                     ajaxRequests.push($.ajax({
                         type: "POST",
                         dataType: "json",
@@ -857,21 +874,37 @@
                             'totalWords': TOTAL_WORDS
                         },
                         success: function (response) {
+                            successRequests++
                             countReadyWords += words.length
                             $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
                             renderTableBody(response.visibility)
-                            array.push(response.statistics)
+                            results.push(response.statistics)
                         },
+                        error: function () {
+                            failRequests++
+                            newArray.push(words)
+                        }
                     }));
                 });
 
-                $.when.apply($, ajaxRequests).done(function () {
-                    $('#download-results').hide()
-                    table = initTable();
+                setTimeout(() => {
+                    if (totalRequests === successRequests + failRequests) {
+                        if (failRequests === 0) {
+                            $('#download-results').hide()
+                            table = initTable();
+                            renderStatistics(calculateAvgValues(results), destroy)
+                        } else {
+                            $('#toast-container').show(300)
+                            $('.toast-message').html("{{ __('Data could not be received, the request was duplicated') }}")
 
-                    let results = calculateAvgValues(array)
-                    renderStatistics(results, destroy)
-                });
+                            setTimeout(() => {
+                                $('#toast-container').hide(300)
+                            }, 5000)
+
+                            ifIssetNotReady(newArray, countReadyWords, results, destroy)
+                        }
+                    }
+                }, 5000)
             }
 
             function calculateAvgValues(array) {
