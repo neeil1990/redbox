@@ -895,7 +895,6 @@
                     regionId: REGION_ID,
                     dates: showDates,
                 }).then(function (response) {
-                    console.log(response)
                     $.each(response.data, function (i, item) {
 
                         let found = showDates.find(function (elem) {

@@ -455,7 +455,6 @@
                             )
                         },
                         success: function (response) {
-                            console.log(response)
                             let rows = ''
                             let yandexTh = false
                             let googleTh = false
