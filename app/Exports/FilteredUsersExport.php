@@ -14,13 +14,18 @@ class FilteredUsersExport implements FromCollection
 
     public function __construct($request)
     {
-        $this->users = User::where('id', '>', 0);
-        if (isset($request['verify'])) {
-            $this->users->where('email_verified_at', '!=', NULL);
+        $sql = User::where('id', '>', 0);
+        if ($request['verify'] === 'verify') {
+            $sql->where('email_verified_at', '!=', NULL);
+        } elseif ($request['verify'] === 'noVerify') {
+            $sql->where('email_verified_at', '=', NULL);
         }
 
-        $this->users->where('last_online_at', '<=', $request['lastOnline']);
-        $this->users = $this->users->get();
+        if (isset($request['lastOnline'])) {
+            $sql->where('last_online_at', '<=', $request['lastOnline']);
+        }
+
+        $this->users = $sql->get();
     }
 
     /**
