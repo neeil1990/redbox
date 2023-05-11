@@ -56,7 +56,34 @@
         @endforeach
     </div>
 
-    <div class="row">
+    <div class="d-flex flex-row mb-3 mt-3">
+        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->id) }}">
+            {{ __('Comparison with competitors') }}
+        </a>
+
+        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.dates', $project->id) }}">
+            {{ __('Changes by top and date') }}
+        </a>
+
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
+                    data-target="#competitorsModal" disabled>
+                {{ __('Search for competitors') }}
+            </button>
+            <button type="button" class="btn btn-secondary">
+                <span class="__helper-link ui_tooltip_w">
+                    <i class="fa fa-question-circle" style="color:white;"></i>
+                    <span class="ui_tooltip __right" style="width: 200px;">
+                        <span class="ui_tooltip_content">
+                            {{ __('We will automatically identify 5 of your closest competitors') }}
+                        </span>
+                    </span>
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-5">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
@@ -99,28 +126,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="d-flex flex-row">
-        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->id) }}">
-            {{ __('Comparison with competitors') }}
-        </a>
-        <div class="btn-group">
-            <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
-                    data-target="#competitorsModal" disabled>
-                {{ __('Search for competitors') }}
-            </button>
-            <button type="button" class="btn btn-secondary">
-                <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question-circle" style="color:white;"></i>
-                    <span class="ui_tooltip __right" style="width: 200px;">
-                        <span class="ui_tooltip_content">
-                            {{ __('We will automatically identify 5 of your closest competitors') }}
-                        </span>
-                    </span>
-                </span>
-            </button>
         </div>
     </div>
 
@@ -172,7 +177,7 @@
     </div>
 
     <div id="tableBlock" style="display: none">
-        <h3 class="mt-5">{{ __('Domains ranked in the top 10 (based on your phrases)') }}</h3>
+        <h3>{{ __('Domains ranked in the top 10 (based on your phrases)') }}</h3>
         <table id="table" class="table table-bordered no-footer">
             <thead style="top: 0; position: sticky; background-color: white">
             <tr>

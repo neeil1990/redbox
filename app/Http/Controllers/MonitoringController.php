@@ -556,15 +556,6 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $project = MonitoringChangesDate::where('range', $request['dateRange'])->first();
-
-        if (isset($project)) {
-            return response()->json([
-                'id' => $project->id,
-                'redirect' => true
-            ]);
-        }
-
         $newRecord = new MonitoringChangesDate([
             'monitoring_project_id' => $request->projectId,
             'range' => $request->dateRange,
@@ -603,9 +594,7 @@ class MonitoringController extends Controller
 
     public function removeChangesDatesState(Request $request): JsonResponse
     {
-        $count = MonitoringChangesDate::where('id', $request['id'])
-            ->where('state', 'fail')
-            ->delete();
+        $count = MonitoringChangesDate::where('id', $request['id'])->delete();
 
         if ($count === 1) {
             return response()->json([], 200);
@@ -614,12 +603,20 @@ class MonitoringController extends Controller
         return response()->json([], 415);
     }
 
+    public function changeDates(MonitoringProject $project)
+    {
+        $navigations = $this->navigations($project);
+        $searchEngines = $project->searchengines;
+
+        return view('monitoring.competitors.dates', compact('navigations', 'project', 'searchEngines'));
+    }
+
     public function resultChangesDatesState(MonitoringChangesDate $project)
     {
         $request = json_decode($project->request, true);
         $request['region'] = MonitoringSearchengine::where('id', $request['region'])->first()->location->name;
         $navigations = $this->navigations(MonitoringProject::find($project->monitoring_project_id));
 
-        return view('monitoring.competitors.dates', compact('project', 'request', 'navigations'));
+        return view('monitoring.competitors.dates-results', compact('project', 'request', 'navigations'));
     }
 }

@@ -34,8 +34,10 @@ class MonitoringCompetitor extends Model
                 foreach ($words as $keywords) {
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->where('lr', $engine['lr'])
-                        ->where('created_at', '<=', date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')))
-                        ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')))
+                        ->whereBetween('created_at', [
+                            date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
+                            date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
+                        ])
                         ->where('position', '<=', 10)
                         ->whereIn('query', $keywords)
                         ->orderBy('id', 'desc')
