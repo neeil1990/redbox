@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -116,6 +117,7 @@ class MonitoringCompetitor extends Model
 
     public static function calculateStatistics(array $request): array
     {
+        Log::debug('test', [$request]);
         $competitors = $request['competitors'];
         $keywords = $request['keywords'];
         $countKeyWords = count($keywords);
@@ -137,7 +139,6 @@ class MonitoringCompetitor extends Model
         }
 
         if (isset($lastDate)) {
-            $start = microtime(true);
             $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->where('lr', $engine['lr'])
                 ->whereBetween('created_at', [
