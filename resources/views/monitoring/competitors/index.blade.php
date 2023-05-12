@@ -496,7 +496,7 @@
                             }
                         },
                     });
-                }, 1000)
+                }, 5000)
             }
 
             function renderTableRows(data) {

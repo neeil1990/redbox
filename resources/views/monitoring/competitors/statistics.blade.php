@@ -746,7 +746,7 @@
                             ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }
                     }
-                }, 2000)
+                }, 5000)
             }
 
             function calculateAvgValues(array) {
