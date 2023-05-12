@@ -54,7 +54,18 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'last_online_at' => 'datetime'
+        'last_online_at' => 'datetime',
+        'metrics' => 'json',
+    ];
+
+    /**
+     *
+     *
+     * @var array
+     */
+    protected $with = [
+        'pay',
+        'roles',
     ];
 
     /**
