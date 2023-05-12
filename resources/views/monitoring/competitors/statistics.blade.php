@@ -739,16 +739,16 @@
                             $('#download-results').hide()
                             table = initTable();
                             renderStatistics(calculateAvgValues(results), destroy)
-                        } else {
-                            $('#toast-container').show(300)
-                            $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
-
-                            setTimeout(() => {
-                                $('#toast-container').hide(300)
-                            }, 2000)
-
-                            ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }
+                    } else {
+                        $('#toast-container').show(300)
+                        $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
+
+                        setTimeout(() => {
+                            $('#toast-container').hide(300)
+                        }, 2000)
+
+                        ifIssetNotReady(newArray, countReadyWords, results, destroy)
                     }
                 }, 2000)
             }
