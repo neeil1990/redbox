@@ -405,6 +405,7 @@
                         }
                     }
                 });
+
                 let res = $('#table').DataTable({
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
@@ -729,11 +730,11 @@
                 });
 
                 setTimeout(() => {
+                    console.log(totalRequests)
+                    console.log(successRequests)
+                    console.log(failRequests)
+                    console.log(failRequests === 0 && successRequests === totalRequests)
                     if (totalRequests === successRequests + failRequests) {
-                        console.log(totalRequests)
-                        console.log(successRequests)
-                        console.log(failRequests)
-                        console.log(failRequests === 0 && successRequests === totalRequests)
                         if (failRequests === 0 && successRequests === totalRequests) {
                             $('#download-results').hide()
                             table = initTable();
