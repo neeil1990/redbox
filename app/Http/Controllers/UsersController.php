@@ -23,6 +23,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -50,20 +51,67 @@ class UsersController extends Controller
     /**
      * @return void
      */
-    public function index()
+    public function index(Request $request)
     {
+        if($request->ajax())
+            return $this->getDataTable($request);
+
         $users = User::all();
-
-        foreach ($users as $key => $user) {
-            $metrics = json_decode($user['metrics'], true);
-            if ($metrics !== null) {
-                $users[$key]['metrics'] = $metrics;
-            }
-        }
-
         $tariffSelect = $this->tariffSelectData();
 
         return view('users.index', compact('users', 'tariffSelect'));
+    }
+
+    protected function getDataTable(Request $request)
+    {
+        $collection = collect([]);
+
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $page = ($length) ? ($start / $length) + 1 : false;
+
+        $user = new User();
+
+        $search = $request->get('search');
+        if ($search = $search['value'])
+            $user = $user->where('email', 'like', $search . '%');
+
+        if ($order = Arr::first($request->get('order'))) {
+            $columns = $request->get('columns');
+            $user = $user->orderBy($columns[$order['column']]['name'], $order['dir']);
+        }
+
+        $users = $user->paginate($length, ['*'], 'page', $page);
+
+        $users->transform(function($user){
+
+            // Tariff
+            $user->tariff = collect([]);
+            if($pay = $user->pay->where('status', true)->first()){
+                $user->tariff->put('name', $user->tariff()->name());
+                $user->tariff->put('active_to', $pay->active_to->format('d.m.Y H:i'));
+                $user->tariff->put('active_to_diffForHumans', $pay->active_to->diffForHumans());
+            }
+
+            //Created
+            $user->created = $user->created_at->format('d.m.Y H:i:s');
+            $user->created_diffForHumans = $user->created_at->diffForHumans();
+
+            //Was online
+            $loa = $user->last_online_at;
+            $user->last_online_strtotime = strtotime($loa);
+            $user->last_online = $loa->format('d.m.Y H:i:s');
+            $user->last_online_diffForHumans = $loa->diffForHumans();
+
+            return $user;
+        });
+
+        $collection->put('draw', $request->input('draw'));
+        $collection->put('recordsTotal', $users->total());
+        $collection->put('recordsFiltered', $users->total());
+        $collection->put('data', collect($users->items()));
+
+        return $collection;
     }
 
     public function storeTariff(Request $request)
