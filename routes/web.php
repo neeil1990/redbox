@@ -11,7 +11,12 @@
 |
 */
 
+use App\Common;
+use App\MonitoringKeyword;
+use App\MonitoringProject;
+use App\MonitoringSearchengine;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -388,4 +393,33 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    $projectId = 41;
+    $date = '29.11.2022';
+
+    $words = MonitoringKeyword::where('monitoring_project_id', $projectId)->get(['query'])->toArray();
+    $words = array_chunk($words, 100);
+    $engines = MonitoringSearchengine::where('id', '=', 80)->get(['engine', 'lr', 'id'])->toArray();
+
+    foreach ($engines as $engine) {
+        foreach ($words as $keywords) {
+            $start = microtime(true);
+            $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                ->where('lr', $engine['lr'])
+                ->whereBetween('created_at', [
+                    date('Y-m-d H:i:s', strtotime($date . ' 00:00:00')),
+                    date('Y-m-d H:i:s', strtotime($date . ' 23:59:59')),
+                ])
+                ->where('position', '<=', 10)
+                ->whereIn('query', $keywords)
+                ->orderBy('id', 'desc')
+                ->limit(count($keywords) * 10)
+                ->get(['query', 'url'])
+                ->toArray();
+
+            dump(microtime(true) - $start);
+        }
+    }
 });
