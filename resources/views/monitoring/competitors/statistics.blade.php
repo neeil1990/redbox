@@ -405,6 +405,7 @@
                         }
                     }
                 });
+
                 let res = $('#table').DataTable({
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
@@ -729,21 +730,25 @@
                 });
 
                 setTimeout(() => {
+                    console.log(totalRequests)
+                    console.log(successRequests)
+                    console.log(failRequests)
+                    console.log(failRequests === 0 && successRequests === totalRequests)
                     if (totalRequests === successRequests + failRequests) {
-                        if (failRequests === 0) {
+                        if (failRequests === 0 && successRequests === totalRequests) {
                             $('#download-results').hide()
                             table = initTable();
                             renderStatistics(calculateAvgValues(results), destroy)
-                        } else {
-                            $('#toast-container').show(300)
-                            $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
-
-                            setTimeout(() => {
-                                $('#toast-container').hide(300)
-                            }, 2000)
-
-                            ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }
+                    } else {
+                        $('#toast-container').show(300)
+                        $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
+
+                        setTimeout(() => {
+                            $('#toast-container').hide(300)
+                        }, 2000)
+
+                        ifIssetNotReady(newArray, countReadyWords, results, destroy)
                     }
                 }, 2000)
             }
@@ -804,6 +809,7 @@
                     buttonCounter++
                 })
             }
+
             function getUniqueValues(data) {
                 data = new Set([...data])
 

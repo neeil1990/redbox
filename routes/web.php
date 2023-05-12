@@ -11,7 +11,12 @@
 |
 */
 
+use App\Common;
+use App\MonitoringKeyword;
+use App\MonitoringProject;
+use App\MonitoringSearchengine;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();

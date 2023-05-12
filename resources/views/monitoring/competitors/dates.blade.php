@@ -47,7 +47,6 @@
         @endforeach
     </div>
 
-
     <div class="d-flex flex-row mb-3 mt-3 btn-group w-50">
         <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
             {{ __('My competitors') }}
