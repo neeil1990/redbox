@@ -730,7 +730,11 @@
 
                 setTimeout(() => {
                     if (totalRequests === successRequests + failRequests) {
-                        if (failRequests === 0) {
+                        console.log(totalRequests)
+                        console.log(successRequests)
+                        console.log(failRequests)
+                        console.log(failRequests === 0 && successRequests === totalRequests)
+                        if (failRequests === 0 && successRequests === totalRequests) {
                             $('#download-results').hide()
                             table = initTable();
                             renderStatistics(calculateAvgValues(results), destroy)
@@ -804,6 +808,7 @@
                     buttonCounter++
                 })
             }
+
             function getUniqueValues(data) {
                 data = new Set([...data])
 
