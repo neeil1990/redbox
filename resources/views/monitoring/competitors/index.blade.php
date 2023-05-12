@@ -8,7 +8,15 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+
+        <!-- daterange picker -->
+        <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
         <style>
+            .exist-position {
+                color: #28a745 !important;
+                font-weight: bold;
+            }
+
             .custom-info-bg {
                 background-color: rgba(23, 162, 184, 0.5) !important;
             }
@@ -56,56 +64,18 @@
         @endforeach
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ __('Region filter') }}</h3>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex flex-row justify-content-start align-items-center">
-                        <div class="col-4 mr-3">
-                            <div class="form-group">
-                                <label>{{ __('Search engine') }}:</label>
-                                <select name="region" class="custom-select" id="searchEngines">
-                                    @if($project->searchengines->count() > 1)
-                                        <option value="">{{ __('All search engine and regions') }}</option>
-                                    @endif
-
-                                    @foreach($project->searchengines as $search)
-                                        @if($search->id == request('region'))
-                                            <option value="{{ $search->id }}"
-                                                    selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                                [{{$search->lr}}]
-                                            </option>
-                                        @else
-                                            <option
-                                                value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                                [{{$search->lr}}]
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div id="download-results">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <img src="/img/1485.gif" style="width: 40px; height: 40px;">
-                            </div>
-                            <div id="render-state">
-                                {{ __('loading results') }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex flex-row">
-        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->id) }}">
+    <div class="d-flex flex-row mb-3 mt-3 btn-group w-50">
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
+            {{ __('My competitors') }}
+        </a>
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
             {{ __('Comparison with competitors') }}
         </a>
+
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.dates', $project->id) }}">
+            {{ __('Changes by top and date') }}
+        </a>
+
         <div class="btn-group">
             <button class="btn btn-outline-secondary" id="searchCompetitors" data-toggle="modal"
                     data-target="#competitorsModal" disabled>
@@ -121,6 +91,59 @@
                     </span>
                 </span>
             </button>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">{{ __('Region filter') }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-row justify-content-start align-items-center">
+                        <div class="input-group col-8 pl-0 ml-0">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" id="date-range">
+                            <select name="region" class="custom-select" id="searchEngines">
+                                @if($project->searchengines->count() > 1)
+                                    <option value="">{{ __('All search engine and regions') }}</option>
+                                @endif
+
+                                @foreach($project->searchengines as $search)
+                                    @if($search->id == request('region'))
+                                        <option value="{{ $search->id }}"
+                                                selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                            [{{$search->lr}}]
+                                        </option>
+                                    @else
+                                        <option
+                                            value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                            [{{$search->lr}}]
+                                        </option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            <button id="competitors-history-positions" class="btn btn-default"
+                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0">
+                                {{ __('Analyse') }}
+                            </button>
+                        </div>
+                        <div id="download-results" style="display: none">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                            </div>
+                            <div id="render-state">
+                                {{ __('loading results') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -172,7 +195,7 @@
     </div>
 
     <div id="tableBlock" style="display: none">
-        <h3 class="mt-5">{{ __('Domains ranked in the top 10 (based on your phrases)') }}</h3>
+        <h3>{{ __('Domains ranked in the top 10 (based on your phrases)') }}</h3>
         <table id="table" class="table table-bordered no-footer">
             <thead style="top: 0; position: sticky; background-color: white">
             <tr>
@@ -198,7 +221,121 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
 
+        <!-- InputMask -->
+        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+        <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+        <!-- date-range-picker -->
+        <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+
         <script>
+            const PROJECT_ID = {{ $project->id }};
+            const REGION_ID = '{{ request('region', null) }}';
+
+            let range = $('#date-range');
+            range.daterangepicker({
+                singleDatePicker: true,
+                opens: 'left',
+                startDate: moment().subtract(30, 'days'),
+                endDate: moment(),
+                ranges: {
+                    'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
+                    'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
+                    'Последние 60 дней': [moment().subtract(59, 'days'), moment()],
+                },
+                alwaysShowCalendars: true,
+                showCustomRangeLabel: false,
+                locale: {
+                    format: 'DD-MM-YYYY',
+                    daysOfWeek: [
+                        "Вс",
+                        "Пн",
+                        "Вт",
+                        "Ср",
+                        "Чт",
+                        "Пт",
+                        "Сб"
+                    ],
+                    monthNames: [
+                        "Январь",
+                        "Февраль",
+                        "Март",
+                        "Апрель",
+                        "Май",
+                        "Июнь",
+                        "Июль",
+                        "Август",
+                        "Сентябрь",
+                        "Октябрь",
+                        "Ноябрь",
+                        "Декабрь"
+                    ],
+                    firstDay: 1,
+                }
+            });
+
+            range.on('updateCalendar.daterangepicker', function (ev, picker) {
+
+                let container = picker.container;
+
+                let leftCalendarEl = container.find('.drp-calendar.left tbody tr');
+                let rightCalendarEl = container.find('.drp-calendar.right tbody tr');
+
+                let leftCalendarData = picker.leftCalendar.calendar;
+                let rightCalendarData = picker.rightCalendar.calendar;
+
+                let showDates = [];
+
+                for (let rows = 0; rows < leftCalendarData.length; rows++) {
+
+                    let leftCalendarRowEl = $(leftCalendarEl[rows]);
+                    $.each(leftCalendarData[rows], function (i, item) {
+
+                        let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
+                        if (!leftCalendarDaysEl.hasClass('off')) {
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: leftCalendarDaysEl,
+                            });
+                        }
+                    });
+
+                    let rightCalendarRowEl = $(rightCalendarEl[rows]);
+                    $.each(rightCalendarData[rows], function (i, item) {
+
+                        let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
+                        if (!rightCalendarDaysEl.hasClass('off')) {
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: rightCalendarDaysEl,
+                            });
+                        }
+                    });
+                }
+
+                axios.post('/monitoring/projects/get-positions-for-calendars', {
+                    projectId: PROJECT_ID,
+                    regionId: REGION_ID,
+                    dates: showDates,
+                }).then(function (response) {
+                    $.each(response.data, function (i, item) {
+
+                        let found = showDates.find(function (elem) {
+                            if (elem.date === item.dateOnly)
+                                return true;
+                        });
+
+                        if (!found.el.hasClass('exist-position'))
+                            found.el.addClass('exist-position');
+                    });
+                })
+            });
+        </script>
+
+        <script>
+            let interval
+
             function changeCellState(elem) {
                 let targetBlock = $(elem)
                 let url = targetBlock.attr('data-target')
@@ -246,11 +383,6 @@
                 }
             }
 
-            let data = {
-                '_token': $('meta[name="csrf-token"]').attr('content'),
-                'projectId': {{ $project->id }},
-            }
-
             $(document).ready(function () {
                 let filter = localStorage.getItem('lr_redbox_monitoring_selected_filter')
 
@@ -259,30 +391,19 @@
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
 
-                if ($('#searchEngines').val() !== '') {
-                    data.region = $('#searchEngines').val()
-                }
-
-                getCompetitorsInfo(data)
+                $('#competitors-history-positions').on('click', function () {
+                    getCompetitors()
+                })
 
                 $('#searchEngines').on('change', function () {
-                    $('#download-results').show()
                     let val = $(this).val()
-                    let data = {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'projectId': {{ $project->id }},
-                    }
-
                     if (val !== '') {
-                        data.region = val
                         localStorage.setItem('lr_redbox_monitoring_selected_filter', JSON.stringify({
                             val: val,
                         }))
                     } else {
                         localStorage.removeItem('lr_redbox_monitoring_selected_filter')
                     }
-
-                    getCompetitorsInfo(data)
                 })
 
                 $('#searchCompetitors').on('click', function () {
@@ -329,63 +450,114 @@
                 })
             })
 
+            function getCompetitors() {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('monitoring.get.competitors') }}",
+                    data: {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'projectId': {{ $project->id }},
+                        'date': $('#date-range').val(),
+                        'region': $('#searchEngines').val()
+                    },
+                    beforeSend: function () {
+                        if ($.fn.DataTable.fnIsDataTable($('#table'))) {
+                            $('#table').dataTable().fnDestroy();
+                            $('#table > tbody').html('')
+                        }
+                        $('#render-state').html("{{ __('loading results') }}")
+                        $('#searchCompetitors').prop('disabled', true)
+                        $('#tableBlock').hide()
+                    },
+                    success: function (response) {
+                        if (response.state === 'ready') {
+                            renderTableRows(JSON.parse(response.result))
+                        } else if (response.state === 'in process' || response.state === 'in queue') {
+                            waitFinishResult(response.id)
+                        }
+                    },
+                });
+            }
+
+            function waitFinishResult(id) {
+                clearInterval(interval)
+                $('#download-results').show()
+                $('#render-state').html('')
+
+                interval = setInterval(() => {
+                    $.ajax({
+                        dataType: "json",
+                        url: "/monitoring/competitors/result/" + id,
+                        success: function (response) {
+                            if (response.state === 'ready') {
+                                renderTableRows(JSON.parse(response.result))
+                                clearInterval(interval)
+                            }
+                        },
+                    });
+                }, 1000)
+            }
+
             function renderTableRows(data) {
                 $('#render-state').html("{{ __('Render data') }}")
 
                 let tableRows = []
-                $.each(data, function (key, val) {
-                    let input = ''
-                    if (val.mainPage) {
-                        input = "{{ __('Your website') }}"
-                    } else {
-                        if (val.competitor) {
-                            input = '<input type="checkbox" data-target="' + key + '" checked>'
+                if (data !== []) {
+                    $.each(data, function (key, val) {
+                        let input = ''
+                        if (val.mainPage) {
+                            input = "{{ __('Your website') }}"
                         } else {
-                            input = '<input type="checkbox" data-target="' + key + '">'
+                            if (val.competitor) {
+                                input = '<input type="checkbox" data-target="' + key + '" checked>'
+                            } else {
+                                input = '<input type="checkbox" data-target="' + key + '">'
+                            }
                         }
-                    }
 
-                    let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
+                        let stub = key + '<i class="ml-2 fa fa-plus-circle get-more-info" data-target="' + key + '">'
 
-                    let engines = ''
-                    let firstBlock = false
+                        let engines = ''
+                        let firstBlock = false
 
-                    $.each(val.urls, function (engine, v) {
-                        if (engine === 'yandex') {
-                            engines += '<i class="fab fa-yandex fa-sm mr-2"></i>'
+                        $.each(val.urls, function (engine, v) {
+                            if (engine === 'yandex') {
+                                engines += '<i class="fab fa-yandex fa-sm mr-2"></i>'
+                            }
+                            if (engine === 'google') {
+                                engines += '<i class="fab fa-google fa-sm mr-2"></i>'
+                            }
+                        })
+
+                        let google = renderRegions(val.visibilityGoogle)
+                        let yandex = renderRegions(val.visibilityYandex)
+
+                        let visibilityCell =
+                            '<div class="d-flex flex-row justify-content-between">'
+
+                        if (google !== 0) {
+                            firstBlock = true
+                            visibilityCell += '<div class="w-50 p-2"> Google: ' + google + '</div>'
                         }
-                        if (engine === 'google') {
-                            engines += '<i class="fab fa-google fa-sm mr-2"></i>'
+                        if (yandex !== 0) {
+                            let border = 'border-0'
+                            if (firstBlock) {
+                                border = 'border-left'
+                            }
+                            visibilityCell += '<div class="w-50 p-2 ' + border + '"> Yandex: ' + yandex + '</div>'
                         }
+
+                        let bool = val.competitor ?? false
+
+                        tableRows.push('<tr>' +
+                            '    <td data-order="' + bool + '" onclick="changeCellState(this)" data-target="' + key + '">' + input + '</td>' +
+                            '    <td data-order="' + key + '">' + stub + '</td>' +
+                            '    <td>' + engines + '</td>' +
+                            '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
+                            '</tr>')
                     })
-
-                    let google = renderRegions(val.visibilityGoogle)
-                    let yandex = renderRegions(val.visibilityYandex)
-
-                    let visibilityCell =
-                        '<div class="d-flex flex-row justify-content-between">'
-
-                    if (google !== 0) {
-                        firstBlock = true
-                        visibilityCell += '<div class="w-50 p-2"> Google: ' + google + '</div>'
-                    }
-                    if (yandex !== 0) {
-                        let border = 'border-0'
-                        if (firstBlock) {
-                            border = 'border-left'
-                        }
-                        visibilityCell += '<div class="w-50 p-2 ' + border + '"> Yandex: ' + yandex + '</div>'
-                    }
-
-                    let bool = val.competitor ?? false
-
-                    tableRows.push('<tr>' +
-                        '    <td data-order="' + bool + '" onclick="changeCellState(this)" data-target="' + key + '">' + input + '</td>' +
-                        '    <td data-order="' + key + '">' + stub + '</td>' +
-                        '    <td>' + engines + '</td>' +
-                        '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
-                        '</tr>')
-                })
+                }
 
                 $('#table > tbody').html(tableRows.join(' '))
 
@@ -403,7 +575,7 @@
                             "next": "»",
                             "previous": "«"
                         },
-                        "emptyTable": "{{ __('More than 15 days have passed since the last withdrawal') }}"
+                        "emptyTable": "{{ __('The withdrawal of positions by the selected date and region was not carried out') }}"
                     },
                     columnDefs: [
                         {
@@ -435,7 +607,7 @@
                             '_token': $('meta[name="csrf-token"]').attr('content'),
                             'projectId': {{ $project->id }},
                             'targetDomain': targetDomain,
-                            'region': $('#searchEngines').val()
+                            'region': $('#searchEngines').val(),
                         },
                         beforeSend: function () {
                             parent.after(
@@ -602,37 +774,6 @@
                 }
 
                 return region
-            }
-
-            function getCompetitorsInfo(data) {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.get.competitors') }}",
-                    data: data,
-                    beforeSend: function () {
-                        if ($.fn.DataTable.fnIsDataTable($('#table'))) {
-                            $('#table').dataTable().fnDestroy();
-                            $('#table > tbody').html('')
-                        }
-                        $('#render-state').html("{{ __('loading results') }}")
-                        $('#searchCompetitors').prop('disabled', true)
-                        $('#tableBlock').hide()
-                    },
-                    success: function (response) {
-                        $('.oldest-info').remove()
-                        if (response.oldest.length !== 0) {
-                            let block = '<div class="text-info mt-5 oldest-info"> Данные устарели, нужно переснять: <ul>'
-                            $.each(response.oldest, function (region, name) {
-                                block += '<li>' + name + ' (' + region + ')</li>'
-                            })
-                            block += '</ul></div>'
-                            $('#tableBlock').before(block)
-                        }
-
-                        renderTableRows(JSON.parse(response.results))
-                    },
-                });
             }
         </script>
     @endslot

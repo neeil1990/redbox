@@ -131,7 +131,7 @@ class Relevance
             $this->sites[$domain]['position'] = $item['position'];
 
             $compUrl = parse_url($domain);
-            if ($host == $compUrl['host']) {
+            if (isset($compUrl['host']) && $host == $compUrl['host']) {
                 $this->sites[$domain]['equallyHost'] = true;
             } else {
                 $this->sites[$domain]['equallyHost'] = false;

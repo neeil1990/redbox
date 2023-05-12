@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class MonitoringProject extends Model
 {
@@ -41,5 +42,25 @@ class MonitoringProject extends Model
     public function dates()
     {
         return $this->hasMany(MonitoringChangesDate::class);
+    }
+
+    public static function getLastDates(MonitoringProject $project): array
+    {
+        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id'])->toArray();
+        $keywordsId = array_column($allWords, 'id');
+
+        $lastChecks = [];
+        foreach ($project->searchengines->pluck('id') as $region) {
+            $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
+                ->where('monitoring_searchengine_id', $region)
+                ->whereIn('monitoring_keyword_id', $keywordsId)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if(isset($positions)){
+                $lastChecks[] = $positions->toArray();
+            }
+        }
+        return $lastChecks;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -11,37 +10,31 @@ class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request): array
+    public static function getCompetitors(array $request, $targetId)
     {
-        $oldest = [];
+        MonitoringCompetitorsResult::where('id', $targetId)->update([
+            'state' => 'in process'
+        ]);
+
         $project = MonitoringProject::findOrFail($request['projectId']);
-        $engines = isset($request['region'])
-            ? MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray()
-            : MonitoringSearchengine::where('monitoring_project_id', $project->id)->get(['engine', 'lr', 'id'])->toArray();
-        $words = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
-
-        foreach ($engines as $key => $engine) {
-            $latest = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                ->select(DB::raw('created_at, id'))
-                ->where('lr', $engine['lr'])
-                ->where('query', $words[0])
-                ->where('created_at', '>=', Carbon::now()->subDays(15)->toDateString() . ' 00:00:00')
-                ->orderBy('id', 'desc')
-                ->first();
-
-            if (empty($latest)) {
-                $oldest[$engine['lr']] = $engine['location']['name'];
-                unset($engines[$key]);
-            }
-        }
-
+        $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
         $words = array_chunk($words, 100);
         $competitors = [];
+
+        if (empty($request['region'])) {
+            $engines = MonitoringSearchengine::where('monitoring_project_id', $request['projectId'])->get(['engine', 'lr', 'id'])->toArray();
+        } else {
+            $engines = MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray();
+        }
 
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
+                    ->whereBetween('created_at', [
+                        date('Y-m-d H:i:s', strtotime($request['date'] . ' 00:00:00')),
+                        date('Y-m-d H:i:s', strtotime($request['date'] . ' 23:59:59')),
+                    ])
                     ->where('position', '<=', 10)
                     ->whereIn('query', $keywords)
                     ->orderBy('id', 'desc')
@@ -114,68 +107,72 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibilityGoogle'] = $google;
         }
 
-        return [
-            'results' => json_encode($competitors, JSON_INVALID_UTF8_IGNORE),
-            'oldest' => $oldest
-        ];
+        MonitoringCompetitorsResult::where('id', $targetId)->update([
+            'result' => Common::compressArray($competitors, JSON_INVALID_UTF8_IGNORE),
+            'state' => 'ready'
+        ]);
     }
 
     public static function calculateStatistics(array $request): array
     {
-        $competitors = $request['competitors'];
-        $keywords = $request['keywords'];
-        $countKeyWords = count($keywords);
-        foreach ($request['lastChecks'] as $check) {
-            if ($check['monitoring_searchengine_id'] === $request['region']) {
-                $lastDate = $check['dateOnly'];
-                break;
-            }
-        }
-
-        $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
-
-        $visibilityArray = [];
-        foreach ($keywords as $keyword) {
-            foreach ($competitors as $competitor) {
-                $visibilityArray[$keyword][$competitor] = 0;
-            }
-        }
-
-        Log::debug('last date', [$lastDate]);
-        $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index)'))
-            ->where('lr', $engine['lr'])
-            ->whereBetween('created_at', [
-                date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
-                date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
-            ])
-            ->whereIn('query', $keywords)
-            ->orderBy('id', 'desc')
-            ->limit($countKeyWords * 100)
-            ->get(['url', 'position', 'created_at', 'query'])
-            ->toArray();
-
-        foreach ($records as $record) {
-            try {
-                $url = Common::domainFilter(parse_url($record->url)['host']);
-                if (in_array($url, $competitors) && $visibilityArray[$record->query][$url] === 0) {
-                    $visibilityArray[$record->query][$url] = $record->position;
-                }
-            } catch (\Throwable $e) {
-            }
-        }
-
         $competitorStatistics = [];
-        foreach ($visibilityArray as $query => $positions) {
-            foreach ($competitors as $competitor) {
-                $competitorStatistics[$competitor]['positions'][$query] = $positions[$competitor] === 0 ? 101 : $positions[$competitor];
-            }
-        }
+        $visibilityArray = [];
 
-        foreach ($competitorStatistics as $key => $item) {
-            $competitorStatistics[$key]['sum'] = array_sum($item['positions']);
-            $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
-            $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
-            $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
+        if (isset($request['lastChecks'])) {
+            $competitors = $request['competitors'];
+            $keywords = $request['keywords'];
+            $countKeyWords = count($keywords);
+            foreach ($request['lastChecks'] as $check) {
+                if ($check['monitoring_searchengine_id'] === $request['region']) {
+                    $lastDate = $check['dateOnly'];
+                    break;
+                }
+            }
+
+            $engine = MonitoringSearchengine::where('id', '=', $request['region'])->first(['lr'])->toArray();
+
+            foreach ($keywords as $keyword) {
+                foreach ($competitors as $competitor) {
+                    $visibilityArray[$keyword][$competitor] = 0;
+                }
+            }
+
+            if (isset($lastDate)) {
+                $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                    ->where('lr', $engine['lr'])
+                    ->whereBetween('created_at', [
+                        date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
+                        date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
+                    ])
+                    ->whereIn('query', $keywords)
+                    ->orderBy('id', 'desc')
+                    ->limit($countKeyWords * 100)
+                    ->get(['url', 'position', 'created_at', 'query'])
+                    ->toArray();
+
+                foreach ($records as $record) {
+                    try {
+                        $url = Common::domainFilter(parse_url($record->url)['host']);
+                        if (in_array($url, $competitors) && $visibilityArray[$record->query][$url] === 0) {
+                            $visibilityArray[$record->query][$url] = $record->position;
+                        }
+                    } catch (\Throwable $e) {
+                    }
+                }
+
+                foreach ($visibilityArray as $query => $positions) {
+                    foreach ($competitors as $competitor) {
+                        $competitorStatistics[$competitor]['positions'][$query] = $positions[$competitor] === 0 ? 101 : $positions[$competitor];
+                    }
+                }
+
+                foreach ($competitorStatistics as $key => $item) {
+                    $competitorStatistics[$key]['sum'] = array_sum($item['positions']);
+                    $competitorStatistics[$key]['top_3'] = Common::percentHitIn(3, $item['positions']);
+                    $competitorStatistics[$key]['top_10'] = Common::percentHitIn(10, $item['positions']);
+                    $competitorStatistics[$key]['top_100'] = Common::percentHitIn(100, $item['positions']);
+                }
+            }
         }
 
         return [

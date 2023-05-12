@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Monitoring;
 
 use App\Common;
-use App\MonitoringChangesDate;
 use App\MonitoringCompetitor;
 use App\MonitoringKeyword;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use Carbon\CarbonPeriod;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
 class MonitoringChangesDateQueue implements ShouldQueue

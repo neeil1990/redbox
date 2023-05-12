@@ -7,10 +7,12 @@ use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
-use App\Jobs\MonitoringChangesDateQueue;
+use App\Jobs\Monitoring\MonitoringChangesDateQueue;
+use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
 use App\MonitoringChangesDate;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
+use App\MonitoringCompetitorsResult;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
@@ -438,9 +440,58 @@ class MonitoringController extends Controller
         ));
     }
 
-    public function getCompetitorsInfo(Request $request): array
+    public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        return MonitoringCompetitor::getCompetitors($request->all());
+        $record = MonitoringCompetitorsResult::where('date', $request->date)
+            ->where('region', $request->region)
+            ->where('project_id', $request->projectId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (isset($record) && $record->state === 'ready') {
+            return response()->json([
+                'result' => Common::uncompressArray($record->result, false),
+                'state' => $record->state
+            ]);
+        }
+
+        if (empty($record)) {
+            $newRecord = new MonitoringCompetitorsResult();
+            $newRecord->region = $request->region;
+            $newRecord->date = $request->date;
+            $newRecord->project_id = $request->projectId;
+            $newRecord->user_id = Auth::id();
+            $newRecord->save();
+
+            MonitoringCompetitorsQueue::dispatch(
+                $request->all(),
+                $newRecord->id
+            )->onQueue('monitoring_competitors_stat');
+
+            return response()->json([
+                'state' => 'in process',
+                'id' => $newRecord->id
+            ]);
+        }
+
+        return response()->json([
+            'state' => 'in queue',
+            'id' => $record->id
+        ]);
+    }
+
+    public function getMonitoringCompetitorsResult(MonitoringCompetitorsResult $record): JsonResponse
+    {
+        if ($record->state === 'ready') {
+            return response()->json([
+                'result' => Common::uncompressArray($record->result, false),
+                'state' => $record->state
+            ]);
+        }
+
+        return response()->json([
+            'state' => $record->state
+        ]);
     }
 
     public function addCompetitor(Request $request): ?JsonResponse
@@ -527,20 +578,9 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project->url);
         $navigations = $this->navigations($project);
 
-        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query', 'id'])->toArray();
+        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
         $totalWords = count($allWords);
         $keywords = array_chunk(array_column($allWords, 'query'), 100);
-        $keywordsId = array_column($allWords, 'id');
-
-        $lastChecks = [];
-        foreach ($project->searchengines->pluck('id') as $region) {
-            $positions = MonitoringPosition::select(DB::raw('*, DATE(created_at) as dateOnly'))
-                ->where('monitoring_searchengine_id', $region)
-                ->whereIn('monitoring_keyword_id', $keywordsId)
-                ->orderBy('id', 'desc');
-
-            $lastChecks[] = $positions->first()->toArray();
-        }
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
@@ -549,7 +589,7 @@ class MonitoringController extends Controller
             'keywords' => json_encode($keywords),
             'totalWords' => $totalWords,
             'changesDates' => $project->dates,
-            'lastChecks' => $lastChecks
+            'lastChecks' => MonitoringProject::getLastDates($project)
         ]);
     }
 
@@ -565,15 +605,6 @@ class MonitoringController extends Controller
 
     public function competitorsHistoryPositions(Request $request): JsonResponse
     {
-        $project = MonitoringChangesDate::where('range', $request['dateRange'])->first();
-
-        if (isset($project)) {
-            return response()->json([
-                'id' => $project->id,
-                'redirect' => true
-            ]);
-        }
-
         $newRecord = new MonitoringChangesDate([
             'monitoring_project_id' => $request->projectId,
             'range' => $request->dateRange,
@@ -612,9 +643,7 @@ class MonitoringController extends Controller
 
     public function removeChangesDatesState(Request $request): JsonResponse
     {
-        $count = MonitoringChangesDate::where('id', $request['id'])
-            ->where('state', 'fail')
-            ->delete();
+        $count = MonitoringChangesDate::where('id', $request['id'])->delete();
 
         if ($count === 1) {
             return response()->json([], 200);
@@ -623,12 +652,20 @@ class MonitoringController extends Controller
         return response()->json([], 415);
     }
 
+    public function changeDates(MonitoringProject $project)
+    {
+        $navigations = $this->navigations($project);
+        $searchEngines = $project->searchengines;
+
+        return view('monitoring.competitors.dates', compact('navigations', 'project', 'searchEngines'));
+    }
+
     public function resultChangesDatesState(MonitoringChangesDate $project)
     {
         $request = json_decode($project->request, true);
         $request['region'] = MonitoringSearchengine::where('id', $request['region'])->first()->location->name;
         $navigations = $this->navigations(MonitoringProject::find($project->monitoring_project_id));
 
-        return view('monitoring.competitors.dates', compact('project', 'request', 'navigations'));
+        return view('monitoring.competitors.dates-results', compact('project', 'request', 'navigations'));
     }
 }
