@@ -7,10 +7,12 @@ use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
-use App\Jobs\MonitoringChangesDateQueue;
+use App\Jobs\Monitoring\MonitoringChangesDateQueue;
+use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
 use App\MonitoringChangesDate;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
+use App\MonitoringCompetitorsResult;
 use App\MonitoringDataTableColumnsProject;
 use App\MonitoringKeyword;
 use App\MonitoringPosition;
@@ -28,6 +30,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {
@@ -429,20 +432,66 @@ class MonitoringController extends Controller
             $ignoredDomains = $ignoredDomains['value'];
         }
 
-        $lastCheck = MonitoringProject::getLastDates($project);
-
         return view('monitoring.competitors.index', compact(
             'navigations',
             'countQuery',
             'ignoredDomains',
-            'project',
-            'lastCheck'
+            'project'
         ));
     }
 
-    public function getCompetitorsInfo(Request $request): string
+    public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        return MonitoringCompetitor::getCompetitors($request->all());
+        $record = MonitoringCompetitorsResult::where('date', $request->date)
+            ->where('region', $request->region)
+            ->where('project_id', $request->projectId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (isset($record) && $record->state === 'ready') {
+            return response()->json([
+                'result' => Common::uncompressArray($record->result, false),
+                'state' => $record->state
+            ]);
+        }
+
+        if (empty($record)) {
+            $newRecord = new MonitoringCompetitorsResult();
+            $newRecord->region = $request->region;
+            $newRecord->date = $request->date;
+            $newRecord->project_id = $request->projectId;
+            $newRecord->user_id = Auth::id();
+            $newRecord->save();
+
+            MonitoringCompetitorsQueue::dispatch(
+                $request->all(),
+                $newRecord->id
+            )->onQueue('monitoring_competitors_stat');
+
+            return response()->json([
+                'state' => 'in process',
+                'id' => $newRecord->id
+            ]);
+        }
+
+        return response()->json([
+            'state' => 'in queue',
+            'id' => $record->id
+        ]);
+    }
+
+    public function getMonitoringCompetitorsResult(MonitoringCompetitorsResult $record): JsonResponse
+    {
+        if ($record->state === 'ready') {
+            return response()->json([
+                'result' => Common::uncompressArray($record->result, false),
+                'state' => $record->state
+            ]);
+        }
+
+        return response()->json([
+            'state' => $record->state
+        ]);
     }
 
     public function addCompetitor(Request $request): ?JsonResponse

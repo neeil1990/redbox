@@ -47,9 +47,17 @@
         @endforeach
     </div>
 
-    <div class="d-flex flex-row mt-3">
-        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->id) }}">
+
+    <div class="d-flex flex-row mb-3 mt-3 btn-group w-50">
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
+            {{ __('My competitors') }}
+        </a>
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
             {{ __('Comparison with competitors') }}
+        </a>
+
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.dates', $project->id) }}">
+            {{ __('Changes by top and date') }}
         </a>
     </div>
 

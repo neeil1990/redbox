@@ -7,8 +7,6 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
-        <!-- daterange picker -->
-        <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
         <style>
             .custom-info-bg {
                 background-color: rgba(23, 162, 184, 0.5) !important;
@@ -144,8 +142,15 @@
         @endforeach
     </div>
 
-    <div class="d-flex flex-row mt-3 mb-3">
-        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.dates', $project->id) }}">
+    <div class="d-flex flex-row mb-3 mt-3 btn-group w-50">
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
+            {{ __('My competitors') }}
+        </a>
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
+            {{ __('Comparison with competitors') }}
+        </a>
+
+        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.dates', $project->id) }}">
             {{ __('Changes by top and date') }}
         </a>
     </div>
@@ -325,11 +330,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
                 integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <!-- InputMask -->
-        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
-        <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
-        <!-- date-range-picker -->
-        <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
         <script>
             let historyTable
             let table
@@ -804,110 +804,6 @@
                     buttonCounter++
                 })
             }
-
-            let startDate = null;
-            let endDate = null;
-
-            let range = $('#date-range');
-            range.daterangepicker({
-                opens: 'left',
-                startDate: startDate ?? moment().subtract(30, 'days'),
-                endDate: endDate ?? moment(),
-                ranges: {
-                    'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
-                    'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
-                    'Последние 60 дней': [moment().subtract(59, 'days'), moment()],
-                },
-                alwaysShowCalendars: true,
-                showCustomRangeLabel: false,
-                locale: {
-                    format: 'DD-MM-YYYY',
-                    daysOfWeek: [
-                        "Вс",
-                        "Пн",
-                        "Вт",
-                        "Ср",
-                        "Чт",
-                        "Пт",
-                        "Сб"
-                    ],
-                    monthNames: [
-                        "Январь",
-                        "Февраль",
-                        "Март",
-                        "Апрель",
-                        "Май",
-                        "Июнь",
-                        "Июль",
-                        "Август",
-                        "Сентябрь",
-                        "Октябрь",
-                        "Ноябрь",
-                        "Декабрь"
-                    ],
-                    firstDay: 1,
-                }
-            });
-
-            range.on('updateCalendar.daterangepicker', function (ev, picker) {
-
-                let container = picker.container;
-
-                let leftCalendarEl = container.find('.drp-calendar.left tbody tr');
-                let rightCalendarEl = container.find('.drp-calendar.right tbody tr');
-
-                let leftCalendarData = picker.leftCalendar.calendar;
-                let rightCalendarData = picker.rightCalendar.calendar;
-
-                let showDates = [];
-
-                for (let rows = 0; rows < leftCalendarData.length; rows++) {
-
-                    let leftCalendarRowEl = $(leftCalendarEl[rows]);
-                    $.each(leftCalendarData[rows], function (i, item) {
-
-                        let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
-                        if (!leftCalendarDaysEl.hasClass('off')) {
-
-                            showDates.push({
-                                date: item.format('YYYY-MM-DD'),
-                                el: leftCalendarDaysEl,
-                            });
-                        }
-                    });
-
-                    let rightCalendarRowEl = $(rightCalendarEl[rows]);
-                    $.each(rightCalendarData[rows], function (i, item) {
-
-                        let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
-                        if (!rightCalendarDaysEl.hasClass('off')) {
-
-                            showDates.push({
-                                date: item.format('YYYY-MM-DD'),
-                                el: rightCalendarDaysEl,
-                            });
-                        }
-                    });
-                }
-
-                axios.post('/monitoring/projects/get-positions-for-calendars', {
-                    projectId: PROJECT_ID,
-                    regionId: REGION_ID,
-                    dates: showDates,
-                }).then(function (response) {
-                    $.each(response.data, function (i, item) {
-
-                        let found = showDates.find(function (elem) {
-                            if (elem.date === item.dateOnly)
-                                return true;
-                        });
-
-                        if (!found.el.hasClass('exist-position'))
-                            found.el.addClass('exist-position');
-                    });
-                })
-            });
-
             function getUniqueValues(data) {
                 data = new Set([...data])
 

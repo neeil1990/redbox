@@ -10,51 +10,46 @@ class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request): string
+    public static function getCompetitors(array $request, $targetId)
     {
+        MonitoringCompetitorsResult::where('id', $targetId)->update([
+            'state' => 'in process'
+        ]);
+
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
-
-        if (isset($request['region'])) {
-            $engines = MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray();
-        } else {
-            $engines = MonitoringSearchengine::where('monitoring_project_id', $request['projectId'])->get(['engine', 'lr', 'id'])->toArray();
-        }
         $words = array_chunk($words, 100);
         $competitors = [];
 
+        if (empty($request['region'])) {
+            $engines = MonitoringSearchengine::where('monitoring_project_id', $request['projectId'])->get(['engine', 'lr', 'id'])->toArray();
+        } else {
+            $engines = MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray();
+        }
+
         foreach ($engines as $engine) {
-            foreach ($request['lastChecks'] as $check) {
-                if ($check['monitoring_searchengine_id'] == $engine['id']) {
-                    $lastDate = $check['dateOnly'];
-                    break;
-                }
-            }
+            foreach ($words as $keywords) {
+                $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                    ->where('lr', $engine['lr'])
+                    ->whereBetween('created_at', [
+                        date('Y-m-d H:i:s', strtotime($request['date'] . ' 00:00:00')),
+                        date('Y-m-d H:i:s', strtotime($request['date'] . ' 23:59:59')),
+                    ])
+                    ->where('position', '<=', 10)
+                    ->whereIn('query', $keywords)
+                    ->orderBy('id', 'desc')
+                    ->limit(count($keywords) * 10)
+                    ->get(['query', 'url'])
+                    ->toArray();
 
-            if (isset($lastDate)) {
-                foreach ($words as $keywords) {
-                    $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                        ->where('lr', $engine['lr'])
-                        ->whereBetween('created_at', [
-                            date('Y-m-d H:i:s', strtotime($lastDate . ' 00:00:00')),
-                            date('Y-m-d H:i:s', strtotime($lastDate . ' 23:59:59')),
-                        ])
-                        ->where('position', '<=', 10)
-                        ->whereIn('query', $keywords)
-                        ->orderBy('id', 'desc')
-                        ->limit(count($keywords) * 10)
-                        ->get(['query', 'url'])
-                        ->toArray();
-
-                    foreach ($results as $result) {
-                        $host = parse_url(Common::domainFilter($result->url))['host'];
-                        if (isset($request['targetDomain'])) {
-                            if ($host === $request['targetDomain']) {
-                                $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
-                            }
-                        } else {
-                            $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
+                foreach ($results as $result) {
+                    $host = parse_url(Common::domainFilter($result->url))['host'];
+                    if (isset($request['targetDomain'])) {
+                        if ($host === $request['targetDomain']) {
+                            $competitors[$host]['urls'][$result->query][$engine['engine']][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                         }
+                    } else {
+                        $competitors[$host]['urls'][$engine['engine']][$result->query][] = [$engine['location']['name'] => Common::domainFilter($result->url)];
                     }
                 }
             }
@@ -112,7 +107,10 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibilityGoogle'] = $google;
         }
 
-        return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
+        MonitoringCompetitorsResult::where('id', $targetId)->update([
+            'result' => Common::compressArray($competitors, JSON_INVALID_UTF8_IGNORE),
+            'state' => 'ready'
+        ]);
     }
 
     public static function calculateStatistics(array $request): array

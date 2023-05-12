@@ -3,7 +3,6 @@
 namespace App;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class Common
 {
@@ -38,6 +37,15 @@ class Common
         }
 
         return gzuncompress(base64_decode($string));
+    }
+
+    public static function compressArray($data, $flag = false): string
+    {
+        if ($flag !== false) {
+            return base64_encode(gzcompress(json_encode($data, $flag), 9));
+        }
+
+        return base64_encode(gzcompress(json_encode($data), 9));
     }
 
     public static function getRegionName(string $id): string

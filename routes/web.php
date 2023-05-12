@@ -11,10 +11,7 @@
 |
 */
 
-use App\MonitoringPosition;
-use App\MonitoringProject;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -325,6 +322,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
     Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
     Route::post('/monitoring/competitors/visibility', 'MonitoringController@getStatistics')->name('monitoring.get.competitors.statistics');
+    Route::get('/monitoring/competitors/result/{record}', 'MonitoringController@getMonitoringCompetitorsResult')->name('monitoring.get.competitors.result');
 
     Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');
     Route::get('/share-my-project-config/{project}', 'SharingController@shareProjectConf')->name('share.project.conf');
