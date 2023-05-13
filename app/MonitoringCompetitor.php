@@ -11,12 +11,8 @@ class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request, $targetId)
+    public static function getCompetitors(array $request, $targetId = false): ?string
     {
-        MonitoringCompetitorsResult::where('id', $targetId)->update([
-            'state' => 'in process'
-        ]);
-
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
         $words = array_chunk($words, 50);
@@ -108,10 +104,14 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibilityGoogle'] = $google;
         }
 
-        MonitoringCompetitorsResult::where('id', $targetId)->update([
-            'result' => Common::compressArray($competitors, JSON_INVALID_UTF8_IGNORE),
-            'state' => 'ready'
-        ]);
+        if ($targetId !== false) {
+            MonitoringCompetitorsResult::where('id', $targetId)->update([
+                'result' => Common::compressArray($competitors, JSON_INVALID_UTF8_IGNORE),
+                'state' => 'ready'
+            ]);
+        }
+
+        return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
     }
 
     public static function calculateStatistics(array $request): array

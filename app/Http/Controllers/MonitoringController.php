@@ -442,42 +442,50 @@ class MonitoringController extends Controller
 
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        $record = MonitoringCompetitorsResult::where('date', $request->date)
-            ->where('region', $request->region)
-            ->where('project_id', $request->projectId)
-            ->where('user_id', Auth::id())
-            ->first();
+        $project = MonitoringProject::find($request->projectId);
+        if ($project->keywords->count() > 500) {
+            $record = MonitoringCompetitorsResult::where('date', $request->date)
+                ->where('region', $request->region)
+                ->where('project_id', $request->projectId)
+                ->where('user_id', Auth::id())
+                ->first();
 
-        if (isset($record) && $record->state === 'ready') {
+            if (isset($record) && $record->state === 'ready') {
+                return response()->json([
+                    'result' => Common::uncompressArray($record->result, false),
+                    'state' => $record->state
+                ]);
+            }
+
+            if (empty($record)) {
+                $newRecord = new MonitoringCompetitorsResult();
+                $newRecord->region = $request->region;
+                $newRecord->date = $request->date;
+                $newRecord->project_id = $request->projectId;
+                $newRecord->user_id = Auth::id();
+                $newRecord->save();
+
+                MonitoringCompetitorsQueue::dispatch(
+                    $request->all(),
+                    $newRecord->id
+                )->onQueue('monitoring_competitors_stat');
+
+                return response()->json([
+                    'state' => 'in process',
+                    'id' => $newRecord->id
+                ]);
+            }
+
             return response()->json([
-                'result' => Common::uncompressArray($record->result, false),
-                'state' => $record->state
+                'state' => 'in queue',
+                'id' => $record->id
+            ]);
+        } else {
+            return response()->json([
+                'result' => MonitoringCompetitor::getCompetitors($request->all()),
+                'state' => 'ready'
             ]);
         }
-
-        if (empty($record)) {
-            $newRecord = new MonitoringCompetitorsResult();
-            $newRecord->region = $request->region;
-            $newRecord->date = $request->date;
-            $newRecord->project_id = $request->projectId;
-            $newRecord->user_id = Auth::id();
-            $newRecord->save();
-
-            MonitoringCompetitorsQueue::dispatch(
-                $request->all(),
-                $newRecord->id
-            )->onQueue('monitoring_competitors_stat');
-
-            return response()->json([
-                'state' => 'in process',
-                'id' => $newRecord->id
-            ]);
-        }
-
-        return response()->json([
-            'state' => 'in queue',
-            'id' => $record->id
-        ]);
     }
 
     public function getMonitoringCompetitorsResult(MonitoringCompetitorsResult $record): JsonResponse
