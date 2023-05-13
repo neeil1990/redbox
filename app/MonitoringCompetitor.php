@@ -25,19 +25,20 @@ class MonitoringCompetitor extends Model
         }
 
         $date = Carbon::parse($request['date'])->toDateString();
+        Log::debug('microtime', [$date]);
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
                 $start = microtime(true);
-                $sql = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                    ->where('lr', $engine['lr'])
-                    ->where('position', '<=', 10)
-                    ->whereDate('created_at', $date)
-                    ->whereIn('query', $keywords)
-                    ->orderBy('id', 'desc')
-                    ->limit(count($keywords) * 10);
-                $results = $sql->get(['query', 'url'])->toArray();
+                $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                    ->where('search_indices.lr', $engine['lr'])
+                    ->where('search_indices.position', '<=', 10)
+                    ->whereDate('search_indices.created_at', $date)
+                    ->whereIn('search_indices.query', $keywords)
+                    ->orderBy('search_indices.id', 'desc')
+                    ->get()
+                    ->toArray();
 
-                Log::debug(microtime(true) - $start);
+                Log::debug('microtime', [microtime(true) - $start]);
 
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
