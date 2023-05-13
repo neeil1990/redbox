@@ -18,7 +18,7 @@ class MonitoringCompetitor extends Model
 
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
-        $words = array_chunk($words, 100);
+        $words = array_chunk($words, 50);
         $competitors = [];
 
         if (empty($request['region'])) {
@@ -32,10 +32,7 @@ class MonitoringCompetitor extends Model
                 $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
-                    ->whereBetween('created_at', [
-                        date('Y-m-d H:i:s', strtotime($request['date'] . ' 00:00:00')),
-                        date('Y-m-d H:i:s', strtotime($request['date'] . ' 23:59:59')),
-                    ])
+                    ->whereDate('created_at', $request['date'])
                     ->where('position', '<=', 10)
                     ->whereIn('query', $keywords)
                     ->orderBy('id', 'desc')
