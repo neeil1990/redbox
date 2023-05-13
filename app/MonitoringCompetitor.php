@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringCompetitor extends Model
 {
@@ -28,6 +29,7 @@ class MonitoringCompetitor extends Model
 
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
+                $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
                     ->whereBetween('created_at', [
@@ -41,6 +43,7 @@ class MonitoringCompetitor extends Model
                     ->get(['query', 'url'])
                     ->toArray();
 
+                Log::debug('microtime', [microtime(true) - $start]);
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
                     if (isset($request['targetDomain'])) {
