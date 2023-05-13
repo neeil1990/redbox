@@ -325,11 +325,6 @@
         <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-        <!-- Charts -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
-                integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
-                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             let historyTable
             let table
@@ -708,12 +703,11 @@
                         url: "{{ route('monitoring.get.competitors.statistics') }}",
                         data: {
                             '_token': $('meta[name="csrf-token"]').attr('content'),
-                            'projectId': PROJECT_ID,
-                            'region': $('#searchEngines').val(),
-                            'keywords': words,
                             'competitors': {!! json_encode($competitors) !!},
+                            'region': $('#searchEngines').val(),
                             'totalWords': TOTAL_WORDS,
-                            'lastChecks': {!! json_encode($lastChecks) !!}
+                            'projectId': PROJECT_ID,
+                            'keywords': words,
                         },
                         success: function (response) {
                             successRequests++
@@ -746,7 +740,7 @@
                             ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }
                     }
-                }, 5000)
+                }, 2000)
             }
 
             function calculateAvgValues(array) {
@@ -830,5 +824,10 @@
                 }, 300)
             })
         </script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <!-- Charts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
+                integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @endslot
 @endcomponent

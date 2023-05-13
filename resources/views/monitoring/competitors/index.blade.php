@@ -102,13 +102,12 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-row justify-content-start align-items-center">
-                        <div class="input-group col-8 pl-0 ml-0">
+                        <div class="input-group col-4 pl-0 ml-0">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control" id="date-range">
                             <select name="region" class="custom-select" id="searchEngines">
                                 @if($project->searchengines->count() > 1)
                                     <option value="">{{ __('All search engine and regions') }}</option>
@@ -221,118 +220,6 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
 
-        <!-- InputMask -->
-        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
-        <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
-        <!-- date-range-picker -->
-        <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
-
-        <script>
-            const PROJECT_ID = {{ $project->id }};
-            const REGION_ID = '{{ request('region', null) }}';
-
-            let range = $('#date-range');
-            range.daterangepicker({
-                singleDatePicker: true,
-                opens: 'left',
-                startDate: moment().subtract(30, 'days'),
-                endDate: moment(),
-                ranges: {
-                    'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
-                    'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
-                    'Последние 60 дней': [moment().subtract(59, 'days'), moment()],
-                },
-                alwaysShowCalendars: true,
-                showCustomRangeLabel: false,
-                locale: {
-                    format: 'DD-MM-YYYY',
-                    daysOfWeek: [
-                        "Вс",
-                        "Пн",
-                        "Вт",
-                        "Ср",
-                        "Чт",
-                        "Пт",
-                        "Сб"
-                    ],
-                    monthNames: [
-                        "Январь",
-                        "Февраль",
-                        "Март",
-                        "Апрель",
-                        "Май",
-                        "Июнь",
-                        "Июль",
-                        "Август",
-                        "Сентябрь",
-                        "Октябрь",
-                        "Ноябрь",
-                        "Декабрь"
-                    ],
-                    firstDay: 1,
-                }
-            });
-
-            range.on('updateCalendar.daterangepicker', function (ev, picker) {
-
-                let container = picker.container;
-
-                let leftCalendarEl = container.find('.drp-calendar.left tbody tr');
-                let rightCalendarEl = container.find('.drp-calendar.right tbody tr');
-
-                let leftCalendarData = picker.leftCalendar.calendar;
-                let rightCalendarData = picker.rightCalendar.calendar;
-
-                let showDates = [];
-
-                for (let rows = 0; rows < leftCalendarData.length; rows++) {
-
-                    let leftCalendarRowEl = $(leftCalendarEl[rows]);
-                    $.each(leftCalendarData[rows], function (i, item) {
-
-                        let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
-                        if (!leftCalendarDaysEl.hasClass('off')) {
-
-                            showDates.push({
-                                date: item.format('YYYY-MM-DD'),
-                                el: leftCalendarDaysEl,
-                            });
-                        }
-                    });
-
-                    let rightCalendarRowEl = $(rightCalendarEl[rows]);
-                    $.each(rightCalendarData[rows], function (i, item) {
-
-                        let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
-                        if (!rightCalendarDaysEl.hasClass('off')) {
-
-                            showDates.push({
-                                date: item.format('YYYY-MM-DD'),
-                                el: rightCalendarDaysEl,
-                            });
-                        }
-                    });
-                }
-
-                axios.post('/monitoring/projects/get-positions-for-calendars', {
-                    projectId: PROJECT_ID,
-                    regionId: REGION_ID,
-                    dates: showDates,
-                }).then(function (response) {
-                    $.each(response.data, function (i, item) {
-
-                        let found = showDates.find(function (elem) {
-                            if (elem.date === item.dateOnly)
-                                return true;
-                        });
-
-                        if (!found.el.hasClass('exist-position'))
-                            found.el.addClass('exist-position');
-                    });
-                })
-            });
-        </script>
-
         <script>
             let interval
 
@@ -390,6 +277,8 @@
                     filter = JSON.parse(filter)
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
+
+                getCompetitors()
 
                 $('#competitors-history-positions').on('click', function () {
                     getCompetitors()
@@ -458,10 +347,11 @@
                     data: {
                         '_token': $('meta[name="csrf-token"]').attr('content'),
                         'projectId': {{ $project->id }},
-                        'date': $('#date-range').val(),
                         'region': $('#searchEngines').val()
                     },
                     beforeSend: function () {
+                        $('#download-results').show()
+                        $('#competitors-history-positions').prop('disabled', true)
                         if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                             $('#table').dataTable().fnDestroy();
                             $('#table > tbody').html('')
@@ -471,11 +361,8 @@
                         $('#tableBlock').hide()
                     },
                     success: function (response) {
-                        if (response.state === 'ready') {
-                            renderTableRows(JSON.parse(response.result))
-                        } else if (response.state === 'in process' || response.state === 'in queue') {
-                            waitFinishResult(response.id)
-                        }
+                        renderTableRows(JSON.parse(response.result))
+                        $('#competitors-history-positions').prop('disabled', false)
                     },
                 });
             }

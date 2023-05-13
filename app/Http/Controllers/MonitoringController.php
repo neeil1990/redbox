@@ -442,50 +442,9 @@ class MonitoringController extends Controller
 
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        $project = MonitoringProject::find($request->projectId);
-        if ($project->keywords->count() > 500) {
-            $record = MonitoringCompetitorsResult::where('date', $request->date)
-                ->where('region', $request->region)
-                ->where('project_id', $request->projectId)
-                ->where('user_id', Auth::id())
-                ->first();
-
-            if (isset($record) && $record->state === 'ready') {
-                return response()->json([
-                    'result' => Common::uncompressArray($record->result, false),
-                    'state' => $record->state
-                ]);
-            }
-
-            if (empty($record)) {
-                $newRecord = new MonitoringCompetitorsResult();
-                $newRecord->region = $request->region;
-                $newRecord->date = $request->date;
-                $newRecord->project_id = $request->projectId;
-                $newRecord->user_id = Auth::id();
-                $newRecord->save();
-
-                MonitoringCompetitorsQueue::dispatch(
-                    $request->all(),
-                    $newRecord->id
-                )->onQueue('monitoring_competitors_stat');
-
-                return response()->json([
-                    'state' => 'in process',
-                    'id' => $newRecord->id
-                ]);
-            }
-
-            return response()->json([
-                'state' => 'in queue',
-                'id' => $record->id
-            ]);
-        } else {
-            return response()->json([
-                'result' => MonitoringCompetitor::getCompetitors($request->all()),
-                'state' => 'ready'
-            ]);
-        }
+        return response()->json([
+            'result' => MonitoringCompetitor::getCompetitors($request->all()),
+        ]);
     }
 
     public function getMonitoringCompetitorsResult(MonitoringCompetitorsResult $record): JsonResponse
@@ -586,9 +545,9 @@ class MonitoringController extends Controller
         array_unshift($competitors, $project->url);
         $navigations = $this->navigations($project);
 
-        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['query'])->toArray();
+        $allWords = MonitoringKeyword::where('monitoring_project_id', $project->id)->get(['id', 'query'])->toArray();
         $totalWords = count($allWords);
-        $keywords = array_chunk(array_column($allWords, 'query'), 100);
+        $keywords = array_chunk($allWords, 100);
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
@@ -597,7 +556,6 @@ class MonitoringController extends Controller
             'keywords' => json_encode($keywords),
             'totalWords' => $totalWords,
             'changesDates' => $project->dates,
-            'lastChecks' => MonitoringProject::getLastDates($project)
         ]);
     }
 
