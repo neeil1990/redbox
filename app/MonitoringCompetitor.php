@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,20 +28,21 @@ class MonitoringCompetitor extends Model
             $engines = MonitoringSearchengine::where('id', '=', $request['region'])->get(['engine', 'lr', 'id'])->toArray();
         }
 
+        $date = Carbon::parse($request['date'])->toDateString();
         foreach ($engines as $engine) {
             foreach ($words as $keywords) {
                 $start = microtime(true);
-                $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                $sql = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('lr', $engine['lr'])
-                    ->whereDate('created_at', $request['date'])
                     ->where('position', '<=', 10)
+                    ->whereDate('created_at', $date)
                     ->whereIn('query', $keywords)
                     ->orderBy('id', 'desc')
-                    ->limit(count($keywords) * 10)
-                    ->get(['query', 'url'])
-                    ->toArray();
+                    ->limit(count($keywords) * 10);
+                $results = $sql->get(['query', 'url'])->toArray();
 
-                Log::debug('microtime', [microtime(true) - $start]);
+                Log::debug(microtime(true) - $start);
+
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
                     if (isset($request['targetDomain'])) {
