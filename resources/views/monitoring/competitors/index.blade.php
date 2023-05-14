@@ -127,10 +127,6 @@
                                     @endif
                                 @endforeach
                             </select>
-                            <button id="competitors-history-positions" class="btn btn-default"
-                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0">
-                                {{ __('Analyse') }}
-                            </button>
                         </div>
                         <div id="download-results" style="display: none">
                             <div class="d-flex justify-content-center align-items-center">
@@ -280,10 +276,6 @@
 
                 getCompetitors()
 
-                $('#competitors-history-positions').on('click', function () {
-                    getCompetitors()
-                })
-
                 $('#searchEngines').on('change', function () {
                     let val = $(this).val()
                     if (val !== '') {
@@ -293,6 +285,8 @@
                     } else {
                         localStorage.removeItem('lr_redbox_monitoring_selected_filter')
                     }
+
+                    getCompetitors()
                 })
 
                 $('#searchCompetitors').on('click', function () {
