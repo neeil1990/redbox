@@ -14,7 +14,7 @@ class MonitoringCompetitor extends Model
     {
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
-        $words = array_chunk($words, 50);
+        $words = array_chunk($words, 100);
         $competitors = [];
 
         if ($request['region'] == '') {
