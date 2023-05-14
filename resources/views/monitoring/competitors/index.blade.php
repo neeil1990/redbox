@@ -361,8 +361,12 @@
                         $('#tableBlock').hide()
                     },
                     success: function (response) {
-                        renderTableRows(JSON.parse(response.result))
-                        $('#competitors-history-positions').prop('disabled', false)
+                        if (response.state === 'ready') {
+                            renderTableRows(JSON.parse(response.result))
+                            $('#competitors-history-positions').prop('disabled', false)
+                        } else if (response.state === 'in process' || response.state === 'in queue') {
+                            waitFinishResult(response.id)
+                        }
                     },
                 });
             }
@@ -380,6 +384,7 @@
                             if (response.state === 'ready') {
                                 renderTableRows(JSON.parse(response.result))
                                 clearInterval(interval)
+                                $('#competitors-history-positions').prop('disabled', false)
                             }
                         },
                     });

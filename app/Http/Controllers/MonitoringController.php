@@ -442,7 +442,33 @@ class MonitoringController extends Controller
 
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
+        $project = MonitoringProject::findOrFail($request->projectId);
+
+        $totalWords = $project->keywords->count();
+        if (empty($request->region)) {
+            $totalWords *= $project->searchengines->count();
+        }
+        if ($totalWords >= 1000) {
+            $newRecord = new MonitoringCompetitorsResult();
+            $newRecord->region = $request->region;
+            $newRecord->date = Carbon::now()->toDateString();
+            $newRecord->project_id = $request->projectId;
+            $newRecord->user_id = Auth::id();
+            $newRecord->save();
+
+            MonitoringCompetitorsQueue::dispatch(
+                $request->all(),
+                $newRecord->id
+            )->onQueue('monitoring_competitors_stat');
+
+            return response()->json([
+                'state' => 'in queue',
+                'id' => $newRecord->id
+            ]);
+        }
+
         return response()->json([
+            'state' => 'ready',
             'result' => MonitoringCompetitor::getCompetitors($request->all()),
         ]);
     }
@@ -450,9 +476,12 @@ class MonitoringController extends Controller
     public function getMonitoringCompetitorsResult(MonitoringCompetitorsResult $record): JsonResponse
     {
         if ($record->state === 'ready') {
+            $result = $record;
+            $record->delete();
+
             return response()->json([
-                'result' => Common::uncompressArray($record->result, false),
-                'state' => $record->state
+                'result' => Common::uncompressArray($result->result, false),
+                'state' => $result->state
             ]);
         }
 
