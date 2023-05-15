@@ -486,10 +486,11 @@
                 $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
                 colorCells()
 
-                $('.paginate_button').on('click', function () {
+                $('#table_paginate ul.pagination').children().on('click', function () {
                     setTimeout(() => {
                         colorCells()
                     }, 300)
+                    refresh()
                 })
 
                 $('th.sorting').on('click', function () {
@@ -498,7 +499,15 @@
                     }, 300)
                 })
 
-                $('select.table_length').on('change', function () {
+                $('select[name="table_length"]').on('change', function () {
+                    setTimeout(() => {
+                        colorCells()
+                    }, 300)
+                })
+            }
+
+            function refresh() {
+                $('#table_paginate ul.pagination').children().on('click', function () {
                     setTimeout(() => {
                         colorCells()
                     }, 300)
