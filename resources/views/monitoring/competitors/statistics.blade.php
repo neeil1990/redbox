@@ -857,10 +857,7 @@
                 });
 
                 let interval = setInterval(() => {
-                    console.log(totalRequests)
-                    console.log(successRequests)
-                    console.log(failRequests)
-                    if (totalRequests === successRequests + failRequests) {
+                    if (Number(Number(countReadyWords / TOTAL_WORDS * 100).toFixed()) === 100) {
                         clearInterval(interval)
                         if (failRequests === 0) {
                             $('#download-results').hide()
