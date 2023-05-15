@@ -660,8 +660,7 @@ class MonitoringController extends Controller
     {
         $request = json_decode($project->request, true);
         $request['region'] = MonitoringSearchengine::where('id', $request['region'])->first()->location->name;
-        $navigations = $this->navigations(MonitoringProject::find($project->monitoring_project_id));
 
-        return view('monitoring.competitors.dates-results', compact('project', 'request', 'navigations'));
+        return view('monitoring.competitors.dates-results', compact('project', 'request'));
     }
 }
