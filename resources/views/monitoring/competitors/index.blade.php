@@ -457,7 +457,7 @@
                             "next": "»",
                             "previous": "«"
                         },
-                        "emptyTable": "{{ __('The withdrawal of positions by the selected date and region was not carried out') }}"
+                        "emptyTable": "{{ __('More than 15 days have passed since the last withdrawal') }}"
                     },
                     columnDefs: [
                         {
