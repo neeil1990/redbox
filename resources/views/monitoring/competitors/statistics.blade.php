@@ -755,8 +755,8 @@
                 } else {
                     table = $('#table').DataTable({
                         ordering: false,
-                        lengthMenu: [10, 25, 50, 100, TOTAL_WORDS],
-                        pageLength: TOTAL_WORDS,
+                        lengthMenu: [10, 25, 50, 100],
+                        pageLength: 50,
                         language: {
                             lengthMenu: "_MENU_",
                             search: "_INPUT_",
