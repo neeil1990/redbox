@@ -774,7 +774,6 @@
                             },
                         },
                         "drawCallback": function (settings) {
-                            console.log(1)
                             colorCells()
                         }
                     })
