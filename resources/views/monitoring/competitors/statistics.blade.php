@@ -507,7 +507,7 @@
                                 }
                             });
 
-                            if(bool) {
+                            if (bool) {
                                 let array = []
                                 $cells.each(function (cellIndex) {
                                     let $cell = $(this);
@@ -763,6 +763,7 @@
                     table.clear().draw()
                 } else {
                     table = $('#table').DataTable({
+                        ordering: false,
                         lengthMenu: [10, 25, 50, 100, TOTAL_WORDS],
                         pageLength: TOTAL_WORDS,
                         language: {
