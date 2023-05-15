@@ -819,7 +819,7 @@
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            timeout: 100,
+                            timeout: 60000,
                             url: "{{ route('monitoring.get.competitors.statistics') }}",
                             data: {
                                 '_token': $('meta[name="csrf-token"]').attr('content'),
