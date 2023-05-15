@@ -580,11 +580,12 @@ class MonitoringController extends Controller
 
         return view('monitoring.competitors.statistics', [
             'project' => $project,
+            'searchEngines' => $project->searchengines,
+            'changesDates' => $project->dates,
             'competitors' => $competitors,
             'navigations' => $navigations,
             'keywords' => json_encode($keywords),
             'totalWords' => $totalWords,
-            'changesDates' => $project->dates,
         ]);
     }
 

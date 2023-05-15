@@ -1,4 +1,4 @@
-@component('component.card', ['title' => $project->mainProject->name])
+@component('component.card', ['title' => $project->mainProject->name . ' ' . $project->range])
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
@@ -116,43 +116,8 @@
             }
         </style>
     @endslot
-
-    <div class="row">
-        @foreach($navigations as $navigation)
-            <div class="col-lg-2 col-6">
-                <a href="{{ $navigation['href'] }}" class="small-box {{ $navigation['bg'] }}" style="min-height: 137px">
-                    <div class="inner">
-                        @if($navigation['h3'])
-                            <h3 class="mb-0">{{ $navigation['h3'] }}</h3>
-                        @endif
-
-                        {!! $navigation['content'] !!}
-
-                        @isset($navigation['small'])
-                            <small>{{ $navigation['small'] }}</small>
-                        @endisset
-                    </div>
-                    <div class="icon">
-                        <i class="{{ $navigation['icon'] }}"></i>
-                    </div>
-                </a>
-            </div>
-        @endforeach
-    </div>
-
-    <div class="d-flex flex-row mb-3 mt-3">
-        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.positions', $project->mainProject->id) }}">
-            {{ __('Comparison with competitors') }}
-        </a>
-
-        <a class="btn btn-outline-secondary mr-2" href="{{ route('monitoring.competitors.dates', $project->mainProject->id) }}">
-            {{ __('Changes by top and date') }}
-        </a>
-    </div>
-
-    <div class="mt-5">
-        <h3>{{ __('Project') . ' '. $project->mainProject->name}} <span class="text-muted">({{ $project->range }})</span></h3>
-        <h3>{{ $request['region'] }}</h3>
+    <div>
+        <h3 class="mb-3">{{ $request['region'] }}</h3>
         <div id="history-block">
             <div class="mb-2 btn-group" id="visibility-buttons">
                 <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
