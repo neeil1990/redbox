@@ -463,6 +463,7 @@
             }
 
             function prepareActions() {
+                table.page.len(50)
                 $('.remove-competitor').unbind().on('click', function () {
                     let columnIndex = $(this).attr('data-id')
                     let url = $(this).attr('data-target')
@@ -751,8 +752,8 @@
                     table.clear().draw()
                 } else {
                     table = $('#table').DataTable({
-                        lengthMenu: [10, 25, 50, 100],
-                        pageLength: 50,
+                        lengthMenu: [10, 25, 50, 100, TOTAL_WORDS],
+                        pageLength: TOTAL_WORDS,
                         language: {
                             lengthMenu: "_MENU_",
                             search: "_INPUT_",
