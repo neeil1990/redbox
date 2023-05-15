@@ -151,7 +151,7 @@
         @endforeach
     </div>
 
-    <div class="d-flex flex-row mb-3 mt-3 btn-group w-50">
+    <div class="d-flex flex-row mb-3 mt-3 btn-group col-4 p-0">
         <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
             {{ __('My competitors') }}
         </a>
